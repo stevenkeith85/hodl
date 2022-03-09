@@ -32,3 +32,21 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+node_modules
+.env
+coverage
+coverage.json
+typechain
+
+#Hardhat files
+cache
+artifacts
+
+# local artifacts
+/public/uploads
+/public/hashed
+/nft-assets
+
+config.js
+generateNfts/config.js
