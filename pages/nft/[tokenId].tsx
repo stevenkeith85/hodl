@@ -5,7 +5,6 @@ import { fetchToken, listTokenOnMarket } from "../../lib/nft";
 import { nftmarketaddress } from '../../config.js'
 import { HodlTextField } from "../../components/HodlTextField";
 import Link from "next/link";
-import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import { WalletContext } from "../_app";
 import { DiamondTitle } from "../../components/DiamondTitle";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -13,13 +12,16 @@ import { grey } from "@mui/material/colors";
 import PublicIcon from '@mui/icons-material/Public';
 import { RocketTitle } from "../../components/RocketTitle";
 import { HodlSnackbar } from "../../components/HodlSnackbar";
+import { HodlModal } from "../../components/HodlModal";
+import { HodlButton } from "../../components/HodlButton";
+import Image from "next/image";
 
 
 const nftDetail = () => {
   const router = useRouter();
-  const { wallet } = useContext(WalletContext);
-  const [marketItem, setMarketItem] = useState(null);
-  const [address, setAddress] = useState('');
+  const { wallet, address } = useContext(WalletContext);
+  const [token, setToken] = useState(null);
+  
   const [loading, setLoading] = useState(false);
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -31,11 +33,14 @@ const nftDetail = () => {
   useEffect(() => {
     const load = async () => {
       if (router.query.tokenId !== undefined &&
-        wallet.provider !== null &&
-        wallet.signer !== null) {
+          wallet.provider !== null &&
+          wallet.signer !== null) {
+
         setLoading(true);
-        const marketItem = await fetchToken(router.query.tokenId, wallet);
-        setMarketItem(marketItem);
+
+        const token = await fetchToken(router.query.tokenId, wallet);
+        setToken(token);
+
         setLoading(false);
       }
     };
@@ -44,17 +49,12 @@ const nftDetail = () => {
 
   }, [router.query.tokenId, wallet]);
 
-  useEffect(() => {
-    const load = async () => {
-      if (wallet.signer) {
-        const address = await wallet.signer.getAddress();
-        setAddress(address);
-      }
-    };
+  const isOnTheMarket = token?.owner.toLowerCase() === nftmarketaddress.toLowerCase();
 
-    load();
-
-  }, [wallet]);
+  { 
+    console.log(address);
+    console.log(token);
+    }
 
   if (loading) {
     return (
@@ -64,27 +64,17 @@ const nftDetail = () => {
     );
   }
 
+  console.log('token', token)
   return (
     <>
       <HodlSnackbar ref={snackbarRef} />
-      <Modal
+      <HodlModal
         open={modalOpen}
-        onClose={() => setModalOpen(false)}
+        setOpen={setModalOpen}
       >
-        <Box sx={{
-          position: 'absolute' as 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: 400,
-          bgcolor: 'background.paper',
-          borderRadius: 2,
-          boxShadow: 24,
-          p: 4,
-        }}>
           {!listed ?
             (<>
-              <Stack spacing={3}>
+              <Stack spacing={4}>
                   <RocketTitle title="Time for Tendies" />
                   <Typography sx={{ paddingLeft: 1}}>
                     List this NFT on the market.
@@ -96,43 +86,49 @@ const nftDetail = () => {
                   required
                   placeholder="1"
                 />
-                {Boolean(address && marketItem && address !== marketItem?.seller) &&
-                  <Button
+                {Boolean(address && token && address !== token?.seller) &&
+                  <HodlButton
                     onClick={async () => {
-                      snackbarRef?.current?.display('Please Approve Transaction in Wallet', 'info');
-                      await listTokenOnMarket(router.query.tokenId, price, wallet);
-                      snackbarRef?.current?.display('Token listed on market', 'success');
-                      setListed(true);
+                      try {
+                        snackbarRef?.current?.display('Please Approve Transaction in Wallet', 'info');
+                        await listTokenOnMarket(router.query.tokenId, price, wallet);
+                        snackbarRef?.current?.display('Token listed on market', 'success');
+                        setListed(true);
+                      } catch (e) {
+                        if (e.code === -32603) {
+                          const re = /reverted with reason string '(.+)'/gi;
+                          const matches = re.exec(e.data.message)
+                          snackbarRef?.current?.display(matches[1], 'error');
+                        }
+                      }
+                      
                     }}
                     disabled={!price}
-                    variant="contained"
-                    color="primary"
-                    sx={{ padding: 2 }}>
+                    >
                     Add
-                  </Button>
+                  </HodlButton>
                 }
               </Stack>
             </>
             ) :
             (
-              <Stack spacing={2}>
-                <Typography variant="h6" component="h2" sx={{ fontWeight: 600 }}>
-                  <RocketLaunchIcon color="secondary" /> We're off to the moon
-                </Typography>
+              <Stack spacing={4}>
+                <RocketTitle title="We're off to the Moon" />
                 <Typography sx={{ span: { fontWeight: 600 } }}>
                   You've <span>successfully</span> listed your token on the market
                 </Typography>
+                <Stack direction="row" spacing={2}>
                 <Link href={`/listing/${router.query.tokenId}`} passHref>
-                  <Button variant="contained" sx={{ padding: 2 }}>
-                    View Token Listing
-                  </Button>
+                  <HodlButton color="secondary">View Listing</HodlButton>
                 </Link>
+                <Link href={`/profile/${address}`} passHref>
+                  <HodlButton>View Profile</HodlButton>
+                </Link>
+                </Stack>
               </Stack>
-
             )
           }
-        </Box>
-      </Modal>
+      </HodlModal>
       <Box sx={{ display: 'flex', flexDirection: 'column', justifyItems: "center", padding: 4 }}>
         <Typography variant='h1' sx={{ paddingBottom: 2 }}>
           <DiamondTitle title="NFT Details" />
@@ -140,92 +136,65 @@ const nftDetail = () => {
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
             <Stack spacing={2}>
-              <HodlTextField
-                label="Name"
-                value={marketItem?.name}
-              />
-              <HodlTextField
-                label="Description"
-                value={marketItem?.description}
-              />
+              <HodlTextField label="Name" value={token?.name}></HodlTextField>
+              <HodlTextField label="Description" value={token?.description}></HodlTextField>
               <Accordion disableGutters elevation={1}
                 sx={{
-                border: (theme) => `1px solid ${grey[400]}`,
-                borderRadius: 1,
-                boxShadow: 'none'
+                  color: grey[800],
+                  border: (theme) => `1px solid ${grey[400]}`,
+                  borderRadius: 1,
+                  boxShadow: 'none'
               }}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                   <Typography>NFT Details</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                   <Stack spacing={2}>
-                    {/* <Stack direction="row" spacing={2} >
-                      <HodlTextField
-                        label="Contract Address"
-                        value={nftaddress}
-                        fullWidth
-                      />
-                      <HodlTextField
-                        label="Token ID"
-                        value={router?.query?.tokenId || ''}
-                        fullWidth
-                      />
-                    </Stack> */}
                     <Stack direction="row" spacing={2}>
-                        <Button fullWidth variant="outlined" sx={{ padding: 2 }} endIcon={<PublicIcon />}>
-                          <MuiLink href={marketItem?.ipfsMetadataGateway || '#'} target="_blank" sx={{textDecoration: 'none'}}>
+                        <HodlButton endIcon={<PublicIcon />}>
+                          <MuiLink href={token?.ipfsMetadataGateway || '#'} target="_blank" sx={{textDecoration: 'none'}}>
                             View IPFS Metadata
-                          </MuiLink>    
-                        </Button>
-                        <Button fullWidth variant="outlined" sx={{ padding: 2 }} endIcon={<PublicIcon />}>
-                          <MuiLink href={marketItem?.ipfsImageGateway || '#'} target="_blank" sx={{textDecoration: 'none'}}>
+                            </MuiLink>    
+                        </HodlButton>
+                        <HodlButton endIcon={<PublicIcon />}>
+                        <MuiLink href={token?.ipfsImageGateway || '#'} target="_blank" sx={{textDecoration: 'none'}}>
                             View IPFS Image
                           </MuiLink>    
-                        </Button>
+                        </HodlButton>
                     </Stack>
                   </Stack>
                 </AccordionDetails>
               </Accordion>
               <Stack spacing={2} direction="row">
-                {Boolean(address && marketItem && marketItem?.owner.toLowerCase() === address.toLowerCase()) &&
-                  <Button
-                    onClick={() => setModalOpen(true)}
-                    variant="outlined"
-                    color="secondary"
-                    sx={{ width: '50%', padding: 2 }}>
-                    List Item for Sale
-                  </Button>
+                {
+                  <HodlButton onClick={() => setModalOpen(true)}>
+                    List Item
+                  </HodlButton>
                 }
-                {Boolean(marketItem?.owner.toLowerCase() === nftmarketaddress.toLowerCase()) ?
-                  <Link href={`/listing/${marketItem.tokenId}`} passHref>
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      sx={{ width: '50%', padding: 2 }}>
-                      View Market Listing
-                    </Button>
-                  </Link> :
-                  <Button
-                    disabled={true}
-                    variant="outlined"
-                    color="secondary"
-                    sx={{ width: '50%', padding: 2 }}>
-                    Not Listed on Market
-                  </Button>
+                {
+                  <Link href={`/listing/${token?.tokenId}`} passHref>
+                    <HodlButton>View Listing</HodlButton>
+                  </Link>
                 }
-                <Link href={`/profile/${marketItem?.owner}` || '#'} passHref>
-                  <Button variant="outlined" sx={{ padding: 2, width: '50%' }}>
-                    View Owner's Profile
-                  </Button>
-              </Link>
+                { 
+                  <Link href={`/profile/${token?.owner}` || '#'} passHref>
+                    <HodlButton color="secondary">Owner's Profile</HodlButton>
+                  </Link>
+                }
               </Stack>
             </Stack>
           </Grid>
-          <Grid item xs={12} md={6} sx={{ img: { maxWidth: '100%' } }}>
-            <Stack spacing={2}>
-              <img src={marketItem?.image} />
-            </Stack>
-          </Grid>
+          <Grid item xs={12} md={6} sx={{ textAlign: 'center'}}>        
+            {Boolean(token?.image) &&
+            <Image
+              src={token?.image}
+              alt={token?.name}
+              width={600}
+              height={600}
+              objectFit='contain'
+              objectPosition="top"
+            />}
+        </Grid>
         </Grid>
       </Box>
     </>

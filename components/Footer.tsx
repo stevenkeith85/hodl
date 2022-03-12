@@ -30,12 +30,7 @@ const Footer = () => (
                     }}
                     sx={{
                         display: 'flex',
-                        // alignContent: {
-                        //     xs: 'center',
-                        //   //  md: 'left',
-                        // },
                         justifyContent: {
-                            // xs: 'center',
                             md: 'space-between'
                         },
                         alignItems: {
@@ -55,26 +50,25 @@ const Footer = () => (
                         }}
                         spacing={{
                             xs: 4,
-                            // sm: 8, 
-                            // md: 10 
+                            md: 12
                         }}
                     >
-                        <Stack spacing={1}>
-                            <Typography sx={{ fontWeight: 800 }}>Hodl My Moon</Typography>
+                        <Stack spacing={0.5}>
+                            <Typography sx={{ fontWeight: 800, marginBottom: 0.5 }}>Hodl My Moon</Typography>
                             <Link href="/about"><Typography component="a" sx={{ fontSize: 14 }}>About</Typography></Link>
                             <Link href="/contact"><Typography component="a" sx={{ fontSize: 14 }}>Contact</Typography></Link>
                         </Stack>
-                        <Stack spacing={1}>
-                            <Typography sx={{ fontWeight: 800 }}>Non Fungible Tokens</Typography>
+                        <Stack spacing={0.5}>
+                            <Typography sx={{ fontWeight: 800, marginBottom: 0.5 }}>Non Fungible Tokens</Typography>
                             <Typography sx={{ fontSize: 14 }}>Mint NFT</Typography>
                             <Typography sx={{ fontSize: 14 }}>My NFT Collection</Typography>
                             <Typography sx={{ fontSize: 14 }}>NFT Market</Typography>
                         </Stack>
                     </Stack>
-                    <Stack spacing={2}>
+                    <Stack spacing={1}>
                         <Logo />
                         <Typography sx={{ fontSize: 18, fontWeight: 500 }}>
-                            Mint, Showcase, and Profit with NFTS.
+                            Mint, Showcase, and Profit with NFTs.
                         </Typography>
                     </Stack>
                 </Stack>
@@ -96,11 +90,10 @@ const Footer = () => (
                 <Stack
                     direction={{
                         xs: 'column-reverse',
-                        md: 'row',
+                        md: 'row-reverse',
                     }}
                     spacing={{
-                        xs: 2,
-                        // sm: 4,
+                        xs: 1,
                     }}
                     sx={{
                         display: 'flex',
@@ -110,16 +103,15 @@ const Footer = () => (
                         },
                         alignItems: {
                             xs: 'center',
-                            md: 'start'
                         },
                     }}>
-                    <Typography sx={{ fontSize: 14 }}>Copyright © 2022 Pony Powered Limited.</Typography>
+                    <Typography sx={{ fontSize: 13 }}>Copyright © 2022 Pony Powered Limited.</Typography>
                     <Stack
                         direction="row"
                         spacing={2}
                     >
-                        <LinkedInIcon />
-                        <TwitterIcon />
+                        <LinkedInIcon fontSize="large"/>
+                        <TwitterIcon fontSize="large"/>
                     </Stack>
 
                 </Stack>

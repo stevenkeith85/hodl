@@ -22,7 +22,9 @@ const Profile = () => {
       setLoading(true);
 
       const walletNfts = await fetchNftsInWallet(router.query.address[0]);
+      console.log('walletNfts', walletNfts)
       const marketNfts = await fetchNFTsListedOnMarket(router.query.address[0]);
+      console.log('marketNfts', marketNfts)
 
       setWalletNfts(walletNfts);
       setMarketNfts(marketNfts);
@@ -65,7 +67,7 @@ const Profile = () => {
         {Boolean(walletNfts.length) &&
           <Box>
             <DiamondTitle title="Hodling" />
-            <NftList nfts={walletNfts} />
+            <NftList nfts={walletNfts} showTop={false} />
           </Box>
         }
         {Boolean(marketNfts.length) && (

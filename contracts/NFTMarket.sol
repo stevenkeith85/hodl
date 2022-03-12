@@ -6,288 +6,244 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+import "./ABDKMathQuad.sol";
+
 import "hardhat/console.sol";
 
 // TODO: Use proxy contract
 contract NFTMarket is ReentrancyGuard, Ownable {
-    using Counters for Counters.Counter;
-    Counters.Counter private _itemIds;
-    Counters.Counter private _itemsSold;
+    address payable marketOwner;
+    uint256 private marketSaleFeeInPercent = 1;
+    uint256 private minListingPriceInMatic = 1 ether;
 
-    address payable marketOwner; // marketplace owner
+    struct Listing {
+        uint256 tokenId;
+        uint256 price;
+        address payable seller;
+    }
 
-    uint256 private listingPrice = 0.025 ether; // fee for the marketplace owner
-    uint256 private minSellingPrice = 0.025 ether; // minimum price we will let users lift NFTs at.
+    // Main DS
+    mapping(uint256 => Listing) private listings;
+    uint256[] listingKeys;
+
+    // Keep track of the number of tokens per address
+    mapping(address => uint256) private numberOfTokensForAddress;
+
+    // Events
+    event ListingCreated(
+        uint256 indexed tokenId,
+        uint256 price,
+        address indexed seller
+    );
 
     constructor() {
         marketOwner = payable(msg.sender);
     }
 
-    struct MarketItem {
-        address nftContract;
-        uint256 tokenId;
-        address payable seller; // Who has given us their NFT to sell. They will receive 'price' when it is sold. (unless they delist)
-        address boughtBy; // We record who bought the NFT for informational purposes
-        uint256 price;
-        bool sold;
+    // Fee Getters/Setters
+    function getMarketSaleFeeInPercent() public view returns (uint256) {
+        return marketSaleFeeInPercent;
     }
 
-    mapping(uint256 => MarketItem) private idToMarketItem; // tokenId to listing
-
-    event MarketItemCreated(
-        address indexed nftContract,
-        uint256 indexed tokenId,
-        address seller,
-        address boughtBy,
-        uint256 price,
-        bool sold
-    );
-
-    function getListingPrice() public view returns (uint256) {
-        return listingPrice;
+    function setMarketSaleFeeInPercent(uint256 _marketSaleFeeInPercent)
+        public
+        onlyOwner
+    {
+        marketSaleFeeInPercent = _marketSaleFeeInPercent;
     }
 
-    function setListingPrice(uint256 _listingPrice) public onlyOwner {
-        listingPrice = _listingPrice;
+    function getMinListingPriceInMatic() public view returns (uint256) {
+        return minListingPriceInMatic;
     }
 
-    function getMinSellingPrice() public view returns (uint256) {
-        return minSellingPrice;
+    function setMinListingPriceInMatic(uint256 _minListingPriceInMatic)
+        public
+        onlyOwner
+    {
+        minListingPriceInMatic = _minListingPriceInMatic;
     }
 
-    function setMinSellingPrice(uint256 _minSellingPrice) public onlyOwner {
-        minSellingPrice = _minSellingPrice;
+    // Utility functions
+    function remove(uint256 _index) public {
+        require(_index < listingKeys.length, "index out of bound");
+
+        for (uint256 i = _index; i < listingKeys.length - 1; i++) {
+            listingKeys[i] = listingKeys[i + 1];
+        }
+
+        listingKeys.pop();
     }
 
-    function createMarketItem(
-        address nftContract,
+    function mulDiv(
+        uint256 x,
+        uint256 y,
+        uint256 z
+    ) public pure returns (uint256) {
+        return
+            ABDKMathQuad.toUInt(
+                ABDKMathQuad.div(
+                    ABDKMathQuad.mul(
+                        ABDKMathQuad.fromUInt(x),
+                        ABDKMathQuad.fromUInt(y)
+                    ),
+                    ABDKMathQuad.fromUInt(z)
+                )
+            );
+    }
+
+    function listToken(
+        address tokenContract,
         uint256 tokenId,
         uint256 price
-    ) public payable nonReentrant {
-        // This stops others trying to list things they don't own.
-        // It also prevents a duplicate 'live' listing happening as
-        // the token owner will be the marketplace for the duration of the listing
+    ) public payable {
         require(
-            msg.sender == IERC721(nftContract).ownerOf(tokenId),
-            "You do not own this token!"
+            msg.sender == IERC721(tokenContract).ownerOf(tokenId),
+            "You do not own this token or it is already listed"
         );
+
         require(
-            price >= minSellingPrice,
-            "Price must at least the minimum selling price"
-        );
-        require(msg.value == listingPrice, "Listing price not sent");
-
-        uint256 itemId = _itemIds.current();
-
-        idToMarketItem[itemId] = MarketItem(
-            nftContract,
-            tokenId,
-            payable(msg.sender), // seller
-            payable(address(0)), // boughtBy
-            price,
-            false // sold
+            price >= minListingPriceInMatic,
+            "Token must be listed at minListingPrice or higher"
         );
 
-        IERC721(nftContract).transferFrom(msg.sender, address(this), tokenId);
+        listings[tokenId] = Listing(tokenId, price, payable(msg.sender));
 
-        _itemIds.increment();
+        listingKeys.push(tokenId);
 
-        emit MarketItemCreated(
-            nftContract,
-            tokenId,
-            msg.sender,
-            address(0),
-            price,
-            false
-        );
+        // Token owner will become the market
+        IERC721(tokenContract).transferFrom(msg.sender, address(this), tokenId);
+
+        numberOfTokensForAddress[msg.sender]++;
+
+        console.log(msg.sender, ' has this number of tokens ', numberOfTokensForAddress[msg.sender]);
+
+        emit ListingCreated(tokenId, price, msg.sender);
+
+        console.log(msg.sender, " has listed tokenId ", tokenId);
     }
 
-    // Sellers can remove their item from the marketplace at any time.
-    function delistToken(address nftContract, uint256 tokenId)
+    function delistToken(address tokenContract, uint256 tokenId)
         public
         payable
-        nonReentrant
     {
         bool found = false;
-        uint256 index;
 
-        for (uint256 i = _itemIds.current(); i >= 0; i--) {
-            if (
-                idToMarketItem[i].tokenId == tokenId && !idToMarketItem[i].sold
-            ) {
+        for (uint256 i = 0; i < listingKeys.length; i++) {
+            if (listingKeys[i] == tokenId) {
                 found = true;
-                index = i;
+                remove(i);
                 break;
             }
         }
-        require(found, "Token not currently on the market");
-        require(
-            msg.sender == idToMarketItem[index].seller,
-            "Only the token seller can delist it"
-        );
 
-        IERC721(nftContract).transferFrom(address(this), msg.sender, tokenId);
+        require(found, "Token is not listed on Market");
+        require(msg.sender == listings[tokenId].seller, "Only the token seller can delist it");
 
-        idToMarketItem[index].sold = true;
-        idToMarketItem[index].boughtBy = msg.sender;
+        IERC721(tokenContract).transferFrom(address(this), msg.sender, tokenId);
 
-        _itemsSold.increment();
+        numberOfTokensForAddress[msg.sender]--;
+
+        Listing memory empty;
+        listings[tokenId] = empty;
 
         console.log(msg.sender, " has delisted item with tokenId ", tokenId);
     }
 
-    // transfer the token ownership, and collect transaction fee
-    function createMarketSale(address nftContract, uint256 itemId)
+    function buyToken(address tokenContract, uint256 tokenId)
         public
         payable
         nonReentrant
     {
         bool found = false;
-        uint256 index;
 
-        for (uint256 i = _itemIds.current(); i >= 0; i--) {
-            if (
-                idToMarketItem[i].tokenId == itemId && !idToMarketItem[i].sold
-            ) {
+        for (uint256 i = 0; i < listingKeys.length; i++) {
+            if (listingKeys[i] == tokenId) {
                 found = true;
-                index = i;
+                remove(i);
                 break;
             }
         }
-        require(found, "Token not currently on the market");
+
+        require(found, "Token is not listed on Market");
+
         require(
-            msg.sender != idToMarketItem[index].seller,
-            "You do not need to buy your item back, just de-list it"
+            msg.sender != listings[tokenId].seller,
+            "You should delist your item instead"
         );
         require(
-            msg.value == idToMarketItem[index].price,
-            "Asking price not sent"
+            msg.value == listings[tokenId].price,
+            "Item asking price not sent"
         );
 
-        (bool sellerReceivedFee, ) = idToMarketItem[index].seller.call{
-            value: msg.value
-        }("");
-        require(sellerReceivedFee, "Unable to send coins to the seller");
+        uint256 sellerFee = mulDiv( (100 - marketSaleFeeInPercent) , listings[tokenId].price, 100 );
+        uint256 marketOwnerFee = mulDiv (marketSaleFeeInPercent, listings[tokenId].price, 100);
 
-        IERC721(nftContract).transferFrom(
-            address(this),
-            msg.sender,
-            idToMarketItem[index].tokenId
-        );
+        (bool sellerReceivedFee, ) = listings[tokenId].seller.call{value: sellerFee}("");
+        require(sellerReceivedFee, "Could not send the seller their fee");
 
-        idToMarketItem[index].sold = true;
-        idToMarketItem[index].boughtBy = msg.sender;
-        _itemsSold.increment();
+        (bool marketOwnerReceivedFee, ) = marketOwner.call{value: marketOwnerFee}("");
+        require(marketOwnerReceivedFee, "Could not send the seller their fee");
 
-        (bool marketOwnerReceivedFee, ) = payable(marketOwner).call{
-            value: listingPrice
-        }("");
-        require(
-            marketOwnerReceivedFee,
-            "Unable to transaction fee to the marketplace owner"
-        );
+        IERC721(tokenContract).transferFrom(address(this), msg.sender, tokenId);
 
-        console.log(
-            msg.sender,
-            " has purchased item with tokenId ",
-            idToMarketItem[index].tokenId
-        );
+        numberOfTokensForAddress[listings[tokenId].seller]--;
+
+        Listing memory empty;
+        listings[tokenId] = empty;
+
+        console.log(msg.sender, " has purchased tokenId ", tokenId);
+        console.log(listings[tokenId].seller, " has received fee");
+        console.log(marketOwner, " has received commision");
     }
-
-    // We will be adding MarketItems sequentially;
-    // Search backwards until we find the tokenId && check it hasn't been sold
-    function fetchMarketItem(uint256 tokenId)
+    
+    // We do not check if the token is listed for performance reasons. 
+    // The assumption is the caller will know this.
+    function getListing(uint256 tokenId)
         public
         view
-        returns (MarketItem memory)
+        returns (Listing memory)
     {
-        for (uint256 i = _itemIds.current(); i >= 0; i--) {
-            if (
-                idToMarketItem[i].tokenId == tokenId && !idToMarketItem[i].sold
-            ) {
-                return idToMarketItem[i];
-            }
-        }
-        revert("Token not currently on the market");
+        return listings[tokenId];
     }
 
-    // Fetch all active listings
-    function fetchMarketItems() public view returns (MarketItem[] memory) {
-        uint256 forSaleCount = 0;
-        uint256 itemCount = _itemIds.current();
+    // e.g. 100 items, offset of 0, limit of 10
+    // we return [0..9], 0 + 10 (next offset for pagination),
+    function fetchMarketItems(uint256 offset, uint256 limit) public view
+        returns (Listing[] memory, uint256 nextOffset, uint256 totalItems) {
 
-        for (uint256 i = 0; i < itemCount; i++) {
-            if (!idToMarketItem[i].sold) {
-                forSaleCount++;
-            }
+        if (limit == 0) {
+            limit = 1;
         }
 
-        MarketItem[] memory items = new MarketItem[](forSaleCount);
-        uint256 currentIndex = 0;
-
-        for (uint256 i = 0; i < itemCount; i++) {
-            if (!idToMarketItem[i].sold) {
-                items[currentIndex] = idToMarketItem[i];
-                currentIndex++;
-            }
+        // Asked for limit of 1000, and an offset of 10 (i.e. we asked for 10 to 999 with a zero based index)
+        //
+        // There might be only 100 items though!
+        // In that case,
+        // 100 (total) - 10 (offset) = 90 (new limit) and we get an iteration of 10 - 89 (zero based index)
+        if (limit > (listingKeys.length - offset)) {
+            limit = listingKeys.length - offset;
         }
 
-        return items;
+        Listing[] memory items = new Listing[](limit);
+
+        for (uint256 i = 0; i < limit; i++) {
+            uint256 tokenId = listingKeys[i + offset];
+            items[i] = listings[tokenId];
+        }
+
+        return (items, offset + limit, listingKeys.length);
     }
 
-    // Fetch the NFTS that I'm the seller of. Only return active listings.
-    function fetchMyNFTs() public view returns (MarketItem[] memory) {
-        uint256 totalItemCount = _itemIds.current();
-        uint256 itemCount = 0;
-        uint256 currentIndex = 0;
+    function getListingsForAddress(address _address) public view returns (Listing[] memory) {
+        console.log('array size of ' ,numberOfTokensForAddress[_address]);
+        Listing[] memory items = new Listing[](numberOfTokensForAddress[_address]);
 
-        for (uint256 i = 0; i < totalItemCount; i++) {
-            if (
-                idToMarketItem[i].seller == msg.sender &&
-                !idToMarketItem[i].sold
-            ) {
-                itemCount++;
+        for (uint256 i = 0; i < listingKeys.length; i++) {
+            if (listings[listingKeys[i]].seller == _address) {
+                items[i] = listings[listingKeys[i]];        
             }
         }
-
-        MarketItem[] memory items = new MarketItem[](itemCount);
-
-        for (uint256 i = 0; i < totalItemCount; i++) {
-            if (
-                idToMarketItem[i].seller == msg.sender &&
-                !idToMarketItem[i].sold
-            ) {
-                items[currentIndex] = idToMarketItem[i];
-                currentIndex++;
-            }
-        }
-        return items;
-    }
-
-    // Fetch the market listings for the supplied address. Only return active listings.
-    function getListingsForAddress(address seller)
-        public
-        view
-        returns (MarketItem[] memory)
-    {
-        uint256 totalItemCount = _itemIds.current();
-        uint256 itemCount = 0;
-        uint256 currentIndex = 0;
-
-        for (uint256 i = 0; i < totalItemCount; i++) {
-            if (idToMarketItem[i].seller == seller && !idToMarketItem[i].sold) {
-                itemCount++;
-            }
-        }
-
-        MarketItem[] memory items = new MarketItem[](itemCount);
-
-        for (uint256 i = 0; i < totalItemCount; i++) {
-            if (idToMarketItem[i].seller == seller && !idToMarketItem[i].sold) {
-                items[currentIndex] = idToMarketItem[i];
-                currentIndex++;
-            }
-        }
+        
         return items;
     }
 }

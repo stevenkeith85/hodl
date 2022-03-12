@@ -1,5 +1,6 @@
 import { Button, Box, Grid, CircularProgress, Stack, Typography } from '@mui/material';
 import { HodlTextField } from './HodlTextField';
+import { HodlButton } from "./HodlButton";
 
 
 export const MintForm = ({
@@ -10,7 +11,8 @@ export const MintForm = ({
   createItem,
   loading,
   loaded,
-  minting
+  minting,
+  cloudinaryUrl
 }) => {
 
   return (
@@ -33,18 +35,16 @@ export const MintForm = ({
             minRows={2}
             onChange={e => updateFormInput({ ...formInput, description: e.target.value })}
           />
-          <Button
-            variant="outlined"
-            color="secondary"
-            onClick={createItem}
-            disabled={minting}
-            sx={{ padding: 2, width: { xs: '100%', md: '50%' } }}
-          >
-            Mint Token
-          </Button>
-        </Stack>
+          <Stack direction="row" spacing={2}>
+            <HodlButton
+              onClick={createItem}
+              disabled={minting}
+            >
+              Mint Token
+            </HodlButton>
+          </Stack>
+          </Stack>
       </Grid>
-
       <Grid item xs={12} md={6}>
         <Box sx={{
           border: '1px solid rgb(229, 231, 235)',

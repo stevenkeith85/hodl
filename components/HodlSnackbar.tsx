@@ -1,4 +1,4 @@
-import {  forwardRef, useState, useImperativeHandle } from 'react'
+import { forwardRef, useState, useImperativeHandle } from 'react'
 import { Snackbar, Alert } from '@mui/material'
 
 
@@ -8,7 +8,7 @@ export const HodlSnackbar = forwardRef((props, ref) => {
     const [alertSeverity, setAlertSeverity] = useState('success');
 
     useImperativeHandle(ref, () => ({
-        display(message, severity="success") {
+        display(message, severity = "success") {
             setAlertSeverity(severity);
             setSnackBarOpen(false);
             setSnackBarMsg(message);
@@ -22,7 +22,7 @@ export const HodlSnackbar = forwardRef((props, ref) => {
             autoHideDuration={2500}
             onClose={() => setSnackBarOpen(false)}
         >
-            <Alert sx = {{ padding: 2, fontSize: 18 }} severity={alertSeverity}>{ snackBarMsg }</Alert>
+            <Alert sx={{ padding: 2, fontSize: 18 }} severity={alertSeverity}>{snackBarMsg}</Alert>
         </Snackbar>
     )
 })
