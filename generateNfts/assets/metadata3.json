@@ -1,8 +1,0 @@
-[
-    { "file": "london1.jpg", "name": "London 1", "description": "Cathedral", "price": "50"},
-    { "file": "london2.jpg", "name": "London 2", "description": "Shard", "price": "35"},
-    { "file": "london3.jpg", "name": "London 3", "description": "Thames", "price": "100"},
-    { "file": "london4.jpg", "name": "London 1 Retro", "description": "Cathedral again", "price": "150"},
-    { "file": "london5.jpg", "name": "London 2 Retro", "description": "Shard again", "price": "135"},
-    { "file": "london6.jpg", "name": "London 3 Retro", "description": "Thames again", "price": "200"}
-]

@@ -1,6 +1,0 @@
-[
-    { "file": "bluebelt.jpg", "name": "Bluebelt", "description": "Promoted to blue belt"},
-    { "file": "scottishopen.jpg", "name": "Scottish Open", "description": "Silver medal on the podium", "price": "15"},
-    { "file": "bluebelt.jpg", "name": "Bluebelt 2", "description": "Promoted to blue belt 2"},
-    { "file": "scottishopen2.jpg", "name": "Scottish Open 2", "description": "Silver medal on the podium 2", "price": "45"}
-]
