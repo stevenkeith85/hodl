@@ -1,16 +1,16 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 
-import mime from 'mime'
+import { NextApiRequest, NextApiResponse } from "next";
 import fs from 'fs'
 import nextConnect from 'next-connect'
-import { create } from 'ipfs-http-client'
+import { create, urlSource } from 'ipfs-http-client'
 import cloudinary from 'cloudinary'
 import dotenv from 'dotenv'
 dotenv.config({ path: '../.env' })
 
 
 const apiRoute = nextConnect({
-  onNoMatch(req, res) {
+  onNoMatch(req, res: NextApiResponse) {
     res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
   },
 });
@@ -24,50 +24,41 @@ const ipfs = create({
   },
 });
 
-cloudinary.config({ 
+// @ts-ignore
+cloudinary.config({
   cloud_name: process.env.CLOUDINARY_NAME,
   api_key: process.env.CLOUDINARY_KEY,
   api_secret: process.env.CLOUDINARY_SECRET,
 });
 
 const uploadNFT = async (name, description, path) => {
-  const file = fs.readFileSync(path);
-  const fileBuffer = new Buffer(file);
-
-  const image = await ipfs.add(fileBuffer, { cidVersion: 1 });
+  const url = `https://res.cloudinary.com/dyobirj7r/image/upload/${path}.jpg`
+  // @ts-ignore
+  const image = await ipfs.add(urlSource(url), { cidVersion: 1 });
 
   // upload metadata
   const data = JSON.stringify({ name, description, image: `ipfs://${image.cid}` });
   const metadata = await ipfs.add(data, { cidVersion: 1 });
-
+  console.log('imageCid:', image.cid, 'metadataCid:', metadata.cid);
   return {imageCid: image.cid, metadataCid: metadata.cid };
 }
 
-apiRoute.post(async (req, res) => {
+apiRoute.post(async (req: NextApiRequest, res: NextApiResponse) => {
   const { name, description, fileUrl } = req.body;
 
-  const uploadsDir = 'public/uploads';
-  const hashedDir = 'public/hashed';
+  const { imageCid, metadataCid } = await uploadNFT(name, description, fileUrl);
 
-  if (!fs.existsSync(hashedDir)) {
-    fs.mkdirSync(hashedDir, { recursive: true });
-  }
 
-  const { imageCid, metadataCid } = await uploadNFT(name, description, `${uploadsDir}/${fileUrl}`);
-  console.log('imageCid, metadataCid', imageCid, metadataCid);
-
-  cloudinary.v2.uploader.upload(`${uploadsDir}/${fileUrl}`, { public_id: imageCid }, (error, result) => {
-    console.log('error', error);
-    console.log('result', result);
+  // overwrite is true for dev; will set to false in production
+  cloudinary.v2.uploader.rename(fileUrl, 'nfts/' + imageCid.toString(), { overwrite: true }, (error, result) => {
     if (error) {
-      console.log(error);
-      res.status(500).json({ error });  
+      console.log('ERROR', error, error.http_code)
+      res.status(error.http_code).json(error);
+    } else {
+      console.log('NOT ERROR')
+      const response = { imageCid, metadataUrl: `ipfs://${metadataCid}`};
+      res.status(200).json(response);
     }
-
-    fs.unlink(`${uploadsDir}/${fileUrl}`, () => null);
-    
-    const response = { imageCid, metadataUrl: `ipfs://${metadataCid}`};
-    res.status(200).json(response);
   });
 });
 

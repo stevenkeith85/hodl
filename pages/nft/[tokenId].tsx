@@ -17,7 +17,7 @@ import { HodlButton } from "../../components/HodlButton";
 import Image from "next/image";
 
 
-const nftDetail = () => {
+const NftDetail = () => {
   const router = useRouter();
   const { wallet, address } = useContext(WalletContext);
   const [token, setToken] = useState(null);
@@ -49,12 +49,13 @@ const nftDetail = () => {
 
   }, [router.query.tokenId, wallet]);
 
-  const isOnTheMarket = token?.owner.toLowerCase() === nftmarketaddress.toLowerCase();
+  const isOnTheMarket = token?.owner?.toLowerCase() === nftmarketaddress.toLowerCase();
 
-  { 
-    console.log(address);
-    console.log(token);
-    }
+  
+  function myLoader({src, width, quality}) {
+    const url = `https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,w_${700},q_${quality}/nfts/${src}`;
+    return url;
+  }
 
   if (loading) {
     return (
@@ -90,14 +91,17 @@ const nftDetail = () => {
                   <HodlButton
                     onClick={async () => {
                       try {
+                        // @ts-ignore
                         snackbarRef?.current?.display('Please Approve Transaction in Wallet', 'info');
                         await listTokenOnMarket(router.query.tokenId, price, wallet);
+                        // @ts-ignore
                         snackbarRef?.current?.display('Token listed on market', 'success');
                         setListed(true);
                       } catch (e) {
                         if (e.code === -32603) {
                           const re = /reverted with reason string '(.+)'/gi;
                           const matches = re.exec(e.data.message)
+                          // @ts-ignore
                           snackbarRef?.current?.display(matches[1], 'error');
                         }
                       }
@@ -115,7 +119,7 @@ const nftDetail = () => {
               <Stack spacing={4}>
                 <RocketTitle title="We're off to the Moon" />
                 <Typography sx={{ span: { fontWeight: 600 } }}>
-                  You've <span>successfully</span> listed your token on the market
+                  You&apos;ve <span>successfully</span> listed your token on the market
                 </Typography>
                 <Stack direction="row" spacing={2}>
                 <Link href={`/listing/${router.query.tokenId}`} passHref>
@@ -134,6 +138,21 @@ const nftDetail = () => {
           <DiamondTitle title="NFT Details" />
         </Typography>
         <Grid container spacing={2}>
+        <Grid item xs={12} md={6}>        
+            {Boolean(token?.image) &&
+            <Image
+              loader={myLoader}
+              src={token?.image}
+              alt={token?.name}
+              width={600}
+              quality={75}
+              loading="eager"
+              layout="responsive"
+              height={600}
+              sizes="33vw"
+              objectFit='contain'
+            />}
+        </Grid>
           <Grid item xs={12} md={6}>
             <Stack spacing={2}>
               <HodlTextField label="Name" value={token?.name}></HodlTextField>
@@ -178,27 +197,16 @@ const nftDetail = () => {
                 }
                 { 
                   <Link href={`/profile/${token?.owner}` || '#'} passHref>
-                    <HodlButton color="secondary">Owner's Profile</HodlButton>
+                    <HodlButton color="secondary">Owner&apos;s Profile</HodlButton>
                   </Link>
                 }
               </Stack>
             </Stack>
           </Grid>
-          <Grid item xs={12} md={6} sx={{ textAlign: 'center'}}>        
-            {Boolean(token?.image) &&
-            <Image
-              src={token?.image}
-              alt={token?.name}
-              width={600}
-              height={600}
-              objectFit='contain'
-              objectPosition="top"
-            />}
-        </Grid>
         </Grid>
       </Box>
     </>
   )
 }
 
-export default nftDetail;
+export default NftDetail;

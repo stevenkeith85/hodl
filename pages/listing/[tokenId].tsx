@@ -14,12 +14,17 @@ import { RocketTitle } from "../../components/RocketTitle";
 import { HodlButton } from "../../components/HodlButton";
 
 
-const nftDetail = () => {
+const NftDetail = () => {
   const router = useRouter();
   const { wallet, address, setAddress } = useContext(WalletContext);
   const [marketItem, setMarketItem] = useState(null);
   const snackbarRef = useRef();
   const [modalOpen, setModalOpen] = useState(false);
+
+  function myLoader({src, width, quality}) {
+    const url = `https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,w_${700},q_${quality}/nfts/${src}`;
+    return url;
+  }
 
   useEffect(() => {
     const load = async () => {
@@ -28,6 +33,10 @@ const nftDetail = () => {
         wallet.signer !== null) {
         try {
           const item = await fetchMarketItem(router.query.tokenId);
+          if (!item) {
+            return;
+          }
+
           setMarketItem(item);
           console.log(item);
         } catch (e) {
@@ -66,7 +75,7 @@ const nftDetail = () => {
           <Stack spacing={4}>
             <RocketTitle title="We're off to the Moon" />
             <Typography sx={{ span: { fontWeight: 600 } }}>
-              You've <span>successfully</span> bought a token on the market
+              You&apos;ve <span>successfully</span> bought a token on the market
             </Typography>
             <Stack direction="row" spacing={2}>
               <Link href={`/nft/${router.query.tokenId}`} passHref>
@@ -87,6 +96,22 @@ const nftDetail = () => {
         <DiamondTitle title="NFT For Sale" />
       </Typography>
       <Grid container spacing={2}>
+        <Grid item xs={12} md={6}>        
+              {Boolean(marketItem?.image) &&
+              <Image
+                loader={myLoader}
+                src={marketItem?.image}
+                alt={marketItem?.name}
+                quality={75}
+                width={600}
+                height={600}
+                sizes="33vw"
+                loading="eager"
+                layout="responsive"
+                objectFit='contain'
+                objectPosition="top"
+              />}
+        </Grid>
         <Grid item xs={12} md={6}>
           <Stack spacing={2}>
             <HodlTextField
@@ -105,6 +130,7 @@ const nftDetail = () => {
               <HodlButton
                 onClick={async () => {
                   try {
+                    // @ts-ignore
                     snackbarRef?.current?.display('Please Approve Transaction in Wallet', 'info');
                     await buyNft(marketItem, wallet);
                     router.push(`/profile/${address}`);
@@ -112,6 +138,7 @@ const nftDetail = () => {
                     if (e.code === -32603) {
                       const re = /reverted with reason string '(.+)'/gi;
                       const matches = re.exec(e.data.message)
+                      // @ts-ignore
                       snackbarRef?.current?.display(matches[1], 'error');
                     }
                   }
@@ -121,6 +148,7 @@ const nftDetail = () => {
               <HodlButton
                 onClick={async () => {
                   try {
+                    // @ts-ignore
                     snackbarRef?.current?.display('Please Approve Transaction in Wallet', 'info');
                     await delistNft(marketItem, wallet);
                     router.push(`/profile/${address}`);
@@ -128,6 +156,7 @@ const nftDetail = () => {
                     if (e.code === -32603) {
                       const re = /reverted with reason string '(.+)'/gi;
                       const matches = re.exec(e.data.message)
+                      // @ts-ignore
                       snackbarRef?.current?.display(matches[1], 'error');
                     }
                   }
@@ -143,22 +172,11 @@ const nftDetail = () => {
               </Link>
             </Stack>
           </Stack>
+          </Grid>
         </Grid>
-        <Grid item xs={12} md={6} sx={{ textAlign: 'center'}}>        
-            {Boolean(marketItem?.image) &&
-            <Image
-              src={marketItem?.image}
-              alt={marketItem?.name}
-              width={600}
-              height={600}
-              objectFit='contain'
-              objectPosition="top"
-            />}
-        </Grid>
-      </Grid>
     </Box>
     </>
   )
 }
 
-export default nftDetail;
+export default NftDetail;

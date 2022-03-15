@@ -2,45 +2,15 @@ import fs from 'fs'
 import { ethers } from 'ethers'
 import mime from 'mime'
 import { create } from 'ipfs-http-client'
-import { copyFile } from 'fs/promises'
 import { nftmarketaddress, nftaddress } from './config.js'
 import { readFileSync } from 'fs'
 import dotenv from 'dotenv'
-
+import cloudinary from 'cloudinary'
+import Redis from 'ioredis';
 dotenv.config({ path: '../.env' })
 
 const Market = JSON.parse(readFileSync('../artifacts/contracts/NFTMarket.sol/NFTMarket.json'));
 const NFT = JSON.parse(readFileSync('../artifacts/contracts/NFT.sol/NFT.json'));
-
-
-// TODO: Build in flexibility with NFT Names / Descriptions / Prices
-// Share code with the website API
-// Upload to external storage provider
-
-export const getContracts = async (signer) => {
-    const marketContract = new ethers.Contract(nftmarketaddress, Market.abi, signer);
-    const tokenContract = new ethers.Contract(nftaddress, NFT.abi, signer);
-
-    return [marketContract, tokenContract];
-}
-
-export const createSale = async (url, tokenPrice, { signer }) => {
-    const [marketContract, tokenContract] = await getContracts(signer);
-
-    const createTokenTransaction = await tokenContract.createToken(url);
-    const tx = await createTokenTransaction.wait();
-    const event = tx.events[0];
-    const value = event.args[2];
-    const tokenId = value.toNumber();
-
-    const price = ethers.utils.parseUnits(tokenPrice, 'ether');
-
-    let listingPrice = await marketContract.getListingPrice();
-    listingPrice = listingPrice.toString();
-
-    const createMarketItemTransaction = await marketContract.createMarketItem(nftaddress, tokenId, price, { value: listingPrice });
-    await createMarketItemTransaction.wait();
-}
 
 const ipfs = create({
   host: 'ipfs.infura.io',
@@ -51,78 +21,121 @@ const ipfs = create({
   },
 });
 
-const uploadNFT = async (name, description, path) => {
-  const file = fs.readFileSync(path);
-  const fileBuffer = new Buffer(file);
 
-  // TODO:
-  // We store it with just the contentId
-  // if we store it with a path, i.e. contentId/image[.jpg|.png]
-  // then we could read the file extension client side, and negate the extra client-side call to IPFS (to determine mimetype)
-  const image = await ipfs.add(fileBuffer, { cidVersion: 1 });
+// @ts-ignore
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_KEY,
+  api_secret: process.env.CLOUDINARY_SECRET,
+});
+
+
+let client = new Redis(process.env.REDIS_CONNECTION_STRING);
+
+
+const uploadNFT = async (name, description, path) => {
+  const file = fs.readFileSync(path)
+
+  // @ts-ignore
+  const image = await ipfs.add(file, { cidVersion: 1 });
 
   // upload metadata
   const data = JSON.stringify({ name, description, image: `ipfs://${image.cid}` });
   const metadata = await ipfs.add(data, { cidVersion: 1 });
 
-  return {imageCid: image.cid, metadataCid: metadata.cid };
+  return { imageCid: image.cid, metadataCid: metadata.cid };
 }
 
-const getFileExtension = (filePath) => {
-  const mimetype = mime.getType(filePath);
-  return mime.getExtension(mimetype);
-}
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+
+const wallets = {
+  1: process.env.WALLET_PRIVATE_KEY,
+  2: process.env.WALLET2_PRIVATE_KEY,
+  3: process.env.WALLET3_PRIVATE_KEY,
+}
+
+
 // createNfts from images in dirpath
 async function createNFTs(dirpath) {
-  console.log('dirpath', dirpath);
-  const dir = await fs.promises.opendir(dirpath)
-  
-  const metadataURLs = [];
-  const collectionName = process.argv[2];
-  console.log('collectionName', collectionName);
 
-  const hashedDir = '../public/hashed';
-  if (!fs.existsSync(hashedDir)) {
-    fs.mkdirSync(hashedDir, { recursive: true });
-  }
-
-  for await (const dirent of dir) {    
-    const mimeType = mime.getType(`${dirpath}/${dirent.name}`);
-
-    if (mimeType === 'video/mp4') {
-      console.log('video not currently supported')
-      process.exit(0);
-    }
-
-    const { imageCid, metadataCid } = await uploadNFT(collectionName, 'TODO', `${dirpath}/${dirent.name}`);
-
-    // Write API calls have a 10 requests/second limit for the following endpoints
-    // Once the site is LIVE we probably want to wait a good amount of time before requests as we'll be sharing the rate limit with users
-    await sleep(1000); 
-
-    const ext  = getFileExtension(`${dirpath}/${dirent.name}`);
-    copyFile(`${dirpath}/${dirent.name}`, `${hashedDir}/${imageCid}.${ext}`);
-
-    metadataURLs.push(`ipfs://${metadataCid}`);
-  }
+  const walletId = process.argv[2];
+  const walletPrivateKey = wallets[walletId];
+  console.log('Using wallet ', walletId);
+  // process.exit(0)
 
   const provider = new ethers.providers.JsonRpcProvider('http://localhost:8545');
-  const signer = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY, provider);
+  const signer = new ethers.Wallet(walletPrivateKey, provider);
 
-  for (const metadataURL of metadataURLs) {
-    await createSale(metadataURL, '5', { provider, signer })
+  const tokenContract = new ethers.Contract(nftaddress, NFT.abi, signer);
+  const marketContract = new ethers.Contract(nftmarketaddress, Market.abi, signer);
+
+  const dir = await fs.promises.opendir(dirpath)
+  const metadata = JSON.parse(readFileSync(dirpath + `/metadata${walletId}.json`));
+  console.log(metadata);
+
+  for (const token of metadata) {
+    const fullPath = `${dirpath}/${token.file}`;
+    const mimeType = mime.getType(fullPath);
+
+    if (mimeType.indexOf('image') !== -1) {
+      const { imageCid, metadataCid } = await uploadNFT(token.name, token.description, fullPath);
+      console.log('imageCid, metadataCid', imageCid, metadataCid);
+
+      const result = await uploadToCloudinary(fullPath, imageCid);
+      console.log(result);
+
+      const tokenCreated = await tokenContract.createToken(`ipfs://${metadataCid}`);
+      const tx = await tokenCreated.wait();
+      const event = tx.events[0];
+      const value = event.args[2];
+      const tokenId = value.toNumber();
+
+      console.log('created token', tokenId);
+
+      client.set("token:" + tokenId, JSON.stringify({
+        tokenId,
+        name: token.name,
+        description: token.description,
+        image: `ipfs://${imageCid.toString()}`,
+        phash: result.phash
+      }));
+
+      if (token.price) {
+        const price = ethers.utils.parseUnits(token.price, 'ether');
+        const tx = await marketContract.listToken(nftaddress, tokenId, price);
+        await tx.wait();
+        console.log("token listed");
+      }
+
+      sleep(2000);
+    }
   }
+
+  process.exit(0);
 }
+
+
+const uploadToCloudinary = (fullPath, imageCid) => {
+  return new Promise((resolve, reject) => {
+    cloudinary.v2.uploader.upload(fullPath, { public_id: 'nfts/' + imageCid.toString(), phash: true }, (error, result) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(result);
+      }
+    });
+  })
+}
+
 
 async function main() {
-  const collectionName = process.argv[2];
-  await createNFTs('../nft-assets/' + collectionName);
+  await createNFTs('assets');
 }
+
 
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.

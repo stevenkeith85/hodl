@@ -23,8 +23,8 @@ contract NFTMarket is ReentrancyGuard, Ownable {
     }
 
     // Main DS
-    mapping(uint256 => Listing) private listings;
-    uint256[] listingKeys;
+    mapping(uint256 => Listing) private listings; // tokenId to Listing
+    uint256[] listingKeys; // tokenIds on the market
 
     // Keep track of the number of tokens per address
     mapping(address => uint256) private numberOfTokensForAddress;
@@ -235,12 +235,24 @@ contract NFTMarket is ReentrancyGuard, Ownable {
     }
 
     function getListingsForAddress(address _address) public view returns (Listing[] memory) {
-        console.log('array size of ' ,numberOfTokensForAddress[_address]);
+        
         Listing[] memory items = new Listing[](numberOfTokensForAddress[_address]);
 
-        for (uint256 i = 0; i < listingKeys.length; i++) {
-            if (listings[listingKeys[i]].seller == _address) {
-                items[i] = listings[listingKeys[i]];        
+        uint256 itemCount = 0;
+        uint256 numberOfItemsOnMarket = listingKeys.length;
+        
+        for (uint256 i = 0; i < numberOfItemsOnMarket; i++) {
+
+            uint tokenId = listingKeys[i];
+
+            if (listings[tokenId].seller == _address) {
+                items[itemCount] = listings[tokenId];
+                itemCount++;
+            }
+
+            // We've found them all
+            if (itemCount == numberOfTokensForAddress[_address]) {
+                break;
             }
         }
         

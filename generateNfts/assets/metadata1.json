@@ -1,0 +1,10 @@
+[
+    { "file": "dug.jpg", "name": "Dug 1", "description": "I think it's dinner time."},
+    { "file": "dug2.jpg", "name": "Dug 2", "description": "I like my bandana", "price": "5"},
+    { "file": "dug3.jpg", "name": "Dug 3", "description": "Waiting on mum."},
+    { "file": "dug4.jpg", "name": "Dug 4", "description": "Hi There!", "price": "10"},
+    { "file": "dug5.jpg", "name": "Dug 5", "description": "Can I have some food please"},
+    { "file": "dug6.jpg", "name": "Dug 6", "description": "Hi There Again!", "price": "15"},
+    { "file": "dug7.jpg", "name": "Dug 7", "description": "Why is this door shut."},
+    { "file": "dug8.jpg", "name": "Dug 8", "description": "I like this sofa", "price": "30"}
+]

@@ -67,10 +67,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 
-//
-
-
-
 const ResponsiveAppBar = () => {
     const { wallet, setWallet, address, setAddress } = useContext(WalletContext);
     const router = useRouter();
@@ -78,7 +74,7 @@ const ResponsiveAppBar = () => {
     const [pages, setPages] = useState([
         { label: 'Market', url: '/' },
         { label: 'Mint NFT', url: '/mint' },
-        { label: 'Profile', url: `/profile/${address}` },
+        { label: 'My Profile', url: `/profile/${address}` },
     ]);
 
     const [settings] = useState([{

@@ -1,6 +1,9 @@
 import { Button, Box, Grid, CircularProgress, Stack, Typography } from '@mui/material';
 import { HodlTextField } from './HodlTextField';
 import { HodlButton } from "./HodlButton";
+import Image from 'next/image'
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 
 export const MintForm = ({
@@ -14,6 +17,10 @@ export const MintForm = ({
   minting,
   cloudinaryUrl
 }) => {
+
+  function myLoader({src, width, quality}) {
+    return `https://res.cloudinary.com/dyobirj7r/c_limit,w_${700},q_${quality}/${src}`
+  }
 
   return (
     <Grid container spacing={2}>
@@ -38,7 +45,7 @@ export const MintForm = ({
           <Stack direction="row" spacing={2}>
             <HodlButton
               onClick={createItem}
-              disabled={minting}
+              disabled={!formInput.name || !formInput.description || minting || loading }
             >
               Mint Token
             </HodlButton>
@@ -46,28 +53,34 @@ export const MintForm = ({
           </Stack>
       </Grid>
       <Grid item xs={12} md={6}>
-        <Box sx={{
-          border: '1px solid rgb(229, 231, 235)',
-          borderRadius: '5px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          textAlign: 'center',
-          minHeight: '300px',
-          height: 'auto',
-          width: '100%',
-          img: {
+        { Boolean(!loaded || loading) ?
+          <Stack spacing={4} sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            textAlign: 'center',
+            height: '400px',
+            width: '100%',
             maxWidth: '100%'
-          }
-        }}>
-
-          {Boolean(loading) && <CircularProgress color="secondary" />}
-          {Boolean(loaded) ?
-            <img src={`/uploads/${fileUrl}`} /> :
-            <Typography sx={{ padding: 2 }}>Image preview will appear here</Typography>
-          }
-        </Box>
+          }}>
+            { Boolean(loading) && <CircularProgress color="secondary" /> }
+            <Typography>Image will appear here</Typography>
+          </Stack> :
+          <>
+            { Boolean(fileUrl) && 
+            <Image 
+              loader={ myLoader }
+              src={`${fileUrl}`} 
+              quality={75}
+              width={700}
+              height={600}
+              layout="responsive"
+              sizes="33vw"
+              objectFit='contain'
+            />}
+            </>
+      }
       </Grid>
 
     </Grid>

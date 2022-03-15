@@ -1,14 +1,14 @@
 import { forwardRef, useState, useImperativeHandle } from 'react'
-import { Snackbar, Alert } from '@mui/material'
+import { Snackbar, Alert, AlertColor } from '@mui/material'
 
 
 export const HodlSnackbar = forwardRef((props, ref) => {
     const [snackBarOpen, setSnackBarOpen] = useState(false);
     const [snackBarMsg, setSnackBarMsg] = useState('');
-    const [alertSeverity, setAlertSeverity] = useState('success');
+    const [alertSeverity, setAlertSeverity] = useState<AlertColor>('success');
 
     useImperativeHandle(ref, () => ({
-        display(message, severity = "success") {
+        display(message, severity: AlertColor = "success") {
             setAlertSeverity(severity);
             setSnackBarOpen(false);
             setSnackBarMsg(message);
@@ -26,3 +26,5 @@ export const HodlSnackbar = forwardRef((props, ref) => {
         </Snackbar>
     )
 })
+
+HodlSnackbar.displayName = 'HodlSnackbar'

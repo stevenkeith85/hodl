@@ -35,7 +35,8 @@ function MyApp({ Component, pageProps }: AppProps) {
             position: 'relative',
             paddingBottom: {
               xs: '540px',
-              sm: '480px'
+              sm: '480px',
+              md: '280px'
             }
           }}>
             <ResponsiveAppBar />

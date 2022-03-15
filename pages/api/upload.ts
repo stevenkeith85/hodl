@@ -1,44 +1,53 @@
+import { NextApiRequest, NextApiResponse } from "next";
 import nextConnect from 'next-connect'
-import mime from 'mime'
 import multer from 'multer';
-import fs from 'fs';
+import cloudinary from 'cloudinary'
 
-// Returns a Multer instance that provides several methods for generating 
-// middleware that process files uploaded in multipart/form-data format.
-const upload = multer({
-  storage: multer.diskStorage({
-    destination: './public/uploads',
-    limits: {
-      fileSize: 104857600, // 100MB
-    },
-    filename: (req, file, cb) => { // https://expressjs.com/en/resources/middleware/multer.html
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      const ext = mime.getExtension(file.mimetype);
-      cb(null, file.fieldname + '-' + uniqueSuffix + '.' + ext); // asset-timestamp-random
-    }
-  }),
+interface MulterRequest extends NextApiRequest {
+  file: any;
+}
+
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+
+// @ts-ignore
+cloudinary.v2.config({ 
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_KEY,
+  api_secret: process.env.CLOUDINARY_SECRET,
 });
 
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary.v2,
+  params: async (req, file) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const public_id = file.fieldname + '-' + uniqueSuffix;
+    return {
+      folder: 'uploads',
+      format: 'jpeg',
+      public_id: public_id,
+    };
+  },
+});
+ 
+const upload = multer({ storage });
+
 const apiRoute = nextConnect({
-  onNoMatch(req, res) {
+  onNoMatch(req: NextApiRequest, res: NextApiResponse) {
     res.status(405)
       .json({ error: `Method '${req.method}' Not Allowed` });
   },
 });
+apiRoute.use(upload.single('asset'));
 
-const uploadMiddleware = upload.single('asset');
-
-apiRoute.use(uploadMiddleware);
-
-apiRoute.post(async (req, res) => {
-  // The user has changed the photo they wish to create an NFT with, 
-  // remove the old file to keep things tidy
-  if (req.body.fileUrl) { 
-    fs.unlink(`public/uploads/${req.body.fileUrl}`, () => null);
+apiRoute.post(async (req: MulterRequest, res: NextApiResponse) => {
+  // TODO: Once we have authentication, consider storing users images under a separate folder
+  if (req.body) { //Remove the old file as the user has changed their mind about which image to use
+    cloudinary.v2.uploader.destroy(req.body.fileUrl, (error, result) => {
+      res.status(200).json({ fileName: req.file.filename });
+    })
+  } else {
+    res.status(200).json({ fileName: req.file.filename });
   }
-
-  res.status(200)
-    .json({ fileName: req.file.filename });
 });
 
 export default apiRoute;

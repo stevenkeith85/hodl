@@ -4,9 +4,15 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import { Logo } from "./Logo";
 import Link from "next/link";
+import { HodlLink } from "./HodlLink";
+import { useContext } from "react";
+import { WalletContext } from "../pages/_app";
 
 
-const Footer = () => (
+const Footer = () => {
+    const { wallet, address } = useContext(WalletContext);
+
+    return (
     <Box sx={{
         position: 'absolute',
         bottom: 0,
@@ -55,21 +61,25 @@ const Footer = () => (
                     >
                         <Stack spacing={0.5}>
                             <Typography sx={{ fontWeight: 800, marginBottom: 0.5 }}>Hodl My Moon</Typography>
-                            <Link href="/about"><Typography component="a" sx={{ fontSize: 14 }}>About</Typography></Link>
+                            <HodlLink href="/about">About</HodlLink>
                             <Link href="/contact"><Typography component="a" sx={{ fontSize: 14 }}>Contact</Typography></Link>
                         </Stack>
                         <Stack spacing={0.5}>
                             <Typography sx={{ fontWeight: 800, marginBottom: 0.5 }}>Non Fungible Tokens</Typography>
-                            <Typography sx={{ fontSize: 14 }}>Mint NFT</Typography>
-                            <Typography sx={{ fontSize: 14 }}>My NFT Collection</Typography>
-                            <Typography sx={{ fontSize: 14 }}>NFT Market</Typography>
+                            <HodlLink href="/mint">Mint NFT</HodlLink>
+                            <HodlLink href={`/profile/${address}`}>My NFT Collection</HodlLink>
+                            <HodlLink href="/">NFT Market</HodlLink>
                         </Stack>
                     </Stack>
                     <Stack spacing={1}>
+                        <HodlLink href="/">
+                            <>
                         <Logo />
                         <Typography sx={{ fontSize: 18, fontWeight: 500 }}>
                             Mint, Showcase, and Profit with NFTs.
                         </Typography>
+                        </>
+                        </HodlLink>
                     </Stack>
                 </Stack>
             </Container>
@@ -118,7 +128,8 @@ const Footer = () => (
             </Container>
         </Box>
 
-    </Box>
+    </Box >
 )
+                }
 
 export default Footer;

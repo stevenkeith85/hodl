@@ -3,11 +3,12 @@ import { fetchNftsInWallet, fetchNFTsListedOnMarket } from '../../lib/nft.js'
 import { useContext } from 'react'
 import { WalletContext } from '../_app'
 import { Box, CircularProgress, Stack } from '@mui/material'
-import NftList from '../../components/NftList'
 import { ConnectWallet } from '../../components/ConnectWallet'
 import InformationBox from '../../components/InformationBox'
 import { DiamondTitle } from '../../components/DiamondTitle'
 import { useRouter } from 'next/router'
+import Head from 'next/head'
+import { InfiniteSlide } from '../../components/InfiniteSlide'
 
 
 const Profile = () => {
@@ -22,9 +23,7 @@ const Profile = () => {
       setLoading(true);
 
       const walletNfts = await fetchNftsInWallet(router.query.address[0]);
-      console.log('walletNfts', walletNfts)
       const marketNfts = await fetchNFTsListedOnMarket(router.query.address[0]);
-      console.log('marketNfts', marketNfts)
 
       setWalletNfts(walletNfts);
       setMarketNfts(marketNfts);
@@ -62,22 +61,43 @@ const Profile = () => {
   }
 
   return (
+    <>
+    <Head>
+      {walletNfts.map(nft => {
+        if (!nft) {return null;}
+        const link = `https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,w_550,q_75/nfts/${nft.image}`;
+
+        return (<link key={link} rel="preload" as="image" href={link}/>)
+      })
+    }
+    </Head>
     <Box sx={{ display: 'flex', flexDirection: 'column', justifyItems: "center", paddingTop: 4, paddingBottom: 4 }}>
       <Stack spacing={4}>
-        {Boolean(walletNfts.length) &&
-          <Box>
-            <DiamondTitle title="Hodling" />
-            <NftList nfts={walletNfts} showTop={false} />
-          </Box>
-        }
-        {Boolean(marketNfts.length) && (
-          <Box>
-            <DiamondTitle title="Listed" />
-            <NftList nfts={marketNfts} />
-          </Box>)
-        }
+        <Box>
+          <DiamondTitle title="Hodling" />
+          <InfiniteSlide 
+            fetcherFn={(offset, limit) => {
+              const data = walletNfts.filter(nft => nft).slice(offset, offset + limit)
+              return [data, offset + data.length, data.length]
+            }} 
+            nftsPerPage={4} 
+            swrKey={'walletNfts'}
+            viewSale={false}/>
+        </Box>
+        <Box>
+        <DiamondTitle title="Listed" />
+        <InfiniteSlide 
+          fetcherFn={(offset, limit) => {
+            const data = marketNfts.filter(nft => nft).slice(offset, offset + limit)
+            return [data, offset + data.length, data.length]
+          }} 
+          nftsPerPage={4} 
+          swrKey={'marketNfts'}
+          />
+        </Box>
       </Stack>
     </Box>
+    </>
   )
 }
 

@@ -4,12 +4,20 @@ import Link from 'next/link';
 import { grey } from "@mui/material/colors";
 
 const truncateText = (text, length=10) => {
+    if (!text) {
+        return '';
+    }
+
     if (text.length > length) {
         return text.slice(0, length) + '...';
     }
 
     return text;
 }
+
+function myLoader({src, width, quality}) {
+    return `https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,w_550,q_75/${src}`
+  }
 
 const NftList = ({ nfts, viewSale = false, showTop = true }) => {
     return (
@@ -31,25 +39,23 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
                 }
             }}
         >
-            {nfts.map((nft, i) => (
-                  <Link href={viewSale ? `/listing/${nft?.tokenId}` : `/nft/${nft?.tokenId}`}>
+            {nfts.filter(nft => nft).map((nft, i) => (
                 <ImageListItem key={i} >
-                    <Box sx={{
-                        width: '100%',
-                        minHeight: {
-                            xs: '500px',
-                            sm: '400px',
-                            md: '350px',
-                        },
-                        height: '100%',
-                        position: 'relative',
-                        background: grey[100],
-                    }}>
+                    <Box 
+                    sx={{ display: 'block'}}    
+                    >
                         <Image
-                            src={nft?.image}
+                            loader={ myLoader }
+                            src={'nfts/' + nft?.image}
                             alt={nft?.name}
-                            layout="fill"
+                            priority={true}
+                            loading="eager"
+                            width={400}
+                            height={400}
+                            layout="responsive"
+                            sizes='25vw'
                             objectFit='cover'
+                            quality={75}
                         />
                     </Box>
                     <ImageListItemBar
@@ -84,7 +90,7 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
                             </Box>
                         }
                         actionIcon={
-                            <Link 
+                            Boolean(nft?.tokenId) && <Link 
                                 href={viewSale ? `/listing/${nft?.tokenId}` : `/nft/${nft?.tokenId}`}
                             >
                                  <Button
@@ -109,7 +115,6 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
                         }
                     />
                 </ImageListItem>
-                </Link>
             )
             )}
 

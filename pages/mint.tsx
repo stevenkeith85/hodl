@@ -2,12 +2,13 @@ import { useContext, useRef, useState } from 'react'
 import { MintForm } from '../components/MintForm'
 import { ipfsUriToCloudinaryUrl, mintToken } from '../lib/nft.js'
 import { WalletContext } from './_app'
-import { Box, Typography,  Button, Modal, Stack, CircularProgress } from '@mui/material'
+import { Box, Typography,  Modal, Stack, CircularProgress } from '@mui/material'
 import { ConnectWallet } from '../components/ConnectWallet'
 import Link from 'next/link'
 import { DiamondTitle } from '../components/DiamondTitle'
 import { RocketTitle } from '../components/RocketTitle'
 import { HodlSnackbar } from '../components/HodlSnackbar'
+import { HodlButton } from '../components/HodlButton'
 
 
 export default function Mint() {
@@ -42,7 +43,7 @@ export default function Mint() {
     });
 
     const json = await response.json();
-
+    console.log(json)
     setFileUrl(json.fileName);
     
     setLoading(false);
@@ -52,6 +53,7 @@ export default function Mint() {
   
   async function doMint(tokenUrl) {
     if (tokenUrl !== '' && tokenUrl !== 'ipfs://') {
+      // @ts-ignore
       snackbarRef?.current.display('Please Approve Transaction in Wallet', 'info');
 
       const tokenId = await mintToken(tokenUrl, wallet);
@@ -67,6 +69,7 @@ export default function Mint() {
 
       setTokenId(tokenId);
 
+      // @ts-ignore
       snackbarRef?.current.display('New NFT Minted');
 
       setMinting(false);
@@ -85,6 +88,7 @@ export default function Mint() {
       setMinting(true);
 
       if (!tokenUrl) { // If there's no tokenURL, upload to IPFS, save the url, and ask user to do the mint.
+        // @ts-ignore
         snackbarRef?.current.display('Uploading Image to IPFS', "info");
 
         const response = await fetch('/api/ipfs', {
@@ -96,9 +100,15 @@ export default function Mint() {
           body: JSON.stringify({ name, description, fileUrl })
         });
 
+        if (response.status === 400) {
+          // @ts-ignore
+          snackbarRef?.current.display("This exact file has already been uploaded", "error");
+          setMinting(false);
+          return;
+        }
+
         const json = await response.json();
-        console.log('json', json);
-        console.log(ipfsUriToCloudinaryUrl(`ipfs://${json.imageCid}`))
+        
         setCloudinaryUrl(ipfsUriToCloudinaryUrl(`ipfs://${json.imageCid}`));
         setTokenUrl(json.metadataUrl);
         setImageCid(json.imageCid);
@@ -112,9 +122,11 @@ export default function Mint() {
       console.log(error);
 
       if (error.code === 4001) {
+        // @ts-ignore
         snackbarRef?.current?.display('Transaction rejected', 'error');
         setMinting(false);
       } else {
+        // @ts-ignore
         snackbarRef?.current?.display("We've ran into a problem, sorry", 'error');
         setMinting(false);
       }
@@ -128,7 +140,7 @@ export default function Mint() {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', justifyItems: "center", paddingTop: 4, paddingBottom: 4 }}>
       <Typography variant='h1' sx={{ paddingBottom: 2 }}>
-        <DiamondTitle title="Mint an NFT" />
+        <DiamondTitle title="Mint NFT" />
       </Typography>
 
       <HodlSnackbar ref={snackbarRef} />
@@ -150,18 +162,18 @@ export default function Mint() {
           <Stack spacing={4}>
             <RocketTitle title="We're off to the Moon" />
             <Typography sx={{ span: { fontWeight: 600 } }}>
-              You've <span>successfully</span> minted a new token.
+              You&apos;ve <span>successfully</span> minted a new token.
             </Typography>
             <Stack direction="row" spacing={2}>
               <Link href={`/nft/${tokenId}`} passHref>
-                <Button color="secondary" variant="outlined" sx={{ padding: 2 }}>
+                <HodlButton color="secondary" variant="outlined" sx={{ padding: 2 }}>
                   View Token Details
-                </Button>
+                </HodlButton>
               </Link>
               <Link href={`/profile/${address}`} passHref>
-                <Button variant="outlined" sx={{ padding: 2 }}>
+                <HodlButton variant="outlined" sx={{ padding: 2 }}>
                   View Profile
-                </Button>
+                </HodlButton>
               </Link>
             </Stack>
           </Stack>
