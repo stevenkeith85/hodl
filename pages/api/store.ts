@@ -5,7 +5,7 @@ import nextConnect from 'next-connect'
 import * as Redis from 'ioredis';
 import dotenv from 'dotenv'
 import { nftaddress } from '../../config';
-import NFT from '../../artifacts/contracts/NFT.sol/NFT.json'
+import NFT from '../../artifacts/contracts/HodlNFT.sol/HodlNFT.json'
 import { ipfsUriToGatewayUrl } from "../../lib/nft";
 import cloudinary from 'cloudinary'
 
@@ -31,6 +31,7 @@ apiRoute.post(async (req: NextApiRequest, res: NextApiResponse) => {
   const { tokenId } = req.body;
 
   try {
+    // TODO: The ethers stuff should be moved to nft.js
     const provider = new ethers.providers.JsonRpcProvider()
     const tokenContract = new ethers.Contract(nftaddress, NFT.abi, provider)
 

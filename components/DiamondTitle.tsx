@@ -1,15 +1,21 @@
 import { Typography, Stack } from '@mui/material'
-import DiamondIcon from '@mui/icons-material/Diamond';
 
 export const DiamondTitle = ({ title }) => (
     <Stack 
-        direction="row" 
+        direction="row-reverse" 
         spacing={1} 
         sx={{ 
             alignItems: 'center' 
         }}
     >
-        <DiamondIcon color="secondary" fontSize="large" />
-        <Typography variant="h1">{title}</Typography>
+        <Typography variant="h1" 
+            sx={{ 
+                textTransform: 'uppercase', 
+                color: (theme) => theme.palette.secondary.main, 
+                fontSize: 14, 
+                fontWeight: 500,
+                borderBottom: (theme) => 'transparent',//`2px solid ${theme.palette.secondary.main}`,
+                display: 'inline-block',
+                padding: '12px 16px'}}>{title}</Typography>
     </Stack>
 )

@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react'
 import { fetchNftsInWallet, fetchNFTsListedOnMarket } from '../../lib/nft.js'
 import { useContext } from 'react'
 import { WalletContext } from '../_app'
-import { Box, CircularProgress, Stack } from '@mui/material'
+import { Box, CircularProgress, Stack, Tab, Tabs} from '@mui/material'
 import { ConnectWallet } from '../../components/ConnectWallet'
 import InformationBox from '../../components/InformationBox'
 import { DiamondTitle } from '../../components/DiamondTitle'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
-import { InfiniteSlide } from '../../components/InfiniteSlide'
+import { InfiniteScroll } from '../../components/InfiniteScroll'
 
 
 const Profile = () => {
@@ -17,15 +17,16 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { address } = useContext(WalletContext);
+  const [value, setValue] = useState(0);
 
   useEffect(() => {
     const load = async () => {
       setLoading(true);
 
-      const walletNfts = await fetchNftsInWallet(router.query.address[0]);
+      // const walletNfts = await fetchNftsInWallet(router.query.address[0]);
       const marketNfts = await fetchNFTsListedOnMarket(router.query.address[0]);
 
-      setWalletNfts(walletNfts);
+      //setWalletNfts(walletNfts);
       setMarketNfts(marketNfts);
 
       setLoading(false);
@@ -56,10 +57,6 @@ const Profile = () => {
     return <ConnectWallet />;
   }
 
-  if (!walletNfts.length && !marketNfts.length) {
-    return <InformationBox message="No assets owned" />
-  }
-
   return (
     <>
     <Head>
@@ -72,30 +69,43 @@ const Profile = () => {
     }
     </Head>
     <Box sx={{ display: 'flex', flexDirection: 'column', justifyItems: "center", paddingTop: 4, paddingBottom: 4 }}>
-      <Stack spacing={4}>
-        <Box>
-          <DiamondTitle title="Hodling" />
-          <InfiniteSlide 
+      <Box sx={{ display: 'flex', flexDirection: 'row-reverse'}}>
+          <Tabs
+            value={value}
+            onChange={(e, v) => { console.log(e, v); setValue(v) }}
+            textColor="secondary"
+            indicatorColor="secondary"
+            aria-label="secondary tabs example"
+            
+          >
+            <Tab value={0} label="Hodling" />
+            <Tab value={1} label="Listed" />
+          </Tabs>
+      </Box>
+      
+      
+      <div hidden={value !== 0}>
+        <Stack spacing={4}>
+            <InfiniteScroll 
+              fetcherFn={async (offset, limit) => {
+                const [data, next, length] = await fetchNftsInWallet(router.query.address[0], offset, limit);
+                return [data, next, length]
+              }} 
+              swrKey={'walletNfts'}
+              viewSale={false}/>
+        </Stack>
+      </div>
+      <div hidden={value !== 1}>
+        <Stack spacing={4} >
+          <InfiniteScroll 
             fetcherFn={(offset, limit) => {
-              const data = walletNfts.filter(nft => nft).slice(offset, offset + limit)
+              const data = marketNfts.filter(nft => nft).slice(offset, offset + limit)
               return [data, offset + data.length, data.length]
             }} 
-            nftsPerPage={4} 
-            swrKey={'walletNfts'}
-            viewSale={false}/>
-        </Box>
-        <Box>
-        <DiamondTitle title="Listed" />
-        <InfiniteSlide 
-          fetcherFn={(offset, limit) => {
-            const data = marketNfts.filter(nft => nft).slice(offset, offset + limit)
-            return [data, offset + data.length, data.length]
-          }} 
-          nftsPerPage={4} 
-          swrKey={'marketNfts'}
-          />
-        </Box>
-      </Stack>
+            swrKey={'marketNfts'}
+            />
+        </Stack>
+      </div>
     </Box>
     </>
   )

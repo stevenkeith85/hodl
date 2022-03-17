@@ -51,3 +51,10 @@ artifacts
 config.js
 generateNfts/config.js
 generateNfts/assets
+
+// .gitignore
+
+# OpenZeppelin
+.openzeppelin/unknown-*.json
+
+scripts/addresses.json

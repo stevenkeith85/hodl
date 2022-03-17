@@ -139,8 +139,18 @@ const ResponsiveAppBar = () => {
         <AppBar position="static">
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
-                    {/* Mobile */}
-                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+                   {/* Mobile */}
+                    <Typography
+                        variant="h6"
+                        noWrap
+                        component="div"
+                        sx={{ flexGrow: 0, display: { xs: 'flex', md: 'none' } }}
+                    >
+                        <Logo />
+                    </Typography>
+
+                     
+                     <Box sx={{ flexGrow: 1, justifyContent: 'right', display: { xs: 'flex', md: 'none' } }}>
                         <IconButton
                             size="large"
                             aria-label="account of current user"
@@ -184,14 +194,6 @@ const ResponsiveAppBar = () => {
                             ))}
                         </Menu>
                     </Box>
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="div"
-                        sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}
-                    >
-                        <Logo />
-                    </Typography>
 
                     {/* Desktop */}
                     <Typography variant="h6" noWrap component="div" sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}>
@@ -230,7 +232,7 @@ const ResponsiveAppBar = () => {
                                                 md: 16,
                                             },
                                             '&:hover': {
-                                                backgroundColor: (theme) => theme.palette.primary.light
+                                                fontWeight: 900
                                             },
                                             textAlign: 'center'
                                         }}
@@ -248,14 +250,16 @@ const ResponsiveAppBar = () => {
                                     <SearchIcon />
                                 </SearchIconWrapper>
                                 <StyledInputBase
-                                    placeholder="Search…"
+                                    placeholder="Search"
                                     inputProps={{ 'aria-label': 'search' }}
                                 />
                             </Search>
                         </Box>
 
 
-                        <IconButton onClick={async e => {
+                        <IconButton 
+                            sx={{ display: { xs: 'none', md: 'flex' } }}
+                            onClick={async e => {
                             if (wallet.signer) {
                                 handleOpenUserMenu(e);
                             } else {
@@ -277,7 +281,7 @@ const ResponsiveAppBar = () => {
                                 width: 120,
                                 padding: 2,
                                 fontSize: 14,
-                                fontWeight: 600,
+                                fontWeight: 500,
                                 border: (theme) => `1px solid ${theme.palette.secondary.light}`,
                                 '&:hover': {
                                     backgroundColor: (theme) => theme.palette.secondary.dark

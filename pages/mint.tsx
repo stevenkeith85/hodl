@@ -125,7 +125,13 @@ export default function Mint() {
         // @ts-ignore
         snackbarRef?.current?.display('Transaction rejected', 'error');
         setMinting(false);
-      } else {
+      } else if (error.code === -32603) {
+        const re = /reverted with reason string '(.+)'/gi;
+        const matches = re.exec(error.data.message)
+        // @ts-ignore
+        snackbarRef?.current?.display(matches[1], 'error');
+      }
+      else {
         // @ts-ignore
         snackbarRef?.current?.display("We've ran into a problem, sorry", 'error');
         setMinting(false);

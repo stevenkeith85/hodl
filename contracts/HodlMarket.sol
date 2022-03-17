@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.4;
+pragma solidity 0.8.10;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
@@ -10,11 +10,11 @@ import "./ABDKMathQuad.sol";
 
 import "hardhat/console.sol";
 
-// TODO: Use proxy contract
-contract NFTMarket is ReentrancyGuard, Ownable {
+
+contract HodlMarket is ReentrancyGuard, Ownable {
     address payable marketOwner;
-    uint256 private marketSaleFeeInPercent = 1;
-    uint256 private minListingPriceInMatic = 1 ether;
+    uint256 private marketSaleFeeInPercent;
+    uint256 private minListingPriceInMatic;
 
     struct Listing {
         uint256 tokenId;
@@ -38,6 +38,8 @@ contract NFTMarket is ReentrancyGuard, Ownable {
 
     constructor() {
         marketOwner = payable(msg.sender);
+        marketSaleFeeInPercent = 1;
+        minListingPriceInMatic = 1 ether;
     }
 
     // Fee Getters/Setters

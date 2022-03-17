@@ -30,7 +30,7 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
                     md: "repeat(3, 1fr)",
                     lg: "repeat(4, 1fr)",
                 },
-                gridGap: 14,
+                gridGap: 8,
                 marginTop: 2,
                 marignBottom: 2,
                 [`& .${imageListItemClasses.root}`]: {

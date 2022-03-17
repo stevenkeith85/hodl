@@ -9,8 +9,8 @@ import cloudinary from 'cloudinary'
 import Redis from 'ioredis';
 dotenv.config({ path: '../.env' })
 
-const Market = JSON.parse(readFileSync('../artifacts/contracts/NFTMarket.sol/NFTMarket.json'));
-const NFT = JSON.parse(readFileSync('../artifacts/contracts/NFT.sol/NFT.json'));
+const Market = JSON.parse(fs.readFileSync('../artifacts/contracts/HodlMarket.sol/HodlMarket.json'));
+const NFT = JSON.parse(fs.readFileSync('../artifacts/contracts/HodlNFT.sol/HodlNFT.json'));
 
 const ipfs = create({
   host: 'ipfs.infura.io',
@@ -53,9 +53,9 @@ function sleep(ms) {
 
 
 const wallets = {
-  1: process.env.WALLET_PRIVATE_KEY,
-  2: process.env.WALLET2_PRIVATE_KEY,
-  3: process.env.WALLET3_PRIVATE_KEY,
+  1: process.env.ACCOUNT1_PRIVATE_KEY,
+  2: process.env.ACCOUNT2_PRIVATE_KEY,
+  3: process.env.ACCOUNT3_PRIVATE_KEY,
 }
 
 
@@ -64,8 +64,7 @@ async function createNFTs(dirpath) {
 
   const walletId = process.argv[2];
   const walletPrivateKey = wallets[walletId];
-  console.log('Using wallet ', walletId);
-  // process.exit(0)
+  console.log('USING ACCOUNT ', walletId);
 
   const provider = new ethers.providers.JsonRpcProvider('http://localhost:8545');
   const signer = new ethers.Wallet(walletPrivateKey, provider);

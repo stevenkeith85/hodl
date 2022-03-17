@@ -120,6 +120,8 @@ const NftDetail = () => {
             />
             <HodlTextField
               label="Description"
+              multiline
+              minRows={5}
               value={marketItem?.description || ''}
             />
             <HodlTextField

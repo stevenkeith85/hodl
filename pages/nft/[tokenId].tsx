@@ -156,7 +156,12 @@ const NftDetail = () => {
           <Grid item xs={12} md={6}>
             <Stack spacing={2}>
               <HodlTextField label="Name" value={token?.name}></HodlTextField>
-              <HodlTextField label="Description" value={token?.description}></HodlTextField>
+              <HodlTextField 
+                label="Description" 
+                value={token?.description}
+                multiline
+                minRows={5}
+              ></HodlTextField>
               <Accordion disableGutters elevation={1}
                 sx={{
                   color: grey[800],

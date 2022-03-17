@@ -86,12 +86,10 @@ export const InfiniteSlide = ({
     const ascending = clientOffset >= (previousClientOffset || 0);
 
     if (nfts.length && ascending && (nfts.length - (clientOffset + clientLimit) <= (clientLimit * 2))) {
-        debugger;
       setOffset(next);
      } 
     else if (nfts.length && !ascending && clientOffset - nfts.filter(nft => !nft).length <= (clientLimit * 2)) { 
     // clientOffset - nfts.filter(nft => !nft).length is how many items we have in front of us that arent null. If there's only two pages to scroll, get more data
-    debugger;
     setOffset(prev);
     }
   }, [clientOffset])
