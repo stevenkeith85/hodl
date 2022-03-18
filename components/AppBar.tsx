@@ -7,12 +7,10 @@ import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import { useState, MouseEvent, useContext, useEffect } from 'react';
 import { WalletContext } from '../pages/_app';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import Link from 'next/link';
 import { getProviderAndSigner } from '../lib/nft.js';
 import { Logo } from './Logo';
@@ -23,6 +21,7 @@ import InputBase from '@mui/material/InputBase';
 import { Stack } from '@mui/material';
 import { useRouter } from 'next/router';
 import { grey } from "@mui/material/colors";
+import { ConnectButton } from './ConnectButton';
 
 // From MUI Docs
 const Search = styled('div')(({ theme }) => ({
@@ -77,13 +76,8 @@ const ResponsiveAppBar = () => {
         { label: 'My Profile', url: `/profile/${address}` },
     ]);
 
-    const [settings] = useState([{
-        label: 'Disconnect', action: () => null
-    }]);
-
     useEffect(() => {
         if (address) {
-            console.log('address changed to', address)
             setPages(old => {
                 return old.map(({ label, url }) => {
                     if (label === 'Profile') {
@@ -97,43 +91,31 @@ const ResponsiveAppBar = () => {
     }, [address]);
 
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
-    const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
     const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
     };
-    const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
-        setAnchorElUser(event.currentTarget);
-    };
-
+    
     const handleCloseNavMenu = () => {
         setAnchorElNav(null);
     };
 
-    const handleCloseUserMenu = () => {
-        setAnchorElUser(null);
-    };
+    // useEffect(() => {
+    //     const load = async () => {
+    //         if (localStorage.getItem('Wallet') === 'Connected') {
+    //             try {
+    //                 const { provider, signer } = await getProviderAndSigner();
+    //                 const walletAddress = await signer.getAddress();
+    //                 setAddress(walletAddress);
+    //                 setWallet({ provider, signer });
+    //             } catch (e) {
+    //                 console.log(e)
+    //             }
+    //         }
+    //     };
 
-    const getShortAddress = () => {
-        return address.slice(0, 2) + '...' + address.slice(-4);
-    }
-
-    useEffect(() => {
-        const load = async () => {
-            if (localStorage.getItem('Wallet') === 'Connected') {
-                try {
-                    const { provider, signer } = await getProviderAndSigner();
-                    const walletAddress = await signer.getAddress();
-                    setAddress(walletAddress);
-                    setWallet({ provider, signer });
-                } catch (e) {
-                    console.log(e)
-                }
-            }
-        };
-
-        load();
-    }, [])
+    //     load();
+    // }, [])
 
     return (
         <AppBar position="static">
@@ -255,70 +237,7 @@ const ResponsiveAppBar = () => {
                                 />
                             </Search>
                         </Box>
-
-
-                        <IconButton 
-                            sx={{ display: { xs: 'none', md: 'flex' } }}
-                            onClick={async e => {
-                            if (wallet.signer) {
-                                handleOpenUserMenu(e);
-                            } else {
-                                try {
-                                    const { provider, signer } = await getProviderAndSigner();
-                                    const walletAddress = await signer.getAddress();
-                                    setAddress(walletAddress);
-                                    setWallet({ provider, signer });
-                                    localStorage.setItem('Wallet', 'Connected');
-                                } catch (e) {
-                                    console.log(e)
-                                }
-
-                            }
-                        }}
-                        >
-                            <Avatar variant="rounded" sx={{
-                                bgcolor: 'secondary.main',
-                                width: 120,
-                                padding: 2,
-                                fontSize: 14,
-                                fontWeight: 500,
-                                border: (theme) => `1px solid ${theme.palette.secondary.light}`,
-                                '&:hover': {
-                                    backgroundColor: (theme) => theme.palette.secondary.dark
-                                }
-                            }}>
-                                <AccountBalanceWalletIcon sx={{ marginRight: 1 }} />
-                                {wallet.signer ? getShortAddress() : 'Connect'}
-                            </Avatar>
-                        </IconButton>
-                        <Menu
-                            sx={{ mt: '45px' }}
-                            id="menu-appbar"
-                            anchorEl={anchorElUser}
-                            anchorOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            open={Boolean(anchorElUser)}
-                            onClose={handleCloseUserMenu}
-                        >
-                            {settings.map(setting => (
-                                <MenuItem key={setting.label} onClick={handleCloseUserMenu}>
-                                    <Typography textAlign="center" onClick={() => {
-                                        setWallet({ provider: null, signer: null });
-                                        localStorage.setItem('Wallet', 'Not Connected');
-                                    }}
-                                    >
-                                        {setting.label}
-                                    </Typography>
-                                </MenuItem>
-                            ))}
-                        </Menu>
+                        <ConnectButton />                       
                     </Stack>
                 </Toolbar>
             </Container>

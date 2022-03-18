@@ -39,7 +39,7 @@ describe("HodlNft Contract", function () {
         // console.log("HodlNFT (Impl) deployed to", currentImplAddress)
     });
 
-    it.only('Should maintain the same proxy address when a new implementation is deployed', async function () {
+    it('Should maintain the same proxy address when a new implementation is deployed', async function () {
         const proxyAddress = hodlNFTAsOwner.address;
         const implAddress = await getImplementationAddress(ethers.provider, hodlNFTAsOwner.address);
 
@@ -165,7 +165,7 @@ describe("HodlNft Contract", function () {
     });
 
 
-    it("Should be able to iterate through the users tokens, page by page", async function () {
+    it.only("Should be able to iterate through the users tokens (in reverse), page by page", async function () {
         // const hodlNFTAsUser = new ethers.Contract(hodlNFT.address, HodlNFTABI.abi, user);
 
         const tx1 = await hodlNFTAsUser.createToken("ipfs://123");
@@ -184,17 +184,17 @@ describe("HodlNft Contract", function () {
         await tx5.wait();
 
         const [page, next, total] = await hodlNFTAsUser.addressToTokenIds(process.env.ACCOUNT1_PUBLIC_KEY, BigNumber.from(0), BigNumber.from(2));
-        expect(page).to.eql([BigNumber.from(1), BigNumber.from(2)]);
+        expect(page).to.eql([BigNumber.from(5), BigNumber.from(4)]);
         expect(next).to.equal(BigNumber.from(2));
         expect(total).to.equal(BigNumber.from(5));
 
         const [page2, next2, total2] = await hodlNFTAsUser.addressToTokenIds(process.env.ACCOUNT1_PUBLIC_KEY, next, BigNumber.from(2));
-        expect(page2).to.eql([BigNumber.from(3), BigNumber.from(4)]);
+        expect(page2).to.eql([BigNumber.from(3), BigNumber.from(2)]);
         expect(next2).to.equal(BigNumber.from(4));
         expect(total2).to.equal(BigNumber.from(5));
 
         const [page3, next3, total3] = await hodlNFTAsUser.addressToTokenIds(process.env.ACCOUNT1_PUBLIC_KEY, next2, BigNumber.from(2));
-        expect(page3).to.eql([BigNumber.from(5)]);
+        expect(page3).to.eql([BigNumber.from(1)]);
         expect(next3).to.equal(BigNumber.from(5));
         expect(total3).to.equal(BigNumber.from(5));
 
@@ -212,8 +212,6 @@ describe("HodlNft Contract", function () {
 
 
     it("Should be reverted if asks for an offset outside array length", async function () {
-        // const hodlNFTAsUser = new ethers.Contract(hodlNFT.address, HodlNFTABI.abi, user);
-
         const tx1 = await hodlNFTAsUser.createToken("ipfs://123");
         await tx1.wait();
 

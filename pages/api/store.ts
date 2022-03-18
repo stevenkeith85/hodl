@@ -32,7 +32,7 @@ apiRoute.post(async (req: NextApiRequest, res: NextApiResponse) => {
 
   try {
     // TODO: The ethers stuff should be moved to nft.js
-    const provider = new ethers.providers.JsonRpcProvider()
+    const provider = new ethers.providers.JsonRpcProvider("http://192.168.1.242:8545")
     const tokenContract = new ethers.Contract(nftaddress, NFT.abi, provider)
 
     const tokenUri = await tokenContract.tokenURI(tokenId);

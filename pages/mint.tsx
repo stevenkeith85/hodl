@@ -9,6 +9,7 @@ import { DiamondTitle } from '../components/DiamondTitle'
 import { RocketTitle } from '../components/RocketTitle'
 import { HodlSnackbar } from '../components/HodlSnackbar'
 import { HodlButton } from '../components/HodlButton'
+import { HodlImpactAlert } from '../components/HodlImpactAlert'
 
 
 export default function Mint() {
@@ -127,9 +128,15 @@ export default function Mint() {
         setMinting(false);
       } else if (error.code === -32603) {
         const re = /reverted with reason string '(.+)'/gi;
-        const matches = re.exec(error.data.message)
+        const matches = re.exec(error?.data?.message)
+        
         // @ts-ignore
-        snackbarRef?.current?.display(matches[1], 'error');
+        if (matches) {
+          snackbarRef?.current?.display(matches[1], 'error');
+        } else {
+          snackbarRef?.current?.display("We've ran into a problem, sorry", 'error');
+          setMinting(false);
+        }
       }
       else {
         // @ts-ignore
@@ -140,7 +147,7 @@ export default function Mint() {
   }
 
   if (!wallet.signer) {
-    return (<ConnectWallet />)
+    return <HodlImpactAlert title="Connect Wallet" message={"You'll need to connect your wallet to go to the Moon"} />
   }
 
   return (

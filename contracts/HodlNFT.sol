@@ -25,10 +25,6 @@ contract HodlNFT is ERC721URIStorageUpgradeable, OwnableUpgradeable, PausableUpg
         uint256 indexed tokenId
     );
 
-    // constructor(address _address) ERC721("Hodl NFT", "HNFT") {
-    //     _marketAddress = _address;
-    // }
-
     function initialize(address _address) public initializer {
          __ERC721_init("Hodl NFT", "HNFT");
          __Ownable_init();
@@ -49,12 +45,11 @@ contract HodlNFT is ERC721URIStorageUpgradeable, OwnableUpgradeable, PausableUpg
     {
         uint256[] storage allTokenIds = _addressToTokenIds[_address];
 
-        console.log("This is mighty good for debugging");
+        console.log('allTokenIds.length', allTokenIds.length);
 
         require(limit > 0, "Limit must be a positive number");
         require(limit < 500, "Limited to 500 items per page");
         require(offset <= allTokenIds.length, "Offset is greater than number of tokens");
-        
 
         // e.g. limit of 100, and an offset of 10 (i.e. we asked for 10 to 99)
         // there might be only 10 items though!
@@ -66,8 +61,20 @@ contract HodlNFT is ERC721URIStorageUpgradeable, OwnableUpgradeable, PausableUpg
         }
 
         page = new uint256[](limit);
-        for (uint256 i = 0; i < limit; i++) {
-            page[i] = allTokenIds[i + offset];
+        
+        uint256 current = 0;
+
+        if (allTokenIds.length == 0) {
+            return (page, 0, 0);
+        }
+
+        for (uint256 i = allTokenIds.length - 1; current < limit; --i) {
+            page[current] = allTokenIds[i - offset];
+            current += 1;
+
+            if (i == 0) {
+                break; // prevent unsigned wraparound
+            }
         }
 
         return (page, offset + limit, allTokenIds.length);
