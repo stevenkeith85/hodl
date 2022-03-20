@@ -7,14 +7,14 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "./ABDKMathQuad.sol";
-
+import "./HodlNFT.sol";
 import "hardhat/console.sol";
 
 
 contract HodlMarket is ReentrancyGuard, Ownable {
-    address payable marketOwner;
-    uint256 private marketSaleFeeInPercent;
-    uint256 private minListingPriceInMatic;
+    address payable public marketOwner;
+    uint256 public marketSaleFeeInPercent;
+    uint256 public minListingPriceInMatic;
 
     struct Listing {
         uint256 tokenId;
@@ -42,20 +42,12 @@ contract HodlMarket is ReentrancyGuard, Ownable {
         minListingPriceInMatic = 1 ether;
     }
 
-    // Fee Getters/Setters
-    function getMarketSaleFeeInPercent() public view returns (uint256) {
-        return marketSaleFeeInPercent;
-    }
-
+    // Fee Setters
     function setMarketSaleFeeInPercent(uint256 _marketSaleFeeInPercent)
         public
         onlyOwner
     {
         marketSaleFeeInPercent = _marketSaleFeeInPercent;
-    }
-
-    function getMinListingPriceInMatic() public view returns (uint256) {
-        return minListingPriceInMatic;
     }
 
     function setMinListingPriceInMatic(uint256 _minListingPriceInMatic)
@@ -65,8 +57,9 @@ contract HodlMarket is ReentrancyGuard, Ownable {
         minListingPriceInMatic = _minListingPriceInMatic;
     }
 
+    // TODO: ONLY OWNER OR PRIVATE
     // Utility functions
-    function remove(uint256 _index) public {
+    function remove(uint256 _index) private {
         require(_index < listingKeys.length, "index out of bound");
 
         for (uint256 i = _index; i < listingKeys.length - 1; i++) {
@@ -93,6 +86,7 @@ contract HodlMarket is ReentrancyGuard, Ownable {
             );
     }
 
+    // TODO: Restrict the token contract to HodlNFT to begin with?
     function listToken(
         address tokenContract,
         uint256 tokenId,
@@ -108,6 +102,11 @@ contract HodlMarket is ReentrancyGuard, Ownable {
             "Token must be listed at minListingPrice or higher"
         );
 
+        require(
+            keccak256(bytes(ERC721Upgradeable(tokenContract).name())) == keccak256(bytes("Hodl NFT")) && 
+            keccak256(bytes(ERC721Upgradeable(tokenContract).symbol())) == keccak256(bytes("HNFT")),
+            "We only support HodlNFTs on the market at the moment");
+
         listings[tokenId] = Listing(tokenId, price, payable(msg.sender));
 
         listingKeys.push(tokenId);
@@ -117,11 +116,7 @@ contract HodlMarket is ReentrancyGuard, Ownable {
 
         numberOfTokensForAddress[msg.sender]++;
 
-        console.log(msg.sender, ' has this number of tokens ', numberOfTokensForAddress[msg.sender]);
-
         emit ListingCreated(tokenId, price, msg.sender);
-
-        console.log(msg.sender, " has listed tokenId ", tokenId);
     }
 
     function delistToken(address tokenContract, uint256 tokenId)

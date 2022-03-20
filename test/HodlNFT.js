@@ -31,20 +31,12 @@ describe("HodlNft Contract", function () {
         hodlNFTAsOwner = await upgrades.deployProxy(HodlNFTFactory, [hodlMarketAsOwner.address], { initializer: 'initialize' })
         await hodlNFTAsOwner.deployed();
 
-        // console.log("HodlNFT (Proxy) deployed to", hodlNFTAsOwner.address)
-
-        hodlNFTAsUser = new ethers.Contract(hodlNFTAsOwner.address, HodlNFTABI.abi, userAccount);
-        
-        const currentImplAddress = await getImplementationAddress(ethers.provider, hodlNFTAsOwner.address);
-        // console.log("HodlNFT (Impl) deployed to", currentImplAddress)
+        hodlNFTAsUser = hodlNFTAsOwner.connect(userAccount);
     });
 
     it('Should maintain the same proxy address when a new implementation is deployed', async function () {
         const proxyAddress = hodlNFTAsOwner.address;
         const implAddress = await getImplementationAddress(ethers.provider, hodlNFTAsOwner.address);
-
-        console.log("Before: HodlNFT (Proxy) deployed to ", proxyAddress)
-        console.log("Before: HodlNFT (Impl) deployed to ", implAddress)
 
         const HodlNFTFactoryNew = await ethers.getContractFactory("HodlNFT", ownerAccount);
         const hodlNFTAsOwnerNew = await upgrades.upgradeProxy(proxyAddress, HodlNFTFactoryNew);
@@ -52,26 +44,20 @@ describe("HodlNft Contract", function () {
         const proxyAddressAfter = hodlNFTAsOwnerNew.address;
         const implAddressAfter = await getImplementationAddress(ethers.provider, hodlNFTAsOwnerNew.address);
 
-        console.log("After: HodlNFT (Proxy) deployed to ", proxyAddressAfter)
-        console.log("After: HodlNFT (Impl) deployed to ", implAddressAfter)
-        
+        expect(proxyAddress).to.equal(proxyAddressAfter);
+        expect(implAddress).to.equal(implAddressAfter); // won't change as the source hasn't changed        
     })
 
     it("Should accept the market address during deployment", async function () {
-        //console.log("Proxy deployed to " + hodlNFTAsOwner.address)
-        //console.log("Implementation at " + hodlNFT.getImplementationAddress(hodlNFT.address))
-
         expect(await hodlNFTAsOwner.name()).to.equal("Hodl NFT");
         expect(await hodlNFTAsOwner.marketAddress()).to.equal(hodlMarketAsOwner.address);
     });
 
 
     it("Should create a token and update mappings", async function () {
-        // const hodlNFTAsUser = new ethers.Contract(hodlNFT.address, HodlNFTABI.abi, user);
-
         const tokenUri = "ipfs://123456"
         const tx = await hodlNFTAsUser.createToken(tokenUri);
-        const receipt = await tx.wait();
+        await tx.wait();
 
         // The NFT should be created and assigned to the user
         //
@@ -104,8 +90,6 @@ describe("HodlNft Contract", function () {
 
 
     it("Should transfer a token between users and update mappings", async function () {
-        // const hodlNFTAsUser = new ethers.Contract(hodlNFT.address, HodlNFTABI.abi, user);
-
         expect(await hodlNFTAsOwner.addressToTokenIds(process.env.ACCOUNT1_PUBLIC_KEY, 0, 1)).to.eql([
             [], BigNumber.from(0), BigNumber.from(0)
         ])
@@ -115,7 +99,7 @@ describe("HodlNft Contract", function () {
 
         const tokenUri = "ipfs://123456"
         const tx = await hodlNFTAsUser.createToken(tokenUri);
-        const receipt = await tx.wait();
+        await tx.wait();
 
         // i.e. we get back a one element array with tokenId === 1, offset is 1, total items in collection is 1
         expect(await hodlNFTAsOwner.addressToTokenIds(process.env.ACCOUNT1_PUBLIC_KEY, 0, 1)).to.eql([
@@ -127,7 +111,7 @@ describe("HodlNft Contract", function () {
         ])
 
         const tx2 = await hodlNFTAsUser.transferFrom(process.env.ACCOUNT1_PUBLIC_KEY, process.env.ACCOUNT2_PUBLIC_KEY, 1)
-        const receipt2 = await tx2.wait();
+        await tx2.wait();
 
         expect(await hodlNFTAsOwner.addressToTokenIds(process.env.ACCOUNT1_PUBLIC_KEY, 0, 1)).to.eql([
             [], BigNumber.from(0), BigNumber.from(0)
@@ -165,9 +149,7 @@ describe("HodlNft Contract", function () {
     });
 
 
-    it.only("Should be able to iterate through the users tokens (in reverse), page by page", async function () {
-        // const hodlNFTAsUser = new ethers.Contract(hodlNFT.address, HodlNFTABI.abi, user);
-
+    it("Should be able to iterate through the users tokens (in reverse), page by page", async function () {
         const tx1 = await hodlNFTAsUser.createToken("ipfs://123");
         await tx1.wait();
 
@@ -228,7 +210,7 @@ describe("HodlNft Contract", function () {
         await tx5.wait();
 
         const [page, next, total] = await hodlNFTAsUser.addressToTokenIds(process.env.ACCOUNT1_PUBLIC_KEY, BigNumber.from(4), BigNumber.from(1));
-        expect(page).to.eql([BigNumber.from(5)]);
+        expect(page).to.eql([BigNumber.from(1)]);
         expect(next).to.equal(BigNumber.from(5));
         expect(total).to.equal(BigNumber.from(5));
 
@@ -260,7 +242,7 @@ describe("HodlNft Contract", function () {
             tx = await hodlNFTAsUser.pauseContract();
             await tx.wait();
         } catch (e) {
-            expect(e.error.message).to.equal("VM Exception while processing transaction: reverted with reason string 'Ownable: caller is not the owner'");
+            expect(e.message).to.equal("VM Exception while processing transaction: reverted with reason string 'Ownable: caller is not the owner'");
         }
 
         // owner can pause contract
@@ -272,7 +254,7 @@ describe("HodlNft Contract", function () {
             tx = await hodlNFTAsUser.createToken("ipfs://123");
             await tx.wait();
         } catch (e) {
-            expect(e.error.message).to.equal("VM Exception while processing transaction: reverted with reason string 'Pausable: paused'");
+            expect(e.message).to.equal("VM Exception while processing transaction: reverted with reason string 'Pausable: paused'");
         }
 
         // user can't unpause contract
@@ -280,7 +262,7 @@ describe("HodlNft Contract", function () {
             tx = await hodlNFTAsUser.unpauseContract();
             tx4.wait();
         } catch (e) {
-            expect(e.error.message).to.equal("VM Exception while processing transaction: reverted with reason string 'Ownable: caller is not the owner'");
+            expect(e.message).to.equal("VM Exception while processing transaction: reverted with reason string 'Ownable: caller is not the owner'");
         }
 
         // pausing a paused contract throws
@@ -294,7 +276,6 @@ describe("HodlNft Contract", function () {
         // the owner can unpause contract
         tx = await hodlNFTAsOwner.unpauseContract()
         await tx.wait();
-
 
         // unpausing an active contract throws
         try {

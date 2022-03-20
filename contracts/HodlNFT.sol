@@ -45,8 +45,6 @@ contract HodlNFT is ERC721URIStorageUpgradeable, OwnableUpgradeable, PausableUpg
     {
         uint256[] storage allTokenIds = _addressToTokenIds[_address];
 
-        console.log('allTokenIds.length', allTokenIds.length);
-
         require(limit > 0, "Limit must be a positive number");
         require(limit < 500, "Limited to 500 items per page");
         require(offset <= allTokenIds.length, "Offset is greater than number of tokens");
@@ -101,7 +99,8 @@ contract HodlNFT is ERC721URIStorageUpgradeable, OwnableUpgradeable, PausableUpg
 
         uint256[] storage fromTokens = _addressToTokenIds[from];
 
-        // The array order isn't important
+        // The array order isn't important.
+        // TODO: Array order should be maintained
         for (uint256 i = 0; i < fromTokens.length; i++) {
             if (fromTokens[i] == tokenId) {
                 fromTokens[i] = fromTokens[fromTokens.length - 1];

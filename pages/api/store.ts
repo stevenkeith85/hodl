@@ -35,6 +35,9 @@ apiRoute.post(async (req: NextApiRequest, res: NextApiResponse) => {
     const provider = new ethers.providers.JsonRpcProvider("http://192.168.1.242:8545")
     const tokenContract = new ethers.Contract(nftaddress, NFT.abi, provider)
 
+    // This is important! We only want to store HodlNFTs in our database at the moment. 
+    // If a user tries to create spoof tokens and list on the market, we
+    // won't show them on the website as we use the HodlNFT contract as the source of truth!
     const tokenUri = await tokenContract.tokenURI(tokenId);
 
     const credentials = Buffer.from(process.env.INFURA_IPFS_PROJECT_ID + ':' + process.env.INFURA_IPFS_PROJECT_SECRET).toString('base64');

@@ -130,10 +130,12 @@ export default function Mint() {
         const re = /reverted with reason string '(.+)'/gi;
         const matches = re.exec(error?.data?.message)
         
-        // @ts-ignore
+        
         if (matches) {
+          // @ts-ignore
           snackbarRef?.current?.display(matches[1], 'error');
         } else {
+          // @ts-ignore
           snackbarRef?.current?.display("We've ran into a problem, sorry", 'error');
           setMinting(false);
         }
