@@ -8,41 +8,16 @@ import { InfiniteScroll } from '../../components/InfiniteScroll'
 import { HodlImpactAlert } from '../../components/HodlImpactAlert'
 import { HodlButton } from '../../components/HodlButton'
 import Link from 'next/link'
+import { ProfileAvatar } from '../../components'
 
 
 const Profile = () => {
-  const [walletNfts, setWalletNfts] = useState([]);
-  const [marketNfts, setMarketNfts] = useState([]);
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { address } = useContext(WalletContext);
-  const [value, setValue] = useState(0);
-  const [validAddress, setValidAddress] = useState(true);
-  const [numberOfNfts, setNumberOfNfts] = useState();
+  const [value, setValue] = useState(0);  
+  const [numberHodling, setNumberHodling] = useState();
+  const [numberListed, setNumberListed] = useState();
 
-  useEffect(() => {
-    const load = async () => {
-      const valid = await isValidAddress(router.query.address[0]);
-      setValidAddress(valid);
-
-      if (!valid) {
-        return;
-      }
-
-      // const walletNfts = await fetchNftsInWallet(router.query.address[0]);
-      const marketNfts = await fetchNFTsListedOnMarket(router.query.address[0]);
-
-      //setWalletNfts(walletNfts);
-      setMarketNfts(marketNfts);      
-    };
-
-    if (router.query.address) {
-      // setLoading(true);
-      load();
-      // setLoading(false);
-    }
-
-  }, [router.query.address]);
 
   // If the user connects their wallet on the profile page, redirect them to the actual location
   useEffect(() => {
@@ -53,51 +28,49 @@ const Profile = () => {
   
 
   if (!address && !router.query.address) {
-    return <HodlImpactAlert title="Connect Wallet" message={"You'll need to connect your wallet to go to the Moon"} />
-  }
-
-  if (!validAddress) {
-    return <HodlImpactAlert title="Invalid Address" message={"The profile address doesn't appear to be valid"} />
+    return <HodlImpactAlert title="Connect Wallet" message={"You need to connect your wallet to view your profile"} />
   }
  
-  if (Number(numberOfNfts) === 0) {
-    console.log("address === router?.query?.address",address, router?.query?.address)
-    return <HodlImpactAlert 
-    title="Empty" 
-    message={"This profile does not have any NFTs"} 
-    action={
-      Boolean(router?.query?.address && address === router?.query?.address[0]) && 
-      <Link href="/mint" passHref>
-        <HodlButton>Mint One</HodlButton>
-      </Link>
-    }/>
+  if (Number(numberHodling) === 0 && Number(numberListed) == 0) {
+    return (
+    <HodlImpactAlert 
+      title="Empty" 
+      message={"This profile does not have any NFTs"} 
+      action={
+        Boolean(router?.query?.address && address === router?.query?.address[0]) && 
+        <Link href="/mint" passHref>
+          <HodlButton>Mint One</HodlButton>
+        </Link>
+      }
+    />)
   }
+
   return (
     <>
-    <Box sx={{ display: 'flex', flexDirection: 'column', justifyItems: "center", paddingTop: 4, paddingBottom: 4 }}>
-      <Box sx={{ display: 'flex', flexDirection: 'row-reverse'}}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', justifyItems: "center", paddingTop: 2, paddingBottom: 2 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
+          
           <Tabs
             value={value}
             onChange={(e, v) => { console.log(e, v); setValue(v) }}
             textColor="secondary"
             indicatorColor="secondary"
-            aria-label="secondary tabs example"
-            
           >
             <Tab value={0} label="Hodling" />
             <Tab value={1} label="Listed" />
           </Tabs>
+          <ProfileAvatar address={router?.query?.address?.length && router?.query?.address[0] || address } />
       </Box>
-      
-      
       <div hidden={value !== 0}>
         <Stack spacing={4}>
           { router?.query?.address && router?.query?.address[0] && 
             <InfiniteScroll 
               fetcherFn={async (offset, limit) => {
-                console.log('here')
                 const [data, next, length] = await fetchNftsInWallet(router.query.address[0], offset, limit);
-                setNumberOfNfts(length);
+                setNumberHodling(length);
+                if(Number(length) === 0) {
+                  setValue(1) // set tab to listed if we aren't holding any. if we have nothing listed then we'll show a message (above)
+                }
                 return [data, next, length]
               }} 
               swrKey={'walletNfts'}
@@ -107,13 +80,14 @@ const Profile = () => {
       </div>
       <div hidden={value !== 1}>
         <Stack spacing={4} >
-          {/* <InfiniteScroll 
-            fetcherFn={(offset, limit) => {
-              const data = marketNfts.filter(nft => nft).slice(offset, offset + limit)
+          <InfiniteScroll 
+            fetcherFn={async (offset, limit) => {
+              const data = (await fetchNFTsListedOnMarket(router.query.address[0])).slice(offset, offset + limit).filter(nft => nft)
+              setNumberListed(data.length);
               return [data, offset + data.length, data.length]
             }} 
             swrKey={'marketNfts'}
-            /> */}
+            />
         </Stack>
       </div>
     </Box>

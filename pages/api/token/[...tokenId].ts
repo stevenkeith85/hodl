@@ -13,11 +13,10 @@ const apiRoute = nextConnect({
   },
 });
 
-let redis = new Redis(process.env.REDIS_CONNECTION_STRING);
 
 
+// https://docs.upstash.com/redis/troubleshooting/max_concurrent_connections
 export const getTokens = memoize(async (tokenId) => {
-  
   // const tokens = [];
   // for (const token of tokenId) {
   //     tokens.push({ "tokenId": token, 
@@ -29,6 +28,8 @@ export const getTokens = memoize(async (tokenId) => {
 
   console.log('CALLING REDIS', tokenId);
 
+  const redis = new Redis(process.env.REDIS_CONNECTION_STRING);
+
   const pipeline = redis.pipeline();
   for (const token of tokenId) {
       pipeline.get('token:' + token);
@@ -37,6 +38,7 @@ export const getTokens = memoize(async (tokenId) => {
   const promise = await pipeline.exec()
   const tokens = promise.map(result => JSON.parse(result[1]))
 
+  await redis.quit();
   return tokens;
 }, { length: false, primitive: true, maxAge: 1000 * 60 * 60, max: 10000}); // cache for an hour and a maximum of 10000 items (estimating up to 70 MB of data if we end up with 20 items per cache entry )
 

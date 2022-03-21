@@ -2,8 +2,9 @@ import { Avatar, IconButton, Menu, MenuItem, Typography } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { WalletContext } from "../pages/_app";
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-import { getProviderAndSigner } from "../lib/nft";
+import { getMetaMaskSigner } from "../lib/nft";
 import { useRouter } from "next/router";
+import { getShortAddress } from "../lib/utils";
 
 
 export const ConnectButton = () => {
@@ -18,10 +19,6 @@ export const ConnectButton = () => {
     const handleOpenUserMenu = (event) => setAnchorElUser(event.currentTarget);
     const handleCloseUserMenu = () => setAnchorElUser(null);
 
-    const getShortAddress = () => {
-        return address.slice(0, 2) + '...' + address.slice(-4);
-    }
-
     const isMobileDevice = () => {
         return 'ontouchstart' in window || 'onmsgesturechange' in window;
     }
@@ -32,12 +29,12 @@ export const ConnectButton = () => {
 
     const connect = async () => {
         try {            
-            const { provider, signer } = await getProviderAndSigner();
+            const signer = await getMetaMaskSigner();
             const walletAddress = await signer.getAddress();
 
             setAddress(walletAddress);
-            console.log('connected to ', walletAddress);
-            setWallet({ provider, signer });
+
+            setWallet({ provider: null, signer });
 
             localStorage.setItem('Wallet', 'Connected');
         } catch (e) {
@@ -53,7 +50,7 @@ export const ConnectButton = () => {
 
     useEffect(() => {
         const load = async () => {
-            if (isMobileDevice() || localStorage.getItem('Wallet') === 'Connected') {
+            if (localStorage.getItem('Wallet') === 'Connected') {
                 connect();
             }
         };
@@ -91,7 +88,7 @@ export const ConnectButton = () => {
                 }}>
                     <AccountBalanceWalletIcon sx={{ marginRight: 1 }} />
                     {
-                        wallet.signer ? getShortAddress() : 'Connect'
+                        wallet.signer ? getShortAddress(address) : 'Connect'
                     }
                 </Avatar>
             </IconButton>

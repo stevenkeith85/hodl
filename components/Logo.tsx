@@ -1,29 +1,26 @@
 import NightlightIcon from '@mui/icons-material/Nightlight';
-import { Box, Typography } from "@mui/material";
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+import { Typography, Stack } from "@mui/material";
 import Link from 'next/link';
 
-
-export const Logo = () => (
-    <Link href='/'>
-        <Box sx={{
-            display: 'flex',
-            alignItems: 'center',
-            marginRight: {
-                xs: 0,
-            },
-            justifyContent: {
-                xs: 'center',
-                md: 'right',
-            },
-            cursor: 'pointer'
-        }}>
-            <NightlightIcon sx={{ mr: 2 }} />
+export const Logo = ({ sx={} }) => (
+    <Link href="/" passHref>
+        <Stack 
+            direction="row" 
+            spacing={1} 
+            sx={{ 
+                alignItems: 'center',
+                cursor: 'pointer',
+                ...sx
+            }}
+        >
+            <RocketLaunchIcon />
             <Typography sx={{
                 fontFamily: theme => theme.logo.fontFamily,
                 fontSize: theme => theme.logo.fontSize
             }}>
                 Hodl My Moon
             </Typography>
-        </Box>
+        </Stack>
     </Link>
 )

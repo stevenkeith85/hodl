@@ -33,11 +33,11 @@ function MyApp({ Component, pageProps }: AppProps) {
           <Box sx={{
             minHeight: '100vh',
             position: 'relative',
-            paddingBottom: {
-              xs: '540px',
-              sm: '480px',
-              md: '280px'
-            }
+            paddingBottom: { // for footer
+              xs: '520px',
+              md: '280px',
+            },
+            // webkitTapHighlightColor: 'transparent'
           }}>
             <ResponsiveAppBar />
             <Container maxWidth="xl">

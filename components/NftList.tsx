@@ -3,7 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link';
 import { grey } from "@mui/material/colors";
 
-const truncateText = (text, length=10) => {
+const truncateText = (text, length=30) => {
     if (!text) {
         return '';
     }
@@ -30,7 +30,7 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
                     md: "repeat(3, 1fr)",
                     lg: "repeat(4, 1fr)",
                 },
-                gridGap: 8,
+                gridGap: 16,
                 marginTop: 2,
                 marignBottom: 2,
                 [`& .${imageListItemClasses.root}`]: {
@@ -85,13 +85,13 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
                         }}
                         subtitle={
                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                <Typography sx={{ fontSize: 16, fontWeight: 900 }}>{truncateText(nft?.name)}</Typography>
-                                <Typography sx={{ fontSize: 16, fontWeight: 600 }}>{truncateText(nft?.description, 20)}</Typography>
+                                <Typography sx={{ fontSize: 16, fontWeight: 900 }}>{truncateText(nft?.name, 28)}</Typography>
+                                <Typography sx={{ fontSize: 16, fontWeight: 600 }}>{truncateText(nft?.description, 28)}</Typography>
                             </Box>
                         }
                         actionIcon={
                             Boolean(nft?.tokenId) && <Link 
-                                href={viewSale ? `/listing/${nft?.tokenId}` : `/nft/${nft?.tokenId}`}
+                                href={viewSale ? `/listing/${nft?.tokenId}` : `/listing/${nft?.tokenId}`}
                             >
                                  <Button
                                     variant="outlined"

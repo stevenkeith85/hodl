@@ -1,44 +1,62 @@
-import { Box, Button, Typography, Grid, Stack } from "@mui/material";
-import { useRouter } from "next/router";
 import { useContext, useEffect, useRef, useState } from "react";
-import { buyNft, delistNft, fetchMarketItem } from "../../lib/nft";
-import { WalletContext } from "../_app";
-import { HodlTextField } from "../../components/HodlTextField";
-import { ConnectWallet } from "../../components/ConnectWallet";
-import { DiamondTitle } from "../../components/DiamondTitle";
-import Image from 'next/image'
+
 import Link from "next/link";
-import { HodlSnackbar } from "../../components/HodlSnackbar";
-import { HodlModal } from "../../components/HodlModal";
-import { RocketTitle } from "../../components/RocketTitle";
-import { HodlButton } from "../../components/HodlButton";
+import { useRouter } from "next/router";
+
+import {
+  Avatar,
+  Card,
+  CardContent,
+  Grid,
+  Stack,
+  Typography,
+  Link as MuiLink
+} from "@mui/material";
+import PersonIcon from '@mui/icons-material/Person';
+import PublicIcon from '@mui/icons-material/Public';
+import SellIcon from '@mui/icons-material/Sell';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+
+import {
+  HodlSnackbar,
+  HodlButton,
+  SuccessModal,
+  DetailPageImage,
+  HodlModal,
+  HodlTextField,
+  RocketTitle,
+  SocialShare,
+  ProfileAvatar
+} from '../../components';
+import { WalletContext } from "../_app";
+import { buyNft, delistNft, fetchMarketItem, listTokenOnMarket } from "../../lib/nft";
+import { checkForAndDisplaySmartContractErrors } from "../../lib/utils";
 
 
 const NftDetail = () => {
   const router = useRouter();
-  const { wallet, address, setAddress } = useContext(WalletContext);
+  const { address } = useContext(WalletContext);
   const [marketItem, setMarketItem] = useState(null);
   const snackbarRef = useRef();
-  const [modalOpen, setModalOpen] = useState(false);
 
-  function myLoader({src, width, quality}) {
-    const url = `https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,w_${700},q_${quality}/nfts/${src}`;
-    return url;
-  }
+  const [boughtModalOpen, setBoughtModalOpen] = useState(false);
+
+  const [listModalOpen, setListModalOpen] = useState(false);
+  const [delistModalOpen, setDelistModalOpen] = useState(false);
+  const [listedModalOpen, setListedModalOpen] = useState(false);
+
+  const [price, setPrice] = useState('');
 
   useEffect(() => {
     const load = async () => {
-      if (router.query.tokenId !== undefined &&
-        wallet.provider !== null &&
-        wallet.signer !== null) {
+      if (router.query.tokenId !== undefined) {
         try {
           const item = await fetchMarketItem(router.query.tokenId);
           if (!item) {
             return;
           }
-
           setMarketItem(item);
-          console.log(item);
         } catch (e) {
           console.log(e);
         }
@@ -47,136 +65,170 @@ const NftDetail = () => {
 
     load();
 
-  }, [router.query.tokenId, wallet]);
-
-  useEffect(() => {
-    const load = async () => {
-      if (wallet.signer) {
-        const address = await wallet.signer.getAddress();
-        setAddress(address);
-      }
-    };
-
-    load();
-
-  }, [wallet]);
-
-  if (!wallet.signer) {
-    return (<ConnectWallet />);
-  }
+  }, [router.query.tokenId]);
 
   return (
     <>
-    <HodlSnackbar ref={snackbarRef} />
-    <HodlModal
-        open={modalOpen}
-        setOpen={setModalOpen}
+      <HodlSnackbar ref={snackbarRef} />
+      
+      {/* Bought */}
+      <SuccessModal
+        modalOpen={boughtModalOpen}
+        setModalOpen={setBoughtModalOpen}
+        message="You&apos;ve successfully bought a token on the market"
+      />
+
+      {/* List */}
+      <HodlModal
+        open={listModalOpen}
+        setOpen={setListModalOpen}
       >
-          <Stack spacing={4}>
-            <RocketTitle title="We're off to the Moon" />
-            <Typography sx={{ span: { fontWeight: 600 } }}>
-              You&apos;ve <span>successfully</span> bought a token on the market
-            </Typography>
-            <Stack direction="row" spacing={2}>
-              <Link href={`/nft/${router.query.tokenId}`} passHref>
-                <HodlButton color="secondary">
-                  View Token Detail
-                </HodlButton>
-              </Link>
-                <Link href={`/profile/${address}`} passHref>
-                  <HodlButton>
-                    View Profile
-                  </HodlButton>
-                </Link>
-                </Stack>
+        <Stack spacing={4}>
+          <RocketTitle title="Time for Tendies" />
+          <Typography sx={{ paddingLeft: 1 }}>
+            List this NFT on the market.
+          </Typography>
+          <HodlTextField
+            label="Price (Matic)"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            required
+            placeholder="1"
+          />
+          <HodlButton
+            onClick={async () => {
+              try {
+                // @ts-ignore
+                snackbarRef?.current?.display('Please Approve Transaction in Wallet', 'info');
+                await listTokenOnMarket(router.query.tokenId, price);
+                // @ts-ignore
+                snackbarRef?.current?.display('Token listed on market', 'success');
+                setListModalOpen(false);
+                setListedModalOpen(true);
+              } catch (e) {
+                checkForAndDisplaySmartContractErrors(e, snackbarRef);
+              }
+
+            }}
+            disabled={!price}
+          >
+            Add
+          </HodlButton>
+        </Stack>
+      </HodlModal>
+
+      {/* Listed */}
+      <SuccessModal
+        modalOpen={listedModalOpen}
+        setModalOpen={setListedModalOpen}
+        message="You&apos;ve successfully listed your token on the market"
+      />
+
+      {/* Delisted */}
+      <SuccessModal
+        modalOpen={delistModalOpen}
+        setModalOpen={setDelistModalOpen}
+        message="You&apos;ve successfully delisted your token from the market"
+      />
+
+      <Grid container spacing={2} sx={{ paddingTop: { xs: 2 } }}>
+        <Grid item xs={12}>
+          <Stack spacing={2} direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="h1" sx={{ fontSize: 24 }}>{marketItem?.name}</Typography>
+            <ProfileAvatar address={marketItem?.owner} />
           </Stack>
-    </HodlModal>
-    <Box sx={{ display: 'flex', flexDirection: 'column', justifyItems: "center", padding: 4 }}>
-      <Typography variant='h1' sx={{ paddingBottom: 2 }}>
-        <DiamondTitle title="NFT For Sale" />
-      </Typography>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>        
-              {Boolean(marketItem?.image) &&
-              <Image
-                loader={myLoader}
-                src={marketItem?.image}
-                alt={marketItem?.name}
-                quality={75}
-                width={600}
-                height={600}
-                sizes="33vw"
-                loading="eager"
-                layout="responsive"
-                objectFit='contain'
-                objectPosition="top"
-              />}
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <DetailPageImage token={marketItem} />
         </Grid>
         <Grid item xs={12} md={6}>
           <Stack spacing={2}>
-            <HodlTextField
-              label="Name"
-              value={marketItem?.name || ''}
-            />
-            <HodlTextField
-              label="Description"
-              multiline
-              minRows={5}
-              value={marketItem?.description || ''}
-            />
-            <HodlTextField
-              label="Price (Matic)"
-              value={marketItem?.price || ''}
-            />
+            <Card variant="outlined">
+              <CardContent>
+                <Typography sx={{ marginBottom: 2 }} variant="h6" component="div">Description </Typography>
+                <Typography>{marketItem?.description}</Typography>
+              </CardContent>
+            </Card>
+            <Card variant="outlined">
+              <CardContent>
+                <Typography sx={{ marginBottom: 2 }} variant="h6" component="div">
+                  InterPlanetary File System
+                </Typography>
+                <Stack direction="row" spacing={2}>
+                  <HodlButton
+                    startIcon={<PublicIcon fontSize="large" />}>
+                    <MuiLink
+                      href={marketItem?.ipfsMetadataGateway || '#'}
+                      target="_blank"
+                      sx={{ textDecoration: 'none' }}>
+                      Metadata
+                    </MuiLink>
+                  </HodlButton>
+                  <HodlButton
+                    startIcon={<PublicIcon fontSize="large" />}>
+                    <MuiLink
+                      href={marketItem?.ipfsImageGateway || '#'}
+                      target="_blank"
+                      sx={{ textDecoration: 'none' }}>
+                      Image
+                    </MuiLink>
+                  </HodlButton>
+                </Stack>
+              </CardContent>
+            </Card>
+            <SocialShare />
             <Stack direction="row" spacing={2}>
-              <HodlButton
-                onClick={async () => {
-                  try {
-                    // @ts-ignore
-                    snackbarRef?.current?.display('Please Approve Transaction in Wallet', 'info');
-                    await buyNft(marketItem, wallet);
-                    router.push(`/profile/${address}`);
-                  } catch (e) {
-                    if (e.code === -32603) {
-                      const re = /reverted with reason string '(.+)'/gi;
-                      const matches = re.exec(e.data.message)
-                      // @ts-ignore
-                      snackbarRef?.current?.display(matches[1], 'error');
-                    }
-                  }
-                }}>
-                Buy NFT
-              </HodlButton>
-              <HodlButton
-                onClick={async () => {
-                  try {
-                    // @ts-ignore
-                    snackbarRef?.current?.display('Please Approve Transaction in Wallet', 'info');
-                    await delistNft(marketItem, wallet);
-                    router.push(`/profile/${address}`);
-                  } catch (e) {
-                    if (e.code === -32603) {
-                      const re = /reverted with reason string '(.+)'/gi;
-                      const matches = re.exec(e.data.message)
-                      // @ts-ignore
-                      snackbarRef?.current?.display(matches[1], 'error');
-                    }
-                  }
-                }}>
-                Delist NFT
-              </HodlButton>
-              <Link href={`/nft/${router.query.tokenId}`} passHref>
+              {Boolean(marketItem?.forSale) && Boolean(marketItem?.owner?.toLowerCase() !== address?.toLowerCase()) &&
                 <HodlButton
-                  color="secondary"
-                >
-                  View Detail
+                  sx={{ paddingLeft: 4, paddingRight: 4, paddingTop: 2, paddingBottom: 2 }}
+                  startIcon={<SellIcon fontSize="large" />}
+                  onClick={async () => {
+                    try {
+                      // @ts-ignore
+                      snackbarRef?.current?.display('Please Approve Transaction in Wallet', 'info');
+                      await buyNft(marketItem);
+                      setBoughtModalOpen(true);
+                    } catch (e) {
+                      checkForAndDisplaySmartContractErrors(e, snackbarRef);
+                    }
+                  }}>
+                  Buy NFT
                 </HodlButton>
-              </Link>
+              }
+              {Boolean(marketItem?.owner?.toLowerCase() === address?.toLowerCase()) &&
+                <>
+                  {
+                    marketItem.forSale ? (
+                      <HodlButton
+                        sx={{ paddingLeft: 4, paddingRight: 4, paddingTop: 2, paddingBottom: 2 }}
+                        startIcon={<RemoveCircleOutlineIcon fontSize="large" />}
+                        onClick={async () => {
+                          try {
+                            // @ts-ignore
+                            snackbarRef?.current?.display('Please Approve Transaction in Wallet', 'info');
+                            await delistNft(marketItem);
+                            setDelistModalOpen(true);
+                          } catch (e) {
+                            checkForAndDisplaySmartContractErrors(e, snackbarRef);
+                          }
+                        }}>
+                        Delist NFT
+                      </HodlButton>
+                    ) : (
+                      <HodlButton
+                        sx={{ paddingLeft: 4, paddingRight: 4, paddingTop: 2, paddingBottom: 2 }}
+                        startIcon={<AddCircleOutlineIcon fontSize="large" />}
+                        onClick={() => setListModalOpen(true)}>
+                        List NFT
+                      </HodlButton>
+                    )
+                  }
+                </>
+              }
             </Stack>
           </Stack>
-          </Grid>
         </Grid>
-    </Box>
+      </Grid>
     </>
   )
 }

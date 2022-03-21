@@ -71,15 +71,16 @@ const Footer = () => {
                             <HodlLink href="/">NFT Market</HodlLink>
                         </Stack>
                     </Stack>
-                    <Stack spacing={1}>
+                    <Stack>
                         <HodlLink href="/">
-                            <>
-                        <Logo />
-                        <Typography sx={{ fontSize: 18, fontWeight: 500 }}>
-                            Mint, Showcase, and Profit with NFTs.
-                        </Typography>
-                        </>
+                            <Logo sx={{ 
+                                justifyContent: { xs: "center", md: "right" }
+                            }} />
+                            <Typography sx={{ fontSize: 18, fontWeight: 500 }}>
+                                Mint, Showcase, and Trade NFTs
+                            </Typography>                        
                         </HodlLink>
+                        
                     </Stack>
                 </Stack>
             </Container>

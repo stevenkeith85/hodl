@@ -17,7 +17,7 @@ const apiRoute = nextConnect({
   },
 });
 
-let client = new Redis(process.env.REDIS_CONNECTION_STRING);
+
 
 
 // @ts-ignore
@@ -27,7 +27,9 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_SECRET,
 });
 
+// https://docs.upstash.com/redis/troubleshooting/max_concurrent_connections
 apiRoute.post(async (req: NextApiRequest, res: NextApiResponse) => {
+  const client = new Redis(process.env.REDIS_CONNECTION_STRING);
   const { tokenId } = req.body;
 
   try {
@@ -43,14 +45,12 @@ apiRoute.post(async (req: NextApiRequest, res: NextApiResponse) => {
     const credentials = Buffer.from(process.env.INFURA_IPFS_PROJECT_ID + ':' + process.env.INFURA_IPFS_PROJECT_SECRET).toString('base64');
     var auth = { "Authorization" : `Basic ${credentials}` };
 
-    console.log('store', tokenUri);
     const r = await fetch(ipfsUriToGatewayUrl(tokenUri), { headers : auth });
     const { name, description, image} = await r.json()
 
     const public_id = 'nfts/' + image.split('//')[1];
-    console.log('public_id', public_id);
-    cloudinary.v2.api.resource(public_id, { phash: true }, (error, result) => {
 
+    cloudinary.v2.api.resource(public_id, { phash: true }, (error, result) => {
       console.log('ERROR', error);
       console.log('RESULT', result.phash);
       client.set("token:" + tokenId, JSON.stringify({ tokenId, name, description, image, phash: result.phash }));
@@ -62,6 +62,7 @@ apiRoute.post(async (req: NextApiRequest, res: NextApiResponse) => {
     console.log(e);
     res.status(500).json({ error: e });
   }
+  await client.quit();
 });
 
 

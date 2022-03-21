@@ -9,30 +9,9 @@ import { HodlImpactAlert } from '../components/HodlImpactAlert'
 import Link from 'next/link';
 
 export default function Home() {
-
-  const [ethereum, setEthereum] = useState(null)
-  useEffect(() => {
-    setEthereum(window.ethereum);
-  },[])
-
-  if (!ethereum) {
-    return (
-      <HodlImpactAlert 
-        title="Preparing for lift off"
-        message="To use this site, you need a web3 mobile app or browser extension."
-        action={
-          <Link href="https://metamask.io/download/" passHref>
-              <HodlButton>Get MetaMask</HodlButton>
-            </Link>
-        }
-        />      
-      )
-  }
-
   return (
     <>
-    <Box sx={{ display: 'flex', flexDirection: 'column', justifyItems: "center", paddingTop: 4, paddingBottom: 4 }}>
-      <DiamondTitle title="Market" />
+    <Box sx={{ display: 'flex', flexDirection: 'column', justifyItems: "center", paddingTop:{ xs: 0, md: 2} }}>
       <InfiniteScroll 
           fetcherFn={(offset, limit) => fetchMarketItems(offset, limit)} 
           swrKey='fetchMarketItems' />

@@ -57,7 +57,7 @@ export default function Mint() {
       // @ts-ignore
       snackbarRef?.current.display('Please Approve Transaction in Wallet', 'info');
 
-      const tokenId = await mintToken(tokenUrl, wallet);
+      const tokenId = await mintToken(tokenUrl);
 
       const response = await fetch('/api/store', {
         method: 'POST',
@@ -148,16 +148,8 @@ export default function Mint() {
     }
   }
 
-  if (!wallet.signer) {
-    return <HodlImpactAlert title="Connect Wallet" message={"You'll need to connect your wallet to go to the Moon"} />
-  }
-
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', justifyItems: "center", paddingTop: 4, paddingBottom: 4 }}>
-      <Typography variant='h1' sx={{ paddingBottom: 2 }}>
-        <DiamondTitle title="Mint NFT" />
-      </Typography>
-
       <HodlSnackbar ref={snackbarRef} />
       <Modal
         open={modalOpen}
@@ -180,7 +172,7 @@ export default function Mint() {
               You&apos;ve <span>successfully</span> minted a new token.
             </Typography>
             <Stack direction="row" spacing={2}>
-              <Link href={`/nft/${tokenId}`} passHref>
+              <Link href={`/listing/${tokenId}`} passHref>
                 <HodlButton color="secondary" variant="outlined" sx={{ padding: 2 }}>
                   View Token Details
                 </HodlButton>

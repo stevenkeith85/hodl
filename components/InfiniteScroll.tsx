@@ -57,7 +57,6 @@ export const InfiniteScroll = ({fetcherFn, viewSale = true, swrKey}) => {
     const fetcher = async (swrKey, offset, limit) => {
         setLoading(true);
         const page = await fetcherFn(offset, limit);
-        console.log(page)
         load(page)
         setLoading(false);
     }
@@ -81,8 +80,6 @@ export const InfiniteScroll = ({fetcherFn, viewSale = true, swrKey}) => {
             if (newArray.length < 50) { // don't bother truncating if the array isn't that big
                 return newArray;
             }
-
-            console.log("Array is over 50", newArray.length)
 
             // truncate
 
@@ -115,13 +112,14 @@ export const InfiniteScroll = ({fetcherFn, viewSale = true, swrKey}) => {
         const ascending = window.scrollY > lastScrollYRef.current;
 
         if (nftsRef.current.length &&
-            //Number(totalRef.current) !== Number(nftsRef.current.length) && // we have all the data
+            Number(totalRef.current) !== Number(nftsRef.current.length) && // we have all the data
             ascending &&
             (window.innerHeight + window.pageYOffset) >= (document.body.offsetHeight - 700)) {
 
             setOffset(nextRef.current);
         }
         else if (nftsRef.current.length &&
+            Number(totalRef.current) !== Number(nftsRef.current.length) && // we have all the data
             !ascending &&
             window.pageYOffset < 700) {
             setOffset(prevRef.current);

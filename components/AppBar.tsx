@@ -24,47 +24,47 @@ import { grey } from "@mui/material/colors";
 import { ConnectButton } from './ConnectButton';
 
 // From MUI Docs
-const Search = styled('div')(({ theme }) => ({
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
-    '&:hover': {
-        backgroundColor: alpha(theme.palette.common.white, 0.25),
-    },
-    marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-        marginLeft: theme.spacing(1),
-        width: 'auto',
-    },
-}));
+// const Search = styled('div')(({ theme }) => ({
+//     position: 'relative',
+//     borderRadius: theme.shape.borderRadius,
+//     backgroundColor: alpha(theme.palette.common.white, 0.15),
+//     '&:hover': {
+//         backgroundColor: alpha(theme.palette.common.white, 0.25),
+//     },
+//     marginLeft: 0,
+//     width: '100%',
+//     [theme.breakpoints.up('sm')]: {
+//         marginLeft: theme.spacing(1),
+//         width: 'auto',
+//     },
+// }));
 
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-    padding: theme.spacing(0, 2),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-}));
+// const SearchIconWrapper = styled('div')(({ theme }) => ({
+//     padding: theme.spacing(0, 2),
+//     height: '100%',
+//     position: 'absolute',
+//     pointerEvents: 'none',
+//     display: 'flex',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+// }));
 
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    color: 'inherit',
-    '& .MuiInputBase-input': {
-        padding: theme.spacing(1, 1, 1, 0),
-        // vertical padding + font size from searchIcon
-        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-        transition: theme.transitions.create('width'),
-        width: '100%',
-        [theme.breakpoints.up('sm')]: {
-            width: '12ch',
-            '&:focus': {
-                width: '20ch',
-            },
-        },
-    },
-}));
+// const StyledInputBase = styled(InputBase)(({ theme }) => ({
+//     color: 'inherit',
+//     '& .MuiInputBase-input': {
+//         padding: theme.spacing(1, 1, 1, 0),
+//         // vertical padding + font size from searchIcon
+//         paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+//         transition: theme.transitions.create('width'),
+//         width: '100%',
+//         [theme.breakpoints.up('sm')]: {
+//             width: '12ch',
+//             '&:focus': {
+//                 width: '20ch',
+//             },
+//         },
+//     },
+// }));
 
 const ResponsiveAppBar = () => {
     const { wallet, setWallet, address, setAddress } = useContext(WalletContext);
@@ -95,44 +95,27 @@ const ResponsiveAppBar = () => {
     const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
     };
-    
+
     const handleCloseNavMenu = () => {
         setAnchorElNav(null);
     };
 
-    // useEffect(() => {
-    //     const load = async () => {
-    //         if (localStorage.getItem('Wallet') === 'Connected') {
-    //             try {
-    //                 const { provider, signer } = await getProviderAndSigner();
-    //                 const walletAddress = await signer.getAddress();
-    //                 setAddress(walletAddress);
-    //                 setWallet({ provider, signer });
-    //             } catch (e) {
-    //                 console.log(e)
-    //             }
-    //         }
-    //     };
-
-    //     load();
-    // }, [])
-
     return (
-        <AppBar position="static">
+        <>
+        <AppBar position="fixed">
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
-                   {/* Mobile */}
+                    {/* Mobile */}
                     <Typography
                         variant="h6"
                         noWrap
                         component="div"
-                        sx={{ flexGrow: 0, display: { xs: 'flex', md: 'none' } }}
+                        sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}
                     >
                         <Logo />
                     </Typography>
 
-                     
-                     <Box sx={{ flexGrow: 1, justifyContent: 'right', display: { xs: 'flex', md: 'none' } }}>
+                    <Box sx={{ justifyContent: 'right', alignItems: 'right', display: { xs: 'flex', md: 'none' } }}>
                         <IconButton
                             size="large"
                             aria-label="account of current user"
@@ -174,6 +157,7 @@ const ResponsiveAppBar = () => {
                                     </Link>
                                 </MenuItem>
                             ))}
+                            <ConnectButton />
                         </Menu>
                     </Box>
 
@@ -225,23 +209,27 @@ const ResponsiveAppBar = () => {
                         ))}
                     </Box>
 
-                    <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-                        <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                            <Search>
-                                <SearchIconWrapper>
-                                    <SearchIcon />
-                                </SearchIconWrapper>
-                                <StyledInputBase
-                                    placeholder="Search"
-                                    inputProps={{ 'aria-label': 'search' }}
-                                />
-                            </Search>
-                        </Box>
-                        <ConnectButton />                       
+                    <Stack
+                        direction="row"
+                        spacing={1}
+                        sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}
+                    >
+                        {/* <Search>
+                            <SearchIconWrapper>
+                                <SearchIcon />
+                            </SearchIconWrapper>
+                            <StyledInputBase
+                                placeholder="Search"
+                                inputProps={{ 'aria-label': 'search' }}
+                            />
+                        </Search> */}
+                        <ConnectButton />
                     </Stack>
                 </Toolbar>
             </Container>
         </AppBar>
+        <Toolbar />
+        </>
     );
 };
 export default ResponsiveAppBar;
