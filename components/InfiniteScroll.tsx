@@ -4,12 +4,10 @@ import { Box, CircularProgress, Stack } from '@mui/material'
 import NftList from '../components/NftList'
 import useSWR from 'swr'
 import Head from 'next/head'
+import memoize from 'memoizee';
 
 
 export const InfiniteScroll = ({fetcherFn, viewSale = true, swrKey}) => {
-    
-    const [loading, setLoading] = useState(false);
-
     const [nfts, _setNfts] = useState([]);
     const nftsRef = useRef(nfts);
     const setNfts = data => {
@@ -55,10 +53,8 @@ export const InfiniteScroll = ({fetcherFn, viewSale = true, swrKey}) => {
 
 
     const fetcher = async (swrKey, offset, limit) => {
-        setLoading(true);
         const page = await fetcherFn(offset, limit);
         load(page)
-        setLoading(false);
     }
 
     const { data, error } = useSWR([swrKey, offset, limit], fetcher);
@@ -128,23 +124,48 @@ export const InfiniteScroll = ({fetcherFn, viewSale = true, swrKey}) => {
         setLastScrollY(window.scrollY);
     }
 
-    if (loading) {
-        return (
-            <Box sx={{ marginTop: "20vh", display: 'flex', justifyContent: "center", alignItems: "center", alignContent: "center" }}>
-                <CircularProgress color="secondary" />
-            </Box>
-        );
-    }
+    // This is based on
+    // "(max-width:599px) 100vw, (max-width:899px) 50vw, (max-width:1199px) 33vw, 25vw"
+    const calcImageWidthWeNeed = memoize(() => {
+        const findFindSizeBigEnough = (width) => {
+            const sizes = [400, 450, 500, 600, 700, 800, 900, 1000, 1200, 1350, 1500, 1700];
+
+            for (let i = 0; i < sizes.length; i++ ) {
+                if (width > sizes[i]) {
+                    continue;
+                }
+                return sizes[i];
+            }
+        }
+        
+        const vw = window.innerWidth;
+        const devicePixelRatio = window.devicePixelRatio;
+
+        let imageWidth;
+
+        if (vw < 600) {
+            console.log(vw, devicePixelRatio)
+            imageWidth = vw * devicePixelRatio;
+        } else if (vw < 900) {
+            imageWidth = (vw / 2) * devicePixelRatio;
+        } else if (vw < 1200){
+            imageWidth = (vw / 3) * devicePixelRatio;
+        } else {
+            console.log(vw, devicePixelRatio)
+            imageWidth = (vw / 4) * devicePixelRatio;
+        }
+        return findFindSizeBigEnough(imageWidth);
+    });
 
     return (
         <>
             <Head>
-                {nfts.map(nft => {
-                    if (!nft) { return null; }
-                    const link = `https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,w_550,q_75/nfts/${nft.image}`;
+                {
+                    nfts.map((nft,i) => {
+                        if (!nft) { return null; }
+                        return <link rel="preload" href={`https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,w_${calcImageWidthWeNeed()},q_auto/nfts//${nft.image}`} />
 
-                    return (<link key={link} rel="preload" as="image" href={link} />)
-                })
+                    })
                 }
             </Head>
 

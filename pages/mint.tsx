@@ -172,7 +172,7 @@ export default function Mint() {
               You&apos;ve <span>successfully</span> minted a new token.
             </Typography>
             <Stack direction="row" spacing={2}>
-              <Link href={`/listing/${tokenId}`} passHref>
+              <Link href={`/nft/${tokenId}`} passHref>
                 <HodlButton color="secondary" variant="outlined" sx={{ padding: 2 }}>
                   View Token Details
                 </HodlButton>

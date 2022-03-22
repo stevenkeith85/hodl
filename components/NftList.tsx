@@ -1,25 +1,14 @@
 import { Box, imageListItemClasses, ImageListItem, ImageListItemBar, Typography, Button, IconButton } from '@mui/material'
-import Image from 'next/image'
 import Link from 'next/link';
-import { grey } from "@mui/material/colors";
-
-const truncateText = (text, length=30) => {
-    if (!text) {
-        return '';
-    }
-
-    if (text.length > length) {
-        return text.slice(0, length) + '...';
-    }
-
-    return text;
-}
-
-function myLoader({src, width, quality}) {
-    return `https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,w_550,q_75/${src}`
-  }
+import { truncateText } from '../lib/utils';
+import { HodlImage } from './HodlImage';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 
 const NftList = ({ nfts, viewSale = false, showTop = true }) => {
+    const theme = useTheme();
+    const matches = useMediaQuery(theme.breakpoints.up('sm'));
+
     return (
         <Box
             sx={{
@@ -42,21 +31,13 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
             {nfts.filter(nft => nft).map((nft, i) => (
                 <ImageListItem key={i} >
                     <Box 
-                    sx={{ display: 'block'}}    
+                        sx={{ display: 'block'}}    
                     >
-                        <Image
-                            loader={ myLoader }
-                            src={'nfts/' + nft?.image}
-                            alt={nft?.name}
-                            priority={true}
-                            loading="eager"
-                            width={400}
-                            height={400}
-                            layout="responsive"
-                            sizes='25vw'
-                            objectFit='cover'
-                            quality={75}
-                        />
+                    { matches ?
+                        <HodlImage image={nft?.image} sx={{height: 350}} imgSizes={"(max-width:599px) 100vw, (max-width:899px) 50vw, (max-width:1199px) 33vw, 25vw"} />
+                        :
+                        <HodlImage image={nft?.image} imgSizes={"100vw"} />
+                    }
                     </Box>
                     <ImageListItemBar
                         sx={{
@@ -85,13 +66,13 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
                         }}
                         subtitle={
                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                <Typography sx={{ fontSize: 16, fontWeight: 900 }}>{truncateText(nft?.name, 28)}</Typography>
-                                <Typography sx={{ fontSize: 16, fontWeight: 600 }}>{truncateText(nft?.description, 28)}</Typography>
+                                <Typography sx={{ fontSize: 16, fontWeight: 900 }}>{truncateText(nft?.name, 20)}</Typography>
+                                <Typography sx={{ fontSize: 16, fontWeight: 600 }}>{truncateText(nft?.description, 20)}</Typography>
                             </Box>
                         }
                         actionIcon={
                             Boolean(nft?.tokenId) && <Link 
-                                href={viewSale ? `/listing/${nft?.tokenId}` : `/listing/${nft?.tokenId}`}
+                                href={viewSale ? `/nft/${nft?.tokenId}` : `/nft/${nft?.tokenId}`}
                             >
                                  <Button
                                     variant="outlined"

@@ -27,11 +27,13 @@ import {
   HodlTextField,
   RocketTitle,
   SocialShare,
-  ProfileAvatar
+  ProfileAvatar,
+  HodlLink,
+  HodlExternalLink
 } from '../../components';
 import { WalletContext } from "../_app";
 import { buyNft, delistNft, fetchMarketItem, listTokenOnMarket } from "../../lib/nft";
-import { checkForAndDisplaySmartContractErrors } from "../../lib/utils";
+import { checkForAndDisplaySmartContractErrors, truncateText } from "../../lib/utils";
 
 
 const NftDetail = () => {
@@ -134,7 +136,7 @@ const NftDetail = () => {
       <Grid container spacing={2} sx={{ paddingTop: { xs: 2 } }}>
         <Grid item xs={12}>
           <Stack spacing={2} direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="h1" sx={{ fontSize: 24 }}>{marketItem?.name}</Typography>
+            <Typography variant="h3">{marketItem?.name}</Typography>
             <ProfileAvatar address={marketItem?.owner} />
           </Stack>
         </Grid>
@@ -145,42 +147,29 @@ const NftDetail = () => {
           <Stack spacing={2}>
             <Card variant="outlined">
               <CardContent>
-                <Typography sx={{ marginBottom: 2 }} variant="h6" component="div">Description </Typography>
-                <Typography>{marketItem?.description}</Typography>
+                <Typography sx={{ marginBottom: 2 }}>Description </Typography>
+                <Typography>{truncateText(marketItem?.description, 200)}</Typography>
               </CardContent>
             </Card>
             <Card variant="outlined">
               <CardContent>
-                <Typography sx={{ marginBottom: 2 }} variant="h6" component="div">
+                <Typography sx={{ marginBottom: 2, fontWeight: 500 }}>
                   InterPlanetary File System
                 </Typography>
                 <Stack direction="row" spacing={2}>
-                  <HodlButton
-                    startIcon={<PublicIcon fontSize="large" />}>
-                    <MuiLink
-                      href={marketItem?.ipfsMetadataGateway || '#'}
-                      target="_blank"
-                      sx={{ textDecoration: 'none' }}>
+                    <HodlExternalLink href={marketItem?.ipfsMetadataGateway || '#'}>
                       Metadata
-                    </MuiLink>
-                  </HodlButton>
-                  <HodlButton
-                    startIcon={<PublicIcon fontSize="large" />}>
-                    <MuiLink
-                      href={marketItem?.ipfsImageGateway || '#'}
-                      target="_blank"
-                      sx={{ textDecoration: 'none' }}>
+                    </HodlExternalLink>
+                    <HodlExternalLink href={marketItem?.ipfsImageGateway || '#'}>
                       Image
-                    </MuiLink>
-                  </HodlButton>
+                    </HodlExternalLink>
                 </Stack>
               </CardContent>
             </Card>
-            <SocialShare />
+            <Stack direction="row" sx={{ justifyContent:"space-between", alignItems: 'center'}}>
             <Stack direction="row" spacing={2}>
               {Boolean(marketItem?.forSale) && Boolean(marketItem?.owner?.toLowerCase() !== address?.toLowerCase()) &&
                 <HodlButton
-                  sx={{ paddingLeft: 4, paddingRight: 4, paddingTop: 2, paddingBottom: 2 }}
                   startIcon={<SellIcon fontSize="large" />}
                   onClick={async () => {
                     try {
@@ -200,8 +189,7 @@ const NftDetail = () => {
                   {
                     marketItem.forSale ? (
                       <HodlButton
-                        sx={{ paddingLeft: 4, paddingRight: 4, paddingTop: 2, paddingBottom: 2 }}
-                        startIcon={<RemoveCircleOutlineIcon fontSize="large" />}
+                        startIcon={<SellIcon fontSize="large" />}
                         onClick={async () => {
                           try {
                             // @ts-ignore
@@ -216,8 +204,7 @@ const NftDetail = () => {
                       </HodlButton>
                     ) : (
                       <HodlButton
-                        sx={{ paddingLeft: 4, paddingRight: 4, paddingTop: 2, paddingBottom: 2 }}
-                        startIcon={<AddCircleOutlineIcon fontSize="large" />}
+                        startIcon={<SellIcon fontSize="large" />}
                         onClick={() => setListModalOpen(true)}>
                         List NFT
                       </HodlButton>
@@ -226,6 +213,10 @@ const NftDetail = () => {
                 </>
               }
             </Stack>
+            <SocialShare />
+            </Stack>
+            
+            
           </Stack>
         </Grid>
       </Grid>

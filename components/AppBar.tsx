@@ -162,7 +162,7 @@ const ResponsiveAppBar = () => {
                     </Box>
 
                     {/* Desktop */}
-                    <Typography variant="h6" noWrap component="div" sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}>
+                    <Typography noWrap component="div" sx={{ display: { xs: 'none', md: 'flex' } }}>
                         <Logo />
                     </Typography>
 
@@ -228,7 +228,7 @@ const ResponsiveAppBar = () => {
                 </Toolbar>
             </Container>
         </AppBar>
-        <Toolbar />
+        <Toolbar disableGutters />
         </>
     );
 };

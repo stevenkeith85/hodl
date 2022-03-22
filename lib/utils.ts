@@ -11,3 +11,15 @@ export const checkForAndDisplaySmartContractErrors = (error, snackbarRef) => {
 export const getShortAddress = (address) => {
     return address?.slice(0, 2) + '..' + address?.slice(-4);
 }
+
+export const truncateText = (text, length=30) => {
+    if (!text) {
+        return '';
+    }
+
+    if (text.length > length) {
+        return text.slice(0, length) + '...';
+    }
+
+    return text;
+}

@@ -19,7 +19,7 @@ export const MintForm = ({
 }) => {
 
   function myLoader({src, width, quality}) {
-    return `https://res.cloudinary.com/dyobirj7r/c_limit,w_${700},q_${quality}/${src}`
+    return `https://res.cloudinary.com/dyobirj7r/c_limit,w_${700},q_auto/${src}`
   }
 
   const descriptionPlaceholder = "A short description\n\nFollowed by a longer description works well.";

@@ -111,7 +111,7 @@ export const InfiniteSlide = ({
     <Head>
       {nfts.map(nft => {
         if (!nft) {return null;}
-        const link = `https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,w_550,q_75/nfts/${nft.image}`;
+        const link = `https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,w_550,q_auto/nfts/${nft.image}`;
 
         return (<link key={link} rel="preload" as="image" href={link}/>)
       })

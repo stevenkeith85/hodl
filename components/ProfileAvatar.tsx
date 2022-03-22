@@ -8,21 +8,16 @@ import { getShortAddress } from "../lib/utils";
 
 export const ProfileAvatar = ({address}) => {
     return (
-        <Link href={address ? `/profile/${address}` : ''} passHref>
-            
+        <Link href={address ? `/profile/${address}` : ''} passHref>            
             <Stack sx={{ position: 'relative',}} spacing={0} direction="row" alignItems="center">
             { Boolean(address) && 
                 <Typography sx={{ 
                     padding: 1,
-                    display: 'block', 
-                    background: 'rgba(255,255,255,0.9)', 
-                    bottom: '0', 
-                    fontSize: 14, 
-                    color: '#666', 
-                    fontWeight: 900}}>{ getShortAddress(address) }</Typography>}
+                    bottom: '0',
+                    }}>{ getShortAddress(address)?.toLowerCase() }</Typography>}
             <Avatar sx={{
-                height: 50,
-                width: 50,
+                height: 40,
+                width: 40,
                 
                 bgcolor: (theme) => theme.palette.secondary.main,
                 '&:hover': {
@@ -31,7 +26,7 @@ export const ProfileAvatar = ({address}) => {
                 }
             }}>
                 
-                <PersonIcon  sx={{ color: 'rgba(255,255,255,0.85)', fontSize: 40 }}/>
+                <PersonIcon  sx={{ color: 'rgba(255,255,255,0.85)', fontSize: 30 }}/>
                 
             </Avatar>
             
