@@ -30,10 +30,22 @@ contract HodlMarket is ReentrancyGuard, Ownable {
     mapping(address => uint256) private numberOfTokensForAddress;
 
     // Events
-    event ListingCreated(
+    event TokenListed (
+        address indexed seller,
         uint256 indexed tokenId,
-        uint256 price,
-        address indexed seller
+        uint256 price
+    );
+
+    event TokenDelisted (
+        address indexed seller,
+        uint256 indexed tokenId
+    );
+
+    event TokenBought (
+        address indexed buyer,
+        address indexed seller,
+        uint256 indexed tokenId,
+        uint256 price
     );
 
     constructor() {
@@ -57,8 +69,6 @@ contract HodlMarket is ReentrancyGuard, Ownable {
         minListingPriceInMatic = _minListingPriceInMatic;
     }
 
-    // TODO: ONLY OWNER OR PRIVATE
-    // Utility functions
     function remove(uint256 _index) private {
         require(_index < listingKeys.length, "index out of bound");
 
@@ -86,7 +96,6 @@ contract HodlMarket is ReentrancyGuard, Ownable {
             );
     }
 
-    // TODO: Restrict the token contract to HodlNFT to begin with?
     function listToken(
         address tokenContract,
         uint256 tokenId,
@@ -111,12 +120,11 @@ contract HodlMarket is ReentrancyGuard, Ownable {
 
         listingKeys.push(tokenId);
 
-        // Token owner will become the market
         IERC721(tokenContract).transferFrom(msg.sender, address(this), tokenId);
 
         numberOfTokensForAddress[msg.sender]++;
 
-        emit ListingCreated(tokenId, price, msg.sender);
+        emit TokenListed(msg.sender, tokenId, price);
     }
 
     function delistToken(address tokenContract, uint256 tokenId)
@@ -143,7 +151,7 @@ contract HodlMarket is ReentrancyGuard, Ownable {
         Listing memory empty;
         listings[tokenId] = empty;
 
-        console.log(msg.sender, " has delisted item with tokenId ", tokenId);
+        emit TokenDelisted(msg.sender, tokenId);
     }
 
     function buyToken(address tokenContract, uint256 tokenId)
@@ -163,34 +171,33 @@ contract HodlMarket is ReentrancyGuard, Ownable {
 
         require(found, "Token is not listed on Market");
 
-        require(
-            msg.sender != listings[tokenId].seller,
-            "You should delist your item instead"
-        );
-        require(
-            msg.value == listings[tokenId].price,
-            "Item asking price not sent"
-        );
+        Listing storage token = listings[tokenId];
 
-        uint256 sellerFee = mulDiv( (100 - marketSaleFeeInPercent) , listings[tokenId].price, 100 );
-        uint256 marketOwnerFee = mulDiv (marketSaleFeeInPercent, listings[tokenId].price, 100);
+        require(msg.sender != token.seller, "You should delist your item instead");
+        require(msg.value == token.price, "Item asking price not sent");
 
-        (bool sellerReceivedFee, ) = listings[tokenId].seller.call{value: sellerFee}("");
+        uint256 sellerFee = mulDiv( (100 - marketSaleFeeInPercent) , token.price, 100 );
+        uint256 marketOwnerFee = mulDiv (marketSaleFeeInPercent, token.price, 100);
+
+        (bool sellerReceivedFee, ) = token.seller.call{value: sellerFee}("");
         require(sellerReceivedFee, "Could not send the seller their fee");
 
         (bool marketOwnerReceivedFee, ) = marketOwner.call{value: marketOwnerFee}("");
-        require(marketOwnerReceivedFee, "Could not send the seller their fee");
+        require(marketOwnerReceivedFee, "Could not send the market owner their fee");
 
         IERC721(tokenContract).transferFrom(address(this), msg.sender, tokenId);
 
-        numberOfTokensForAddress[listings[tokenId].seller]--;
+        numberOfTokensForAddress[token.seller]--;
+
+        emit TokenBought (
+            msg.sender, 
+            token.seller,
+            tokenId,
+            token.price
+        );
 
         Listing memory empty;
         listings[tokenId] = empty;
-
-        console.log(msg.sender, " has purchased tokenId ", tokenId);
-        console.log(listings[tokenId].seller, " has received fee");
-        console.log(marketOwner, " has received commision");
     }
     
     // We do not check if the token is listed for performance reasons. 

@@ -1,6 +1,5 @@
 import { createTheme, responsiveFontSizes  } from '@mui/material/styles';
 import { indigo, pink } from '@mui/material/colors';
-import { breakpoints } from '@mui/material';
 
 declare module '@mui/material/styles' {
   interface Theme {

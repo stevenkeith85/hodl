@@ -12,7 +12,6 @@ import MenuItem from '@mui/material/MenuItem';
 import { useState, MouseEvent, useContext, useEffect } from 'react';
 import { WalletContext } from '../pages/_app';
 import Link from 'next/link';
-import { getProviderAndSigner } from '../lib/nft.js';
 import { Logo } from './Logo';
 
 import SearchIcon from '@mui/icons-material/Search';

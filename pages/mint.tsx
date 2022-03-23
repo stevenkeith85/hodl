@@ -1,15 +1,13 @@
 import { useContext, useRef, useState } from 'react'
 import { MintForm } from '../components/MintForm'
-import { ipfsUriToCloudinaryUrl, mintToken } from '../lib/nft.js'
+import { getMetaMaskSigner, ipfsUriToCloudinaryUrl, mintToken } from '../lib/nft.js'
 import { WalletContext } from './_app'
 import { Box, Typography,  Modal, Stack, CircularProgress } from '@mui/material'
-import { ConnectWallet } from '../components/ConnectWallet'
 import Link from 'next/link'
-import { DiamondTitle } from '../components/DiamondTitle'
 import { RocketTitle } from '../components/RocketTitle'
 import { HodlSnackbar } from '../components/HodlSnackbar'
 import { HodlButton } from '../components/HodlButton'
-import { HodlImpactAlert } from '../components/HodlImpactAlert'
+import { HodlModal, SuccessModal } from '../components'
 
 
 export default function Mint() {
@@ -18,14 +16,15 @@ export default function Mint() {
   const [loaded, setLoaded] = useState(false);
   const [fileUrl, setFileUrl] = useState('');
   const [formInput, updateFormInput] = useState({ price: '', name: '', description: '' });
+  
   const [modalOpen, setModalOpen] = useState(false);
+  const [unableToSaveModalOpen, setUnableToSaveModalOpen] = useState(false);
 
   const [tokenUrl, setTokenUrl] = useState('');
   const [tokenId, setTokenId] = useState(null);
   const [imageCid, setImageCid] = useState('');
   const [cloudinaryUrl, setCloudinaryUrl] = useState('');
 
-  const { wallet, setWallet, address, setAddress } = useContext(WalletContext);
   const snackbarRef = useRef();
 
   // upload a photo
@@ -44,21 +43,32 @@ export default function Mint() {
     });
 
     const json = await response.json();
-    console.log(json)
-    setFileUrl(json.fileName);
+
+    if (response.status === 400) {
+      // @ts-ignore
+      snackbarRef?.current.display(json.error.message, 'error');
+    } else {  
+      setFileUrl(json.fileName);
+    }
     
     setLoading(false);
     setLoaded(true);
   }
 
-  
   async function doMint(tokenUrl) {
-    if (tokenUrl !== '' && tokenUrl !== 'ipfs://') {
+      const signer = await getMetaMaskSigner();
+      
       // @ts-ignore
-      snackbarRef?.current.display('Please Approve Transaction in Wallet', 'info');
+      snackbarRef?.current.display('Please approve transaction in MetaMask', 'info');
+      const tokenId = await mintToken(tokenUrl, signer);
+      setTokenId(tokenId);
 
-      const tokenId = await mintToken(tokenUrl);
+      // @ts-ignore
+      snackbarRef?.current.display(`NFT minted on the blockchain with token id ${tokenId}`, 'success');
 
+      // @ts-ignore
+      snackbarRef?.current.display('Storing a copy in our database', 'info');
+      
       const response = await fetch('/api/store', {
         method: 'POST',
         headers: new Headers({
@@ -68,16 +78,18 @@ export default function Mint() {
         body: JSON.stringify({ tokenId })
       });
 
-      setTokenId(tokenId);
-
-      // @ts-ignore
-      snackbarRef?.current.display('New NFT Minted');
+      if (response.status === 500){
+        // @ts-ignore
+        snackbarRef?.current.display("Unable to save a copy in our database", "info");
+        setUnableToSaveModalOpen(true);
+      } else {
+        // @ts-ignore
+        snackbarRef?.current.display('Successfully a copy in our database', 'success');
+        setModalOpen(true);
+      } 
 
       setMinting(false);
-
-      setModalOpen(true);
-    }
-  }
+  }  
 
   async function createItem() {
     try {
@@ -151,41 +163,40 @@ export default function Mint() {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', justifyItems: "center", paddingTop: 4, paddingBottom: 4 }}>
       <HodlSnackbar ref={snackbarRef} />
-      <Modal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
+      <HodlModal
+        open={unableToSaveModalOpen}
+        setOpen={setUnableToSaveModalOpen}
       >
-        <Box sx={{
-          position: 'absolute' as 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: 400,
-          bgcolor: 'background.paper',
-          borderRadius: 2,
-          boxShadow: 24,
-          p: 4,
-        }}>
           <Stack spacing={4}>
-            <RocketTitle title="We're off to the Moon" />
+            <RocketTitle title="We've ran out of fuel..." />
             <Typography sx={{ span: { fontWeight: 600 } }}>
-              You&apos;ve <span>successfully</span> minted a new token.
+            <span>Your token was minted on the blockchain</span>, but we had a problem saving a copy to the website's database.
             </Typography>
-            <Stack direction="row" spacing={2}>
-              <Link href={`/nft/${tokenId}`} passHref>
-                <HodlButton color="secondary" variant="outlined" sx={{ padding: 2 }}>
-                  View Token Details
-                </HodlButton>
-              </Link>
-              <Link href={`/profile/${address}`} passHref>
-                <HodlButton variant="outlined" sx={{ padding: 2 }}>
-                  View Profile
-                </HodlButton>
-              </Link>
-            </Stack>
+            <Typography sx={{ span: { fontWeight: 600 } }}>
+              Once we store a copy of the token data, it will show up.
+            </Typography>
+            <Typography sx={{ span: { fontWeight: 600 } }}>
+              <span>Do not re-mint your token</span>, click the button below to request your token is added to HodlMyMoon.
+            </Typography>
+            <Typography sx={{ span: { fontWeight: 600 } }}>
+              Your token will automatically appear on the website, once we have processed this request. 
+            </Typography>
+            <Typography sx={{ span: { fontWeight: 600 } }}>
+              The process should take less than 24 hours.
+            </Typography>
+            
+            <Link href={`mailto:support@hodlmymoon.com?subject=Add my HodlNFT to HodlMyMoon (DO NOT EDIT)&body=Please add my HodlNFT to HodlMyMoon. It has the following tokenId: ${tokenId}`} passHref>
+              <HodlButton>
+                Add My NFT
+              </HodlButton>
+            </Link>
           </Stack>
-        </Box>
-      </Modal>
+      </HodlModal>
+      <SuccessModal
+        modalOpen={modalOpen}
+        setModalOpen={setModalOpen}
+        message="You&apos;ve successfully minted a token"
+      />
       {Boolean(minting) && <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%' }} color="secondary" />}
       <MintForm
         formInput={formInput}

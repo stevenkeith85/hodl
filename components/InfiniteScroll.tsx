@@ -1,6 +1,6 @@
 /* pages/index.js */
 import { useEffect, useRef, useState } from 'react'
-import { Box, CircularProgress, Stack } from '@mui/material'
+import { CircularProgress, Stack } from '@mui/material'
 import NftList from '../components/NftList'
 import useSWR from 'swr'
 import Head from 'next/head'
@@ -51,7 +51,6 @@ export const InfiniteScroll = ({fetcherFn, viewSale = true, swrKey}) => {
         _setTotal(data);
     };
 
-
     const fetcher = async (swrKey, offset, limit) => {
         const page = await fetcherFn(offset, limit);
         load(page)
@@ -60,13 +59,13 @@ export const InfiniteScroll = ({fetcherFn, viewSale = true, swrKey}) => {
     const { data, error } = useSWR([swrKey, offset, limit], fetcher);
 
     const load = async (data) => {
+        console.log('load')
         if (!data) {
             return;
         }
         const [items, nextOffset, _total] = data;
 
         setNfts(old => {
-
             const newArray = [
                 ...old.slice(0, offset),
                 ...items,
@@ -110,14 +109,14 @@ export const InfiniteScroll = ({fetcherFn, viewSale = true, swrKey}) => {
         if (nftsRef.current.length &&
             Number(totalRef.current) !== Number(nftsRef.current.length) && // we have all the data
             ascending &&
-            (window.innerHeight + window.pageYOffset) >= (document.body.offsetHeight - 700)) {
+            (window.innerHeight + window.pageYOffset) >= (document.body.offsetHeight - 1300)) {
 
             setOffset(nextRef.current);
         }
         else if (nftsRef.current.length &&
             Number(totalRef.current) !== Number(nftsRef.current.length) && // we have all the data
             !ascending &&
-            window.pageYOffset < 700) {
+            window.pageYOffset < 1300) {
             setOffset(prevRef.current);
         }
 
@@ -163,7 +162,12 @@ export const InfiniteScroll = ({fetcherFn, viewSale = true, swrKey}) => {
                 {
                     nfts.map((nft,i) => {
                         if (!nft) { return null; }
-                        return <link rel="preload" href={`https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,w_${calcImageWidthWeNeed()},q_auto/nfts//${nft.image}`} />
+                        return (
+                            <>
+                                <link key={'blurred' + i} rel="preload" href={`https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,h_350,q_10/e_grayscale/nfts/${nft.image}`} /> // @ts-ignore
+                                <link key={'actual' + i} rel="preload" href={`https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,w_${calcImageWidthWeNeed()},q_auto/nfts/${nft.image}`} /> // @ts-ignore
+                            </>
+                        )
 
                     })
                 }

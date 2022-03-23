@@ -1,9 +1,9 @@
-import { Box, ImageListItemBar, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import Head from "next/head";
 import memoize from 'memoizee';
 import { HodlImage } from "./HodlImage";
 
-export const DetailPageImage = ({token}) => {
+export const DetailPageImage = ({token, folder='nfts'}) => {
 
     if (!token?.image) {
         return null;
@@ -43,7 +43,7 @@ export const DetailPageImage = ({token}) => {
         <>
         <Head>
             {
-                <link rel="preload" href={`https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,w_${calcImageWidthWeNeed()},q_auto/nfts/${token.image}`} />
+                <link rel="preload" href={`https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,w_${calcImageWidthWeNeed()},q_auto/${folder}/${token.image}`} />
             }
         </Head>
         <Box sx={{ position: 'relative', img: { borderRadius: 1} }}>

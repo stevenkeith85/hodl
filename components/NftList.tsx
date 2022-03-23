@@ -1,9 +1,9 @@
 import { Box, imageListItemClasses, ImageListItem, ImageListItemBar, Typography, Button, IconButton } from '@mui/material'
 import Link from 'next/link';
 import { truncateText } from '../lib/utils';
-import { HodlImage } from './HodlImage';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
+import { HodlImage } from './HodlImage';
 
 const NftList = ({ nfts, viewSale = false, showTop = true }) => {
     const theme = useTheme();
@@ -30,13 +30,27 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
         >
             {nfts.filter(nft => nft).map((nft, i) => (
                 <ImageListItem key={i} >
-                    <Box 
-                        sx={{ display: 'block'}}    
+                    <Box  sx={{ 
+                        display: 'block', 
+                        position: 'relative',
+                        height: 350,
+                        }}
                     >
+                            <img 
+                                style={{
+                                    position: 'absolute',
+                                    zIndex: -1,
+                                    height: 350,
+                                    width: '100%',
+                                    objectFit: "cover",
+                                }}
+                                decoding="async"
+                                loading="eager"
+                                src={`https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,h_350,q_10/e_grayscale/nfts/${nft?.image}`} 
+                            />
                     { matches ?
-                        <HodlImage image={nft?.image} sx={{height: 350}} imgSizes={"(max-width:599px) 100vw, (max-width:899px) 50vw, (max-width:1199px) 33vw, 25vw"} />
-                        :
-                        <HodlImage image={nft?.image} imgSizes={"100vw"} />
+                        <HodlImage sx={{height: 350}} image={nft?.image} imgSizes={"(max-width:599px) 100vw, (max-width:899px) 50vw, (max-width:1199px) 33vw, 25vw"} /> : 
+                        <HodlImage sx={{height: 350}} image={nft?.image} imgSizes={"100vw"} />
                     }
                     </Box>
                     <ImageListItemBar

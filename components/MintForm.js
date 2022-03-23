@@ -1,9 +1,7 @@
 import { Button, Box, Grid, CircularProgress, Stack, Typography } from '@mui/material';
 import { HodlTextField } from './HodlTextField';
 import { HodlButton } from "./HodlButton";
-import Image from 'next/image'
-import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import { HodlImage } from './HodlImage';
 
 
 export const MintForm = ({
@@ -14,13 +12,8 @@ export const MintForm = ({
   createItem,
   loading,
   loaded,
-  minting,
-  cloudinaryUrl
+  minting
 }) => {
-
-  function myLoader({src, width, quality}) {
-    return `https://res.cloudinary.com/dyobirj7r/c_limit,w_${700},q_auto/${src}`
-  }
 
   const descriptionPlaceholder = "A short description\n\nFollowed by a longer description works well.";
 
@@ -74,17 +67,11 @@ export const MintForm = ({
             <Typography sx={{ color: `rgba(0,0,0,0.2)`}}>Image will appear here</Typography>
           </Stack> :
           <>
-            { Boolean(fileUrl) && 
-            <Image 
-              loader={ myLoader }
-              src={`${fileUrl}`} 
-              quality={75}
-              width={700}
-              height={600}
-              layout="responsive"
-              sizes="33vw"
-              objectFit='contain'
-            />}
+            { Boolean(fileUrl) && (<>
+            <HodlImage image={ fileUrl.split('/')[1] } folder='uploads' />
+            </>
+            )
+}
             </>
       }
       </Grid>
