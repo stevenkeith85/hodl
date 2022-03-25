@@ -1,22 +1,16 @@
 import { useContext, useEffect, useRef, useState } from "react";
 
-import Link from "next/link";
 import { useRouter } from "next/router";
 
 import {
-  Avatar,
   Card,
   CardContent,
   Grid,
   Stack,
-  Typography,
-  Link as MuiLink
+  Typography
 } from "@mui/material";
-import PersonIcon from '@mui/icons-material/Person';
-import PublicIcon from '@mui/icons-material/Public';
+
 import SellIcon from '@mui/icons-material/Sell';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 
 import {
   HodlSnackbar,
@@ -28,13 +22,12 @@ import {
   RocketTitle,
   SocialShare,
   ProfileAvatar,
-  HodlLink,
   HodlExternalLink
 } from '../../components';
 import { WalletContext } from "../_app";
-import { buyNft, delistNft, fetchMarketItem, listTokenOnMarket } from "../../lib/nft";
-import { checkForAndDisplaySmartContractErrors, truncateText } from "../../lib/utils";
-
+import { buyNft, delistNft, fetchMarketItem, listTokenOnMarket, lookupPriceHistory } from "../../lib/nft";
+import { checkForAndDisplaySmartContractErrors, getShortAddress, truncateText } from "../../lib/utils";
+import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
 
 const NftDetail = () => {
   const router = useRouter();
@@ -49,18 +42,22 @@ const NftDetail = () => {
   const [listedModalOpen, setListedModalOpen] = useState(false);
 
   const [price, setPrice] = useState('');
+  
+  const [priceHistory, setPriceHistory] = useState<any[]>([]);
 
   useEffect(() => {
     const load = async () => {
       if (router.query.tokenId !== undefined) {
         try {
           const item = await fetchMarketItem(router.query.tokenId);
-          if (!item) {
+          if(!item) {
             return;
           }
           setMarketItem(item);
+          setPriceHistory(await lookupPriceHistory(router.query.tokenId));
+          
         } catch (e) {
-          console.log(e);
+          console.log('ERROR', e);
         }
       }
     };
@@ -137,7 +134,7 @@ const NftDetail = () => {
         <Grid item xs={12}>
           <Stack spacing={2} direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
             <Typography variant="h3">{marketItem?.name}</Typography>
-            <ProfileAvatar address={marketItem?.owner} />
+            <ProfileAvatar reverse={true} address={marketItem?.owner} />
           </Stack>
         </Grid>
         <Grid item xs={12} md={6}>
@@ -166,6 +163,24 @@ const NftDetail = () => {
                 </Stack>
               </CardContent>
             </Card>
+            { Boolean(priceHistory.length) &&
+            <Card variant="outlined">
+              <CardContent>
+                <Typography sx={{ marginBottom: 2 }}>Price History</Typography>
+                <Stack spacing={2}>
+                  {priceHistory.map( ({buyer, seller, price}) => (<>
+                    <Stack direction="row" spacing={2} sx={{ alignItems: 'center'}}>
+                      <Typography>{`${getShortAddress(seller)}`}</Typography>
+                      <DoubleArrowIcon fontSize="small" />
+                      <Typography>{`${getShortAddress(buyer)}`}</Typography>
+                      <Typography>{`${price}`} MATIC</Typography>
+                    </Stack>
+                    </>)
+                  )}
+                </Stack>
+              </CardContent>
+            </Card>
+            }
             <Stack direction="row" sx={{ justifyContent:"space-between", alignItems: 'center'}}>
             <Stack direction="row" spacing={2}>
               {Boolean(marketItem?.forSale) && Boolean(marketItem?.owner?.toLowerCase() !== address?.toLowerCase()) &&

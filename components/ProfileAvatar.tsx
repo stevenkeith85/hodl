@@ -6,33 +6,51 @@ import {
 import { getShortAddress } from "../lib/utils";
 
 
-export const ProfileAvatar = ({address}) => {
+export const ProfileAvatar = ({address, reverse=false, following=false}) => {
     return (
         <Link href={address ? `/profile/${address}` : ''} passHref>            
-            <Stack sx={{ position: 'relative',}} spacing={0} direction="row" alignItems="center">
-            { Boolean(address) && 
-                <Typography sx={{ 
-                    padding: 1,
-                    bottom: '0',
-                    }}>{ getShortAddress(address)?.toLowerCase() }</Typography>}
-            <Avatar sx={{
-                height: 40,
-                width: 40,
-                
-                bgcolor: (theme) => theme.palette.secondary.main,
+            <Stack sx={{ 
+                position: 'relative', 
+                cursor: 'pointer',
                 '&:hover': {
-                    bgcolor: (theme) => theme.palette.secondary.dark,
-                    cursor: 'pointer'
+                    '.avatar': {
+                        cursor: 'pointer',
+                        bgcolor: 'white',
+                        borderColor: (theme) => following ? theme.palette.primary.light : theme.palette.secondary.main,
+                    },
+                    '.icon': {
+                        color: (theme) => following ? theme.palette.primary.light : theme.palette.secondary.main,
+                        bgcolor:'white'
+                    },
+                    '.address': {
+                        fontWeight: 900
+                    }
                 }
-            }}>
-                
-                <PersonIcon  sx={{ color: 'rgba(255,255,255,0.85)', fontSize: 30 }}/>
-                
+            }} 
+            spacing={2} 
+            direction={ reverse ? 'row-reverse': 'row'}
+            alignItems="center">   
+               <Avatar 
+               className="avatar"
+               sx={{
+                    height: 40,
+                    width: 40,
+                    border: `2px solid`,
+                    bgcolor: (theme) => following? theme.palette.primary.light : theme.palette.secondary.main,
+                    
+                }}>
+                <PersonIcon 
+                    className="icon"
+                    sx={{ 
+                        color: 'rgba(255,255,255,0.85)', 
+                        fontSize: 30,
+                    }}
+                />
             </Avatar>
-            
-
-            </Stack>
-            
+            { Boolean(address) &&
+             <Typography className="address" sx={{ fontWeight: following ? 400: 600 }}>
+                    { getShortAddress(address)?.toLowerCase() }</Typography>}
+            </Stack>            
         </Link>
     )
 }

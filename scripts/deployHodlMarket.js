@@ -8,16 +8,17 @@ async function main() {
   const ownerAccount = new ethers.Wallet(process.env.ACCOUNT0_PRIVATE_KEY, ethers.provider);
 
   const HodlMarketFactory = await ethers.getContractFactory("HodlMarket", ownerAccount);
-  const hodlMarketAsOwner = await HodlMarketFactory.deploy();
+  const hodlMarketAsOwner = await upgrades.deployProxy(HodlMarketFactory, [], { initializer: 'initialize' })
   await hodlMarketAsOwner.deployed();
 
-  console.log(`export const nftmarketaddress = "${hodlMarketAsOwner.address}"`);
+  console.log('MARKET PROXY DEPLOYED AT  ', hodlMarketAsOwner.address);
 
   const HodlNFTFactory = await ethers.getContractFactory("HodlNFT", ownerAccount);
   const hodlNFTAsOwner = await upgrades.deployProxy(HodlNFTFactory, [hodlMarketAsOwner.address], { initializer: 'initialize' })
   await hodlNFTAsOwner.deployed();
 
-  console.log(`export const nftaddress = "${hodlNFTAsOwner.address}"`);
+  console.log('NFT PROXY LINKED TO MARKET', hodlMarketAsOwner.address);
+  console.log('NFT PROXY DEPLOYED AT     ', hodlNFTAsOwner.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

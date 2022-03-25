@@ -1,3 +1,5 @@
+import { Box } from "@mui/material";
+
 export const HodlImage = ({image, sx={}, imgSizes=null, folder="nfts"}) => {
 
     // iphone12, samsung galaxy, 
@@ -7,11 +9,16 @@ export const HodlImage = ({image, sx={}, imgSizes=null, folder="nfts"}) => {
         return sizes.map(size => `https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,w_${size},q_auto/${folder}/${image} ${size}w`).join(',');
     }
     return (
-        <img 
+        <Box sx={{
+            img: {
+                ...sx,
+            }
+        }}>
+            <img 
             style={{
                 width: '100%',
                 objectFit: "cover",
-                ...sx,
+                objectPosition: 'center'
             }}
             decoding="async"
             loading="eager"
@@ -19,5 +26,7 @@ export const HodlImage = ({image, sx={}, imgSizes=null, folder="nfts"}) => {
             sizes={imgSizes || "(max-width:899px) 100vw, (max-width:1549px) 50vw, 744px"}
             srcSet= {sources()}
         />
+        </Box>
+        
     )
 }

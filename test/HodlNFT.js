@@ -25,7 +25,8 @@ describe("HodlNft Contract", function () {
         userAccount = new ethers.Wallet(process.env.ACCOUNT1_PRIVATE_KEY, ethers.provider);
 
         HodlMarketFactory = await ethers.getContractFactory("HodlMarket", ownerAccount);
-        hodlMarketAsOwner = await HodlMarketFactory.deploy();
+        hodlMarketAsOwner = await upgrades.deployProxy(HodlMarketFactory, [], { initializer: 'initialize' });
+        await hodlMarketAsOwner.deployed();
 
         HodlNFTFactory = await ethers.getContractFactory("HodlNFT", ownerAccount);
         hodlNFTAsOwner = await upgrades.deployProxy(HodlNFTFactory, [hodlMarketAsOwner.address], { initializer: 'initialize' })
@@ -40,6 +41,7 @@ describe("HodlNft Contract", function () {
 
         const HodlNFTFactoryNew = await ethers.getContractFactory("HodlNFT", ownerAccount);
         const hodlNFTAsOwnerNew = await upgrades.upgradeProxy(proxyAddress, HodlNFTFactoryNew);
+        await hodlNFTAsOwnerNew.deployed();
         
         const proxyAddressAfter = hodlNFTAsOwnerNew.address;
         const implAddressAfter = await getImplementationAddress(ethers.provider, hodlNFTAsOwnerNew.address);

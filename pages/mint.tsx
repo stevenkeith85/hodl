@@ -1,13 +1,14 @@
-import { useContext, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { MintForm } from '../components/MintForm'
-import { getMetaMaskSigner, ipfsUriToCloudinaryUrl, mintToken } from '../lib/nft.js'
-import { WalletContext } from './_app'
 import { Box, Typography,  Modal, Stack, CircularProgress } from '@mui/material'
 import Link from 'next/link'
 import { RocketTitle } from '../components/RocketTitle'
 import { HodlSnackbar } from '../components/HodlSnackbar'
 import { HodlButton } from '../components/HodlButton'
 import { HodlModal, SuccessModal } from '../components'
+import { getMetaMaskSigner } from '../lib/connections'
+import { mintToken } from '../lib/mint'
+import { ipfsUriToCloudinaryUrl } from '../lib/utils'
 
 
 export default function Mint() {
@@ -34,8 +35,6 @@ export default function Mint() {
     const data = new FormData();
     data.append('asset', e.target.files[0]);
     data.append('fileUrl', fileUrl);
-    console.log('fileUrl', fileUrl);
-    console.log('typeof fileUrl', typeof fileUrl);
 
     const response = await fetch('/api/upload', {
       method: 'POST',
@@ -132,8 +131,7 @@ export default function Mint() {
         await doMint(tokenUrl);
       }
     } catch (error) {
-      console.log(error);
-
+      console.log(error)
       if (error.code === 4001) {
         // @ts-ignore
         snackbarRef?.current?.display('Transaction rejected', 'error');
@@ -207,7 +205,6 @@ export default function Mint() {
         loading={loading}
         loaded={loaded}
         minting={minting}
-        cloudinaryUrl={cloudinaryUrl}
       />
     </Box>
   )

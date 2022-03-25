@@ -1,6 +1,6 @@
 const { expect } = require("chai");
-const { upgrades } = require("hardhat");
-const { BigNumber, utils } = require("ethers");
+const { upgrades, ethers } = require("hardhat");
+const { BigNumber, utils, parseEther, parseUnits } = require("ethers");
 const fs = require('fs');
 const { getImplementationAddress } = require('@openzeppelin/upgrades-core');
 const dotenv = require('dotenv');
@@ -27,6 +27,17 @@ describe("HodlMarket Contract", function () {
 
     let myTokenAsOwner; // Deployed MyToken contract instance with the signer set as owner
 
+    let hodlNFTAddress;
+
+    // helper
+    const pageToObjects = page => {
+        const newPage = []
+        for (let struct of page) {
+            [tokenId, price, seller] = struct;
+            newPage.push({tokenId, price, seller})
+        }
+        return newPage;
+    }
 
     beforeEach(async () => {
         ownerAccount = new ethers.Wallet(process.env.ACCOUNT0_PRIVATE_KEY, ethers.provider);
@@ -34,7 +45,7 @@ describe("HodlMarket Contract", function () {
         userAccount2 = new ethers.Wallet(process.env.ACCOUNT2_PRIVATE_KEY, ethers.provider);
 
         HodlMarketFactory = await ethers.getContractFactory("HodlMarket", ownerAccount);
-        hodlMarketAsOwner = await HodlMarketFactory.deploy();
+        hodlMarketAsOwner = await upgrades.deployProxy(HodlMarketFactory, [], { initializer: 'initialize' });
         await hodlMarketAsOwner.deployed();
 
         hodlMarketAsUser = hodlMarketAsOwner.connect(userAccount);
@@ -51,6 +62,8 @@ describe("HodlMarket Contract", function () {
         MyToken = await ethers.getContractFactory("MyToken", ownerAccount);
         myTokenAsOwner = await MyToken.deploy(hodlMarketAsOwner.address);
         await myTokenAsOwner.deployed();
+
+        hodlNFTAddress = hodlNFTAsOwner.address;
     });
 
     describe("Admin functions", function () {
@@ -58,8 +71,8 @@ describe("HodlMarket Contract", function () {
             expect(await hodlMarketAsOwner.marketOwner()).to.equal(ownerAccount.address);    
         });   
 
-        it("Should set the commision rate as 1 percent", async function () {
-            expect(await hodlMarketAsOwner.marketSaleFeeInPercent()).to.equal(1);
+        it("Should set the commision rate as 3 percent", async function () {
+            expect(await hodlMarketAsOwner.marketSaleFeeInPercent()).to.equal(3);
         });   
 
         it("Should only let the owner change the commision rate", async function () {
@@ -235,22 +248,44 @@ describe("HodlMarket Contract", function () {
             let tx = await hodlNFTAsUser.createToken('ipfs://12345');
             await tx.wait();
 
-            const transferEvents = await hodlNFTAsUser.queryFilter("Transfer")
-            const tokenId = transferEvents[0].args.tokenId;
-
-            tx = await hodlMarketAsUser.listToken(hodlNFTAsUser.address, tokenId, ethers.utils.parseEther("5"));
+            tx = await hodlNFTAsUser.createToken('ipfs://12345');
             await tx.wait();
 
-            tx = await hodlMarketAsUser.delistToken(hodlNFTAsUser.address, tokenId);
+            tx = await hodlNFTAsUser.createToken('ipfs://12345');
+            await tx.wait();
+
+            tx = await hodlMarketAsUser.listToken(hodlNFTAsUser.address, 1, ethers.utils.parseEther("5"));
+            await tx.wait();
+
+            tx = await hodlMarketAsUser.listToken(hodlNFTAsUser.address, 2, ethers.utils.parseEther("10"));
+            await tx.wait();
+
+            tx = await hodlMarketAsUser.listToken(hodlNFTAsUser.address, 3, ethers.utils.parseEther("15"));
+            await tx.wait();
+
+            let usersSecondToken = await hodlMarketAsUser.addressToTokenIds(process.env.ACCOUNT1_PUBLIC_KEY, 1);
+            expect(usersSecondToken).to.eql(BigNumber.from(2))
+
+            tx = await hodlMarketAsUser.delistToken(hodlNFTAsUser.address, 2); // array should close the gap
             await tx.wait();
 
             const TokenDelistedEvents = await hodlMarketAsUser.queryFilter("TokenDelisted")   
             expect(TokenDelistedEvents.length).to.equal(1);
             expect(TokenDelistedEvents[0].args.seller).to.equal(process.env.ACCOUNT1_PUBLIC_KEY);
-            expect(TokenDelistedEvents[0].args.tokenId).to.equal(tokenId);
+            expect(TokenDelistedEvents[0].args.tokenId).to.equal(2);
+
+            try {
+                let usersThirdToken = await hodlMarketAsUser.addressToTokenIds(process.env.ACCOUNT1_PUBLIC_KEY, 2);
+            } catch(e) {
+                expect(e.message).to.equal('Transaction reverted without a reason string')
+            }
+
+            usersSecondToken = await hodlMarketAsUser.addressToTokenIds(process.env.ACCOUNT1_PUBLIC_KEY, 1);
+            expect(usersSecondToken).to.eql(BigNumber.from(3)) // array shifted left to close the gap
+            
         });
 
-        it("Should allow user to delist their token twice", async function () {
+        it("Should NOT allow user to delist their token once it has been delisted (without relisting it first)", async function () {
             let tx = await hodlNFTAsUser.createToken('ipfs://12345');
             await tx.wait();
 
@@ -390,12 +425,335 @@ describe("HodlMarket Contract", function () {
             expect(transferEvents[2].args.tokenId).to.equal(1);
             
             // Neither user has anything on the market
-            const account1listings = await hodlMarketAsOwner.getListingsForAddress(process.env.ACCOUNT1_PUBLIC_KEY);
-            expect(account1listings.length).to.equal(0);
+            const [page, offset, totalItems] = await hodlMarketAsOwner.getListingsForAddress(process.env.ACCOUNT1_PUBLIC_KEY, 0, 5);
+            expect(totalItems).to.equal(0);
 
-            const account2listings = await hodlMarketAsOwner.getListingsForAddress(process.env.ACCOUNT2_PUBLIC_KEY);
-            expect(account2listings.length).to.equal(0);
-        });
+            const [page2, offset2, totalItems2] = await hodlMarketAsOwner.getListingsForAddress(process.env.ACCOUNT2_PUBLIC_KEY, 0, 5);
+            expect(totalItems2).to.equal(0);
     });
 
+    it("Should NOT allow user to buy another users token if correct amount is NOT provided", async function () {
+        // user 1 creates a token
+        let tx = await hodlNFTAsUser.createToken('ipfs://12345');
+        await tx.wait();
+
+        let transferEvents = await hodlNFTAsUser.queryFilter("Transfer")
+        
+        const tokenId = transferEvents[0].args.tokenId;
+        
+        // market is empty
+        let marketItems = await hodlMarketAsOwner.fetchMarketItems(0, 1);
+        expect(marketItems[0].length).to.equal(0);
+
+        // user 1 lists the token for 'price'
+        tx = await hodlMarketAsUser.listToken(hodlNFTAsUser.address, tokenId, ethers.utils.parseEther("5"));
+        await tx.wait();
+
+        try {
+            // user 2 pays tries to pay LESS than 'price' to buy the token
+            tx = await hodlMarketAsUser2.buyToken(hodlNFTAsUser2.address, tokenId, { value: ethers.utils.parseEther("4") })
+            await tx.wait();
+        } catch (e) {
+            expect(e.message).to.equal("VM Exception while processing transaction: reverted with reason string 'Item asking price not sent'");
+        }
+
+        try {
+            // user 2 pays tries to pay MORE than 'price' to buy the token
+            tx = await hodlMarketAsUser2.buyToken(hodlNFTAsUser2.address, tokenId, { value: ethers.utils.parseEther("6") })
+            await tx.wait();
+        } catch (e) {
+            expect(e.message).to.equal("VM Exception while processing transaction: reverted with reason string 'Item asking price not sent'");
+        }
+
+        // events were emmited
+        const TokenBoughtEvents = await hodlMarketAsUser.queryFilter("TokenBought");
+        expect(TokenBoughtEvents.length).to.equal(0);        
+    });
+
+    it("Should NOT allow user to buy an unlisted token", async function () {
+        // user 1 creates a token
+        let tx = await hodlNFTAsUser.createToken('ipfs://12345');
+        await tx.wait();
+
+        // user 1 DOES NOT list the token
+        // tx = await hodlMarketAsUser.listToken(hodlNFTAsUser.address, 1, ethers.utils.parseEther("5"));
+        // await tx.wait();
+
+        try {
+            // user 2 pays tries to buy the token
+            tx = await hodlMarketAsUser2.buyToken(hodlNFTAsUser2.address, 1, { value: ethers.utils.parseEther("5") })
+            await tx.wait();
+        } catch (e) {
+            expect(e.message).to.equal("VM Exception while processing transaction: reverted with reason string 'Token is not listed on Market'");
+        }
+
+        // events were emmited
+        const TokenBoughtEvents = await hodlMarketAsUser.queryFilter("TokenBought");
+        expect(TokenBoughtEvents.length).to.equal(0);        
+    });
+
+    it("Should send seller and market owner their fees", async function () {
+        let tx = await hodlNFTAsUser.createToken('ipfs://12345');
+        await tx.wait();
+        
+        expect(await hodlNFTAsUser2.ownerOf(1)).to.equal(userAccount.address);
+
+        tx = await hodlMarketAsUser.listToken(hodlNFTAsUser.address, 1, ethers.utils.parseEther("100"));
+        await tx.wait();
+
+        // market takes ownership
+        expect(await hodlNFTAsUser2.ownerOf(1)).to.equal(hodlMarketAsOwner.address);
+
+        const ownerBeforeBalance = await ownerAccount.getBalance();
+        const sellerBeforeBalance = await userAccount.getBalance();
+
+        tx = await hodlMarketAsUser2.buyToken(hodlNFTAsUser2.address, 1, { value: ethers.utils.parseEther("100") })
+        await tx.wait();
+
+        const ownerAfterBalance = await ownerAccount.getBalance();
+        const sellerAfterBalance = await userAccount.getBalance();
+
+        expect(ownerAfterBalance).to.equal( ownerBeforeBalance.add(ethers.utils.parseEther("3")) )
+        expect(sellerAfterBalance).to.equal( sellerBeforeBalance.add(ethers.utils.parseEther("97")) )
+
+        expect(await hodlNFTAsUser2.ownerOf(1)).to.equal(userAccount2.address);
+    });
+
+    // TODO: We may consider remembering the rate a token was listed at and charge that instead
+    it("Should charge the current commision rate, even if token was listed when the rate was different", async function () {
+        let tx = await hodlNFTAsUser.createToken('ipfs://12345');
+        await tx.wait();
+        
+        // commision rate is 3 percent here
+        tx = await hodlMarketAsUser.listToken(hodlNFTAsUser.address, 1, ethers.utils.parseEther("100"));
+        await tx.wait();
+
+        // change it to 2 percent
+        tx = await hodlMarketAsOwner.setMarketSaleFeeInPercent(2);
+        await tx.wait();
+
+        const ownerBeforeBalance = await ownerAccount.getBalance();
+        const sellerBeforeBalance = await userAccount.getBalance();
+
+        tx = await hodlMarketAsUser2.buyToken(hodlNFTAsUser2.address, 1, { value: ethers.utils.parseEther("100") })
+        await tx.wait();
+
+        const ownerAfterBalance = await ownerAccount.getBalance();
+        const sellerAfterBalance = await userAccount.getBalance();
+
+        expect(ownerAfterBalance).to.equal( ownerBeforeBalance.add(ethers.utils.parseEther("2")) )
+        expect(sellerAfterBalance).to.equal( sellerBeforeBalance.add(ethers.utils.parseEther("98")) )
+
+        expect(await hodlNFTAsUser2.ownerOf(1)).to.equal(userAccount2.address);
+    });
+    });
+
+    describe('Get Listing', function () {
+        it("should return a valid listing",  async function () { 
+            let tx = await hodlNFTAsUser.createToken('ipfs://12345');
+            await tx.wait();
+            
+            tx = await hodlMarketAsUser.listToken(hodlNFTAddress, 1, ethers.utils.parseEther("100"));
+            await tx.wait();
+
+            const listing = await hodlMarketAsOwner.getListing(1)
+            
+            // struct Listing {
+            //     uint256 tokenId;
+            //     uint256 price;
+            //     address payable seller;
+            // }
+            expect(listing.tokenId).to.equal(1);
+            expect(listing.price).to.equal(ethers.utils.parseEther("100"));
+            expect(listing.seller).to.equal(userAccount.address);
+        });
+
+        it("should return empty object for an invalid listing",  async function () { 
+            let tx = await hodlNFTAsUser.createToken('ipfs://12345');
+            await tx.wait();
+            
+            tx = await hodlMarketAsUser.listToken(hodlNFTAddress, 1, ethers.utils.parseEther("100"));
+            await tx.wait();
+
+            const listing = await hodlMarketAsOwner.getListing(2)
+            
+            // struct Listing {
+            //     uint256 tokenId;
+            //     uint256 price;
+            //     address payable seller;
+            // }
+            expect(listing.tokenId).to.equal(0);
+            expect(listing.price).to.equal(ethers.utils.parseEther("0"));
+            expect(listing.seller).to.equal(ethers.constants.AddressZero);
+        });
+
+    })
+
+    describe('Fetch Market Items', function () {
+        it("Should be able to iterate through the market listings (in reverse), page by page", async function () {
+            const tx1 = await hodlNFTAsUser.createToken("ipfs://123");
+            await tx1.wait();
+
+            tx = await hodlMarketAsUser.listToken(hodlNFTAsUser.address, 1, ethers.utils.parseEther("10"));
+            await tx.wait();
+    
+            const tx2 = await hodlNFTAsUser.createToken("ipfs://456");
+            await tx2.wait();
+
+            tx = await hodlMarketAsUser.listToken(hodlNFTAsUser.address, 2, ethers.utils.parseEther("20"));
+            await tx.wait();
+    
+            const tx3 = await hodlNFTAsUser.createToken("ipfs://789");
+            await tx3.wait();
+
+            tx = await hodlMarketAsUser.listToken(hodlNFTAsUser.address, 3, ethers.utils.parseEther("30"));
+            await tx.wait();
+    
+            const tx4 = await hodlNFTAsUser.createToken("ipfs://1011");
+            await tx4.wait();
+
+            tx = await hodlMarketAsUser.listToken(hodlNFTAsUser.address, 4, ethers.utils.parseEther("40"));
+            await tx.wait();
+    
+            const tx5 = await hodlNFTAsUser.createToken("ipfs://1213");
+            await tx5.wait();
+
+            tx = await hodlMarketAsUser.listToken(hodlNFTAsUser.address, 5, ethers.utils.parseEther("50"));
+            await tx.wait();
+    
+            // struct Listing {
+            //     uint256 tokenId;
+            //     uint256 price;
+            //     address payable seller;
+            // }
+
+            const [page, next, total] = await hodlMarketAsUser.fetchMarketItems(ethers.BigNumber.from(0), ethers.BigNumber.from(2));
+            expect(pageToObjects(page)).to.eql([
+                {
+                    tokenId: ethers.BigNumber.from(5),
+                    price: ethers.utils.parseEther("50"),
+                    seller: userAccount.address
+                },
+                {
+                    tokenId: ethers.BigNumber.from(4),
+                    price: ethers.utils.parseEther("40"),
+                    seller: userAccount.address
+                }
+            ]);
+            expect(next).to.equal(BigNumber.from(2));
+            expect(total).to.equal(BigNumber.from(5));
+
+            const [page2, next2, total2] = await hodlMarketAsUser.fetchMarketItems(next, BigNumber.from(2));
+            expect(pageToObjects(page2)).to.eql([
+                {
+                    tokenId: ethers.BigNumber.from(3),
+                    price: ethers.utils.parseEther("30"),
+                    seller: userAccount.address
+                },
+                {
+                    tokenId: ethers.BigNumber.from(2),
+                    price: ethers.utils.parseEther("20"),
+                    seller: userAccount.address
+                }
+            ]);
+            expect(next2).to.equal(BigNumber.from(4));
+            expect(total2).to.equal(BigNumber.from(5));
+
+            const [page3, next3, total3] = await hodlMarketAsUser.fetchMarketItems(next2, BigNumber.from(2));
+            expect(pageToObjects(page3)).to.eql([
+                {
+                    tokenId: ethers.BigNumber.from(1),
+                    price: ethers.utils.parseEther("10"),
+                    seller: userAccount.address
+                }
+            ]);
+            expect(next3).to.equal(BigNumber.from(5));
+            expect(total3).to.equal(BigNumber.from(5));
+
+            // This should just be blank from now on. Client should check if next == total and stop asking
+            const [page4, next4, total4] = await hodlMarketAsUser.fetchMarketItems(next3, BigNumber.from(2));
+            expect(pageToObjects(page4)).to.eql([]);
+            expect(next4).to.equal(BigNumber.from(5));
+            expect(total4).to.equal(BigNumber.from(5));
+
+            const [page5, next5, total5] = await hodlMarketAsUser.fetchMarketItems(next4, BigNumber.from(2));
+            expect(pageToObjects(page5)).to.eql([]);
+            expect(next5).to.equal(BigNumber.from(5));
+            expect(total5).to.equal(BigNumber.from(5));
+        });
+
+    })
+
+    describe('Get listings for address', function () {
+        it('should return the listings', async () => {
+            let tx = await hodlNFTAsUser.createToken('ipfs://123');
+            await tx.wait();
+
+            tx = await hodlNFTAsUser.createToken('ipfs://456');
+            await tx.wait();
+
+            tx = await hodlNFTAsUser.createToken('ipfs://789');
+            await tx.wait();
+            
+            tx = await hodlMarketAsUser.listToken(hodlNFTAddress, 1, ethers.utils.parseEther("10"));
+            await tx.wait();
+
+            tx = await hodlMarketAsUser.listToken(hodlNFTAddress, 2, ethers.utils.parseEther("20"));
+            await tx.wait();
+
+            tx = await hodlMarketAsUser.listToken(hodlNFTAddress, 3, ethers.utils.parseEther("30"));
+            await tx.wait();
+
+            const [listings, next, total] = await hodlMarketAsOwner.getListingsForAddress(process.env.ACCOUNT1_PUBLIC_KEY, 0, 2);
+
+            expect(pageToObjects(listings)).to.eql([
+                {
+                    tokenId: ethers.BigNumber.from(3),
+                    price: ethers.utils.parseEther("30"),
+                    seller: userAccount.address
+                },
+                {
+                    tokenId: ethers.BigNumber.from(2),
+                    price: ethers.utils.parseEther("20"),
+                    seller: userAccount.address
+                }
+            ]);
+
+            const [listings2, next2, total2] = await hodlMarketAsOwner.getListingsForAddress(process.env.ACCOUNT1_PUBLIC_KEY, next, 2);
+
+            expect(pageToObjects(listings2)).to.eql([
+                {
+                    tokenId: ethers.BigNumber.from(1),
+                    price: ethers.utils.parseEther("10"),
+                    seller: userAccount.address
+                }
+            ]);
+        })
+
+        it('should reject bad input', async () => {
+            let tx = await hodlNFTAsUser.createToken('ipfs://123');
+            await tx.wait();
+
+            tx = await hodlNFTAsUser.createToken('ipfs://456');
+            await tx.wait();
+
+            tx = await hodlNFTAsUser.createToken('ipfs://789');
+            await tx.wait();
+            
+            tx = await hodlMarketAsUser.listToken(hodlNFTAddress, 1, ethers.utils.parseEther("10"));
+            await tx.wait();
+
+            tx = await hodlMarketAsUser.listToken(hodlNFTAddress, 2, ethers.utils.parseEther("20"));
+            await tx.wait();
+
+            tx = await hodlMarketAsUser.listToken(hodlNFTAddress, 3, ethers.utils.parseEther("30"));
+            await tx.wait();
+
+            try {
+                const [listings, next, total] = await hodlMarketAsOwner.getListingsForAddress(process.env.ACCOUNT1_PUBLIC_KEY, 0, -1);
+            } catch (e) {
+                expect(e.message).to.equal('value out-of-bounds (argument="limit", value=-1, code=INVALID_ARGUMENT, version=abi/5.5.0)')
+            }
+        })
+    })
 });

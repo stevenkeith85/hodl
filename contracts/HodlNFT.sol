@@ -4,16 +4,15 @@ pragma solidity ^0.8.10;
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
-
-import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 
 import "hardhat/console.sol";
 
 
 contract HodlNFT is ERC721URIStorageUpgradeable, OwnableUpgradeable, PausableUpgradeable {
-    using Counters for Counters.Counter;
+    using CountersUpgradeable for CountersUpgradeable.Counter;
 
-    Counters.Counter private _tokenIds;
+    CountersUpgradeable.Counter private _tokenIds;
     address private _marketAddress;
     mapping(address => uint256[]) private _addressToTokenIds;
 
@@ -29,6 +28,7 @@ contract HodlNFT is ERC721URIStorageUpgradeable, OwnableUpgradeable, PausableUpg
          __ERC721_init("Hodl NFT", "HNFT");
          __Ownable_init();
          __Pausable_init();
+        
         _marketAddress = _address;
     }
 

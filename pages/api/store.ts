@@ -1,12 +1,12 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { NextApiRequest, NextApiResponse } from "next";
-import { BigNumber, ethers } from 'ethers'
+import { ethers } from 'ethers'
 import nextConnect from 'next-connect'
 import * as Redis from 'ioredis';
 import dotenv from 'dotenv'
 import { nftaddress } from '../../config';
 import NFT from '../../artifacts/contracts/HodlNFT.sol/HodlNFT.json'
-import { ipfsUriToGatewayUrl } from "../../lib/nft";
+import { ipfsUriToGatewayUrl } from "../../lib/utils";
 import cloudinary from 'cloudinary'
 import memoize from 'memoizee';
 
@@ -63,7 +63,7 @@ apiRoute.post(async (req: NextApiRequest, res: NextApiResponse) => {
 
     res.status(200).json({ tokenId, name, description, image });
   } catch (error) {
-    console.log(error);
+    console.log('ERROR', error);
     res.status(500).json({ error });
   }
 

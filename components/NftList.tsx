@@ -33,14 +33,23 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
                     <Box  sx={{ 
                         display: 'block', 
                         position: 'relative',
-                        height: 350,
+                        height: {
+                            xs: 500, 
+                            sm: 400
+                        },
+                        img: {
+                            height: {
+                                xs: 500,
+                                sm: 400
+                            }
+                        }
                         }}
+
                     >
                             <img 
                                 style={{
                                     position: 'absolute',
                                     zIndex: -1,
-                                    height: 350,
                                     width: '100%',
                                     objectFit: "cover",
                                 }}
@@ -49,8 +58,19 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
                                 src={`https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,h_350,q_10/e_grayscale/nfts/${nft?.image}`} 
                             />
                     { matches ?
-                        <HodlImage sx={{height: 350}} image={nft?.image} imgSizes={"(max-width:599px) 100vw, (max-width:899px) 50vw, (max-width:1199px) 33vw, 25vw"} /> : 
-                        <HodlImage sx={{height: 350}} image={nft?.image} imgSizes={"100vw"} />
+                        <HodlImage sx={{
+                            height: {
+                                xs: 500,
+                                sm: 400
+                            }
+                            
+                        }} image={nft?.image} imgSizes={"(max-width:599px) 100vw, (max-width:899px) 50vw, (max-width:1199px) 33vw, 25vw"} /> : 
+                        <HodlImage sx={{
+                            height: {
+                                xs: 500,
+                                sm: 400
+                            }
+                        }} image={nft?.image} imgSizes={"100vw"} />
                     }
                     </Box>
                     <ImageListItemBar

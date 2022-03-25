@@ -32,14 +32,14 @@ cloudinary.config({
 });
 
 const uploadNFT = async (name, description, path) => {
-  const url = `https://res.cloudinary.com/dyobirj7r/image/upload/${path}.jpg`
+  const url = `https://res.cloudinary.com/dyobirj7r/image/upload/${path}`
   // @ts-ignore
   const image = await ipfs.add(urlSource(url), { cidVersion: 1 });
 
   // upload metadata
   const data = JSON.stringify({ name, description, image: `ipfs://${image.cid}` });
   const metadata = await ipfs.add(data, { cidVersion: 1 });
-  console.log('imageCid:', image.cid, 'metadataCid:', metadata.cid);
+
   return {imageCid: image.cid, metadataCid: metadata.cid };
 }
 
@@ -47,6 +47,7 @@ apiRoute.post(async (req: NextApiRequest, res: NextApiResponse) => {
   const { name, description, fileUrl } = req.body;
 
   const { imageCid, metadataCid } = await uploadNFT(name, description, fileUrl);
+  console.log('here', imageCid, metadataCid)
 
 
   // overwrite is true for dev; will set to false in production
@@ -55,7 +56,6 @@ apiRoute.post(async (req: NextApiRequest, res: NextApiResponse) => {
       console.log('ERROR', error, error.http_code)
       res.status(error.http_code).json(error);
     } else {
-      console.log('NOT ERROR')
       const response = { imageCid, metadataUrl: `ipfs://${metadataCid}`};
       res.status(200).json(response);
     }

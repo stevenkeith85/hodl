@@ -1,6 +1,6 @@
 /* pages/index.js */
 import { useEffect, useRef, useState } from 'react'
-import { CircularProgress, Stack } from '@mui/material'
+import { Stack } from '@mui/material'
 import NftList from '../components/NftList'
 import useSWR from 'swr'
 import Head from 'next/head'
@@ -143,14 +143,12 @@ export const InfiniteScroll = ({fetcherFn, viewSale = true, swrKey}) => {
         let imageWidth;
 
         if (vw < 600) {
-            console.log(vw, devicePixelRatio)
             imageWidth = vw * devicePixelRatio;
         } else if (vw < 900) {
             imageWidth = (vw / 2) * devicePixelRatio;
         } else if (vw < 1200){
             imageWidth = (vw / 3) * devicePixelRatio;
         } else {
-            console.log(vw, devicePixelRatio)
             imageWidth = (vw / 4) * devicePixelRatio;
         }
         return findFindSizeBigEnough(imageWidth);

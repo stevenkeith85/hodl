@@ -1,17 +1,16 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity 0.8.10;
 
-import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import "./ABDKMathQuad.sol";
 import "./HodlNFT.sol";
 import "hardhat/console.sol";
 
 
-contract HodlMarket is ReentrancyGuard, Ownable {
+contract HodlMarket is ReentrancyGuardUpgradeable, OwnableUpgradeable {
     address payable public marketOwner;
     uint256 public marketSaleFeeInPercent;
     uint256 public minListingPriceInMatic;
@@ -23,11 +22,11 @@ contract HodlMarket is ReentrancyGuard, Ownable {
     }
 
     // Main DS
-    mapping(uint256 => Listing) private listings; // tokenId to Listing
+    mapping(uint256 => Listing) public listings; // tokenId to Listing
     uint256[] listingKeys; // tokenIds on the market
 
-    // Keep track of the number of tokens per address
-    mapping(address => uint256) private numberOfTokensForAddress;
+    // tokens that 'address' currently has listed on the market
+    mapping(address => uint256[]) public addressToTokenIds;
 
     // Events
     event TokenListed (
@@ -48,10 +47,13 @@ contract HodlMarket is ReentrancyGuard, Ownable {
         uint256 price
     );
 
-    constructor() {
+    function initialize() public initializer {
+         __ReentrancyGuard_init();
+         __Ownable_init();
+        
         marketOwner = payable(msg.sender);
-        marketSaleFeeInPercent = 1;
-        minListingPriceInMatic = 1 ether;
+        marketSaleFeeInPercent = 3;        // To be finalised
+        minListingPriceInMatic = 1 ether; // To be finalised
     }
 
     // Fee Setters
@@ -69,14 +71,14 @@ contract HodlMarket is ReentrancyGuard, Ownable {
         minListingPriceInMatic = _minListingPriceInMatic;
     }
 
-    function remove(uint256 _index) private {
-        require(_index < listingKeys.length, "index out of bound");
+    function remove(uint256[] storage array, uint256 _index) private {
+        require(_index < array.length, "index out of bound");
 
-        for (uint256 i = _index; i < listingKeys.length - 1; i++) {
-            listingKeys[i] = listingKeys[i + 1];
+        for (uint256 i = _index; i < array.length - 1; i++) {
+            array[i] = array[i + 1];
         }
 
-        listingKeys.pop();
+        array.pop();
     }
 
     function mulDiv(
@@ -96,13 +98,18 @@ contract HodlMarket is ReentrancyGuard, Ownable {
             );
     }
 
-    function listToken(
-        address tokenContract,
-        uint256 tokenId,
-        uint256 price
-    ) public payable {
+    function listToken(address tokenContract, uint256 tokenId, uint256 price) 
+        public 
+        payable 
+        nonReentrant 
+    {
         require(
-            msg.sender == IERC721(tokenContract).ownerOf(tokenId),
+            keccak256(bytes(ERC721Upgradeable(tokenContract).name())) == keccak256(bytes("Hodl NFT")) && 
+            keccak256(bytes(ERC721Upgradeable(tokenContract).symbol())) == keccak256(bytes("HNFT")),
+            "We only support HodlNFTs on the market at the moment");
+
+        require(
+            msg.sender == IERC721Upgradeable(tokenContract).ownerOf(tokenId),
             "You do not own this token or it is already listed"
         );
 
@@ -111,32 +118,25 @@ contract HodlMarket is ReentrancyGuard, Ownable {
             "Token must be listed at minListingPrice or higher"
         );
 
-        require(
-            keccak256(bytes(ERC721Upgradeable(tokenContract).name())) == keccak256(bytes("Hodl NFT")) && 
-            keccak256(bytes(ERC721Upgradeable(tokenContract).symbol())) == keccak256(bytes("HNFT")),
-            "We only support HodlNFTs on the market at the moment");
-
         listings[tokenId] = Listing(tokenId, price, payable(msg.sender));
-
         listingKeys.push(tokenId);
-
-        IERC721(tokenContract).transferFrom(msg.sender, address(this), tokenId);
-
-        numberOfTokensForAddress[msg.sender]++;
+        addressToTokenIds[msg.sender].push(tokenId);
 
         emit TokenListed(msg.sender, tokenId, price);
+
+        IERC721Upgradeable(tokenContract).transferFrom(msg.sender, address(this), tokenId);
     }
 
     function delistToken(address tokenContract, uint256 tokenId)
         public
         payable
-    {
+        nonReentrant
+    {        
         bool found = false;
-
         for (uint256 i = 0; i < listingKeys.length; i++) {
             if (listingKeys[i] == tokenId) {
                 found = true;
-                remove(i);
+                remove(listingKeys, i);
                 break;
             }
         }
@@ -144,14 +144,24 @@ contract HodlMarket is ReentrancyGuard, Ownable {
         require(found, "Token is not listed on Market");
         require(msg.sender == listings[tokenId].seller, "Only the token seller can delist it");
 
-        IERC721(tokenContract).transferFrom(address(this), msg.sender, tokenId);
+        address seller = listings[tokenId].seller;
 
-        numberOfTokensForAddress[msg.sender]--;
+        bool removedTokenFromAddress = false;
+        for (uint256 j = 0; j < addressToTokenIds[seller].length; j++) {
+            if (addressToTokenIds[seller][j]== tokenId) {
+                remove(addressToTokenIds[seller], j);
+                removedTokenFromAddress = true;
+                break;
+            }
+        }
 
-        Listing memory empty;
-        listings[tokenId] = empty;
+        assert(removedTokenFromAddress);
+
+        delete listings[tokenId];
 
         emit TokenDelisted(msg.sender, tokenId);
+        
+        IERC721Upgradeable(tokenContract).transferFrom(address(this), seller, tokenId);
     }
 
     function buyToken(address tokenContract, uint256 tokenId)
@@ -160,48 +170,55 @@ contract HodlMarket is ReentrancyGuard, Ownable {
         nonReentrant
     {
         bool found = false;
-
         for (uint256 i = 0; i < listingKeys.length; i++) {
             if (listingKeys[i] == tokenId) {
                 found = true;
-                remove(i);
+                remove(listingKeys, i);
                 break;
             }
         }
 
         require(found, "Token is not listed on Market");
+        require(msg.sender != listings[tokenId].seller, "You should delist your item instead");
+        require(msg.value == listings[tokenId].price, "Item asking price not sent");
+  
+        address payable sellerAddress = listings[tokenId].seller;
 
-        Listing storage token = listings[tokenId];
+         bool removedTokenFromAddress = false;
+        for (uint256 j = 0; j < addressToTokenIds[sellerAddress].length; j++) {
+            if (addressToTokenIds[sellerAddress][j] == tokenId) {
+                remove(addressToTokenIds[sellerAddress], j);
+                removedTokenFromAddress = true;
+                break;
+            }
+        }
 
-        require(msg.sender != token.seller, "You should delist your item instead");
-        require(msg.value == token.price, "Item asking price not sent");
+        assert(removedTokenFromAddress);
+      
+        uint256 marketOwnerFee = mulDiv (marketSaleFeeInPercent, listings[tokenId].price, 100);
+        uint256 sellerFee = mulDiv((100 - marketSaleFeeInPercent) , listings[tokenId].price, 100);  
 
-        uint256 sellerFee = mulDiv( (100 - marketSaleFeeInPercent) , token.price, 100 );
-        uint256 marketOwnerFee = mulDiv (marketSaleFeeInPercent, token.price, 100);
+        emit TokenBought (
+            msg.sender, 
+            listings[tokenId].seller,
+            tokenId,
+            listings[tokenId].price
+        );
 
-        (bool sellerReceivedFee, ) = token.seller.call{value: sellerFee}("");
-        require(sellerReceivedFee, "Could not send the seller their fee");
+        delete listings[tokenId];
+
+        IERC721Upgradeable(tokenContract).transferFrom(address(this), msg.sender, tokenId);
 
         (bool marketOwnerReceivedFee, ) = marketOwner.call{value: marketOwnerFee}("");
         require(marketOwnerReceivedFee, "Could not send the market owner their fee");
 
-        IERC721(tokenContract).transferFrom(address(this), msg.sender, tokenId);
-
-        numberOfTokensForAddress[token.seller]--;
-
-        emit TokenBought (
-            msg.sender, 
-            token.seller,
-            tokenId,
-            token.price
-        );
-
-        Listing memory empty;
-        listings[tokenId] = empty;
+        (bool sellerReceivedFee, ) = sellerAddress.call{value: sellerFee}("");
+        require(sellerReceivedFee, "Could not send the seller their fee");
     }
     
     // We do not check if the token is listed for performance reasons. 
     // The assumption is the caller will know this.
+    // Do we need this as we have the public getter?
     function getListing(uint256 tokenId)
         public
         view
@@ -212,54 +229,81 @@ contract HodlMarket is ReentrancyGuard, Ownable {
 
     // e.g. 100 items, offset of 0, limit of 10
     // we return [0..9], 0 + 10 (next offset for pagination),
-    function fetchMarketItems(uint256 offset, uint256 limit) public view
-        returns (Listing[] memory, uint256 nextOffset, uint256 totalItems) {
+    function fetchMarketItems(uint256 offset, uint256 limit) 
+        public 
+        view
+        returns (Listing[] memory page, uint256 nextOffset, uint256 totalItems) {
 
-        if (limit == 0) {
-            limit = 1;
-        }
+        require(limit > 0, "Limit must be a positive number");
+        require(limit < 500, "Limited to 500 items per page");
+        require(offset <= listingKeys.length, "Offset is greater than number of listings");
 
-        // Asked for limit of 1000, and an offset of 10 (i.e. we asked for 10 to 999 with a zero based index)
-        //
-        // There might be only 100 items though!
-        // In that case,
-        // 100 (total) - 10 (offset) = 90 (new limit) and we get an iteration of 10 - 89 (zero based index)
+        // e.g. limit of 100, and an offset of 10 (i.e. we asked for 10 to 99)
+        // there might be only 10 items though!
+
+        // if so, we set the limit to
+        // 100 (total) - 10 (offset); and iterate of 10 - 89
         if (limit > (listingKeys.length - offset)) {
             limit = listingKeys.length - offset;
         }
 
-        Listing[] memory items = new Listing[](limit);
+        page = new Listing[](limit);
 
-        for (uint256 i = 0; i < limit; i++) {
-            uint256 tokenId = listingKeys[i + offset];
-            items[i] = listings[tokenId];
+        uint256 current = 0;
+
+        if (listingKeys.length == 0) {
+            return (page, 0, 0);
         }
 
-        return (items, offset + limit, listingKeys.length);
+        for (uint256 i = listingKeys.length - 1; current < limit; --i) {
+            uint256 tokenId = listingKeys[i - offset];
+            page[current] = listings[tokenId];
+            current += 1;
+
+            if (i == 0) {
+                break; // prevent unsigned wraparound
+            }
+        }
+
+        return (page, offset + limit, listingKeys.length);
     }
 
-    function getListingsForAddress(address _address) public view returns (Listing[] memory) {
+    function getListingsForAddress(address _address, uint256 offset, uint256 limit) 
+        public 
+        view 
+        returns (Listing[] memory page, uint256 nextOffset, uint256 totalItems) {
         
-        Listing[] memory items = new Listing[](numberOfTokensForAddress[_address]);
+        require(limit > 0, "Limit must be a positive number");
+        require(limit < 500, "Limited to 500 items per page");
+        require(offset <= listingKeys.length, "Offset is greater than number of listings");
 
-        uint256 itemCount = 0;
-        uint256 numberOfItemsOnMarket = listingKeys.length;
-        
-        for (uint256 i = 0; i < numberOfItemsOnMarket; i++) {
+        // e.g. limit of 100, and an offset of 10 (i.e. we asked for 10 to 99)
+        // there might be only 10 items though!
 
-            uint tokenId = listingKeys[i];
+        // if so, we set the limit to
+        // 100 (total) - 10 (offset); and iterate of 10 - 89
+        if (limit > (addressToTokenIds[_address].length - offset)) {
+            limit = addressToTokenIds[_address].length - offset;
+        }
 
-            if (listings[tokenId].seller == _address) {
-                items[itemCount] = listings[tokenId];
-                itemCount++;
-            }
+        page = new Listing[](limit);
 
-            // We've found them all
-            if (itemCount == numberOfTokensForAddress[_address]) {
-                break;
+        uint256 current = 0;
+
+        if (addressToTokenIds[_address].length == 0) {
+            return (page, 0, 0);
+        }
+
+        for (uint256 i = addressToTokenIds[_address].length - 1; current < limit; --i) {
+            uint256 tokenId = addressToTokenIds[_address][i - offset];
+            page[current] = listings[tokenId];
+            current += 1;
+
+            if (i == 0) {
+                break; // prevent unsigned wraparound
             }
         }
-        
-        return items;
+
+        return (page, offset + limit, addressToTokenIds[_address].length);
     }
 }

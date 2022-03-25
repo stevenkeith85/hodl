@@ -2,7 +2,7 @@ import { Button } from "@mui/material";
 
 export const HodlButton = ({ children, sx={}, ...props }) => (
     <Button {...props} variant="outlined" sx={{ 
-        borderRadius: 3,
+        borderRadius: 2,
         paddingTop: 1, 
         paddingBottom: 1, 
         paddingLeft: 3, 

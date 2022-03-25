@@ -1,18 +1,24 @@
+import memoize from 'memoizee';
 
 export const checkForAndDisplaySmartContractErrors = (error, snackbarRef) => {
     if (error.code === -32603) { // Smart Contract Error Messages
       const re = /reverted with reason string '(.+)'/gi;
       const matches = re.exec(error.data.message)
-      // @ts-ignore
-      snackbarRef?.current?.display(matches[1], 'error');
-    }
-  }
 
-export const getShortAddress = (address) => {
-    return address?.slice(0, 2) + '..' + address?.slice(-4);
+      if (matches) {
+        // @ts-ignore
+        snackbarRef?.current?.display(matches[1], 'error');
+      }
+
+      console.log(error)
+    }
 }
 
-export const truncateText = (text, length=30) => {
+export const getShortAddress = memoize((address) => {
+    return address?.slice(0, 2) + '..' + address?.slice(-4);
+})
+
+export const truncateText = memoize((text, length=30) => {
     if (!text) {
         return '';
     }
@@ -22,4 +28,31 @@ export const truncateText = (text, length=30) => {
     }
 
     return text;
-}
+})
+
+export const ipfsUriToGatewayUrl = memoize(ipfsUri => {
+    if (!ipfsUri) {
+      return '#';
+    }
+  
+    const [_protocol, uri] = ipfsUri.split('//');
+    const [cid, path] = uri.split('/');
+  
+    if (path) {
+      return `https://${cid}.ipfs.infura-ipfs.io/${path}`;
+    }
+  
+    return `https://${cid}.ipfs.infura-ipfs.io`;
+  
+});
+
+export const ipfsUriToCloudinaryUrl = memoize(ipfsUri => {
+    if (!ipfsUri) {
+      return '#';
+    }
+  
+    const [_protocol, uri] = ipfsUri.split('//');
+    const [cid, _path] = uri.split('/');
+    return `${cid}`
+});
+  

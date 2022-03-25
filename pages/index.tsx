@@ -1,6 +1,6 @@
 /* pages/index.js */
-import { fetchMarketItems } from '../lib/nft.js'
-import { Alert, Box, Stack, Typography } from '@mui/material'
+import { fetchMarketItems } from '../lib/market'
+import { Box } from '@mui/material'
 import { InfiniteScroll } from '../components/InfiniteScroll'
 
 
