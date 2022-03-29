@@ -2,6 +2,7 @@ import { Button, Box, Grid, CircularProgress, Stack, Typography } from '@mui/mat
 import { HodlTextField } from './HodlTextField';
 import { HodlButton } from "./HodlButton";
 import { HodlImage } from './HodlImage';
+import { Build } from '@mui/icons-material';
 
 
 export const MintForm = ({
@@ -15,34 +16,42 @@ export const MintForm = ({
   minting
 }) => {
 
-  const descriptionPlaceholder = "A short description\n\nFollowed by a longer description works well.";
-
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={0}>
       <Grid item xs={12} md={6}>
-        <Stack spacing={4}>
+        <Stack spacing={4} 
+          sx={{
+            marginRight: {
+              md: 4
+            },
+            marginBottom: {
+              xs: 4,
+              md: 0
+            }
+          }}>
           <HodlTextField
             type="file"
-            label="Image"
             onChange={onChange}
             disabled={loading}
+            helperText="We support images, including animated GIFs. Maximum file size of 10MB."
           />
           <HodlTextField
-            label="Name"
-            placeholder="My NFT"
+            label="Token Name"
             onChange={e => updateFormInput({ ...formInput, name: e.target.value })}
+            helperText="A name for your token"
           />
           <HodlTextField
-            label="Description"
-            placeholder={descriptionPlaceholder}
+            label="Token Description"
             multiline
             minRows={8}
             onChange={e => updateFormInput({ ...formInput, description: e.target.value })}
+            helperText="A multi-line description for your token. No HTML"
           />
           <Stack direction="row" spacing={2}>
             <HodlButton
               onClick={createItem}
               disabled={!formInput.name || !formInput.description || minting || loading }
+              startIcon={<Build fontSize="large" />}
             >
               Mint Token
             </HodlButton>
@@ -64,7 +73,7 @@ export const MintForm = ({
             maxWidth: '100%'
           }}>
             { Boolean(loading) && <CircularProgress color="secondary" /> }
-            <Typography sx={{ color: `rgba(0,0,0,0.2)`}}>Image will appear here</Typography>
+            <Typography sx={{ color: `rgba(0,0,0,0.2)`}}>Image preview will appear here</Typography>
           </Stack> :
           <>
             { Boolean(fileUrl) && (<>
@@ -75,7 +84,6 @@ export const MintForm = ({
             </>
       }
       </Grid>
-
     </Grid>
   )
 }

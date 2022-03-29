@@ -3,6 +3,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import nextConnect from 'next-connect'
 import * as Redis from 'ioredis';
 import dotenv from 'dotenv'
+import { trim } from "../../lib/utils";
+
 dotenv.config({ path: '../.env' })
 
 const apiRoute = nextConnect({
@@ -12,22 +14,18 @@ const apiRoute = nextConnect({
 });
 
 
-// GET /api/following?address=
+// GET /api/address?nickname=steve
 apiRoute.get(async (req: NextApiRequest, res: NextApiResponse) => {
-  
-  const { address } = req.query;
-
   try {
+    const { nickname } = req.query;
+    const sanitizedNickName = trim(nickname).toLowerCase();
     const client = new Redis(process.env.REDIS_CONNECTION_STRING);
-    const following = await client.hkeys(`following: ${address}`)
+    const address = await client.get(`address:${sanitizedNickName}`);
     await client.quit();
-
-    res.status(200).json({following});
-  } catch (error) {
-    console.log('ERROR', error);
-    res.status(500).json({ error });
+    return res.status(200).json({address})
+  } catch (e) {
+    console.log(e)
   }
-
 });
 
 

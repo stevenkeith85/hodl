@@ -21,6 +21,12 @@ import { Stack } from '@mui/material';
 import { useRouter } from 'next/router';
 import { grey } from "@mui/material/colors";
 import { ConnectButton } from './ConnectButton';
+import { listTokenOnMarket } from '../lib/nft';
+import { checkForAndDisplaySmartContractErrors } from '../lib/utils';
+import { HodlButton } from './HodlButton';
+import { HodlModal } from './HodlModal';
+import { HodlTextField } from './HodlTextField';
+import { RocketTitle } from './RocketTitle';
 
 // From MUI Docs
 // const Search = styled('div')(({ theme }) => ({
@@ -66,13 +72,13 @@ import { ConnectButton } from './ConnectButton';
 // }));
 
 const ResponsiveAppBar = () => {
-    const { wallet, setWallet, address, setAddress } = useContext(WalletContext);
+    const { wallet, setWallet, address, setAddress, nickname } = useContext(WalletContext);
     const router = useRouter();
 
     const [pages, setPages] = useState([
         { label: 'Market', url: '/' },
         { label: 'Mint NFT', url: '/mint' },
-        { label: 'My Profile', url: `/profile/${address}` },
+        { label: 'My Profile', url: `/profile/${nickname || address}` },
     ]);
 
     useEffect(() => {
@@ -81,7 +87,7 @@ const ResponsiveAppBar = () => {
             setPages(old => {
                 return old.map(({ label, url }) => {
                     if (label === 'My Profile') {
-                        return ({ label, url: `/profile/${address}` })
+                        return ({ label, url: `/profile/${nickname || address}` })
                     } else {
                         return ({ label, url })
                     }

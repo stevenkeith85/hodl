@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { fetchNftsInWallet, fetchNFTsListedOnMarket } from '../../lib/profile'
+import { fetchNftsInWallet, fetchNFTsListedOnMarket, isValidAddress } from '../../lib/profile'
 import { useContext } from 'react'
 import { WalletContext } from '../_app'
 import { Box, Stack, Tab, Tabs, Typography} from '@mui/material'
@@ -19,26 +19,33 @@ const Profile = () => {
   const [numberListed, setNumberListed] = useState();
 
   const [following, setFollowing] = useState([]);
-  
+  const [validAddress, setValidAddress] = useState(false);
   const [userIsFollowingThisProfile, setUserIsFollowingThisProfile] = useState(null);
-
   
-  // Who this profile is following
   useEffect(async () => {
-    if (router.query.address && router.query.address.length) {
-      const response = await fetch(`/api/following?address=${router.query.address[0]}`);
+    const isValid = await isValidAddress(router.query.address);
+    setValidAddress(isValid);
+
+    if (router.query.address && !isValid) {
+      console.log('here')
+      const response = await fetch(`/api/address?nickname=${router.query.address}`);
+      const result = await response.json();
+      router.query.address = result.address;
+      setValidAddress(true);
+    }
+    // Who this profile is following
+    if (router.query.address) {
+      const response = await fetch(`/api/following?address=${router.query.address}`);
       const result = await response.json();
       setFollowing(result.following);
     }
-  }, [router.query.address]);
 
-  // Who the user is following
-  useEffect(async () => {
-    if (address && router.query.address && router.query.address.length) {
+    // Who the user is following
+    if (address && router.query.address) {
       const response = await fetch(`/api/following?address=${address}`);
       const result = await response.json();
       
-      if (result.following.indexOf(router.query.address[0]) !== -1) {
+      if (result.following.indexOf(router.query.address) !== -1) {
         setUserIsFollowingThisProfile(true);
       } else {
         setUserIsFollowingThisProfile(false);
@@ -60,7 +67,7 @@ const Profile = () => {
       title="Empty" 
       message={"This profile does not have any NFTs"} 
       action={
-        Boolean(router?.query?.address && address === router?.query?.address[0]) && 
+        Boolean(router?.query?.address && address === router?.query?.address) && 
         <Link href="/mint" passHref>
           <HodlButton>Mint One</HodlButton>
         </Link>
@@ -68,17 +75,15 @@ const Profile = () => {
     />)
   }
 
-  console.log(address, router.query.address)
+  
+
   return (
     <>
+   {validAddress && router?.query?.address &&
     <Box sx={{ display: 'flex', flexDirection: 'column', justifyItems: "center", paddingTop: 2, paddingBottom: 2 }}>
       <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: 2, marginBottom: 2}}>
-        <ProfileAvatar address={router?.query?.address?.length && router?.query?.address[0] || address } />
-        {Boolean( 
-          address && 
-          router.query?.address?.length && 
-          address !== router.query.address[0]
-        ) &&
+        <ProfileAvatar size="large" profileAddress={router?.query?.address || address } />
+        {Boolean( address !== router.query.address) &&
         <HodlButton onClick={async () => {
           if (!address) { return }
            const response = await fetch('/api/follow', {
@@ -89,7 +94,7 @@ const Profile = () => {
               }),
               body: JSON.stringify({ 
                 address: address,
-                addressToFollow: router?.query?.address?.length && router?.query?.address[0]
+                addressToFollow: router?.query?.address?.length && router?.query?.address
               })
             });
 
@@ -113,10 +118,9 @@ const Profile = () => {
       </Box>
       <div hidden={value !== 0}>
         <Stack spacing={4}>
-          { router?.query?.address && router?.query?.address[0] && 
             <InfiniteScroll 
               fetcherFn={async (offset, limit) => {
-                const [data, next, length] = await fetchNftsInWallet(router.query.address[0], offset, limit);
+                const [data, next, length] = await fetchNftsInWallet(router.query.address, offset, limit);
                 setNumberHodling(length);
 
                 if (Number(length) === 0) {
@@ -125,21 +129,20 @@ const Profile = () => {
 
                 return [data, next, length]
               }} 
-              swrKey={'walletNfts: ' + router.query.address[0]}
-              viewSale={false}/>
-            }
+              swrKey={'walletNfts: ' + router.query.address}
+              showTop={false}/>
         </Stack>
       </div>
       <div hidden={value !== 1}>
         <Stack spacing={4} >
-        { router?.query?.address && router?.query?.address[0] && 
+        {  
           <InfiniteScroll 
             fetcherFn={async (offset, limit) => {
-              const [data, next, length] = await fetchNFTsListedOnMarket(router.query.address[0], offset, limit);
+              const [data, next, length] = await fetchNFTsListedOnMarket(router.query.address, offset, limit);
               setNumberListed(data.length);
               return [data, next, length]
             }} 
-            swrKey={'marketNfts: ' + router.query.address[0]}
+            swrKey={'marketNfts: ' + router.query.address}
             />
           }
         </Stack>
@@ -148,13 +151,13 @@ const Profile = () => {
         <Stack spacing={4} sx={{ padding: 4, paddingLeft: 0}}>
           { following.length ? 
               following.map(address => 
-                <ProfileAvatar following={true} address={address}/>  
+                <ProfileAvatar color="primary" profileAddress={address}/>  
               ) 
               :
               <Typography>{ 
                 address && 
                 router.query?.address?.length && 
-                address === router.query.address[0] ? 
+                address === router.query.address ? 
                 `You aren't following anyone`:
                 `This user isn't following anyone`
               }</Typography>
@@ -162,6 +165,7 @@ const Profile = () => {
         </Stack>
       </div>
     </Box>
+}
     </>
   )
 }

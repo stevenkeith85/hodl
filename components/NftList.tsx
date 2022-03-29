@@ -4,6 +4,7 @@ import { truncateText } from '../lib/utils';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { HodlImage } from './HodlImage';
+import { ProfileAvatar } from './ProfileAvatar';
 
 const NftList = ({ nfts, viewSale = false, showTop = true }) => {
     const theme = useTheme();
@@ -33,11 +34,14 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
                     <Box  sx={{ 
                         display: 'block', 
                         position: 'relative',
+                        padding: 0,
+                        borderRadius: 1,
                         height: {
                             xs: 500, 
                             sm: 400
                         },
                         img: {
+                            borderRadius: 1,
                             height: {
                                 xs: 500,
                                 sm: 400
@@ -59,6 +63,7 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
                             />
                     { matches ?
                         <HodlImage sx={{
+                            borderRadius: 1,
                             height: {
                                 xs: 500,
                                 sm: 400
@@ -66,6 +71,7 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
                             
                         }} image={nft?.image} imgSizes={"(max-width:599px) 100vw, (max-width:899px) 50vw, (max-width:1199px) 33vw, 25vw"} /> : 
                         <HodlImage sx={{
+                            borderRadius: 1,
                             height: {
                                 xs: 500,
                                 sm: 400
@@ -76,32 +82,42 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
                     <ImageListItemBar
                         sx={{
                             display: () => showTop ? 'flex' : 'none',
-                            backgroundColor: 'rgba(0,0,0,0.25)',
+                            backgroundColor: 'rgba(0,0,0,0.3)',
+                            borderTopLeftRadius: 1,
+                            borderTopRightRadius: 1,
+                            '.MuiImageListItemBar-titleWrap': {
+                                padding: 2
+                            }
                         }}
+                        
                         position="top"
                         title={
                             <Box sx={{ 
                                 display: 'flex', 
                                 justifyContent: 'space-between',
-                                img: {
-                                    filter: 'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(242deg) brightness(115%) contrast(101%)'
-                                }
+                                alignItems: "center",
                                 }}>
-                                <img src="/polygon-matic-logo.svg" width={20} height={20} />
+                                <ProfileAvatar size="small" profileAddress={nft.seller} color="greyscale"/>
                                 {Boolean(nft?.price) &&
-                                    <Typography sx={{ marginLeft: 1, fontSize: 16, fontWeight: 900 }}>{`${nft.price} MATIC`}</Typography>
+                                    <Typography sx={{ fontWeight: 900 }}>{`${nft.price} matic`}</Typography>
                                 }
                             </Box>
                         }
                     />
                     <ImageListItemBar
                         sx={{
-                            backgroundColor: 'rgba(0,0,0,0.25)',
+                            backgroundColor: 'rgba(0,0,0,0.3)',
+                            borderBottomLeftRadius: 1,
+                            borderBottomRightRadius: 1,
+                            paddingTop: 1,
+                            paddingBottom: 1,
+                            '.MuiImageListItemBar-titleWrap': {
+                                padding: 2
+                            }
                         }}
                         subtitle={
-                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                <Typography sx={{ fontSize: 16, fontWeight: 900 }}>{truncateText(nft?.name, 20)}</Typography>
-                                <Typography sx={{ fontSize: 16, fontWeight: 600 }}>{truncateText(nft?.description, 20)}</Typography>
+                            <Box sx={{ display: 'flex' }}>
+                                <Typography sx={{ fontWeight: 900 }}>{truncateText(nft?.name, 20)}</Typography>
                             </Box>
                         }
                         actionIcon={
@@ -114,9 +130,8 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
                                         borderColor: 'rgba(255, 255, 255, 0.9)',
                                         marginRight: 2,
                                         color: 'rgba(255, 255, 255, 0.9)',
-                                        textTransform: 'none',
-                                        fontWeight: 500,
-                                        fontSize: 16,
+
+                                        fontWeight: 900,
                                         '&:hover': {
                                             borderColor: 'white',
                                             color: 'white',

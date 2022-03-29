@@ -5,9 +5,11 @@ import NftList from '../components/NftList'
 import useSWR from 'swr'
 import Head from 'next/head'
 import memoize from 'memoizee';
+import { useRouter } from 'next/router'
 
 
-export const InfiniteScroll = ({fetcherFn, viewSale = true, swrKey}) => {
+export const InfiniteScroll = ({fetcherFn, viewSale = true, swrKey, showTop=true}) => {
+    const router = useRouter();
     const [nfts, _setNfts] = useState([]);
     const nftsRef = useRef(nfts);
     const setNfts = data => {
@@ -52,6 +54,7 @@ export const InfiniteScroll = ({fetcherFn, viewSale = true, swrKey}) => {
     };
 
     const fetcher = async (swrKey, offset, limit) => {
+        console.log('data requested for', swrKey)
         const page = await fetcherFn(offset, limit);
         load(page)
     }
@@ -65,7 +68,9 @@ export const InfiniteScroll = ({fetcherFn, viewSale = true, swrKey}) => {
         }
         const [items, nextOffset, _total] = data;
 
+        
         setNfts(old => {
+            console.log('old', old)
             const newArray = [
                 ...old.slice(0, offset),
                 ...items,
@@ -102,6 +107,13 @@ export const InfiniteScroll = ({fetcherFn, viewSale = true, swrKey}) => {
     useEffect(() => {
         window.addEventListener('scroll', onScroll);
     }, []);
+
+    useEffect(() => {
+        if (router.query.address) {
+            setNfts(() => []);
+        }
+        
+    }, [router?.query?.address]);
 
     const onScroll = () => {
         const ascending = window.scrollY > lastScrollYRef.current;
@@ -173,7 +185,7 @@ export const InfiniteScroll = ({fetcherFn, viewSale = true, swrKey}) => {
 
             <Stack spacing={2}>
                 {Boolean(nfts.length) &&
-                    <NftList nfts={nfts} viewSale={viewSale} />
+                    <NftList nfts={nfts} viewSale={viewSale} showTop={showTop}/>
                 }
             </Stack>
 

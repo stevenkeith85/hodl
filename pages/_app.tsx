@@ -7,7 +7,14 @@ import ResponsiveAppBar from '../components/AppBar';
 import theme from '../theme';
 import Footer from '../components/Footer';
 
-export const WalletContext = createContext<{ wallet: any, setWallet: Function, address: any, setAddress: Function }>(null);
+export const WalletContext = createContext<{ 
+  wallet: any, 
+  setWallet: Function, 
+  address: any, 
+  setAddress: Function,
+  nickname: any, 
+  setNickname: Function  
+}>(null);
 
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -19,6 +26,8 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   const [address, setAddress] = useState('');
 
+  const [nickname, setNickname] = useState('');
+
   return (
     <>
       <Head>
@@ -29,7 +38,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,500" />
       </Head>
       <CssBaseline />
-      <WalletContext.Provider value={{ wallet, setWallet, address, setAddress }}>
+      <WalletContext.Provider value={{ wallet, setWallet, address, setAddress, nickname, setNickname }}>
         <ThemeProvider theme={theme}>
           <Box sx={{
             minHeight: '100vh',

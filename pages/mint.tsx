@@ -9,6 +9,7 @@ import { HodlModal, SuccessModal } from '../components'
 import { getMetaMaskSigner } from '../lib/connections'
 import { mintToken } from '../lib/mint'
 import { ipfsUriToCloudinaryUrl } from '../lib/utils'
+import { Spa } from '@mui/icons-material'
 
 
 export default function Mint() {
@@ -44,6 +45,7 @@ export default function Mint() {
     const json = await response.json();
 
     if (response.status === 400) {
+      console.log('error', json)
       // @ts-ignore
       snackbarRef?.current.display(json.error.message, 'error');
     } else {  
@@ -196,6 +198,15 @@ export default function Mint() {
         message="You&apos;ve successfully minted a token"
       />
       {Boolean(minting) && <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%' }} color="secondary" />}
+      <Stack spacing={2}>
+        <Stack direction="row" spacing={1} sx={{ alignItems: 'center'}}>
+          <Spa color="secondary"  />
+          <Typography color="secondary" pt={2} pb={2} variant="h1">
+            Mint
+          </Typography>
+        </Stack>
+        
+        
       <MintForm
         formInput={formInput}
         updateFormInput={updateFormInput}
@@ -206,6 +217,8 @@ export default function Mint() {
         loaded={loaded}
         minting={minting}
       />
+      </Stack>
+      
     </Box>
   )
 }

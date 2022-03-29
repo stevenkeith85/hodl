@@ -62,7 +62,7 @@ const Footer = () => {
                         <Stack spacing={0.5}>
                             <Typography sx={{ fontWeight: 800, marginBottom: 0.5 }}>Hodl My Moon</Typography>
                             <HodlLink href="/about">About</HodlLink>
-                            <Link href="/contact"><Typography component="a" sx={{ fontSize: 14 }}>Contact</Typography></Link>
+                            <HodlLink href="/contact">Contact</HodlLink>
                         </Stack>
                         <Stack spacing={0.5}>
                             <Typography sx={{ fontWeight: 800, marginBottom: 0.5 }}>Non Fungible Tokens</Typography>
@@ -121,8 +121,8 @@ const Footer = () => {
                         direction="row"
                         spacing={2}
                     >
-                        <LinkedInIcon fontSize="large"/>
-                        <TwitterIcon fontSize="large"/>
+                        <LinkedInIcon/>
+                        <TwitterIcon/>
                     </Stack>
 
                 </Stack>

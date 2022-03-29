@@ -4,22 +4,80 @@ import {
     Avatar, Stack, Typography
 } from "@mui/material";
 import { getShortAddress } from "../lib/utils";
+import { useState, useEffect, useContext } from "react";
+import { isValidAddress } from "../lib/profile";
+import { WalletContext } from "../pages/_app";
 
+export const ProfileAvatar = ({profileAddress, reverse=false, size="medium", color="secondary"}) => {
 
-export const ProfileAvatar = ({address, reverse=false, following=false}) => {
+    const { address, nickname } = useContext(WalletContext);
+
+    const [profileNickname, setProfileNickname] = useState('');
+    const [validAddress, setValidAddress] = useState(false);
+
+    useEffect(async () => {
+        if (address === profileAddress && nickname) {
+            setProfileNickname(nickname);
+            setValidAddress(true);
+        } else {
+            console.log("profileAddress is", profileAddress)
+            const r = await fetch(`/api/nickname?address=${profileAddress}`);
+            const json = await r.json();
+            setProfileNickname(json.nickname);
+            setValidAddress(await isValidAddress(profileAddress))        
+        }
+    }, [profileAddress]);
+
+    
+    useEffect(async () => {
+        if (address === profileAddress && nickname) {
+            setProfileNickname(nickname);
+            setValidAddress(true);
+        }
+    }, [nickname]);
+    
+
+    const getSize = () => {
+        if (size === 'small') {
+            return 30;
+        }
+
+        if (size === 'medium') {
+            return 40;
+        }
+
+        if (size === 'large') {
+            return 50;
+        }
+    }
+
+    const getColor = theme => {
+        if (color === 'primary') {
+            return theme.palette.primary.light;
+        }
+         
+         if (color === 'secondary') {
+             return theme.palette.secondary.main;
+         }
+
+         if (color === 'greyscale') {
+            return 'rgba(0,0,0,0.3)'
+        }
+    }
+
     return (
-        <Link href={address ? `/profile/${address}` : ''} passHref>            
+        <Link href={profileAddress ? `/profile/${profileNickname || profileAddress}` : ''} passHref>            
             <Stack sx={{ 
-                position: 'relative', 
+                alignItems: "center",
                 cursor: 'pointer',
                 '&:hover': {
                     '.avatar': {
                         cursor: 'pointer',
                         bgcolor: 'white',
-                        borderColor: (theme) => following ? theme.palette.primary.light : theme.palette.secondary.main,
+                        borderColor: theme => getColor(theme),
                     },
                     '.icon': {
-                        color: (theme) => following ? theme.palette.primary.light : theme.palette.secondary.main,
+                        color: theme => getColor(theme),
                         bgcolor:'white'
                     },
                     '.address': {
@@ -27,29 +85,34 @@ export const ProfileAvatar = ({address, reverse=false, following=false}) => {
                     }
                 }
             }} 
-            spacing={2} 
+            spacing={1} 
             direction={ reverse ? 'row-reverse': 'row'}
-            alignItems="center">   
+            >   
                <Avatar 
-               className="avatar"
-               sx={{
-                    height: 40,
-                    width: 40,
-                    border: `2px solid`,
-                    bgcolor: (theme) => following? theme.palette.primary.light : theme.palette.secondary.main,
-                    
-                }}>
-                <PersonIcon 
-                    className="icon"
-                    sx={{ 
-                        color: 'rgba(255,255,255,0.85)', 
-                        fontSize: 30,
-                    }}
-                />
-            </Avatar>
-            { Boolean(address) &&
-             <Typography className="address" sx={{ fontWeight: following ? 400: 600 }}>
-                    { getShortAddress(address)?.toLowerCase() }</Typography>}
+                className="avatar"
+                sx={{
+                        height: getSize(),
+                        width: getSize(),
+                        border: size === 'small' ? `1px solid` : `2px solid`,
+                        bgcolor: (theme) => getColor(theme)
+                        
+                    }}>
+                    <PersonIcon 
+                        className="icon"
+                        sx={{ 
+                            color: 'rgba(255,255,255,0.85)', 
+                            fontSize: getSize() - 10,
+                        }}
+                    />
+                </Avatar>
+            {
+            profileAddress && 
+            validAddress && (
+                profileNickname ? 
+                    <Typography className="address" sx={{ fontWeight: color === 'primary' ? 400: 600 }}>{ profileNickname }</Typography> : 
+                    <Typography className="address" sx={{ fontWeight: color === 'primary' ? 400: 600 }}>{ getShortAddress(profileAddress)?.toLowerCase() }</Typography>
+                )
+            }
             </Stack>            
         </Link>
     )

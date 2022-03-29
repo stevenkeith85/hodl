@@ -48,15 +48,15 @@ const theme = responsiveFontSizes(createTheme({
     fontSize: 14,
     h1: {
       fontSize: 17,
-      fontWeight: 400,
+      fontWeight: 600,
       
     },
     h2: {
-      fontSize: 17,
-      fontWeight: 400
+      fontSize: 15,
+      fontWeight: 600,
     },
     h3: {
-      fontSize: 17,
+      fontSize: 14,
       fontWeight: 400,
     },
     // h4: {},

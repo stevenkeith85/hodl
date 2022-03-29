@@ -55,7 +55,7 @@ apiRoute.post(async (req: MulterRequest, res: NextApiResponse) => {
   try {
     await uploadToCloudinary(req, res);
   } catch (error) {
-    console.log(error)
+    console.log('heeeeeeeeeeeeeeeeere', error)
     return res.status(error.http_code).json({ error });
   }
 

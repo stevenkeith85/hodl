@@ -53,6 +53,7 @@ const NftDetail = () => {
           if(!item) {
             return;
           }
+
           setMarketItem(item);
           setPriceHistory(await lookupPriceHistory(router.query.tokenId));
           
@@ -133,8 +134,8 @@ const NftDetail = () => {
       <Grid container spacing={2} sx={{ paddingTop: { xs: 2 } }}>
         <Grid item xs={12}>
           <Stack spacing={2} direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="h3">{marketItem?.name}</Typography>
-            <ProfileAvatar reverse={true} address={marketItem?.owner} />
+            <Typography variant="h1">{marketItem?.name}</Typography>
+            <ProfileAvatar reverse={true} profileAddress={marketItem?.owner} />
           </Stack>
         </Grid>
         <Grid item xs={12} md={6}>
@@ -142,12 +143,14 @@ const NftDetail = () => {
         </Grid>
         <Grid item xs={12} md={6}>
           <Stack spacing={2}>
+          {Boolean(marketItem) &&
             <Card variant="outlined">
-              <CardContent>
-                <Typography sx={{ marginBottom: 2 }}>Description </Typography>
-                <Typography>{truncateText(marketItem?.description, 200)}</Typography>
+              <CardContent sx={{ whiteSpace: 'pre-line', maxHeight: 500, overflowY: 'auto'}}>
+                 <Typography sx={{ marginBottom: 2 }}>Description</Typography>
+                 <Typography>{marketItem?.description || "<No description provided>"}</Typography>
               </CardContent>
             </Card>
+            }
             <Card variant="outlined">
               <CardContent>
                 <Typography sx={{ marginBottom: 2, fontWeight: 500 }}>
@@ -163,17 +166,30 @@ const NftDetail = () => {
                 </Stack>
               </CardContent>
             </Card>
+            { Boolean(marketItem?.forSale) &&
+                <Card variant="outlined">
+                <CardContent>
+                   <Typography sx={{ marginBottom: 2 }}>Price</Typography>
+                   <Typography>{marketItem?.price || "<Price Not Known>"} Matic</Typography>
+                </CardContent>
+              </Card>
+            }
             { Boolean(priceHistory.length) &&
             <Card variant="outlined">
-              <CardContent>
+              <CardContent sx={{ whiteSpace: 'pre-line', maxHeight: 500, overflowY: 'auto'}}>
                 <Typography sx={{ marginBottom: 2 }}>Price History</Typography>
                 <Stack spacing={2}>
-                  {priceHistory.map( ({buyer, seller, price}) => (<>
-                    <Stack direction="row" spacing={2} sx={{ alignItems: 'center'}}>
-                      <Typography>{`${getShortAddress(seller)}`}</Typography>
-                      <DoubleArrowIcon fontSize="small" />
-                      <Typography>{`${getShortAddress(buyer)}`}</Typography>
-                      <Typography>{`${price}`} MATIC</Typography>
+                  {priceHistory.map( ({buyer, seller, price, timestamp}) => (<>
+                      <Stack direction="row" spacing={1} sx={{ alignItems: 'center'}}>
+                      <Typography>Bought for</Typography>
+                      <Typography sx={{ color: (theme) => theme.palette.secondary.dark }}>{`${price}`} Matic</Typography>
+                      <Typography>on</Typography>
+                      <Typography>{
+                        `${new Date(timestamp * 1000).toLocaleString()}`
+                      }</Typography>
+                      <Typography>({`${getShortAddress(seller)}`} </Typography>
+                      <Typography>sold to</Typography>
+                      <Typography>{`${getShortAddress(buyer)}`})</Typography>
                     </Stack>
                     </>)
                   )}

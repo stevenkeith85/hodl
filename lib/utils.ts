@@ -55,4 +55,8 @@ export const ipfsUriToCloudinaryUrl = memoize(ipfsUri => {
     const [cid, _path] = uri.split('/');
     return `${cid}`
 });
+
+export const trim =(str)  => {
+    return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+}
   

@@ -2,13 +2,14 @@ import { Box, Typography } from "@mui/material";
 import Head from "next/head";
 import memoize from 'memoizee';
 import { HodlImage } from "./HodlImage";
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 
 export const DetailPageImage = ({token, folder='nfts'}) => {
 
     if (!token?.image) {
         return null;
     }
-
 
     // This is based on
     // "(max-width:899px) 100vw, (max-width:1549px) 50vw, 744px"
@@ -47,38 +48,17 @@ export const DetailPageImage = ({token, folder='nfts'}) => {
             }
         </Head>
         <Box sx={{ position: 'relative', img: { borderRadius: 1} }}>
-            {Boolean(token?.forSale) && <Box
-                sx={{
-                    backgroundColor: 'rgba(0,0,0,0.25)',
-                    position: 'absolute',
-                    left: 0,
-                    right: 0,
-                    borderRadius: 1,
-                    borderBottomLeftRadius: 0,
-                    borderBottomRightRadius: 0,
-                    zIndex: 1,
-                    display: 'flex', 
-                    justifyContent: 'space-between',
-                    padding: '12px 16px',
-                    color: 'white',
-                    img: {
-                        filter: 'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(242deg) brightness(115%) contrast(101%)'
-                    }
-                }}
-                >
-                    <img 
-                        src="/polygon-matic-logo.svg" 
-                        width={20} 
-                        height={20} 
-                        
-                    />
-                    <Typography sx={{ marginLeft: 1, fontSize: 16, fontWeight: 900 }}>{`${token?.price} MATIC`}</Typography>
-            </Box>
-            }
-            <Box sx={{display: "block"}}>
-                <HodlImage image={token?.image} sx={{ width: '100%'}} />
-            </Box>                           
             
+                <HodlImage image={token?.image} sx={{ width: '100%', maxHeight: '80vh'}} />
+                <FavoriteBorderIcon 
+                    fontSize="large" 
+                    sx={{ position: 'absolute', bottom: 20, right: 10, color: "white" }}
+                    onClick={() => {
+                        console.log('toggle like');
+                    }}    
+                />
+                {/* <FavoriteIcon fontSize="large" sx={{ position: 'absolute', bottom: 20, right: 10, color: "white" }}/> */}
+
         </Box>
         
         </>
