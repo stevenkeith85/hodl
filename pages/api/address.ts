@@ -4,6 +4,7 @@ import nextConnect from 'next-connect'
 import * as Redis from 'ioredis';
 import dotenv from 'dotenv'
 import { trim } from "../../lib/utils";
+import memoize from 'memoizee';
 
 dotenv.config({ path: '../.env' })
 
@@ -13,15 +14,25 @@ const apiRoute = nextConnect({
   },
 });
 
+// export this, as we clear the memo when a new nickname is set
+export const getAddress = memoize(async (nickname) => {
+  try {
+    const client = new Redis(process.env.REDIS_CONNECTION_STRING);
+    console.log("CALLING REDIS FOR ADDRESS FOR NICKNAME", nickname);
+    const address = await client.get(`address:${nickname}`); // O(1)
+    await client.quit();
+    return address;
+  } catch (e) {
+    console.log(e)
+  }
+}, { primitive: true, maxAge: 1000 * 60 * 60, max: 10000, async: true}); // cache for an hour and a maximum of 10000 items
 
 // GET /api/address?nickname=steve
 apiRoute.get(async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { nickname } = req.query;
     const sanitizedNickName = trim(nickname).toLowerCase();
-    const client = new Redis(process.env.REDIS_CONNECTION_STRING);
-    const address = await client.get(`address:${sanitizedNickName}`);
-    await client.quit();
+    const address = await getAddress(sanitizedNickName);
     return res.status(200).json({address})
   } catch (e) {
     console.log(e)

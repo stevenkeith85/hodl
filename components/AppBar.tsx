@@ -83,7 +83,6 @@ const ResponsiveAppBar = () => {
 
     useEffect(() => {
         if (address) {
-            console.log('updating profile link to use address', address)
             setPages(old => {
                 return old.map(({ label, url }) => {
                     if (label === 'My Profile') {

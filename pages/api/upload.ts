@@ -3,6 +3,7 @@ import nextConnect from 'next-connect'
 import multer from 'multer';
 import cloudinary from 'cloudinary'
 
+
 interface MulterRequest extends NextApiRequest {
   file: any;
 }
@@ -21,10 +22,13 @@ const storage = new CloudinaryStorage({
   params: async (req, file) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     const public_id = file.fieldname + '-' + uniqueSuffix;
+    console.log(file)
+    const isVideo = file.mimetype.indexOf('video') !== -1;
+    console.log('isVideo', isVideo)
     return {
       folder: 'uploads',
-      // format: 'jpeg',
       public_id: public_id,
+      resource_type: isVideo ? 'video' : 'auto'
     };
   },
 });
@@ -42,6 +46,7 @@ const uploadToCloudinary = (req, res) : Promise<any> => {
   return new Promise((resolve, reject) => {
     upload(req, res, function (error) {
       if (error) {
+        console.log('upload to cloudinary error', error)
         reject(error);
       } else {
         resolve(true);
@@ -52,19 +57,19 @@ const uploadToCloudinary = (req, res) : Promise<any> => {
 
   // TODO: Once we have authentication, consider storing users images under a separate folder
 apiRoute.post(async (req: MulterRequest, res: NextApiResponse) => {
+
   try {
     await uploadToCloudinary(req, res);
-  } catch (error) {
-    console.log('heeeeeeeeeeeeeeeeere', error)
+  } catch (error) { 
     return res.status(error.http_code).json({ error });
   }
-
+  
   if (req.body) { 
     cloudinary.v2.uploader.destroy(req.body.fileUrl, (error, result) => { //Remove the old file as the user has changed their mind about which image to use
-      res.status(200).json({ fileName: req.file.filename });
+      res.status(200).json({ fileName: req.file.filename,  mimeType: req?.file?.mimetype });
     })
   } else {
-    res.status(200).json({ fileName: req?.file?.filename });
+    res.status(200).json({ fileName: req?.file?.filename, mimeType: req?.file?.mimetype });
   }
 });
 

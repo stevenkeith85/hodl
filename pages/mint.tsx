@@ -24,6 +24,8 @@ export default function Mint() {
 
   const [tokenUrl, setTokenUrl] = useState('');
   const [tokenId, setTokenId] = useState(null);
+  const [mimeType, setMimeType] = useState('video'); // most things will be this. if we can get it from the cloudinary rename step, use that
+
   const [imageCid, setImageCid] = useState('');
   const [cloudinaryUrl, setCloudinaryUrl] = useState('');
 
@@ -45,23 +47,23 @@ export default function Mint() {
     const json = await response.json();
 
     if (response.status === 400) {
-      console.log('error', json)
       // @ts-ignore
       snackbarRef?.current.display(json.error.message, 'error');
     } else {  
       setFileUrl(json.fileName);
     }
     
+    setMimeType(json.mimeType);
     setLoading(false);
     setLoaded(true);
   }
 
-  async function doMint(tokenUrl) {
+  async function doMint(tokenUrl, mimeType) {
       const signer = await getMetaMaskSigner();
       
       // @ts-ignore
       snackbarRef?.current.display('Please approve transaction in MetaMask', 'info');
-      const tokenId = await mintToken(tokenUrl, signer);
+      const tokenId = await mintToken(tokenUrl);
       setTokenId(tokenId);
 
       // @ts-ignore
@@ -76,7 +78,7 @@ export default function Mint() {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         }),
-        body: JSON.stringify({ tokenId })
+        body: JSON.stringify({ tokenId, mimeType })
       });
 
       if (response.status === 500){
@@ -111,7 +113,7 @@ export default function Mint() {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
           }),
-          body: JSON.stringify({ name, description, fileUrl })
+          body: JSON.stringify({ name, description, fileUrl, mimeType })
         });
 
         if (response.status === 400) {
@@ -126,11 +128,14 @@ export default function Mint() {
         setCloudinaryUrl(ipfsUriToCloudinaryUrl(`ipfs://${json.imageCid}`));
         setTokenUrl(json.metadataUrl);
         setImageCid(json.imageCid);
-        await doMint(json.metadataUrl);
+        console.log('setting mimetype to ', json.mimeType)
+        setMimeType(json.mimeType);
+
+        await doMint(json.metadataUrl, json.mimeType);
       } else {
         // if there is a tokenURL already, then the user has likely previously cancelled the mint operation in metamask.
         // just use the exitising data if they try again.
-        await doMint(tokenUrl);
+        await doMint(tokenUrl, mimeType);
       }
     } catch (error) {
       console.log(error)
@@ -170,7 +175,7 @@ export default function Mint() {
           <Stack spacing={4}>
             <RocketTitle title="We've ran out of fuel..." />
             <Typography sx={{ span: { fontWeight: 600 } }}>
-            <span>Your token was minted on the blockchain</span>, but we had a problem saving a copy to the website's database.
+            <span>Your token was minted on the blockchain</span>, but we had a problem saving a copy to the website&apos;s database.
             </Typography>
             <Typography sx={{ span: { fontWeight: 600 } }}>
               Once we store a copy of the token data, it will show up.
@@ -216,6 +221,7 @@ export default function Mint() {
         loading={loading}
         loaded={loaded}
         minting={minting}
+        mimeType={mimeType}
       />
       </Stack>
       

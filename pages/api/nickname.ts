@@ -6,6 +6,7 @@ import dotenv from 'dotenv'
 import { trim } from "../../lib/utils";
 import { isValidAddress } from "../../lib/profile";
 import memoize from 'memoizee';
+import { getAddress } from "./address";
 
 dotenv.config({ path: '../.env' })
 
@@ -15,19 +16,20 @@ const apiRoute = nextConnect({
   },
 });
 
-
+// Gets the nickname for address
 const getNickname = memoize(async (address) => {
     try {
       const client = new Redis(process.env.REDIS_CONNECTION_STRING);
       console.log("CALLING REDIS FOR NICKNAME FOR ADDRESS", address);
-      const nickname = await client.get(`nickname:${address}`);
+      const nickname = await client.get(`nickname:${address}`); // O(1)
       await client.quit();
       return nickname;
     } catch (e) {
       console.log(e)
     }
-}, { length: false, primitive: true, maxAge: 1000 * 60 * 60, max: 10000}); // cache for an hour and a maximum of 10000 items
-// TODO: SANITISE ADDRESS?
+}, { primitive: true, maxAge: 1000 * 60 * 60, max: 10000, async: true}); // cache for an hour and a maximum of 10000 items
+
+// TODO: SANITISE ADDRESS / DO AUTHENTICATION
 
 // GET /api/nickname?address=0x1234
 apiRoute.get(async (req: NextApiRequest, res: NextApiResponse) => {
@@ -55,24 +57,25 @@ apiRoute.post(async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const client = new Redis(process.env.REDIS_CONNECTION_STRING);
     const sanitizedNickName = trim(nickname).toLowerCase();
-    const exists = await client.exists(`address:${sanitizedNickName}`);
+    const exists = await client.exists(`address:${sanitizedNickName}`); // O(1)
 
     if (exists) {
       return res.status(200).json({set: false, message: 'That nickname is already taken'})
     } else {
-      const oldNickname = await client.get(`nickname:${address}`);
+      const oldNickname = await client.get(`nickname:${address}`); // O(1)
 
       // set new
-      await client.set(`address:${sanitizedNickName}`, address); 
-      await client.set(`nickname:${address}`, sanitizedNickName); 
+      await client.set(`address:${sanitizedNickName}`, address); // O(1)
+      await client.set(`nickname:${address}`, sanitizedNickName); // O(1)
 
       // and free up the old one (if we have one)
       if (oldNickname) {
-        await client.del(`address:${oldNickname}`); 
+        await client.del(`address:${oldNickname}`); // O(1)
       }
 
+      // clear cache
       getNickname.delete(address, true);
-      
+      getAddress.delete(sanitizedNickName, true);
     }
 
     await client.quit();

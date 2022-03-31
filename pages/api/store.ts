@@ -40,8 +40,9 @@ const getInfuraIPFSAuth = memoize(() => {
 // }
 apiRoute.post(async (req: NextApiRequest, res: NextApiResponse) => {
   
-  const { tokenId } = req.body;
+  const { tokenId, mimeType } = req.body;
 
+  console.log('mimeType', mimeType)
   try {
     const client = new Redis(process.env.REDIS_CONNECTION_STRING);
 
@@ -54,10 +55,10 @@ apiRoute.post(async (req: NextApiRequest, res: NextApiResponse) => {
     // won't show them on the website as we use the HodlNFT contract as the source of truth!
 
     const tokenUri = await tokenContract.tokenURI(tokenId);
-    const r = await fetch(ipfsUriToGatewayUrl(tokenUri), { headers : getInfuraIPFSAuth() });
+    const r = await fetch(ipfsUriToGatewayUrl(tokenUri), { headers : getInfuraIPFSAuth() }); // Potentially, we don't want to do it this way (as rate limiting / slow / etc)
     const { name, description, image } = await r.json()
 
-    client.set("token:" + tokenId, JSON.stringify({ tokenId, name, description, image }));
+    client.set("token:" + tokenId, JSON.stringify({ tokenId, name, description, image, mimeType }));
     
     await client.quit(); // https://docs.upstash.com/redis/troubleshooting/max_concurrent_connections
 

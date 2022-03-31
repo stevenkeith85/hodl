@@ -60,3 +60,20 @@ export const trim =(str)  => {
     return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 }
   
+export const assetType = (nft) => {
+  if (!nft.mimeType) {
+      return 'image';
+  }
+
+  if (nft.mimeType === 'image/gif') {
+      return 'gif'
+  }
+  
+  if (nft.mimeType.indexOf('video') !== -1) {
+      return 'video'
+  }
+
+  if (nft.mimeType.indexOf('image') !== -1) {
+      return 'image'
+  }
+}

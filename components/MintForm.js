@@ -2,6 +2,7 @@ import { Button, Box, Grid, CircularProgress, Stack, Typography } from '@mui/mat
 import { HodlTextField } from './HodlTextField';
 import { HodlButton } from "./HodlButton";
 import { HodlImage } from './HodlImage';
+import { HodlVideo } from './HodlVideo';
 import { Build } from '@mui/icons-material';
 
 
@@ -13,7 +14,8 @@ export const MintForm = ({
   createItem,
   loading,
   loaded,
-  minting
+  minting,
+  mimeType
 }) => {
 
   return (
@@ -33,7 +35,7 @@ export const MintForm = ({
             type="file"
             onChange={onChange}
             disabled={loading}
-            helperText="We support images, including animated GIFs. Maximum file size of 10MB."
+            helperText="Images have a maximum file size of 10MB. Videos can be up to 100MB"
           />
           <HodlTextField
             label="Token Name"
@@ -73,11 +75,14 @@ export const MintForm = ({
             maxWidth: '100%'
           }}>
             { Boolean(loading) && <CircularProgress color="secondary" /> }
-            <Typography sx={{ color: `rgba(0,0,0,0.2)`}}>Image preview will appear here</Typography>
+            <Typography sx={{ color: `rgba(0,0,0,0.2)`}}>Asset preview will appear here</Typography>
           </Stack> :
           <>
-            { Boolean(fileUrl) && (<>
-            <HodlImage image={ fileUrl.split('/')[1] } folder='uploads' />
+            { Boolean(fileUrl && mimeType) && (<>
+              { mimeType.indexOf('video') !== -1 ? 
+                <HodlVideo cid={fileUrl} directory="video/upload" /> :
+                <HodlImage image={ fileUrl.split('/')[1] } folder='uploads' />
+              }
             </>
             )
 }

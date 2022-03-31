@@ -38,9 +38,11 @@ export const getTokens = memoize(async (tokenId) => {
   const promise = await pipeline.exec()
   const tokens = promise.map(result => JSON.parse(result[1]))
 
+  console.log(tokens);
+
   await redis.quit();
   return tokens;
-}, { length: false, primitive: true, maxAge: 1000 * 60 * 60, max: 10000}); // cache for an hour and a maximum of 10000 items (estimating up to 70 MB of data if we end up with 20 items per cache entry )
+}, { length: false, primitive: true, maxAge: 1000 * 60 * 60, max: 10000, async: true}); // cache for an hour and a maximum of 10000 items (estimating up to 70 MB of data if we end up with 20 items per cache entry )
 
 
 apiRoute.get(async (req: NextApiRequest, res: NextApiResponse) => {

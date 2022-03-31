@@ -18,7 +18,6 @@ const addressToTokenIds = async (address, offset, limit) => {
 }
 
 export const fetchNftsInWallet = async (address, offset, limit) => {
-    console.log('adrress is', address)
     const [tokenIds, next, total] = await addressToTokenIds(address, offset, limit);
 
     if (!tokenIds.length) {
@@ -28,12 +27,21 @@ export const fetchNftsInWallet = async (address, offset, limit) => {
     const r = await fetch(`/api/token/${tokenIds.join('/')}`);
     const result = await r.json();
 
-    const items = result.tokens.filter(token => token).map(token => ({
+    const items = result.tokens.map(token => {
+
+        if (!token) {
+            return null; // We want to keep the number of items in the array, so that it ties up with blockchain (and our infinite scroll iterator works), but won't show anything not in our database
+        }
+
+        return {
+        
         tokenId: token.tokenId,
         name: token.name,
         description: token.description,
-        image: ipfsUriToCloudinaryUrl(token.image)
-    }));
+        image: ipfsUriToCloudinaryUrl(token.image),
+        mimeType: token.mimeType
+    }
+    });
 
     return [items, next, total];
 }
@@ -41,7 +49,7 @@ export const fetchNftsInWallet = async (address, offset, limit) => {
 export const fetchNFTsListedOnMarket = async (address, offset, limit) => {
     const provider = await getProvider();
     const market = new ethers.Contract(nftmarketaddress, Market.abi, provider);
-    const [data, next, total] = await market.getListingsForAddress(address, offset, limit);
+    let [data, next, total] = await market.getListingsForAddress(address, offset, limit);
 
     if (!data.length) {
         return [];
@@ -58,8 +66,10 @@ export const fetchNFTsListedOnMarket = async (address, offset, limit) => {
     const r = await fetch(`/api/token/${tokenIds.join('/')}`);
     const result = await r.json();
 
-    const items =  result.tokens.filter(token => token).map(token => {
-
+    const items =  result.tokens.map(token => {
+        if (!token) {
+            return null; // We want to keep the number of items in the array, so that it ties up with blockchain (and our infinite scroll iterator works), but won't show anything not in our database
+        }
         const listing = tokenIdToListing.get(Number(token.tokenId));
 
         return {
@@ -68,9 +78,11 @@ export const fetchNFTsListedOnMarket = async (address, offset, limit) => {
             description: token.description,
             image: ipfsUriToCloudinaryUrl(token.image),
             price: listing ? ethers.utils.formatUnits(listing.price, 'ether') : '',
-            seller: listing ? listing.seller : ''
+            seller: listing ? listing.seller : '',
+            mimeType: token.mimeType
         };
     })
 
+    console.log('[items, next, total]', items, next, total)
     return [items, next, total];
 }

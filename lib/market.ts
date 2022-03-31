@@ -28,7 +28,8 @@ const getItems = async (data) => {
             image: ipfsUriToCloudinaryUrl(token.image),
 
             price: listing ? ethers.utils.formatUnits(listing.price.toString(), 'ether') : '',
-            seller: listing ? listing.seller : ''
+            seller: listing ? listing.seller : '',
+            mimeType: token.mimeType
         };
     });
 

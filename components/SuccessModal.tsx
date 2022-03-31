@@ -9,8 +9,8 @@ from "./index"
 
 import { WalletContext } from "../pages/_app";
 
-export const SuccessModal = ({modalOpen, setModalOpen, message}) => {
-    const { address } = useContext(WalletContext);
+export const SuccessModal = ({modalOpen, setModalOpen, message, tab=1}) => {
+    const { nickname, address } = useContext(WalletContext);
 
     return (
         <HodlModal
@@ -22,7 +22,7 @@ export const SuccessModal = ({modalOpen, setModalOpen, message}) => {
             <Typography sx={{ span: { fontWeight: 600 } }}>
               { message }
             </Typography>
-            <Link href={`/profile/${address}`} passHref>
+            <Link href={`/profile/${nickname || address}?tab=${tab}`} passHref>
               <HodlButton>
                 View Profile
               </HodlButton>

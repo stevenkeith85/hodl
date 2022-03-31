@@ -27,7 +27,7 @@ import {
 import { WalletContext } from "../_app";
 import { buyNft, delistNft, fetchMarketItem, listTokenOnMarket, lookupPriceHistory } from "../../lib/nft";
 import { checkForAndDisplaySmartContractErrors, getShortAddress, truncateText } from "../../lib/utils";
-import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
+import { PriceHistory } from "../../components/PriceHistory";
 
 const NftDetail = () => {
   const router = useRouter();
@@ -67,6 +67,7 @@ const NftDetail = () => {
 
   }, [router.query.tokenId]);
 
+  console.log(marketItem)
   return (
     <>
       <HodlSnackbar ref={snackbarRef} />
@@ -122,6 +123,7 @@ const NftDetail = () => {
         modalOpen={listedModalOpen}
         setModalOpen={setListedModalOpen}
         message="You&apos;ve successfully listed your token on the market"
+        tab={1}
       />
 
       {/* Delisted */}
@@ -161,7 +163,7 @@ const NftDetail = () => {
                       Metadata
                     </HodlExternalLink>
                     <HodlExternalLink href={marketItem?.ipfsImageGateway || '#'}>
-                      Image
+                      Asset
                     </HodlExternalLink>
                 </Stack>
               </CardContent>
@@ -174,28 +176,7 @@ const NftDetail = () => {
                 </CardContent>
               </Card>
             }
-            { Boolean(priceHistory.length) &&
-            <Card variant="outlined">
-              <CardContent sx={{ whiteSpace: 'pre-line', maxHeight: 500, overflowY: 'auto'}}>
-                <Typography sx={{ marginBottom: 2 }}>Price History</Typography>
-                <Stack spacing={2}>
-                  {priceHistory.map( ({buyer, seller, price, timestamp}) => (<>
-                      <Stack direction="row" spacing={1} sx={{ alignItems: 'center'}}>
-                      <Typography>Bought for</Typography>
-                      <Typography sx={{ color: (theme) => theme.palette.secondary.dark }}>{`${price}`} Matic</Typography>
-                      <Typography>on</Typography>
-                      <Typography>{
-                        `${new Date(timestamp * 1000).toLocaleString()}`
-                      }</Typography>
-                      <Typography>({`${getShortAddress(seller)}`} </Typography>
-                      <Typography>sold to</Typography>
-                      <Typography>{`${getShortAddress(buyer)}`})</Typography>
-                    </Stack>
-                    </>)
-                  )}
-                </Stack>
-              </CardContent>
-            </Card>
+            { Boolean(priceHistory.length) && <PriceHistory priceHistory={priceHistory} />
             }
             <Stack direction="row" sx={{ justifyContent:"space-between", alignItems: 'center'}}>
             <Stack direction="row" spacing={2}>
@@ -246,8 +227,6 @@ const NftDetail = () => {
             </Stack>
             <SocialShare />
             </Stack>
-            
-            
           </Stack>
         </Grid>
       </Grid>

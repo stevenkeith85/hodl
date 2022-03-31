@@ -48,7 +48,7 @@ export default function About() {
         <Box>
             <Typography mb={1} variant="h2" color="primary">Trust</Typography>
             <Typography mb={2}>
-                We deplore any attempt to conterfeit other's work. We will do everything we can to prevent this type of activity occurring on our platform. 
+                We deplore any attempt to conterfeit other&apos;s work. We will do everything we can to prevent this type of activity occurring on our platform. 
             </Typography>
             <Alert sx={{
                 ol: {
@@ -58,11 +58,11 @@ export default function About() {
                     ml: 2
                 }
             }}>
-                We also encourage user's to DYOR (Do Your Own Research) before buying an NFT. 
+                We also encourage users to DYOR (Do Your Own Research) before buying an NFT. 
                 <ol>
                     <li>Check the IPFS Image and Metadata </li>
                     <li>Check the selling history (if any) of the token</li>
-                    <li>Check the owner's activity.</li>
+                    <li>Check the owner&apos;s activity.</li>
                     <li>Check for social validation </li>
                     <li>Do a Google image search</li>
                     <li>Check what you are getting (<Link href="#copyright">See Copyright section</Link>)</li>
@@ -92,13 +92,13 @@ export default function About() {
             </Typography>
             <Typography mt={2} sx={{ span: { fontWeight: 600}}}>
                 In addition to the above, by using this website token authors agree for the display and fair use of their token on Hodl My Moon (in general). 
-                i.e. If we can't show other users your token, then how can they buy it?
+                i.e. If we can&apos;t show other users your token, then how can they buy it?
             </Typography>
         </Box>
         <Box>
             <Typography mb={1} variant="h2" color="primary">Disclaimer</Typography>
             <Typography mb={1} sx={{ span: { fontWeight: 600}}}>
-                Finally, <span>we will do our best</span> to make this a great place for all; but accept no legal responsibility for the actions of our user's.
+                Finally, <span>we will do our best</span> to make this a great place for all; but accept no legal responsibility for the actions of our users&apos;.
             </Typography>
         </Box>
     </Stack>)

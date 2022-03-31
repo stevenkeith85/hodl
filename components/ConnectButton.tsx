@@ -45,11 +45,8 @@ export const ConnectButton = () => {
             const signer = await getMetaMaskSigner();
             const walletAddress = await signer.getAddress();
             
-            console.log('address set to', walletAddress)
-
             const r = await fetch(`/api/nickname?address=${walletAddress}`);
             const json = await r.json();
-            console.log(json.nickname)
 
             setAddress(walletAddress);
             setNickname(json.nickname);
@@ -128,7 +125,6 @@ export const ConnectButton = () => {
                     setNickname(desiredNickname);
                     setNicknameModalOpen(false);
                   } else {
-                      console.log(message)
                     // @ts-ignore
                     setError(true);
                     setErrorMessage(message);

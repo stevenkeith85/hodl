@@ -31,8 +31,9 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_SECRET,
 });
 
-const uploadNFT = async (name, description, path) => {
-  const url = `https://res.cloudinary.com/dyobirj7r/image/upload/${path}`
+const uploadNFT = async (name, description, path, mimeType) => {
+  const url = mimeType.indexOf('video') === -1 ? `https://res.cloudinary.com/dyobirj7r/image/upload/${path}`: `https://res.cloudinary.com/dyobirj7r/video/upload/${path}`
+  
   // @ts-ignore
   const image = await ipfs.add(urlSource(url), { cidVersion: 1 });
 
@@ -44,19 +45,20 @@ const uploadNFT = async (name, description, path) => {
 }
 
 apiRoute.post(async (req: NextApiRequest, res: NextApiResponse) => {
-  const { name, description, fileUrl } = req.body;
+  const { name, description, fileUrl, mimeType } = req.body;
 
-  const { imageCid, metadataCid } = await uploadNFT(name, description, fileUrl);
-  console.log('here', imageCid, metadataCid)
-
+  const { imageCid, metadataCid } = await uploadNFT(name, description, fileUrl, mimeType);
 
   // overwrite is true for dev; will set to false in production
-  cloudinary.v2.uploader.rename(fileUrl, 'nfts/' + imageCid.toString(), { overwrite: true }, (error, result) => {
+  // TODO: If this falls over, we've already minted a token. We should try to recover
+  cloudinary.v2.uploader.rename(fileUrl, 'nfts/' + imageCid.toString(), { overwrite: true, resource_type: mimeType.indexOf('video') !== -1 ? 'video' : 'image' }, (error, result) => {
     if (error) {
-      console.log('ERROR', error, error.http_code)
+      console.log('cloudinary rename error', error)
       res.status(error.http_code).json(error);
     } else {
-      const response = { imageCid, metadataUrl: `ipfs://${metadataCid}`};
+      console.log('cloudinary rename success', result)
+      const mimeType = `${result.resource_type}/${result.format}`;
+      const response = { imageCid, metadataUrl: `ipfs://${metadataCid}`, mimeType};
       res.status(200).json(response);
     }
   });

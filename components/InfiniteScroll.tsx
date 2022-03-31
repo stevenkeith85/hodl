@@ -54,7 +54,6 @@ export const InfiniteScroll = ({fetcherFn, viewSale = true, swrKey, showTop=true
     };
 
     const fetcher = async (swrKey, offset, limit) => {
-        console.log('data requested for', swrKey)
         const page = await fetcherFn(offset, limit);
         load(page)
     }
@@ -62,15 +61,12 @@ export const InfiniteScroll = ({fetcherFn, viewSale = true, swrKey, showTop=true
     const { data, error } = useSWR([swrKey, offset, limit], fetcher);
 
     const load = async (data) => {
-        console.log('load')
         if (!data) {
             return;
         }
         const [items, nextOffset, _total] = data;
-
         
         setNfts(old => {
-            console.log('old', old)
             const newArray = [
                 ...old.slice(0, offset),
                 ...items,
@@ -123,13 +119,13 @@ export const InfiniteScroll = ({fetcherFn, viewSale = true, swrKey, showTop=true
             ascending &&
             (window.innerHeight + window.pageYOffset) >= (document.body.offsetHeight - 1300)) {
 
-            setOffset(nextRef.current);
+            setOffset(Number(nextRef.current));
         }
         else if (nftsRef.current.length &&
             Number(totalRef.current) !== Number(nftsRef.current.length) && // we have all the data
             !ascending &&
             window.pageYOffset < 1300) {
-            setOffset(prevRef.current);
+            setOffset(Number(prevRef.current));
         }
 
         setLastScrollY(window.scrollY);
@@ -174,8 +170,8 @@ export const InfiniteScroll = ({fetcherFn, viewSale = true, swrKey, showTop=true
                         if (!nft) { return null; }
                         return (
                             <>
-                                <link key={'blurred' + i} rel="preload" href={`https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,h_350,q_10/e_grayscale/nfts/${nft.image}`} /> // @ts-ignore
-                                <link key={'actual' + i} rel="preload" href={`https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,w_${calcImageWidthWeNeed()},q_auto/nfts/${nft.image}`} /> // @ts-ignore
+                                <link key={'blurred' + i} rel="preload" href={`https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,h_350,q_10/e_grayscale/nfts/${nft.image}`} />
+                                <link key={'actual' + i} rel="preload" href={`https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,w_${calcImageWidthWeNeed()},q_auto/nfts/${nft.image}`} />
                             </>
                         )
 

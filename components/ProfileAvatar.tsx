@@ -15,12 +15,16 @@ export const ProfileAvatar = ({profileAddress, reverse=false, size="medium", col
     const [profileNickname, setProfileNickname] = useState('');
     const [validAddress, setValidAddress] = useState(false);
 
+    // @ts-ignore
     useEffect(async () => {
+        if (!profileAddress) {
+            return;
+        }
+
         if (address === profileAddress && nickname) {
             setProfileNickname(nickname);
             setValidAddress(true);
         } else {
-            console.log("profileAddress is", profileAddress)
             const r = await fetch(`/api/nickname?address=${profileAddress}`);
             const json = await r.json();
             setProfileNickname(json.nickname);
@@ -28,7 +32,7 @@ export const ProfileAvatar = ({profileAddress, reverse=false, size="medium", col
         }
     }, [profileAddress]);
 
-    
+    // @ts-ignore
     useEffect(async () => {
         if (address === profileAddress && nickname) {
             setProfileNickname(nickname);
@@ -93,7 +97,7 @@ export const ProfileAvatar = ({profileAddress, reverse=false, size="medium", col
                 sx={{
                         height: getSize(),
                         width: getSize(),
-                        border: size === 'small' ? `1px solid` : `2px solid`,
+                        border: size === 'small' ? `1.5px solid` : `2px solid`,
                         bgcolor: (theme) => getColor(theme)
                         
                     }}>

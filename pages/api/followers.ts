@@ -14,19 +14,19 @@ const apiRoute = nextConnect({
 });
 
 
-// Find out who address is following
+// Find out who is following address
 // export this, as we clear the memo when 'follow' is toggled
-export const getFollowing = memoize(async (address) => {
-  console.log("CALLING REDIS TO SEE WHO ADDRESS IS FOLLOWING", address);
+export const getFollowers = memoize(async (address) => {
+  console.log("CALLING REDIS TO SEE WHO IS FOLLOWING ADDRESS", address);
   const client = new Redis(process.env.REDIS_CONNECTION_STRING);
-  const following = await client.hkeys(`following:${address}`) // O(N) 'following:0x1234' : { 0x5678: 1, 0x9101: 1, ... }
+  const followers = await client.hkeys(`followers:${address}`)
   await client.quit();
 
-  return following;
+  return followers;
 }, { primitive: true, maxAge: 1000 * 60 * 60, max: 10000, async: true}); // cache for an hour and a maximum of 10000 items
 
 
-// Returns a list of addresses that 'address' is following
+// Returns a list of addresses following 'address' (the followers of address1)
 // Used in the following tab on the user profile
 // GET /api/following?address=
 apiRoute.get(async (req: NextApiRequest, res: NextApiResponse) => {
@@ -34,9 +34,9 @@ apiRoute.get(async (req: NextApiRequest, res: NextApiResponse) => {
   const { address } = req.query;
 
   try {
-    const following = await getFollowing(address);
+    const followers = await getFollowers(address);
 
-    res.status(200).json({following});
+    res.status(200).json({followers});
   } catch (error) {
     console.log('ERROR', error);
     res.status(500).json({ error });
