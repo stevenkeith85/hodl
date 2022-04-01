@@ -77,3 +77,12 @@ export const assetType = (nft) => {
       return 'image'
   }
 }
+
+export const messageToSign = `
+Welcome to HodlMyMoon. 
+
+To log in to the website, please sign this message. 
+
+It will NOT cost you a transaction fee. 
+
+Nonce: `

@@ -3,14 +3,16 @@ import { NextApiRequest, NextApiResponse } from "next";
 import nextConnect from 'next-connect'
 import * as Redis from 'ioredis';
 import dotenv from 'dotenv'
+import apiRoute from "./handler";
 
 dotenv.config({ path: '../.env' })
+const route = apiRoute();
 
-const apiRoute = nextConnect({
-  onNoMatch(req: NextApiRequest, res: NextApiResponse) {
-    res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
-  },
-});
+// const apiRoute = nextConnect({
+//   onNoMatch(req: NextApiRequest, res: NextApiResponse) {
+//     res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
+//   },
+// });
 
 
 // POST /api/follow
@@ -20,7 +22,7 @@ const apiRoute = nextConnect({
 //   "token": <tokenId>
 // }
 // Requests the number of users who like a token
-apiRoute.get(async (req: NextApiRequest, res: NextApiResponse) => {
+route.get(async (req: NextApiRequest, res: NextApiResponse) => {
   
   const { token } = req.query;
 
@@ -40,4 +42,4 @@ apiRoute.get(async (req: NextApiRequest, res: NextApiResponse) => {
 });
 
 
-export default apiRoute;
+export default route;

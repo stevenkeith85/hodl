@@ -7,14 +7,11 @@ import { trim } from "../../lib/utils";
 import { isValidAddress } from "../../lib/profile";
 import memoize from 'memoizee';
 import { getAddress } from "./address";
+import apiRoute from "./handler";
 
 dotenv.config({ path: '../.env' })
 
-const apiRoute = nextConnect({
-  onNoMatch(req: NextApiRequest, res: NextApiResponse) {
-    res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
-  },
-});
+const route = apiRoute();
 
 // Gets the nickname for address
 const getNickname = memoize(async (address) => {
@@ -32,7 +29,7 @@ const getNickname = memoize(async (address) => {
 // TODO: SANITISE ADDRESS / DO AUTHENTICATION
 
 // GET /api/nickname?address=0x1234
-apiRoute.get(async (req: NextApiRequest, res: NextApiResponse) => {
+route.get(async (req: NextApiRequest, res: NextApiResponse) => {
   const { address } = req.query;
   
   try {
@@ -44,7 +41,7 @@ apiRoute.get(async (req: NextApiRequest, res: NextApiResponse) => {
 });
 
 // POST /api/nickname
-apiRoute.post(async (req: NextApiRequest, res: NextApiResponse) => {
+route.post(async (req: NextApiRequest, res: NextApiResponse) => {
   
   const { address, nickname } = req.body;
 
@@ -88,5 +85,4 @@ apiRoute.post(async (req: NextApiRequest, res: NextApiResponse) => {
 
 });
 
-
-export default apiRoute;
+export default route;

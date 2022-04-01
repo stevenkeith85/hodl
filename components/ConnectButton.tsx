@@ -1,10 +1,10 @@
-import { Avatar, IconButton, Menu, MenuItem, Stack, Typography } from "@mui/material";
+import { Avatar, Button, IconButton, Menu, MenuItem, Stack, Typography } from "@mui/material";
 import { useContext, useEffect, useRef, useState } from "react";
 import { WalletContext } from "../pages/_app";
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { getMetaMaskSigner } from "../lib/connections";
 import { useRouter } from "next/router";
-import { getShortAddress, trim } from "../lib/utils";
+import { getShortAddress, messageToSign, trim } from "../lib/utils";
 import { HodlButton } from "./HodlButton";
 import { HodlModal } from "./HodlModal";
 import { HodlTextField } from "./HodlTextField";
@@ -13,7 +13,7 @@ import { HodlSnackbar } from '../components/HodlSnackbar'
 
 
 export const ConnectButton = () => {
-    const { wallet, setWallet, address, setAddress, nickname, setNickname } = useContext(WalletContext);
+    const { signer, setSigner, address, setAddress, nickname, setNickname, jwt, setJwt} = useContext(WalletContext);
     const router = useRouter()
     const snackbarRef = useRef();
 
@@ -32,6 +32,16 @@ export const ConnectButton = () => {
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
+    const buttonText = () => {
+        if (nickname) {
+            return nickname;
+        } else if (address) {
+            return getShortAddress(address).toLowerCase();
+        } else {
+            return 'CONNECT WITH METAMASK';
+        }
+    }
+
     const isMobileDevice = () => {
         return 'ontouchstart' in window || 'onmsgesturechange' in window;
     }
@@ -40,31 +50,60 @@ export const ConnectButton = () => {
         router.push("https://metamask.app.link/dapp/192.168.1.242:3001/");
     }
 
-    const connect = async () => {
+    const connect = async (returningUser=true) => {
         try {            
-            const signer = await getMetaMaskSigner();
-            const walletAddress = await signer.getAddress();
-            
-            const r = await fetch(`/api/nickname?address=${walletAddress}`);
-            const json = await r.json();
+            const _signer = await getMetaMaskSigner(returningUser);
+            const _address = await _signer.getAddress();
 
-            setAddress(walletAddress);
-            setNickname(json.nickname);
-            setWallet({ provider: null, signer });
+            if (!returningUser) {
+                // get nonce
+                const rNonce = await fetch(`/api/nonce?address=${_address}`);
+                const { nonce } = await rNonce.json();
+                
+                // get user to sign message + nonce
+                const signature = await _signer.signMessage(messageToSign + nonce);
+                
+                // send the sign to the BE
+                const rSig = await fetch('/api/signature', {
+                    method: 'POST',
+                    headers: new Headers({
+                      'Content-Type': 'application/json',
+                      'Accept': 'application/json',
+                    }),
+                    body: JSON.stringify({ 
+                        signature,
+                        address: _address
+                    })
+                  });
+
+                  console.log('rsig', rSig)
+
+                  // if sig was valid, we should get a token
+                  const { token } = await rSig.json();
+                  setJwt(token.split(" ")[1]);
+            }
+            console.log("hereeeeeeeeeeeeee")
+
+            const r = await fetch(`/api/nickname?address=${_address}`);
+            console.log(r)
+            const json = await r.json();
+            const _nickname = json.nickname;
+
+            console.log('setting signer to', _signer)
+            setSigner(_signer);
+            setAddress(_address);
+            setNickname(_nickname);    
 
             localStorage.setItem('Wallet', 'Connected');
-
-            // need to think about this
-            //router.push('/profile/' + walletAddress);
         } catch (e) {
             console.log(e)
         }
     }
 
     const disconnect = async () => {
-        setAddress('');
-        setNickname('');
-        setWallet({ provider: null, signer: null });
+        setAddress(null);
+        setNickname(null);
+        setSigner(null);
         localStorage.setItem('Wallet', 'Not Connected');
     }
 
@@ -141,79 +180,58 @@ export const ConnectButton = () => {
         </Stack>
       </HodlModal>
       
-            <IconButton
-                sx={{ 
-                    display: { 
-                        xs: 'flex' 
-                    },
-                    
-                    '&:hover': {
-                        '.avatar': {
-                            bgcolor: 'white',
-                            color: 'secondary.main',
-                            border: `3px solid secondary.main`,
-                        }
-                        
-                    }
-                }}
-                onClick={async e => {
-                    if (wallet.signer) {
-                        handleOpenUserMenu(e);
-                    } else if (isMobileDevice()) {
-                        connectMobile();
-                    } else {
-                        connect();
-                    }
-                }}
-            >
-                <Avatar 
-                variant="rounded" 
-                className="avatar"
-                sx={{
-                    bgcolor: 'secondary.main',
-                    width: 120,
-                    padding: 2,
-                    fontSize: 14,
-                    fontWeight: 500,
-                    
-                }}>
-                    <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-                        <AccountBalanceWalletIcon />
-                        { nickname ? 
-                        <Typography>{nickname}</Typography>
-                        : <Typography sx={{ lineHeight: '14px',fontWeight: 500 }}>{ wallet.signer ? getShortAddress(address).toLowerCase() : 'Connect' }</Typography>
-                        }
-                    </Stack>
-                    
-                </Avatar>
-            </IconButton>
-            <Menu
-                sx={{ 
-                    mt: '45px' 
-                }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-            >
-                {settings.map(setting => (
-                    <MenuItem key={setting.label} onClick={handleCloseUserMenu}>
-                        <Typography textAlign="center" onClick={setting.action}>
-                            {setting.label}
-                        </Typography>
-                    </MenuItem>
+        <Button
+            color="secondary"
+            variant="contained"
+            onClick = { e => {
+                if (signer) {
+                    handleOpenUserMenu(e);
+                } else if (isMobileDevice()) {
+                    connectMobile();
+                } 
+                else {
+                    connect(false);
+                }
+            }
+            }
+        >
+                { 
+                <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                    <AccountBalanceWalletIcon />
+                    <Typography>{ buttonText() }</Typography>
+                </Stack>
+                 }
+        </Button>
+        <Menu
+            sx={{ 
+                mt: '45px' 
+            }}
+            id="menu-appbar"
+            anchorEl={anchorElUser}
+            anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+            }}
+            keepMounted
+            transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+            }}
+            open={Boolean(anchorElUser)}
+            onClose={handleCloseUserMenu}
+        >
+            {settings.map(setting => (
+                <MenuItem 
+                    key={setting.label} 
+                    onClick={() => {
+                        setting.action();
+                        handleCloseUserMenu();
+                 }}>
+                    <Typography textAlign="center">{setting.label}</Typography>
+                </MenuItem>
 
-                ))}
-            </Menu>
+            ))}
+        </Menu>
         </>
     )
 }

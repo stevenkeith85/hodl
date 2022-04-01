@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { WalletContext } from "../pages/_app";
 
 export const useTokenLikes = (token) => {
-    const { address } = useContext(WalletContext);
+    const { address, jwt } = useContext(WalletContext);
     const [userLikesThisToken, setUserLikesThisToken] = useState(false);
     const [tokenLikesCount, setTokenLikesCount] = useState(null);
 
@@ -32,11 +32,13 @@ export const useTokenLikes = (token) => {
           return;
         }
         
+        console.log('jwt', jwt)
         const response = await fetch('/api/like', {
             method: 'POST',
             headers: new Headers({
               'Content-Type': 'application/json',
               'Accept': 'application/json',
+              'Authorization': jwt
             }),
             body: JSON.stringify({ 
               address,

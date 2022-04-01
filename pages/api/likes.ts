@@ -4,14 +4,11 @@ import nextConnect from 'next-connect'
 import * as Redis from 'ioredis';
 import dotenv from 'dotenv'
 import memoize from 'memoizee';
+import apiRoute from "./handler";
 
 dotenv.config({ path: '../.env' })
 
-const apiRoute = nextConnect({
-  onNoMatch(req: NextApiRequest, res: NextApiResponse) {
-    res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
-  },
-});
+const route = apiRoute();
 
 // Find out if adress likes token
 // export this, as we will clear the memo when 'like' is toggled
@@ -25,7 +22,7 @@ export const likesToken = memoize(async (address, token) => {
 
 
 // Returns whether address1 follows address2
-apiRoute.get(async (req: NextApiRequest, res: NextApiResponse) => {
+route.get(async (req: NextApiRequest, res: NextApiResponse) => {
   const { address, token } = req.query;
 
   try {
@@ -40,4 +37,4 @@ apiRoute.get(async (req: NextApiRequest, res: NextApiResponse) => {
 });
 
 
-export default apiRoute;
+export default route;

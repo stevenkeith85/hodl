@@ -5,15 +5,17 @@ import fs from 'fs'
 import nextConnect from 'next-connect'
 import { create, urlSource } from 'ipfs-http-client'
 import cloudinary from 'cloudinary'
+import apiRoute from "./handler";
 import dotenv from 'dotenv'
 dotenv.config({ path: '../.env' })
 
+const route = apiRoute();
 
-const apiRoute = nextConnect({
-  onNoMatch(req, res: NextApiResponse) {
-    res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
-  },
-});
+// const apiRoute = nextConnect({
+//   onNoMatch(req, res: NextApiResponse) {
+//     res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
+//   },
+// });
 
 const ipfs = create({
   host: 'ipfs.infura.io',
@@ -44,7 +46,7 @@ const uploadNFT = async (name, description, path, mimeType) => {
   return {imageCid: image.cid, metadataCid: metadata.cid };
 }
 
-apiRoute.post(async (req: NextApiRequest, res: NextApiResponse) => {
+route.post(async (req: NextApiRequest, res: NextApiResponse) => {
   const { name, description, fileUrl, mimeType } = req.body;
 
   const { imageCid, metadataCid } = await uploadNFT(name, description, fileUrl, mimeType);
@@ -65,4 +67,4 @@ apiRoute.post(async (req: NextApiRequest, res: NextApiResponse) => {
 });
 
 
-export default apiRoute;
+export default route;

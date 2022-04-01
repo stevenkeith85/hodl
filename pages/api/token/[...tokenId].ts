@@ -4,16 +4,11 @@ import nextConnect from 'next-connect'
 import * as Redis from 'ioredis';
 import dotenv from 'dotenv'
 import memoize from 'memoizee';
+import apiRoute from '../handler';
 
 dotenv.config({ path: '../.env' })
 
-const apiRoute = nextConnect({
-  onNoMatch(req: NextApiRequest, res: NextApiResponse) {
-    res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
-  },
-});
-
-
+const route = apiRoute();
 
 // https://docs.upstash.com/redis/troubleshooting/max_concurrent_connections
 export const getTokens = memoize(async (tokenId) => {
@@ -38,17 +33,15 @@ export const getTokens = memoize(async (tokenId) => {
   const promise = await pipeline.exec()
   const tokens = promise.map(result => JSON.parse(result[1]))
 
-  console.log(tokens);
-
   await redis.quit();
   return tokens;
 }, { length: false, primitive: true, maxAge: 1000 * 60 * 60, max: 10000, async: true}); // cache for an hour and a maximum of 10000 items (estimating up to 70 MB of data if we end up with 20 items per cache entry )
 
 
-apiRoute.get(async (req: NextApiRequest, res: NextApiResponse) => {
+route.get(async (req: NextApiRequest, res: NextApiResponse) => {
   const tokens = await getTokens(req.query.tokenId);
   res.status(200).json({ tokens })
 });
 
 
-export default apiRoute;
+export default route;

@@ -5,14 +5,17 @@ import * as Redis from 'ioredis';
 import dotenv from 'dotenv'
 import { trim } from "../../lib/utils";
 import memoize from 'memoizee';
+import apiRoute from "./handler";
 
 dotenv.config({ path: '../.env' })
 
-const apiRoute = nextConnect({
-  onNoMatch(req: NextApiRequest, res: NextApiResponse) {
-    res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
-  },
-});
+const route = apiRoute();
+
+// const apiRoute = nextConnect({
+//   onNoMatch(req: NextApiRequest, res: NextApiResponse) {
+//     res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
+//   },
+// });
 
 // export this, as we clear the memo when a new nickname is set
 export const getAddress = memoize(async (nickname) => {
@@ -28,7 +31,7 @@ export const getAddress = memoize(async (nickname) => {
 }, { primitive: true, maxAge: 1000 * 60 * 60, max: 10000, async: true}); // cache for an hour and a maximum of 10000 items
 
 // GET /api/address?nickname=steve
-apiRoute.get(async (req: NextApiRequest, res: NextApiResponse) => {
+route.get(async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { nickname } = req.query;
     const sanitizedNickName = trim(nickname).toLowerCase();
@@ -40,4 +43,4 @@ apiRoute.get(async (req: NextApiRequest, res: NextApiResponse) => {
 });
 
 
-export default apiRoute;
+export default route;

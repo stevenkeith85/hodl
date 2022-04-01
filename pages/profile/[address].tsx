@@ -139,8 +139,8 @@ const Profile = () => {
           >
             <Tab value={0} label="Hodling" icon={ <Badge sx={{p: '6px 3px'}} showZero badgeContent={numberHodling}></Badge> } iconPosition="end"/>
             <Tab value={1} label="Listed" icon={ <Badge sx={{p: '6px 3px'}} showZero badgeContent={numberListed}></Badge> } iconPosition="end"/>
-            <Tab value={2} label="Following" icon={ <Badge sx={{p: '6px 3px'}} showZero badgeContent={following.length}></Badge> } iconPosition="end"/>
-            <Tab value={3} label="Followers" icon={ <Badge sx={{p: '6px 3px'}} showZero badgeContent={followers.length} ></Badge> } iconPosition="end"/>
+            <Tab value={2} label="Following" icon={ <Badge sx={{p: '6px 3px'}} showZero badgeContent={following?.length}></Badge> } iconPosition="end"/>
+            <Tab value={3} label="Followers" icon={ <Badge sx={{p: '6px 3px'}} showZero badgeContent={followers?.length} ></Badge> } iconPosition="end"/>
           </Tabs>
       </Box>
       <div hidden={value !== 0}>
@@ -177,7 +177,7 @@ const Profile = () => {
       </div>
       <div hidden={value !== 2}>
         <Stack spacing={4} sx={{ padding: 4, paddingLeft: 0}}>
-          { following.length ? 
+          { following?.length ? 
               following.map((address,i) => 
                 <ProfileAvatar key={i} color="primary" profileAddress={address}/>  
               ) 
@@ -194,7 +194,7 @@ const Profile = () => {
       </div>
       <div hidden={value !== 3}>
         <Stack spacing={4} sx={{ padding: 4, paddingLeft: 0}}>
-          { followers.length ? 
+          { followers?.length ? 
               followers.map((address,i) => 
                 <ProfileAvatar key={i} color="primary" profileAddress={address}/>  
               ) 

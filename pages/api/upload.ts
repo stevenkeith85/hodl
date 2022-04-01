@@ -2,13 +2,15 @@ import { NextApiRequest, NextApiResponse } from "next";
 import nextConnect from 'next-connect'
 import multer from 'multer';
 import cloudinary from 'cloudinary'
-
+import apiRoute from "./handler";
 
 interface MulterRequest extends NextApiRequest {
   file: any;
 }
 
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
+
+const route = apiRoute();
 
 // @ts-ignore
 cloudinary.v2.config({ 
@@ -32,13 +34,7 @@ const storage = new CloudinaryStorage({
     };
   },
 });
- 
-const apiRoute = nextConnect({
-  onNoMatch(req: NextApiRequest, res: NextApiResponse) {
-    res.status(405)
-      .json({ error: `Method '${req.method}' Not Allowed` });
-  },
-});
+
 
 const upload = multer({ storage }).single('asset');
 
@@ -56,7 +52,7 @@ const uploadToCloudinary = (req, res) : Promise<any> => {
 }
 
   // TODO: Once we have authentication, consider storing users images under a separate folder
-apiRoute.post(async (req: MulterRequest, res: NextApiResponse) => {
+route.post(async (req: MulterRequest, res: NextApiResponse) => {
 
   try {
     await uploadToCloudinary(req, res);
@@ -73,7 +69,7 @@ apiRoute.post(async (req: MulterRequest, res: NextApiResponse) => {
   }
 });
 
-export default apiRoute;
+export default route;
 
 export const config = {
   api: {

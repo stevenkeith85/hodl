@@ -4,14 +4,16 @@ import nextConnect from 'next-connect'
 import * as Redis from 'ioredis';
 import dotenv from 'dotenv'
 import memoize from 'memoizee';
+import apiRoute from "./handler";
 
 dotenv.config({ path: '../.env' })
+const route = apiRoute();
 
-const apiRoute = nextConnect({
-  onNoMatch(req: NextApiRequest, res: NextApiResponse) {
-    res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
-  },
-});
+// const apiRoute = nextConnect({
+//   onNoMatch(req: NextApiRequest, res: NextApiResponse) {
+//     res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
+//   },
+// });
 
 
 // Find out who address is following
@@ -29,7 +31,7 @@ export const getFollowing = memoize(async (address) => {
 // Returns a list of addresses that 'address' is following
 // Used in the following tab on the user profile
 // GET /api/following?address=
-apiRoute.get(async (req: NextApiRequest, res: NextApiResponse) => {
+route.get(async (req: NextApiRequest, res: NextApiResponse) => {
   
   const { address } = req.query;
 
@@ -45,4 +47,4 @@ apiRoute.get(async (req: NextApiRequest, res: NextApiResponse) => {
 });
 
 
-export default apiRoute;
+export default route;

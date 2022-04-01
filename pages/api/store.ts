@@ -9,15 +9,11 @@ import NFT from '../../artifacts/contracts/HodlNFT.sol/HodlNFT.json'
 import { ipfsUriToGatewayUrl } from "../../lib/utils";
 import cloudinary from 'cloudinary'
 import memoize from 'memoizee';
-
+import apiRoute from "./handler";
 
 dotenv.config({ path: '../.env' })
 
-const apiRoute = nextConnect({
-  onNoMatch(req: NextApiRequest, res: NextApiResponse) {
-    res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
-  },
-});
+const route = apiRoute();
 
 // @ts-ignore
 cloudinary.config({
@@ -38,7 +34,7 @@ const getInfuraIPFSAuth = memoize(() => {
 // {
 //   "tokenId": <number>
 // }
-apiRoute.post(async (req: NextApiRequest, res: NextApiResponse) => {
+route.post(async (req: NextApiRequest, res: NextApiResponse) => {
   
   const { tokenId, mimeType } = req.body;
 
@@ -71,4 +67,4 @@ apiRoute.post(async (req: NextApiRequest, res: NextApiResponse) => {
 });
 
 
-export default apiRoute;
+export default route;

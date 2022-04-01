@@ -8,25 +8,22 @@ import theme from '../theme';
 import Footer from '../components/Footer';
 
 export const WalletContext = createContext<{ 
-  wallet: any, 
-  setWallet: Function, 
+  signer: any, 
+  setSigner: Function, 
   address: any, 
   setAddress: Function,
   nickname: any, 
-  setNickname: Function  
+  setNickname: Function,
+  jwt: any, 
+  setJwt: Function  
 }>(null);
 
 
 function MyApp({ Component, pageProps }: AppProps) {
-
-  const [wallet, setWallet] = useState<{ provider: any, signer: any }>({
-    provider: null,
-    signer: null,
-  });
-
+  const [signer, setSigner] = useState('');
   const [address, setAddress] = useState('');
-
   const [nickname, setNickname] = useState('');
+  const [jwt, setJwt] = useState('');
 
   return (
     <>
@@ -38,7 +35,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,500" />
       </Head>
       <CssBaseline />
-      <WalletContext.Provider value={{ wallet, setWallet, address, setAddress, nickname, setNickname }}>
+      <WalletContext.Provider value={{ signer, setSigner, address, setAddress, nickname, setNickname, jwt, setJwt }}>
         <ThemeProvider theme={theme}>
           <Box sx={{
             minHeight: '100vh',

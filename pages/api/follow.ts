@@ -6,14 +6,16 @@ import dotenv from 'dotenv'
 import { getFollowing } from "./following";
 import { isFollowing } from "./follows";
 import { getFollowers } from "./followers";
+import apiRoute from "./handler";
 
 dotenv.config({ path: '../.env' })
+const route = apiRoute();
 
-const apiRoute = nextConnect({
-  onNoMatch(req: NextApiRequest, res: NextApiResponse) {
-    res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
-  },
-});
+// const apiRoute = nextConnect({
+//   onNoMatch(req: NextApiRequest, res: NextApiResponse) {
+//     res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
+//   },
+// });
 
 
 // POST /api/follow
@@ -23,7 +25,7 @@ const apiRoute = nextConnect({
 //   "addressToFollow": <address>
 // }
 // Requests that address1 follows OR unfollows address2 (toggle behaviour)
-apiRoute.post(async (req: NextApiRequest, res: NextApiResponse) => {
+route.post(async (req: NextApiRequest, res: NextApiResponse) => {
   
   const { address1, address2 } = req.body;
   let followed = false;
@@ -60,4 +62,4 @@ apiRoute.post(async (req: NextApiRequest, res: NextApiResponse) => {
 });
 
 
-export default apiRoute;
+export default route;

@@ -72,7 +72,7 @@ import { RocketTitle } from './RocketTitle';
 // }));
 
 const ResponsiveAppBar = () => {
-    const { wallet, setWallet, address, setAddress, nickname } = useContext(WalletContext);
+    const { signer, setSigner, address, setAddress, nickname } = useContext(WalletContext);
     const router = useRouter();
 
     const [pages, setPages] = useState([

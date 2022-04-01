@@ -7,14 +7,16 @@ import { getFollowing } from "./following";
 import { isFollowing } from "./follows";
 import { getFollowers } from "./followers";
 import { likesToken } from "./likes";
+import apiRoute from "./handler";
 
 dotenv.config({ path: '../.env' })
+const route = apiRoute();
 
-const apiRoute = nextConnect({
-  onNoMatch(req: NextApiRequest, res: NextApiResponse) {
-    res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
-  },
-});
+// const apiRoute = nextConnect({
+//   onNoMatch(req: NextApiRequest, res: NextApiResponse) {
+//     res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
+//   },
+// });
 
 
 // POST /api/follow
@@ -24,13 +26,19 @@ const apiRoute = nextConnect({
 //   "token": <tokenId>
 // }
 // Requests that address likes token (or stops liking it)
-apiRoute.post(async (req: NextApiRequest, res: NextApiResponse) => {
+route.post(async (req, res: NextApiResponse) => {
   
   const { address, token } = req.body;
 
   if (!address || !token) {
     return res.status(200).json({ liked: false });
   }
+
+  // TODO: We'll just check if we have a req.address (which will only be the case if we've been sent a valid jwt) and use that, rather than passing an address from the FE
+  if (req.address !== address) {
+    return res.status(400).json({ liked: false, message: "You cannot like something on behalf of another user" });
+  }
+
   let liked = false;
 
   try {
@@ -65,4 +73,4 @@ apiRoute.post(async (req: NextApiRequest, res: NextApiResponse) => {
 });
 
 
-export default apiRoute;
+export default route;

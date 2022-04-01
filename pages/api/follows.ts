@@ -4,14 +4,16 @@ import nextConnect from 'next-connect'
 import * as Redis from 'ioredis';
 import dotenv from 'dotenv'
 import memoize from 'memoizee';
+import apiRoute from "./handler";
 
 dotenv.config({ path: '../.env' })
+const route = apiRoute();
 
-const apiRoute = nextConnect({
-  onNoMatch(req: NextApiRequest, res: NextApiResponse) {
-    res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
-  },
-});
+// const apiRoute = nextConnect({
+//   onNoMatch(req: NextApiRequest, res: NextApiResponse) {
+//     res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
+//   },
+// });
 
 // Find out if adress1 follows address2
 // export this, as we clear the memo when 'follow' is toggled
@@ -25,7 +27,7 @@ export const isFollowing = memoize(async (address1, address2) => {
 
 
 // Returns whether address1 follows address2
-apiRoute.get(async (req: NextApiRequest, res: NextApiResponse) => {
+route.get(async (req: NextApiRequest, res: NextApiResponse) => {
   const { address1, address2 } = req.query;
 
   try {
@@ -40,4 +42,4 @@ apiRoute.get(async (req: NextApiRequest, res: NextApiResponse) => {
 });
 
 
-export default apiRoute;
+export default route;
