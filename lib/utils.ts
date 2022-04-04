@@ -14,11 +14,11 @@ export const checkForAndDisplaySmartContractErrors = (error, snackbarRef) => {
     }
 }
 
-export const getShortAddress = memoize((address) => {
+export const getShortAddress = address => {
     return address?.slice(0, 2) + '..' + address?.slice(-4);
-})
+}
 
-export const truncateText = memoize((text, length=30) => {
+export const truncateText = (text, length=30) => {
     if (!text) {
         return '';
     }
@@ -28,9 +28,9 @@ export const truncateText = memoize((text, length=30) => {
     }
 
     return text;
-})
+}
 
-export const ipfsUriToGatewayUrl = memoize(ipfsUri => {
+export const ipfsUriToGatewayUrl = ipfsUri => {
     if (!ipfsUri) {
       return '#';
     }
@@ -44,9 +44,9 @@ export const ipfsUriToGatewayUrl = memoize(ipfsUri => {
   
     return `https://${cid}.ipfs.infura-ipfs.io`;
   
-});
+};
 
-export const ipfsUriToCloudinaryUrl = memoize(ipfsUri => {
+export const ipfsUriToCloudinaryUrl = ipfsUri => {
     if (!ipfsUri) {
       return '#';
     }
@@ -54,13 +54,13 @@ export const ipfsUriToCloudinaryUrl = memoize(ipfsUri => {
     const [_protocol, uri] = ipfsUri.split('//');
     const [cid, _path] = uri.split('/');
     return `${cid}`
-});
+};
 
-export const trim =(str)  => {
+export const trim = str  => {
     return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 }
   
-export const assetType = (nft) => {
+export const assetType = nft => {
   if (!nft.mimeType) {
       return 'image';
   }

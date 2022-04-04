@@ -8,7 +8,7 @@ import { HodlVideo } from "./HodlVideo";
 import { assetType } from "../lib/utils";
 import { WalletContext } from "../pages/_app";
 import { useState, useContext, useEffect } from 'react';
-import { useTokenLikes } from "../hooks/useTokenLikes";
+import { useLike } from "../hooks/useLike";
 import { Likes } from "./Likes";
 
 export const DetailPageImage = ({token, folder='nfts'}) => {

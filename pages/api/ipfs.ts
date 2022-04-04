@@ -1,8 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 
 import { NextApiRequest, NextApiResponse } from "next";
-import fs from 'fs'
-import nextConnect from 'next-connect'
 import { create, urlSource } from 'ipfs-http-client'
 import cloudinary from 'cloudinary'
 import apiRoute from "./handler";
@@ -11,18 +9,15 @@ dotenv.config({ path: '../.env' })
 
 const route = apiRoute();
 
-// const apiRoute = nextConnect({
-//   onNoMatch(req, res: NextApiResponse) {
-//     res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
-//   },
-// });
-
 const ipfs = create({
   host: 'ipfs.infura.io',
   port: 5001,
   protocol: 'https',
   headers: {
-    authorization: 'Basic ' + Buffer.from(process.env.INFURA_IPFS_PROJECT_ID + ':' + process.env.INFURA_IPFS_PROJECT_SECRET).toString('base64'),
+    authorization: 'Basic ' + 
+                    Buffer.from(process.env.INFURA_IPFS_PROJECT_ID + 
+                    ':' + 
+                    process.env.INFURA_IPFS_PROJECT_SECRET).toString('base64'),
   },
 });
 

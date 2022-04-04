@@ -1,75 +1,49 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { NextApiRequest, NextApiResponse } from "next";
-import nextConnect from 'next-connect'
+import { NextApiResponse } from "next";
 import * as Redis from 'ioredis';
 import dotenv from 'dotenv'
-import { getFollowing } from "./following";
-import { isFollowing } from "./follows";
-import { getFollowers } from "./followers";
+
 import { likesToken } from "./likes";
+import { getLikeCount } from './likeCount';
+
 import apiRoute from "./handler";
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
 
-// const apiRoute = nextConnect({
-//   onNoMatch(req: NextApiRequest, res: NextApiResponse) {
-//     res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
-//   },
-// });
-
-
-// POST /api/follow
-//
-// {
-//   "address": <address>
-//   "token": <tokenId>
-// }
-// Requests that address likes token (or stops liking it)
+// Requests that address likes or stops liking a token
 route.post(async (req, res: NextApiResponse) => {
-  
-  const { address, token } = req.body;
-
-  if (!address || !token) {
-    return res.status(200).json({ liked: false });
+  if (!req.address) {
+    return res.status(403).json({ message: "Not Authenticated" });
   }
 
-  // TODO: We'll just check if we have a req.address (which will only be the case if we've been sent a valid jwt) and use that, rather than passing an address from the FE
-  if (req.address !== address) {
-    return res.status(400).json({ liked: false, message: "You cannot like something on behalf of another user" });
+  const { token } = req.body;
+
+  if (!token) {
+    return res.status(400).json({message: 'Bad Request - No token supplied'});
   }
 
   let liked = false;
 
-  try {
-    console.log("CALLING REDIS TO TOGGLE WHETHER ADDRESS LIKES TOKEN", address, token);
-    const client = new Redis(process.env.REDIS_CONNECTION_STRING);
-    const exists = await client.hexists(`likes:${address}`, token); // O(1)
+  console.log("CALLING REDIS TO TOGGLE WHETHER ADDRESS LIKES TOKEN", req.address, token);
+  const client = new Redis(process.env.REDIS_CONNECTION_STRING);
+  const exists = await client.hexists(`likes:${req.address}`, token); // O(1)
 
-    if (exists) {
-      // address no longer likes token, and token is no longer liked by address
-      await client.hdel(`likes:${address}`, token); // O(1)
-      await client.hdel(`likedby:${token}`, address); // O(1)
-    } else {
-      // address likes token, and token is liked by address
-      await client.hset(`likes:${address}`, token, 1); // O(1) 'likes:0x1234' : { 42: 1}
-      await client.hset(`likedby:${token}`, address, 1); // O(1) 'likedby:42' : { 0x1234: 1 }
-      liked = true;
-    }
-
-    await client.quit();
-
-    // clear cache (TODO)
-    
-    likesToken.delete(address, token);
-    
-
-    
-    res.status(200).json({liked});
-  } catch (error) {
-    res.status(500).json({ error });
+  if (exists) {
+    await client.hdel(`likes:${req.address}`, token);
+    await client.hdel(`likedby:${token}`, req.address);
+  } else {
+    await client.hset(`likes:${req.address}`, token, 1);
+    await client.hset(`likedby:${token}`, req.address, 1);
+    liked = true;
   }
 
+  await client.quit();
+  
+  likesToken.delete(req.address, token);
+  getLikeCount.delete(token);
+  
+  res.status(200).json({liked});
 });
 
 

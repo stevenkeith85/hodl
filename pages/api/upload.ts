@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import nextConnect from 'next-connect'
 import multer from 'multer';
 import cloudinary from 'cloudinary'
 import apiRoute from "./handler";
@@ -24,9 +23,8 @@ const storage = new CloudinaryStorage({
   params: async (req, file) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     const public_id = file.fieldname + '-' + uniqueSuffix;
-    console.log(file)
     const isVideo = file.mimetype.indexOf('video') !== -1;
-    console.log('isVideo', isVideo)
+
     return {
       folder: 'uploads',
       public_id: public_id,

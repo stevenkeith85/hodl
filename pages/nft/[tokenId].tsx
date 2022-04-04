@@ -149,7 +149,7 @@ const NftDetail = () => {
             <Card variant="outlined">
               <CardContent sx={{ whiteSpace: 'pre-line', maxHeight: 500, overflowY: 'auto'}}>
                  <Typography sx={{ marginBottom: 2 }}>Description</Typography>
-                 <Typography>{marketItem?.description || "<No description provided>"}</Typography>
+                 <Typography>{marketItem?.description || ""}</Typography>
               </CardContent>
             </Card>
             }

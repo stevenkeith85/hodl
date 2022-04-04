@@ -17,24 +17,28 @@ const handler =  () => nc<HodlApiRequest, NextApiResponse>({
   },
   onError(error, req, res) {
     // TODO: Write this error somewhere. Perhaps REDIS
-    console.log('Error', error);
+    console.log('API Route Error', 'address: ', req.address, 'path: ', req.url, 'message: ', error.message)
     res.status(500).json(error);
   }
 }).use((req, res, next) => {
-  const {authorization} = req.headers;
-  console.log('Authorization', authorization)
-
-  if (!authorization) {
-    next();
-  } else {
-    
-    const { address } = jwt.verify(authorization, process.env.JWT_SECRET);
-    req.address = address;
-    next();
+    const {authorization} = req.headers;
+    if (!authorization) {
+      next();
+    } else {  
+      try {
+        const { address } = jwt.verify(authorization, process.env.JWT_SECRET);
+        req.address = address;
+        next();
+      } catch (e) {
+        if (e instanceof jwt.TokenExpiredError) {
+          // Return a 403; so that the FE re-requests a login
+          return res.status(403).json({message: 'jwt has expired'})
+        } else {
+          return res.status(500).json({message: 'something has gone wrong'})
+        }
+      }
+      
   }
-
-  
-
 });
 
 export default handler;

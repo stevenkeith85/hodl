@@ -24,22 +24,25 @@ export const fetchNftsInWallet = async (address, offset, limit) => {
         return [[], next, total];
     }
 
-    const r = await fetch(`/api/token/${tokenIds.join('/')}`);
-    const result = await r.json();
+    const tokens = await Promise.all(
+        tokenIds.map(id => fetch(`/api/token/${id}`).then(r => r.json()).then(json => json.token))
+    );
 
-    const items = result.tokens.map(token => {
+    const items = tokens.map(token => {
 
+        // We want to keep the number of items in the array, 
+        // so that it ties up with blockchain (and our infinite scroll iterator works), but 
+        // won't show anything not in our database
         if (!token) {
-            return null; // We want to keep the number of items in the array, so that it ties up with blockchain (and our infinite scroll iterator works), but won't show anything not in our database
+            return null; 
         }
 
-        return {
-        
-        tokenId: token.tokenId,
-        name: token.name,
-        description: token.description,
-        image: ipfsUriToCloudinaryUrl(token.image),
-        mimeType: token.mimeType
+        return {        
+            tokenId: token.tokenId,
+            name: token.name,
+            description: token.description,
+            image: ipfsUriToCloudinaryUrl(token.image),
+            mimeType: token.mimeType
     }
     });
 
@@ -52,7 +55,7 @@ export const fetchNFTsListedOnMarket = async (address, offset, limit) => {
     let [data, next, total] = await market.getListingsForAddress(address, offset, limit);
 
     if (!data.length) {
-        return [];
+        return [[], next, total];
     }
 
     const tokenIdToListing = new Map();
@@ -63,12 +66,17 @@ export const fetchNFTsListedOnMarket = async (address, offset, limit) => {
         tokenIds.push(listing.tokenId);
     }
 
-    const r = await fetch(`/api/token/${tokenIds.join('/')}`);
-    const result = await r.json();
+    // We want to keep the number of items in the array, 
+    // so that it ties up with blockchain (and our infinite scroll iterator works), but 
+    // won't show anything not in our database
+    const tokens = await Promise.all(
+        tokenIds.map(id => fetch(`/api/token/${id}`).then(r => r.json()).then(json => json.token))
+    );
 
-    const items =  result.tokens.map(token => {
+    const items =  tokens.map(token => {
+
         if (!token) {
-            return null; // We want to keep the number of items in the array, so that it ties up with blockchain (and our infinite scroll iterator works), but won't show anything not in our database
+            return null; 
         }
         const listing = tokenIdToListing.get(Number(token.tokenId));
 
@@ -83,6 +91,5 @@ export const fetchNFTsListedOnMarket = async (address, offset, limit) => {
         };
     })
 
-    console.log('[items, next, total]', items, next, total)
     return [items, next, total];
 }

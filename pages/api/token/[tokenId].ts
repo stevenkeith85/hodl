@@ -3,37 +3,33 @@ import { NextApiRequest, NextApiResponse } from "next";
 import * as Redis from 'ioredis';
 import dotenv from 'dotenv'
 import memoize from 'memoizee';
-import apiRoute from "./handler";
+import apiRoute from '../handler';
 
 dotenv.config({ path: '../.env' })
 
 const route = apiRoute();
 
-// Find out if adress likes token
-// Memo cleared when 'like' is toggled
-export const likesToken = memoize(async (address, token) => {
-  console.log("CALLING REDIS TO SEE IF ADDRESS LIKES TOKEN", address, token);
+export const getToken = memoize(async (tokenId) => {
+  console.log('CALLING REDIS TO GET TOKEN INFORMATION FOR', tokenId);
   const client = new Redis(process.env.REDIS_CONNECTION_STRING);
-  const likes = await client.hexists(`likes:${address}`, token);
+  const token = await client.get('token:' + tokenId);
   await client.quit();
-  return likes;
+  return JSON.parse(token);
 }, { 
   primitive: true,
-  max: 1000, // 1000 tokens 
+  max: 10000, 
 });
 
 
 route.get(async (req: NextApiRequest, res: NextApiResponse) => {
-  const { address, token } = req.query;
+  const { tokenId } = req.query;
 
-  if (!address || !token) {
+  if (!tokenId) {
     return res.status(400).json({message: 'Bad Request'});
   }
 
-  const likes = await likesToken(address, token);
-  res.status(200).json({likes});
-  
+  const token = await getToken(tokenId);
+  res.status(200).json({ token })
 });
-
 
 export default route;

@@ -14,11 +14,12 @@ const getItems = async (data) => {
         tokenIdToListing.set(Number(listing.tokenId), listing);
         tokenIds.push(listing.tokenId);
     }
+    
+    const tokens = await Promise.all(
+        tokenIds.map(id => fetch(`/api/token/${id}`).then(r => r.json()).then(json => json.token))
+    );
 
-    const r = await fetch(`/api/token/${tokenIds.join('/')}`);
-    const result = await r.json();
-
-    const items = result.tokens.filter(token => token).map(token => {
+    const items = tokens.filter(token => token).map(token => {
         const listing = tokenIdToListing.get(Number(token.tokenId));
 
         return {

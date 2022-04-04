@@ -1,7 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { NextApiRequest, NextApiResponse } from "next";
 import { ethers } from 'ethers'
-import nextConnect from 'next-connect'
 import * as Redis from 'ioredis';
 import dotenv from 'dotenv'
 import { nftaddress } from '../../config';

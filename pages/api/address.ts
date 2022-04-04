@@ -11,35 +11,31 @@ dotenv.config({ path: '../.env' })
 
 const route = apiRoute();
 
-// const apiRoute = nextConnect({
-//   onNoMatch(req: NextApiRequest, res: NextApiResponse) {
-//     res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
-//   },
-// });
 
-// export this, as we clear the memo when a new nickname is set
+// Memo cleared when a new nickname is set
 export const getAddress = memoize(async (nickname) => {
-  try {
-    const client = new Redis(process.env.REDIS_CONNECTION_STRING);
     console.log("CALLING REDIS FOR ADDRESS FOR NICKNAME", nickname);
-    const address = await client.get(`address:${nickname}`); // O(1)
+    const client = new Redis(process.env.REDIS_CONNECTION_STRING);
+    const address = await client.get(`address:${nickname}`);
     await client.quit();
     return address;
-  } catch (e) {
-    console.log(e)
-  }
-}, { primitive: true, maxAge: 1000 * 60 * 60, max: 10000, async: true}); // cache for an hour and a maximum of 10000 items
+}, { 
+  primitive: true, 
+  max: 10000
+});
 
 // GET /api/address?nickname=steve
 route.get(async (req: NextApiRequest, res: NextApiResponse) => {
-  try {
-    const { nickname } = req.query;
-    const sanitizedNickName = trim(nickname).toLowerCase();
-    const address = await getAddress(sanitizedNickName);
-    return res.status(200).json({address})
-  } catch (e) {
-    console.log(e)
+  const { nickname } = req.query;
+
+  if (!nickname) {
+    return res.status(400).json({message: 'Bad Request'});
   }
+
+  const sanitizedNickName = trim(nickname).toLowerCase();
+  const address = await getAddress(sanitizedNickName);
+
+  return res.status(200).json({address})
 });
 
 

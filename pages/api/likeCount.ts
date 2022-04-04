@@ -1,44 +1,38 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { NextApiRequest, NextApiResponse } from "next";
-import nextConnect from 'next-connect'
 import * as Redis from 'ioredis';
 import dotenv from 'dotenv'
 import apiRoute from "./handler";
+import memoize from 'memoizee';
 
 dotenv.config({ path: '../.env' })
+
 const route = apiRoute();
 
-// const apiRoute = nextConnect({
-//   onNoMatch(req: NextApiRequest, res: NextApiResponse) {
-//     res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
-//   },
-// });
+// Memo cleared when someone likes/dislikes the token
+export const getLikeCount = memoize(async (token) => {
+  console.log("CALLING REDIS TO GET TOKEN LIKE COUNT", token);
 
+  const client = new Redis(process.env.REDIS_CONNECTION_STRING);
+    
+  const count = await client.hlen(`likedby:${token}`);
+  await client.quit();
 
-// POST /api/follow
-//
-// {
-//   "address": <address>
-//   "token": <tokenId>
-// }
+  return count;
+}, { 
+  primitive: true,
+  max: 10000, // 10000 tokens 
+});
+
 // Requests the number of users who like a token
-route.get(async (req: NextApiRequest, res: NextApiResponse) => {
-  
+route.get(async (req, res) => {
   const { token } = req.query;
 
-  try {
-    const client = new Redis(process.env.REDIS_CONNECTION_STRING);
-    
-    console.log("CALLING REDIS TO GET TOKEN LIKE COUNT", token);
-    const count = await client.hlen(`likedby:${token}`); // O(1)
-    await client.quit();
-    
-    res.status(200).json({count});
-  } catch (error) {
-    console.log('ERROR', error);
-    res.status(500).json({ error });
+  if (!token) {
+    return res.status(400).json({message: 'Bad Request'});
   }
 
+  const count = await getLikeCount(token);
+  res.status(200).json({count});
 });
 
 

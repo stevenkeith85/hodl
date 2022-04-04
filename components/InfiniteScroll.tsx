@@ -113,11 +113,13 @@ export const InfiniteScroll = ({fetcherFn, viewSale = true, swrKey, showTop=true
 
     const onScroll = () => {
         const ascending = window.scrollY > lastScrollYRef.current;
-
+        const yPosition = window.pageYOffset + window.innerHeight;
+        const contentHeight = document.body.offsetHeight;
+        
         if (nftsRef.current.length &&
             Number(totalRef.current) !== Number(nftsRef.current.length) && // we have all the data
             ascending &&
-            (window.innerHeight + window.pageYOffset) >= (document.body.offsetHeight - 1300)) {
+            (contentHeight / 2) > yPosition) {
 
             setOffset(Number(nextRef.current));
         }

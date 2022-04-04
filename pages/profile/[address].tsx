@@ -9,6 +9,7 @@ import { HodlImpactAlert } from '../../components/HodlImpactAlert'
 import { HodlButton } from '../../components/HodlButton'
 import Link from 'next/link'
 import { ProfileAvatar } from '../../components'
+import { useFollow } from '../../hooks/useFollow'
 
 
 const Profile = () => {
@@ -22,7 +23,7 @@ const Profile = () => {
   const [followers, setFollowers] = useState([]);
 
   const [validAddress, setValidAddress] = useState(false);
-  const [userIsFollowingThisProfile, setUserIsFollowingThisProfile] = useState(null);
+  const [follow, isFollowing] = useFollow();
   
   // @ts-ignore
   useEffect(async () => {
@@ -48,20 +49,6 @@ const Profile = () => {
       const response = await fetch(`/api/followers?address=${router.query.address}`);
       const result = await response.json();
       setFollowers(result.followers);
-    }
-
-    // To determine if we need to show the follow or unfollow button;
-    // If a user is on their own profile, we never show the button, so skip the BE call
-    if (address && 
-        router.query.address &&
-        address !== router.query.address) {
-      const response = await fetch(`/api/follows?address1=${address}&address2=${router.query.address}`);
-      const result = await response.json();
-      if (result.follows) {
-        setUserIsFollowingThisProfile(true);
-      } else {
-        setUserIsFollowingThisProfile(false);
-      }
     }
   }, [address, router.query.address]);
   
@@ -110,24 +97,9 @@ const Profile = () => {
           paddingRight: 2
         }}
         
-        onClick={async () => {
-          if (!address) { return }
-           const response = await fetch('/api/follow', {
-              method: 'POST',
-              headers: new Headers({
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-              }),
-              body: JSON.stringify({ 
-                address1: address,
-                address2: router?.query?.address
-              })
-            });
-
-            setUserIsFollowingThisProfile(old => !old);
-        }}>
-          { userIsFollowingThisProfile ? 'Unfollow' : 'Follow' }
-          </HodlButton>
+        onClick={follow}>
+          { isFollowing ? 'Unfollow' : 'Follow' }
+        </HodlButton>
       }
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>

@@ -1,12 +1,12 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { NextApiRequest, NextApiResponse } from "next"
-import nextConnect from 'next-connect'
 import * as Redis from 'ioredis'
 import dotenv from 'dotenv'
 import { messageToSign } from "../../lib/utils"
 import { ethers } from "ethers"
 import jwt from 'jsonwebtoken'
 import apiRoute from "./handler";
+import { getNonceForAddress } from "./nonce"
 
 dotenv.config({ path: '../.env' })
 
@@ -22,10 +22,10 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
     console.log("CALLING REDIS TO GET NONCE TO AUTHENTICATE ADDRESS", address);
     
     const client = new Redis(process.env.REDIS_CONNECTION_STRING);
-    const exists = await client.hexists(`user:${address}`, 'nonce'); // O(1)
+    const exists = await client.hexists(`user:${address}`, 'nonce');
 
     if (exists) {
-      const nonce = await client.hget(`user:${address}`, 'nonce'); // O(1)
+      const nonce = await client.hget(`user:${address}`, 'nonce');
       const msg = messageToSign + nonce;
       const signerAddress = ethers.utils.verifyMessage(msg, signature);
 
@@ -33,10 +33,12 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
         
         // update their nonce
         const newNonce = `${Math.floor(Math.random() * 1000000)}`;
-        await client.hset(`user:${address}`, 'nonce', newNonce); // O(1)
+        await client.hset(`user:${address}`, 'nonce', newNonce);
+        getNonceForAddress.delete(address);
         
         // generate a jwt
-        const token = jwt.sign({address}, process.env.JWT_SECRET, { expiresIn: '1h' });
+        // expire every 30 mins for development to help catch bugs. TODO: Update to 24 hours or so
+        const token = jwt.sign({address}, process.env.JWT_SECRET, { expiresIn: 60 * 30 });
         
         await client.quit();
         return res.status(200).json({

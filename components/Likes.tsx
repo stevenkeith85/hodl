@@ -1,10 +1,10 @@
 import { Stack, Typography } from "@mui/material";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import { useTokenLikes } from "../hooks/useTokenLikes";
+import { useLike } from "../hooks/useLike";
 
 export const Likes = ({token, sx={}}) => {
-    const [tokenLikesCount, userLikesThisToken, toggleLike] = useTokenLikes(token);
+    const [tokenLikesCount, userLikesThisToken, toggleLike] = useLike(token);
 
     return (
         <Stack spacing={1} direction="row" sx={{ color: "white", alignItems: "center", ...sx }}>
