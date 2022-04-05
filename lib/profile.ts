@@ -5,8 +5,11 @@ import Market from '../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
 import NFT from '../artifacts/contracts/HodlNFT.sol/HodlNFT.json'
 
 import { ipfsUriToCloudinaryUrl } from './utils';
-import { getProvider } from './connections';
+import { getProvider } from './server/connections';
 
+///////////////////////////////////////////////////////////////////////////
+// TODO: Move to API function as we need to use the provider server side //
+///////////////////////////////////////////////////////////////////////////
 
 export const isValidAddress = async address => await ethers.utils.isAddress(address);
 

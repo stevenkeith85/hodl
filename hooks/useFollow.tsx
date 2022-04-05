@@ -24,8 +24,6 @@ export const useFollow = () => {
   }, [address, router.query.address]);
 
   const follow = async () => {
-    // if (!address) { return }
-
     if (!router?.query?.address) {
       return;
     }

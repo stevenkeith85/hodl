@@ -115,7 +115,7 @@ contract HodlMarket is ReentrancyGuardUpgradeable, OwnableUpgradeable {
 
         require(
             price >= minListingPriceInMatic,
-            "Token must be listed at minListingPrice or higher"
+            "Token must be listed at the minimum listing price or higher."
         );
 
         listings[tokenId] = Listing(tokenId, price, payable(msg.sender));

@@ -16,7 +16,7 @@ export const DetailPageImage = ({token, folder='nfts'}) => {
     
     // This is based on
     // "(max-width:899px) 100vw, (max-width:1549px) 50vw, 744px"
-    const calcImageWidthWeNeed = memoize(() => {
+    const calcImageWidthWeNeed = () => {
         const findFindSizeBigEnough = (width) => {
             const sizes = [400, 450, 500, 600, 700, 800, 900, 1000, 1200, 1350, 1500, 1700];
 
@@ -41,7 +41,7 @@ export const DetailPageImage = ({token, folder='nfts'}) => {
             imageWidth = devicePixelRatio * 744;
         }
         return findFindSizeBigEnough(imageWidth);
-    });
+    };
     
     return ( token &&
         <>

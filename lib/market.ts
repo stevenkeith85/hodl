@@ -3,8 +3,11 @@ import { ethers } from 'ethers'
 import { nftmarketaddress } from '../config.js'
 import Market from '../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
 import { ipfsUriToCloudinaryUrl } from './utils';
-import { getProvider } from './connections';
+import { getProvider } from './server/connections';
 
+///////////////////////////////////
+// TODO: Move to API function as we need to use the provider server side
+///////////////////////////////////
 
 const getItems = async (data) => {
     const tokenIdToListing = new Map();
@@ -36,6 +39,7 @@ const getItems = async (data) => {
 
     return items;
 }
+
 
 export const fetchMarketItems = async (offset, limit) => {
     const provider = await getProvider();

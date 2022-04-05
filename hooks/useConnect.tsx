@@ -35,6 +35,7 @@ export const useConnect = () => {
         });
 
         const { token } = await rSig.json();
+
         localStorage.setItem('jwt', token.split(" ")[1]);
       }
 
@@ -54,9 +55,10 @@ export const useConnect = () => {
   }
 
   const disconnect = async () => {
+    setSigner(null);
     setAddress(null);
     setNickname(null);
-    setSigner(null);
+    setJwt(null);
     localStorage.setItem('Wallet', 'Not Connected');
     localStorage.setItem('jwt', '');
   }

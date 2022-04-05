@@ -68,19 +68,19 @@ const Profile = () => {
     return <HodlImpactAlert title="Connect Wallet" message={"You need to connect your wallet to view your profile"} />
   }
  
-  if (Number(numberHodling) === 0 && Number(numberListed) == 0) {
-    return (
-    <HodlImpactAlert 
-      title="Empty" 
-      message={"This profile does not have any NFTs"} 
-      action={
-        Boolean(router?.query?.address && address === router?.query?.address) && 
-        <Link href="/mint" passHref>
-          <HodlButton>Mint One</HodlButton>
-        </Link>
-      }
-    />)
-  }
+  // if (Number(numberHodling) === 0 && Number(numberListed) == 0) {
+  //   return (
+  //   <HodlImpactAlert 
+  //     title="Empty" 
+  //     message={"This profile does not have any NFTs"} 
+  //     action={
+  //       Boolean(router?.query?.address && address === router?.query?.address) && 
+  //       <Link href="/mint" passHref>
+  //         <HodlButton>Mint One</HodlButton>
+  //       </Link>
+  //     }
+  //   />)
+  // }
 
   return (
     <>

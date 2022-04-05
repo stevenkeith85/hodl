@@ -29,6 +29,7 @@ cloudinary.config({
 });
 
 const uploadNFT = async (name, description, path, mimeType) => {
+  console.log(name, description, path, mimeType)
   const url = mimeType.indexOf('video') === -1 ? `https://res.cloudinary.com/dyobirj7r/image/upload/${path}`: `https://res.cloudinary.com/dyobirj7r/video/upload/${path}`
   
   // @ts-ignore
@@ -44,8 +45,9 @@ const uploadNFT = async (name, description, path, mimeType) => {
 route.post(async (req: NextApiRequest, res: NextApiResponse) => {
   const { name, description, fileUrl, mimeType } = req.body;
 
+  console.log('here')
   const { imageCid, metadataCid } = await uploadNFT(name, description, fileUrl, mimeType);
-
+  console.log('we go')
   // overwrite is true for dev; will set to false in production
   // TODO: If this falls over, we've already minted a token. We should try to recover
   cloudinary.v2.uploader.rename(fileUrl, 'nfts/' + imageCid.toString(), { overwrite: true, resource_type: mimeType.indexOf('video') !== -1 ? 'video' : 'image' }, (error, result) => {

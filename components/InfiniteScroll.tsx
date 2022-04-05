@@ -36,7 +36,7 @@ export const InfiniteScroll = ({fetcherFn, viewSale = true, swrKey, showTop=true
         _setOffset(data);
     };
 
-    const [limit, setLimit] = useState(16);
+    const [limit, setLimit] = useState(24);
 
     const [lastScrollY, _setLastScrollY] = useState(0);
     const lastScrollYRef = useRef(lastScrollY);
@@ -73,7 +73,7 @@ export const InfiniteScroll = ({fetcherFn, viewSale = true, swrKey, showTop=true
                 ...old.slice(offset + items.length,),
             ]
 
-            if (newArray.length < 50) { // don't bother truncating if the array isn't that big
+            if (newArray.length < 40) { // don't bother truncating if the array isn't that big
                 return newArray;
             }
 
@@ -115,18 +115,22 @@ export const InfiniteScroll = ({fetcherFn, viewSale = true, swrKey, showTop=true
         const ascending = window.scrollY > lastScrollYRef.current;
         const yPosition = window.pageYOffset + window.innerHeight;
         const contentHeight = document.body.offsetHeight;
+
+        // console.log("contentHeight", contentHeight)
+        // console.log("yPos", yPosition)
         
         if (nftsRef.current.length &&
             Number(totalRef.current) !== Number(nftsRef.current.length) && // we have all the data
             ascending &&
-            (contentHeight / 2) > yPosition) {
-
+            yPosition > (contentHeight / 2)) {
+                console.log('requesting next data')
             setOffset(Number(nextRef.current));
         }
         else if (nftsRef.current.length &&
             Number(totalRef.current) !== Number(nftsRef.current.length) && // we have all the data
             !ascending &&
-            window.pageYOffset < 1300) {
+            yPosition < (contentHeight / 2)) {
+                console.log('requesting prev data')
             setOffset(Number(prevRef.current));
         }
 

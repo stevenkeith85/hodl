@@ -6,17 +6,16 @@ import { RocketTitle } from '../components/RocketTitle'
 import { HodlSnackbar } from '../components/HodlSnackbar'
 import { HodlButton } from '../components/HodlButton'
 import { HodlModal, SuccessModal } from '../components'
-import { getMetaMaskSigner } from '../lib/connections'
 import { mintToken } from '../lib/mint'
 import { ipfsUriToCloudinaryUrl } from '../lib/utils'
 import { Spa } from '@mui/icons-material'
-
+import { useUpload } from '../hooks/useUpload'
 
 export default function Mint() {
   const [loading, setLoading] = useState(false);
   const [minting, setMinting] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  const [fileUrl, setFileUrl] = useState('');
+  
   const [formInput, updateFormInput] = useState({ price: '', name: '', description: '' });
   
   const [modalOpen, setModalOpen] = useState(false);
@@ -24,43 +23,28 @@ export default function Mint() {
 
   const [tokenUrl, setTokenUrl] = useState('');
   const [tokenId, setTokenId] = useState(null);
-  const [mimeType, setMimeType] = useState('video'); // most things will be this. if we can get it from the cloudinary rename step, use that
 
   const [imageCid, setImageCid] = useState('');
   const [cloudinaryUrl, setCloudinaryUrl] = useState('');
 
   const snackbarRef = useRef();
 
-  // upload a photo
-  async function onChange(e) {
+  const [upload, fileName, mimeType] = useUpload();
+  
+  async function doUpload(e) {
     setLoading(true);
 
-    const data = new FormData();
-    data.append('asset', e.target.files[0]);
-    data.append('fileUrl', fileUrl);
+    const success = await upload(e.target.files[0]);
 
-    const response = await fetch('/api/upload', {
-      method: 'POST',
-      body: data,
-    });
-
-    const json = await response.json();
-
-    if (response.status === 400) {
-      // @ts-ignore
-      snackbarRef?.current.display(json.error.message, 'error');
-    } else {  
-      setFileUrl(json.fileName);
+    if (!success) {
+      e.target.value = null;
     }
-    
-    setMimeType(json.mimeType);
+
     setLoading(false);
     setLoaded(true);
   }
 
-  async function doMint(tokenUrl, mimeType) {
-      const signer = await getMetaMaskSigner();
-      
+  async function doMint(tokenUrl) {
       // @ts-ignore
       snackbarRef?.current.display('Please approve transaction in MetaMask', 'info');
       const tokenId = await mintToken(tokenUrl);
@@ -97,7 +81,8 @@ export default function Mint() {
   async function createItem() {
     try {
       const { name, description } = formInput;
-      if (!name || !description || !fileUrl) {
+      
+      if (!name || !description || !fileName || !mimeType) {
         return;
       }
 
@@ -113,7 +98,7 @@ export default function Mint() {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
           }),
-          body: JSON.stringify({ name, description, fileUrl, mimeType })
+          body: JSON.stringify({ name, description, fileUrl: fileName, mimeType })
         });
 
         if (response.status === 400) {
@@ -123,22 +108,19 @@ export default function Mint() {
           return;
         }
 
-        const json = await response.json();
+        const {imageCid, metadataUrl} = await response.json();
         
-        setCloudinaryUrl(ipfsUriToCloudinaryUrl(`ipfs://${json.imageCid}`));
-        setTokenUrl(json.metadataUrl);
-        setImageCid(json.imageCid);
-        console.log('setting mimetype to ', json.mimeType)
-        setMimeType(json.mimeType);
+        setCloudinaryUrl(ipfsUriToCloudinaryUrl(`ipfs://${imageCid}`));
+        setTokenUrl(metadataUrl);
+        setImageCid(imageCid);
 
-        await doMint(json.metadataUrl, json.mimeType);
+        await doMint(metadataUrl);
       } else {
         // if there is a tokenURL already, then the user has likely previously cancelled the mint operation in metamask.
         // just use the exitising data if they try again.
-        await doMint(tokenUrl, mimeType);
+        await doMint(tokenUrl);
       }
     } catch (error) {
-      console.log(error)
       if (error.code === 4001) {
         // @ts-ignore
         snackbarRef?.current?.display('Transaction rejected', 'error');
@@ -215,8 +197,8 @@ export default function Mint() {
       <MintForm
         formInput={formInput}
         updateFormInput={updateFormInput}
-        onChange={onChange}
-        fileUrl={fileUrl}
+        onChange={doUpload}
+        fileUrl={fileName}
         createItem={createItem}
         loading={loading}
         loaded={loaded}

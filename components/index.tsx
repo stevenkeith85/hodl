@@ -11,3 +11,7 @@ export { TokenDetail } from './TokenDetail';
 export { SocialShare } from './SocialShare';
 export { ProfileAvatar } from './ProfileAvatar';
 export { HodlExternalLink } from './HodlExternalLink';
+export { IpfsCard } from './IpfsCard';
+export { PriceCard } from './PriceCard';
+export { DescriptionCard } from './DescriptionCard';
+export { NftActionButtons } from './NftActionButtons';

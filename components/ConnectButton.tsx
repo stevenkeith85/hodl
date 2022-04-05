@@ -56,7 +56,7 @@ export const ConnectButton = () => {
 
     useEffect(() => {
         // @ts-ignore
-        snackbarRef?.current.display(`Nickname updated`, 'success');
+        //snackbarRef?.current.display(`Nickname updated`, 'success');
 
         setNicknameModalOpen(false);
     }, [nickname])

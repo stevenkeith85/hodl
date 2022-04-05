@@ -41,6 +41,9 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
         const token = jwt.sign({address}, process.env.JWT_SECRET, { expiresIn: 60 * 30 });
         
         await client.quit();
+
+        // TODO: Consider setting a cookie with the jwt value instead of returning it.
+        // res.setHeader('Set-Cookie', [`jwt=${token}`]);
         return res.status(200).json({
           success: true,
           token: `Bearer ${token}`,

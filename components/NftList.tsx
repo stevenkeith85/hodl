@@ -140,7 +140,6 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
                         }}
                         subtitle={
                             <Stack>
-                                <Typography sx={{ fontWeight: 900 }}>{truncateText(nft?.tokenId, 20)}</Typography>
                                 <Likes token={nft} />
                             </Stack>
                         }

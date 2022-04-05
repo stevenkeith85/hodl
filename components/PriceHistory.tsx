@@ -1,5 +1,4 @@
-import { Card, CardContent, Typography, Stack } from "@mui/material"
-import { getShortAddress } from "../lib/utils"
+import { Card, CardContent, Typography, Stack, Link } from "@mui/material"
 
 
 import Table from '@mui/material/Table';
@@ -8,6 +7,8 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import { getShortAddress } from "../lib/utils";
+import { HodlLink } from "./HodlLink";
 
 export const PriceHistory = ({ priceHistory }) => {
     return (
@@ -26,14 +27,22 @@ export const PriceHistory = ({ priceHistory }) => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {priceHistory.map(({ buyer, seller, price, timestamp }, i) => {
+                            {priceHistory.map(({ buyerNickname, buyerAddress, sellerNickname, sellerAddress, price, timestamp }, i) => {
                                 return (
                                     <TableRow
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                         key={i}>
-                                        <TableCell size="small">{getShortAddress(buyer)}</TableCell>
+                                        <TableCell size="small">
+                                            <HodlLink href={`/profile/${buyerNickname || buyerAddress}`}>
+                                                {buyerNickname || getShortAddress(buyerAddress)}
+                                            </HodlLink>
+                                        </TableCell>
                                         <TableCell size="small">{price} Matic</TableCell>
-                                        <TableCell size="small">{getShortAddress(seller)}</TableCell>
+                                        <TableCell size="small">
+                                            <HodlLink href={`/profile/${sellerNickname || sellerAddress}`}>
+                                                {sellerNickname || getShortAddress(sellerAddress)}
+                                            </HodlLink>
+                                        </TableCell>
                                         <TableCell size="small">{new Date(timestamp * 1000).toLocaleDateString()}</TableCell>
 
                                     </TableRow>

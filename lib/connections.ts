@@ -24,8 +24,3 @@ export const getMetaMaskSigner = async (returningUser=true) => {
   
     return signer;
   }
-
-  // TODO: Use correct provider for local, testnet, prod
-  export const getProvider = async () => {
-    return await new ethers.providers.JsonRpcProvider("http://192.168.1.242:8545");
-  }
