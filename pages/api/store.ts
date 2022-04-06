@@ -35,7 +35,7 @@ const getInfuraIPFSAuth = memoize(() => {
 // }
 route.post(async (req: NextApiRequest, res: NextApiResponse) => {
   
-  const { tokenId, mimeType } = req.body;
+  const { tokenId, mimeType, filter } = req.body;
 
   console.log('mimeType', mimeType)
   try {
@@ -53,7 +53,7 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
     const r = await fetch(ipfsUriToGatewayUrl(tokenUri), { headers : getInfuraIPFSAuth() }); // Potentially, we don't want to do it this way (as rate limiting / slow / etc)
     const { name, description, image } = await r.json()
 
-    client.set("token:" + tokenId, JSON.stringify({ tokenId, name, description, image, mimeType }));
+    client.set("token:" + tokenId, JSON.stringify({ tokenId, name, description, image, mimeType, filter }));
     
     await client.quit(); // https://docs.upstash.com/redis/troubleshooting/max_concurrent_connections
 

@@ -18,15 +18,18 @@ export const SuccessModal = ({modalOpen, setModalOpen, message, tab=1}) => {
         setOpen={setModalOpen}
       >
           <Stack spacing={4}>
-            <RocketTitle title="We have lift off" />
+            <RocketTitle title="Success" />
             <Typography sx={{ span: { fontWeight: 600 } }}>
               { message }
             </Typography>
+            <div>
             <Link href={`/profile/${nickname || address}?tab=${tab}`} passHref>
               <HodlButton>
                 View Profile
               </HodlButton>
             </Link>
+            </div>
+            
           </Stack>
     </HodlModal>
     )

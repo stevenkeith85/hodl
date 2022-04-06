@@ -1,212 +1,306 @@
 import { useRef, useState } from 'react'
-import { MintForm } from '../components/MintForm'
-import { Box, Typography,  Modal, Stack, CircularProgress } from '@mui/material'
-import Link from 'next/link'
-import { RocketTitle } from '../components/RocketTitle'
+import { Box, Typography, Stack, CircularProgress, Step, StepLabel, Stepper, Button } from '@mui/material'
 import { HodlSnackbar } from '../components/HodlSnackbar'
-import { HodlButton } from '../components/HodlButton'
-import { HodlModal, SuccessModal } from '../components'
+import { HodlButton, HodlImage, HodlTextField, SuccessModal } from '../components'
 import { mintToken } from '../lib/mint'
-import { ipfsUriToCloudinaryUrl } from '../lib/utils'
-import { Spa } from '@mui/icons-material'
-import { useUpload } from '../hooks/useUpload'
+import { Build, KeyboardArrowLeft, KeyboardArrowRight, Spa } from '@mui/icons-material'
+import { useCloudinaryUpload } from '../hooks/useCloudinaryUpload'
+import { useIpfsUpload } from '../hooks/useIpfsUpload'
+import { useStoreToken } from '../hooks/useStoreToken'
+import { UnableToStoreModal } from '../components/UnableToStoreModal'
+import { HodlVideo } from '../components/HodlVideo'
+
+export const MintTitle = () => (
+  <Stack 
+      direction="row" 
+      spacing={1} 
+      sx={{ 
+        alignItems: 'center',
+        width: '100%'
+      }}>
+      <Spa color="secondary"  />
+      <Typography color="secondary" pt={2} pb={2} variant="h1">
+        Mint
+      </Typography>
+    </Stack>
+)
 
 export default function Mint() {
   const [loading, setLoading] = useState(false);
-  const [minting, setMinting] = useState(false);
-  const [loaded, setLoaded] = useState(false);
   
-  const [formInput, updateFormInput] = useState({ price: '', name: '', description: '' });
+  const [filter, setFilter] = useState(null);
+
+  const [formInput, updateFormInput] = useState({ 
+    name: '', 
+    description: '' 
+  });
   
-  const [modalOpen, setModalOpen] = useState(false);
+  const [successModalOpen, setSuccessModalOpen] = useState(false);
   const [unableToSaveModalOpen, setUnableToSaveModalOpen] = useState(false);
 
-  const [tokenUrl, setTokenUrl] = useState('');
   const [tokenId, setTokenId] = useState(null);
-
-  const [imageCid, setImageCid] = useState('');
-  const [cloudinaryUrl, setCloudinaryUrl] = useState('');
-
   const snackbarRef = useRef();
+  const metadataUrlRef = useRef(null);
 
-  const [upload, fileName, mimeType] = useUpload();
+  const [uploadToCloudinary] = useCloudinaryUpload();
+  const [uploadToIpfs] = useIpfsUpload();
+  const [store] = useStoreToken();
+
+  const [fileName, setFileName] = useState(null);
+  const [mimeType, setMimeType] = useState(null);
+
+  const [activeStep, setActiveStep] = useState(0);
+  const [stepComplete, setStepComplete] = useState(-1);
   
-  async function doUpload(e) {
+  const isImage = () => mimeType && mimeType.indexOf('image') !== -1;
+  const isVideo = () => mimeType && mimeType.indexOf('video') !== -1;
+
+  async function cloudinaryUpload(e) {
     setLoading(true);
 
-    const success = await upload(e.target.files[0]);
+    // @ts-ignore
+    snackbarRef?.current.display('Large files may take some time', "info");
+    const {success, fileName, mimeType} = await uploadToCloudinary(e.target.files[0]);
 
-    if (!success) {
-      e.target.value = null;
+    if (success) {
+      setFileName(fileName);
+      setMimeType(mimeType);
+      // @ts-ignore
+      snackbarRef?.current.display('Asset ready for departure', "success");
+      setStepComplete(0);
+    } else {
+      e.target.value = ''; // clear the input and ask the user to try again
+      // @ts-ignore
+      snackbarRef?.current.display('Please try again', "warning");
     }
-
+    
     setLoading(false);
-    setLoaded(true);
   }
 
-  async function doMint(tokenUrl) {
-      // @ts-ignore
-      snackbarRef?.current.display('Please approve transaction in MetaMask', 'info');
-      const tokenId = await mintToken(tokenUrl);
-      setTokenId(tokenId);
+  async function ipfsUpload() {
+    setLoading(true);
+    
+    const { name, description } = formInput;
 
+    // @ts-ignore
+    snackbarRef?.current.display('Transferring asset to IPFS', "info");
+    let {success, imageCid, metadataUrl } = await uploadToIpfs(name, description, fileName, mimeType, filter)
+    
+    if (success) {
+      metadataUrlRef.current = metadataUrl;
+
+      // @ts-ignore
+      snackbarRef?.current.display('IPFS Upload Success', "success");
+      setStepComplete(1);
+    } else {
+      // @ts-ignore
+      snackbarRef?.current.display('Please try again', "warning");
+    }
+    
+    setLoading(false);
+  }
+
+  async function mint() {
+    setLoading(true);
+    
+    // @ts-ignore
+    snackbarRef?.current.display('Please approve the transaction in MetaMask', 'info');
+    const tokenId = await mintToken(metadataUrlRef.current);
+
+    if (tokenId) {
+      setTokenId(tokenId);
       // @ts-ignore
       snackbarRef?.current.display(`NFT minted on the blockchain with token id ${tokenId}`, 'success');
-
+      setStepComplete(2);
+    } else {
       // @ts-ignore
-      snackbarRef?.current.display('Storing a copy in our database', 'info');
-      
-      const response = await fetch('/api/store', {
-        method: 'POST',
-        headers: new Headers({
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        }),
-        body: JSON.stringify({ tokenId, mimeType })
-      });
-
-      if (response.status === 500){
-        // @ts-ignore
-        snackbarRef?.current.display("Unable to save a copy in our database", "info");
-        setUnableToSaveModalOpen(true);
-      } else {
-        // @ts-ignore
-        snackbarRef?.current.display('Successfully a copy in our database', 'success');
-        setModalOpen(true);
-      } 
-
-      setMinting(false);
-  }  
-
-  async function createItem() {
-    try {
-      const { name, description } = formInput;
-      
-      if (!name || !description || !fileName || !mimeType) {
-        return;
-      }
-
-      setMinting(true);
-
-      if (!tokenUrl) { // If there's no tokenURL, upload to IPFS, save the url, and ask user to do the mint.
-        // @ts-ignore
-        snackbarRef?.current.display('Uploading Image to IPFS', "info");
-
-        const response = await fetch('/api/ipfs', {
-          method: 'POST',
-          headers: new Headers({
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          }),
-          body: JSON.stringify({ name, description, fileUrl: fileName, mimeType })
-        });
-
-        if (response.status === 400) {
-          // @ts-ignore
-          snackbarRef?.current.display("This exact file has already been uploaded", "error");
-          setMinting(false);
-          return;
-        }
-
-        const {imageCid, metadataUrl} = await response.json();
-        
-        setCloudinaryUrl(ipfsUriToCloudinaryUrl(`ipfs://${imageCid}`));
-        setTokenUrl(metadataUrl);
-        setImageCid(imageCid);
-
-        await doMint(metadataUrl);
-      } else {
-        // if there is a tokenURL already, then the user has likely previously cancelled the mint operation in metamask.
-        // just use the exitising data if they try again.
-        await doMint(tokenUrl);
-      }
-    } catch (error) {
-      if (error.code === 4001) {
-        // @ts-ignore
-        snackbarRef?.current?.display('Transaction rejected', 'error');
-        setMinting(false);
-      } else if (error.code === -32603) {
-        const re = /reverted with reason string '(.+)'/gi;
-        const matches = re.exec(error?.data?.message)
-        
-        
-        if (matches) {
-          // @ts-ignore
-          snackbarRef?.current?.display(matches[1], 'error');
-        } else {
-          // @ts-ignore
-          snackbarRef?.current?.display("We've ran into a problem, sorry", 'error');
-          setMinting(false);
-        }
-      }
-      else {
-        // @ts-ignore
-        snackbarRef?.current?.display("We've ran into a problem, sorry", 'error');
-        setMinting(false);
-      }
+       snackbarRef?.current.display('Unable to mint at the moment. Please try again', "warning");
     }
+    
+    setLoading(false);
+  }
+
+  async function hodl() {
+    const success = await store(tokenId, mimeType, filter);
+    
+    if (success) {
+      // @ts-ignore
+      snackbarRef?.current.display('Successfully added your token to HodlMyMoon', 'success');
+      setStepComplete(3);
+      setSuccessModalOpen(true);
+    } else {
+      // @ts-ignore
+      setUnableToSaveModalOpen(true);
+    }
+  
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', justifyItems: "center", paddingTop: 4, paddingBottom: 4 }}>
+    <Stack spacing={6} mt={4} sx={{ alignItems: 'center', position: 'relative'}}>
       <HodlSnackbar ref={snackbarRef} />
-      <HodlModal
-        open={unableToSaveModalOpen}
-        setOpen={setUnableToSaveModalOpen}
-      >
-          <Stack spacing={4}>
-            <RocketTitle title="We've ran out of fuel..." />
-            <Typography sx={{ span: { fontWeight: 600 } }}>
-            <span>Your token was minted on the blockchain</span>, but we had a problem saving a copy to the website&apos;s database.
-            </Typography>
-            <Typography sx={{ span: { fontWeight: 600 } }}>
-              Once we store a copy of the token data, it will show up.
-            </Typography>
-            <Typography sx={{ span: { fontWeight: 600 } }}>
-              <span>Do not re-mint your token</span>, click the button below to request your token is added to HodlMyMoon.
-            </Typography>
-            <Typography sx={{ span: { fontWeight: 600 } }}>
-              Your token will automatically appear on the website, once we have processed this request. 
-            </Typography>
-            <Typography sx={{ span: { fontWeight: 600 } }}>
-              The process should take less than 24 hours.
-            </Typography>
-            
-            <Link href={`mailto:support@hodlmymoon.com?subject=Add my HodlNFT to HodlMyMoon (DO NOT EDIT)&body=Please add my HodlNFT to HodlMyMoon. It has the following tokenId: ${tokenId}`} passHref>
-              <HodlButton>
-                Add My NFT
-              </HodlButton>
-            </Link>
-          </Stack>
-      </HodlModal>
-      <SuccessModal
-        modalOpen={modalOpen}
-        setModalOpen={setModalOpen}
-        message="You&apos;ve successfully minted a token"
+      <UnableToStoreModal 
+        setUnableToSaveModalOpen={setUnableToSaveModalOpen} 
+        unableToSaveModalOpen={unableToSaveModalOpen} 
+        tokenId={tokenId} 
+        retry={hodl}
       />
-      {Boolean(minting) && <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%' }} color="secondary" />}
-      <Stack spacing={2}>
-        <Stack direction="row" spacing={1} sx={{ alignItems: 'center'}}>
-          <Spa color="secondary"  />
-          <Typography color="secondary" pt={2} pb={2} variant="h1">
-            Mint
-          </Typography>
+       <SuccessModal
+        modalOpen={successModalOpen}
+        setModalOpen={setSuccessModalOpen}
+        message="You&apos;ve successfully minted your token and added it to HodlMyMoon"
+        tab={0}
+      />
+      
+      {loading && <CircularProgress 
+          sx={{ 
+            position: 'absolute', 
+            top: '50%', 
+            left: '50%' 
+          }} 
+        color="secondary" 
+        />
+      } 
+      
+        <MintTitle />
+        <Stepper activeStep={activeStep} alternativeLabel sx={{ width: '100%'}}>
+          <Step key={'upload'}>
+            <StepLabel>
+              <Typography sx={{ fontWeight: activeStep == 0 ? 900: 400}}>Select Asset</Typography>
+            </StepLabel>
+          </Step>
+          <Step key={'ipfs'}>
+            <StepLabel>
+              <Typography sx={{ fontWeight: activeStep == 1 ? 900: 400}}>IPFS Upload</Typography>
+            </StepLabel>
+          </Step>
+          <Step key={'mint'}>
+            <StepLabel>
+              <Typography sx={{ fontWeight: activeStep == 2 ? 900: 400}}>Mint NFT</Typography>
+            </StepLabel>
+          </Step>
+          <Step key={'store'}>
+            <StepLabel>
+              <Typography sx={{ fontWeight: activeStep == 3 ? 900: 400}}>Hodl</Typography>
+            </StepLabel>
+          </Step>
+        </Stepper>
+       
+        
+        <Box
+          sx={{
+            width: {
+              xs: `100%`,
+              // sm: `75%`,
+              // md: `66%`,
+              // lg: `50%`
+            }
+          }}>
+        { activeStep === 0 && 
+        <Stack direction="row" spacing={4}>
+          <Stack spacing={4} sx={{ width: '50%'}}>
+            <Typography variant="h2">Select Asset</Typography>
+            <Typography>Upload an asset to be attached to your token. This can be an image, video or audo clip.</Typography>
+            <HodlTextField
+              type="file"
+              onChange={cloudinaryUpload}
+              disabled={loading}
+              helperText="Images can be up to 10MB. Videos can be up to 100MB"
+            />
+        </Stack>
+        <Stack sx={{ width: '50%' }} spacing={2}>
+          <Stack sx={{ border: !fileName ? `1px solid #d0d0d0`: 'none', minHeight: 400, alignItems: 'center', justifyContent: 'center' }}>
+                {!fileName && <Typography>Preview will appear here</Typography>}
+                {fileName && isImage() && <HodlImage image={ fileName.split('/')[1] } folder='uploads' filter={filter}/>}
+                {fileName && isVideo() && <HodlVideo cid={fileName} directory="video/upload" />}
+          </Stack>
+          <Stack direction="row" spacing={2} sx={{justifyContent:"center"}}>
+              <HodlButton onClick={() => setFilter(null)}>none</HodlButton>
+              <HodlButton onClick={() => setFilter('e_improve')}>auto</HodlButton>
+              <HodlButton onClick={() => setFilter('e_art:athena')}>athena</HodlButton>
+              <HodlButton onClick={() => setFilter('e_art:aurora')}>aurora</HodlButton>
+              <HodlButton onClick={() => setFilter('e_art:hairspray')}>hairspray</HodlButton>
+              <HodlButton onClick={() => setFilter('e_art:peacock')}>peacock</HodlButton>
+              <HodlButton onClick={() => setFilter('e_art:primavera')}>primavera</HodlButton>
+              <HodlButton onClick={() => setFilter('e_cartoonify')}>cartoonify</HodlButton>
+          </Stack>
         </Stack>
         
+            
+          </Stack>
+        }
+        { activeStep === 1 && 
+        <Stack direction="row" spacing={4} >
+          <Stack spacing={4} sx={{ width: '50%'}}>
+          <Typography variant="h2">Upload To IPFS</Typography>
+          <Typography>Your token metadata and asset will be stored on IPFS</Typography>
+          <HodlTextField
+              disabled={stepComplete === 1}
+              label="Token Name"
+              onChange={e => updateFormInput({ ...formInput, name: e.target.value })}
+              helperText="A name for your token"
+            />
+            <HodlTextField
+              disabled={stepComplete === 1}
+              label="Token Description"
+              multiline
+              minRows={8}
+              onChange={e => updateFormInput({ ...formInput, description: e.target.value })}
+              helperText="A multi-line description for your token. No HTML"
+            />
+            <div>
+              <HodlButton
+                onClick={ipfsUpload}
+                disabled={!formInput.name || !formInput.description || loading || stepComplete === 1}
+                startIcon={<Build fontSize="large" />}
+              >
+                Upload To IPFS
+              </HodlButton>
+            </div>
+        </Stack> 
+          <Stack sx={{ border: !fileName ? `1px solid #d0d0d0`: 'none', minHeight: 400, alignItems: 'center', justifyContent: 'center', width: `50%`}}>
+              {fileName && isImage() && <HodlImage image={ fileName.split('/')[1] } folder='uploads' filter={filter} />}
+              {fileName && isVideo() && <HodlVideo cid={fileName} directory="video/upload" />}
+            </Stack>
+        </Stack>
         
-      <MintForm
-        formInput={formInput}
-        updateFormInput={updateFormInput}
-        onChange={doUpload}
-        fileUrl={fileName}
-        createItem={createItem}
-        loading={loading}
-        loaded={loaded}
-        minting={minting}
-        mimeType={mimeType}
-      />
-      </Stack>
-      
-    </Box>
+        }
+        { activeStep === 2 && 
+        <Stack spacing={4}>
+          <Typography variant="h2">Mint NFT</Typography>
+          <Typography>Your ERC721 token will be minted on the Polygon blockchain to benefit from low transaction fees.</Typography>
+            <div>
+            <HodlButton
+                onClick={mint}
+                disabled={ loading }
+                startIcon={<Build fontSize="large" />}
+              >
+                Mint Token
+            </HodlButton>
+            </div>
+        </Stack> }
+        { activeStep === 3 && 
+        <Stack spacing={4}>
+          <Typography variant="h2">Hodl My Moon</Typography>
+          <Typography>Add my token to HodlMyMoon</Typography>
+          <div>
+            <HodlButton
+              onClick={hodl}
+              disabled={ loading }
+              startIcon={<Build fontSize="large" />}
+            >
+              Add Token
+            </HodlButton>
+          </div>
+          
+        </Stack> }
+        </Box>
+
+        <Stack direction="row" sx={{ justifyContent: 'center', width: '100%'}}>
+          {/* <Button disabled={stepComplete < 0} onClick={() => setActiveStep(step => step - 1)}><KeyboardArrowLeft /> Previous</Button> */}
+          <Button disabled={stepComplete < activeStep} variant="outlined" onClick={() => stepComplete === activeStep && setActiveStep(activeStep => activeStep + 1)}> Next <KeyboardArrowRight /></Button>  
+        </Stack>
+
+        
+    </Stack>
   )
 }

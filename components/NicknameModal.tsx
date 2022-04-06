@@ -27,18 +27,21 @@ export const NicknameModal = ({ nicknameModalOpen, setNicknameModalOpen }) => {
                     <HodlTextField
                         label="Nickname"
                         value={desiredNickname}
+                        // @ts-ignore
                         onInput={() => setUpdateErrors([])}
                         onChange={e => setDesiredNickname(e.target.value)}
                         required
                         error={updateErrors.length}
+                        // @ts-ignore
                         helperText={updateErrors.join(', ')}
                     />
                     <HodlButton
                         onClick={() => {
                             if (desiredNickname && (desiredNickname.length >= 3 || desiredNickname.length <= 20)) {
+                                // @ts-ignore
                                 updateNickname(desiredNickname);
                             } else {
-                                console.log(desiredNickname)
+                                // @ts-ignore
                                 setUpdateErrors(['A nickname between 3 and 20 characters is required'])
                             }
                         }}

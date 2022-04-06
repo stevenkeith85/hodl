@@ -14,19 +14,11 @@ import { WalletContext } from '../pages/_app';
 import Link from 'next/link';
 import { Logo } from './Logo';
 
-import SearchIcon from '@mui/icons-material/Search';
-import { styled, alpha } from '@mui/material/styles';
-import InputBase from '@mui/material/InputBase';
 import { Stack } from '@mui/material';
 import { useRouter } from 'next/router';
 import { grey } from "@mui/material/colors";
 import { ConnectButton } from './ConnectButton';
-import { listTokenOnMarket } from '../lib/nft';
-import { checkForAndDisplaySmartContractErrors } from '../lib/utils';
-import { HodlButton } from './HodlButton';
-import { HodlModal } from './HodlModal';
-import { HodlTextField } from './HodlTextField';
-import { RocketTitle } from './RocketTitle';
+
 
 // From MUI Docs
 // const Search = styled('div')(({ theme }) => ({

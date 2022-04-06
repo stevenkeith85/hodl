@@ -3,14 +3,13 @@ import { grey } from '@mui/material/colors';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import { Logo } from "./Logo";
-import Link from "next/link";
 import { HodlLink } from "./HodlLink";
 import { useContext } from "react";
 import { WalletContext } from "../pages/_app";
 
 
 const Footer = () => {
-    const { wallet, address } = useContext(WalletContext);
+    const { address } = useContext(WalletContext);
 
     return (
     <Box sx={{

@@ -1,6 +1,7 @@
 import {
   Grid,
   Stack,
+  Tooltip,
   Typography
 } from "@mui/material";
 
@@ -15,6 +16,7 @@ import {
 
 import { fetchNFT, lookupPriceHistory } from "../../lib/server/nft";
 import { PriceHistory } from "../../components/PriceHistory";
+import { truncateText } from "../../lib/utils";
 
 export async function getServerSideProps({ params }) {
   const nft = await fetchNFT(params.tokenId);
@@ -35,8 +37,18 @@ const NftDetail = ({nft, priceHistory}) => {
     <>    
       <Grid container spacing={2} sx={{ paddingTop: { xs: 2 } }}>
         <Grid item xs={12}>
-          <Stack spacing={2} direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="h1">{nft?.name}</Typography>
+          <Stack 
+            spacing={1} 
+            direction="row" 
+            sx={{ 
+              py: 2,
+              justifyContent: 'space-between', 
+              alignItems: 'center' 
+            }}>
+            <Tooltip title={nft.name}>
+              <Typography variant="h2">{truncateText(nft?.name, 100)}</Typography>
+            </Tooltip>
+            
             <ProfileAvatar reverse={true} profileAddress={nft?.owner} />
           </Stack>
         </Grid>

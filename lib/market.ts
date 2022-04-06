@@ -5,9 +5,9 @@ import Market from '../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
 import { ipfsUriToCloudinaryUrl } from './utils';
 import { getProvider } from './server/connections';
 
-///////////////////////////////////
-// TODO: Move to API function as we need to use the provider server side
-///////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+// TODO: Move to API function as we need to use the provider server side //
+///////////////////////////////////////////////////////////////////////////
 
 const getItems = async (data) => {
     const tokenIdToListing = new Map();
@@ -33,7 +33,8 @@ const getItems = async (data) => {
 
             price: listing ? ethers.utils.formatUnits(listing.price.toString(), 'ether') : '',
             seller: listing ? listing.seller : '',
-            mimeType: token.mimeType
+            mimeType: token.mimeType,
+            filter: token.filter
         };
     });
 

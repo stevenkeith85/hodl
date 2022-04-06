@@ -86,6 +86,7 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
                                 }} 
                                 image={nft?.image} 
                                 imgSizes={"(max-width:599px) 100vw, (max-width:899px) 50vw, (max-width:1199px) 33vw, 25vw"} 
+                                filter={nft?.filter}
                             /> : 
                             <HodlImage 
                                 sx={{
@@ -97,6 +98,7 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
                                 }} 
                                 image={nft?.image} 
                                 imgSizes={"100vw"} 
+                                filter={nft?.filter}
                             />
                         }
                     </>

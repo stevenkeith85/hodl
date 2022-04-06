@@ -120,7 +120,7 @@ const Profile = () => {
             <InfiniteScroll 
               fetcherFn={async (offset, limit) => {
                 const [data, next, length] = await fetchNftsInWallet(router.query.address, offset, limit);
-                console.log('fetchNftsInWallet returned', data, next, length);
+                // @ts-ignore
                 setNumberHodling(Number(length));
 
                 if (Number(length) === 0) {
@@ -139,6 +139,7 @@ const Profile = () => {
           <InfiniteScroll 
             fetcherFn={async (offset, limit) => {
               const [data, next, length] = await fetchNFTsListedOnMarket(router.query.address, offset, limit);
+              // @ts-ignore
               setNumberListed(Number(length));
               return [data, next, length]
             }} 

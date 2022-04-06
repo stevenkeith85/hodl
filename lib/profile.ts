@@ -45,7 +45,8 @@ export const fetchNftsInWallet = async (address, offset, limit) => {
             name: token.name,
             description: token.description,
             image: ipfsUriToCloudinaryUrl(token.image),
-            mimeType: token.mimeType
+            mimeType: token.mimeType,
+            filter: token.filter
     }
     });
 
@@ -90,7 +91,8 @@ export const fetchNFTsListedOnMarket = async (address, offset, limit) => {
             image: ipfsUriToCloudinaryUrl(token.image),
             price: listing ? ethers.utils.formatUnits(listing.price, 'ether') : '',
             seller: listing ? listing.seller : '',
-            mimeType: token.mimeType
+            mimeType: token.mimeType,
+            filter: token.filter
         };
     })
 

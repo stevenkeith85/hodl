@@ -15,7 +15,8 @@ route.post(async (req: MulterRequest, res: NextApiResponse) => {
 
   await uploadToCloudinary(req, res);
 
-  if (req.body) {
+  if (req?.body?.fileUrl) {
+    console.log(req.body)
     await removeFromCloudinary(req, res);
   } 
   

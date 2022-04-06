@@ -1,6 +1,6 @@
 import { Stack } from "@mui/material";
 import { useContext, useRef, useState } from "react";
-import { buyNft, delistNft, listTokenOnMarket } from "../lib/nft";
+import { buyNft, delistNft, listNftOnMarket } from "../lib/nft";
 import { checkForAndDisplaySmartContractErrors } from "../lib/utils";
 import { WalletContext } from "../pages/_app";
 import { HodlButton } from "./HodlButton";
@@ -55,7 +55,7 @@ export const NftActionButtons = ({ nft }) => {
                             try {
                                 // @ts-ignore
                                 snackbarRef?.current?.display('Please Approve Transaction in Wallet', 'info');
-                                await listTokenOnMarket(router.query.tokenId, price);
+                                await listNftOnMarket(router.query.tokenId, price);
                                 // @ts-ignore
                                 snackbarRef?.current?.display('Token listed on market', 'success');
                                 setListModalOpen(false);
