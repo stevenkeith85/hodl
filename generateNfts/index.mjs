@@ -7,7 +7,7 @@ import { readFileSync } from 'fs'
 import dotenv from 'dotenv'
 import cloudinary from 'cloudinary'
 import Redis from 'ioredis';
-dotenv.config({ path: '../.env' })
+dotenv.config({ path: '../.env.local' })
 
 const Market = JSON.parse(fs.readFileSync('../artifacts/contracts/HodlMarket.sol/HodlMarket.json'));
 const NFT = JSON.parse(fs.readFileSync('../artifacts/contracts/HodlNFT.sol/HodlNFT.json'));
@@ -21,10 +21,10 @@ const ipfs = create({
   },
 });
 
-
+console.log('process.env.CLOUDINARY_NAME', process.env.CLOUDINARY_NAME)
 // @ts-ignore
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_NAME,
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_NAME,
   api_key: process.env.CLOUDINARY_KEY,
   api_secret: process.env.CLOUDINARY_SECRET,
 });
@@ -120,7 +120,7 @@ async function createNFTs(dirpath) {
 
 const uploadToCloudinary = (fullPath, imageCid) => {
   return new Promise((resolve, reject) => {
-    cloudinary.v2.uploader.upload(fullPath, { public_id: 'nfts/' + imageCid.toString(), phash: true }, (error, result) => {
+    cloudinary.v2.uploader.upload(fullPath, { public_id: process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER + '/nfts/' + imageCid.toString(), phash: true }, (error, result) => {
       if (error) {
         reject(error);
       } else {

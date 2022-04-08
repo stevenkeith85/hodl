@@ -5,11 +5,12 @@ import { HodlImage } from "./HodlImage";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { HodlVideo } from "./HodlVideo";
-import { assetType } from "../lib/utils";
+import { assetType, createCloudinaryUrl } from "../lib/utils";
 import { WalletContext } from "../pages/_app";
 import { useState, useContext, useEffect } from 'react';
 import { useLike } from "../hooks/useLike";
 import { Likes } from "./Likes";
+import { HodlImage2 } from "./HodlImage2";
 
 export const DetailPageImage = ({token, folder='nfts'}) => {
     // const [tokenLikesCount, userLikesThisToken, toggleLike] = useTokenLikes(token);
@@ -48,14 +49,15 @@ export const DetailPageImage = ({token, folder='nfts'}) => {
         <Head>
             {
                 token && token.mimeType === 'image/gif' ?
-                <link rel="preload" href={`https://res.cloudinary.com/dyobirj7r/${folder}/${token.image}.mp4`} />
-                : <link rel="preload" href={`https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,w_${calcImageWidthWeNeed()},q_auto/${folder}/${token.image}`} />
+                <link rel="preload" href={createCloudinaryUrl('image', 'upload', null, folder, token.image, 'mp4')} />
+                : <link rel="preload" href={createCloudinaryUrl('image', 'upload', `f_auto,c_limit,w_${calcImageWidthWeNeed()},q_auto`, folder, token.image)} />
             }
         </Head>
         <Box sx={{ position: 'relative', img: { borderRadius: 1} }}>
                 { assetType(token) === 'gif' && <HodlVideo cid={token?.image} gif={true}/> }
                 { assetType(token) === 'video' && <HodlVideo cid={token?.image} directory={'video/upload/nfts/'}/> }
-                { assetType(token) === 'image' && <HodlImage image={token?.image} sx={{ width: '100%'}} filter={token?.filter}/> }
+                {/* { assetType(token) === 'image' && <HodlImage image={token?.image} sx={{ width: '100%'}} filter={token?.filter}/> } */}
+                { assetType(token) === 'image' && <HodlImage2 image={token?.image} effect={token?.filter}/> }
                 <Likes token={token} sx={{padding: 1, position: 'absolute', top: 10, right: 10}}/>
         </Box>
         

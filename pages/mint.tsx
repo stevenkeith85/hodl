@@ -1,40 +1,55 @@
 import { useRef, useState } from 'react'
-import { Box, Typography, Stack, CircularProgress, Step, StepLabel, Stepper, Button } from '@mui/material'
-import { HodlSnackbar } from '../components/HodlSnackbar'
-import { HodlButton, HodlImage, HodlTextField, SuccessModal } from '../components'
-import { mintToken } from '../lib/mint'
-import { Build, KeyboardArrowLeft, KeyboardArrowRight, Spa } from '@mui/icons-material'
+import { Box, Typography, Stack, CircularProgress } from '@mui/material'
+
 import { useCloudinaryUpload } from '../hooks/useCloudinaryUpload'
 import { useIpfsUpload } from '../hooks/useIpfsUpload'
+import { mintToken } from '../lib/mint'
 import { useStoreToken } from '../hooks/useStoreToken'
-import { UnableToStoreModal } from '../components/UnableToStoreModal'
-import { HodlVideo } from '../components/HodlVideo'
 
-export const MintTitle = () => (
-  <Stack 
-      direction="row" 
-      spacing={1} 
-      sx={{ 
-        alignItems: 'center',
-        width: '100%'
-      }}>
-      <Spa color="secondary"  />
-      <Typography color="secondary" pt={2} pb={2} variant="h1">
-        Mint
-      </Typography>
-    </Stack>
-)
+import { HodlVideo } from '../components/HodlVideo'
+import { MintStepperMemo } from '../components/mint/MintStepper'
+import { MintProgressButtonsMemo } from '../components/mint/MintProgressButtons'
+import { FilteredImageMemo } from '../components/mint/FilteredImage'
+import { MintTitleMemo } from '../components/mint/MintTitle'
+
+import { HodlSnackbar } from '../components';
+import { SuccessModal } from '../components';
+import { UnableToStoreModal } from '../components/UnableToStoreModal';
+
+import dynamic from "next/dynamic";
+
+const SelectAssetAction = dynamic(
+  // @ts-ignore
+  () => import('../components/mint/SelectAssetAction').then((module) => module.SelectAssetAction),
+  {loading: () => <CircularProgress />}
+);
+const UploadToIpfsAction = dynamic(
+  // @ts-ignore
+  () => import('../components/mint/UploadToIpfsAction').then((module) => module.UploadToIpfsAction),
+  {loading: () => <CircularProgress />}
+);
+const MintTokenAction = dynamic(
+  // @ts-ignore
+  () => import('../components/mint/MintTokenAction').then((module) => module.MintTokenAction),
+  {loading: () => <CircularProgress />}
+);
+const AddToHodlAction = dynamic(
+  // @ts-ignore
+  () => import('../components/mint/AddToHodlAction').then((module) => module.AddToHodlAction),
+  {loading: () => <CircularProgress />}
+);
+
 
 export default function Mint() {
   const [loading, setLoading] = useState(false);
-  
+
   const [filter, setFilter] = useState(null);
 
-  const [formInput, updateFormInput] = useState({ 
-    name: '', 
-    description: '' 
+  const [formInput, updateFormInput] = useState({
+    name: '',
+    description: ''
   });
-  
+
   const [successModalOpen, setSuccessModalOpen] = useState(false);
   const [unableToSaveModalOpen, setUnableToSaveModalOpen] = useState(false);
 
@@ -51,7 +66,7 @@ export default function Mint() {
 
   const [activeStep, setActiveStep] = useState(0);
   const [stepComplete, setStepComplete] = useState(-1);
-  
+
   const isImage = () => mimeType && mimeType.indexOf('image') !== -1;
   const isVideo = () => mimeType && mimeType.indexOf('video') !== -1;
 
@@ -60,7 +75,7 @@ export default function Mint() {
 
     // @ts-ignore
     snackbarRef?.current.display('Large files may take some time', "info");
-    const {success, fileName, mimeType} = await uploadToCloudinary(e.target.files[0]);
+    const { success, fileName, mimeType } = await uploadToCloudinary(e.target.files[0]);
 
     if (success) {
       setFileName(fileName);
@@ -72,20 +87,19 @@ export default function Mint() {
       e.target.value = ''; // clear the input and ask the user to try again
       // @ts-ignore
       snackbarRef?.current.display('Please try again', "warning");
+      setLoading(false);
     }
-    
-    setLoading(false);
   }
 
   async function ipfsUpload() {
     setLoading(true);
-    
+
     const { name, description } = formInput;
 
     // @ts-ignore
     snackbarRef?.current.display('Transferring asset to IPFS', "info");
-    let {success, imageCid, metadataUrl } = await uploadToIpfs(name, description, fileName, mimeType, filter)
-    
+    let { success, imageCid, metadataUrl } = await uploadToIpfs(name, description, fileName, mimeType, filter)
+
     if (success) {
       metadataUrlRef.current = metadataUrl;
 
@@ -96,13 +110,13 @@ export default function Mint() {
       // @ts-ignore
       snackbarRef?.current.display('Please try again', "warning");
     }
-    
+
     setLoading(false);
   }
 
   async function mint() {
     setLoading(true);
-    
+
     // @ts-ignore
     snackbarRef?.current.display('Please approve the transaction in MetaMask', 'info');
     const tokenId = await mintToken(metadataUrlRef.current);
@@ -114,15 +128,15 @@ export default function Mint() {
       setStepComplete(2);
     } else {
       // @ts-ignore
-       snackbarRef?.current.display('Unable to mint at the moment. Please try again', "warning");
+      snackbarRef?.current.display('Unable to mint at the moment. Please try again', "warning");
     }
-    
+
     setLoading(false);
   }
 
   async function hodl() {
     const success = await store(tokenId, mimeType, filter);
-    
+
     if (success) {
       // @ts-ignore
       snackbarRef?.current.display('Successfully added your token to HodlMyMoon', 'success');
@@ -132,175 +146,120 @@ export default function Mint() {
       // @ts-ignore
       setUnableToSaveModalOpen(true);
     }
-  
+
   }
 
   return (
-    <Stack spacing={6} mt={4} sx={{ alignItems: 'center', position: 'relative'}}>
+    <Stack spacing={4} mt={4} sx={{ alignItems: 'center', position: 'relative' }}>
       <HodlSnackbar ref={snackbarRef} />
-      <UnableToStoreModal 
-        setUnableToSaveModalOpen={setUnableToSaveModalOpen} 
-        unableToSaveModalOpen={unableToSaveModalOpen} 
-        tokenId={tokenId} 
+      <UnableToStoreModal
+        setUnableToSaveModalOpen={setUnableToSaveModalOpen}
+        unableToSaveModalOpen={unableToSaveModalOpen}
+        tokenId={tokenId}
         retry={hodl}
       />
-       <SuccessModal
+      <SuccessModal
         modalOpen={successModalOpen}
         setModalOpen={setSuccessModalOpen}
         message="You&apos;ve successfully minted your token and added it to HodlMyMoon"
         tab={0}
       />
-      
-      {loading && <CircularProgress 
-          sx={{ 
-            position: 'absolute', 
-            top: '50%', 
-            left: '50%' 
-          }} 
-        color="secondary" 
-        />
-      } 
-      
-        <MintTitle />
-        <Stepper activeStep={activeStep} alternativeLabel sx={{ width: '100%'}}>
-          <Step key={'upload'}>
-            <StepLabel>
-              <Typography sx={{ fontWeight: activeStep == 0 ? 900: 400}}>Select Asset</Typography>
-            </StepLabel>
-          </Step>
-          <Step key={'ipfs'}>
-            <StepLabel>
-              <Typography sx={{ fontWeight: activeStep == 1 ? 900: 400}}>IPFS Upload</Typography>
-            </StepLabel>
-          </Step>
-          <Step key={'mint'}>
-            <StepLabel>
-              <Typography sx={{ fontWeight: activeStep == 2 ? 900: 400}}>Mint NFT</Typography>
-            </StepLabel>
-          </Step>
-          <Step key={'store'}>
-            <StepLabel>
-              <Typography sx={{ fontWeight: activeStep == 3 ? 900: 400}}>Hodl</Typography>
-            </StepLabel>
-          </Step>
-        </Stepper>
-       
-        
-        <Box
-          sx={{
-            width: {
-              xs: `100%`,
-              // sm: `75%`,
-              // md: `66%`,
-              // lg: `50%`
-            }
-          }}>
-        { activeStep === 0 && 
-        <Stack direction="row" spacing={4}>
-          <Stack spacing={4} sx={{ width: '50%'}}>
-            <Typography variant="h2">Select Asset</Typography>
-            <Typography>Upload an asset to be attached to your token. This can be an image, video or audo clip.</Typography>
-            <HodlTextField
-              type="file"
-              onChange={cloudinaryUpload}
-              disabled={loading}
-              helperText="Images can be up to 10MB. Videos can be up to 100MB"
-            />
-        </Stack>
-        <Stack sx={{ width: '50%' }} spacing={2}>
-          <Stack sx={{ border: !fileName ? `1px solid #d0d0d0`: 'none', minHeight: 400, alignItems: 'center', justifyContent: 'center' }}>
+
+      {loading && <CircularProgress
+        sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%'
+        }}
+        color="secondary"
+      />
+      }
+
+      <MintTitleMemo />
+      <MintStepperMemo activeStep={activeStep} />
+      <Box
+        sx={{
+          width: {
+            xs: `100%`,
+          }
+        }}>
+        {activeStep === 0 &&
+          <Stack direction={{
+              xs: "column",
+              md: 'row'
+          }}
+             spacing={4}
+             sx={{ }}>
+            <Stack spacing={8} sx={{ flexBasis: `50%`}}>
+               {/* @ts-ignore */}
+              <SelectAssetAction cloudinaryUpload={cloudinaryUpload} loading={loading} filter={filter} setFilter={setFilter} />
+              <MintProgressButtonsMemo activeStep={activeStep} setActiveStep={setActiveStep} stepComplete={stepComplete} />
+            </Stack>
+            <Stack spacing={2} sx={{ flexBasis: `50%` }}>
+              <Stack
+                sx={{
+                  border: !fileName ? `1px solid #d0d0d0` : 'none',
+                  flexGrow: 1,
+                  minHeight: 400,
+                  borderRadius: `5px`,
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
                 {!fileName && <Typography>Preview will appear here</Typography>}
-                {fileName && isImage() && <HodlImage image={ fileName.split('/')[1] } folder='uploads' filter={filter}/>}
+                {fileName && isImage() && <FilteredImageMemo filter={filter} fileName={fileName} setLoading={setLoading} />}
                 {fileName && isVideo() && <HodlVideo cid={fileName} directory="video/upload" />}
-          </Stack>
-          <Stack direction="row" spacing={2} sx={{justifyContent:"center"}}>
-              <HodlButton onClick={() => setFilter(null)}>none</HodlButton>
-              <HodlButton onClick={() => setFilter('e_improve')}>auto</HodlButton>
-              <HodlButton onClick={() => setFilter('e_art:athena')}>athena</HodlButton>
-              <HodlButton onClick={() => setFilter('e_art:aurora')}>aurora</HodlButton>
-              <HodlButton onClick={() => setFilter('e_art:hairspray')}>hairspray</HodlButton>
-              <HodlButton onClick={() => setFilter('e_art:peacock')}>peacock</HodlButton>
-              <HodlButton onClick={() => setFilter('e_art:primavera')}>primavera</HodlButton>
-              <HodlButton onClick={() => setFilter('e_cartoonify')}>cartoonify</HodlButton>
-          </Stack>
-        </Stack>
-        
-            
+              </Stack>
+            </Stack>
           </Stack>
         }
-        { activeStep === 1 && 
-        <Stack direction="row" spacing={4} >
-          <Stack spacing={4} sx={{ width: '50%'}}>
-          <Typography variant="h2">Upload To IPFS</Typography>
-          <Typography>Your token metadata and asset will be stored on IPFS</Typography>
-          <HodlTextField
-              disabled={stepComplete === 1}
-              label="Token Name"
-              onChange={e => updateFormInput({ ...formInput, name: e.target.value })}
-              helperText="A name for your token"
-            />
-            <HodlTextField
-              disabled={stepComplete === 1}
-              label="Token Description"
-              multiline
-              minRows={8}
-              onChange={e => updateFormInput({ ...formInput, description: e.target.value })}
-              helperText="A multi-line description for your token. No HTML"
-            />
-            <div>
-              <HodlButton
-                onClick={ipfsUpload}
-                disabled={!formInput.name || !formInput.description || loading || stepComplete === 1}
-                startIcon={<Build fontSize="large" />}
-              >
-                Upload To IPFS
-              </HodlButton>
-            </div>
-        </Stack> 
-          <Stack sx={{ border: !fileName ? `1px solid #d0d0d0`: 'none', minHeight: 400, alignItems: 'center', justifyContent: 'center', width: `50%`}}>
-              {fileName && isImage() && <HodlImage image={ fileName.split('/')[1] } folder='uploads' filter={filter} />}
+        {activeStep === 1 &&
+          <Stack direction={{
+            xs: "column",
+            md: 'row'
+        }}   spacing={4} alignContent="center" >
+            <Stack spacing={4} sx={{ flexBasis: `50%`}}>
+              {/* @ts-ignore */}
+              <UploadToIpfsAction formInput={formInput} ipfsUpload={ipfsUpload} loading={loading} stepComplete={stepComplete} updateFormInput={updateFormInput} />
+              <MintProgressButtonsMemo activeStep={activeStep} setActiveStep={setActiveStep} stepComplete={stepComplete} />
+            </Stack>
+            <Stack sx={{flexBasis: `50%` }}>
+              {fileName && isImage() && <FilteredImageMemo filter={filter} fileName={fileName} setLoading={setLoading} />}
               {fileName && isVideo() && <HodlVideo cid={fileName} directory="video/upload" />}
             </Stack>
-        </Stack>
-        
+          </Stack>
+
         }
-        { activeStep === 2 && 
-        <Stack spacing={4}>
-          <Typography variant="h2">Mint NFT</Typography>
-          <Typography>Your ERC721 token will be minted on the Polygon blockchain to benefit from low transaction fees.</Typography>
-            <div>
-            <HodlButton
-                onClick={mint}
-                disabled={ loading }
-                startIcon={<Build fontSize="large" />}
-              >
-                Mint Token
-            </HodlButton>
-            </div>
-        </Stack> }
-        { activeStep === 3 && 
-        <Stack spacing={4}>
-          <Typography variant="h2">Hodl My Moon</Typography>
-          <Typography>Add my token to HodlMyMoon</Typography>
-          <div>
-            <HodlButton
-              onClick={hodl}
-              disabled={ loading }
-              startIcon={<Build fontSize="large" />}
-            >
-              Add Token
-            </HodlButton>
-          </div>
-          
-        </Stack> }
-        </Box>
-
-        <Stack direction="row" sx={{ justifyContent: 'center', width: '100%'}}>
-          {/* <Button disabled={stepComplete < 0} onClick={() => setActiveStep(step => step - 1)}><KeyboardArrowLeft /> Previous</Button> */}
-          <Button disabled={stepComplete < activeStep} variant="outlined" onClick={() => stepComplete === activeStep && setActiveStep(activeStep => activeStep + 1)}> Next <KeyboardArrowRight /></Button>  
-        </Stack>
-
-        
+        {activeStep === 2 &&
+          <Stack direction={{
+            xs: "column",
+            md: 'row'
+        }} spacing={4} >
+            <Stack spacing={4} sx={{ flexBasis: `50%` }}>
+               {/* @ts-ignore */}
+              <MintTokenAction name={formInput.name} loading={loading} mint={mint} stepComplete={stepComplete} activeStep={activeStep} setActiveStep={setActiveStep} />
+            </Stack>
+            <Stack sx={{ flexBasis: `50%` }}>
+              {fileName && isImage() && <FilteredImageMemo filter={filter} fileName={fileName} setLoading={setLoading} />}
+              {fileName && isVideo() && <HodlVideo cid={fileName} directory="video/upload" />}
+            </Stack>
+          </Stack>
+        }
+        {activeStep === 3 &&
+          <Stack direction={{
+            xs: "column",
+            md: 'row'
+        }} spacing={4} >
+            <Stack spacing={8} sx={{ flexBasis: `50%` }}>
+               {/* @ts-ignore */}
+              <AddToHodlAction name={formInput.name} loading={loading} stepComplete={stepComplete} hodl={hodl} />
+            </Stack>
+            <Stack sx={{ flexBasis: `50%` }}>
+              {fileName && isImage() && <FilteredImageMemo filter={filter} fileName={fileName} setLoading={setLoading} />}
+              {fileName && isVideo() && <HodlVideo cid={fileName} directory="video/upload" />}
+            </Stack>
+          </Stack>
+        }
+      </Box>
     </Stack>
   )
 }

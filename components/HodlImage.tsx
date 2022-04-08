@@ -1,14 +1,13 @@
 import { Box } from "@mui/material";
+import { createCloudinaryUrl } from "../lib/utils";
 
-export const HodlImage = ({image, sx={}, imgSizes=null, folder="nfts", filter=null}) => {
+export const HodlImage = ({image, sx={}, imgSizes=null, folder="nfts", filter=null, ext=null}) => {
 
-    // iphone12, samsung galaxy, 
+
     const sizes = [400, 450, 500, 600, 700, 800, 900, 1000, 1200, 1350, 1500, 1700]
 
     const sources = () => {
-        return sizes.map(size => filter ? 
-            `https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,w_${size},q_auto,${filter}/${folder}/${image} ${size}w` :
-            `https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,w_${size},q_auto/${folder}/${image} ${size}w`
+        return sizes.map(size => `${createCloudinaryUrl('image', 'upload', `f_auto,c_limit,w_${size},q_auto${filter ? ',' + filter : ''}`, folder, image, ext)} ${size}w`
         ).join(',');
     }
     return (
@@ -25,9 +24,7 @@ export const HodlImage = ({image, sx={}, imgSizes=null, folder="nfts", filter=nu
             }}
             decoding="async"
             loading="eager"
-            src={ filter ? `https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,w_744,q_auto,${filter}/${folder}/${image} 750w` :
-                            `https://res.cloudinary.com/dyobirj7r/f_auto,c_limit,w_744,q_auto/${folder}/${image} 750w`
-            }
+            src={ `${createCloudinaryUrl('image', 'upload', `f_auto,c_limit,w_744,q_auto${filter ? ',' + filter : ''}`, folder, image, ext)} 750w`}
             sizes={imgSizes || "(max-width:899px) 100vw, (max-width:1549px) 50vw, 744px"}
             srcSet= {sources()}
         />

@@ -21,7 +21,7 @@ export const UnableToStoreModal = ({ unableToSaveModalOpen, setUnableToSaveModal
                 If this is the <span>first time</span> your have encountered this dialog, we suggest waiting ~60 seconds, and then click <span>retry</span>.
             </Alert>
             <Alert severity="warning" sx={{ span: { fontWeight: 600 } }}>
-                If this <span>isn't</span> the first time you've encountered this dialog, we suggest your send us a message
+                If this <span>isn&apos;t</span> the first time you&apos;ve encountered this dialog, we suggest your send us a message
             </Alert>
 
             <Stack direction="row" spacing={2}>

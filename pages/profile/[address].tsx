@@ -1,15 +1,41 @@
 import { useEffect, useState } from 'react'
-import { fetchNftsInWallet, fetchNFTsListedOnMarket, isValidAddress } from '../../lib/profile'
+import { isValidAddress } from '../../lib/profile'
 import { useContext } from 'react'
 import { WalletContext } from '../_app'
-import { Badge, Box, Stack, Tab, Tabs, Typography} from '@mui/material'
+import { Badge, Box, CircularProgress, Tab, Tabs} from '@mui/material'
 import { useRouter } from 'next/router'
-import { InfiniteScroll } from '../../components/InfiniteScroll'
+
 import { HodlImpactAlert } from '../../components/HodlImpactAlert'
 import { HodlButton } from '../../components/HodlButton'
-import Link from 'next/link'
+
 import { ProfileAvatar } from '../../components'
 import { useFollow } from '../../hooks/useFollow'
+
+import dynamic from 'next/dynamic'
+
+const HodlingTab = dynamic(
+   // @ts-ignore
+  () => import('../../components/profile/HodlingTab').then((module) => module.HodlingTab),
+  {loading: () => <CircularProgress />}
+);
+
+const ListedTab = dynamic(
+   // @ts-ignore
+  () => import('../../components/profile/ListedTab').then((module) => module.ListedTab),
+  {loading: () => <CircularProgress />}
+);
+
+const FollowingTab = dynamic(
+   // @ts-ignore
+  () => import('../../components/profile/FollowingTab').then((module) => module.FollowingTab),
+  {loading: () => <CircularProgress />}
+);
+
+const FollowersTab = dynamic(
+   // @ts-ignore
+  () => import('../../components/profile/FollowersTab').then((module) => module.FollowersTab),
+  {loading: () => <CircularProgress />}
+);
 
 
 const Profile = () => {
@@ -25,6 +51,7 @@ const Profile = () => {
   const [validAddress, setValidAddress] = useState(false);
   const [follow, isFollowing] = useFollow();
   
+  // TODO: Move to Server Side?
   // @ts-ignore
   useEffect(async () => {
     const isValid = await isValidAddress(router.query.address);
@@ -67,20 +94,6 @@ const Profile = () => {
   if (!address && !router.query.address) {
     return <HodlImpactAlert title="Connect Wallet" message={"You need to connect your wallet to view your profile"} />
   }
- 
-  // if (Number(numberHodling) === 0 && Number(numberListed) == 0) {
-  //   return (
-  //   <HodlImpactAlert 
-  //     title="Empty" 
-  //     message={"This profile does not have any NFTs"} 
-  //     action={
-  //       Boolean(router?.query?.address && address === router?.query?.address) && 
-  //       <Link href="/mint" passHref>
-  //         <HodlButton>Mint One</HodlButton>
-  //       </Link>
-  //     }
-  //   />)
-  // }
 
   return (
     <>
@@ -116,71 +129,20 @@ const Profile = () => {
           </Tabs>
       </Box>
       <div hidden={value !== 0}>
-        <Stack spacing={4}>
-            <InfiniteScroll 
-              fetcherFn={async (offset, limit) => {
-                const [data, next, length] = await fetchNftsInWallet(router.query.address, offset, limit);
-                // @ts-ignore
-                setNumberHodling(Number(length));
-
-                if (Number(length) === 0) {
-                  setValue(1) // set tab to listed if we aren't holding any. if we have nothing listed then we'll show a message (above)
-                }
-
-                return [data, next, length]
-              }} 
-              swrKey={'walletNfts: ' + router.query.address}
-              showTop={false}/>
-        </Stack>
+        {/* @ts-ignore */}
+        <HodlingTab setNumberHodling={setNumberHodling}/>
       </div>
       <div hidden={value !== 1}>
-        <Stack spacing={4} >
-        {  
-          <InfiniteScroll 
-            fetcherFn={async (offset, limit) => {
-              const [data, next, length] = await fetchNFTsListedOnMarket(router.query.address, offset, limit);
-              // @ts-ignore
-              setNumberListed(Number(length));
-              return [data, next, length]
-            }} 
-            swrKey={'marketNfts: ' + router.query.address}
-            />
-          }
-        </Stack>
+        {/* @ts-ignore */}
+        <ListedTab setNumberListed={setNumberListed} />
       </div>
       <div hidden={value !== 2}>
-        <Stack spacing={4} sx={{ padding: 4, paddingLeft: 0}}>
-          { following?.length ? 
-              following.map((address,i) => 
-                <ProfileAvatar key={i} color="primary" profileAddress={address}/>  
-              ) 
-              :
-              <Typography>{ 
-                address && 
-                router.query?.address?.length && 
-                address === router.query.address ? 
-                `You aren't following anyone`:
-                `This user isn't following anyone`
-              }</Typography>
-            }
-        </Stack>
+        {/* @ts-ignore */}
+        <FollowingTab address={address} following={following} />
       </div>
       <div hidden={value !== 3}>
-        <Stack spacing={4} sx={{ padding: 4, paddingLeft: 0}}>
-          { followers?.length ? 
-              followers.map((address,i) => 
-                <ProfileAvatar key={i} color="primary" profileAddress={address}/>  
-              ) 
-              :
-              <Typography>{ 
-                address && 
-                router.query?.address?.length && 
-                address === router.query.address ? 
-                `You don't have any followers`:
-                `This user has no followers`
-              }</Typography>
-            }
-        </Stack>
+        {/* @ts-ignore */}
+        <FollowersTab address={address} followers={followers} />
       </div>
     </Box>
 }

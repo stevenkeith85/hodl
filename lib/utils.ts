@@ -1,4 +1,21 @@
-import memoize from 'memoizee';
+
+export const imageFilters = [
+  {code:null, name: 'original'}, 
+  {code:"e_improve", name:'improve'}, 
+  {code:"e_art:athena", name: 'athena'}, 
+  {code:"e_art:aurora", name: 'aurora'}, 
+  {code:"e_art:hairspray", name: 'hairspray'},
+  {code:"e_grayscale", name: 'greyscale'}
+  ];
+
+export const createCloudinaryUrl = (assetType="image", deliveryType="upload", transformations=null, folder, cid, ext=null) => {
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_NAME;
+  const environment = process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER; // dev, staging, or prod
+  
+  return `https://res.cloudinary.com/${cloudName}/${assetType}/${deliveryType}/${ transformations ? transformations + '/' : ''}${environment}/${folder}/${cid}${ext ? '.' + ext: ''}`;
+}
+
+export const imageSizes = [400, 600, 800, 1000, 1200, 1400, 1600];
 
 export const checkForAndDisplaySmartContractErrors = (error, snackbarRef) => {
     if (error.code === -32603) { // Smart Contract Error Messages

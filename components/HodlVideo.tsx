@@ -1,5 +1,7 @@
-export const HodlVideo = ({cid, directory='nfts', gif=false, controls=true, onlyPoster=false}) => {
-    const asset = `https://res.cloudinary.com/dyobirj7r/${directory}/${cid}`;
+import { createCloudinaryUrl } from "../lib/utils";
+
+export const HodlVideo = ({cid, directory='nfts', gif=false, controls=true, onlyPoster=false, transformations=null}) => {
+    const asset = `${createCloudinaryUrl('video', 'upload', transformations, directory, cid)}`
     return (
         <video width="100%" autoPlay={gif} loop={gif} muted={gif} controls={!gif && controls} controlsList="nodownload" poster={`${asset}.jpg`}>
             { Boolean(!onlyPoster) && (<>

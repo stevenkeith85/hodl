@@ -1,6 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { NextApiRequest, NextApiResponse } from "next";
-import nextConnect from 'next-connect'
 import * as Redis from 'ioredis';
 import dotenv from 'dotenv'
 import { trim } from "../../lib/utils";

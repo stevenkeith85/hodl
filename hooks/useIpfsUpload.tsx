@@ -1,11 +1,9 @@
-import { useState, useContext } from 'react';
+import { useContext } from 'react';
 import { WalletContext } from "../pages/_app";
 import { useConnect } from './useConnect';
 
 export const useIpfsUpload = () => {
   const { jwt } = useContext(WalletContext);
-  // const [imageCid, setImageCid] = useState(null);
-  // const [metadataUrl, setMetadataUrl] = useState(null);
   const [connect] = useConnect();
 
   const uploadToIpfs = async (name, description, fileName, mimeType, filter) => {
