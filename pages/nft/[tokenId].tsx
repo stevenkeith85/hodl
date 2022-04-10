@@ -17,6 +17,7 @@ import {
 import { fetchNFT, lookupPriceHistory } from "../../lib/server/nft";
 import { PriceHistory } from "../../components/PriceHistory";
 import { truncateText } from "../../lib/utils";
+import { ProfileAvatarMemo } from "../../components/ProfileAvatar";
 
 export async function getServerSideProps({ params }) {
   const nft = await fetchNFT(params.tokenId);
@@ -49,7 +50,7 @@ const NftDetail = ({nft, priceHistory}) => {
               <Typography variant="h2">{truncateText(nft?.name, 100)}</Typography>
             </Tooltip>
             
-            <ProfileAvatar reverse={true} profileAddress={nft?.owner} />
+            <ProfileAvatarMemo reverse={true} profileAddress={nft?.owner} />
           </Stack>
         </Grid>
         <Grid item xs={12} md={6}>

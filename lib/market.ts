@@ -42,6 +42,7 @@ const getItems = async (data) => {
 }
 
 
+// TODO - Move server side
 export const fetchMarketItems = async (offset, limit) => {
     const provider = await getProvider();
 
@@ -54,5 +55,5 @@ export const fetchMarketItems = async (offset, limit) => {
 
     const items = await getItems(data);
 
-    return [items, next, total];
+    return {items, next: Number(next), total: Number(total)};
 }

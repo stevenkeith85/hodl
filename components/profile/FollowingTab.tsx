@@ -1,21 +1,16 @@
 import { Stack, Typography } from "@mui/material";
-import { useRouter } from "next/router";
-import { ProfileAvatar } from "../ProfileAvatar";
+import { ProfileAvatar, ProfileAvatarMemo } from "../ProfileAvatar";
 
-export const FollowingTab = ({ following, address }) => {
-    const router = useRouter();
-
+export const FollowingTab = ({ following, address, profileAddress }) => {
     return (
       <Stack spacing={4} sx={{ padding: 4, paddingLeft: 0}}>
       { following?.length ? 
           following.map((address,i) => 
-            <ProfileAvatar key={i} color="primary" profileAddress={address}/>  
+            <ProfileAvatarMemo key={i} color="primary" profileAddress={address}/>  
           ) 
           :
           <Typography>{ 
-            address && 
-            router.query?.address?.length && 
-            address === router.query.address ? 
+            address === profileAddress ? 
             `You aren't following anyone`:
             `This user isn't following anyone`
           }</Typography>

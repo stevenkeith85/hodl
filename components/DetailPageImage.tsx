@@ -1,19 +1,11 @@
 import { Box, Stack, Typography } from "@mui/material";
 import Head from "next/head";
-import memoize from 'memoizee';
-import { HodlImage } from "./HodlImage";
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import { HodlVideo } from "./HodlVideo";
 import { assetType, createCloudinaryUrl } from "../lib/utils";
-import { WalletContext } from "../pages/_app";
-import { useState, useContext, useEffect } from 'react';
-import { useLike } from "../hooks/useLike";
-import { Likes } from "./Likes";
+import { LikesMemo } from "./Likes";
 import { HodlImage2 } from "./HodlImage2";
 
 export const DetailPageImage = ({token, folder='nfts'}) => {
-    // const [tokenLikesCount, userLikesThisToken, toggleLike] = useTokenLikes(token);
     
     // This is based on
     // "(max-width:899px) 100vw, (max-width:1549px) 50vw, 744px"
@@ -56,9 +48,8 @@ export const DetailPageImage = ({token, folder='nfts'}) => {
         <Box sx={{ position: 'relative', img: { borderRadius: 1} }}>
                 { assetType(token) === 'gif' && <HodlVideo cid={token?.image} gif={true}/> }
                 { assetType(token) === 'video' && <HodlVideo cid={token?.image} directory={'video/upload/nfts/'}/> }
-                {/* { assetType(token) === 'image' && <HodlImage image={token?.image} sx={{ width: '100%'}} filter={token?.filter}/> } */}
                 { assetType(token) === 'image' && <HodlImage2 image={token?.image} effect={token?.filter}/> }
-                <Likes token={token} sx={{padding: 1, position: 'absolute', top: 10, right: 10}}/>
+                <LikesMemo tokenId={token.tokenId} sx={{padding: 1, position: 'absolute', top: 10, right: 10}}/>
         </Box>
         
         </>

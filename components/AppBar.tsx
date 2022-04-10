@@ -64,7 +64,7 @@ import { ConnectButton } from './ConnectButton';
 // }));
 
 const ResponsiveAppBar = () => {
-    const { signer, setSigner, address, setAddress, nickname } = useContext(WalletContext);
+    const { address, nickname } = useContext(WalletContext);
     const router = useRouter();
 
     const [pages, setPages] = useState([
@@ -85,7 +85,7 @@ const ResponsiveAppBar = () => {
                 })
             });
         }
-    }, [address]);
+    }, [address, nickname]);
 
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 

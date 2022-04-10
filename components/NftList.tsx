@@ -4,9 +4,9 @@ import { assetType, createCloudinaryUrl, truncateText } from '../lib/utils';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { HodlImage } from './HodlImage';
-import { ProfileAvatar } from './ProfileAvatar';
+import { ProfileAvatar, ProfileAvatarMemo } from './ProfileAvatar';
 import { HodlVideo } from './HodlVideo';
-import { Likes } from './Likes';
+import { Likes, LikesMemo } from './Likes';
 import { HodlImage2 } from './HodlImage2';
 
 const NftList = ({ nfts, viewSale = false, showTop = true }) => {
@@ -74,38 +74,14 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
                                 }}
                                 decoding="async"
                                 loading="eager"
-                                src={`${createCloudinaryUrl('image', 'upload', `f_auto,q_10,h_350,e_grayscale`, 'nfts', nft.image)}`}
+                                src={`${createCloudinaryUrl('image', 'upload', `c_limit,f_auto,q_20,h_350${nft?.filter? ',' + nft?.filter : ''}`, 'nfts', nft.image)}`}
                             />
                             { matches ?
-                            // <HodlImage 
-                            //     sx={{
-                            //         borderRadius: 1,
-                            //         height: {
-                            //             xs: 500,
-                            //             sm: 400
-                            //         }
-                            //     }} 
-                            //     image={nft?.image} 
-                            //     imgSizes={"(max-width:599px) 100vw, (max-width:899px) 50vw, (max-width:1199px) 33vw, 25vw"} 
-                            //     filter={nft?.filter}
-                            // /> :
                             <HodlImage2
                                 image={nft?.image}
                                 effect={nft?.filter}
                                 imgSizes={"(max-width:599px) 100vw, (max-width:899px) 50vw, (max-width:1199px) 33vw, 25vw"}
                                 /> : 
-                            // <HodlImage 
-                            //     sx={{
-                            //         borderRadius: 1,
-                            //         height: {
-                            //             xs: 500,
-                            //             sm: 400
-                            //         }
-                            //     }} 
-                            //     image={nft?.image} 
-                            //     imgSizes={"100vw"} 
-                            //     filter={nft?.filter}
-                            // />
                             <HodlImage2
                                 image={nft?.image}
                                 effect={nft?.filter}
@@ -133,7 +109,7 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
                                 justifyContent: 'space-between',
                                 alignItems: "center",
                                 }}>
-                                <ProfileAvatar size="small" profileAddress={nft.seller} color="greyscale"/>
+                                <ProfileAvatarMemo size="small" profileAddress={nft.seller} color="greyscale"/>
                                 {Boolean(nft?.price) &&
                                     <Typography sx={{ fontWeight: 900 }}>{`${nft.price} Matic`}</Typography>
                                 }
@@ -153,7 +129,7 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
                         }}
                         subtitle={
                             <Stack>
-                                <Likes token={nft} />
+                                <LikesMemo tokenId={nft?.tokenId} />
                             </Stack>
                         }
                         actionIcon={

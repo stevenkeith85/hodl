@@ -9,8 +9,11 @@ export default function Home() {
     <>
     <Box sx={{ display: 'flex', flexDirection: 'column', justifyItems: "center", paddingTop:{ xs: 0, md: 2} }}>
       <InfiniteScroll 
-          fetcherFn={(offset, limit) => fetchMarketItems(offset, limit)} 
-          swrKey='fetchMarketItems' />
+          swrkey='fetchMarketItems'
+          fetcher={(offset, limit) => fetchMarketItems(offset, limit)} 
+          viewSale={true}
+          showTop={true}
+           />
     </Box>    
     </>
   ) 

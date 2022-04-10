@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { WalletContext } from "../pages/_app";
 import { useConnect } from './useConnect';
 
-export const useLike = (token) => {
+export const useLike = (tokenId) => {
     const { address, jwt } = useContext(WalletContext);
     const [userLikesThisToken, setUserLikesThisToken] = useState(false);
     const [tokenLikesCount, setTokenLikesCount] = useState(null);
@@ -10,36 +10,28 @@ export const useLike = (token) => {
 
     // @ts-ignore
     useEffect(async() => {
-        if (!token) {
-          return;
-        }
-
-        const r = await fetch(`/api/likeCount?token=${token.tokenId}`);
+        const r = await fetch(`/api/likeCount?token=${tokenId}`);
         if (r.status == 200) {
           const { count } = await r.json();
           setTokenLikesCount(count);
         }
         
-    }, [token])
+    }, [tokenId])
 
     // @ts-ignore
     useEffect(async() => {
-        if (!token || !address) {
+        if (!address) {
           return;
         }
         
-        const r = await fetch(`/api/likes?address=${address}&token=${token.tokenId}`);
+        const r = await fetch(`/api/likes?address=${address}&token=${tokenId}`);
         if (r.status == 200) {
           const { likes } = await r.json();
           setUserLikesThisToken(likes);
         }
-    }, [token, address])
+    }, [tokenId, address])
 
-    const toggleLike = async () => {
-        if (!token) {
-          return;
-        }
-        
+    const toggleLike = async () => {        
         const r = await fetch('/api/like', {
             method: 'POST',
             headers: new Headers({
@@ -47,7 +39,7 @@ export const useLike = (token) => {
               'Accept': 'application/json',
               'Authorization': jwt
             }),
-            body: JSON.stringify({ token: token.tokenId })
+            body: JSON.stringify({ token: tokenId })
           });
 
           if (r.status === 403) {

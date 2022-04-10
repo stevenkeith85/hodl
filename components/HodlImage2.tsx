@@ -15,7 +15,7 @@ import { createCloudinaryUrl, imageSizes } from "../lib/utils";
 // <width> will be calculated to match our imageSizes array
 export const HodlImage2 = ({ image, folder="nfts", onLoad=null, effect=null, format="f_auto", quality="q_auto", ext=null, imgSizes=null }) => {
     const sources = () => {
-        return imageSizes.map(size => `${createCloudinaryUrl('image', 'upload', `${format},${quality},w_${size}${ effect ? ',' + effect : ''}`, folder, image, ext)} ${size}w`
+        return imageSizes.map(size => `${createCloudinaryUrl('image', 'upload', `c_limit,${format},${quality},w_${size}${ effect ? ',' + effect : ''}`, folder, image, ext)} ${size}w`
         ).join(',');
     }
     
@@ -37,7 +37,7 @@ export const HodlImage2 = ({ image, folder="nfts", onLoad=null, effect=null, for
             <img 
                 decoding="async"
                 loading="eager"
-                src={ `${createCloudinaryUrl('image', 'upload', `${format},${quality},w_800${ effect ? ',' + effect : ''}`, folder, image, ext)} 800w` }
+                src={ `${createCloudinaryUrl('image', 'upload', `c_limit,${format},${quality},w_800${ effect ? ',' + effect : ''}`, folder, image, ext)}` }
                 sizes={imgSizes || "(max-width:899px) 100vw, (max-width:1549px) 50vw, 800px"}
                 srcSet= {sources()}
                 onLoad={onLoad}

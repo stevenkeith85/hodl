@@ -119,18 +119,20 @@ export default function Mint() {
 
     // @ts-ignore
     snackbarRef?.current.display('Please approve the transaction in MetaMask', 'info');
-    const tokenId = await mintToken(metadataUrlRef.current);
 
-    if (tokenId) {
+    try {
+      const tokenId = await mintToken(metadataUrlRef.current);
+
       setTokenId(tokenId);
       // @ts-ignore
       snackbarRef?.current.display(`NFT minted on the blockchain with token id ${tokenId}`, 'success');
-      setStepComplete(2);
-    } else {
+      setStepComplete(2); 
+    } catch(e) {
       // @ts-ignore
       snackbarRef?.current.display('Unable to mint at the moment. Please try again', "warning");
+      setLoading(false);
     }
-
+    
     setLoading(false);
   }
 

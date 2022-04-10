@@ -1,33 +1,19 @@
-import { useRouter } from 'next/router';
-import { useState, useEffect, useContext } from 'react';
+import { useContext } from 'react';
+import useSWR from 'swr';
 import { WalletContext } from "../pages/_app";
 import { useConnect } from './useConnect';
 
-export const useFollow = () => {
+export const useFollow = (profileAddress) => {
   const { address, jwt } = useContext(WalletContext);
-  const [isFollowing, setIsFollowing] = useState(null);
-  const router = useRouter();
   const [connect] = useConnect();
 
-  // @ts-ignore
-  useEffect(async () => {
-    if (address && router.query.address && address !== router.query.address) {
-      const response = await fetch(`/api/follows?address1=${address}&address2=${router.query.address}`);
-      const { follows } = await response.json();
-      
-      if (follows) {
-        setIsFollowing(true);
-      } else {
-        setIsFollowing(false);
-      }
-    }
-  }, [address, router.query.address]);
+  const {data: isFollowing, mutate } = useSWR(address && address !== profileAddress ? [`/api/follows`, address, profileAddress] : null, 
+                                                            (url, address, profileAddress) => fetch(`${url}?address1=${address}&address2=${profileAddress}`)
+                                                                                              .then(r => r.json())
+                                                                                              .then(json => Boolean(json.follows)));
+
 
   const follow = async () => {
-    if (!router?.query?.address) {
-      return;
-    }
-
     const r = await fetch('/api/follow', {
       method: 'POST',
       headers: new Headers({
@@ -35,13 +21,13 @@ export const useFollow = () => {
         'Accept': 'application/json',
         'Authorization': jwt
       }),
-      body: JSON.stringify({ address: router?.query?.address })
+      body: JSON.stringify({ address: profileAddress })
     });
 
     if (r.status === 403) {
       await connect(false);
     } else if (r.status === 200) {
-      setIsFollowing(old => !old);
+      mutate(!isFollowing, { revalidate: false});
     }
   }
 

@@ -1,23 +1,22 @@
 import { Stack } from "@mui/material";
-import { useRouter } from "next/router";
 import { fetchNftsInWallet } from "../../lib/profile";
 import { InfiniteScroll } from "../InfiniteScroll";
 
-export const HodlingTab = ({ setNumberHodling }) => {
-    const router = useRouter();
-
+export const HodlingTab = ({ setNumberHodling, profileAddress }) => {
     return (
         <Stack spacing={4}>
             <InfiniteScroll
-                fetcherFn={async (offset, limit) => {
-                    const [data, next, length] = await fetchNftsInWallet(router.query.address, offset, limit);
+                fetcher={async (offset, limit) => {
+                    const [items, next, length] = await fetchNftsInWallet(profileAddress, offset, limit);
                     // @ts-ignore
                     setNumberHodling(Number(length));
 
-                    return [data, next, length]
+                    return {items, next: Number(next), length: Number(length)}
                 }}
-                swrKey={'walletNfts: ' + router.query.address}
-                showTop={false} />
+                swrkey={'walletNfts: ' + profileAddress}
+                viewSale={false}
+                showTop={false} 
+                />
         </Stack>
     )
 }

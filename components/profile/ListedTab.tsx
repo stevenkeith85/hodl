@@ -1,23 +1,21 @@
 import { Stack } from "@mui/material";
-import { useRouter } from "next/router";
 import { fetchNFTsListedOnMarket } from "../../lib/profile";
 import { InfiniteScroll } from "../InfiniteScroll";
 
-export const ListedTab = ({ setNumberListed }) => {
-    const router = useRouter();
-
+export const ListedTab = ({ setNumberListed, profileAddress }) => {
+    
     return (
         <Stack spacing={4} >
         {  
           <InfiniteScroll 
-            fetcherFn={async (offset, limit) => {
-              const [data, next, length] = await fetchNFTsListedOnMarket(router.query.address, offset, limit);
+            fetcher={async (offset, limit) => {
+              const [items, next, length] = await fetchNFTsListedOnMarket(profileAddress, offset, limit);
               // @ts-ignore
               setNumberListed(Number(length));
 
-              return [data, next, length]
+              return {items, next: Number(next), length: Number(length)}
             }} 
-            swrKey={'marketNfts: ' + router.query.address}
+            swrkey={'marketNfts: ' + profileAddress}
             />
           }
         </Stack>
