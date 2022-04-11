@@ -46,7 +46,7 @@ export const DetailPageImage = ({token, folder='nfts'}) => {
             }
         </Head>
         <Box sx={{ position: 'relative', img: { borderRadius: 1} }}>
-                { assetType(token) === 'gif' && <HodlVideo cid={token?.image} gif={true}/> }
+                { assetType(token) === 'gif' && <HodlVideo cid={token?.image} transformations={token?.filter} gif={true}/> }
                 { assetType(token) === 'video' && <HodlVideo cid={token?.image} directory={'video/upload/nfts/'}/> }
                 { assetType(token) === 'image' && <HodlImage2 image={token?.image} effect={token?.filter}/> }
                 <LikesMemo tokenId={token.tokenId} sx={{padding: 1, position: 'absolute', top: 10, right: 10}}/>

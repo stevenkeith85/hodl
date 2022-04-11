@@ -103,109 +103,112 @@ const ResponsiveAppBar = () => {
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
                     {/* Mobile */}
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="div"
-                        sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}
-                    >
+                    <Box sx={{  display: { xs: 'flex', md: 'none' }, width: '100%', justifyContent: 'space-between'}}>
                         <Logo />
-                    </Typography>
-
-                    <Box sx={{ justifyContent: 'right', alignItems: 'right', display: { xs: 'flex', md: 'none' } }}>
-                        <IconButton
-                            size="large"
-                            aria-label="account of current user"
-                            aria-controls="menu-appbar"
-                            aria-haspopup="true"
-                            onClick={handleOpenNavMenu}
-                            color="inherit"
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Menu
-                            id="menu-appbar"
-                            anchorEl={anchorElNav}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'left',
-                            }}
-                            open={Boolean(anchorElNav)}
-                            onClose={handleCloseNavMenu}
-                            sx={{
-                                display: { xs: 'block', md: 'none' },
-                            }}
-                        >
-                            {pages.map(page => (
-                                <MenuItem key={page.label} onClick={handleCloseNavMenu}>
-                                    <Link href={page.url} passHref>
-                                        <Typography component="a" sx={{
-                                            color: grey[900],
-                                            textDecoration: 'none',
-                                            fontWeight: (theme) => router.asPath === page.url ? 900 : 300,
-                                        }} >
-                                            {page.label}
-                                        </Typography>
-                                    </Link>
-                                </MenuItem>
-                            ))}
-                            <ConnectButton />
-                        </Menu>
+                        <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+                            <IconButton
+                                size="large"
+                                aria-label="account of current user"
+                                aria-controls="menu-appbar"
+                                aria-haspopup="true"
+                                onClick={handleOpenNavMenu}
+                                color="inherit"
+                            >
+                                <MenuIcon />
+                            </IconButton>
+                            <Menu
+                                id="menu-appbar"
+                                anchorEl={anchorElNav}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                }}
+                                keepMounted
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'left',
+                                }}
+                                open={Boolean(anchorElNav)}
+                                onClose={handleCloseNavMenu}
+                                sx={{
+                                    display: { xs: 'block', md: 'none' },
+                                }}
+                            >
+                                {pages.map(page => (
+                                    <MenuItem key={page.label} onClick={handleCloseNavMenu}>
+                                        <Link href={page.url} passHref>
+                                            <Typography component="a" sx={{
+                                                color: grey[900],
+                                                textDecoration: 'none',
+                                                fontWeight: (theme) => router.asPath === page.url ? 900 : 300,
+                                            }} >
+                                                {page.label}
+                                            </Typography>
+                                        </Link>
+                                    </MenuItem>
+                                ))}
+                                <ConnectButton />
+                            </Menu>
+                        </Box>
                     </Box>
+
 
                     {/* Desktop */}
-                    <Typography noWrap component="div" sx={{ display: { xs: 'none', md: 'flex' } }}>
+                    <Box sx={{ display: { xs: 'none', md: 'flex'}, width: '100%', justifyContent: 'space-between'}}>
+                    <Stack direction="row" spacing={12} sx={{alignItems: 'center'}}>
                         <Logo />
-                    </Typography>
+                        <Box sx={{
+                            display: 'grid',
+                            gap: 6,
+                            gridTemplateColumns: `repeat(3, minmax(0, 1fr))`,
 
-                    <Box sx={{
-                        flexGrow: 1,
-                        alignItems: 'center',
-                        display: {
-                            xs: 'none',
-                            md: 'flex'
-                        },
-                        justifyContent: {
-                            md: 'left'
-                        },
-                        marginLeft: {
-                            md: 2,
-                            lg: 6
-                        }
-                    }}>
-                        {pages.map(page => (
-                            <>
-                                <Link key={page.url} href={page.url} passHref>
-                                    <Button
-                                        component="a"
-                                        key={page.label}
-                                        onClick={handleCloseNavMenu}
-                                        sx={{
-                                            color: 'white',
-                                            display: 'block',
-                                            margin: '0 14px',
-                                            textTransform: 'none',
-                                            fontWeight: (theme) => router.asPath === page.url ? 900 : 300,
-                                            fontSize: {
-                                                md: 16,
-                                            },
-                                            '&:hover': {
-                                                fontWeight: 900
-                                            },
-                                            textAlign: 'center'
-                                        }}
-                                    >
-                                        {page.label}
-                                    </Button>
-                                </Link></>
-                        ))}
-                    </Box>
-
+                        }}>
+                            {pages.map(page => (
+                                    <Link key={page.url} href={page.url} passHref>
+                                        {router.asPath === page.url ?
+                                            <Typography
+                                                key={page.label}
+                                                onClick={handleCloseNavMenu}
+                                                sx={{
+                                                    display: 'block',
+                                                    textAlign: 'center',
+                                                    padding: 1,
+                                                    cursor: 'pointer',
+                                                    color: 'white',
+                                                    textTransform: 'none',
+                                                    fontSize: {
+                                                        md: 16,
+                                                    },
+                                                    fontWeight: 900
+                                                }}
+                                            >
+                                                {page.label}
+                                            </Typography>
+                                            : <Typography
+                                                key={page.label}
+                                                onClick={handleCloseNavMenu}
+                                                sx={{
+                                                    display: 'block',
+                                                    textAlign: 'center',
+                                                    padding: 1,
+                                                    cursor: 'pointer',
+                                                    color: 'white',
+                                                    textTransform: 'none',
+                                                    fontSize: {
+                                                        md: 16,
+                                                    },
+                                                    '&:hover': {
+                                                        fontWeight: 900,
+                                                    }
+                                                }}
+                                            >
+                                                {page.label}
+                                            </Typography>
+                                    }
+                                    </Link>
+                            ))}
+                        </Box>
+                    </Stack>
                     <Stack
                         direction="row"
                         spacing={1}
@@ -222,6 +225,7 @@ const ResponsiveAppBar = () => {
                         </Search> */}
                         <ConnectButton />
                     </Stack>
+                    </Box>
                 </Toolbar>
             </Container>
         </AppBar>

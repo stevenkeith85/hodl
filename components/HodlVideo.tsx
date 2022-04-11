@@ -1,9 +1,9 @@
 import { createCloudinaryUrl } from "../lib/utils";
 
 export const HodlVideo = ({cid, directory='nfts', gif=false, controls=true, onlyPoster=false, transformations=null}) => {
-    const asset = `${createCloudinaryUrl('video', 'upload', transformations, directory, cid)}`
+    const asset = `${createCloudinaryUrl(gif ? 'image' : 'video', 'upload', transformations, directory, cid)}`
     return (
-        <video width="100%" autoPlay={gif} loop={gif} muted={gif} controls={!gif && controls} controlsList="nodownload" poster={`${asset}.jpg`}>
+        <video width="100%" autoPlay={gif} loop={gif} muted={gif} controls={!gif && controls} controlsList="nodownload" poster={gif ? null : `${asset}.jpg`}>
             { Boolean(!onlyPoster) && (<>
                 <source type="video/mp4" src={`${asset}.mp4`} />
                 <source type="video/webm" src={`${asset}.webm`}  />

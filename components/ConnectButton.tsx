@@ -32,7 +32,7 @@ export const ConnectButton = () => {
         } else if (address) {
             return getShortAddress(address).toLowerCase();
         } else {
-            return 'CONNECT WITH METAMASK';
+            return 'Connect';
         }
     }
 

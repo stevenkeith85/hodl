@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import * as Redis from 'ioredis';
 import dotenv from 'dotenv'
 import memoize from 'memoizee';
-import apiRoute from "./handler";
+import apiRoute from "../handler";
 
 dotenv.config({ path: '../.env' })
 

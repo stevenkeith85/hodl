@@ -1,10 +1,11 @@
-import { Box, CircularProgress, Stack } from '@mui/material';
+import { Stack } from '@mui/material';
 import { useEffect, useRef } from 'react';
 import useSWRInfinite from 'swr/infinite'
 import NftList from './NftList';
 import { debounce } from 'underscore';
+import { HodlLoadingSpinner } from './HodlLoadingSpinner';
 
-export const InfiniteScroll = ({ swrkey, fetcher, viewSale=false, showTop=true }) => {
+export const InfiniteScroll = ({ swrkey, fetcher, viewSale=false, showTop=true, prefetchedData=null, revalidateOnMount=true, showAvatar=true, showName=true }) => {
     const limit = useRef(20);
     const lastY = useRef(0);
     const finished = useRef(false);
@@ -17,7 +18,7 @@ export const InfiniteScroll = ({ swrkey, fetcher, viewSale=false, showTop=true }
         return [swrkey, index * limit.current, limit.current]
       }
 
-    const { data, size, isValidating, setSize } = useSWRInfinite(getKey, (_key, offset, limit) => fetcher(offset, limit))
+    const { data, isValidating, setSize } = useSWRInfinite(getKey, (_key, offset, limit) => fetcher(offset, limit), { fallbackData: prefetchedData, revalidateOnMount })
 
     useEffect(() => {
         window.addEventListener('scroll', onScroll, { passive: true});
@@ -29,24 +30,28 @@ export const InfiniteScroll = ({ swrkey, fetcher, viewSale=false, showTop=true }
         const contentHeight = document.body.offsetHeight;
         
         if (ascending && yPosition > (contentHeight / 2) && !finished.current) {
-            console.log('get more data')
             setSize(size => size + 1)
         }
 
         lastY.current = window.scrollY;
     }, 100)
 
-    if (!data) {
-        return <Box sx={{ padding: 5, display: "flex", justifyContent: "center" }}><CircularProgress color="secondary"/></Box>
-     }
-
-     console.log(data)
     return (
         <>
         <Stack spacing={2}>
-            {data.map(page => page.items && <NftList nfts={page.items} viewSale={viewSale} showTop={showTop}/>)}
+            {
+            data.map((page,i) => page.items && 
+                                <NftList 
+                                    key={i} 
+                                    nfts={page.items} 
+                                    viewSale={viewSale} 
+                                    showTop={showTop}
+                                    showAvatar={showAvatar}
+                                    showName={showName}
+                                />)
+            }
         </Stack>
-        { !finished.current && isValidating && <Box sx={{ padding: 5, display: "flex", justifyContent: "center" }}><CircularProgress color="secondary"/></Box>}
+        { !finished.current && isValidating && <HodlLoadingSpinner />}
         </>
     )
 }

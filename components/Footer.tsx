@@ -71,15 +71,12 @@ const Footer = () => {
                         </Stack>
                     </Stack>
                     <Stack>
-                        <HodlLink href="/">
                             <Logo sx={{ 
                                 justifyContent: { xs: "center", md: "right" }
                             }} />
                             <Typography sx={{ fontSize: 18, fontWeight: 500 }}>
                                 Mint, Showcase, and Trade NFTs
                             </Typography>                        
-                        </HodlLink>
-                        
                     </Stack>
                 </Stack>
             </Container>

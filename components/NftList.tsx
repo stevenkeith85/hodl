@@ -1,15 +1,14 @@
-import { Box, imageListItemClasses, ImageListItem, ImageListItemBar, Typography, Button, IconButton, Stack } from '@mui/material'
+import { Box, imageListItemClasses, ImageListItem, ImageListItemBar, Typography, Button, Stack } from '@mui/material'
 import Link from 'next/link';
-import { assetType, createCloudinaryUrl, truncateText } from '../lib/utils';
+import { assetType, createCloudinaryUrl } from '../lib/utils';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import { HodlImage } from './HodlImage';
-import { ProfileAvatar, ProfileAvatarMemo } from './ProfileAvatar';
+import { ProfileAvatarMemo } from './ProfileAvatar';
 import { HodlVideo } from './HodlVideo';
-import { Likes, LikesMemo } from './Likes';
+import { LikesMemo } from './Likes';
 import { HodlImage2 } from './HodlImage2';
 
-const NftList = ({ nfts, viewSale = false, showTop = true }) => {
+const NftList = ({ nfts, viewSale=false, showTop=true, showAvatar=true, showName=true }) => {
     const theme = useTheme();
     const matches = useMediaQuery(theme.breakpoints.up('sm'));
 
@@ -61,7 +60,7 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
                         }}
 
                     >
-                        { assetType(nft) === 'gif' && <HodlVideo cid={nft?.image} gif={true}/> }
+                        { assetType(nft) === 'gif' && <HodlVideo cid={nft?.image} transformations={nft?.filter} gif={true}/> }
                         { assetType(nft) === 'video' && <HodlVideo cid={nft?.image} controls={false} onlyPoster={true} transformations='l_text:Arial_100_bold:VIDEO,co_rgb:FFFFFF'/> }
                         { assetType(nft) === 'image' &&
                             <>
@@ -98,7 +97,8 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
                             borderTopLeftRadius: 1,
                             borderTopRightRadius: 1,
                             '.MuiImageListItemBar-titleWrap': {
-                                padding: 2
+                                paddingX: 2,
+                                paddingY: 1,
                             }
                         }}
                         
@@ -108,10 +108,12 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
                                 display: 'flex', 
                                 justifyContent: 'space-between',
                                 alignItems: "center",
+                                
                                 }}>
-                                <ProfileAvatarMemo size="small" profileAddress={nft.seller} color="greyscale"/>
+                                {showAvatar && <ProfileAvatarMemo size="small" profileAddress={nft.seller} color="greyscale"/>}
+                                {showName && <Typography sx={{ fontWeight: 900, paddingY: 1 }}>{nft.name}</Typography>}
                                 {Boolean(nft?.price) &&
-                                    <Typography sx={{ fontWeight: 900 }}>{`${nft.price} Matic`}</Typography>
+                                    <Typography sx={{ fontWeight: 900, paddingY: 1 }}>{`${nft.price} Matic`}</Typography>
                                 }
                             </Box>
                         }
@@ -124,7 +126,8 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
                             paddingTop: 1,
                             paddingBottom: 1,
                             '.MuiImageListItemBar-titleWrap': {
-                                padding: 2
+                                paddingX: 2,
+                                paddingY: 0
                             }
                         }}
                         subtitle={
@@ -141,6 +144,7 @@ const NftList = ({ nfts, viewSale = false, showTop = true }) => {
                                     sx={{ 
                                         borderColor: 'rgba(255, 255, 255, 0.9)',
                                         marginRight: 2,
+                                        padding: 0.5,
                                         borderWidth: 1.5,
                                         color: 'rgba(255, 255, 255, 0.9)',
 

@@ -4,8 +4,10 @@ import dotenv from 'dotenv'
 import { getFollowing } from "./following";
 import { isFollowing } from "./follows";
 import { getFollowers } from "./followers";
-import apiRoute from "./handler";
-import { isValidAddress } from '../../lib/profile';
+import apiRoute from "../handler";
+import { isValidAddress } from '../../../lib/profile';
+import { getFollowingCount } from './followingCount';
+import { getFollowersCount } from './followersCount';
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
@@ -47,9 +49,13 @@ route.post(async (req, res) => {
 
   await client.quit();
 
-  getFollowing.delete(req.address);
   isFollowing.delete(req.address, address);
+
+  getFollowing.delete(req.address);
+  getFollowingCount.delete(req.address);
+
   getFollowers.delete(address);
+  getFollowersCount.delete(address);
   
   res.status(200).json({followed});
 });

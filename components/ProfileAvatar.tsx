@@ -10,7 +10,6 @@ import { WalletContext } from "../pages/_app";
 
 
 export const ProfileAvatar = ({profileAddress, reverse=false, size="medium", color="secondary"}) => {
-
     const { address, nickname } = useContext(WalletContext);
 
     const [profileNickname, setProfileNickname] = useState('');

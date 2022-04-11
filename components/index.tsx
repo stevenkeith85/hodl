@@ -3,7 +3,6 @@ export { RocketTitle } from "./RocketTitle";
 export { HodlSnackbar } from "./HodlSnackbar";
 export { HodlModal } from "./HodlModal";
 export { HodlButton } from "./HodlButton";
-export { HodlImage } from "./HodlImage";
 export { HodlLink } from "./HodlLink";
 export { SuccessModal } from "./SuccessModal";
 export { DetailPageImage } from "./DetailPageImage";

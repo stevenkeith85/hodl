@@ -17,26 +17,27 @@ import { SuccessModal } from '../components';
 import { UnableToStoreModal } from '../components/UnableToStoreModal';
 
 import dynamic from "next/dynamic";
+import { HodlLoadingSpinner } from '../components/HodlLoadingSpinner'
 
 const SelectAssetAction = dynamic(
   // @ts-ignore
   () => import('../components/mint/SelectAssetAction').then((module) => module.SelectAssetAction),
-  {loading: () => <CircularProgress />}
+  {loading: () => <HodlLoadingSpinner />}
 );
 const UploadToIpfsAction = dynamic(
   // @ts-ignore
   () => import('../components/mint/UploadToIpfsAction').then((module) => module.UploadToIpfsAction),
-  {loading: () => <CircularProgress />}
+  {loading: () => <HodlLoadingSpinner />}
 );
 const MintTokenAction = dynamic(
   // @ts-ignore
   () => import('../components/mint/MintTokenAction').then((module) => module.MintTokenAction),
-  {loading: () => <CircularProgress />}
+  {loading: () => <HodlLoadingSpinner />}
 );
 const AddToHodlAction = dynamic(
   // @ts-ignore
   () => import('../components/mint/AddToHodlAction').then((module) => module.AddToHodlAction),
-  {loading: () => <CircularProgress />}
+  {loading: () => <HodlLoadingSpinner />}
 );
 
 
@@ -197,7 +198,7 @@ export default function Mint() {
               <SelectAssetAction cloudinaryUpload={cloudinaryUpload} loading={loading} filter={filter} setFilter={setFilter} />
               <MintProgressButtonsMemo activeStep={activeStep} setActiveStep={setActiveStep} stepComplete={stepComplete} />
             </Stack>
-            <Stack spacing={2} sx={{ flexBasis: `50%` }}>
+            <Stack spacing={2} sx={{ flexBasis: `50%`, justifyContent: 'center' }}>
               <Stack
                 sx={{
                   border: !fileName ? `1px solid #d0d0d0` : 'none',
@@ -224,7 +225,7 @@ export default function Mint() {
               <UploadToIpfsAction formInput={formInput} ipfsUpload={ipfsUpload} loading={loading} stepComplete={stepComplete} updateFormInput={updateFormInput} />
               <MintProgressButtonsMemo activeStep={activeStep} setActiveStep={setActiveStep} stepComplete={stepComplete} />
             </Stack>
-            <Stack sx={{flexBasis: `50%` }}>
+            <Stack sx={{flexBasis: `50%`, justifyContent: 'center' }}>
               {fileName && isImage() && <FilteredImageMemo filter={filter} fileName={fileName} setLoading={setLoading} />}
               {fileName && isVideo() && <HodlVideo cid={fileName} directory="video/upload" />}
             </Stack>
@@ -240,7 +241,7 @@ export default function Mint() {
                {/* @ts-ignore */}
               <MintTokenAction name={formInput.name} loading={loading} mint={mint} stepComplete={stepComplete} activeStep={activeStep} setActiveStep={setActiveStep} />
             </Stack>
-            <Stack sx={{ flexBasis: `50%` }}>
+            <Stack sx={{ flexBasis: `50%`, justifyContent: 'center' }}>
               {fileName && isImage() && <FilteredImageMemo filter={filter} fileName={fileName} setLoading={setLoading} />}
               {fileName && isVideo() && <HodlVideo cid={fileName} directory="video/upload" />}
             </Stack>
@@ -255,7 +256,7 @@ export default function Mint() {
                {/* @ts-ignore */}
               <AddToHodlAction name={formInput.name} loading={loading} stepComplete={stepComplete} hodl={hodl} />
             </Stack>
-            <Stack sx={{ flexBasis: `50%` }}>
+            <Stack sx={{ flexBasis: `50%`, justifyContent: 'center' }}>
               {fileName && isImage() && <FilteredImageMemo filter={filter} fileName={fileName} setLoading={setLoading} />}
               {fileName && isVideo() && <HodlVideo cid={fileName} directory="video/upload" />}
             </Stack>

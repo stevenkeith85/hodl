@@ -1,12 +1,8 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { NextApiRequest, NextApiResponse } from "next";
-import { ethers } from 'ethers'
+import { NextApiResponse } from "next";
 import * as Redis from 'ioredis';
 import dotenv from 'dotenv'
-import { nftaddress } from '../../config';
-import NFT from '../../artifacts/contracts/HodlNFT.sol/HodlNFT.json'
 import { ipfsUriToGatewayUrl } from "../../lib/utils";
-import cloudinary from 'cloudinary'
 import memoize from 'memoizee';
 import apiRoute from "./handler";
 import { getTokenUriAndOwner } from "../../lib/server/nft";
@@ -14,13 +10,6 @@ import { getTokenUriAndOwner } from "../../lib/server/nft";
 dotenv.config({ path: '../.env' })
 
 const route = apiRoute();
-
-// @ts-ignore
-// cloudinary.config({
-//   cloud_name: process.env.CLOUDINARY_NAME,
-//   api_key: process.env.CLOUDINARY_KEY,
-//   api_secret: process.env.CLOUDINARY_SECRET,
-// });
 
 const getInfuraIPFSAuth = memoize(() => {
   const credentials = Buffer.from(process.env.INFURA_IPFS_PROJECT_ID + ':' + process.env.INFURA_IPFS_PROJECT_SECRET).toString('base64');

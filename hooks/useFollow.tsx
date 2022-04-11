@@ -7,14 +7,14 @@ export const useFollow = (profileAddress) => {
   const { address, jwt } = useContext(WalletContext);
   const [connect] = useConnect();
 
-  const {data: isFollowing, mutate } = useSWR(address && address !== profileAddress ? [`/api/follows`, address, profileAddress] : null, 
+  const {data: isFollowing, mutate } = useSWR(address && address !== profileAddress ? [`/api/follow/follows`, address, profileAddress] : null, 
                                                             (url, address, profileAddress) => fetch(`${url}?address1=${address}&address2=${profileAddress}`)
                                                                                               .then(r => r.json())
                                                                                               .then(json => Boolean(json.follows)));
 
 
   const follow = async () => {
-    const r = await fetch('/api/follow', {
+    const r = await fetch('/api/follow/follow', {
       method: 'POST',
       headers: new Headers({
         'Content-Type': 'application/json',

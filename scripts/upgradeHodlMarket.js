@@ -3,7 +3,7 @@ const { getImplementationAddress } = require('@openzeppelin/upgrades-core');
 const dotenv = require('dotenv');
 const fs = require('fs');
 
-dotenv.config({ path: '../.env' })
+dotenv.config({ path: '.env.local' })
 
 const HodlMarketProxy = JSON.parse(fs.readFileSync('./scripts/addresses.json')).HodlMarketProxy;
 

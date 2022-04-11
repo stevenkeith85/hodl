@@ -56,7 +56,11 @@ contract HodlMarket is ReentrancyGuardUpgradeable, OwnableUpgradeable {
         minListingPriceInMatic = 1 ether; // To be finalised
     }
 
-    // Fee Setters
+    // Returns the number of NFTs _address has currently listed on the market
+    function balanceOf(address _address) external view returns (uint256) {
+        return addressToTokenIds[_address].length;
+    }
+
     function setMarketSaleFeeInPercent(uint256 _marketSaleFeeInPercent)
         public
         onlyOwner

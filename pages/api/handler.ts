@@ -17,7 +17,7 @@ const handler =  () => nc<HodlApiRequest, NextApiResponse>({
   },
   onError(error, req, res) {
     // TODO: Write this error somewhere. Perhaps REDIS
-    console.log('API Route Error', 'address: ', req.address, 'path: ', req.url, 'message: ', error.message)
+    console.log('API Route Error', 'address: ', req.address, 'path: ', req.url, 'error: ', error)
     res.status(500).json(error);
   }
 }).use((req, res, next) => {

@@ -40,7 +40,6 @@ function MyApp({ Component, pageProps }: AppProps) {
               xs: '520px',
               md: '280px',
             },
-            // webkitTapHighlightColor: 'transparent'
           }}>
             <ResponsiveAppBar />
             <Container maxWidth="xl">

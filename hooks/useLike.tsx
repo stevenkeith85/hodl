@@ -10,7 +10,7 @@ export const useLike = (tokenId) => {
 
     // @ts-ignore
     useEffect(async() => {
-        const r = await fetch(`/api/likeCount?token=${tokenId}`);
+        const r = await fetch(`/api/like/likeCount?token=${tokenId}`);
         if (r.status == 200) {
           const { count } = await r.json();
           setTokenLikesCount(count);
@@ -24,7 +24,7 @@ export const useLike = (tokenId) => {
           return;
         }
         
-        const r = await fetch(`/api/likes?address=${address}&token=${tokenId}`);
+        const r = await fetch(`/api/like/likes?address=${address}&token=${tokenId}`);
         if (r.status == 200) {
           const { likes } = await r.json();
           setUserLikesThisToken(likes);
@@ -32,7 +32,7 @@ export const useLike = (tokenId) => {
     }, [tokenId, address])
 
     const toggleLike = async () => {        
-        const r = await fetch('/api/like', {
+        const r = await fetch('/api/like/like', {
             method: 'POST',
             headers: new Headers({
               'Content-Type': 'application/json',

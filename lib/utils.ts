@@ -1,3 +1,6 @@
+export const makeAddressBasedFetcher = key => (url, address) => fetch(`${url}?address=${address}`)
+                                                                .then(r => r.json())
+                                                                .then(json => json[key])
 
 export const imageFilters = [
   {code:null, name: 'original'}, 

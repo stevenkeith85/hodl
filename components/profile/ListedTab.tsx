@@ -1,21 +1,26 @@
 import { Stack } from "@mui/material";
-import { fetchNFTsListedOnMarket } from "../../lib/profile";
 import { InfiniteScroll } from "../InfiniteScroll";
 
-export const ListedTab = ({ setNumberListed, profileAddress }) => {
-    
+interface ListedTabProps {
+  profileAddress: string,
+  prefetchedData?: []
+}
+
+export const ListedTab: React.FC<ListedTabProps> = ({ profileAddress, prefetchedData=null }) => {
     return (
         <Stack spacing={4} >
         {  
           <InfiniteScroll 
-            fetcher={async (offset, limit) => {
-              const [items, next, length] = await fetchNFTsListedOnMarket(profileAddress, offset, limit);
-              // @ts-ignore
-              setNumberListed(Number(length));
-
-              return {items, next: Number(next), length: Number(length)}
-            }} 
+            fetcher={
+              async (offset, limit) => await fetch(`/api/profile/listed?address=${profileAddress}&offset=${offset}&limit=${limit}`)
+                                              .then(r => r.json())
+                                              .then(json => json.data)
+            } 
             swrkey={'marketNfts: ' + profileAddress}
+            prefetchedData={prefetchedData}
+            showName={true}
+            showAvatar={false}
+            //revalidateOnMount={prefetchedData ? false : true}
             />
           }
         </Stack>
