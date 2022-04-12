@@ -8,9 +8,9 @@ export const Likes = ({tokenId, sx={}}) => {
     const [tokenLikesCount, userLikesThisToken, toggleLike] = useLike(tokenId);
 
     return (
-        <Stack spacing={1} direction="row" sx={{ color: "white", alignItems: "center", ...sx }}>
+        <Stack spacing={0.5} direction="row" sx={{ color: "white", alignItems: "center", ...sx }}>
                 {!userLikesThisToken ? <FavoriteBorderIcon onClick={ toggleLike } /> :  <FavoriteIcon onClick={ toggleLike }/> }
-                <Typography sx={{ fontSize: 14, fontWeight: 900 }}>{ tokenLikesCount }</Typography>
+                <Typography sx={{ fontSize: 14 }}>{ tokenLikesCount }</Typography>
         </Stack>
     )
 }

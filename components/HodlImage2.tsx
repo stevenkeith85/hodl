@@ -13,7 +13,7 @@ import { createCloudinaryUrl, imageSizes } from "../lib/utils";
 // We will do <format><quality><width><effect> 
 //
 // <width> will be calculated to match our imageSizes array
-export const HodlImage2 = ({ image, folder="nfts", onLoad=null, effect=null, format="f_auto", quality="q_auto", ext=null, imgSizes=null }) => {
+export const HodlImage2 = ({ image, folder="nfts", onLoad=null, effect=null, format="f_auto", quality="q_auto", ext=null, imgSizes=null, sx={} }) => {
     const sources = () => {
         return imageSizes.map(size => `${createCloudinaryUrl('image', 'upload', `c_limit,${format},${quality},w_${size}${ effect ? ',' + effect : ''}`, folder, image, ext)} ${size}w`
         ).join(',');
@@ -28,11 +28,15 @@ export const HodlImage2 = ({ image, folder="nfts", onLoad=null, effect=null, for
             { preload.map(item => <link key={item} href={item} rel="preload" />) }
         </Head>
         <Box sx={{
+            display: 'flex',
+            width: `100%`,
             img: {
                 width: '100%',
                 objectFit: "cover",
-                objectPosition: 'center'
-            }
+                objectPosition: 'center',
+                borderRadius: 1,
+            },
+            ...sx
         }}>
             <img 
                 decoding="async"

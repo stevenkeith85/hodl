@@ -1,11 +1,17 @@
 import { ethers } from 'ethers'
     
-export const getProvider = async () => {
-    // TODO: 
-    // We need to use correct provider for local, testnet, and prod
-    // For local we can just hit the hardhat node. For the other environments we should set up Infura/Alchemy API access
-    // if (env === 'development') {
-    //   return await new ethers.providers.JsonRpcProvider("http://192.168.1.242:8545");  
-    // }
-    return await new ethers.providers.JsonRpcProvider("http://192.168.1.242:8545");
+export const getProvider = () => {
+    // See https://docs.ethers.io/v5/api/providers/
+    if (process.env.LOCAL_BLOCKCHAIN_NODE) {
+        return ethers.getDefaultProvider(process.env.DEFAULT_PROVIDER_NETWORK);
+    } else {
+        const options = {
+            infura: { 
+                projectId: process.env.INFURA_IPFS_PROJECT_ID, 
+                projectSecret: process.env.INFURA_PROJECT_SECRET 
+            }
+        }
+
+        return ethers.getDefaultProvider(process.env.DEFAULT_PROVIDER_NETWORK, options);
+    }
 }

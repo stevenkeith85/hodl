@@ -1,12 +1,12 @@
 import { Stack } from "@mui/material";
 import { useContext, useRef, useState } from "react";
-import { buyNft, delistNft, listNftOnMarket } from "../lib/nft";
-import { checkForAndDisplaySmartContractErrors } from "../lib/utils";
-import { WalletContext } from "../pages/_app";
-import { HodlButton } from "./HodlButton";
-import { SocialShare } from "./SocialShare";
+import { buyNft, delistNft, listNftOnMarket } from "../../lib/nft";
+import { checkForAndDisplaySmartContractErrors } from "../../lib/utils";
+import { WalletContext } from "../../pages/_app";
+import { HodlButton } from "../HodlButton";
+import { SocialShare } from "../SocialShare";
 import SellIcon from '@mui/icons-material/Sell';
-import { HodlModal, HodlSnackbar, HodlTextField, RocketTitle, SuccessModal } from "./index";
+import { HodlModal, HodlSnackbar, HodlTextField, RocketTitle, SuccessModal } from "../index";
 import { useRouter } from "next/router";
 
 
@@ -98,7 +98,7 @@ export const NftActionButtons = ({ nft }) => {
                     spacing={2}
                 >
                     {
-                        Boolean(nft?.forSale) && !isOwner() &&
+                        Boolean(address) && Boolean(nft?.forSale) && !isOwner() &&
                         <HodlButton
                             startIcon={<SellIcon fontSize="large" />}
                             onClick={async () => {
@@ -143,7 +143,6 @@ export const NftActionButtons = ({ nft }) => {
                         </>
                     }
                 </Stack>
-                <SocialShare />
             </Stack>
         </>
     )

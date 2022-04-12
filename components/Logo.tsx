@@ -6,7 +6,7 @@ export const Logo = ({ sx={} }) => (
     <Link href="/" passHref>
         <Stack 
             direction="row" 
-            spacing={1} 
+            spacing={2} 
             sx={{ 
                 alignItems: 'center',
                 cursor: 'pointer',

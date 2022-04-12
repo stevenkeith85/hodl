@@ -202,28 +202,29 @@ const Profile = ({
 
   return (
     <>
-    <Box sx={{ display: 'flex', flexDirection: 'column', justifyItems: "center", paddingTop: 2, paddingBottom: 2 }}>
-      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: 2, marginBottom: 2, alignItems: 'center'}}>
+    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'row', paddingY: 2, justifyContent: 'space-between', alignItems: 'center'}}>
         <ProfileAvatarStatic size="large" handle={nickname || getShortAddress(profileAddress) } />
-        {Boolean( address !== profileAddress) &&
+        {Boolean(address) && Boolean( address !== profileAddress) &&
         <HodlButton 
-        sx={{
-          paddingTop: 1,
-          paddingBottom: 1,
-          paddingLeft: 2,
-          paddingRight: 2
-        }}
-        
-        onClick={
-          async () => {
-            updateFollowers(isFollowing ? 
-                followers.filter(f => f !== address) : 
-                [...followers, address], { revalidate: false});
-            updateFollowersCount(isFollowing ? followersCount - 1 : followersCount + 1, { revalidate: false})
-            
-            await follow();     
+          sx={{
+            paddingTop: 1,
+            paddingBottom: 1,
+            paddingLeft: 2,
+            paddingRight: 2
+          }}
+          
+          onClick={
+            async () => {
+              updateFollowers(isFollowing ? 
+                  followers.filter(f => f !== address) : 
+                  [...followers, address], { revalidate: false});
+              updateFollowersCount(isFollowing ? followersCount - 1 : followersCount + 1, { revalidate: false})
+              // @ts-ignore
+              await follow();     
+            }
           }
-        }>
+        >
           { isFollowing ? 'Unfollow' : 'Follow' }
         </HodlButton>
       }
@@ -242,11 +243,16 @@ const Profile = ({
             }}
             textColor="secondary"
             indicatorColor="secondary"
+            sx={{ 
+              '.MuiTab-root': { 
+                minHeight: '50px',
+              }
+            }}
           >
             <Tab value={0} label="Hodling" icon={ <Badge sx={{p: '6px 3px'}} showZero badgeContent={hodlingCount}></Badge> } iconPosition="end"/>
             <Tab value={1} label="Listed" icon={ <Badge sx={{p: '6px 3px'}} showZero badgeContent={listedCount}></Badge> } iconPosition="end"/>
             <Tab value={2} label="Following" icon={ <Badge sx={{p: '6px 3px'}} showZero badgeContent={followingCount}></Badge> } iconPosition="end"/>
-            <Tab value={3} label="Followers" icon={ <Badge sx={{p: '6px 3px'}} showZero badgeContent={followersCount} ></Badge> } iconPosition="end"/>
+            <Tab value={3} label="Followers" icon={ <Badge sx={{p: '6px 3px'}} showZero badgeContent={followersCount} ></Badge> } iconPosition="end"/> */}
           </Tabs>
       </Box>
       <div hidden={value !== 0}>

@@ -7,14 +7,14 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { getShortAddress } from "../lib/utils";
-import { HodlLink } from "./HodlLink";
+import { getShortAddress } from "../../lib/utils";
+import { HodlLink } from "../HodlLink";
 
 export const PriceHistory = ({ priceHistory }) => {
     return (
         <Card variant="outlined">
             <CardContent sx={{ whiteSpace: 'pre-line', maxHeight: 500, overflowY: 'auto' }}>
-                <Typography sx={{ marginBottom: 2 }}>Price History</Typography>
+                <Typography variant="h3" sx={{ marginBottom: 2 }}>Price History</Typography>
                 <TableContainer>
                     <Table sx={{ marginX: '-10px' }}>
                         <TableHead>

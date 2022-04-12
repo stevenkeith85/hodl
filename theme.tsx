@@ -21,6 +21,15 @@ declare module '@mui/material/styles' {
 
 const theme = responsiveFontSizes(createTheme({
   spacing: 6,
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 900,
+      lg: 1200,
+      xl: 1250//1536,
+    },
+  },
   palette: {
     primary: {
       // light: '#757ce8',
@@ -57,7 +66,8 @@ const theme = responsiveFontSizes(createTheme({
     },
     h3: {
       fontSize: 14,
-      fontWeight: 400,
+      fontWeight: 600,
+      color: '#555'
     },
     // h4: {},
     // h5: {},

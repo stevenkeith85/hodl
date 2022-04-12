@@ -26,8 +26,10 @@ export const useFollow = (profileAddress) => {
 
     if (r.status === 403) {
       await connect(false);
+      return false;
     } else if (r.status === 200) {
       mutate(!isFollowing, { revalidate: false});
+      return true;
     }
   }
 

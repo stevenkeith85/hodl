@@ -6,7 +6,6 @@ import { HodlTextField } from "../HodlTextField";
 export const UploadToIpfsAction = ({ stepComplete, updateFormInput, formInput, loading, ipfsUpload }) => (
     <>
       <Typography variant="h2">Upload To IPFS</Typography>
-      <Typography>Your token metadata and asset will be stored on IPFS</Typography>
       <HodlTextField
         disabled={loading || stepComplete === 1}
         label="Token Name"

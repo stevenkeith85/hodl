@@ -7,7 +7,6 @@ import {
 
 import {
   DetailPageImage,
-  ProfileAvatar,
   IpfsCard,
   PriceCard,
   DescriptionCard,
@@ -15,9 +14,10 @@ import {
 } from '../../components';
 
 import { fetchNFT, lookupPriceHistory } from "../../lib/server/nft";
-import { PriceHistory } from "../../components/PriceHistory";
+import { PriceHistory } from "../../components/nft/PriceHistory";
 import { truncateText } from "../../lib/utils";
 import { ProfileAvatarMemo } from "../../components/ProfileAvatar";
+import { LikesMemo } from "../../components/Likes";
 
 export async function getServerSideProps({ params }) {
   const nft = await fetchNFT(params.tokenId);
@@ -42,19 +42,20 @@ const NftDetail = ({nft, priceHistory}) => {
             spacing={1} 
             direction="row" 
             sx={{ 
-              py: 2,
               justifyContent: 'space-between', 
               alignItems: 'center' 
             }}>
             <Tooltip title={nft.name}>
               <Typography variant="h2">{truncateText(nft?.name, 100)}</Typography>
             </Tooltip>
-            
             <ProfileAvatarMemo reverse={true} profileAddress={nft?.owner} />
           </Stack>
         </Grid>
         <Grid item xs={12} md={6}>
+          <Stack spacing={2}>
           { !SSR ?  <DetailPageImage token={nft} /> : null }
+            <LikesMemo sx={{ color: theme => theme.palette.secondary.main, '.MuiTypography-body1': {color: '#666'}}} tokenId={nft.tokenId} />
+          </Stack>
         </Grid>
         <Grid item xs={12} md={6}>
           <Stack spacing={2}>

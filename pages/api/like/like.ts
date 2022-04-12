@@ -6,7 +6,7 @@ import dotenv from 'dotenv'
 import { likesToken } from "./likes";
 import { getLikeCount } from './likeCount';
 
-import apiRoute from "./handler";
+import apiRoute from "../handler";
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();

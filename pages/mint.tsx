@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { Box, Typography, Stack, CircularProgress } from '@mui/material'
+import { Box, Typography, Stack, CircularProgress, Grid } from '@mui/material'
 
 import { useCloudinaryUpload } from '../hooks/useCloudinaryUpload'
 import { useIpfsUpload } from '../hooks/useIpfsUpload'
@@ -18,6 +18,7 @@ import { UnableToStoreModal } from '../components/UnableToStoreModal';
 
 import dynamic from "next/dynamic";
 import { HodlLoadingSpinner } from '../components/HodlLoadingSpinner'
+import { FilteredVideoMemo } from '../components/mint/FilteredVideo'
 
 const SelectAssetAction = dynamic(
   // @ts-ignore
@@ -40,6 +41,25 @@ const AddToHodlAction = dynamic(
   {loading: () => <HodlLoadingSpinner />}
 );
 
+export const AssetPreview = ({ fileName, isImage, isVideo, filter, setLoading}) => (
+  <Stack spacing={2} sx={{ flexBasis: `50%`, justifyContent: 'center' }}>
+      
+      <Stack
+        sx={{
+          border: !fileName ? `1px solid #d0d0d0` : 'none',
+          flexGrow: 1,
+          minHeight: 400,
+          borderRadius: `5px`,
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+        {!fileName && <Typography>Preview will appear here</Typography>}
+        {fileName && isImage() && <FilteredImageMemo filter={filter} fileName={fileName} setLoading={setLoading} />}
+        {fileName && isVideo() && <FilteredVideoMemo filter={filter} fileName={fileName} setLoading={setLoading} />}
+      </Stack>
+      {/* <Typography sx={{ justifyContent: "right"}}>{ filter }</Typography> */}
+    </Stack>
+)
 
 export default function Mint() {
   const [loading, setLoading] = useState(false);
@@ -153,7 +173,7 @@ export default function Mint() {
   }
 
   return (
-    <Stack spacing={4} mt={4} sx={{ alignItems: 'center', position: 'relative' }}>
+    <Stack spacing={4} mt={4}>
       <HodlSnackbar ref={snackbarRef} />
       <UnableToStoreModal
         setUnableToSaveModalOpen={setUnableToSaveModalOpen}
@@ -168,101 +188,61 @@ export default function Mint() {
         tab={0}
       />
 
-      {loading && <CircularProgress
-        sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%'
-        }}
-        color="secondary"
-      />
-      }
+      {loading && <HodlLoadingSpinner sx={{ position: 'absolute', top: 'calc(50vh - 20px)', left: 'calc(50vw - 20px)'}}/>}
 
       <MintTitleMemo />
       <MintStepperMemo activeStep={activeStep} />
-      <Box
-        sx={{
-          width: {
-            xs: `100%`,
-          }
-        }}>
+      <Grid container>
+        <Grid item xs={12} md={6} 
+          sx={{
+            paddingBottom: {
+              xs: 4,
+              md: 0
+            },
+            paddingRight: {
+              md: 2
+          }}}>
         {activeStep === 0 &&
-          <Stack direction={{
-              xs: "column",
-              md: 'row'
-          }}
-             spacing={4}
-             sx={{ }}>
-            <Stack spacing={8} sx={{ flexBasis: `50%`}}>
-               {/* @ts-ignore */}
-              <SelectAssetAction cloudinaryUpload={cloudinaryUpload} loading={loading} filter={filter} setFilter={setFilter} />
-              <MintProgressButtonsMemo activeStep={activeStep} setActiveStep={setActiveStep} stepComplete={stepComplete} />
-            </Stack>
-            <Stack spacing={2} sx={{ flexBasis: `50%`, justifyContent: 'center' }}>
-              <Stack
-                sx={{
-                  border: !fileName ? `1px solid #d0d0d0` : 'none',
-                  flexGrow: 1,
-                  minHeight: 400,
-                  borderRadius: `5px`,
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                {!fileName && <Typography>Preview will appear here</Typography>}
-                {fileName && isImage() && <FilteredImageMemo filter={filter} fileName={fileName} setLoading={setLoading} />}
-                {fileName && isVideo() && <HodlVideo cid={fileName} directory="video/upload" />}
-              </Stack>
-            </Stack>
+          <Stack spacing={12}>
+                {/* @ts-ignore */}
+                <SelectAssetAction cloudinaryUpload={cloudinaryUpload} loading={loading} filter={filter} setFilter={setFilter} />
+                <MintProgressButtonsMemo activeStep={activeStep} setActiveStep={setActiveStep} stepComplete={stepComplete} />
           </Stack>
         }
         {activeStep === 1 &&
-          <Stack direction={{
-            xs: "column",
-            md: 'row'
-        }}   spacing={4} alignContent="center" >
-            <Stack spacing={4} sx={{ flexBasis: `50%`}}>
+          <Stack spacing={4}>
               {/* @ts-ignore */}
               <UploadToIpfsAction formInput={formInput} ipfsUpload={ipfsUpload} loading={loading} stepComplete={stepComplete} updateFormInput={updateFormInput} />
               <MintProgressButtonsMemo activeStep={activeStep} setActiveStep={setActiveStep} stepComplete={stepComplete} />
-            </Stack>
-            <Stack sx={{flexBasis: `50%`, justifyContent: 'center' }}>
-              {fileName && isImage() && <FilteredImageMemo filter={filter} fileName={fileName} setLoading={setLoading} />}
-              {fileName && isVideo() && <HodlVideo cid={fileName} directory="video/upload" />}
-            </Stack>
           </Stack>
-
         }
         {activeStep === 2 &&
-          <Stack direction={{
-            xs: "column",
-            md: 'row'
-        }} spacing={4} >
-            <Stack spacing={4} sx={{ flexBasis: `50%` }}>
-               {/* @ts-ignore */}
+          <Stack spacing={12}>
+              {/* @ts-ignore */}
               <MintTokenAction name={formInput.name} loading={loading} mint={mint} stepComplete={stepComplete} activeStep={activeStep} setActiveStep={setActiveStep} />
-            </Stack>
-            <Stack sx={{ flexBasis: `50%`, justifyContent: 'center' }}>
-              {fileName && isImage() && <FilteredImageMemo filter={filter} fileName={fileName} setLoading={setLoading} />}
-              {fileName && isVideo() && <HodlVideo cid={fileName} directory="video/upload" />}
-            </Stack>
+              <MintProgressButtonsMemo activeStep={activeStep} setActiveStep={setActiveStep} stepComplete={stepComplete} />
           </Stack>
         }
         {activeStep === 3 &&
-          <Stack direction={{
-            xs: "column",
-            md: 'row'
-        }} spacing={4} >
-            <Stack spacing={8} sx={{ flexBasis: `50%` }}>
+          <Stack spacing={12}>
                {/* @ts-ignore */}
               <AddToHodlAction name={formInput.name} loading={loading} stepComplete={stepComplete} hodl={hodl} />
-            </Stack>
-            <Stack sx={{ flexBasis: `50%`, justifyContent: 'center' }}>
-              {fileName && isImage() && <FilteredImageMemo filter={filter} fileName={fileName} setLoading={setLoading} />}
-              {fileName && isVideo() && <HodlVideo cid={fileName} directory="video/upload" />}
-            </Stack>
           </Stack>
         }
-      </Box>
+        </Grid>
+        <Grid 
+          item 
+          xs={12} 
+          md={6}
+          sx={{
+            paddingLeft: {
+              md: 2
+          }
+          }}
+          >
+            <AssetPreview fileName={fileName} filter={filter} isImage={isImage} isVideo={isVideo} setLoading={setLoading} />
+        </Grid>
+      </Grid>
     </Stack>
   )
 }

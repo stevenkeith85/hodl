@@ -16,6 +16,5 @@ export const MintTokenAction = ({ name, stepComplete, loading, mint, activeStep,
         Mint Token
       </HodlButton>
     </div>
-    <MintProgressButtonsMemo activeStep={activeStep} setActiveStep={setActiveStep} stepComplete={stepComplete} />
   </Stack>
 );

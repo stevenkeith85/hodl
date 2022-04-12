@@ -60,7 +60,7 @@ const NftList = ({ nfts, viewSale=false, showTop=true, showAvatar=true, showName
                         }}
 
                     >
-                        { assetType(nft) === 'gif' && <HodlVideo cid={nft?.image} transformations={nft?.filter} gif={true}/> }
+                        { assetType(nft) === 'gif' && <HodlVideo sx={{ video: {width: '100%'} }} cid={nft?.image} transformations={nft?.filter} gif={true}/> }
                         { assetType(nft) === 'video' && <HodlVideo cid={nft?.image} controls={false} onlyPoster={true} transformations='l_text:Arial_100_bold:VIDEO,co_rgb:FFFFFF'/> }
                         { assetType(nft) === 'image' &&
                             <>
@@ -94,11 +94,10 @@ const NftList = ({ nfts, viewSale=false, showTop=true, showAvatar=true, showName
                         sx={{
                             display: () => showTop ? 'flex' : 'none',
                             backgroundColor: 'rgba(0,0,0,0.3)',
-                            borderTopLeftRadius: 1,
-                            borderTopRightRadius: 1,
-                            '.MuiImageListItemBar-titleWrap': {
-                                paddingX: 2,
-                                paddingY: 1,
+                            borderTopLeftRadius: 4,
+                            borderTopRightRadius: 4,
+                            '.MuiImageListItemBar-titleWrap, .MuiImageListItemBar-actionIcon': {
+                                padding: 1,
                             }
                         }}
                         
@@ -108,12 +107,12 @@ const NftList = ({ nfts, viewSale=false, showTop=true, showAvatar=true, showName
                                 display: 'flex', 
                                 justifyContent: 'space-between',
                                 alignItems: "center",
-                                
+                                padding: 1,
                                 }}>
                                 {showAvatar && <ProfileAvatarMemo size="small" profileAddress={nft.seller} color="greyscale"/>}
-                                {showName && <Typography sx={{ fontWeight: 900, paddingY: 1 }}>{nft.name}</Typography>}
+                                {showName && <Typography sx={{ fontWeight: 900 }}>{nft.name}</Typography>}
                                 {Boolean(nft?.price) &&
-                                    <Typography sx={{ fontWeight: 900, paddingY: 1 }}>{`${nft.price} Matic`}</Typography>
+                                    <Typography sx={{ fontWeight: 900 }}>{`${nft.price} Matic`}</Typography>
                                 }
                             </Box>
                         }
@@ -121,13 +120,10 @@ const NftList = ({ nfts, viewSale=false, showTop=true, showAvatar=true, showName
                     <ImageListItemBar
                         sx={{
                             backgroundColor: 'rgba(0,0,0,0.3)',
-                            borderBottomLeftRadius: 1,
-                            borderBottomRightRadius: 1,
-                            paddingTop: 1,
-                            paddingBottom: 1,
-                            '.MuiImageListItemBar-titleWrap': {
-                                paddingX: 2,
-                                paddingY: 0
+                            borderBottomLeftRadius: 4,
+                            borderBottomRightRadius: 4,
+                            '.MuiImageListItemBar-titleWrap, .MuiImageListItemBar-actionIcon': {
+                                padding: 1,
                             }
                         }}
                         subtitle={
@@ -143,11 +139,10 @@ const NftList = ({ nfts, viewSale=false, showTop=true, showAvatar=true, showName
                                     variant="outlined"
                                     sx={{ 
                                         borderColor: 'rgba(255, 255, 255, 0.9)',
-                                        marginRight: 2,
-                                        padding: 0.5,
                                         borderWidth: 1.5,
                                         color: 'rgba(255, 255, 255, 0.9)',
-
+                                        paddingY: 1,
+                                        margin: 0,
                                         fontWeight: 900,
                                         '&:hover': {
                                             borderColor: 'white',

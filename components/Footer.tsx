@@ -65,9 +65,10 @@ const Footer = () => {
                         </Stack>
                         <Stack spacing={0.5}>
                             <Typography sx={{ fontWeight: 800, marginBottom: 0.5 }}>Non Fungible Tokens</Typography>
-                            <HodlLink href="/mint">Mint NFT</HodlLink>
-                            <HodlLink href={`/profile/${address}`}>My NFT Collection</HodlLink>
-                            <HodlLink href="/">NFT Market</HodlLink>
+                            <HodlLink href="/">Market</HodlLink>
+                            <HodlLink href="/mint">Mint</HodlLink>
+                            <HodlLink href={`/profile/${address}`}>My Profile</HodlLink>
+                            
                         </Stack>
                     </Stack>
                     <Stack>

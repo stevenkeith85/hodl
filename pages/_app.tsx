@@ -6,6 +6,8 @@ import { Box, Container, CssBaseline, ThemeProvider } from '@mui/material';
 import ResponsiveAppBar from '../components/AppBar';
 import theme from '../theme';
 import Footer from '../components/Footer';
+import { createEmotionCache } from '../createEmotionCache';
+import { CacheProvider } from '@emotion/react'
 
 export const WalletContext = createContext<{ 
   signer: any, 
@@ -18,6 +20,8 @@ export const WalletContext = createContext<{
   setJwt: Function  
 }>(null);
 
+// Client-side cache, shared for the whole session of the user in the browser.
+const clientSideEmotionCache = createEmotionCache();
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [signer, setSigner] = useState('');
@@ -26,13 +30,13 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [jwt, setJwt] = useState('');
 
   return (
-    <>
+    <CacheProvider value={clientSideEmotionCache}>
       <Head>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
-      <CssBaseline />
       <WalletContext.Provider value={{ signer, setSigner, address, setAddress, nickname, setNickname, jwt, setJwt }}>
         <ThemeProvider theme={theme}>
+        <CssBaseline />  
           <Box sx={{
             minHeight: '100vh',
             position: 'relative',
@@ -49,7 +53,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           </Box>
         </ThemeProvider>
       </WalletContext.Provider>
-    </>
+    </CacheProvider>
   )
 }
 
