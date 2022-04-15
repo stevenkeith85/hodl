@@ -1,10 +1,6 @@
 import Link from "next/link";
 import PersonIcon from '@mui/icons-material/Person';
 import { Avatar, Stack, Typography } from "@mui/material";
-import { getShortAddress } from "../lib/utils";
-import { memo } from "react";
-import { isValidAddress } from "../lib/profile";
-
 
 // This version will not do any HTTP requests
 export const ProfileAvatarStatic = ({handle, reverse=false, size="medium", color="secondary"}) => {

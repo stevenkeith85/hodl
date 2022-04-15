@@ -1,20 +1,20 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { NextApiRequest, NextApiResponse } from "next";
-import * as Redis from 'ioredis';
+
 import dotenv from 'dotenv'
 import memoize from 'memoizee';
 import apiRoute from '../handler';
 
+import { Redis } from '@upstash/redis';
+
 dotenv.config({ path: '../.env' })
 
+const client = Redis.fromEnv()
 const route = apiRoute();
 
 export const getToken = memoize(async (tokenId) => {
   console.log('CALLING REDIS TO GET TOKEN INFORMATION FOR', tokenId);
-  const client = new Redis(process.env.REDIS_CONNECTION_STRING);
   const token = await client.get('token:' + tokenId);
-  await client.quit();
-  return JSON.parse(token);
+  return token;
 }, { 
   primitive: true,
   max: 10000, 

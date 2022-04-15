@@ -5,24 +5,26 @@ import { WalletContext } from "../pages/_app";
 
 export const useConnect = () => {
 
-  const { setSigner, setAddress, setNickname, setJwt } = useContext(WalletContext);
+  const { setSigner, setAddress, setNickname} = useContext(WalletContext);
 
-  const connect = async (returningUser = true) => {
+  // we ask which account they want if they aren't a returning user (i.e. they've logged out)
+  // we can also connect returningusers to update their jwt
+  const connect = async (returningUser=true, jwtExpired=false) => {
     try {
       const _signer = await getMetaMaskSigner(returningUser);
       const _address = await _signer.getAddress();
 
-      if (!returningUser) {
-
+      if (!returningUser || jwtExpired) {
         // get nonce
-        const rNonce = await fetch(`/api/nonce?address=${_address}`);
+        const rNonce = await fetch(`/api/auth/nonce?address=${_address}`);
         const { nonce } = await rNonce.json();
 
         // get user to sign message + nonce
         const signature = await _signer.signMessage(messageToSign + nonce);
 
         // send the sign to the BE
-        const rSig = await fetch('/api/signature', {
+        const rSig = await fetch('/api/auth/signature', {
+          credentials: 'include',
           method: 'POST',
           headers: new Headers({
             'Content-Type': 'application/json',
@@ -35,20 +37,16 @@ export const useConnect = () => {
         });
 
         const { token } = await rSig.json();
-
-        localStorage.setItem('jwt', token.split(" ")[1]);
+        localStorage.setItem('jwt', token);
       }
 
-      const r = await fetch(`/api/nickname?address=${_address}`);
+      const r = await fetch(`/api/profile/nickname?address=${_address}`);
       const json = await r.json();
       const _nickname = json.nickname;
 
       setSigner(_signer);
       setAddress(_address);
       setNickname(_nickname);
-      setJwt(localStorage.getItem('jwt'));
-
-      localStorage.setItem('Wallet', 'Connected');
     } catch (e) {
       console.log(e)
     }
@@ -58,8 +56,6 @@ export const useConnect = () => {
     setSigner(null);
     setAddress(null);
     setNickname(null);
-    setJwt(null);
-    localStorage.setItem('Wallet', 'Not Connected');
     localStorage.setItem('jwt', '');
   }
 

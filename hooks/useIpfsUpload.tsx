@@ -1,18 +1,20 @@
-import { useContext } from 'react';
-import { WalletContext } from "../pages/_app";
+import { hasExpired } from '../lib/utils';
 import { useConnect } from './useConnect';
 
 export const useIpfsUpload = () => {
-  const { jwt } = useContext(WalletContext);
   const [connect] = useConnect();
 
   const uploadToIpfs = async (name, description, fileName, mimeType, filter) => {
-    const r = await fetch('/api/ipfs', {
+    if (hasExpired(localStorage.getItem('jwt'))) {
+      await connect(true, true);
+    }
+    
+    const r = await fetch('/api/mint/ipfs', {
       method: 'POST',
       headers: new Headers({
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': jwt
+        'Authorization': localStorage.getItem('jwt')
       }),
       body: JSON.stringify({ 
         name, 

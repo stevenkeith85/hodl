@@ -1,11 +1,12 @@
 import { Box, Modal } from "@mui/material";
 
 // Start simple
-export const HodlModal = ({open, setOpen, children}) => {
+export const HodlModal = ({open, setOpen, children, ref=null, sx={}}) => {
     return (
         <Modal
             open={open}
             onClose={() => setOpen(false)}
+            ref={ref}
         >
         <Box 
             sx={{
@@ -18,6 +19,7 @@ export const HodlModal = ({open, setOpen, children}) => {
                 borderRadius: 2,
                 boxShadow: 24,
                 p: 4,
+                ...sx
         }}>
             { children }
         </Box>

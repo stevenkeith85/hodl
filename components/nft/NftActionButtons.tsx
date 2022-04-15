@@ -4,7 +4,6 @@ import { buyNft, delistNft, listNftOnMarket } from "../../lib/nft";
 import { checkForAndDisplaySmartContractErrors } from "../../lib/utils";
 import { WalletContext } from "../../pages/_app";
 import { HodlButton } from "../HodlButton";
-import { SocialShare } from "../SocialShare";
 import SellIcon from '@mui/icons-material/Sell';
 import { HodlModal, HodlSnackbar, HodlTextField, RocketTitle, SuccessModal } from "../index";
 import { useRouter } from "next/router";

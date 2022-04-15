@@ -1,14 +1,14 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { NextApiResponse } from "next";
-import * as Redis from 'ioredis';
+import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
-import { ipfsUriToGatewayUrl } from "../../lib/utils";
+import { ipfsUriToGatewayUrl } from "../../../lib/utils";
 import memoize from 'memoizee';
-import apiRoute from "./handler";
-import { getTokenUriAndOwner } from "../../lib/server/nft";
+import apiRoute from "../handler";
+import { getTokenUriAndOwner } from "../../../lib/server/nft";
 
 dotenv.config({ path: '../.env' })
 
+const client = Redis.fromEnv()
 const route = apiRoute();
 
 const getInfuraIPFSAuth = memoize(() => {
@@ -32,9 +32,7 @@ route.post(async (req, res: NextApiResponse) => {
   const r = await fetch(ipfsUriToGatewayUrl(tokenUri), { headers : getInfuraIPFSAuth() }); // Potentially, we don't want to do it this way (as rate limiting / slow / etc)
   const { name, description, image } = await r.json()
 
-  const client = new Redis(process.env.REDIS_CONNECTION_STRING);
   client.set("token:" + tokenId, JSON.stringify({ tokenId, name, description, image, mimeType, filter }));
-  await client.quit();
 
   res.status(200).json({ tokenId, name, description, image });
 });

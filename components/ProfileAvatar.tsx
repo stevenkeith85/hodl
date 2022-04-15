@@ -4,122 +4,148 @@ import {
     Avatar, Stack, Typography
 } from "@mui/material";
 import { getShortAddress } from "../lib/utils";
-import { useState, useEffect, useContext, memo } from "react";
-import { isValidAddress } from "../lib/profile";
-import { WalletContext } from "../pages/_app";
+import useSWR from "swr";
+import { HodlImage2 } from "./HodlImage2";
+import { HodlVideo } from "./HodlVideo";
+import { useNickname } from "../hooks/useNickname";
 
 
-export const ProfileAvatar = ({profileAddress, reverse=false, size="medium", color="secondary"}) => {
-    const { address, nickname } = useContext(WalletContext);
-
-    const [profileNickname, setProfileNickname] = useState('');
-    const [validAddress, setValidAddress] = useState(false);
-
-    // @ts-ignore
-    useEffect(async () => {
-        if (!profileAddress) {
-            return;
-        }
-
-        if (address === profileAddress && nickname) {
-            setProfileNickname(nickname);
-            setValidAddress(true);
-        } else {
-            const r = await fetch(`/api/nickname?address=${profileAddress}`);
-            const json = await r.json();
-            setProfileNickname(json.nickname);
-            setValidAddress(await isValidAddress(profileAddress))        
-        }
-    }, [profileAddress]);
-
-    // @ts-ignore
-    useEffect(async () => {
-        if (address === profileAddress && nickname) {
-            setProfileNickname(nickname);
-            setValidAddress(true);
-        }
-    }, [nickname]);
-    
-
-    const getSize = () => {
-        if (size === 'small') {
-            return 30;
-        }
-
-        if (size === 'medium') {
-            return 40;
-        }
-
-        if (size === 'large') {
-            return 50;
-        }
-    }
-
-    const getColor = theme => {
-        if (color === 'primary') {
-            return theme.palette.primary.light;
-        }
-         
-         if (color === 'secondary') {
-             return theme.palette.secondary.main;
-         }
-
-         if (color === 'greyscale') {
-            return 'rgba(0,0,0,0.3)'
-        }
+const AvatarText: React.FC<{size: string, href?: string, children?: any, color: string}> = ({ size, href, children, color }) => {
+    const mappings = {
+        small: 14,
+        medium: 14,
+        large: 18
     }
 
     return (
-        <Link href={profileAddress ? `/profile/${profileNickname || profileAddress}` : ''} passHref>            
-            <Stack sx={{ 
-                alignItems: "center",
-                cursor: 'pointer',
-                '&:hover': {
-                    '.avatar': {
-                        cursor: 'pointer',
-                        bgcolor: 'white',
-                        borderColor: theme => getColor(theme),
-                    },
-                    '.icon': {
-                        color: theme => getColor(theme),
-                        bgcolor:'white'
-                    },
-                    '.address': {
-                        fontWeight: 900
-                    }
-                }
-            }} 
-            spacing={1} 
-            direction={ reverse ? 'row-reverse': 'row'}
-            >   
-               <Avatar 
-                className="avatar"
-                sx={{
-                        height: getSize(),
-                        width: getSize(),
-                        border: size === 'small' ? `1.5px solid` : `2px solid`,
-                        bgcolor: (theme) => getColor(theme)
-                        
-                    }}>
-                    <PersonIcon 
-                        className="icon"
-                        sx={{ 
-                            color: 'rgba(255,255,255,0.85)', 
-                            fontSize: getSize() - 10,
-                        }}
-                    />
-                </Avatar>
-            {
-            profileAddress && 
-            validAddress && (
-                profileNickname ? 
-                    <Typography className="address" sx={{ fontWeight: color === 'primary' ? 400: 600 }}>{ profileNickname }</Typography> : 
-                    <Typography className="address" sx={{ fontWeight: color === 'primary' ? 400: 600 }}>{ getShortAddress(profileAddress)?.toLowerCase() }</Typography>
-                )
-            }
-            </Stack>            
-        </Link>
+        <Typography 
+            component="a"
+            href={href}
+            className="address" 
+            sx={{ 
+                fontSize: mappings[size],
+                textDecoration: 'none',
+                color: color === 'greyscale' ? 'white' : 'black'
+            }}>
+                {children}
+            </Typography>
     )
 }
 
-export const ProfileAvatarMemo = memo(ProfileAvatar);
+export const ProfileAvatar = ({ profileAddress, reverse=false, size="medium", color="secondary" }) => {
+    const { data: profileNickname } = useSWR(profileAddress ? [`/api/profile/nickname`, profileAddress] : null,
+        (url, query) => fetch(`${url}?address=${query}`)
+            .then(r => r.json())
+            .then(json => json.nickname))
+
+    const { data: tokenId } = useSWR(profileAddress ? [`/api/profile/picture`, profileAddress] : null,
+        (url, query) => fetch(`${url}?address=${query}`)
+            .then(r => r.json())
+            .then(json => json.token))
+
+    const { data: token } = useSWR(tokenId ? [`/api/token`, tokenId] : null,
+        (url, query) => fetch(`${url}/${query}`)
+            .then(r => r.json())
+            .then(json => json.token))
+
+    const isGif = (mimeType) => mimeType && mimeType.indexOf('gif') !== -1;
+    const isImage = (mimeType) => mimeType && mimeType.indexOf('image') !== -1;
+    const isVideo = (mimeType) => mimeType && mimeType.indexOf('video') !== -1;
+
+    const getSize = () => {
+        const mappings = {
+            small: 36,
+            medium: 54,
+            large: 90
+        }
+
+        return mappings[size];
+    }
+
+    const getColor = theme => {
+        const mappings = {
+            primary: theme.palette.primary.light,
+            secondary: theme.palette.secondary.main,
+            greyscale: 'rgba(0,0,0,0.3)'
+        }
+
+        return mappings[color]
+    }
+
+    return (
+        <Stack sx={{
+            alignItems: "center",
+            cursor: 'pointer',
+        }}
+            spacing={ size === 'small' ? 1 : 2}
+            direction={reverse ? 'row-reverse' : 'row'}
+        >
+            {token ?
+                <Link href={`/nft/${token.tokenId}`}>
+                    <Avatar
+                        className="avatar"
+                        sx={{
+                            height: getSize(),
+                            width: getSize(),
+                        }}>
+                        {isImage(token.mimeType) && !isGif(token.mimeType) &&
+                            <HodlImage2
+                                image={token?.image.split('//')[1]}
+                                effect={`w_200,h_200${token?.filter ? ',' + token.filter : ''},ar_1.0,c_fill,r_max`}
+                                imgSizes={`${getSize() + 10}px`}
+                            />}
+                        {isImage(token.mimeType) && isGif(token.mimeType) &&
+                            <HodlVideo
+                                gif={true}
+                                cid={token?.image.split('//')[1]}
+                                transformations={`w_200,h_200${token?.filter ? ',' + token.filter : ''},ar_1.0,c_fill,r_max`}
+                            />}
+                        {isVideo(token.mimeType) &&
+                            <HodlVideo
+                                controls={false}
+                                cid={token?.image.split('//')[1]}
+                                transformations={`w_200,h_200${token?.filter ? ',' + token.filter : ''},ar_1.0,c_fill,r_max`}
+                                onlyPoster={true}
+                            />}
+                    </Avatar>
+                </Link> :
+                <Link href={profileAddress ? `/profile/${profileNickname || profileAddress}` : ''}>
+                    <Avatar
+                        className="avatar"
+                        sx={{
+                            height: getSize(),
+                            width: getSize(),
+                            bgcolor: (theme) => getColor(theme),
+                            border: size === 'small' ? `1.5px solid` : `2px solid`,
+                            '&:hover': {
+                                cursor: 'pointer',
+                                bgcolor: 'white',
+                                borderColor: theme => getColor(theme),
+                                '.icon': {
+                                    color: theme => getColor(theme),
+                                    bgcolor: 'white'
+                                }
+                            }
+                        }}>
+
+                        <PersonIcon
+                            className="icon"
+                            sx={{
+                                color: 'rgba(255,255,255,0.85)',
+                                fontSize: getSize() - 10,
+                            }}
+
+                        />
+                    </Avatar>
+                </Link >
+            }
+            <Link href={`/profile/${profileNickname || profileAddress}`} passHref>
+                {
+                    profileNickname ? 
+                        <AvatarText size={size} color={color}>{profileNickname}</AvatarText> :
+                        <AvatarText size={size} color={color}>{getShortAddress(profileAddress)?.toLowerCase()}</AvatarText>
+                }
+            </Link>
+        </Stack>
+    )
+}

@@ -1,6 +1,6 @@
 import { NextApiResponse } from "next";
-import { removeFromCloudinary, uploadToCloudinary } from "../../lib/server/cloudinary";
-import apiRoute, { HodlApiRequest } from "./handler";
+import { removeFromCloudinary, uploadToCloudinary } from "../../../lib/server/cloudinary";
+import apiRoute, { HodlApiRequest } from "../handler";
 
 interface MulterRequest extends HodlApiRequest {
   file: any;

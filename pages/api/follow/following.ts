@@ -1,12 +1,14 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { NextApiRequest, NextApiResponse } from "next";
-import * as Redis from 'ioredis';
+import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
 import memoize from 'memoizee';
 import apiRoute from "../handler";
 import { isValidAddress } from "../../../lib/profile";
 
 dotenv.config({ path: '../.env' })
+
+const client = Redis.fromEnv()
 const route = apiRoute();
 
 
@@ -14,9 +16,7 @@ const route = apiRoute();
 // Memo cleared when 'follow' is toggled
 export const getFollowing = memoize(async (address) => {
   console.log("CALLING REDIS TO SEE WHO ADDRESS IS FOLLOWING", address);
-  const client = new Redis(process.env.REDIS_CONNECTION_STRING);
   const following = await client.hkeys(`following:${address}`)
-  await client.quit();
 
   return following;
 }, { 

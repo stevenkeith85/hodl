@@ -1,5 +1,5 @@
 import { Stack, Typography } from "@mui/material";
-import { ProfileAvatarMemo } from "../ProfileAvatar";
+import { ProfileAvatar } from "../ProfileAvatar";
 
 interface FollowersTabProps {
   address: string, // current user
@@ -13,7 +13,7 @@ export const FollowersTab: React.FC<FollowersTabProps> = ({ followers, address, 
     return (
       <Stack spacing={4} sx={{ padding: 4, paddingLeft: 0}}>
           { followers?.length ? 
-              followers?.map((address, i) => <ProfileAvatarMemo key={i} color="primary" profileAddress={address}/>) :
+              followers?.map((address, i) => <ProfileAvatar key={i} color="primary" profileAddress={address}/>) :
               <Typography>{ isOwnProfile ? `You don't have any followers`: `This user has no followers`}</Typography>
           }
         </Stack>

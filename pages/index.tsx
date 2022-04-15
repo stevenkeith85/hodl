@@ -1,34 +1,48 @@
 import { Box } from '@mui/material'
+import Head from 'next/head';
 import { InfiniteScroll } from '../components/InfiniteScroll'
+import NftList from '../components/NftList'
 
 export async function getServerSideProps() {
-  
-  const prefetchedListed = await fetch(`${process.env.NEXT_PUBLIC_HODL_API_ADDRESS}/market/listed?offset=0&limit=20`)
-                                    .then(r => r.json())
-                                    .then(json => json.data)
+  const lim = 8;
+  const prefetchedListed = await fetch(`${process.env.NEXT_PUBLIC_HODL_API_ADDRESS}/market/listed?offset=0&limit=${lim}`)
+    .then(r => r.json())
+    .then(json => json.data)
   return {
     props: {
+      lim,
       prefetchedListed: [prefetchedListed],
     },
   }
 }
 
 
-export default function Home({ prefetchedListed }) {
+export default function Home({ lim, prefetchedListed }) {
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', justifyItems: "center", paddingTop:{ xs: 0, md: 2} }}>
-      <InfiniteScroll 
+    <>
+      <Head>
+        <title>NFT Market</title>
+      </Head>
+      <Box>
+        <InfiniteScroll
           swrkey='fetchMarketItems'
           fetcher={
             async (offset, limit) => await fetch(`/api/market/listed?offset=${offset}&limit=${limit}`)
-                                            .then(r => r.json())
-                                            .then(json => json.data)
-          } 
-          viewSale={true}
-          showTop={true}
-          showName={false}
+              .then(r => r.json())
+              .then(json => json.data)}
           prefetchedData={prefetchedListed}
-           />
-    </Box>
-  ) 
+          revalidateOnMount={true}
+          lim={lim}
+          render={nfts => (
+            <Box marginY={2}>
+              <NftList
+                nfts={nfts}
+                viewSale={true}
+                showTop={true}
+                showName={false} />
+            </Box>
+          )} />
+      </Box>
+    </>
+  )
 }

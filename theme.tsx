@@ -53,7 +53,7 @@ const theme = responsiveFontSizes(createTheme({
     tonalOffset: 0.2
   },
   typography: {
-    fontFamily: "Nunito Sans, Roboto, sans-serif",
+    fontFamily: "Nunito Sans, sans-serif",
     fontSize: 14,
     h1: {
       fontSize: 17,

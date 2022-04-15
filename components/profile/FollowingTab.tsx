@@ -1,5 +1,5 @@
 import { Stack, Typography } from "@mui/material";
-import { ProfileAvatarMemo } from "../ProfileAvatar";
+import { ProfileAvatar } from "../ProfileAvatar";
 
 interface FollowingTabProps {
   address: string, // current user
@@ -13,7 +13,7 @@ export const FollowingTab: React.FC<FollowingTabProps> = ({ following, address, 
     return (
       <Stack spacing={4} sx={{ padding: 4, paddingLeft: 0}}>
         { following?.length ? 
-            following.map((address,i) => <ProfileAvatarMemo key={i} color="primary" profileAddress={address}/>) :
+            following.map((address,i) => <ProfileAvatar key={i} color="primary" profileAddress={address}/>) :
             <Typography>{ isOwnProfile ? `You aren't following anyone`: `This user isn't following anyone`}</Typography>
         }
       </Stack>

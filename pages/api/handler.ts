@@ -4,6 +4,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import nc from 'next-connect'
 import dotenv from 'dotenv'
 import jwt from 'jsonwebtoken'
+import Cookies from 'cookies'
+import crypto from 'crypto'
 
 dotenv.config({ path: '../.env' })
 
@@ -31,11 +33,10 @@ const handler =  () => nc<HodlApiRequest, NextApiResponse>({
         next();
       } catch (e) {
         if (e instanceof jwt.TokenExpiredError) {
-          // Return a 403; so that the FE re-requests a login
           return res.status(403).json({message: 'jwt has expired'})
-        } else {
-          return res.status(500).json({message: 'something has gone wrong'})
-        }
+        } 
+        
+        throw e;
       }
       
   }

@@ -1,22 +1,19 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import * as Redis from 'ioredis';
+import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
 import apiRoute from "../handler";
 import memoize from 'memoizee';
 
 dotenv.config({ path: '../.env' })
 
+const client = Redis.fromEnv()
 const route = apiRoute();
 
 // Memo cleared when someone likes/dislikes the token
 export const getLikeCount = memoize(async (token) => {
   console.log("CALLING REDIS TO GET TOKEN LIKE COUNT", token);
-
-  const client = new Redis(process.env.REDIS_CONNECTION_STRING);
     
   const count = await client.hlen(`likedby:${token}`);
-  await client.quit();
-
   return count;
 }, { 
   primitive: true,

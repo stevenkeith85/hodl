@@ -1,5 +1,4 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import * as Redis from 'ioredis';
+import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
 import { getFollowing } from "./following";
 import { isFollowing } from "./follows";
@@ -10,6 +9,7 @@ import { getFollowingCount } from './followingCount';
 import { getFollowersCount } from './followersCount';
 
 dotenv.config({ path: '../.env' })
+const client = Redis.fromEnv()
 const route = apiRoute();
 
 
@@ -35,19 +35,16 @@ route.post(async (req, res) => {
 
   let followed = false;
 
-  const client = new Redis(process.env.REDIS_CONNECTION_STRING);
   const exists = await client.hexists(`following:${req.address}`, address);
 
   if (exists) {
     await client.hdel(`following:${req.address}`, address);
     await client.hdel(`followers:${address}`, req.address);
   } else {
-    await client.hset(`following:${req.address}`, address, 1);
-    await client.hset(`followers:${address}`, req.address, 1);
+    await client.hset(`following:${req.address}`, {[address]: 1});
+    await client.hset(`followers:${address}`, {[req.address]: 1});
     followed = true;
   }
-
-  await client.quit();
 
   isFollowing.delete(req.address, address);
 

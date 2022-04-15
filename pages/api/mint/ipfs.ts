@@ -3,10 +3,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { create, urlSource } from 'ipfs-http-client'
 import cloudinary from 'cloudinary'
-import apiRoute from "./handler";
+import apiRoute from "../handler";
 import dotenv from 'dotenv'
-import { createCloudinaryUrl } from "../../lib/utils";
-import { renameOnCloudinary } from "../../lib/server/cloudinary";
+import { createCloudinaryUrl } from "../../../lib/utils";
+import { renameOnCloudinary } from "../../../lib/server/cloudinary";
 dotenv.config({ path: '../.env' })
 
 const route = apiRoute();

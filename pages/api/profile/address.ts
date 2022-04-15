@@ -1,22 +1,19 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { NextApiRequest, NextApiResponse } from "next";
-import * as Redis from 'ioredis';
+import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
-import { trim } from "../../lib/utils";
+import { trim } from "../../../lib/utils";
 import memoize from 'memoizee';
-import apiRoute from "./handler";
+import apiRoute from "../handler";
 
 dotenv.config({ path: '../.env' })
 
+const client = Redis.fromEnv();
 const route = apiRoute();
-
 
 // Memo cleared when a new nickname is set
 export const getAddress = memoize(async (nickname) => {
     console.log("CALLING REDIS FOR ADDRESS FOR NICKNAME", nickname);
-    const client = new Redis(process.env.REDIS_CONNECTION_STRING);
     const address = await client.get(`address:${nickname}`);
-    await client.quit();
     return address;
 }, { 
   primitive: true, 

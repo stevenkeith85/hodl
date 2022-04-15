@@ -1,18 +1,18 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { NextApiRequest, NextApiResponse } from "next";
-import * as Redis from 'ioredis';
+import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
-import apiRoute from "./handler";
+import apiRoute from "../handler";
 import memoize from 'memoizee';
 
 dotenv.config({ path: '../.env' })
 
+const client = Redis.fromEnv()
 const route = apiRoute();
 
 // Memo cleared on login
 export const getNonceForAddress = memoize(async (address) => {
   console.log("CALLING REDIS TO GET NONCE FOR ADDRESS", address);
-  const client = new Redis(process.env.REDIS_CONNECTION_STRING);
   const exists = await client.hexists(`user:${address}`, 'nonce');
 
   let nonce = null;
@@ -21,10 +21,8 @@ export const getNonceForAddress = memoize(async (address) => {
     nonce = await client.hget(`user:${address}`, 'nonce');
   } else {
     nonce = `${Math.floor(Math.random() * 1000000)}`;
-    await client.hset(`user:${address}`, 'nonce', nonce);
+    await client.hset(`user:${address}`, {'nonce': nonce});
   }
-
-  await client.quit();
 
   return nonce;
 }, {  

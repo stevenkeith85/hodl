@@ -12,9 +12,10 @@ import { useFollow } from '../../hooks/useFollow'
 
 import dynamic from 'next/dynamic'
 import useSWR, { mutate } from 'swr'
-import { ProfileAvatarStatic } from '../../components/ProfileAvatarStatic'
-import { getShortAddress, makeAddressBasedFetcher } from '../../lib/utils'
+import { makeAddressBasedFetcher } from '../../lib/utils'
 import { HodlLoadingSpinner } from '../../components/HodlLoadingSpinner'
+import { ProfileAvatar } from '../../components/ProfileAvatar'
+import Head from 'next/head'
 
 const HodlingTab = dynamic(
    // @ts-ignore
@@ -53,7 +54,7 @@ export async function getServerSideProps({ params, query }) {
     // If not, we should return a 404 as we do not want to generate a page for every valid ethereum address (bad for SEO)
 
     // If this address has a nickname set, we'd prefer to use that
-    const r = await fetch(`${process.env.NEXT_PUBLIC_HODL_API_ADDRESS}/nickname?address=${params.address}`);
+    const r = await fetch(`${process.env.NEXT_PUBLIC_HODL_API_ADDRESS}/profile/nickname?address=${params.address}`);
     const { nickname } = await r.json();
 
     if (nickname !== null) {
@@ -65,7 +66,7 @@ export async function getServerSideProps({ params, query }) {
     }
   }
   else {
-    const r = await fetch(`${process.env.NEXT_PUBLIC_HODL_API_ADDRESS}/address?nickname=${params.address}`);
+    const r = await fetch(`${process.env.NEXT_PUBLIC_HODL_API_ADDRESS}/profile/address?nickname=${params.address}`);
     const { address } = await r.json();
 
     if (address === null) {
@@ -202,9 +203,11 @@ const Profile = ({
 
   return (
     <>
-    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-      <Box sx={{ display: 'flex', flexDirection: 'row', paddingY: 2, justifyContent: 'space-between', alignItems: 'center'}}>
-        <ProfileAvatarStatic size="large" handle={nickname || getShortAddress(profileAddress) } />
+      <Head>
+        <title>{ nickname || profileAddress }</title>
+      </Head>
+      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginY: 2}}>
+        <ProfileAvatar size="large" profileAddress={profileAddress} />
         {Boolean(address) && Boolean( address !== profileAddress) &&
         <HodlButton 
           sx={{
@@ -244,15 +247,16 @@ const Profile = ({
             textColor="secondary"
             indicatorColor="secondary"
             sx={{ 
+              marginY: 2,
               '.MuiTab-root': { 
-                minHeight: '50px',
+                minHeight: 'auto',
               }
             }}
           >
             <Tab value={0} label="Hodling" icon={ <Badge sx={{p: '6px 3px'}} showZero badgeContent={hodlingCount}></Badge> } iconPosition="end"/>
             <Tab value={1} label="Listed" icon={ <Badge sx={{p: '6px 3px'}} showZero badgeContent={listedCount}></Badge> } iconPosition="end"/>
             <Tab value={2} label="Following" icon={ <Badge sx={{p: '6px 3px'}} showZero badgeContent={followingCount}></Badge> } iconPosition="end"/>
-            <Tab value={3} label="Followers" icon={ <Badge sx={{p: '6px 3px'}} showZero badgeContent={followersCount} ></Badge> } iconPosition="end"/> */}
+            <Tab value={3} label="Followers" icon={ <Badge sx={{p: '6px 3px'}} showZero badgeContent={followersCount} ></Badge> } iconPosition="end"/>
           </Tabs>
       </Box>
       <div hidden={value !== 0}>
@@ -267,7 +271,6 @@ const Profile = ({
       <div hidden={value !== 3}>
         <FollowersTab address={address} followers={followers} profileAddress={profileAddress}/>
       </div>
-    </Box>
     </>
   )
 }

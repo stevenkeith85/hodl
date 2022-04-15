@@ -7,7 +7,7 @@ export const HodlVideo = ({cid, directory='nfts', gif=false, controls=true, only
     const video = useRef(null);
     
     useEffect(() => {
-        if (pauseWhenOffScreen) {
+        if (pauseWhenOffScreen && !gif) {
             try {
                 let observer = new IntersectionObserver((entries, observer) => { 
                     entries.forEach(entry => {

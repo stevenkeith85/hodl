@@ -1,4 +1,4 @@
-import { Box, Link, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import TwitterIcon from '@mui/icons-material/Twitter';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import { grey } from '@mui/material/colors';
@@ -6,7 +6,8 @@ import { grey } from '@mui/material/colors';
 
 export default function Contact() {
     return (
-        <Stack spacing={4} sx={{marginTop: 6}}>
+        <Box marginY={4}>
+        <Stack spacing={4}>
         <Box>
         <Typography mb={2} variant="h1" color="secondary">Contact</Typography>
         <Typography mb={1}>
@@ -24,5 +25,6 @@ export default function Contact() {
             
         </Stack>
         </Box>
-    </Stack>)
+    </Stack>
+    </Box>)
 }

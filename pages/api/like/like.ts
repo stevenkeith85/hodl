@@ -1,11 +1,12 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { NextApiResponse } from "next";
-import * as Redis from 'ioredis';
+import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
 
 import { likesToken } from "./likes";
 import { getLikeCount } from './likeCount';
 
+const client = Redis.fromEnv()
 import apiRoute from "../handler";
 
 dotenv.config({ path: '../.env' })
@@ -26,19 +27,16 @@ route.post(async (req, res: NextApiResponse) => {
   let liked = false;
 
   console.log("CALLING REDIS TO TOGGLE WHETHER ADDRESS LIKES TOKEN", req.address, token);
-  const client = new Redis(process.env.REDIS_CONNECTION_STRING);
   const exists = await client.hexists(`likes:${req.address}`, token); // O(1)
 
   if (exists) {
     await client.hdel(`likes:${req.address}`, token);
     await client.hdel(`likedby:${token}`, req.address);
   } else {
-    await client.hset(`likes:${req.address}`, token, 1);
-    await client.hset(`likedby:${token}`, req.address, 1);
+    await client.hset(`likes:${req.address}`, {[token]: 1});
+    await client.hset(`likedby:${token}`, {[req.address]: 1});
     liked = true;
   }
-
-  await client.quit();
   
   likesToken.delete(req.address, token);
   getLikeCount.delete(token);

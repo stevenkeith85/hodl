@@ -1,21 +1,20 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { NextApiRequest, NextApiResponse } from "next";
-import * as Redis from 'ioredis';
+import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
 import memoize from 'memoizee';
 import apiRoute from "../handler";
 
 dotenv.config({ path: '../.env' })
 
+const client = Redis.fromEnv()
 const route = apiRoute();
 
 // Find out if adress likes token
 // Memo cleared when 'like' is toggled
 export const likesToken = memoize(async (address, token) => {
   console.log("CALLING REDIS TO SEE IF ADDRESS LIKES TOKEN", address, token);
-  const client = new Redis(process.env.REDIS_CONNECTION_STRING);
   const likes = await client.hexists(`likes:${address}`, token);
-  await client.quit();
   return likes;
 }, { 
   primitive: true,

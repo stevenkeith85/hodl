@@ -1,3 +1,5 @@
+export const hasExpired = jwt => Date.now() >= (JSON.parse(atob(jwt.split('.')[1]))).exp * 1000
+
 export const makeAddressBasedFetcher = key => (url, address) => fetch(`${url}?address=${address}`)
                                                                 .then(r => r.json())
                                                                 .then(json => json[key])

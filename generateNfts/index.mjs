@@ -30,9 +30,6 @@ cloudinary.config({
 });
 
 
-let client = new Redis(process.env.REDIS_CONNECTION_STRING);
-
-
 const uploadNFT = async (name, description, path) => {
   const file = fs.readFileSync(path)
 
@@ -74,7 +71,6 @@ async function createNFTs(dirpath) {
 
   const dir = await fs.promises.opendir(dirpath)
   const metadata = JSON.parse(readFileSync(dirpath + `/metadata${walletId}.json`));
-  console.log(metadata);
 
   for (const token of metadata) {
     const fullPath = `${dirpath}/${token.file}`;
@@ -95,6 +91,7 @@ async function createNFTs(dirpath) {
 
       console.log('created token', tokenId);
 
+      let client = new Redis(process.env.REDIS_CONNECTION_STRING);
       client.set("token:" + tokenId, JSON.stringify({
         tokenId,
         name: token.name,
@@ -102,7 +99,8 @@ async function createNFTs(dirpath) {
         image: `ipfs://${imageCid.toString()}`,
         phash: result.phash
       }));
-
+      await client.quit();
+      
       if (token.price) {
         const price = ethers.utils.parseUnits(token.price, 'ether');
         const tx = await marketContract.listToken(nftaddress, tokenId, price);

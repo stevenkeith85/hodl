@@ -1,9 +1,9 @@
 import { useContext, useRef } from 'react';
+import { hasExpired } from '../lib/utils';
 import { WalletContext } from "../pages/_app";
 import { useConnect } from './useConnect';
 
 export const useCloudinaryUpload = () => {
-  const { jwt } = useContext(WalletContext);
   const previousFile = useRef(null);
   const [connect] = useConnect();
 
@@ -11,16 +11,20 @@ export const useCloudinaryUpload = () => {
     const data = new FormData();
     data.append('asset', asset);
 
-    // If the user uploads a new file; remove the previous one
     if (previousFile.current) {
       data.append('fileUrl', previousFile.current);
     }
+
+    if (hasExpired(localStorage.getItem('jwt'))) {
+      await connect(true, true);
+    }
     
-    const r = await fetch('/api/upload', {
+    const r = await fetch('/api/mint/upload', {
+      credentials: 'include',
       method: 'POST',
       headers: new Headers({
         'Accept': 'application/json',
-        'Authorization': jwt
+        'Authorization': localStorage.getItem('jwt')
       }),
       body: data,
     });
