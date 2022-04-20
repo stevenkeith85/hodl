@@ -21,6 +21,7 @@ export const AssetPreview: FC<MintProps> = ({
           border: !fileName ? `1px solid #d0d0d0` : 'none',
           flexGrow: 1,
           minHeight: 400,
+          // maxHeight: '50vh',
           borderRadius: `5px`,
           alignItems: 'center',
           justifyContent: 'center'

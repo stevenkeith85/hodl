@@ -11,10 +11,15 @@ dotenv.config({ path: '../.env' })
 const route = apiRoute();
 
 const getListedCount = async address => {
-  const provider = await getProvider();
-  const contract = new ethers.Contract(nftmarketaddress, HodlMarket.abi, provider);
-  const result = await contract.balanceOf(address);
-  return Number(result);
+  try {
+    const provider = await getProvider();
+    const contract = new ethers.Contract(nftmarketaddress, HodlMarket.abi, provider);
+    const result = await contract.balanceOf(address);
+    return Number(result);
+  } catch(e) {
+    // console.log(e);
+    return 0;
+  }
 }
 
 // Requests the number of accounts address follows

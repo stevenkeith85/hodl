@@ -125,13 +125,13 @@ export async function getServerSideProps({ params, query }) {
     props: {
       profileAddress,
       nickname,
-      prefetchedFollowingCount,
-      prefetchedFollowing,
-      prefetchedFollowersCount,
-      prefetchedFollowers,
-      prefetchedHodlingCount,
+      prefetchedFollowingCount: prefetchedFollowingCount ? prefetchedFollowingCount : 0,
+      prefetchedFollowing: prefetchedFollowing ? prefetchedFollowing: [],
+      prefetchedFollowersCount: prefetchedFollowersCount ? prefetchedFollowersCount : 0,
+      prefetchedFollowers: prefetchedFollowers ? prefetchedFollowers : [],
+      prefetchedHodlingCount: prefetchedHodlingCount ? prefetchedHodlingCount : 0,
       prefetchedHodling: prefetchedHodling ? [prefetchedHodling] : [],
-      prefetchedListedCount,
+      prefetchedListedCount: prefetchedListedCount ? prefetchedListedCount : 0,
       prefetchedListed: prefetchedListed ? [prefetchedListed]: [],
       tab
     },
@@ -206,7 +206,7 @@ const Profile = ({
       <Head>
         <title>{ nickname || profileAddress }</title>
       </Head>
-      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginY: 2}}>
+      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 2}}>
         <ProfileAvatar size="large" profileAddress={profileAddress} />
         {Boolean(address) && Boolean( address !== profileAddress) &&
         <HodlButton 

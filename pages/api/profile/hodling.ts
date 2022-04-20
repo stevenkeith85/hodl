@@ -19,35 +19,40 @@ const addressToTokenIds = async (address, offset, limit) => {
 }
 
 export const fetchNftsInWallet = async (address, offset, limit) => {
-    const [tokenIds, next, total] = await addressToTokenIds(address, offset, limit);
+    try {
+        const [tokenIds, next, total] = await addressToTokenIds(address, offset, limit);
 
-    if (!tokenIds.length) {
-        return {items: [], next: 0, total: 0};
-    }
-
-    const tokens = await Promise.all(
-        tokenIds.map(id => fetch(`${process.env.NEXT_PUBLIC_HODL_API_ADDRESS}/token/${id}`).then(r => r.json()).then(json => json.token))
-    );
-
-    const items = tokens.map(token => {
-        // We want to keep the number of items in the array, 
-        // so that it ties up with blockchain (and our infinite scroll iterator works), but 
-        // won't show anything not in our database
-        if (!token) {
-            return null; 
+        if (!tokenIds.length) {
+            return {items: [], next: 0, total: 0};
         }
 
-        return {        
-            tokenId: token.tokenId,
-            name: token.name,
-            description: token.description,
-            image: ipfsUriToCloudinaryUrl(token.image),
-            mimeType: token.mimeType,
-            filter: token.filter
-    }
-    });
+        const tokens = await Promise.all(
+            tokenIds.map(id => fetch(`${process.env.NEXT_PUBLIC_HODL_API_ADDRESS}/token/${id}`).then(r => r.json()).then(json => json.token))
+        );
 
-    return {items, next: Number(next), total: Number(total)};
+        const items = tokens.map(token => {
+            // We want to keep the number of items in the array, 
+            // so that it ties up with blockchain (and our infinite scroll iterator works), but 
+            // won't show anything not in our database
+            if (!token) {
+                return null; 
+            }
+
+            return {        
+                tokenId: token.tokenId,
+                name: token.name,
+                description: token.description,
+                image: ipfsUriToCloudinaryUrl(token.image),
+                mimeType: token.mimeType,
+                filter: token.filter
+        }
+        });
+
+        return {items, next: Number(next), total: Number(total)};
+    } catch(e) {
+        // console.log(e);
+        return {items: [], next: 0, total: 0};
+    }
 }
 
 const route = apiRoute();

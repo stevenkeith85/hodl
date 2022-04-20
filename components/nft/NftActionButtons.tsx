@@ -1,17 +1,17 @@
 import { Stack } from "@mui/material";
-import { useContext, useRef, useState } from "react";
+import { useContext, useState } from "react";
 import { buyNft, delistNft, listNftOnMarket } from "../../lib/nft";
-import { checkForAndDisplaySmartContractErrors } from "../../lib/utils";
 import { WalletContext } from "../../pages/_app";
 import { HodlButton } from "../HodlButton";
 import SellIcon from '@mui/icons-material/Sell';
-import { HodlModal, HodlSnackbar, HodlTextField, RocketTitle, SuccessModal } from "../index";
+import { HodlModal, HodlTextField, RocketTitle, SuccessModal } from "../index";
 import { useRouter } from "next/router";
+import { useSnackbar } from 'notistack';
 
 
 export const NftActionButtons = ({ nft }) => {
+    const { enqueueSnackbar } = useSnackbar();
     const router = useRouter();
-    const snackbarRef = useRef();
     const { address } = useContext(WalletContext);
 
     const [listModalOpen, setListModalOpen] = useState(false);
@@ -23,10 +23,17 @@ export const NftActionButtons = ({ nft }) => {
 
     const isOwner = () => Boolean(nft?.owner?.toLowerCase() === address?.toLowerCase());
 
+    const smartContractError = e => {
+        const re = /reverted with reason string '(.+)'/gi;
+        const matches = re.exec(e.data.message)
+    
+        if (matches) {
+            enqueueSnackbar(matches[1], { variant: "error" });
+        }
+    }
+
     return (
         <>
-            <HodlSnackbar ref={snackbarRef} />
-
             {/* Bought */}
             <SuccessModal
                 modalOpen={boughtModalOpen}
@@ -52,15 +59,15 @@ export const NftActionButtons = ({ nft }) => {
                     <HodlButton
                         onClick={async () => {
                             try {
-                                // @ts-ignore
-                                snackbarRef?.current?.display('Please Approve Transaction in Wallet', 'info');
+                                enqueueSnackbar('Please Approve Transaction in Wallet', { variant: "info" });
                                 await listNftOnMarket(router.query.tokenId, price);
-                                // @ts-ignore
-                                snackbarRef?.current?.display('Token listed on market', 'success');
+                                enqueueSnackbar('Token listed on market', { variant: "success" });
                                 setListModalOpen(false);
                                 setListedModalOpen(true);
                             } catch (e) {
-                                checkForAndDisplaySmartContractErrors(e, snackbarRef);
+                                if (e.code === -32603) {
+                                    smartContractError(e);
+                                }
                             }
                         }}
                         disabled={!price}
@@ -102,12 +109,13 @@ export const NftActionButtons = ({ nft }) => {
                             startIcon={<SellIcon fontSize="large" />}
                             onClick={async () => {
                                 try {
-                                    // @ts-ignore
-                                    snackbarRef?.current?.display('Please Approve Transaction in Wallet', 'info');
+                                    enqueueSnackbar('Please Approve Transaction in Wallet', { variant: "info" });
                                     await buyNft(nft);
                                     setBoughtModalOpen(true);
                                 } catch (e) {
-                                    checkForAndDisplaySmartContractErrors(e, snackbarRef);
+                                    if (e.code === -32603) {
+                                        smartContractError(e);
+                                    }    
                                 }
                             }}>
                             Buy NFT
@@ -121,12 +129,13 @@ export const NftActionButtons = ({ nft }) => {
                                         startIcon={<SellIcon fontSize="large" />}
                                         onClick={async () => {
                                             try {
-                                                // @ts-ignore
-                                                snackbarRef?.current?.display('Please Approve Transaction in Wallet', 'info');
+                                                enqueueSnackbar('Please Approve Transaction in Wallet', { variant: "info" });
                                                 await delistNft(nft);
                                                 setDelistModalOpen(true);
                                             } catch (e) {
-                                                checkForAndDisplaySmartContractErrors(e, snackbarRef);
+                                                if (e.code === -32603) {
+                                                    smartContractError(e);
+                                                }
                                             }
                                         }}>
                                         Delist NFT

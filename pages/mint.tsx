@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import { Stack, Grid, useMediaQuery } from '@mui/material'
+import { Stack, Grid, useMediaQuery, Box, useTheme } from '@mui/material'
 import { MintStepperMemo } from '../components/mint/MintStepper'
 import { MintProgressButtonsMemo } from '../components/mint/MintProgressButtons'
-import { MintTitleMemo } from '../components/mint/MintTitle'
+import { MintTitle } from '../components/mint/MintTitle'
 import { HodlLoadingSpinner } from '../components/HodlLoadingSpinner'
 import { AssetPreview } from '../components/mint/AssetPreview'
 import { MintMobileStepper } from '../components/mint/MintMobileStepper'
-import theme from '../theme'
+
 import dynamic from "next/dynamic";
 import Head from 'next/head'
 
@@ -41,6 +41,7 @@ const Mint = () => {
   const [loading, setLoading] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const [stepComplete, setStepComplete] = useState(-1);
+  const theme = useTheme();
   const xs = useMediaQuery(theme.breakpoints.only('xs'));
   const stepLabels = [
     'Select Asset',
@@ -55,7 +56,7 @@ const Mint = () => {
         <title>Mint NFT</title>
       </Head>
       <Stack spacing={2} marginY={4}>
-        <MintTitleMemo />
+        <MintTitle />
         {xs ?
           <MintMobileStepper activeStep={activeStep} setActiveStep={setActiveStep} stepComplete={stepComplete} stepLabels={stepLabels} /> :
           <MintStepperMemo activeStep={activeStep} stepLabels={stepLabels} />
@@ -63,6 +64,9 @@ const Mint = () => {
         <Grid container>
           <Grid item xs={12} md={6}
             sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
               paddingTop: 2,
               paddingBottom: {
                 xs: 4,
@@ -73,23 +77,15 @@ const Mint = () => {
               }
             }}>
             {activeStep === 0 &&
-              <Stack spacing={4}>
-                <SelectAssetAction
+                <SelectAssetAction 
                   formData={formData}
                   setFormData={setFormData}
-                  loading={loading}
-                  setLoading={setLoading}
-                  setStepComplete={setStepComplete}
+                  loading={loading} 
+                  setLoading={setLoading} 
+                  setStepComplete={setStepComplete} 
                 />
-                {!xs && <MintProgressButtonsMemo
-                  activeStep={activeStep}
-                  setActiveStep={setActiveStep}
-                  stepComplete={stepComplete}
-                />}
-              </Stack>
             }
             {activeStep === 1 &&
-              <Stack spacing={4}>
                 <UploadToIpfsAction
                   formData={formData}
                   setFormData={setFormData}
@@ -97,44 +93,44 @@ const Mint = () => {
                   stepComplete={stepComplete}
                   setLoading={setLoading}
                   setStepComplete={setStepComplete} />
-                {!xs && <MintProgressButtonsMemo
-                  activeStep={activeStep}
-                  setActiveStep={setActiveStep}
-                  stepComplete={stepComplete}
-                />}
-              </Stack>
             }
             {activeStep === 2 &&
-              <Stack spacing={6}>
                 <MintTokenAction
                   formData={formData}
                   setFormData={setFormData}
                   loading={loading}
                   stepComplete={stepComplete}
                   setLoading={setLoading}
-                  setStepComplete={setStepComplete}
-                />
-                {!xs && <MintProgressButtonsMemo
-                  activeStep={activeStep}
-                  setActiveStep={setActiveStep}
-                  stepComplete={stepComplete}
-                />}
-              </Stack>
+                  setStepComplete={setStepComplete} />
             }
             {activeStep === 3 &&
-              <Stack spacing={6}>
                 <AddToHodlAction
                   formData={formData}
                   setFormData={setFormData}
                   loading={loading}
                   setLoading={setLoading}
                   stepComplete={stepComplete}
-                  setStepComplete={setStepComplete}
-                />
-              </Stack>
+                  setStepComplete={setStepComplete} />
+            }
+            {
+            !xs && activeStep < 3 && 
+            <Box paddingTop={6}>
+              <MintProgressButtonsMemo
+                  activeStep={activeStep}
+                  setActiveStep={setActiveStep}
+                  stepComplete={stepComplete}
+              />
+              </Box>
             }
           </Grid>
-          <Grid item marginY={2} xs={12} md={6} sx={{ paddingLeft: { md: 1 } }}>
+          <Grid 
+            item 
+            marginTop={2} 
+            xs={12} 
+            md={6} 
+            sx={{ 
+              paddingLeft: { md: 1 } 
+            }}>
             <AssetPreview
               formData={formData}
               setFormData={setFormData}
@@ -144,6 +140,7 @@ const Mint = () => {
         </Grid>
         <HodlLoadingSpinner
           sx={{
+            padding: 0,
             display: loading ? 'block' : 'none',
             position: 'absolute',
             top: 'calc(50vh - 20px)',

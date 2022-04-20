@@ -11,7 +11,8 @@ export const FilteredImage = ({ filter, fileName, setLoading }) => {
         <Box
           key={index}
           sx={{
-            display: filter === code ? 'flex' : 'none'
+            display: filter === code ? 'flex' : 'none',
+            maxHeight: '66vh'
           }}
         >
           <HodlImage2

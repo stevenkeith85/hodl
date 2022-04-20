@@ -19,7 +19,7 @@ export const ListedTab: React.FC<ListedTabProps> = ({ profileAddress, prefetched
           }
           swrkey={'marketNfts: ' + profileAddress}
           prefetchedData={prefetchedData}
-          //revalidateOnMount={prefetchedData ? false : true}
+          revalidateOnMount={true}
           render={nfts => (
             <NftList
               nfts={nfts}

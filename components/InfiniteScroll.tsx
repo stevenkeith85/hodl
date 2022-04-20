@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import useSWRInfinite from 'swr/infinite'
-import { debounce } from 'underscore';
+import { debounce } from '../lib/utils';
 import { HodlLoadingSpinner } from './HodlLoadingSpinner';
 
 export const InfiniteScroll = ({ 
@@ -17,11 +17,13 @@ export const InfiniteScroll = ({
     const limit = useRef(lim);
     const lastY = useRef(0);
 
-    const [finished, setFinished] = useState(false);
+    const finished = useRef<boolean>();
+    const [complete, setComplete] =  useState(false);
 
     const getKey = (index, previousData) => {
         if (previousData && previousData?.next === previousData?.total) {
-            setFinished(true);
+            finished.current = true;
+            setComplete(true);
             return null 
         }
         return [swrkey, index * limit.current, limit.current]
@@ -41,30 +43,29 @@ export const InfiniteScroll = ({
         const ascending = window.scrollY > lastY.current;
         const yPosition = window.pageYOffset + window.innerHeight;
         const contentHeight = document.body.offsetHeight;
-        
-        if (ascending && yPosition > (contentHeight / 2) && !finished) {
+
+        if (ascending && yPosition > (contentHeight / 2) && !finished.current) {
             setSize(size => size + 1)
         }
 
         lastY.current = window.scrollY;
-    }, 100)
+    }, 500, false)
 
     const onDivScroll = debounce((e) => {
         const el = e.target;
         const ascending = el.scrollTop > lastY.current;
         if (ascending && (el.scrollTop > 
             ((el.scrollHeight - el.clientHeight) / 2))) {
-                console.log('getting more data')
                 setSize(size => size + 1)
         }
 
         lastY.current = el.scrollTop;
-    }, 100);
+    }, 50, false);
 
     return (
-        <Box onScroll={!windowScroll ? onDivScroll : undefined} sx={{ height: windowScroll ? 'auto': divScrollHeight, overflow: 'auto'}}>
-            { data?.map(page => render(page.items)) } 
-            { !finished && isLoadingMore && <HodlLoadingSpinner />}
+        <Box onScroll={!windowScroll ? onDivScroll : undefined} sx={{ height: windowScroll ? 'auto': divScrollHeight, overflow: 'auto', marginBottom: 2}}>
+            { data?.map(page => render(page?.items)) } 
+            { !complete && isLoadingMore && <HodlLoadingSpinner />}
         </Box>
     )
 }

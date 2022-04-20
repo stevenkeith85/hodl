@@ -4,82 +4,41 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
+import CloseIcon from '@mui/icons-material/Close';
 import Container from '@mui/material/Container';
-import MenuItem from '@mui/material/MenuItem';
 import { useState, MouseEvent, useContext, useEffect } from 'react';
 import { WalletContext } from '../pages/_app';
 import Link from 'next/link';
 import { Logo } from './Logo';
 
-import { Stack } from '@mui/material';
+import { ClickAwayListener, Stack } from '@mui/material';
 import { useRouter } from 'next/router';
-import { grey } from "@mui/material/colors";
 import { ConnectButton } from './ConnectButton';
+import { MobileMenu } from './MobileMenu';
+import { AccountBalanceWallet, AccountCircle, Spa, Storefront } from '@mui/icons-material';
 
-
-// From MUI Docs
-// const Search = styled('div')(({ theme }) => ({
-//     position: 'relative',
-//     borderRadius: theme.shape.borderRadius,
-//     backgroundColor: alpha(theme.palette.common.white, 0.15),
-//     '&:hover': {
-//         backgroundColor: alpha(theme.palette.common.white, 0.25),
-//     },
-//     marginLeft: 0,
-//     width: '100%',
-//     [theme.breakpoints.up('sm')]: {
-//         marginLeft: theme.spacing(1),
-//         width: 'auto',
-//     },
-// }));
-
-// const SearchIconWrapper = styled('div')(({ theme }) => ({
-//     padding: theme.spacing(0, 2),
-//     height: '100%',
-//     position: 'absolute',
-//     pointerEvents: 'none',
-//     display: 'flex',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-// }));
-
-// const StyledInputBase = styled(InputBase)(({ theme }) => ({
-//     color: 'inherit',
-//     '& .MuiInputBase-input': {
-//         padding: theme.spacing(1, 1, 1, 0),
-//         // vertical padding + font size from searchIcon
-//         paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-//         transition: theme.transitions.create('width'),
-//         width: '100%',
-//         [theme.breakpoints.up('sm')]: {
-//             width: '12ch',
-//             '&:focus': {
-//                 width: '20ch',
-//             },
-//         },
-//     },
-// }));
 
 const ResponsiveAppBar = () => {
     const { address, nickname } = useContext(WalletContext);
     const router = useRouter();
 
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
     const [pages, setPages] = useState([
-        { label: 'Market', url: '/' },
-        { label: 'Mint NFT', url: '/mint' },
-        { label: 'My Profile', url: `/profile/${nickname || address}` },
+        { label: 'Market', url: '/', icon: <Storefront />, publicPage: true },
+        { label: 'Mint NFT', url: '/mint', icon: <Spa />, publicPage: false },
+        { label: 'My Profile', url: `/profile/${nickname || address}`, icon: <AccountCircle />, publicPage: false },
     ]);
 
     useEffect(() => {
         if (address) {
             setPages(old => {
-                return old.map(({ label, url }) => {
+                return old.map(({ label, url, icon, publicPage }) => {
                     if (label === 'My Profile') {
-                        return ({ label, url: `/profile/${nickname || address}` })
+                        return ({ label, url: `/profile/${nickname || address}`, icon, publicPage })
                     } else {
-                        return ({ label, url })
+                        return ({ label, url, icon, publicPage })
                     }
                 })
             });
@@ -98,134 +57,117 @@ const ResponsiveAppBar = () => {
 
     return (
         <>
-        <AppBar position="fixed">
-            <Container maxWidth="xl">
-                <Toolbar disableGutters>
-                    {/* Mobile */}
-                    <Box sx={{  display: { xs: 'flex', md: 'none' }, width: '100%', justifyContent: 'space-between'}}>
-                        <Logo />
-                        <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-                            <IconButton
-                                size="large"
-                                onClick={handleOpenNavMenu}
-                                color="inherit"
-                            >
-                                <MenuIcon />
-                            </IconButton>
-                            <Menu
-                                id="menu-appbar"
-                                anchorEl={anchorElNav}
-                                anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'left',
-                                }}
-                                keepMounted
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'left',
-                                }}
-                                open={Boolean(anchorElNav)}
-                                onClose={handleCloseNavMenu}
-                                sx={{
-                                    display: { xs: 'block', md: 'none' },
-                                }}
-                            >
-                                {pages.map(page => (
-                                    <MenuItem key={page.label} onClick={handleCloseNavMenu}>
-                                        <Link href={page.url} passHref>
-                                            <Typography component="a" sx={{
-                                                color: grey[900],
-                                                textDecoration: 'none',
-                                                fontWeight: (theme) => router.asPath === page.url ? 900 : 300,
-                                            }} >
-                                                {page.label}
-                                            </Typography>
-                                        </Link>
-                                    </MenuItem>
-                                ))}
-                                <ConnectButton />
-                            </Menu>
-                        </Box>
-                    </Box>
+
+            <AppBar position="fixed" sx={{ maxWidth: `100vw`, left: 0 }}>
+                {/* Mobile */}
+
+                <Container maxWidth="xl" sx={{ width: '100%', position: 'relative' }}>
+
+                    <Toolbar disableGutters>
 
 
-                    {/* Desktop */}
-                    <Box sx={{ display: { xs: 'none', md: 'flex'}, width: '100%', justifyContent: 'space-between'}}>
-                    <Stack direction="row" spacing={12} sx={{alignItems: 'center'}}>
-                        <Logo />
-                        <Box sx={{
-                            display: 'grid',
-                            gap: 6,
-                            gridTemplateColumns: `repeat(3, minmax(0, 1fr))`,
-
-                        }}>
-                            {pages.map(page => (
-                                    <Link key={page.url} href={page.url} passHref>
-                                        {router.asPath === page.url ?
-                                            <Typography
-                                                key={page.label}
-                                                onClick={handleCloseNavMenu}
-                                                sx={{
-                                                    display: 'block',
-                                                    textAlign: 'center',
-                                                    padding: 1,
-                                                    cursor: 'pointer',
-                                                    color: 'white',
-                                                    textTransform: 'none',
-                                                    fontSize: {
-                                                        md: 16,
-                                                    },
-                                                    fontWeight: 900
-                                                }}
-                                            >
-                                                {page.label}
-                                            </Typography>
-                                            : <Typography
-                                                key={page.label}
-                                                onClick={handleCloseNavMenu}
-                                                sx={{
-                                                    display: 'block',
-                                                    textAlign: 'center',
-                                                    padding: 1,
-                                                    cursor: 'pointer',
-                                                    color: 'white',
-                                                    textTransform: 'none',
-                                                    fontSize: {
-                                                        md: 16,
-                                                    },
-                                                    '&:hover': {
-                                                        fontWeight: 900,
-                                                    }
-                                                }}
-                                            >
-                                                {page.label}
-                                            </Typography>
-                                    }
-                                    </Link>
-                            ))}
-                        </Box>
-                    </Stack>
-                    <Stack
-                        direction="row"
-                        spacing={1}
-                        sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}
-                    >
-                        {/* <Search>
-                            <SearchIconWrapper>
-                                <SearchIcon />
-                            </SearchIconWrapper>
-                            <StyledInputBase
-                                placeholder="Search"
-                                inputProps={{ 'aria-label': 'search' }}
+                        {/* Mobile */}
+                        <Box sx={{ display: { xs: 'flex', md: 'none' }, width: '100%', justifyContent: 'space-between' }}>
+                            <MobileMenu
+                                pages={pages}
+                                mobileMenuOpen={mobileMenuOpen}
+                                setMobileMenuOpen={setMobileMenuOpen}
                             />
-                        </Search> */}
-                        <ConnectButton />
-                    </Stack>
-                    </Box>
-                </Toolbar>
-            </Container>
-        </AppBar>
-        <Toolbar disableGutters />
+                            <Logo />
+                            <Box>
+                                <IconButton
+                                    size="large"
+                                    onClick={() => setMobileMenuOpen(prev => !prev)}
+                                    color="inherit"
+                                >
+                                    {mobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
+                                </IconButton>
+
+                            </Box>
+                        </Box>
+
+
+                        {/* Desktop */}
+                        <Box sx={{ display: { xs: 'none', md: 'flex' }, width: '100%', justifyContent: 'space-between' }}>
+                            <Stack direction="row" spacing={12} sx={{ alignItems: 'center' }}>
+                                <Logo />
+                                <Box sx={{
+                                    display: 'grid',
+                                    gap: 8,
+                                    gridTemplateColumns: `repeat(3, minmax(0, 1fr))`,
+
+                                }}>
+                                    {pages.filter(p => p.publicPage || address).map(page => (
+                                        <Link key={page.url} href={page.url} passHref>
+                                            {router.asPath === page.url ?
+                                                <Typography
+                                                    key={page.label}
+                                                    onClick={handleCloseNavMenu}
+                                                    sx={{
+                                                        display: 'block',
+                                                        textAlign: 'center',
+                                                        padding: 1,
+                                                        cursor: 'pointer',
+                                                        color: 'white',
+                                                        textTransform: 'none',
+                                                        fontSize: {
+                                                            md: 16,
+                                                        },
+                                                        fontWeight: 900
+                                                    }}
+                                                >
+                                                    {page.label}
+                                                </Typography>
+                                                : <Typography
+                                                    key={page.label}
+                                                    onClick={handleCloseNavMenu}
+                                                    sx={{
+                                                        display: 'block',
+                                                        textAlign: 'center',
+                                                        padding: 1,
+                                                        cursor: 'pointer',
+                                                        color: 'white',
+                                                        textTransform: 'none',
+                                                        fontSize: {
+                                                            md: 16,
+                                                        },
+                                                        '&:hover': {
+                                                            fontWeight: 900,
+                                                        }
+                                                    }}
+                                                >
+                                                    {page.label}
+                                                </Typography>
+                                            }
+                                        </Link>
+                                    ))}
+                                </Box>
+                            </Stack>
+                            <Stack
+                                direction="row"
+                                spacing={1}
+                                sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}
+                            >
+                                {mobileMenuOpen && <MobileMenu
+                                    page={1}
+                                    showBack={false}
+                                    pages={pages}
+                                    mobileMenuOpen={mobileMenuOpen}
+                                    setMobileMenuOpen={setMobileMenuOpen}
+                                />}
+                                <IconButton
+                                    size="large"
+                                    onClick={() => setMobileMenuOpen(prev => !prev)}
+                                    color="inherit"
+                                >
+                                    {mobileMenuOpen ? <CloseIcon /> : <AccountBalanceWallet />}
+                                </IconButton>
+                            </Stack>
+                        </Box>
+                    </Toolbar>
+                </Container>
+            </AppBar>
+            <Toolbar disableGutters />
         </>
     );
 };

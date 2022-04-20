@@ -43,7 +43,7 @@ export const MintTokenAction: FC<MintProps> = ({
   return (
     <Stack spacing={4}>
       <Typography variant="h2">Mint NFT</Typography>
-      <Typography sx={{ span: { fontWeight: 600 } }}>You are now ready to mint your token <span>{name}</span> on the blockchain</Typography>
+      <Typography sx={{ span: { fontWeight: 600 } }}>You are now ready to mint your token <span>{formData.name}</span> on the blockchain</Typography>
       <div>
         <HodlButton
           disabled={stepComplete === 2 || loading}

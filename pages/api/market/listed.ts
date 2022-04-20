@@ -20,7 +20,7 @@ const getItems = async (data) => {
         tokenIdToListing.set(Number(listing.tokenId), listing);
         tokenIds.push(listing.tokenId);
     }
-    
+
     const tokens = await Promise.all(
         tokenIds.map(id => fetch(`${process.env.NEXT_PUBLIC_HODL_API_ADDRESS}/token/${id}`).then(r => r.json()).then(json => json.token))
     );
@@ -46,18 +46,22 @@ const getItems = async (data) => {
 
 
 export const fetchMarketItems = async (offset, limit) => {
-    const provider = await getProvider();
+    try {
+        const provider = await getProvider();
 
-    const contract = new ethers.Contract(nftmarketaddress, HodlMarket.abi, provider);
-    const [data, next, total] = await contract.fetchMarketItems(offset, limit);
+        const contract = new ethers.Contract(nftmarketaddress, HodlMarket.abi, provider);
+        const [data, next, total] = await contract.fetchMarketItems(offset, limit);
 
-    if (!data.length) {
-        return {items: [], next: 0, total: 0};
+        if (!data.length) {
+            return { items: [], next: 0, total: 0 };
+        }
+
+        const items = await getItems(data);
+
+        return { items, next: Number(next), total: Number(total) };
+    } catch (e) {
+        return { items: [], next: 0, total: 0 };
     }
-
-    const items = await getItems(data);
-
-    return {items, next: Number(next), total: Number(total)};
 }
 
 const route = apiRoute();
@@ -65,11 +69,11 @@ route.get(async (req, res) => {
     const { offset, limit } = req.query;
 
     if (!offset || !limit) {
-        return res.status(400).json({message: 'Bad Request'});
+        return res.status(400).json({ message: 'Bad Request' });
     }
 
     const data = await fetchMarketItems(offset, limit);
-    return res.status(200).json({data});
+    return res.status(200).json({ data });
 });
 
 

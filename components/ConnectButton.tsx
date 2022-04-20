@@ -1,14 +1,12 @@
-import { Button, Menu, MenuItem, Stack, Typography } from "@mui/material";
+import { Button, Menu, MenuItem, Stack, Tooltip, Typography } from "@mui/material";
 import { useContext, useEffect, useRef, useState } from "react";
 import { WalletContext } from "../pages/_app";
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { useRouter } from "next/router";
 import { getShortAddress, truncateText} from "../lib/utils";
-import { HodlSnackbar } from '../components/HodlSnackbar'
 import { useConnect } from "../hooks/useConnect";
 import { NicknameModal } from "./modals/NicknameModal";
 import { ProfilePictureModal } from "./ProfilePictureModal";
-import useSWR from "swr";
 import { useNickname } from "../hooks/useNickname";
 
 
@@ -33,16 +31,18 @@ export const ConnectButton = () => {
 
     const [_update, _apiError, _setApiError, nickname] = useNickname();
 
+    // TODO - EXTRACT
     const buttonText = () => {
         if (nickname) {
-            return truncateText(nickname, 20);
+            return <Tooltip title={nickname}><Typography>{ truncateText(nickname, 20) }</Typography></Tooltip>
         } else if (address) {
-            return getShortAddress(address).toLowerCase();
+            return <Tooltip title={address}><Typography>{ getShortAddress(address).toLowerCase() }</Typography></Tooltip>
         } else {
             return 'Connect';
         }
     }
 
+    // TODO - EXTRACT 
     const isMobileDevice = () => {
         return 'ontouchstart' in window || 'onmsgesturechange' in window;
     }
@@ -84,7 +84,7 @@ export const ConnectButton = () => {
                 {
                     <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
                         <AccountBalanceWalletIcon />
-                        <Typography>{buttonText()}</Typography>
+                        {buttonText()}
                     </Stack>
                 }
             </Button>

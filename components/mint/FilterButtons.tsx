@@ -3,7 +3,12 @@ import { HodlButton } from '../index';
 import { imageFilters } from '../../lib/utils';
 
 export const FilterButtons = ({ formData, setFormData }) => (
-  <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap'}}>
+  <Box 
+    sx={{ 
+      display: 'grid', 
+      gap: 2,
+      gridTemplateColumns: '1fr 1fr 1fr'
+    }}>
     {imageFilters.map(({ code, name }, index) => (
       <HodlButton 
         key={index} 

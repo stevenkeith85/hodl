@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { hasExpired } from '../lib/utils';
 import { useConnect } from './useConnect';
 
@@ -27,13 +28,14 @@ export const useIpfsUpload = () => {
 
     if (r.status === 403) {
       await connect(false);      
+      return {success: false, imageCid: null, metadataUrl: null};
     } else if (r.status === 200) {
       const {imageCid, metadataUrl} = await r.json();
-    
       return {success: true, imageCid, metadataUrl};
+    } else {
+      const { message } = await r.json();
+      return {success: false, imageCid: null, metadataUrl: null, message};
     }
-
-    return {success: false, imageCid: null, metadataUrl: null };
   }
 
   return [uploadToIpfs];

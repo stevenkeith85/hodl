@@ -10,12 +10,12 @@
   "dependencies": {
     "@emotion/cache": "^11.7.1",
     "@emotion/css": "^11.9.0",
-    "@emotion/react": "^11.8.1",
+    "@emotion/react": "^11.9.0",
     "@emotion/server": "^11.4.0",
     "@emotion/styled": "^11.8.1",
     "@mui/icons-material": "^5.4.2",
     "@mui/lab": "^5.0.0-alpha.74",
-    "@mui/material": "^5.4.3",
+    "@mui/material": "^5.6.2",
     "@nomiclabs/hardhat-ethers": "^2.0.0",
     "@nomiclabs/hardhat-waffle": "^2.0.0",
     "@openzeppelin/contracts": "^4.5.0",
@@ -25,13 +25,11 @@
     "@upstash/redis": "^1.1.0",
     "chai": "^4.2.0",
     "cloudinary": "^1.28.1",
-    "cookies": "^0.8.0",
     "dotenv": "^16.0.0",
     "ethereum-waffle": "^3.0.0",
     "ethers": "^5.0.0",
     "formik": "^2.2.9",
     "hardhat": "^2.8.3",
-    "ioredis": "^4.28.5",
     "ipfs-http-client": "50.1.2",
     "ipfs-unixfs": "^6.0.6",
     "jsonwebtoken": "^8.5.1",
@@ -46,7 +44,6 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "swr": "^1.2.2",
-    "underscore": "^1.13.2",
     "yup": "^0.32.11"
   },
   "devDependencies": {
@@ -57,6 +54,7 @@
     "eslint-config-next": "12.0.10",
     "postcss": "^8.4.6",
     "solidity-coverage": "^0.7.20",
-    "typescript": "^4.5.5"
+    "typescript": "^4.5.5",
+    "webpack-bundle-analyzer": "^4.5.0"
   }
 }

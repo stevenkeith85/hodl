@@ -21,10 +21,11 @@ export const MintMobileStepper = ({ activeStep, stepLabels, stepComplete, setAct
             backButton={''}
             nextButton={
                 <Button
+                    endIcon={<KeyboardArrowRight />}
                     disabled={stepComplete < activeStep}
                     variant="outlined"
                     onClick={() => stepComplete === activeStep && setActiveStep(activeStep => activeStep + 1)}>
-                    Next <KeyboardArrowRight />
+                        Next
                 </Button>
             }
         />)

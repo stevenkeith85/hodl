@@ -42,10 +42,11 @@ export const SelectAssetAction: FC<MintProps> = ({
 
   return (
     <>
-      <Stack spacing={4}>
+      <Stack spacing={6}>
         <div>
           <Typography marginBottom={2} variant="h2">Asset</Typography>
           <HodlTextField
+            fullWidth
             type="file"
             onChange={cloudinaryUpload}
             disabled={loading}

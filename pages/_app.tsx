@@ -8,6 +8,7 @@ import theme from '../theme';
 import Footer from '../components/Footer';
 import { SnackbarProvider } from 'notistack';
 import { SWRConfig } from 'swr';
+import '../styles/globals.css'
 
 export const WalletContext = createContext<{
   signer: any,
@@ -16,8 +17,6 @@ export const WalletContext = createContext<{
   setAddress: Function,
   nickname: any,
   setNickname: Function,
-  jwt: any,
-  setJwt: Function
 }>(null);
 
 
@@ -29,7 +28,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <meta name="viewport" content="initial-scale=1, width=device-width" />
+        <meta name="viewport" content="initial-scale=1, width=device-width, user-scalable=no" />
       </Head>
       <SWRConfig value={{
         dedupingInterval: 4000, // default is 2000
@@ -42,19 +41,39 @@ function MyApp({ Component, pageProps }: AppProps) {
               maxSnack={3}
             >
               <CssBaseline />
-              <Box sx={{
-                minHeight: '100vh',
-                position: 'relative',
-                paddingBottom: { // for footer
-                  xs: '520px',
-                  md: '280px',
-                },
-              }}>
-                <ResponsiveAppBar />
-                <Container maxWidth="xl">
-                  <Component {...pageProps} />
-                </Container>
-                <Footer />
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  minHeight: '100vh',
+                  header: {
+                    flexGrow: 0,
+                    flexShrink: 0,
+                    flexBasis: 'auto'
+                  },
+                  footer: {
+                    flexGrow: 0,
+                    flexShrink: 0,
+                    flexBasis: 'auto'
+                  },
+                  main: {
+                    flexGrow: 1,
+                    flexShrink: 0,
+                    flexBasis: 'auto'
+                  }
+                }}>
+                <header>
+                  <ResponsiveAppBar />
+                </header>
+                <main>
+                  <Container 
+                    maxWidth="xl">
+                    <Component {...pageProps} />
+                  </Container>
+                </main>
+                <footer>
+                  <Footer />
+                </footer>
               </Box>
               </SnackbarProvider>
             </ThemeProvider>

@@ -18,7 +18,7 @@ export const HodlingTab: React.FC<HodlingTabProps> = ({ profileAddress, prefetch
                         .then(json => json.data)
                 }
                 prefetchedData={prefetchedData}
-                //revalidateOnMount={prefetchedData ? false : true}
+                revalidateOnMount={true}
                 render={nfts => (
                     <NftList
                         nfts={nfts}

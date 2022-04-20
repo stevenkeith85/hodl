@@ -12,12 +12,7 @@ const Footer = () => {
     const { address } = useContext(WalletContext);
 
     return (
-    <Box sx={{
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        width: '100%',
-    }}>
+    <Box>
         <Box sx={{ backgroundColor: grey[300] }}>
             <Container maxWidth="xl" sx={{
                 paddingTop: {

@@ -1,7 +1,6 @@
 // TODO: Don't do this. Allegedly, it can interfere with tree shaking
 export { HodlTextField } from "./HodlTextField";
 export { RocketTitle } from "./RocketTitle";
-export { HodlSnackbar } from "./HodlSnackbar";
 export { HodlModal } from "./HodlModal";
 export { HodlButton } from "./HodlButton";
 export { HodlLink } from "./HodlLink";

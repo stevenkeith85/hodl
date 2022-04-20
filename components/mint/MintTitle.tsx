@@ -1,6 +1,5 @@
 import { Spa } from "@mui/icons-material"
 import { Stack, Typography } from "@mui/material"
-import { memo } from "react"
 
 export const MintTitle = () => (
     <Stack
@@ -16,5 +15,3 @@ export const MintTitle = () => (
       </Typography>
     </Stack>
   )
-  
-  export const MintTitleMemo = memo(MintTitle)

@@ -1,16 +1,15 @@
 import Link from "next/link";
 import PersonIcon from '@mui/icons-material/Person';
 import {
-    Avatar, Stack, Typography
+    Avatar, Stack, Tooltip, Typography
 } from "@mui/material";
-import { getShortAddress } from "../lib/utils";
+import { getShortAddress, truncateText } from "../lib/utils";
 import useSWR from "swr";
 import { HodlImage2 } from "./HodlImage2";
 import { HodlVideo } from "./HodlVideo";
-import { useNickname } from "../hooks/useNickname";
 
 
-const AvatarText: React.FC<{size: string, href?: string, children?: any, color: string}> = ({ size, href, children, color }) => {
+const AvatarText: React.FC<{ size: string, href?: string, children?: any, color: string }> = ({ size, href, children, color }) => {
     const mappings = {
         small: 14,
         medium: 14,
@@ -18,21 +17,21 @@ const AvatarText: React.FC<{size: string, href?: string, children?: any, color: 
     }
 
     return (
-        <Typography 
+        <Typography
             component="a"
             href={href}
-            className="address" 
-            sx={{ 
+            className="address"
+            sx={{
                 fontSize: mappings[size],
                 textDecoration: 'none',
                 color: color === 'greyscale' ? 'white' : 'black'
             }}>
-                {children}
-            </Typography>
+            {children}
+        </Typography>
     )
 }
 
-export const ProfileAvatar = ({ profileAddress, reverse=false, size="medium", color="secondary" }) => {
+export const ProfileAvatar = ({ profileAddress, reverse = false, size = "medium", color = "secondary" }) => {
     const { data: profileNickname } = useSWR(profileAddress ? [`/api/profile/nickname`, profileAddress] : null,
         (url, query) => fetch(`${url}?address=${query}`)
             .then(r => r.json())
@@ -56,7 +55,7 @@ export const ProfileAvatar = ({ profileAddress, reverse=false, size="medium", co
         const mappings = {
             small: 36,
             medium: 54,
-            large: 90
+            large: 85
         }
 
         return mappings[size];
@@ -77,7 +76,7 @@ export const ProfileAvatar = ({ profileAddress, reverse=false, size="medium", co
             alignItems: "center",
             cursor: 'pointer',
         }}
-            spacing={ size === 'small' ? 1 : 2}
+            spacing={size === 'small' ? 1 : 2}
             direction={reverse ? 'row-reverse' : 'row'}
         >
             {token ?
@@ -141,9 +140,17 @@ export const ProfileAvatar = ({ profileAddress, reverse=false, size="medium", co
             }
             <Link href={`/profile/${profileNickname || profileAddress}`} passHref>
                 {
-                    profileNickname ? 
-                        <AvatarText size={size} color={color}>{profileNickname}</AvatarText> :
-                        <AvatarText size={size} color={color}>{getShortAddress(profileAddress)?.toLowerCase()}</AvatarText>
+                    profileNickname ?
+                        <Tooltip title={profileNickname}>
+                            <div>
+                                <AvatarText size={size} color={color}>{truncateText(profileNickname, 20)}</AvatarText>
+                            </div>
+                        </Tooltip> :
+                        <Tooltip title={profileAddress}>
+                            <div>
+                                <AvatarText size={size} color={color}>{getShortAddress(profileAddress)?.toLowerCase()}</AvatarText>
+                            </div>
+                        </Tooltip>
                 }
             </Link>
         </Stack>

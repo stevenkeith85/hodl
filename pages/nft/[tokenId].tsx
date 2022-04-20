@@ -1,5 +1,6 @@
 import {
   Grid,
+  NoSsr,
   Stack,
   Tooltip,
   Typography
@@ -33,15 +34,13 @@ export async function getServerSideProps({ params }) {
 }
 
 const NftDetail = ({nft, priceHistory}) => {
-  const SSR = typeof window === 'undefined';
-
   return (
     <>    
       <Head>
         <title>{ nft.name } - { truncateText(nft.description) }</title>
       </Head>
-      <Grid container spacing={2} marginY={2}>
-        <Grid item xs={12}>
+      <Grid container>
+        <Grid item xs={12} marginY={2}>
           <Stack 
             spacing={1} 
             direction="row" 
@@ -55,13 +54,13 @@ const NftDetail = ({nft, priceHistory}) => {
             <ProfileAvatar reverse={true} profileAddress={nft?.owner} />
           </Stack>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={6} marginBottom={2} paddingRight={{md: 1}}>
           <Stack spacing={2}>
-          { !SSR ?  <DetailPageImage token={nft} /> : null }
+          <NoSsr><DetailPageImage token={nft} /></NoSsr>
             <Likes sx={{ color: theme => theme.palette.secondary.main, '.MuiTypography-body1': {color: '#666'}}} tokenId={nft.tokenId} />
           </Stack>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={6} marginBottom={2} paddingLeft={{md: 1}}>
           <Stack spacing={2}>
             <DescriptionCard nft={nft} />
             <IpfsCard nft={nft} />

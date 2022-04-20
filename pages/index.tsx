@@ -4,14 +4,14 @@ import { InfiniteScroll } from '../components/InfiniteScroll'
 import NftList from '../components/NftList'
 
 export async function getServerSideProps() {
-  const lim = 8;
+  const lim = 16;
   const prefetchedListed = await fetch(`${process.env.NEXT_PUBLIC_HODL_API_ADDRESS}/market/listed?offset=0&limit=${lim}`)
     .then(r => r.json())
     .then(json => json.data)
   return {
     props: {
       lim,
-      prefetchedListed: [prefetchedListed],
+      prefetchedListed: prefetchedListed ? [prefetchedListed] : null,
     },
   }
 }
@@ -24,6 +24,7 @@ export default function Home({ lim, prefetchedListed }) {
         <title>NFT Market</title>
       </Head>
       <Box>
+        { prefetchedListed && 
         <InfiniteScroll
           swrkey='fetchMarketItems'
           fetcher={
@@ -42,6 +43,7 @@ export default function Home({ lim, prefetchedListed }) {
                 showName={false} />
             </Box>
           )} />
+        }
       </Box>
     </>
   )

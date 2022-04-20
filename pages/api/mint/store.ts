@@ -23,6 +23,7 @@ route.post(async (req, res: NextApiResponse) => {
   }
 
   const {tokenId, mimeType, filter} = req.body;
+  console.log(req.body)
   const {tokenUri, owner} = await getTokenUriAndOwner(tokenId);
 
   if (owner !== req.address) {

@@ -1,11 +1,9 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-
 import { NextApiRequest, NextApiResponse } from "next";
 import { create, urlSource } from 'ipfs-http-client'
 import cloudinary from 'cloudinary'
 import apiRoute from "../handler";
 import dotenv from 'dotenv'
-import { createCloudinaryUrl } from "../../../lib/utils";
+import { createCloudinaryUrl, validFilter } from "../../../lib/utils";
 import { renameOnCloudinary } from "../../../lib/server/cloudinary";
 dotenv.config({ path: '../.env' })
 
@@ -31,7 +29,7 @@ cloudinary.v2.config({
 });
 
 
-const uploadNFT = async (name, description, path, mimeType, filter, isVideo) => {
+const uploadNFT = async (name, description, path, filter, isVideo) => {
   const url = !isVideo ? 
     createCloudinaryUrl('image', 'upload', filter ? filter : null, 'uploads', path.split('/')[2]) : 
     createCloudinaryUrl('video', 'upload', filter ? filter : null, 'uploads', path.split('/')[2])
@@ -46,17 +44,34 @@ const uploadNFT = async (name, description, path, mimeType, filter, isVideo) => 
   return {imageCid: image.cid, metadataCid: metadata.cid };
 }
 
+
+
 route.post(async (req, res: NextApiResponse) => {
   if (!req.address) {
-    return res.status(403).json({ message: "Not Authenticated" });
+    return res.status(403).json({ message: "Not authenticated" });
   }
 
   const { name, description, fileUrl, mimeType, filter } = req.body;
 
+  if (!name || !description || !fileUrl || !mimeType) {
+    return res.status(400).json({message: 'Bad request'});  
+  }
+
+  if (name.length < 1 || name.length > 100) {
+    return res.status(400).json({message: 'Name must be between 1 and 100 characters'});  
+  }
+
+  if (description.length < 1 || description.length > 1000) {
+    return res.status(400).json({message: 'Description must be between 1 and 1000 characters'});  
+  }
+
+  if (filter && !validFilter(filter)) {
+    return res.status(400).json({message: 'Invalid filter'});
+  }
+
   const isVideo = mimeType.indexOf('video') !== -1;
 
-  const { imageCid, metadataCid } = await uploadNFT(name, description, fileUrl, mimeType, filter, isVideo);
-
+  const { imageCid, metadataCid } = await uploadNFT(name, description, fileUrl, filter, isVideo);
   
   await renameOnCloudinary(fileUrl, process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER + '/nfts/' + imageCid.toString(), isVideo);
   
