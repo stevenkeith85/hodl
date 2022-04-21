@@ -7,7 +7,47 @@ import { getShortAddress, truncateText } from "../lib/utils";
 import useSWR from "swr";
 import { HodlImage2 } from "./HodlImage2";
 import { HodlVideo } from "./HodlVideo";
+import { memo } from "react";
 
+
+const NftAvatar = ({ token, size }: any) => {
+    const isGif = (mimeType) => mimeType && mimeType.indexOf('gif') !== -1;
+    const isImage = (mimeType) => mimeType && mimeType.indexOf('image') !== -1;
+    const isVideo = (mimeType) => mimeType && mimeType.indexOf('video') !== -1;
+
+    return (
+        <Link href={`/nft/${token.tokenId}`}>
+            <Avatar
+                className="avatar"
+                sx={{
+                    height: size,
+                    width: size,
+                }}>
+                {isImage(token.mimeType) && !isGif(token.mimeType) &&
+                    <HodlImage2
+                        image={token?.image.split('//')[1]}
+                        effect={`w_200,h_200${token?.filter ? ',' + token.filter : ''},ar_1.0,c_fill,r_max`}
+                        imgSizes={`${size + 10}px`}
+                    />}
+                {isImage(token.mimeType) && isGif(token.mimeType) &&
+                    <HodlVideo
+                        gif={true}
+                        cid={token?.image.split('//')[1]}
+                        transformations={`w_200,h_200${token?.filter ? ',' + token.filter : ''},ar_1.0,c_fill,r_max`}
+                    />}
+                {isVideo(token.mimeType) &&
+                    <HodlVideo
+                        controls={false}
+                        cid={token?.image.split('//')[1]}
+                        transformations={`w_200,h_200${token?.filter ? ',' + token.filter : ''},ar_1.0,c_fill,r_max`}
+                        onlyPoster={true}
+                    />}
+            </Avatar>
+        </Link>
+    )
+}
+
+const NftAvatarMemo = memo(NftAvatar, (prev: any, next: any) => prev.size === next.size && prev.token.tokenId === next.token.tokenId);
 
 const AvatarText: React.FC<{ size: string, href?: string, children?: any, color: string }> = ({ size, href, children, color }) => {
     const mappings = {
@@ -47,15 +87,12 @@ export const ProfileAvatar = ({ profileAddress, reverse = false, size = "medium"
             .then(r => r.json())
             .then(json => json.token))
 
-    const isGif = (mimeType) => mimeType && mimeType.indexOf('gif') !== -1;
-    const isImage = (mimeType) => mimeType && mimeType.indexOf('image') !== -1;
-    const isVideo = (mimeType) => mimeType && mimeType.indexOf('video') !== -1;
 
     const getSize = () => {
         const mappings = {
             small: 36,
             medium: 54,
-            large: 85
+            large: 90
         }
 
         return mappings[size];
@@ -80,34 +117,7 @@ export const ProfileAvatar = ({ profileAddress, reverse = false, size = "medium"
             direction={reverse ? 'row-reverse' : 'row'}
         >
             {token ?
-                <Link href={`/nft/${token.tokenId}`}>
-                    <Avatar
-                        className="avatar"
-                        sx={{
-                            height: getSize(),
-                            width: getSize(),
-                        }}>
-                        {isImage(token.mimeType) && !isGif(token.mimeType) &&
-                            <HodlImage2
-                                image={token?.image.split('//')[1]}
-                                effect={`w_200,h_200${token?.filter ? ',' + token.filter : ''},ar_1.0,c_fill,r_max`}
-                                imgSizes={`${getSize() + 10}px`}
-                            />}
-                        {isImage(token.mimeType) && isGif(token.mimeType) &&
-                            <HodlVideo
-                                gif={true}
-                                cid={token?.image.split('//')[1]}
-                                transformations={`w_200,h_200${token?.filter ? ',' + token.filter : ''},ar_1.0,c_fill,r_max`}
-                            />}
-                        {isVideo(token.mimeType) &&
-                            <HodlVideo
-                                controls={false}
-                                cid={token?.image.split('//')[1]}
-                                transformations={`w_200,h_200${token?.filter ? ',' + token.filter : ''},ar_1.0,c_fill,r_max`}
-                                onlyPoster={true}
-                            />}
-                    </Avatar>
-                </Link> :
+                <NftAvatarMemo token={token} size={getSize()} /> :
                 <Link href={profileAddress ? `/profile/${profileNickname || profileAddress}` : ''}>
                     <Avatar
                         className="avatar"

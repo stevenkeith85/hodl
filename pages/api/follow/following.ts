@@ -12,8 +12,6 @@ const client = Redis.fromEnv()
 const route = apiRoute();
 
 
-// Find out who address is following
-// Memo cleared when 'follow' is toggled
 export const getFollowing = memoize(async (address) => {
   console.log("CALLING REDIS TO SEE WHO ADDRESS IS FOLLOWING", address);
   const following = await client.hkeys(`following:${address}`)
@@ -25,21 +23,13 @@ export const getFollowing = memoize(async (address) => {
 });
 
 
-// Returns a list of addresses that 'address' is following
-// Used in the following tab on the user profile
-// GET /api/following?address=
-route.get(async (req: NextApiRequest, res: NextApiResponse) => {
-  
+route.get(async (req: NextApiRequest, res: NextApiResponse) => {  
   const { address } = req.query;
 
-  if (!address) {
-    return res.status(400).json({message: 'Bad Request - No address supplied'});
+  if (!address || ! (await isValidAddress(address) )) {
+    return res.status(400).json({message: 'Bad Request'});
   }
   
-  if (!(await isValidAddress(address))) {
-    return res.status(400).json({message: 'Bad Request - Invalid address'});
-  }
-
   const following = await getFollowing(address);
   res.status(200).json({following});
 });

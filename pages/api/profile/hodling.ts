@@ -1,12 +1,9 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import dotenv from 'dotenv'
 import { ethers } from 'ethers';
 import { getProvider } from '../../../lib/server/connections';
-
 import { nftaddress } from '../../../config';
 import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import { ipfsUriToCloudinaryUrl } from '../../../lib/utils';
-
 import apiRoute from '../handler';
 
 dotenv.config({ path: '../.env' })
@@ -18,12 +15,12 @@ const addressToTokenIds = async (address, offset, limit) => {
     return result;
 }
 
-export const fetchNftsInWallet = async (address, offset, limit) => {
+export const getHodling = async (address, offset, limit) => {
     try {
         const [tokenIds, next, total] = await addressToTokenIds(address, offset, limit);
 
         if (!tokenIds.length) {
-            return {items: [], next: 0, total: 0};
+            return { items: [], next: 0, total: 0 };
         }
 
         const tokens = await Promise.all(
@@ -35,23 +32,22 @@ export const fetchNftsInWallet = async (address, offset, limit) => {
             // so that it ties up with blockchain (and our infinite scroll iterator works), but 
             // won't show anything not in our database
             if (!token) {
-                return null; 
+                return null;
             }
 
-            return {        
+            return {
                 tokenId: token.tokenId,
                 name: token.name,
                 description: token.description,
                 image: ipfsUriToCloudinaryUrl(token.image),
                 mimeType: token.mimeType,
                 filter: token.filter
-        }
+            }
         });
 
-        return {items, next: Number(next), total: Number(total)};
-    } catch(e) {
-        // console.log(e);
-        return {items: [], next: 0, total: 0};
+        return { items, next: Number(next), total: Number(total) };
+    } catch (e) {
+        return { items: [], next: 0, total: 0 };
     }
 }
 
@@ -61,12 +57,12 @@ route.get(async (req, res) => {
     const { address, offset, limit } = req.query;
 
     if (!address || !offset || !limit) {
-        return res.status(400).json({message: 'Bad Request'});
+        return res.status(400).json({ message: 'Bad Request' });
     }
 
-    const data = await fetchNftsInWallet(address, offset, limit)
+    const data = await getHodling(address, offset, limit)
 
-    return res.status(200).json({data});
+    return res.status(200).json({ data });
 });
 
 

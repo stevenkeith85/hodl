@@ -9,7 +9,6 @@ dotenv.config({ path: '../.env' })
 const client = Redis.fromEnv()
 const route = apiRoute();
 
-// Memo cleared when user follows/unfollows an account
 export const getFollowersCount = memoize(async (address) => {
   console.log("CALLING REDIS TO GET FOLLOWERS COUNT", address);
 
@@ -20,7 +19,6 @@ export const getFollowersCount = memoize(async (address) => {
   max: 10000, // 10000 tokens 
 });
 
-// Requests the number of accounts address follows
 route.get(async (req, res) => {
   const { address } = req.query;
 

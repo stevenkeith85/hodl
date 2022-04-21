@@ -1,4 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import dotenv from 'dotenv'
 import { ethers } from 'ethers';
 import { getProvider } from '../../../lib/server/connections';
@@ -11,8 +10,7 @@ import apiRoute from '../handler';
 
 dotenv.config({ path: '../.env' })
 
-
-export const fetchNFTsListedOnMarket = async (address, offset, limit) => {
+export const getListed = async (address, offset, limit) => {
     try {
         const provider = await getProvider();
         const market = new ethers.Contract(nftmarketaddress, HodlMarket.abi, provider);
@@ -68,7 +66,7 @@ route.get(async (req, res) => {
         return res.status(400).json({message: 'Bad Request'});
     }
 
-    const data = await fetchNFTsListedOnMarket(address, offset, limit)
+    const data = await getListed(address, offset, limit);
     return res.status(200).json({data});
 });
 

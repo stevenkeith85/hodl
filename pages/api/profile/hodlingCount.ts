@@ -2,7 +2,7 @@
 
 import dotenv from 'dotenv'
 import apiRoute from "../handler";
-
+import memoize from 'memoizee';
 import { ethers } from 'ethers';
 import { nftaddress } from '../../../config';
 import { getProvider } from '../../../lib/server/connections';
@@ -12,19 +12,18 @@ dotenv.config({ path: '../.env' })
 
 const route = apiRoute();
 
-const getHodlingCount = async address => {
+// TODO: Memoize / Cache
+export const getHodlingCount = async address => {
   try {
     const provider = await getProvider();
     const tokenContract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
     const result = await tokenContract.balanceOf(address);
     return Number(result);
   } catch(e) {
-    // console.log(e);
     return 0;
   }
-}
+};
 
-// Requests the number of accounts address follows
 route.get(async (req, res) => {
   const { address } = req.query;
 

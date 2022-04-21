@@ -1,7 +1,11 @@
 import { Box } from '@mui/material'
 import Head from 'next/head';
-import { InfiniteScroll } from '../components/InfiniteScroll'
+
 import NftList from '../components/NftList'
+import useSWRInfinite from 'swr/infinite'
+import InfiniteScroll from 'react-swr-infinite-scroll'
+import { HodlLoadingSpinner } from '../components/HodlLoadingSpinner';
+
 
 export async function getServerSideProps() {
   const lim = 16;
@@ -18,33 +22,40 @@ export async function getServerSideProps() {
 
 
 export default function Home({ lim, prefetchedListed }) {
+
+  const getKey = (index, previous) => {
+    return ['market', index * lim, lim];
+  }
+
+  const fetcher =  async (key, offset, limit) => await fetch(`/api/market/listed?offset=${offset}&limit=${limit}`)
+                                                        .then(r => r.json())
+                                                        .then(json => json.data);
+  const swr = useSWRInfinite(getKey, fetcher, { fallbackData: prefetchedListed });
+    
   return (
     <>
       <Head>
         <title>NFT Market</title>
       </Head>
       <Box>
-        { prefetchedListed && 
         <InfiniteScroll
-          swrkey='fetchMarketItems'
-          fetcher={
-            async (offset, limit) => await fetch(`/api/market/listed?offset=${offset}&limit=${limit}`)
-              .then(r => r.json())
-              .then(json => json.data)}
-          prefetchedData={prefetchedListed}
-          revalidateOnMount={true}
-          lim={lim}
-          render={nfts => (
-            <Box marginY={2}>
+                swr={swr}
+                loadingIndicator={<HodlLoadingSpinner />}
+                isReachingEnd={swr => swr.data?.[0]?.items.length === 0 || swr.data?.[swr.data?.length - 1]?.items.length < lim } 
+                 >
+        {
+          ({ items }) => 
+          <Box marginY={2}>
               <NftList
-                nfts={nfts}
+                nfts={items}
                 viewSale={true}
                 showTop={true}
                 showName={false} />
             </Box>
-          )} />
         }
+        </InfiniteScroll>
       </Box>
     </>
   )
 }
+

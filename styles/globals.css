@@ -31,7 +31,7 @@ body {
     }
   }
 
-  @keyframes fadeIn {
+  @keyframes fadein {
     from {
       opacity: 0;
     }
@@ -41,7 +41,7 @@ body {
     }
   }
 
-  @keyframes fadeOut {
+  @keyframes fadeout {
     to {
       opacity: 0;
     }

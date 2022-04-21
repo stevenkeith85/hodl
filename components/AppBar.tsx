@@ -7,65 +7,69 @@ import Typography from '@mui/material/Typography';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import Container from '@mui/material/Container';
-import { useState, MouseEvent, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { WalletContext } from '../pages/_app';
 import Link from 'next/link';
 import { Logo } from './Logo';
 
-import { ClickAwayListener, Stack } from '@mui/material';
+import { Stack } from '@mui/material';
 import { useRouter } from 'next/router';
-import { ConnectButton } from './ConnectButton';
 import { MobileMenu } from './MobileMenu';
 import { AccountBalanceWallet, AccountCircle, Spa, Storefront } from '@mui/icons-material';
+import { useConnect } from '../hooks/useConnect';
+import useSWR from 'swr';
 
 
 const ResponsiveAppBar = () => {
-    const { address, nickname } = useContext(WalletContext);
+    const { address } = useContext(WalletContext);
+
     const router = useRouter();
+    const [connect] = useConnect();
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-    const [pages, setPages] = useState([
-        { label: 'Market', url: '/', icon: <Storefront />, publicPage: true },
-        { label: 'Mint NFT', url: '/mint', icon: <Spa />, publicPage: false },
-        { label: 'My Profile', url: `/profile/${nickname || address}`, icon: <AccountCircle />, publicPage: false },
+    const [pages] = useState([
+        { 
+            label: 'Market', 
+            url: '/', 
+            icon: <Storefront />, 
+            publicPage: true 
+        },
+        { 
+            label: 'Mint NFT', 
+            url: '/mint', 
+            icon: <Spa />, 
+            publicPage: false 
+        },
+        { 
+            label: 'My Profile', 
+            url: `/profile`, 
+            icon: <AccountCircle />, 
+            publicPage: false 
+        },
     ]);
 
+    const { data: nickname } = useSWR(address ? [`/api/profile/nickname`, address] : null,
+        (url, query) => fetch(`${url}?address=${query}`)
+            .then(r => r.json())
+            .then(json => json.nickname))
+
+
     useEffect(() => {
-        if (address) {
-            setPages(old => {
-                return old.map(({ label, url, icon, publicPage }) => {
-                    if (label === 'My Profile') {
-                        return ({ label, url: `/profile/${nickname || address}`, icon, publicPage })
-                    } else {
-                        return ({ label, url, icon, publicPage })
-                    }
-                })
-            });
-        }
-    }, [address, nickname]);
+        const load = async () => {
+            if (localStorage.getItem('jwt')) {
+                connect();
+            }
+        };
 
-    const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
-
-    const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {
-        setAnchorElNav(event.currentTarget);
-    };
-
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null);
-    };
+        load();
+    }, [])
 
     return (
         <>
-
             <AppBar position="fixed" sx={{ maxWidth: `100vw`, left: 0 }}>
-                {/* Mobile */}
-
                 <Container maxWidth="xl" sx={{ width: '100%', position: 'relative' }}>
-
                     <Toolbar disableGutters>
-
-
                         {/* Mobile */}
                         <Box sx={{ display: { xs: 'flex', md: 'none' }, width: '100%', justifyContent: 'space-between' }}>
                             <MobileMenu
@@ -82,10 +86,8 @@ const ResponsiveAppBar = () => {
                                 >
                                     {mobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
                                 </IconButton>
-
                             </Box>
                         </Box>
-
 
                         {/* Desktop */}
                         <Box sx={{ display: { xs: 'none', md: 'flex' }, width: '100%', justifyContent: 'space-between' }}>
@@ -98,11 +100,14 @@ const ResponsiveAppBar = () => {
 
                                 }}>
                                     {pages.filter(p => p.publicPage || address).map(page => (
-                                        <Link key={page.url} href={page.url} passHref>
+                                        <Link 
+                                            key={page.url} 
+                                            href={page.url === '/profile' ? `${page.url}/${nickname || address}`: page.url} 
+                                            passHref
+                                            >
                                             {router.asPath === page.url ?
                                                 <Typography
                                                     key={page.label}
-                                                    onClick={handleCloseNavMenu}
                                                     sx={{
                                                         display: 'block',
                                                         textAlign: 'center',
@@ -120,7 +125,6 @@ const ResponsiveAppBar = () => {
                                                 </Typography>
                                                 : <Typography
                                                     key={page.label}
-                                                    onClick={handleCloseNavMenu}
                                                     sx={{
                                                         display: 'block',
                                                         textAlign: 'center',

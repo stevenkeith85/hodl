@@ -10,14 +10,14 @@ dotenv.config({ path: '../.env' })
 
 const route = apiRoute();
 
-const getListedCount = async address => {
+// TODO: Memoize / Cache
+export const getListedCount = async address => {
   try {
     const provider = await getProvider();
     const contract = new ethers.Contract(nftmarketaddress, HodlMarket.abi, provider);
     const result = await contract.balanceOf(address);
     return Number(result);
   } catch(e) {
-    // console.log(e);
     return 0;
   }
 }

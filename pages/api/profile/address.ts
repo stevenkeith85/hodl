@@ -10,7 +10,7 @@ dotenv.config({ path: '../.env' })
 const client = Redis.fromEnv();
 const route = apiRoute();
 
-// Memo cleared when a new nickname is set
+
 export const getAddress = memoize(async (nickname) => {
     console.log("CALLING REDIS FOR ADDRESS FOR NICKNAME", nickname);
     const address = await client.get(`address:${nickname}`);
@@ -28,8 +28,7 @@ route.get(async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(400).json({message: 'Bad Request'});
   }
 
-  const sanitizedNickName = trim(nickname).toLowerCase();
-  const address = await getAddress(sanitizedNickName);
+  const address = await getAddress(nickname);
 
   return res.status(200).json({address})
 });

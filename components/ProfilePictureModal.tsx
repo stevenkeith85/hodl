@@ -3,57 +3,62 @@ import { useContext, useState } from "react";
 import { WalletContext } from "../pages/_app";
 import { HodlButton } from "./HodlButton";
 import { HodlModal } from "./HodlModal";
-import { InfiniteScroll } from "./InfiniteScroll";
+// import { InfiniteScroll } from "./InfiniteScroll";
 import { RocketTitle } from "./RocketTitle";
 import NftList from "./NftList";
 import { useConnect } from "../hooks/useConnect";
 import { mutate } from "swr";
 import { hasExpired } from "../lib/utils";
 
-export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePictureModalOpen }) => {
+import useSWRInfinite from 'swr/infinite'
+import InfiniteScroll from 'react-swr-infinite-scroll'
+import { HodlLoadingSpinner } from "./HodlLoadingSpinner";
+
+export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePictureModalOpen, lim = 10 }) => {
     const [token, setToken] = useState(null);
     const { address } = useContext(WalletContext);
     const [connect] = useConnect();
-    
+
+
+    const getKey = (index, previous) => {
+        return [`/api/profile/hodling?address=${address}`, index * lim, lim];
+    }
+
+    const fetcher = async (key, offset, limit) => await fetch(`/api/profile/hodling?address=${address}&offset=${offset}&limit=${limit}`)
+        .then(r => r.json())
+        .then(json => json.data);
+    const swr = useSWRInfinite(getKey, fetcher);
+
     return (
         <>
             <HodlModal
                 open={profilePictureModalOpen}
                 setOpen={setProfilePictureModalOpen}
             >
-                <Stack spacing={4} >
+                <Stack spacing={2} >
                     <RocketTitle title="Set Profile NFT" />
-                    <Typography>
-                        Tired of looking a bit generic? Set a Profile NFT!
-                    </Typography>
-                    <Typography>
-                        You must be Hodling the NFT for it to show up.
-                    </Typography>
+                    <Typography>Tired of looking a bit generic?</Typography>
+                    <Typography>Set a profile NFT instead</Typography>
                     <InfiniteScroll
-                        swrkey={'profilePicture: ' + address}
-                        fetcher={
-                            async (offset, limit) => await fetch(`/api/profile/hodling?address=${address}&offset=${offset}&limit=${limit}`)
-                                .then(r => r.json())
-                                .then(json => json.data)
+                        swr={swr}
+                        loadingIndicator={<HodlLoadingSpinner />}
+                        isReachingEnd={swr => swr.data?.[0]?.items.length === 0 || swr.data?.[swr.data?.length - 1]?.items.length < lim}
+                    >
+                        {
+                            ({ items }) =>
+                                <NftList
+                                    nfts={items}
+                                    viewSale={false}
+                                    showAvatar={false}
+                                    showTop={false}
+                                    showBottom={false}
+                                    gridColumns={{ xs: "repeat(3, 1fr)" }}
+                                    imgHeight={100}
+                                    onClick={(tokenId) => setToken(tokenId)}
+                                    highlightNft={token}
+                                />
                         }
-                        revalidateOnMount={true}
-                        windowScroll={false}
-                        divScrollHeight={ 3 * 100 }
-                        lim={10}
-                        render={nfts => (
-                            <NftList
-                                nfts={nfts}
-                                viewSale={false}
-                                showAvatar={false}
-                                showTop={false}
-                                showBottom={false}
-                                gridColumns={{ xs: "repeat(3, 1fr)" }}
-                                imgHeight={100}
-                                onClick={(tokenId) => setToken(tokenId)}
-                                highlightNft={token}
-                            />
-                        )}
-                    />
+                    </InfiniteScroll>
                     <HodlButton
                         disabled={!token}
                         onClick={async () => {
@@ -61,7 +66,7 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                                 if (hasExpired(localStorage.getItem('jwt'))) {
                                     await connect(true, true);
                                 }
-                                
+
                                 const r = await fetch('/api/profile/picture', {
                                     method: 'POST',
                                     headers: new Headers({
