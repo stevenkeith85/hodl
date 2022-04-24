@@ -18,7 +18,16 @@ export const HodlingTab: React.FC<HodlingTabProps> = ({ profileAddress, prefetch
     const fetcher = async (key, offset, limit) => await fetch(`/api/profile/hodling?address=${profileAddress}&offset=${offset}&limit=${limit}`)
         .then(r => r.json())
         .then(json => json.data);
-    const swr = useSWRInfinite(getKey, fetcher, { fallbackData: prefetchedData });
+    const swr = useSWRInfinite(getKey, fetcher, { 
+        fallbackData: prefetchedData,
+        revalidateOnMount: !prefetchedData,
+        dedupingInterval: 10000 
+    });
+
+    if (swr?.error) {
+        console.log('swr infinite error', swr.error)
+        return null;
+      }
 
     return (
         <Stack spacing={4}>
@@ -29,7 +38,7 @@ export const HodlingTab: React.FC<HodlingTabProps> = ({ profileAddress, prefetch
             >
                 {
                     ({ items }) =>
-                        <Box marginY={2}>
+                        <Box marginY={2} >
                             <NftList
                                 nfts={items}
                                 viewSale={false}

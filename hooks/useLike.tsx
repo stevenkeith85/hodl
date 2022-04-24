@@ -1,42 +1,32 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useContext } from 'react';
+import useSWR from 'swr';
 import { hasExpired } from '../lib/utils';
 import { WalletContext } from "../pages/_app";
 import { useConnect } from './useConnect';
 
 export const useLike = (tokenId) => {
   const { address } = useContext(WalletContext);
-  const [userLikesThisToken, setUserLikesThisToken] = useState(false);
-  const [tokenLikesCount, setTokenLikesCount] = useState(null);
+  const [error, setError] = useState('');
   const [connect] = useConnect();
 
-  // @ts-ignore
-  useEffect(async () => {
-    const r = await fetch(`/api/like/likeCount?token=${tokenId}`);
-    if (r.status == 200) {
-      const { count } = await r.json();
-      setTokenLikesCount(count);
-    }
+  const { data: tokenLikesCount, mutate: mutateLikesCount } = useSWR(tokenId ? [`/api/like/likeCount`, tokenId] : null,
+    (url, tokenId) => fetch(`${url}?token=${tokenId}`)
+      .then(r => r.json())
+      .then(json => json.count));
 
-  }, [tokenId])
-
-  // @ts-ignore
-  useEffect(async () => {
-    if (!address) {
-      return;
-    }
-
-    const r = await fetch(`/api/like/likes?address=${address}&token=${tokenId}`);
-    if (r.status == 200) {
-      const { likes } = await r.json();
-      setUserLikesThisToken(likes);
-    }
-  }, [tokenId, address])
+  const { data: userLikesThisToken, mutate: mutateUserLikesThisToken } = useSWR(address && tokenId ? [`/api/like/likes`, address, tokenId] : null,
+    (url, address, tokenId) => fetch(`${url}?address=${address}&token=${tokenId}`)
+      .then(r => r.json())
+      .then(json => Boolean(json.likes)));
 
   const toggleLike = async () => {
     if (hasExpired(localStorage.getItem('jwt'))) {
       await connect(true, true);
     }
     
+    mutateLikesCount(old => userLikesThisToken ? old-1 : old+1, { revalidate: false }); // TODO: Try to do this before the network call
+    mutateUserLikesThisToken(old => !old, { revalidate: false })
+
     const r = await fetch('/api/like/like', {
       method: 'POST',
       headers: new Headers({
@@ -47,14 +37,17 @@ export const useLike = (tokenId) => {
       body: JSON.stringify({ token: tokenId })
     });
 
-    if (r.status === 403) {
+    if (r.status === 429) {
+      mutateLikesCount();
+      mutateUserLikesThisToken();
+      const { message } = await r.json();
+      setError(message);
+    } else if (r.status === 403) {
+      mutateLikesCount();
+      mutateUserLikesThisToken();
       await connect(false);
-    } else if (r.status === 200) {
-      const { liked } = await r.json();
-      setUserLikesThisToken(old => !old);
-      setTokenLikesCount(old => liked ? old + 1 : old - 1);
     }
   }
 
-  return [tokenLikesCount, userLikesThisToken, toggleLike];
+  return [tokenLikesCount, userLikesThisToken, toggleLike, error, setError];
 }

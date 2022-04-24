@@ -51,6 +51,7 @@ route.post(async (req, res) => {
   getFollowing.delete(req.address);
   getFollowingCount.delete(req.address);
 
+  console.log('deleting the memo')
   getFollowers.delete(address);
   getFollowersCount.delete(address);
   

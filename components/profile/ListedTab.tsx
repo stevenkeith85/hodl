@@ -19,7 +19,16 @@ export const ListedTab: React.FC<ListedTabProps> = ({ profileAddress, prefetched
     .then(r => r.json())
     .then(json => json.data);
 
-  const swr = useSWRInfinite(getKey, fetcher, { fallbackData: prefetchedData });
+  const swr = useSWRInfinite(getKey, fetcher, { 
+    fallbackData: prefetchedData, 
+    revalidateOnMount: !prefetchedData,
+    dedupingInterval: 10000 
+  });
+
+  if (swr?.error) {
+    console.log('swr infinite error', swr.error)
+    return null;
+  }
 
   return (
     <Stack spacing={4} >

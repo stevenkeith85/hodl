@@ -14,6 +14,7 @@ import useSWRInfinite from 'swr/infinite'
 import InfiniteScroll from 'react-swr-infinite-scroll'
 import { HodlLoadingSpinner } from "./HodlLoadingSpinner";
 
+
 export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePictureModalOpen, lim = 10 }) => {
     const [token, setToken] = useState(null);
     const { address } = useContext(WalletContext);
@@ -27,7 +28,16 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
     const fetcher = async (key, offset, limit) => await fetch(`/api/profile/hodling?address=${address}&offset=${offset}&limit=${limit}`)
         .then(r => r.json())
         .then(json => json.data);
-    const swr = useSWRInfinite(getKey, fetcher);
+
+    const swr = useSWRInfinite(getKey, fetcher, {
+        dedupingInterval: 10000
+    });
+
+
+    if (swr?.error) {
+        console.log('swr infinite error', swr.error)
+        return null;
+      }
 
     return (
         <>

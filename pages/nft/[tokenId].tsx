@@ -14,16 +14,17 @@ import {
   NftActionButtons
 } from '../../components';
 
-import { fetchNFT, lookupPriceHistory } from "../../lib/server/nft";
+import { fetchNFT } from "../../lib/server/nft";
 import { PriceHistory } from "../../components/nft/PriceHistory";
 import { truncateText } from "../../lib/utils";
 import { ProfileAvatar } from "../../components/ProfileAvatar";
 import { Likes } from "../../components/Likes";
 import Head from "next/head";
+import { getPriceHistory } from "../api/priceHistory/[tokenId]";
 
 export async function getServerSideProps({ params }) {
   const nft = await fetchNFT(params.tokenId);
-  const priceHistory = await lookupPriceHistory(params.tokenId);
+  const priceHistory = await getPriceHistory(params.tokenId);
   
   return {
     props: {

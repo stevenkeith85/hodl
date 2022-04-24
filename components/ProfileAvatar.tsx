@@ -9,7 +9,6 @@ import { HodlImage2 } from "./HodlImage2";
 import { HodlVideo } from "./HodlVideo";
 import { memo } from "react";
 
-
 const NftAvatar = ({ token, size }: any) => {
     const isGif = (mimeType) => mimeType && mimeType.indexOf('gif') !== -1;
     const isImage = (mimeType) => mimeType && mimeType.indexOf('image') !== -1;

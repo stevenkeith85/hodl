@@ -5,7 +5,7 @@ import { WalletContext } from "../pages/_app";
 
 export const useConnect = () => {
 
-  const { setSigner, setAddress, setNickname} = useContext(WalletContext);
+  const { setSigner, setAddress } = useContext(WalletContext);
 
   // we ask which account they want if they aren't a returning user (i.e. they've logged out)
   // we can also connect returningusers to update their jwt
@@ -40,13 +40,8 @@ export const useConnect = () => {
         localStorage.setItem('jwt', token);
       }
 
-      const r = await fetch(`/api/profile/nickname?address=${_address}`);
-      const json = await r.json();
-      const _nickname = json.nickname;
-
       setSigner(_signer);
       setAddress(_address);
-      setNickname(_nickname);
     } catch (e) {
       console.log(e)
     }
@@ -55,7 +50,6 @@ export const useConnect = () => {
   const disconnect = async () => {
     setSigner(null);
     setAddress(null);
-    setNickname(null);
     localStorage.setItem('jwt', '');
   }
 

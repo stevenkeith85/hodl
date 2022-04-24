@@ -1,7 +1,7 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
-import { ipfsUriToGatewayUrl } from "../../../lib/utils";
+import { ipfsUriToGatewayUrl, sleep } from "../../../lib/utils";
 import memoize from 'memoizee';
 import apiRoute from "../handler";
 import { getTokenUriAndOwner } from "../../../lib/server/nft";
@@ -23,14 +23,16 @@ route.post(async (req, res: NextApiResponse) => {
   }
 
   const {tokenId, mimeType, filter} = req.body;
-  console.log(req.body)
   const {tokenUri, owner} = await getTokenUriAndOwner(tokenId);
 
   if (owner !== req.address) {
     return res.status(403).json({ message: "Only the token owner can add their token to HodlMyMoon" });
   }
 
-  const r = await fetch(ipfsUriToGatewayUrl(tokenUri), { headers : getInfuraIPFSAuth() }); // Potentially, we don't want to do it this way (as rate limiting / slow / etc)
+  // https://community.infura.io/t/ipfs-api-rate-limit/4995
+  const r = await fetch(ipfsUriToGatewayUrl(tokenUri), { headers : getInfuraIPFSAuth() }); 
+  sleep(1000);
+
   const { name, description, image } = await r.json()
 
   client.set("token:" + tokenId, JSON.stringify({ tokenId, name, description, image, mimeType, filter }));

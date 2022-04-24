@@ -1,5 +1,5 @@
-import { useContext } from 'react';
-import useSWR from 'swr';
+import { useContext, useState } from 'react';
+import useSWR, { mutate } from 'swr';
 import { hasExpired } from '../lib/utils';
 import { WalletContext } from "../pages/_app";
 import { useConnect } from './useConnect';
@@ -7,18 +7,36 @@ import { useConnect } from './useConnect';
 export const useFollow = (profileAddress) => {
   const { address } = useContext(WalletContext);
   const [connect] = useConnect();
+  const [error, setError] = useState('');
 
-  const {data: isFollowing, mutate } = useSWR(address && address !== profileAddress ? [`/api/follow/follows`, address, profileAddress] : null, 
-                                                            (url, address, profileAddress) => fetch(`${url}?address1=${address}&address2=${profileAddress}`)
-                                                                                              .then(r => r.json())
-                                                                                              .then(json => Boolean(json.follows)));
-
+  const { data: isFollowing, mutate: mutateIsFollowing } = useSWR(address && address !== profileAddress ? [`/api/follow/follows`, address, profileAddress] : null,
+    (url, address, profileAddress) => fetch(`${url}?address1=${address}&address2=${profileAddress}`)
+      .then(r => r.json())
+      .then(json => Boolean(json.follows)),
+    { dedupingInterval: 60000 * 30 }, // don't check this more than once every 30 mins as follows rarely change, and we already invalidate the cache if they do
+  );
 
   const follow = async () => {
     if (hasExpired(localStorage.getItem('jwt'))) {
       await connect(true, true);
     }
-    
+
+    mutate([`/api/follow/followersCount`, profileAddress],
+      async count => {
+        console.log('count', count)
+        return isFollowing ? count - 1 : count + 1
+      },
+      { revalidate: false });
+
+    mutate([`/api/follow/followers`, profileAddress],
+      async followers => {
+        console.log('followers', followers);
+        return isFollowing ? (followers || []).filter(a => a !== address) : [...(followers || []), address]
+      },
+      { revalidate: false });
+
+    mutateIsFollowing(old => !old, { revalidate: false });
+
     const r = await fetch('/api/follow/follow', {
       method: 'POST',
       headers: new Headers({
@@ -29,15 +47,24 @@ export const useFollow = (profileAddress) => {
       body: JSON.stringify({ address: profileAddress })
     });
 
-    if (r.status === 403) {
+    if (r.status === 429) {
+      const { message } = await r.json();
+      setError(message);
+      mutate([`/api/follow/followersCount`, profileAddress]);
+      mutate([`/api/follow/followers`, profileAddress]);
+      mutateIsFollowing();
+      return false;
+    } else if (r.status === 403) {
       await connect(false);
+      mutate([`/api/follow/followersCount`, profileAddress]);
+      mutate([`/api/follow/followers`, profileAddress]);
+      mutateIsFollowing();
       return false;
     } else if (r.status === 200) {
-      mutate(!isFollowing, { revalidate: false});
       return true;
     }
   }
 
 
-  return [follow, isFollowing];
+  return [follow, isFollowing, error, setError];
 }

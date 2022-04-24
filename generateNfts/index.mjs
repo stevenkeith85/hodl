@@ -44,11 +44,6 @@ const uploadNFT = async (name, description, path) => {
 }
 
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-
 const wallets = {
   1: process.env.ACCOUNT1_PRIVATE_KEY,
   2: process.env.ACCOUNT2_PRIVATE_KEY,

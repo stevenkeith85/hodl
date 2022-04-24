@@ -12,7 +12,10 @@ export const useNickname = () => {
   const { data: nickname } = useSWR(address ? [`/api/profile/nickname`, address] : null,
         (url, query) => fetch(`${url}?address=${query}`)
             .then(r => r.json())
-            .then(json => json.nickname))
+            .then(json => json.nickname), 
+            {
+              dedupingInterval: 60000 * 30, // don't check this more than once every 30 mins as nicknames rarely change, and we already invalidate the cache if they do
+            })
   
   
   const update = async (nickname) => {

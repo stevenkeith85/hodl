@@ -16,6 +16,7 @@ export const getFollowers = memoize(async (address) => {
 
   return followers;
 }, { 
+  async: true,
   primitive: true,
   max: 10000, 
 });

@@ -4,7 +4,6 @@ import { useContext } from 'react'
 import { WalletContext } from '../_app'
 import { Badge, Box, Tab, Tabs } from '@mui/material'
 import { useRouter } from 'next/router'
-import { HodlImpactAlert } from '../../components/HodlImpactAlert'
 import { HodlButton } from '../../components/HodlButton'
 import { useFollow } from '../../hooks/useFollow'
 import dynamic from 'next/dynamic'
@@ -23,6 +22,7 @@ import { getHodling } from '../api/profile/hodling'
 import { getListed } from '../api/profile/listed'
 import { getFollowing } from '../api/follow/following'
 import { getFollowers } from '../api/follow/followers'
+import { useSnackbar } from 'notistack';
 
 const HodlingTab = dynamic(
   // @ts-ignore
@@ -92,25 +92,27 @@ export async function getServerSideProps({ params, query }) {
 
   // Following                                    
   const prefetchedFollowingCount = await getFollowingCount(profileAddress);
-  const prefetchedFollowing = tab == 2 ? await getFollowing(profileAddress): null;
+  const prefetchedFollowing = tab == 2 ? await getFollowing(profileAddress) : null;
 
   // Followers
   const prefetchedFollowersCount = await getFollowersCount(profileAddress);
-  const prefetchedFollowers = tab == 3 ? await getFollowers(profileAddress): null;
+  const prefetchedFollowers = tab == 3 ? await getFollowers(profileAddress) : null;
+
+  console.log(prefetchedFollowersCount, typeof(prefetchedFollowersCount))
 
 
   return {
     props: {
       profileAddress,
       nickname,
-      prefetchedFollowingCount: prefetchedFollowingCount ? prefetchedFollowingCount : 0,
-      prefetchedFollowing: prefetchedFollowing ? prefetchedFollowing : [],
-      prefetchedFollowersCount: prefetchedFollowersCount ? prefetchedFollowersCount : 0,
-      prefetchedFollowers: prefetchedFollowers ? prefetchedFollowers : [],
-      prefetchedHodlingCount: prefetchedHodlingCount ? prefetchedHodlingCount : 0,
-      prefetchedHodling: prefetchedHodling ? [prefetchedHodling] : [],
-      prefetchedListedCount: prefetchedListedCount ? prefetchedListedCount : 0,
-      prefetchedListed: prefetchedListed ? [prefetchedListed] : [],
+      prefetchedFollowingCount,
+      prefetchedFollowing,
+      prefetchedFollowersCount,
+      prefetchedFollowers,
+      prefetchedHodlingCount,
+      prefetchedHodling: prefetchedHodling ? [prefetchedHodling] : null,
+      prefetchedListedCount,
+      prefetchedListed: prefetchedListed ? [prefetchedListed] : null,
       tab
     },
   }
@@ -131,47 +133,75 @@ const Profile = ({
   tab
 }) => {
   const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
   const { address } = useContext(WalletContext);
   const [value, setValue] = useState(Number(tab));
-  const [follow, isFollowing] = useFollow(profileAddress);
+  const [follow, isFollowing, error, setError] = useFollow(profileAddress);
 
   // Hodling
   const { data: hodlingCount } = useSWR([`/api/profile/hodlingCount`, profileAddress],
     makeAddressBasedFetcher('count'),
-    { fallbackData: prefetchedHodlingCount, revalidateOnMount: false }
+    {
+      fallbackData: prefetchedHodlingCount,
+      revalidateOnMount: false
+    }
   )
 
   // Listed
   const { data: listedCount } = useSWR([`/api/profile/listedCount`, profileAddress],
     makeAddressBasedFetcher('count'),
-    { fallbackData: prefetchedListedCount, revalidateOnMount: false }
+    {
+      fallbackData: prefetchedListedCount,
+      revalidateOnMount: false
+    }
   )
   // Followers
-  const { data: followersCount, mutate: updateFollowersCount } = useSWR([`/api/follow/followersCount`, profileAddress],
+  const { data: followersCount } = useSWR([`/api/follow/followersCount`, profileAddress],
     makeAddressBasedFetcher('count'),
-    { fallbackData: prefetchedFollowersCount, revalidateOnMount: false }
+    {
+      fallbackData: prefetchedFollowersCount,
+      revalidateOnMount: true
+    }
   )
 
+  console.log('prefetchedFollowers', prefetchedFollowers)
   const { data: followers, mutate: updateFollowers } = useSWR([`/api/follow/followers`, profileAddress],
     makeAddressBasedFetcher('followers'),
-    { fallbackData: prefetchedFollowers }
+    {
+      fallbackData: prefetchedFollowers,
+      revalidateOnMount: !prefetchedFollowers
+    }
   );
 
   // Following                                                            
   const { data: followingCount } = useSWR([`/api/follow/followingCount`, profileAddress],
     makeAddressBasedFetcher('count'),
-    { fallbackData: prefetchedFollowingCount, revalidateOnMount: false }
+    {
+      fallbackData: prefetchedFollowingCount,
+      revalidateOnMount: false
+    }
   )
 
   const { data: following } = useSWR([`/api/follow/following`, profileAddress],
     makeAddressBasedFetcher('following'),
-    { fallbackData: prefetchedFollowing }
+    {
+      fallbackData: prefetchedFollowing,
+      revalidateOnMount: !prefetchedFollowing
+    }
   )
+
   useEffect(() => {
     if (!router?.query?.tab) {
       setValue(0)// redirect to first tab on route change
     }
   }, [router.asPath, router?.query?.tab]);
+
+  useEffect(() => {
+    if (error !== '') {
+      enqueueSnackbar(error, { variant: "error" });
+      setError('');
+    }
+  }, [error])
 
   return (
     <>
@@ -191,9 +221,6 @@ const Profile = ({
 
             onClick={
               async () => {
-                updateFollowers(isFollowing ? followers.filter(f => f !== address) : [...followers, address], { revalidate: false });
-                updateFollowersCount(isFollowing ? followersCount - 1 : followersCount + 1, { revalidate: false })
-                // @ts-ignore
                 await follow();
               }
             }
@@ -207,12 +234,20 @@ const Profile = ({
           value={value}
           onChange={(e, v) => {
             setValue(v);
-            router.push({
-              pathname: '/profile/[address]',
-              query: { address: nickname || profileAddress, tab: v },
-            },
+
+            router.push(
+              {
+                pathname: '/profile/[address]',
+                query: {
+                  address: nickname || profileAddress,
+                  tab: v
+                }
+              },
               undefined,
-              { shallow: true })
+              {
+                shallow: true
+              }
+            )
           }}
           textColor="secondary"
           indicatorColor="secondary"
@@ -223,10 +258,10 @@ const Profile = ({
             }
           }}
         >
-          <Tab value={0} label="Hodling" icon={<Badge sx={{ p: '6px 3px' }} showZero badgeContent={hodlingCount}></Badge>} iconPosition="end" />
-          <Tab value={1} label="Listed" icon={<Badge sx={{ p: '6px 3px' }} showZero badgeContent={listedCount}></Badge>} iconPosition="end" />
-          <Tab value={2} label="Following" icon={<Badge sx={{ p: '6px 3px' }} showZero badgeContent={followingCount}></Badge>} iconPosition="end" />
-          <Tab value={3} label="Followers" icon={<Badge sx={{ p: '6px 3px' }} showZero badgeContent={followersCount} ></Badge>} iconPosition="end" />
+          <Tab key={0} value={0} label="Hodling" icon={<Badge sx={{ p: '6px 3px' }} showZero badgeContent={hodlingCount}></Badge>} iconPosition="end" />
+          <Tab key={1} value={1} label="Listed" icon={<Badge sx={{ p: '6px 3px' }} showZero badgeContent={listedCount}></Badge>} iconPosition="end" />
+          <Tab key={2} value={2} label="Following" icon={<Badge sx={{ p: '6px 3px' }} showZero badgeContent={followingCount}></Badge>} iconPosition="end" />
+          <Tab key={3} value={3} label="Followers" icon={<Badge sx={{ p: '6px 3px' }} showZero badgeContent={followersCount} ></Badge>} iconPosition="end" />
         </Tabs>
       </Box>
       <div hidden={value !== 0}>

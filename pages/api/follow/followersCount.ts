@@ -15,9 +15,11 @@ export const getFollowersCount = memoize(async (address) => {
   const count = await client.hlen(`followers:${address}`);
   return count;
 }, { 
+  async: true,
   primitive: true,
   max: 10000, // 10000 tokens 
 });
+
 
 route.get(async (req, res) => {
   const { address } = req.query;

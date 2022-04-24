@@ -40,6 +40,7 @@ export const UploadToIpfsAction: FC<MintProps> = ({
     setSubmitting(true);
 
     enqueueSnackbar('Transferring asset to IPFS', { variant: "info" });
+    enqueueSnackbar('Large files may take some time', { variant: "info" });
 
     let { success, imageCid, metadataUrl, message } = await uploadToIpfs(values.name, values.description, formData.fileName, formData.mimeType, formData.filter);
 

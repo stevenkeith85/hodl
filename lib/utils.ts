@@ -1,3 +1,7 @@
+export function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export const debounce = (func, wait, immediate) => {
   let timeout;
   return function () {

@@ -9,6 +9,8 @@ import Footer from '../components/Footer';
 import { SnackbarProvider } from 'notistack';
 import { SWRConfig } from 'swr';
 import '../styles/globals.css'
+import createEmotionCache from '../createEmotionCache';
+import { CacheProvider } from '@emotion/react';
 
 export const WalletContext = createContext<{
   signer: any,
@@ -20,20 +22,25 @@ export const WalletContext = createContext<{
 }>(null);
 
 
-function MyApp({ Component, pageProps }: AppProps) {
+// Client-side cache, shared for the whole session of the user in the browser.
+const clientSideEmotionCache = createEmotionCache();
+
+function MyApp(props) {
   const [signer, setSigner] = useState('');
   const [address, setAddress] = useState('');
   const [nickname, setNickname] = useState(''); // This will be getting removed
 
+  const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
+
   return (
-    <>
+    <CacheProvider value={emotionCache}>
       <Head>
         <meta name="viewport" content="initial-scale=1, width=device-width, user-scalable=no" />
       </Head>
       <SWRConfig value={{
-        dedupingInterval: 4000, // default is 2000
+        dedupingInterval: 10000, // default is 2000
         focusThrottleInterval: 10000, // default is 5000
-        errorRetryCount: 0, // possibly just for dev
+        errorRetryCount: 1,
       }}>
         <WalletContext.Provider value={{ signer, setSigner, address, setAddress, nickname, setNickname }}>
             <ThemeProvider theme={theme}>
@@ -79,7 +86,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             </ThemeProvider>
         </WalletContext.Provider>
       </SWRConfig>
-    </>
+    </CacheProvider>
   )
 }
 
