@@ -1,6 +1,5 @@
-import { Stack } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import { useNickname } from "../../hooks/useNickname";
-import { HodlButton } from "../HodlButton";
 import { Formik, Form } from 'formik';
 import { HodlFormikTextField } from "../formFields/HodlFormikTextField";
 import { nicknameValidationSchema } from "../../validationSchema/nickname";
@@ -28,9 +27,9 @@ export const NicknameForm = ({onSuccess=null}) => {
                     <Form>
                         <Stack spacing={2}>
                             <HodlFormikTextField name="nickname" type="text" label="nickname" apiError={apiError} setApiError={setApiError}/>
-                            <HodlButton type="submit" disabled={isSubmitting || apiError}>
+                            <Button type="submit" disabled={isSubmitting || apiError}>
                                 Submit
-                            </HodlButton>
+                            </Button>
                         </Stack>
                     </Form>
                 )}

@@ -1,26 +1,15 @@
-// import '../styles/globals.css'
-import { createContext, useState } from 'react';
-import { AppProps } from 'next/app';
+import { useState } from 'react';
 import Head from 'next/head';
-import { Box, Container, CssBaseline, snackbarClasses, ThemeProvider } from '@mui/material';
+import { Box, Container, CssBaseline, ThemeProvider } from '@mui/material';
 import ResponsiveAppBar from '../components/AppBar';
 import theme from '../theme';
 import Footer from '../components/Footer';
 import { SnackbarProvider } from 'notistack';
 import { SWRConfig } from 'swr';
-import '../styles/globals.css'
 import createEmotionCache from '../createEmotionCache';
 import { CacheProvider } from '@emotion/react';
-
-export const WalletContext = createContext<{
-  signer: any,
-  setSigner: Function,
-  address: any,
-  setAddress: Function,
-  nickname: any,
-  setNickname: Function,
-}>(null);
-
+import { WalletContext } from '../contexts/WalletContext';
+import '../styles/globals.css'
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -35,15 +24,15 @@ function MyApp(props) {
   return (
     <CacheProvider value={emotionCache}>
       <Head>
-        <meta name="viewport" content="initial-scale=1, width=device-width, user-scalable=no" />
+        <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
       <SWRConfig value={{
-        dedupingInterval: 10000, // default is 2000
+        dedupingInterval: 4000, // default is 2000
         focusThrottleInterval: 10000, // default is 5000
         errorRetryCount: 1,
       }}>
         <WalletContext.Provider value={{ signer, setSigner, address, setAddress, nickname, setNickname }}>
-            <ThemeProvider theme={theme}>
+          <ThemeProvider theme={theme}>
             <SnackbarProvider
               maxSnack={3}
             >
@@ -73,7 +62,7 @@ function MyApp(props) {
                   <ResponsiveAppBar />
                 </header>
                 <main>
-                  <Container 
+                  <Container
                     maxWidth="xl">
                     <Component {...pageProps} />
                   </Container>
@@ -82,8 +71,8 @@ function MyApp(props) {
                   <Footer />
                 </footer>
               </Box>
-              </SnackbarProvider>
-            </ThemeProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
         </WalletContext.Provider>
       </SWRConfig>
     </CacheProvider>

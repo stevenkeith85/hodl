@@ -1,13 +1,16 @@
-import { useContext, useRef } from 'react';
+import { useRef, useState } from 'react';
 import { hasExpired } from '../lib/utils';
-import { WalletContext } from "../pages/_app";
 import { useConnect } from './useConnect';
+import axios from 'axios'
 
 export const useCloudinaryUpload = () => {
   const previousFile = useRef(null);
   const [connect] = useConnect();
 
+  const [progress, setProgress] = useState(0);
+
   const uploadToCloudinary = async (asset) => {
+    setProgress(0);
     const data = new FormData();
     data.append('asset', asset);
 
@@ -18,27 +21,39 @@ export const useCloudinaryUpload = () => {
     if (hasExpired(localStorage.getItem('jwt'))) {
       await connect(true, true);
     }
-    
-    const r = await fetch('/api/mint/upload', {
-      credentials: 'include',
-      method: 'POST',
-      headers: new Headers({
-        'Accept': 'application/json',
-        'Authorization': localStorage.getItem('jwt')
-      }),
-      body: data,
-    });
 
+    let r;
+    try {
+      r = await axios.post(
+        '/api/mint/upload',
+        data,
+        {
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': localStorage.getItem('jwt')
+          },
+          onUploadProgress: progress => {
+            if (!progress.lenthComputable) {
+              setProgress(null);
+            }
+            setProgress(Math.floor(progress.loaded / progress.total * 100))
+          }
+        }
+      )
+    } catch (e) {
+      return { success: false, fileName: null, mimeType: null };  
+    }
+    
     if (r.status === 200) {
-      const { fileName, mimeType } = await r.json();
+      const { fileName, mimeType } = r.data;
       previousFile.current = fileName;
-      return {success: true, fileName, mimeType};
+      return { success: true, fileName, mimeType };
     } else if (r.status === 403) {
-      await connect(false); 
+      await connect(false);
     }
 
-    return {success: false, fileName: null, mimeType: null};
+    return { success: false, fileName: null, mimeType: null };
   }
 
-  return [uploadToCloudinary];
+  return [uploadToCloudinary, progress];
 }

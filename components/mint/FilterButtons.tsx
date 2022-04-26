@@ -1,5 +1,4 @@
-import { Box } from '@mui/material';
-import { HodlButton } from '../index';
+import { Box, Button } from '@mui/material';
 import { imageFilters } from '../../lib/utils';
 
 export const FilterButtons = ({ formData, setFormData }) => (
@@ -10,7 +9,7 @@ export const FilterButtons = ({ formData, setFormData }) => (
       gridTemplateColumns: '1fr 1fr 1fr'
     }}>
     {imageFilters.map(({ code, name }, index) => (
-      <HodlButton 
+      <Button 
         key={index} 
         sx={{ 
           textTransform: 'capitalize'
@@ -20,7 +19,7 @@ export const FilterButtons = ({ formData, setFormData }) => (
           ...prev,
           filter: code
         }))}>{name}
-      </HodlButton>
+      </Button>
     ))}
   </Box>
 );

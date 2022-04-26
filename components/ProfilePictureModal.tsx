@@ -1,9 +1,7 @@
-import { Stack, Typography } from "@mui/material";
+import { Button, Stack, Typography } from "@mui/material";
 import { useContext, useState } from "react";
-import { WalletContext } from "../pages/_app";
-import { HodlButton } from "./HodlButton";
+import { WalletContext } from '../contexts/WalletContext';
 import { HodlModal } from "./HodlModal";
-// import { InfiniteScroll } from "./InfiniteScroll";
 import { RocketTitle } from "./RocketTitle";
 import NftList from "./NftList";
 import { useConnect } from "../hooks/useConnect";
@@ -58,7 +56,6 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                             ({ items }) =>
                                 <NftList
                                     nfts={items}
-                                    viewSale={false}
                                     showAvatar={false}
                                     showTop={false}
                                     showBottom={false}
@@ -69,7 +66,7 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                                 />
                         }
                     </InfiniteScroll>
-                    <HodlButton
+                    <Button
                         disabled={!token}
                         onClick={async () => {
                             if (token) {
@@ -97,7 +94,7 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                         }}
                     >
                         Set Profile NFT
-                    </HodlButton>
+                    </Button>
                 </Stack>
             </HodlModal>
         </>

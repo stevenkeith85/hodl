@@ -1,5 +1,4 @@
-import { Typography, Stack } from '@mui/material';
-import { HodlButton } from '../index';
+import { Typography, Stack, Button } from '@mui/material';
 import { Build } from '@mui/icons-material';
 import { FC } from 'react';
 import { useSnackbar } from 'notistack';
@@ -45,13 +44,13 @@ export const MintTokenAction: FC<MintProps> = ({
       <Typography variant="h2">Mint NFT</Typography>
       <Typography sx={{ span: { fontWeight: 600 } }}>You are now ready to mint your token <span>{formData.name}</span> on the blockchain</Typography>
       <div>
-        <HodlButton
+        <Button
           disabled={stepComplete === 2 || loading}
           onClick={mint}
           startIcon={<Build fontSize="large" />}
         >
           Mint Token
-        </HodlButton>
+        </Button>
       </div>
     </Stack>
   );

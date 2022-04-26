@@ -1,27 +1,40 @@
-import { Stack, Typography } from "@mui/material";
-import { FC } from "react";
-import { HodlTextField } from "../HodlTextField";
+import { Button, Stack, Typography, CircularProgress, LinearProgress } from "@mui/material";
+import { FC, useCallback } from "react";
 import { FilterButtons } from "./FilterButtons";
 import { useSnackbar } from 'notistack';
 import { useCloudinaryUpload } from "../../hooks/useCloudinaryUpload";
 import { MintProps } from "./models";
+import { uploadToCloudinaryValidationSchema } from "../../validationSchema/uploadToCloudinary";
+import { Field, Form, Formik } from "formik";
+import { TextField } from 'formik-mui';
+import { HodlDropzone } from "../formFields/HodlDropZone";
 
-export const SelectAssetAction: FC<MintProps> = ({ 
-  loading, 
-  setLoading, 
+export const SelectAssetAction: FC<MintProps> = ({
+  loading,
+  setLoading,
   formData,
   setFormData,
-  setStepComplete 
-}: MintProps) => 
-{
+  setStepComplete
+}: MintProps) => {
   const { enqueueSnackbar } = useSnackbar();
-  const [uploadToCloudinary] = useCloudinaryUpload();
+  const [uploadToCloudinary, progress] = useCloudinaryUpload();
 
-  async function cloudinaryUpload(e) {
+  const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
+    if (rejectedFiles.length === 1) {
+      enqueueSnackbar(rejectedFiles[0].errors[0].message, {variant: 'error'});
+    }
+    else if (acceptedFiles.length === 1) {
+      cloudinaryUpload(acceptedFiles[0]);
+    }
+    // @ts-ignore
+  }, [])
+
+  async function cloudinaryUpload(file) {
     setLoading(true);
 
     enqueueSnackbar('Large files may take some time', { variant: "info" });
-    const { success, fileName, mimeType } = await uploadToCloudinary(e.target.files[0]);
+    // @ts-ignore
+    const { success, fileName, mimeType } = await uploadToCloudinary(file);
 
     if (success) {
       setFormData(prev => ({
@@ -33,30 +46,29 @@ export const SelectAssetAction: FC<MintProps> = ({
       enqueueSnackbar('Asset ready for departure', { variant: "success" });
       setStepComplete(0);
     } else {
-      e.target.value = ''; // clear the input and ask the user to try again
-
       enqueueSnackbar('Please try again', { variant: "warning" });
-      setLoading(false);
     }
+
+    setLoading(false);
   }
 
   return (
-    <>
-      <Stack spacing={6}>
-        <div>
-          <Typography marginBottom={2} variant="h2">Asset</Typography>
-          <HodlTextField
-            fullWidth
-            type="file"
-            onChange={cloudinaryUpload}
-            disabled={loading}
-          />
-        </div>
-        <div>
-          <Typography marginBottom={2}  variant="h2">Filter</Typography>
-          <FilterButtons formData={formData} setFormData={setFormData} />
-        </div>
-      </Stack>
-    </>
+    <Formik
+      initialValues={{
+        fileName: ''
+      }}
+      onSubmit={() => {}}
+    >
+      {() => (
+        <Form>
+          <Stack spacing={4}>
+            <HodlDropzone onDrop={onDrop} progress={progress}/>
+            <div>
+              <FilterButtons formData={formData} setFormData={setFormData} />
+            </div>
+          </Stack>
+        </Form>
+      )}
+    </Formik>
   )
 }

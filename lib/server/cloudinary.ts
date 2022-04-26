@@ -37,7 +37,6 @@ export const uploadToCloudinary = (req, res) : Promise<any> => {
     return new Promise((resolve, reject) => {
         upload(req, res, error => {
             if (error) {
-                console.log('error', error)
                 reject(error);
             } else {
                 resolve(true);

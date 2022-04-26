@@ -1,6 +1,5 @@
-import { Alert, Stack, Typography } from "@mui/material";
+import { Alert, Button, Stack, Typography } from "@mui/material";
 import Link from "next/link";
-import { HodlButton } from "./HodlButton";
 import { HodlModal } from "./HodlModal";
 import { RocketTitle } from "./RocketTitle";
 
@@ -25,16 +24,16 @@ export const UnableToStoreModal = ({ unableToSaveModalOpen, setUnableToSaveModal
             </Alert>
 
             <Stack direction="row" spacing={2}>
-                <HodlButton onClick={async() => {
+                <Button onClick={async() => {
                     setUnableToSaveModalOpen(false); 
                     setTimeout(retry, 1000);
                 }}>
                     Retry
-                </HodlButton>
+                </Button>
                 <Link href={`mailto:support@hodlmymoon.com?subject=Add my HodlNFT to HodlMyMoon (DO NOT EDIT)&body=Please add my HodlNFT to HodlMyMoon. It has the following tokenId: ${tokenId}`} passHref>
-                    <HodlButton color="secondary">
+                    <Button color="secondary">
                         Send Message
-                    </HodlButton>
+                    </Button>
                 </Link>
             </Stack>
             

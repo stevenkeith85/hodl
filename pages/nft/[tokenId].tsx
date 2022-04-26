@@ -50,7 +50,7 @@ const NftDetail = ({nft, priceHistory}) => {
               alignItems: 'center' 
             }}>
             <Tooltip title={nft.name}>
-              <Typography variant="h2">{truncateText(nft?.name, 100)}</Typography>
+              <Typography variant="h1">{truncateText(nft?.name, 100)}</Typography>
             </Tooltip>
             <ProfileAvatar reverse={true} profileAddress={nft?.owner} />
           </Stack>

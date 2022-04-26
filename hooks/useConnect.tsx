@@ -1,7 +1,8 @@
 import { useContext } from 'react';
 import { messageToSign } from "../lib/utils";
 import { getMetaMaskSigner } from '../lib/connections';
-import { WalletContext } from "../pages/_app";
+import { WalletContext } from '../contexts/WalletContext';
+
 
 export const useConnect = () => {
 
@@ -9,7 +10,7 @@ export const useConnect = () => {
 
   // we ask which account they want if they aren't a returning user (i.e. they've logged out)
   // we can also connect returningusers to update their jwt
-  const connect = async (returningUser=true, jwtExpired=false) => {
+  const connect = async (returningUser = true, jwtExpired = false): Promise<Boolean> => {
     try {
       const _signer = await getMetaMaskSigner(returningUser);
       const _address = await _signer.getAddress();
@@ -36,14 +37,20 @@ export const useConnect = () => {
           })
         });
 
+        if (rSig.status !== 200) {
+          return false;
+        }
+
         const { token } = await rSig.json();
         localStorage.setItem('jwt', token);
       }
 
       setSigner(_signer);
       setAddress(_address);
+      return true;
     } catch (e) {
       console.log(e)
+      return false;
     }
   }
 

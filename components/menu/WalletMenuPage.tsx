@@ -1,12 +1,11 @@
 import { DisplaySettings, CameraAlt, CloudOff, AccountBalanceWallet } from "@mui/icons-material";
-import { Tooltip, Typography, Box, Stack, Link } from "@mui/material";
+import { Tooltip, Typography, Box, Stack, Link, Button } from "@mui/material";
 import router from "next/router";
 import { useContext, useState } from "react";
 import { useConnect } from "../../hooks/useConnect";
 import { useNickname } from "../../hooks/useNickname";
 import { truncateText, getShortAddress } from "../../lib/utils";
-import { WalletContext } from "../../pages/_app";
-import { HodlButton } from "../HodlButton";
+import { WalletContext } from '../../contexts/WalletContext';
 
 export const WalletMenuPage = ({ closeMenu, setMenuPage, setNicknameModalOpen, setProfilePictureModalOpen, showBack=true }) => {
     const [connect, disconnect] = useConnect();
@@ -94,7 +93,7 @@ export const WalletMenuPage = ({ closeMenu, setMenuPage, setNicknameModalOpen, s
                         
                     </Box>}
             </Box>
-            { showBack && <HodlButton
+            { showBack && <Button
                 color="secondary"
                 onClick={(e) => {
                     e.stopPropagation();
@@ -106,9 +105,9 @@ export const WalletMenuPage = ({ closeMenu, setMenuPage, setNicknameModalOpen, s
                     flexBasis: 'auto'
                 }}
             >Back
-            </HodlButton>
+            </Button>
             }
-            {!showBack && <HodlButton
+            {!showBack && <Button
                 color="secondary"
                 onClick={(e) => {
                     e.stopPropagation();
@@ -133,7 +132,7 @@ export const WalletMenuPage = ({ closeMenu, setMenuPage, setNicknameModalOpen, s
                         {buttonText()}
                     </Typography>
                 </Stack>
-            </HodlButton>}
+            </Button>}
         </Box>
     )
 }

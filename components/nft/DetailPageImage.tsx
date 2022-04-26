@@ -38,55 +38,55 @@ export const DetailPageImage = ({ token, folder = 'nfts' }) => {
         <>
             <Modal open={assetModalOpen} onClose={() => { setAssetModalOpen(false) }}>
                 <>
-                    {assetType(token) === 'gif' && <HodlVideo sx={{
+                    {assetType(token) === 'gif' && <HodlVideo 
+                    sx={{
                         pointerEvents: 'none',
                         justifyContent: 'center',
                         alignItems: 'center',
-                        height: '100%',
                         video: {
-                            width: 'fit-content',
-                            height: 'fit-content',
+                            height: '66vh',
+                            width: '66vw',
+                            objectFit: 'scale-down',
                         }
                     }}
                         cid={token?.image} transformations={token?.filter} gif={true} />}
-                    {assetType(token) === 'video' && <HodlVideo sx={{
+                    {assetType(token) === 'video' && <HodlVideo 
+                    sx={{
                         pointerEvents: 'none',
                         justifyContent: 'center',
                         alignItems: 'center',
-                        height: '100%',
                         video: {
-                            width: 'fit-content',
-                            height: 'fit-content',
+                            height: '66vh',
+                            width: '66vw',
+                            objectFit: 'scale-down',
                         }
                     }}
 
                         cid={token?.image} directory={'video/upload/nfts/'} />}
-                    {assetType(token) === 'image' && <HodlImage2 sx={{
-                        pointerEvents: 'none',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        height: '100%',
-                        img: {
-                            width: 'fit-content',
-                            height: 'fit-content',
-                        }
-                    }}
+                    {assetType(token) === 'image' && <HodlImage2
+                        imgSizes="66vw"
+                        sx={{
+                            pointerEvents: 'none',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            img: {
+                                height: '66vh',
+                                width: '66vw',
+                                objectFit: 'scale-down',
+                                "&.lowRes": {
+                                    display: 'none'
+                                }
+                            }
+                        }}
                         image={token?.image} effect={token?.filter} />}
                 </>
             </Modal>
-            <Head>
-                {
-                    token && token.mimeType === 'image/gif' ?
-                        <link rel="preload" href={createCloudinaryUrl('image', 'upload', null, folder, token.image, 'mp4')} />
-                        : <link rel="preload" href={createCloudinaryUrl('image', 'upload', `f_auto,c_limit,w_${calcImageWidthWeNeed()},q_auto`, folder, token.image)} />
-                }
-            </Head>
             <Box>
                 <Box onClick={() => setAssetModalOpen(true)}>
                     {assetType(token) === 'gif' && <HodlVideo cid={token?.image} transformations={token?.filter} gif={true} />}
                 </Box>
                 <Box onClick={() => setAssetModalOpen(true)}>
-                    {assetType(token) === 'image' && <HodlImage2 image={token?.image} effect={token?.filter} />}
+                    {assetType(token) === 'image' && <HodlImage2 image={token?.image} effect={token?.filter} fit="scale-down" />}
                 </Box>
                 {assetType(token) === 'video' && <HodlVideo cid={token?.image} transformations={token?.filter} />}
             </Box>

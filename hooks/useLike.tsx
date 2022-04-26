@@ -1,7 +1,7 @@
 import { useState, useContext } from 'react';
 import useSWR from 'swr';
 import { hasExpired } from '../lib/utils';
-import { WalletContext } from "../pages/_app";
+import { WalletContext } from '../contexts/WalletContext';
 import { useConnect } from './useConnect';
 
 export const useLike = (tokenId) => {
@@ -20,10 +20,13 @@ export const useLike = (tokenId) => {
       .then(json => Boolean(json.likes)));
 
   const toggleLike = async () => {
+
     if (hasExpired(localStorage.getItem('jwt'))) {
-      await connect(true, true);
+      if (!(await connect(true, true))) {
+        return; // couldn't connect
+      }
     }
-    
+
     mutateLikesCount(old => userLikesThisToken ? old-1 : old+1, { revalidate: false }); // TODO: Try to do this before the network call
     mutateUserLikesThisToken(old => !old, { revalidate: false })
 

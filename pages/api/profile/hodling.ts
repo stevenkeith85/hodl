@@ -62,7 +62,7 @@ route.get(async (req, res) => {
 
     const data = await getHodling(address, offset, limit)
 
-    return res.status(200).json({ data });
+    return res.status(200).json(data);
 });
 
 

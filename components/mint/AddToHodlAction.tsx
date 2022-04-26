@@ -1,5 +1,5 @@
-import { Typography, Stack } from '@mui/material';
-import { HodlButton, SuccessModal } from '../index';
+import { Typography, Stack, Button } from '@mui/material';
+import { SuccessModal } from '../index';
 import { Rocket } from '@mui/icons-material';
 import { FC, useState } from 'react';
 import { useSnackbar } from 'notistack';
@@ -58,13 +58,13 @@ export const AddToHodlAction: FC<MintProps> = ({
         <Typography variant="h2">Hodl My Moon</Typography>
         <Typography sx={{ span: { fontWeight: 600 } }}>You can now add your token <span>{formData.name}</span> to HodlMyMoon</Typography>
         <div>
-          <HodlButton
+          <Button
             onClick={hodl}
             disabled={stepComplete === 3 || loading}
             startIcon={<Rocket fontSize="large" />}
           >
             Add Token
-          </HodlButton>
+          </Button>
         </div>
       </Stack>
     </>

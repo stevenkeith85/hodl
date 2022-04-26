@@ -1,28 +1,12 @@
 import { Upload } from "@mui/icons-material";
-import { Stack } from "@mui/material";
-import { HodlButton } from "../HodlButton";
+import { Button, Stack } from "@mui/material";
 import { FC } from "react";
 import { useSnackbar } from 'notistack';
 import { useIpfsUpload } from "../../hooks/useIpfsUpload";
 import { MintProps } from "./models";
 import { Form, Formik } from "formik";
-import * as yup from 'yup';
 import { HodlFormikTextField } from "../formFields/HodlFormikTextField";
-
-const validationSchema = yup.object({
-  name: yup
-    .string()
-    .ensure()
-    .min(1)
-    .max(100)
-    .required(),
-  description: yup
-    .string()
-    .ensure()
-    .min(1)
-    .max(1000)
-    .required(),
-});
+import { uploadToIPFSValidationSchema } from "../../validationSchema/uploadToIPFS";
 
 export const UploadToIpfsAction: FC<MintProps> = ({
   formData,
@@ -67,7 +51,7 @@ export const UploadToIpfsAction: FC<MintProps> = ({
         name: formData.name,
         description: formData.description
       }}
-      validationSchema={validationSchema}
+      validationSchema={uploadToIPFSValidationSchema}
       onSubmit={ipfsUpload}
     >
       {({ isSubmitting }) => (
@@ -88,13 +72,13 @@ export const UploadToIpfsAction: FC<MintProps> = ({
               disabled={stepComplete === 1}
             />
             <div>
-              <HodlButton
+              <Button
                 startIcon={<Upload fontSize="large" />}
                 type="submit"
                 disabled={isSubmitting || stepComplete === 1}
               >
                 Upload To IPFS
-              </HodlButton>
+              </Button>
             </div>
           </Stack>
         </Form>

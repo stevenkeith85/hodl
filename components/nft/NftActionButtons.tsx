@@ -1,10 +1,9 @@
-import { Stack } from "@mui/material";
+import { Button, Stack, TextField } from "@mui/material";
 import { useContext, useState } from "react";
 import { buyNft, delistNft, listNftOnMarket } from "../../lib/nft";
-import { WalletContext } from "../../pages/_app";
-import { HodlButton } from "../HodlButton";
+import { WalletContext } from '../../contexts/WalletContext';
 import SellIcon from '@mui/icons-material/Sell';
-import { HodlModal, HodlTextField, RocketTitle, SuccessModal } from "../index";
+import { HodlModal, RocketTitle, SuccessModal } from "../index";
 import { useRouter } from "next/router";
 import { useSnackbar } from 'notistack';
 
@@ -51,12 +50,12 @@ export const NftActionButtons = ({ nft }) => {
                     <RocketTitle 
                         title="List this token on the market" 
                     />
-                    <HodlTextField
+                    <TextField
                         label="Price (Matic)"
                         value={price}
                         onChange={(e) => setPrice(e.target.value)}
                     />
-                    <HodlButton
+                    <Button
                         onClick={async () => {
                             try {
                                 enqueueSnackbar('Please Approve Transaction in Wallet', { variant: "info" });
@@ -73,7 +72,7 @@ export const NftActionButtons = ({ nft }) => {
                         disabled={!price}
                     >
                         Add
-                    </HodlButton>
+                    </Button>
                 </Stack>
             </HodlModal>
 
@@ -105,7 +104,7 @@ export const NftActionButtons = ({ nft }) => {
                 >
                     {
                         Boolean(address) && Boolean(nft?.forSale) && !isOwner() &&
-                        <HodlButton
+                        <Button
                             startIcon={<SellIcon fontSize="large" />}
                             onClick={async () => {
                                 try {
@@ -119,13 +118,13 @@ export const NftActionButtons = ({ nft }) => {
                                 }
                             }}>
                             Buy NFT
-                        </HodlButton>
+                        </Button>
                     }
                     {isOwner() &&
                         <>
                             {
                                 nft?.forSale ? (
-                                    <HodlButton
+                                    <Button
                                         startIcon={<SellIcon fontSize="large" />}
                                         onClick={async () => {
                                             try {
@@ -139,13 +138,13 @@ export const NftActionButtons = ({ nft }) => {
                                             }
                                         }}>
                                         Delist NFT
-                                    </HodlButton>
+                                    </Button>
                                 ) : (
-                                    <HodlButton
+                                    <Button
                                         startIcon={<SellIcon fontSize="large" />}
                                         onClick={() => setListModalOpen(true)}>
                                         List NFT
-                                    </HodlButton>
+                                    </Button>
                                 )
                             }
                         </>

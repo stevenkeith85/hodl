@@ -7,18 +7,17 @@ class MyDocument extends Document {
 
   render() {
     return (
-      <Html>
+      <Html lang='en'>
         <Head>
+          <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka&display=swap" />
+          <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,500&display=swap" />
           <link rel="preconnect" href="https://res.cloudinary.com/" />
-          
 
           {/* PWA primary color */}
           <meta name="theme-color" content={theme.palette.primary.main} />
-          {/* <link rel="shortcut icon" href="/static/favicon.ico" /> */}
-          <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka&display=swap" />
-          <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,500" />
-          
+
           {/* Inject MUI styles first to match with the prepend: true configuration. */}
+          {/* @ts-ignore */}
           {this.props.emotionStyleTags}
         </Head>
         <body>
@@ -66,6 +65,7 @@ MyDocument.getInitialProps = async (ctx) => {
     originalRenderPage({
       enhanceApp: (App) =>
         function EnhanceApp(props) {
+          {/* @ts-ignore */ }
           return <App emotionCache={cache} {...props} />;
         },
     });

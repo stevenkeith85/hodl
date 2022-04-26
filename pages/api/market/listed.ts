@@ -27,8 +27,8 @@ const getItems = async (data) => {
 
         return {
             tokenId: token.tokenId,
-            name: token.name,
-            description: token.description,
+            // name: token.name,
+            // description: token.description,
             image: ipfsUriToCloudinaryUrl(token.image),
 
             price: listing ? ethers.utils.formatUnits(listing.price.toString(), 'ether') : '',
@@ -70,7 +70,7 @@ route.get(async (req, res) => {
     }
 
     const data = await getListed(offset, limit);
-    return res.status(200).json({ data });
+    return res.status(200).json(data);
 });
 
 

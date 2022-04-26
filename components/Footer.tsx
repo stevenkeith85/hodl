@@ -5,7 +5,7 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import { Logo } from "./Logo";
 import { HodlLink } from "./HodlLink";
 import { useContext } from "react";
-import { WalletContext } from "../pages/_app";
+import { WalletContext } from '../contexts/WalletContext';
 
 
 const Footer = () => {
@@ -87,7 +87,7 @@ const Footer = () => {
                     paddingBottom: {
                         xs: 2,
                     },
-                    color: grey[600]
+                    color: grey[800]
                 }}
             >
                 <Stack

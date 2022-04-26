@@ -1,6 +1,6 @@
 import { Button, Menu, MenuItem, Stack, Tooltip, Typography } from "@mui/material";
 import { useContext, useEffect, useRef, useState } from "react";
-import { WalletContext } from "../pages/_app";
+import { WalletContext } from '../contexts/WalletContext';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { useRouter } from "next/router";
 import { getShortAddress, truncateText} from "../lib/utils";

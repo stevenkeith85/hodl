@@ -20,9 +20,8 @@ export const AssetPreview: FC<MintProps> = ({
         sx={{
           border: !fileName ? `1px solid #d0d0d0` : 'none',
           flexGrow: 1,
-          minHeight: 400,
-          // maxHeight: '50vh',
-          borderRadius: `5px`,
+          minHeight: fileName ? 'auto' : 400,
+          borderRadius: 1,
           alignItems: 'center',
           justifyContent: 'center'
         }}>

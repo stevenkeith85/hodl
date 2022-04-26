@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import { hasExpired } from '../lib/utils';
-import { WalletContext } from "../pages/_app";
+import { WalletContext } from '../contexts/WalletContext';
 import { useConnect } from './useConnect';
 
 export const useFollow = (profileAddress) => {
@@ -13,7 +13,6 @@ export const useFollow = (profileAddress) => {
     (url, address, profileAddress) => fetch(`${url}?address1=${address}&address2=${profileAddress}`)
       .then(r => r.json())
       .then(json => Boolean(json.follows)),
-    { dedupingInterval: 60000 * 30 }, // don't check this more than once every 30 mins as follows rarely change, and we already invalidate the cache if they do
   );
 
   const follow = async () => {
@@ -22,16 +21,14 @@ export const useFollow = (profileAddress) => {
     }
 
     mutate([`/api/follow/followersCount`, profileAddress],
-      async count => {
-        console.log('count', count)
-        return isFollowing ? count - 1 : count + 1
+      async ({count}) => {
+        return ({count: isFollowing ? count - 1 : count + 1})
       },
       { revalidate: false });
 
     mutate([`/api/follow/followers`, profileAddress],
-      async followers => {
-        console.log('followers', followers);
-        return isFollowing ? (followers || []).filter(a => a !== address) : [...(followers || []), address]
+      async ({followers}) => {
+        return ({followers: isFollowing ? (followers || []).filter(a => a !== address) : [...(followers || []), address]})
       },
       { revalidate: false });
 

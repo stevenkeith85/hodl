@@ -1,13 +1,12 @@
-import { Stack, Typography } from "@mui/material"
+import { Button, Stack, Typography } from "@mui/material"
 import Link from "next/link"
 import { useContext } from "react"
 import { 
-    HodlButton,
     HodlModal,
     RocketTitle } 
 from "./index"
 
-import { WalletContext } from "../pages/_app";
+import { WalletContext } from '../contexts/WalletContext';
 
 export const SuccessModal = ({modalOpen, setModalOpen, message, tab=1}) => {
     const { nickname, address } = useContext(WalletContext);
@@ -24,9 +23,9 @@ export const SuccessModal = ({modalOpen, setModalOpen, message, tab=1}) => {
             </Typography>
             <div>
             <Link href={`/profile/${nickname || address}?tab=${tab}`} passHref>
-              <HodlButton>
+              <Button>
                 View Profile
-              </HodlButton>
+              </Button>
             </Link>
             </div>
             

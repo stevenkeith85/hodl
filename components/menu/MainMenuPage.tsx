@@ -1,12 +1,11 @@
 import { AccountBalanceWallet } from "@mui/icons-material";
-import { Tooltip, Typography, Box, Stack } from "@mui/material";
+import { Tooltip, Typography, Box, Stack, Button } from "@mui/material";
 import Link from "next/link";
 import { useContext, useEffect } from "react";
 import { useConnect } from "../../hooks/useConnect";
 import { useNickname } from "../../hooks/useNickname";
 import { truncateText, getShortAddress } from "../../lib/utils";
-import { WalletContext } from "../../pages/_app";
-import { HodlButton } from "../HodlButton";
+import { WalletContext } from '../../contexts/WalletContext';
 
 export const MainMenuPage = ({ pages, closeMenu, router, setMenuPage }) => {
     const [_update, _apiError, _setApiError, nickname] = useNickname();
@@ -80,7 +79,7 @@ export const MainMenuPage = ({ pages, closeMenu, router, setMenuPage }) => {
                     ))}
                 </Stack>
             </Box>
-            <HodlButton
+            <Button
                 color="secondary"
                 onClick={(e) => {
                     e.stopPropagation();
@@ -108,7 +107,7 @@ export const MainMenuPage = ({ pages, closeMenu, router, setMenuPage }) => {
                         {buttonText()}
                     </Typography>
                 </Stack>
-            </HodlButton>
+            </Button>
         </Box>
     )
 }

@@ -8,6 +8,9 @@ import useSWR from "swr";
 import { HodlImage2 } from "./HodlImage2";
 import { HodlVideo } from "./HodlVideo";
 import { memo } from "react";
+import theme from "../theme";
+
+
 
 const NftAvatar = ({ token, size }: any) => {
     const isGif = (mimeType) => mimeType && mimeType.indexOf('gif') !== -1;
@@ -21,18 +24,25 @@ const NftAvatar = ({ token, size }: any) => {
                 sx={{
                     height: size,
                     width: size,
+                    transition: theme.transitions.create(['background-color', 'transform'], {
+                        duration: theme.transitions.duration.standard,
+                    }),
+                    '&:hover': {
+                        transform: 'scale(1.2)',
+                    }
                 }}>
                 {isImage(token.mimeType) && !isGif(token.mimeType) &&
                     <HodlImage2
                         image={token?.image.split('//')[1]}
-                        effect={`w_200,h_200${token?.filter ? ',' + token.filter : ''},ar_1.0,c_fill,r_max`}
-                        imgSizes={`${size + 10}px`}
+                        effect={`w_${size},h_${size}${token?.filter ? ',' + token.filter : ''},ar_1.0,c_fill,r_max`}
+                        imgSizes={`${size}px`}
                     />}
                 {isImage(token.mimeType) && isGif(token.mimeType) &&
                     <HodlVideo
                         gif={true}
                         cid={token?.image.split('//')[1]}
                         transformations={`w_200,h_200${token?.filter ? ',' + token.filter : ''},ar_1.0,c_fill,r_max`}
+                        square={true}
                     />}
                 {isVideo(token.mimeType) &&
                     <HodlVideo
@@ -40,6 +50,7 @@ const NftAvatar = ({ token, size }: any) => {
                         cid={token?.image.split('//')[1]}
                         transformations={`w_200,h_200${token?.filter ? ',' + token.filter : ''},ar_1.0,c_fill,r_max`}
                         onlyPoster={true}
+                        square={true}
                     />}
             </Avatar>
         </Link>

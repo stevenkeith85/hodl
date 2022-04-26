@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import { hasExpired, trim } from '../lib/utils';
-import { WalletContext } from "../pages/_app";
+import { WalletContext } from '../contexts/WalletContext';
 import { useConnect } from './useConnect';
 
 export const useNickname = () => {

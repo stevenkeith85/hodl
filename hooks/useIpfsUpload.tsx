@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { hasExpired } from '../lib/utils';
 import { useConnect } from './useConnect';
 

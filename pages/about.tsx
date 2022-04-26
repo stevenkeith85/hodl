@@ -61,7 +61,6 @@ export default function About() {
                         <ol>
                             <li>Check the IPFS Image and Metadata </li>
                             <li>Check the selling history (if any) of the token</li>
-                            <li>Check the owner&apos;s activity.</li>
                             <li>Check for social validation </li>
                             <li>Do a Google image search</li>
                             <li>Check what you are getting (<Link href="#copyright">See Copyright section</Link>)</li>
@@ -78,7 +77,7 @@ export default function About() {
                             ml: 2
                         }
                     }}>
-                        When you buy an NFT you will get one of the following: (decided by the token author at mint time)
+                        When you buy an NFT you will get one of the following: (selected by the token author at mint time)
                         <ol>
                             <li>Only the token*</li>
                             <li>The token and a non-commercial license for the attached asset</li>
@@ -87,7 +86,7 @@ export default function About() {
 
                     </Alert>
                     <Typography mt={2} sx={{ span: { fontWeight: 600 } }}>
-                        * this could be used in creative ways such as identifying a character in a computer game.
+                        * this could be used in creative ways such as identifying a character in a computer game
                     </Typography>
                     <Typography mt={2} sx={{ span: { fontWeight: 600 } }}>
                         In addition to the above, by using this website token authors agree for the display and fair use of their token on Hodl My Moon (in general).

@@ -66,8 +66,7 @@ const Mint = () => {
             sx={{
               display: 'flex',
               flexDirection: 'column',
-              justifyContent: 'space-between',
-              paddingTop: 2,
+              paddingTop: 1,
               paddingBottom: {
                 xs: 4,
                 md: 0
@@ -114,7 +113,7 @@ const Mint = () => {
             }
             {
             !xs && activeStep < 3 && 
-            <Box paddingTop={6}>
+            <Box paddingTop={4}>
               <MintProgressButtonsMemo
                   activeStep={activeStep}
                   setActiveStep={setActiveStep}
@@ -125,7 +124,7 @@ const Mint = () => {
           </Grid>
           <Grid 
             item 
-            marginTop={2} 
+            marginTop={1} 
             xs={12} 
             md={6} 
             sx={{ 

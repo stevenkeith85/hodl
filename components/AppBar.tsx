@@ -8,7 +8,6 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import Container from '@mui/material/Container';
 import { useState, useContext, useEffect } from 'react';
-import { WalletContext } from '../pages/_app';
 import Link from 'next/link';
 import { Logo } from './Logo';
 
@@ -17,7 +16,8 @@ import { useRouter } from 'next/router';
 import { MobileMenu } from './MobileMenu';
 import { AccountBalanceWallet, AccountCircle, Spa, Storefront } from '@mui/icons-material';
 import { useConnect } from '../hooks/useConnect';
-import useSWR from 'swr';
+import { WalletContext } from '../contexts/WalletContext';
+import { useNickname } from '../hooks/useNickname';
 
 
 const ResponsiveAppBar = () => {
@@ -49,11 +49,7 @@ const ResponsiveAppBar = () => {
         },
     ]);
 
-    const { data: nickname } = useSWR(address ? [`/api/profile/nickname`, address] : null,
-        (url, query) => fetch(`${url}?address=${query}`)
-            .then(r => r.json())
-            .then(json => json.nickname))
-
+    const [_update, _apiError, _setApiError, nickname] = useNickname()
 
     useEffect(() => {
         const load = async () => {
@@ -163,6 +159,7 @@ const ResponsiveAppBar = () => {
                                     size="large"
                                     onClick={() => setMobileMenuOpen(prev => !prev)}
                                     color="inherit"
+                                    aria-label='Account Menu'
                                 >
                                     {mobileMenuOpen ? <CloseIcon /> : <AccountBalanceWallet />}
                                 </IconButton>
