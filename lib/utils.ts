@@ -2,19 +2,6 @@ export function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export const debounce = (func, wait, immediate) => {
-  let timeout;
-  return function () {
-    var context = this, args = arguments;
-    clearTimeout(timeout);
-    timeout = setTimeout(function () {
-      timeout = null;
-      if (!immediate) func.apply(context, args);
-    }, wait);
-    if (immediate && !timeout) func.apply(context, args);
-  };
-}
-
 export const hasExpired = jwt => {
   if (!jwt) {
     return true;
@@ -23,9 +10,6 @@ export const hasExpired = jwt => {
   return Date.now() >= (JSON.parse(atob(jwt.split('.')[1]))).exp * 1000
 }
 
-export const makeAddressBasedFetcher = key => (url, address) => fetch(`${url}?address=${address}`)
-  .then(r => r.json())
-  .then(json => json[key])
 
 export const imageFilters = [
   { code: null, name: 'original' },
@@ -49,7 +33,7 @@ export const createCloudinaryUrl = (assetType = "image", deliveryType = "upload"
   return `https://res.cloudinary.com/${cloudName}/${assetType}/${deliveryType}/${transformations ? transformations + '/' : ''}${environment}/${folder}/${cid}${ext ? '.' + ext : ''}`;
 }
 
-export const imageSizes = [400, 600, 800, 1000, 1200, 1400, 1600];
+export const imageSizes = [600, 800, 1000, 1200, 1400];
 
 export const getShortAddress = address => {
   return address?.slice(0, 2) + '..' + address?.slice(-4);

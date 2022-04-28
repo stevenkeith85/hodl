@@ -11,6 +11,7 @@ import { hasExpired } from "../lib/utils";
 import useSWRInfinite from 'swr/infinite'
 import InfiniteScroll from 'react-swr-infinite-scroll'
 import { HodlLoadingSpinner } from "./HodlLoadingSpinner";
+import SelectProfileNFT from "./SelectProfileNFT";
 
 
 export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePictureModalOpen, lim = 10 }) => {
@@ -25,13 +26,17 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
 
     const fetcher = async (key, offset, limit) => await fetch(`/api/profile/hodling?address=${address}&offset=${offset}&limit=${limit}`)
         .then(r => r.json())
-        .then(json => json.data);
 
     const swr = useSWRInfinite(getKey, fetcher, {
         dedupingInterval: 10000
     });
 
+    if (!swr.data) {
+        return null;
+      }
 
+
+      console.log(swr)
     if (swr?.error) {
         console.log('swr infinite error', swr.error)
         return null;
@@ -46,23 +51,16 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                 <Stack spacing={2} >
                     <RocketTitle title="Set Profile NFT" />
                     <Typography>Tired of looking a bit generic?</Typography>
-                    <Typography>Set a profile NFT instead</Typography>
                     <InfiniteScroll
                         swr={swr}
                         loadingIndicator={<HodlLoadingSpinner />}
                         isReachingEnd={swr => swr.data?.[0]?.items.length === 0 || swr.data?.[swr.data?.length - 1]?.items.length < lim}
                     >
                         {
-                            ({ items }) =>
-                                <NftList
+                            ({ items }) => 
+                                <SelectProfileNFT
                                     nfts={items}
-                                    showAvatar={false}
-                                    showTop={false}
-                                    showBottom={false}
-                                    gridColumns={{ xs: "repeat(3, 1fr)" }}
-                                    imgHeight={100}
                                     onClick={(tokenId) => setToken(tokenId)}
-                                    highlightNft={token}
                                 />
                         }
                     </InfiniteScroll>
@@ -93,7 +91,7 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                             }
                         }}
                     >
-                        Set Profile NFT
+                        Select
                     </Button>
                 </Stack>
             </HodlModal>

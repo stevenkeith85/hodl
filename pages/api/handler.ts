@@ -16,6 +16,8 @@ const client = Redis.fromEnv();
 
 // Comment out for development to save db calls
 const rateLimits = {
+  'POST:/api/mint/upload': 3,
+  'POST:/api/mint/ipfs': 1,
   // 'POST:/api/like/like': 10,
   // 'POST:/api/follow/follow': 10
 }
@@ -25,7 +27,9 @@ const isRateLimited = async (ip, routeKey, limit) => {
   const secondsBeforeExpires = 30;
 
   const key = `ping:${ip}:${routeKey}`;
-  if (client.setnx(key, limit)) {
+
+  const set = await client.setnx(key, limit)
+  if (set) {
     client.expire(key, secondsBeforeExpires)
   }
 

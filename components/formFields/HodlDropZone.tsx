@@ -1,15 +1,15 @@
 import { Box, Button, LinearProgress, Stack, Typography } from '@mui/material'
-import React, { useCallback } from 'react'
+import React from 'react'
 import { useDropzone } from 'react-dropzone'
 
 export const HodlDropzone = ({ onDrop, progress }) => {
     const validator = file => {
-        if (file.type.indexOf("image") !== -1 && file.size > 10485760 ) {
+        if (file.type.indexOf("image") !== -1 && file.size > 10 * 1024 * 1024 ) {
             return  {
                 code: "filesize-too-large",
                 message: `Images can be up to 10MB`
               };
-        } else if (file.type.indexOf("video") !== -1 && file.size > 104857600) {
+        } else if (file.type.indexOf("video") !== -1 && file.size > 100 * 1024 * 1024) {
             return  {
                 code: "filesize-too-large",
                 message: `Videos can be up to 100MB`
@@ -18,9 +18,10 @@ export const HodlDropzone = ({ onDrop, progress }) => {
 
         return null;
     }
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({ 
+    const { getRootProps, getInputProps } = useDropzone({ 
         onDrop, 
         maxFiles:1,
+        accept: ['image/*', 'video/*', 'audio/*'],
         validator
     })
 
@@ -45,10 +46,8 @@ export const HodlDropzone = ({ onDrop, progress }) => {
                 }}>
                 <input {...getInputProps()} />
                 <Stack spacing={2} sx={{ textAlign: 'center' }}>
-                    {isDragActive ?
-                        <Typography>Drop your file here</Typography> :
-                        <Typography>Drag &apos;n&apos; drop your file here, or</Typography>
-                    }
+                    <Typography>Drag &apos;n&apos; drop your file here</Typography>
+                    <Typography>Images up to 10MB; Audio/Video up to 100MB</Typography>
                     <div><Button>Browse Files</Button></div>
                 </Stack>
             </Box>

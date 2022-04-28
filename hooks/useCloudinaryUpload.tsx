@@ -7,6 +7,7 @@ export const useCloudinaryUpload = () => {
   const previousFile = useRef(null);
   const [connect] = useConnect();
 
+  const [error, setError] = useState('');
   const [progress, setProgress] = useState(0);
 
   const uploadToCloudinary = async (asset) => {
@@ -22,9 +23,8 @@ export const useCloudinaryUpload = () => {
       await connect(true, true);
     }
 
-    let r;
     try {
-      r = await axios.post(
+      const r = await axios.post(
         '/api/mint/upload',
         data,
         {
@@ -40,20 +40,21 @@ export const useCloudinaryUpload = () => {
           }
         }
       )
-    } catch (e) {
-      return { success: false, fileName: null, mimeType: null };  
-    }
-    
-    if (r.status === 200) {
       const { fileName, mimeType } = r.data;
       previousFile.current = fileName;
-      return { success: true, fileName, mimeType };
-    } else if (r.status === 403) {
-      await connect(false);
-    }
 
-    return { success: false, fileName: null, mimeType: null };
+      return { success: true, fileName, mimeType };
+    } catch (error) {
+      if (error.response.status === 400 || error.response.status === 429) {
+        const { message } = error.response.data;
+        setError(message);
+      } else if (error.response.status === 403) {
+        await connect(false);
+      } 
+
+      return { success: false, fileName: null, mimeType: null };
+    }
   }
 
-  return [uploadToCloudinary, progress];
+  return [uploadToCloudinary, progress, error, setError];
 }

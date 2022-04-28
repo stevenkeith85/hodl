@@ -115,6 +115,7 @@ const Mint = () => {
             !xs && activeStep < 3 && 
             <Box paddingTop={4}>
               <MintProgressButtonsMemo
+                  loading={loading}
                   activeStep={activeStep}
                   setActiveStep={setActiveStep}
                   stepComplete={stepComplete}
@@ -131,6 +132,7 @@ const Mint = () => {
               paddingLeft: { md: 1 } 
             }}>
             <AssetPreview
+              loading={loading}
               formData={formData}
               setFormData={setFormData}
               setLoading={setLoading}

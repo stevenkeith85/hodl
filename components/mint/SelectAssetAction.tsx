@@ -1,23 +1,29 @@
-import { Button, Stack, Typography, CircularProgress, LinearProgress } from "@mui/material";
-import { FC, useCallback } from "react";
+import { Stack } from "@mui/material";
+import { FC, useCallback, useEffect } from "react";
 import { FilterButtons } from "./FilterButtons";
 import { useSnackbar } from 'notistack';
 import { useCloudinaryUpload } from "../../hooks/useCloudinaryUpload";
 import { MintProps } from "./models";
-import { uploadToCloudinaryValidationSchema } from "../../validationSchema/uploadToCloudinary";
-import { Field, Form, Formik } from "formik";
-import { TextField } from 'formik-mui';
+import { Form, Formik } from "formik";
 import { HodlDropzone } from "../formFields/HodlDropZone";
 
 export const SelectAssetAction: FC<MintProps> = ({
-  loading,
   setLoading,
   formData,
   setFormData,
   setStepComplete
 }: MintProps) => {
   const { enqueueSnackbar } = useSnackbar();
-  const [uploadToCloudinary, progress] = useCloudinaryUpload();
+  const [uploadToCloudinary, progress, error, setError] = useCloudinaryUpload();
+
+  useEffect(() => {
+    if (error !== '') {
+        enqueueSnackbar(error, { variant: "error" });
+        // @ts-ignore
+        setError('');
+    }
+    // @ts-ignore
+}, [error])
 
   const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
     if (rejectedFiles.length === 1) {
@@ -46,10 +52,8 @@ export const SelectAssetAction: FC<MintProps> = ({
       enqueueSnackbar('Asset ready for departure', { variant: "success" });
       setStepComplete(0);
     } else {
-      enqueueSnackbar('Please try again', { variant: "warning" });
+      setLoading(false);
     }
-
-    setLoading(false);
   }
 
   return (

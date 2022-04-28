@@ -8,13 +8,18 @@ interface MulterRequest extends HodlApiRequest {
 
 const route = apiRoute();
 
+
 route.post(async (req: MulterRequest, res: NextApiResponse) => {
   if (!req.address) {
     return res.status(403).json({ message: "Not Authenticated" });
   }
 
-  await uploadToCloudinary(req, res);
-
+  try {
+    await uploadToCloudinary(req, res);
+  } catch (e) {
+    return res.status(400).json({message: e.message})
+  }
+  
   if (req?.body?.fileUrl) {
     await removeFromCloudinary(req, res);
   } 

@@ -1,12 +1,37 @@
 import { Box, Skeleton } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import Head from "next/head";
+import { useEffect, useRef } from "react";
 import { createCloudinaryUrl } from "../lib/utils";
 
-export const HodlVideo = ({ cid, directory = 'nfts', gif = false, controls = true, onlyPoster = false, transformations = null, sx = {}, onLoad = null, pauseWhenOffScreen = true, square=false}) => {
-    const asset = `${createCloudinaryUrl(gif ? 'image' : 'video', 'upload', transformations, directory, cid)}`
-    const video = useRef(null);
+interface HodlVideoProps {
+    cid: string;
+    folder?: string;
+    transformations?: string;
+    sx?: object;
+    controls?: boolean;
+    onlyPoster?: boolean;
+    pauseWhenOffScreen?: boolean;
+    gif?: boolean;
+    height?: string;
+    preload?: string,
+    onLoad?: Function;
+}
 
-    const [videoLoaded, setVideoLoaded] = useState(false);
+export const HodlVideo = ({
+    cid,
+    folder = 'nfts',
+    transformations = null,
+    sx = {},
+    controls = true,
+    onlyPoster = false,
+    pauseWhenOffScreen = true,
+    gif = false,
+    height = 'auto',
+    preload="auto",
+    onLoad = null,
+}: HodlVideoProps) => {
+    const asset = `${createCloudinaryUrl(gif ? 'image' : 'video', 'upload', transformations, folder, cid)}`
+    const video = useRef(null);
 
     useEffect(() => {
         if (pauseWhenOffScreen && !gif) {
@@ -27,37 +52,36 @@ export const HodlVideo = ({ cid, directory = 'nfts', gif = false, controls = tru
     }, [video?.current])
 
     return (
+        <>
         <Box sx={{
             display: 'flex',
-            justifyContent: 'left',
-            borderRadius: 1,
-            width: `100%`,
-            height: `100%`,
-            position: 'relative',
             video: {
-                maxWidth: `100%`,
-                objectFit: "cover",
-                objectPosition: 'center',
+                objectFit: 'cover',
+                objectPosition: 'top',
                 borderRadius: 1,
             },
             ...sx
         }}>
+            <Skeleton variant="rectangular" width="100%" height={height}></Skeleton>
             <video
-                ref={video}
                 onLoadedData={() => {
-                    setVideoLoaded(true);
                     if (onLoad) {
+                        console.log('calling onload')
                         onLoad()
                     }
                 }
                 }
+                preload={preload}
+                width={`100%`}
+                height={height}
+                ref={video}
                 autoPlay={gif}
                 loop={gif}
                 muted={gif}
                 controls={!gif && controls}
                 controlsList="nodownload"
                 poster={gif ? null : `${asset}.jpg`}>
-                {Boolean(!onlyPoster) && (<>
+                {!onlyPoster && (<>
                     <source type="video/mp4" src={`${asset}.mp4`} />
                     <source type="video/webm" src={`${asset}.webm`} />
                     Your browser does not support HTML5 video tag.
@@ -65,5 +89,6 @@ export const HodlVideo = ({ cid, directory = 'nfts', gif = false, controls = tru
                 </>)}
             </video>
         </Box>
+        </>
     )
 }

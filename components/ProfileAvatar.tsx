@@ -5,20 +5,18 @@ import {
 } from "@mui/material";
 import { getShortAddress, truncateText } from "../lib/utils";
 import useSWR from "swr";
-import { HodlImage2 } from "./HodlImage2";
+import { HodlImage } from "./HodlImage";
 import { HodlVideo } from "./HodlVideo";
 import { memo } from "react";
 import theme from "../theme";
 
-
-
-const NftAvatar = ({ token, size }: any) => {
+export const NftAvatar = ({ token, size, navigate=true }: any) => {
     const isGif = (mimeType) => mimeType && mimeType.indexOf('gif') !== -1;
     const isImage = (mimeType) => mimeType && mimeType.indexOf('image') !== -1;
     const isVideo = (mimeType) => mimeType && mimeType.indexOf('video') !== -1;
 
     return (
-        <Link href={`/nft/${token.tokenId}`}>
+        <Link href={ navigate ? `/nft/${token.tokenId}` : ''}>
             <Avatar
                 className="avatar"
                 sx={{
@@ -32,32 +30,32 @@ const NftAvatar = ({ token, size }: any) => {
                     }
                 }}>
                 {isImage(token.mimeType) && !isGif(token.mimeType) &&
-                    <HodlImage2
-                        image={token?.image.split('//')[1]}
-                        effect={`w_${size},h_${size}${token?.filter ? ',' + token.filter : ''},ar_1.0,c_fill,r_max`}
-                        imgSizes={`${size}px`}
+                    <HodlImage
+                        cid={token?.image.split('//')[1] || token?.image}
+                        effect={`ar_1.0,c_fill,r_max`}
+                        height={size}
+                        srcSetSizes={[Math.ceil(size), Math.ceil(size * 1.5), Math.ceil(size * 2), Math.ceil(size * 2.5)]} // we want it big enough for the scale effect
+                        sizes=""
                     />}
                 {isImage(token.mimeType) && isGif(token.mimeType) &&
                     <HodlVideo
                         gif={true}
-                        cid={token?.image.split('//')[1]}
-                        transformations={`w_200,h_200${token?.filter ? ',' + token.filter : ''},ar_1.0,c_fill,r_max`}
-                        square={true}
+                        cid={token?.image.split('//')[1] || token?.image}
+                        transformations={`w_${size},h_${size}${token?.filter ? ',' + token.filter : ''},ar_1.0,c_fill,r_max`}
                     />}
                 {isVideo(token.mimeType) &&
                     <HodlVideo
                         controls={false}
-                        cid={token?.image.split('//')[1]}
-                        transformations={`w_200,h_200${token?.filter ? ',' + token.filter : ''},ar_1.0,c_fill,r_max`}
+                        cid={token?.image.split('//')[1] || token?.image }
+                        transformations={`w_${size},h_${size}${token?.filter ? ',' + token.filter : ''},ar_1.0,c_fill,r_max`}
                         onlyPoster={true}
-                        square={true}
                     />}
             </Avatar>
         </Link>
     )
 }
 
-const NftAvatarMemo = memo(NftAvatar, (prev: any, next: any) => prev.size === next.size && prev.token.tokenId === next.token.tokenId);
+export const NftAvatarMemo = memo(NftAvatar, (prev: any, next: any) => prev.size === next.size && prev.token.tokenId === next.token.tokenId);
 
 const AvatarText: React.FC<{ size: string, href?: string, children?: any, color: string }> = ({ size, href, children, color }) => {
     const mappings = {

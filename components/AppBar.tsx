@@ -91,7 +91,7 @@ const ResponsiveAppBar = () => {
                                 <Logo />
                                 <Box sx={{
                                     display: 'grid',
-                                    gap: 8,
+                                    gap: 4,
                                     gridTemplateColumns: `repeat(3, minmax(0, 1fr))`,
 
                                 }}>

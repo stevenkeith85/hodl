@@ -32,7 +32,7 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
       await client.hset(`user:${address}`, { 'nonce': newNonce });
       getNonceForAddress.delete(address);
 
-      const token = jwt.sign({ address }, process.env.JWT_SECRET, { expiresIn: 60 * 30 }); // expires every 30 mins
+      const token = jwt.sign({ address }, process.env.JWT_SECRET, { expiresIn: 60 * 60 }); // expires every 60 mins
 
       return res.status(200).json({ success: true, token, address, msg: "You are now logged in." });
     } else {

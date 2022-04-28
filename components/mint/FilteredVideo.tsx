@@ -1,15 +1,15 @@
-import { memo, useEffect } from 'react';
+import { memo } from 'react';
 import { Box } from '@mui/material';
 
 import { imageFilters } from '../../lib/utils';
 import { HodlVideo } from '../HodlVideo';
 
 // We load all the filter variations and hide with css
-export const FilteredVideo = ({ filter, fileName, setLoading }) => {
-
-  useEffect(() => {
-    console.log('effect changed')
-  }, [filter]);
+export const FilteredVideo = ({ 
+  filter, 
+  fileName, 
+  onLoad
+}) => {
 
   return (
     <>
@@ -20,7 +20,12 @@ export const FilteredVideo = ({ filter, fileName, setLoading }) => {
             display: filter === code ? 'flex' : 'none'
           }}
         >
-          <HodlVideo cid={fileName.split('/')[2]} directory="uploads" onLoad={() => setLoading(false)} transformations={code}/>
+          <HodlVideo 
+            cid={fileName.split('/')[2]} 
+            folder="uploads" 
+            transformations={code}
+            onLoad={onLoad}
+          />
         </Box>
       ))}
     </>

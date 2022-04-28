@@ -9,6 +9,23 @@ cloudinary.v2.config({
     api_secret: process.env.CLOUDINARY_SECRET,
 });
 
+const validator = (req, file, cb) => {    
+    const fileType = file.mimetype.split('/')[0];
+    const fileSize = parseInt(req.headers['content-length']);
+
+    const acceptedFileTypes = ['image', 'video', 'audio'];
+    if (acceptedFileTypes.indexOf(fileType) === -1) {
+        cb(new Error('Unsupported file type'));
+    }
+
+    if (fileType == "image" && fileSize > 10 * 1024 * 1024 ) {
+        cb(new Error('Images can be up to 10MB'));
+    } else if (fileSize > 100 * 1024 * 1024) {
+        cb(new Error('Videos or audio can be up to 100MB'));
+    }
+  
+    cb(null, true);
+  }
 
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary.v2,
@@ -29,9 +46,15 @@ const storage = new CloudinaryStorage({
       };
     },
   });
-
   
-const upload = multer({ storage }).single('asset');
+const upload = multer({ 
+    storage,
+    fileFilter: validator,
+    limits: { 
+        fields: 1,
+        files: 1
+    }
+}).single('asset');
 
 export const uploadToCloudinary = (req, res) : Promise<any> => {
     return new Promise((resolve, reject) => {

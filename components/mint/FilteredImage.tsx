@@ -1,10 +1,13 @@
 import { memo } from 'react';
 import { Box } from '@mui/material';
-import { HodlImage2 } from '../HodlImage2';
+import { HodlImage } from '../HodlImage';
 import { imageFilters } from '../../lib/utils';
 
-// We load all the image variations and hide with css
-export const FilteredImage = ({ filter, fileName, setLoading }) => {
+export const FilteredImage = ({ 
+  filter, 
+  fileName, 
+  onLoad
+}) => {
   return (
     <>
       {imageFilters.map(({ code, name }, index) => (
@@ -12,14 +15,15 @@ export const FilteredImage = ({ filter, fileName, setLoading }) => {
           key={index}
           sx={{
             display: filter === code ? 'flex' : 'none',
-            // maxHeight: '66vh'
           }}
         >
-          <HodlImage2
-            image={fileName.split('/')[2]}
+          <HodlImage
+            cid={fileName.split('/')[2]}
             folder="uploads"
             effect={code}
-            onLoad={() => setLoading(false)} />
+            onLoad={() => onLoad(false)}
+            sizes = "(max-width:899px) 100vw, (max-width:1199px) 50vw"
+          />
         </Box>
       ))}
     </>

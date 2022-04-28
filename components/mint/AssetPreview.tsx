@@ -1,4 +1,4 @@
-import { Stack, Typography } from "@mui/material";
+import { Skeleton, Stack, Typography } from "@mui/material";
 import { FC } from "react";
 import { FilteredImageMemo } from "./FilteredImage";
 import { FilteredVideoMemo } from "./FilteredVideo";
@@ -6,6 +6,7 @@ import { MintProps } from './models';
 
 
 export const AssetPreview: FC<MintProps> = ({ 
+  loading,
   formData,
   setLoading,
 }: MintProps) => {
@@ -16,6 +17,7 @@ export const AssetPreview: FC<MintProps> = ({
   
   return (
     <Stack spacing={2} sx={{ flexBasis: `50%`, justifyContent: 'center' }}>
+      
       <Stack
         sx={{
           border: !fileName ? `1px solid #d0d0d0` : 'none',
@@ -23,11 +25,24 @@ export const AssetPreview: FC<MintProps> = ({
           minHeight: fileName ? 'auto' : 400,
           borderRadius: 1,
           alignItems: 'center',
-          justifyContent: 'center'
+          justifyContent: 'center',
         }}>
-        {!fileName && <Typography>Preview will appear here</Typography>}
-        {fileName && isImage() && <FilteredImageMemo filter={filter} fileName={fileName} setLoading={setLoading} />}
-        {fileName && isVideo() && <FilteredVideoMemo filter={filter} fileName={fileName} setLoading={setLoading} />}
+        { !fileName && <Skeleton   
+                    variant="rectangular"
+                    width="100%"
+                    height={400} /> }
+        {fileName && isImage() && 
+          <FilteredImageMemo 
+            filter={filter} 
+            fileName={fileName} 
+            onLoad={setLoading} 
+          />}
+        {fileName && isVideo() && 
+          <FilteredVideoMemo 
+            filter={filter} 
+            fileName={fileName} 
+            onLoad={setLoading} 
+          />}
       </Stack>
     </Stack>
   )
