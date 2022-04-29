@@ -18,7 +18,6 @@ async function main() {
   const hodlNFTAsOwner = await upgrades.deployProxy(HodlNFTFactory, [hodlMarketAsOwner.address], { initializer: 'initialize' })
   await hodlNFTAsOwner.deployed();
 
-  console.log('NFT PROXY LINKED TO MARKET', hodlMarketAsOwner.address);
   console.log('NFT PROXY DEPLOYED AT     ', hodlNFTAsOwner.address);
 }
 

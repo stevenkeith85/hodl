@@ -9,7 +9,8 @@ export const FilterButtons = ({ formData, setFormData }) => (
       gridTemplateColumns: '1fr 1fr 1fr'
     }}>
     {imageFilters.map(({ code, name }, index) => (
-      <Button 
+      <Button
+        disabled={!formData.mimeType || formData.mimeType.indexOf('image') === -1} 
         key={index} 
         sx={{ 
           textTransform: 'capitalize'

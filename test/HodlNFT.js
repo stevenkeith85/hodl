@@ -3,10 +3,9 @@ const { upgrades } = require("hardhat");
 const { BigNumber } = require("ethers");
 const fs = require('fs');
 const { getImplementationAddress } = require('@openzeppelin/upgrades-core');
-const dotenv = require('dotenv');
-dotenv.config({ path: '../.env' })
+const path = require('path')
+require('dotenv').config({ path: path.resolve(__dirname, '../.env.local') })
 
-const HodlNFTABI = JSON.parse(fs.readFileSync('artifacts/contracts/HodlNFT.sol/HodlNFT.json'));
 
 describe("HodlNft Contract", function () {
     let ownerAccount; // the account that will deploy the NFT and Market contracts
@@ -14,10 +13,12 @@ describe("HodlNft Contract", function () {
 
     let HodlMarketFactory; // Contract Factory for the market, with signer set as owner
     let HodlNFTFactory; // Contract Factory for the token, with signer set as owner;
-    
+
     let hodlMarketAsOwner; // Deployed Market Contract instance.
     let hodlNFTAsOwner; // Deployed NFT Contract Instance (via proxy) with the signer set as owner
     let hodlNFTAsUser; // Deployed NFT Contract Instance (via proxy) with the signer set as user
+
+    let mintFee;
 
 
     beforeEach(async () => {
@@ -33,6 +34,8 @@ describe("HodlNft Contract", function () {
         await hodlNFTAsOwner.deployed();
 
         hodlNFTAsUser = hodlNFTAsOwner.connect(userAccount);
+
+        mintFee = await hodlNFTAsUser.mintFee();
     });
 
     it('Should maintain the same proxy address when a new implementation is deployed', async function () {
@@ -42,7 +45,7 @@ describe("HodlNft Contract", function () {
         const HodlNFTFactoryNew = await ethers.getContractFactory("HodlNFT", ownerAccount);
         const hodlNFTAsOwnerNew = await upgrades.upgradeProxy(proxyAddress, HodlNFTFactoryNew);
         await hodlNFTAsOwnerNew.deployed();
-        
+
         const proxyAddressAfter = hodlNFTAsOwnerNew.address;
         const implAddressAfter = await getImplementationAddress(ethers.provider, hodlNFTAsOwnerNew.address);
 
@@ -58,7 +61,7 @@ describe("HodlNft Contract", function () {
 
     it("Should create a token and update mappings", async function () {
         const tokenUri = "ipfs://123456"
-        const tx = await hodlNFTAsUser.createToken(tokenUri);
+        const tx = await hodlNFTAsUser.createToken(tokenUri, { value: mintFee });
         await tx.wait();
 
         // The NFT should be created and assigned to the user
@@ -87,9 +90,90 @@ describe("HodlNft Contract", function () {
         expect(tokenMappingUpdatedEvents[0].args.tokenId).to.equal(1);
         expect(tokenMappingUpdatedEvents[0].args.fromTokens).to.eql([]);
         expect(tokenMappingUpdatedEvents[0].args.toTokens).to.eql([BigNumber.from(1)]);
-
     });
 
+    describe("mintFee", function () {
+        it("Should NOT create a token if NO mint fee is sent", async function () {
+            try {
+                const tokenUri = "ipfs://123456"
+                const tx = await hodlNFTAsUser.createToken(tokenUri);
+                await tx.wait();
+            } catch (e) {
+                expect(e.message).to.equal("VM Exception while processing transaction: reverted with reason string 'Mint Fee not sent'")
+            }
+        });
+
+
+        it("Should NOT create a token if value < mint fee is sent", async function () {
+            try {
+                const tokenUri = "ipfs://123456"
+                const tx = await hodlNFTAsUser.createToken(tokenUri, { value: mintFee.sub(1) });
+                await tx.wait();
+            } catch (e) {
+                expect(e.message).to.equal("VM Exception while processing transaction: reverted with reason string 'Mint Fee not sent'")
+            }
+        });
+
+
+        it("Should NOT create a token if value > mint fee is sent", async function () {
+            try {
+                const tokenUri = "ipfs://123456"
+                const tx = await hodlNFTAsUser.createToken(tokenUri, { value: mintFee.add(1) });
+                await tx.wait();
+            } catch (e) {
+                expect(e.message).to.equal("VM Exception while processing transaction: reverted with reason string 'Mint Fee not sent'")
+            }
+        });
+
+        it("Should send the mint fee to the contract owner", async function () {
+            const tokenUri = "ipfs://123456"
+
+            const ownerBeforeBalance = await ownerAccount.getBalance();
+            const tx = await hodlNFTAsUser.createToken(tokenUri, { value: mintFee });
+            await tx.wait();
+
+            const ownerAfterBalance = await ownerAccount.getBalance();
+            expect(ownerAfterBalance).to.equal(ownerBeforeBalance.add(mintFee))
+        });
+
+        
+        it("Should allow the contract owner to change the mint fee", async function () {
+            const tokenUri = "ipfs://123456"
+
+            const newMintFee = ethers.utils.parseEther("0.5");
+            await hodlNFTAsOwner.setMintFee(newMintFee)
+            
+            const ownerBeforeBalance = await ownerAccount.getBalance();
+            const tx = await hodlNFTAsUser.createToken(tokenUri, { value: newMintFee });
+            await tx.wait();
+
+            const ownerAfterBalance = await ownerAccount.getBalance();
+            expect(ownerAfterBalance).to.equal(ownerBeforeBalance.add(newMintFee))
+        });
+
+        it("Should allow the contract owner to set the mint fee to 0", async function () {
+            const tokenUri = "ipfs://123456"
+
+            const newMintFee = ethers.utils.parseEther("0");
+            await hodlNFTAsOwner.setMintFee(newMintFee)
+            
+            const ownerBeforeBalance = await ownerAccount.getBalance();
+            const tx = await hodlNFTAsUser.createToken(tokenUri);
+            await tx.wait();
+
+            const ownerAfterBalance = await ownerAccount.getBalance();
+            expect(ownerAfterBalance).to.equal(ownerBeforeBalance.add(newMintFee))
+        });
+
+        it("Should NOT allow anyone except the contract owner to change the mint fee", async function () {
+            try {
+                const newMintFee = ethers.utils.parseEther("0.5");
+                await hodlNFTAsUser.setMintFee(newMintFee)
+            } catch (e) {
+                expect(e.message).to.equal("VM Exception while processing transaction: reverted with reason string 'Ownable: caller is not the owner'")
+            }
+        });
+    });
 
     it("Should transfer a token between users and update mappings", async function () {
         expect(await hodlNFTAsOwner.addressToTokenIds(process.env.ACCOUNT1_PUBLIC_KEY, 0, 1)).to.eql([
@@ -100,7 +184,7 @@ describe("HodlNft Contract", function () {
         ])
 
         const tokenUri = "ipfs://123456"
-        const tx = await hodlNFTAsUser.createToken(tokenUri);
+        const tx = await hodlNFTAsUser.createToken(tokenUri, { value: mintFee });
         await tx.wait();
 
         // i.e. we get back a one element array with tokenId === 1, offset is 1, total items in collection is 1
@@ -152,19 +236,19 @@ describe("HodlNft Contract", function () {
 
 
     it("Should be able to iterate through the users tokens (in reverse), page by page", async function () {
-        const tx1 = await hodlNFTAsUser.createToken("ipfs://123");
+        const tx1 = await hodlNFTAsUser.createToken("ipfs://123", { value: mintFee });
         await tx1.wait();
 
-        const tx2 = await hodlNFTAsUser.createToken("ipfs://456");
+        const tx2 = await hodlNFTAsUser.createToken("ipfs://456", { value: mintFee });
         await tx2.wait();
 
-        const tx3 = await hodlNFTAsUser.createToken("ipfs://789");
+        const tx3 = await hodlNFTAsUser.createToken("ipfs://789", { value: mintFee });
         await tx3.wait();
 
-        const tx4 = await hodlNFTAsUser.createToken("ipfs://1011");
+        const tx4 = await hodlNFTAsUser.createToken("ipfs://1011", { value: mintFee });
         await tx4.wait();
 
-        const tx5 = await hodlNFTAsUser.createToken("ipfs://1213");
+        const tx5 = await hodlNFTAsUser.createToken("ipfs://1213", { value: mintFee });
         await tx5.wait();
 
         const [page, next, total] = await hodlNFTAsUser.addressToTokenIds(process.env.ACCOUNT1_PUBLIC_KEY, BigNumber.from(0), BigNumber.from(2));
@@ -196,19 +280,19 @@ describe("HodlNft Contract", function () {
 
 
     it("Should be reverted if asks for an offset outside array length", async function () {
-        const tx1 = await hodlNFTAsUser.createToken("ipfs://123");
+        const tx1 = await hodlNFTAsUser.createToken("ipfs://123", { value: mintFee });
         await tx1.wait();
 
-        const tx2 = await hodlNFTAsUser.createToken("ipfs://456");
+        const tx2 = await hodlNFTAsUser.createToken("ipfs://456", { value: mintFee });
         await tx2.wait();
 
-        const tx3 = await hodlNFTAsUser.createToken("ipfs://789");
+        const tx3 = await hodlNFTAsUser.createToken("ipfs://789", { value: mintFee });
         await tx3.wait();
 
-        const tx4 = await hodlNFTAsUser.createToken("ipfs://1011");
+        const tx4 = await hodlNFTAsUser.createToken("ipfs://1011", { value: mintFee });
         await tx4.wait();
 
-        const tx5 = await hodlNFTAsUser.createToken("ipfs://1213");
+        const tx5 = await hodlNFTAsUser.createToken("ipfs://1213", { value: mintFee });
         await tx5.wait();
 
         const [page, next, total] = await hodlNFTAsUser.addressToTokenIds(process.env.ACCOUNT1_PUBLIC_KEY, BigNumber.from(4), BigNumber.from(1));
@@ -236,7 +320,7 @@ describe("HodlNft Contract", function () {
 
 
     it("Should be pausable / unpausable by ONLY the owner, and token transfers/creation should be blocked when paused", async function () {
-        let tx = await hodlNFTAsUser.createToken("ipfs://123");
+        let tx = await hodlNFTAsUser.createToken("ipfs://123", { value: mintFee });
         await tx.wait();
 
         // user can't pause contract
@@ -288,7 +372,7 @@ describe("HodlNft Contract", function () {
         }
 
         // and token creation can resume once unpaused
-        tx = await hodlNFTAsUser.createToken("ipfs://123");
+        tx = await hodlNFTAsUser.createToken("ipfs://123", { value: mintFee });
         await tx.wait();
 
         const tokenMappingUpdatedEvents = await hodlNFTAsUser.queryFilter("TokenMappingUpdated")

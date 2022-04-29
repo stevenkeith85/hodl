@@ -1,9 +1,9 @@
 const { ethers, upgrades } = require("hardhat");
 const { getImplementationAddress } = require('@openzeppelin/upgrades-core');
-const dotenv = require('dotenv');
 const fs = require('fs');
 
-dotenv.config({ path: '../.env' })
+const dotenv = require('dotenv');
+dotenv.config({ path: '.env.local' })
 
 const HodlNFTProxy = JSON.parse(fs.readFileSync('./scripts/addresses.json')).HodlNFTProxy;
 
@@ -13,6 +13,7 @@ async function main() {
   const ownerAccount = new ethers.Wallet(process.env.ACCOUNT0_PRIVATE_KEY, ethers.provider);
 
   const HodlNFTFactoryNew = await ethers.getContractFactory("HodlNFT", ownerAccount);
+
   const hodlNFTAsOwnerNew = await upgrades.upgradeProxy(HodlNFTProxy, HodlNFTFactoryNew);
   await hodlNFTAsOwnerNew.deployed();
   

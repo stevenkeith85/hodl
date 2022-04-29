@@ -11,7 +11,6 @@ import "hardhat/console.sol";
 
 
 contract HodlMarket is ReentrancyGuardUpgradeable, OwnableUpgradeable {
-    address payable public marketOwner;
     uint256 public marketSaleFeeInPercent;
     uint256 public minListingPriceInMatic;
 
@@ -51,9 +50,8 @@ contract HodlMarket is ReentrancyGuardUpgradeable, OwnableUpgradeable {
          __ReentrancyGuard_init();
          __Ownable_init();
         
-        marketOwner = payable(msg.sender);
-        marketSaleFeeInPercent = 3;        // To be finalised
-        minListingPriceInMatic = 1 ether; // To be finalised
+        marketSaleFeeInPercent = 3;
+        minListingPriceInMatic = 1 ether;
     }
 
     // Returns the number of NFTs _address has currently listed on the market
@@ -199,7 +197,7 @@ contract HodlMarket is ReentrancyGuardUpgradeable, OwnableUpgradeable {
 
         assert(removedTokenFromAddress);
       
-        uint256 marketOwnerFee = mulDiv (marketSaleFeeInPercent, listings[tokenId].price, 100);
+        uint256 ownerFee = mulDiv (marketSaleFeeInPercent, listings[tokenId].price, 100);
         uint256 sellerFee = mulDiv((100 - marketSaleFeeInPercent) , listings[tokenId].price, 100);  
 
         emit TokenBought (
@@ -213,8 +211,8 @@ contract HodlMarket is ReentrancyGuardUpgradeable, OwnableUpgradeable {
 
         IERC721Upgradeable(tokenContract).transferFrom(address(this), msg.sender, tokenId);
 
-        (bool marketOwnerReceivedFee, ) = marketOwner.call{value: marketOwnerFee}("");
-        require(marketOwnerReceivedFee, "Could not send the market owner their fee");
+        (bool ownerReceivedFee, ) = owner().call{value: ownerFee}("");
+        require(ownerReceivedFee, "Could not send the owner their fee");
 
         (bool sellerReceivedFee, ) = sellerAddress.call{value: sellerFee}("");
         require(sellerReceivedFee, "Could not send the seller their fee");

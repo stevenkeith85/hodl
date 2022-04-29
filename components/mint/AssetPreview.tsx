@@ -1,5 +1,6 @@
 import { Skeleton, Stack, Typography } from "@mui/material";
 import { FC } from "react";
+import { HodlVideo } from "../HodlVideo";
 import { FilteredImageMemo } from "./FilteredImage";
 import { FilteredVideoMemo } from "./FilteredVideo";
 import { MintProps } from './models';
@@ -38,11 +39,18 @@ export const AssetPreview: FC<MintProps> = ({
             onLoad={setLoading} 
           />}
         {fileName && isVideo() && 
-          <FilteredVideoMemo 
-            filter={filter} 
-            fileName={fileName} 
-            onLoad={setLoading} 
-          />}
+          // Video transformations are too expensive on cloudinary
+          // <FilteredVideoMemo 
+          //   filter={filter} 
+          //   fileName={fileName} 
+          //   onLoad={setLoading} 
+          // />
+          <HodlVideo 
+            cid={fileName.split('/')[2]} 
+            folder="uploads" 
+            onLoad={setLoading}
+          />
+        }
       </Stack>
     </Stack>
   )

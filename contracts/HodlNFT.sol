@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.10;
 
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
@@ -8,15 +9,21 @@ import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 
 import "hardhat/console.sol";
 
-
-contract HodlNFT is ERC721URIStorageUpgradeable, OwnableUpgradeable, PausableUpgradeable {
+contract HodlNFT is
+    ReentrancyGuardUpgradeable,
+    ERC721URIStorageUpgradeable,
+    OwnableUpgradeable,
+    PausableUpgradeable
+{
     using CountersUpgradeable for CountersUpgradeable.Counter;
 
     CountersUpgradeable.Counter private _tokenIds;
-    address private _marketAddress;
+    address public marketAddress;
     mapping(address => uint256[]) private _addressToTokenIds;
 
-    event TokenMappingUpdated (
+    uint256 public mintFee;
+
+    event TokenMappingUpdated(
         address fromAddress,
         uint256[] fromTokens,
         address toAddress,
@@ -25,29 +32,42 @@ contract HodlNFT is ERC721URIStorageUpgradeable, OwnableUpgradeable, PausableUpg
     );
 
     function initialize(address _address) public initializer {
-         __ERC721_init("Hodl NFT", "HNFT");
-         __Ownable_init();
-         __Pausable_init();
-        
-        _marketAddress = _address;
+        __ReentrancyGuard_init();
+        __ERC721_init("Hodl NFT", "HNFT");
+        __Ownable_init();
+        __Pausable_init();
+
+        marketAddress = _address;
+        mintFee = 1 ether;
     }
 
-    function marketAddress() public view returns (address) {
-        return _marketAddress;
+    function setMintFee(uint256 _mintFee) public onlyOwner {
+        mintFee = _mintFee;
     }
 
     // e.g. offset of 0, limit of 10, total items of 100
-    // we return [ [0 ->9], 0 + 10, 100 ]
-    function addressToTokenIds(address _address, uint256 offset, uint256 limit)
+    // we return [ [0 -> 9], 0 + 10, 100 ]
+    function addressToTokenIds(
+        address _address,
+        uint256 offset,
+        uint256 limit
+    )
         public
         view
-        returns (uint256[] memory page, uint256 next, uint256 total)
+        returns (
+            uint256[] memory page,
+            uint256 next,
+            uint256 total
+        )
     {
         uint256[] storage allTokenIds = _addressToTokenIds[_address];
 
         require(limit > 0, "Limit must be a positive number");
         require(limit < 500, "Limited to 500 items per page");
-        require(offset <= allTokenIds.length, "Offset is greater than number of tokens");
+        require(
+            offset <= allTokenIds.length,
+            "Offset is greater than number of tokens"
+        );
 
         // e.g. limit of 100, and an offset of 10 (i.e. we asked for 10 to 99)
         // there might be only 10 items though!
@@ -59,7 +79,7 @@ contract HodlNFT is ERC721URIStorageUpgradeable, OwnableUpgradeable, PausableUpg
         }
 
         page = new uint256[](limit);
-        
+
         uint256 current = 0;
 
         if (allTokenIds.length == 0) {
@@ -78,14 +98,28 @@ contract HodlNFT is ERC721URIStorageUpgradeable, OwnableUpgradeable, PausableUpg
         return (page, offset + limit, allTokenIds.length);
     }
 
-    function createToken(string memory tokenURI) public whenNotPaused returns (uint256) {
+    function createToken(string memory tokenURI)
+        public
+        payable
+        whenNotPaused
+        nonReentrant
+        returns (uint256)
+    {
+        require(msg.value == mintFee, "Mint Fee not sent");
+
         _tokenIds.increment();
 
         uint256 tokenId = _tokenIds.current();
 
         _mint(msg.sender, tokenId);
         _setTokenURI(tokenId, tokenURI);
-        setApprovalForAll(_marketAddress, true);
+        setApprovalForAll(marketAddress, true);
+
+        (bool received, ) = owner().call{value: msg.value}("");
+        require(
+            received,
+            "Could not send the contract owner the minting fee"
+        );
 
         return tokenId;
     }

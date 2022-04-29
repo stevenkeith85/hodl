@@ -1,12 +1,10 @@
 const { expect } = require("chai");
 const { upgrades, ethers } = require("hardhat");
-const { BigNumber, utils, parseEther, parseUnits } = require("ethers");
-const fs = require('fs');
-const { getImplementationAddress } = require('@openzeppelin/upgrades-core');
-const dotenv = require('dotenv');
-dotenv.config({ path: '../.env' })
+const { BigNumber } = require("ethers");
 
-const HodlNFTABI = JSON.parse(fs.readFileSync('artifacts/contracts/HodlNFT.sol/HodlNFT.json'));
+const path = require('path')
+require('dotenv').config({ path: path.resolve(__dirname, '../.env.local') })
+
 
 describe("HodlMarket Contract", function () {
     let ownerAccount; // the account that will deploy the NFT and Market contracts
@@ -15,7 +13,6 @@ describe("HodlMarket Contract", function () {
 
     let HodlMarketFactory; // Contract Factory for the market, with signer set as owner
     let HodlNFTFactory; // Contract Factory for the token, with signer set as owner;
-    let MyTokenFactory; // Contract Factory for another ERC721 token, with signer set as owner;
     
     let hodlMarketAsOwner; // Deployed Market Contract instance with signer as owner;
     let hodlMarketAsUser; // Deployed Market Contract instance with signer as user
@@ -28,6 +25,8 @@ describe("HodlMarket Contract", function () {
     let myTokenAsOwner; // Deployed MyToken contract instance with the signer set as owner
 
     let hodlNFTAddress;
+
+    let mintFee;
 
     // helper
     const pageToObjects = page => {
@@ -64,11 +63,13 @@ describe("HodlMarket Contract", function () {
         await myTokenAsOwner.deployed();
 
         hodlNFTAddress = hodlNFTAsOwner.address;
+
+        mintFee = await hodlNFTAsUser.mintFee();
     });
 
     describe("Admin functions", function () {
         it("Should set the market owner as the deployment address", async function () {
-            expect(await hodlMarketAsOwner.marketOwner()).to.equal(ownerAccount.address);    
+            expect(await hodlMarketAsOwner.owner()).to.equal(ownerAccount.address);    
         });   
 
         it("Should set the commision rate as 3 percent", async function () {
@@ -108,7 +109,7 @@ describe("HodlMarket Contract", function () {
 
     describe("listToken", function () {
         it("Should allow user to list their token", async function () {
-            let tx = await hodlNFTAsUser.createToken('ipfs://12345');
+            let tx = await hodlNFTAsUser.createToken('ipfs://12345', { value: mintFee });
             await tx.wait();
 
             const transferEvents = await hodlNFTAsUser.queryFilter("Transfer")
@@ -125,7 +126,7 @@ describe("HodlMarket Contract", function () {
         });
 
         it("Should NOT allow user to list their token whilst it is already listed", async function () {
-            let tx = await hodlNFTAsUser.createToken('ipfs://12345');
+            let tx = await hodlNFTAsUser.createToken('ipfs://12345', { value: mintFee });
             await tx.wait();
 
             const transferEvents = await hodlNFTAsUser.queryFilter("Transfer")
@@ -150,14 +151,14 @@ describe("HodlMarket Contract", function () {
 
         it("Should NOT allow user to list another user's token", async function () {
             // 1st user creates tokenId1 and does not list it
-            let tx = await hodlNFTAsUser.createToken('ipfs://12345');
+            let tx = await hodlNFTAsUser.createToken('ipfs://12345', { value: mintFee });
             await tx.wait();
 
             let transferEvents = await hodlNFTAsUser.queryFilter("Transfer")
             const tokenId1 = transferEvents[0].args.tokenId;
 
             // 2nd user creates tokenId2 and lists it for 10 matic
-            tx = await hodlNFTAsUser2.createToken('ipfs://6789');
+            tx = await hodlNFTAsUser2.createToken('ipfs://6789', { value: mintFee });
             await tx.wait();
 
             transferEvents = await hodlNFTAsUser.queryFilter("Transfer")
@@ -180,7 +181,7 @@ describe("HodlMarket Contract", function () {
         });
 
         it("Should NOT allow user to list their token for less than min listing price", async function () {
-            let tx = await hodlNFTAsUser.createToken('ipfs://12345');
+            let tx = await hodlNFTAsUser.createToken('ipfs://12345', { value: mintFee });
             await tx.wait();
 
             const transferEvents = await hodlNFTAsUser.queryFilter("Transfer")
@@ -190,12 +191,12 @@ describe("HodlMarket Contract", function () {
                 tx = await hodlMarketAsUser.listToken(hodlNFTAsUser.address, tokenId, ethers.utils.parseUnits("0.9", "ether"));
                 await tx.wait();
             } catch (e) {
-                expect(e.message).to.equal("VM Exception while processing transaction: reverted with reason string 'Token must be listed at minListingPrice or higher'");
+                expect(e.message).to.equal("VM Exception while processing transaction: reverted with reason string 'Token must be listed at the minimum listing price or higher.'");
             }
         });
 
         it("Should NOT allow user to list their token with a negative value for price", async function () {
-            let tx = await hodlNFTAsUser.createToken('ipfs://12345');
+            let tx = await hodlNFTAsUser.createToken('ipfs://12345', { value: mintFee });
             await tx.wait();
 
             const transferEvents = await hodlNFTAsUser.queryFilter("Transfer")
@@ -245,13 +246,13 @@ describe("HodlMarket Contract", function () {
 
     describe("DelistToken", function () {
         it("Should allow user to delist their token", async function () {
-            let tx = await hodlNFTAsUser.createToken('ipfs://12345');
+            let tx = await hodlNFTAsUser.createToken('ipfs://12345', { value: mintFee });
             await tx.wait();
 
-            tx = await hodlNFTAsUser.createToken('ipfs://12345');
+            tx = await hodlNFTAsUser.createToken('ipfs://12345', { value: mintFee });
             await tx.wait();
 
-            tx = await hodlNFTAsUser.createToken('ipfs://12345');
+            tx = await hodlNFTAsUser.createToken('ipfs://12345', { value: mintFee });
             await tx.wait();
 
             tx = await hodlMarketAsUser.listToken(hodlNFTAsUser.address, 1, ethers.utils.parseEther("5"));
@@ -275,7 +276,6 @@ describe("HodlMarket Contract", function () {
             expect(TokenDelistedEvents[0].args.tokenId).to.equal(2);
 
             try {
-                let usersThirdToken = await hodlMarketAsUser.addressToTokenIds(process.env.ACCOUNT1_PUBLIC_KEY, 2);
             } catch(e) {
                 expect(e.message).to.equal('Transaction reverted without a reason string')
             }
@@ -286,7 +286,7 @@ describe("HodlMarket Contract", function () {
         });
 
         it("Should NOT allow user to delist their token once it has been delisted (without relisting it first)", async function () {
-            let tx = await hodlNFTAsUser.createToken('ipfs://12345');
+            let tx = await hodlNFTAsUser.createToken('ipfs://12345', { value: mintFee });
             await tx.wait();
 
             const transferEvents = await hodlNFTAsUser.queryFilter("Transfer")
@@ -312,7 +312,7 @@ describe("HodlMarket Contract", function () {
         });
 
         it("Should NOT allow user to delist their token if it isn't listed", async function () {
-            let tx = await hodlNFTAsUser.createToken('ipfs://12345');
+            let tx = await hodlNFTAsUser.createToken('ipfs://12345', { value: mintFee });
             await tx.wait();
 
             const transferEvents = await hodlNFTAsUser.queryFilter("Transfer")
@@ -335,7 +335,7 @@ describe("HodlMarket Contract", function () {
 
         it("Should NOT allow user to delist another user's token", async function () {
             // user creates token and lists it for 10 matic
-            tx = await hodlNFTAsUser.createToken('ipfs://6789');
+            tx = await hodlNFTAsUser.createToken('ipfs://6789', { value: mintFee });
             await tx.wait();
 
             transferEvents = await hodlNFTAsUser.queryFilter("Transfer")
@@ -369,7 +369,7 @@ describe("HodlMarket Contract", function () {
     describe("BuyToken", function () {
         it("Should allow user to buy another users token if correct amount is provided", async function () {
             // user 1 creates a token
-            let tx = await hodlNFTAsUser.createToken('ipfs://12345');
+            let tx = await hodlNFTAsUser.createToken('ipfs://12345', { value: mintFee });
             await tx.wait();
 
             let transferEvents = await hodlNFTAsUser.queryFilter("Transfer")
@@ -434,7 +434,7 @@ describe("HodlMarket Contract", function () {
 
     it("Should NOT allow user to buy another users token if correct amount is NOT provided", async function () {
         // user 1 creates a token
-        let tx = await hodlNFTAsUser.createToken('ipfs://12345');
+        let tx = await hodlNFTAsUser.createToken('ipfs://12345', { value: mintFee });
         await tx.wait();
 
         let transferEvents = await hodlNFTAsUser.queryFilter("Transfer")
@@ -472,7 +472,7 @@ describe("HodlMarket Contract", function () {
 
     it("Should NOT allow user to buy an unlisted token", async function () {
         // user 1 creates a token
-        let tx = await hodlNFTAsUser.createToken('ipfs://12345');
+        let tx = await hodlNFTAsUser.createToken('ipfs://12345', { value: mintFee });
         await tx.wait();
 
         // user 1 DOES NOT list the token
@@ -493,7 +493,7 @@ describe("HodlMarket Contract", function () {
     });
 
     it("Should send seller and market owner their fees", async function () {
-        let tx = await hodlNFTAsUser.createToken('ipfs://12345');
+        let tx = await hodlNFTAsUser.createToken('ipfs://12345', { value: mintFee });
         await tx.wait();
         
         expect(await hodlNFTAsUser2.ownerOf(1)).to.equal(userAccount.address);
@@ -521,7 +521,7 @@ describe("HodlMarket Contract", function () {
 
     // TODO: We may consider remembering the rate a token was listed at and charge that instead
     it("Should charge the current commision rate, even if token was listed when the rate was different", async function () {
-        let tx = await hodlNFTAsUser.createToken('ipfs://12345');
+        let tx = await hodlNFTAsUser.createToken('ipfs://12345', { value: mintFee });
         await tx.wait();
         
         // commision rate is 3 percent here
@@ -550,7 +550,7 @@ describe("HodlMarket Contract", function () {
 
     describe('Get Listing', function () {
         it("should return a valid listing",  async function () { 
-            let tx = await hodlNFTAsUser.createToken('ipfs://12345');
+            let tx = await hodlNFTAsUser.createToken('ipfs://12345', { value: mintFee });
             await tx.wait();
             
             tx = await hodlMarketAsUser.listToken(hodlNFTAddress, 1, ethers.utils.parseEther("100"));
@@ -569,7 +569,7 @@ describe("HodlMarket Contract", function () {
         });
 
         it("should return empty object for an invalid listing",  async function () { 
-            let tx = await hodlNFTAsUser.createToken('ipfs://12345');
+            let tx = await hodlNFTAsUser.createToken('ipfs://12345', { value: mintFee });
             await tx.wait();
             
             tx = await hodlMarketAsUser.listToken(hodlNFTAddress, 1, ethers.utils.parseEther("100"));
@@ -591,31 +591,31 @@ describe("HodlMarket Contract", function () {
 
     describe('Fetch Market Items', function () {
         it("Should be able to iterate through the market listings (in reverse), page by page", async function () {
-            const tx1 = await hodlNFTAsUser.createToken("ipfs://123");
+            const tx1 = await hodlNFTAsUser.createToken("ipfs://123", { value: mintFee });
             await tx1.wait();
 
             tx = await hodlMarketAsUser.listToken(hodlNFTAsUser.address, 1, ethers.utils.parseEther("10"));
             await tx.wait();
     
-            const tx2 = await hodlNFTAsUser.createToken("ipfs://456");
+            const tx2 = await hodlNFTAsUser.createToken("ipfs://456", { value: mintFee });
             await tx2.wait();
 
             tx = await hodlMarketAsUser.listToken(hodlNFTAsUser.address, 2, ethers.utils.parseEther("20"));
             await tx.wait();
     
-            const tx3 = await hodlNFTAsUser.createToken("ipfs://789");
+            const tx3 = await hodlNFTAsUser.createToken("ipfs://789", { value: mintFee });
             await tx3.wait();
 
             tx = await hodlMarketAsUser.listToken(hodlNFTAsUser.address, 3, ethers.utils.parseEther("30"));
             await tx.wait();
     
-            const tx4 = await hodlNFTAsUser.createToken("ipfs://1011");
+            const tx4 = await hodlNFTAsUser.createToken("ipfs://1011", { value: mintFee });
             await tx4.wait();
 
             tx = await hodlMarketAsUser.listToken(hodlNFTAsUser.address, 4, ethers.utils.parseEther("40"));
             await tx.wait();
     
-            const tx5 = await hodlNFTAsUser.createToken("ipfs://1213");
+            const tx5 = await hodlNFTAsUser.createToken("ipfs://1213", { value: mintFee });
             await tx5.wait();
 
             tx = await hodlMarketAsUser.listToken(hodlNFTAsUser.address, 5, ethers.utils.parseEther("50"));
@@ -686,13 +686,13 @@ describe("HodlMarket Contract", function () {
 
     describe('Get listings for address', function () {
         it('should return the listings', async () => {
-            let tx = await hodlNFTAsUser.createToken('ipfs://123');
+            let tx = await hodlNFTAsUser.createToken('ipfs://123', { value: mintFee });
             await tx.wait();
 
-            tx = await hodlNFTAsUser.createToken('ipfs://456');
+            tx = await hodlNFTAsUser.createToken('ipfs://456', { value: mintFee });
             await tx.wait();
 
-            tx = await hodlNFTAsUser.createToken('ipfs://789');
+            tx = await hodlNFTAsUser.createToken('ipfs://789', { value: mintFee });
             await tx.wait();
             
             tx = await hodlMarketAsUser.listToken(hodlNFTAddress, 1, ethers.utils.parseEther("10"));
@@ -731,13 +731,13 @@ describe("HodlMarket Contract", function () {
         })
 
         it('should reject bad input', async () => {
-            let tx = await hodlNFTAsUser.createToken('ipfs://123');
+            let tx = await hodlNFTAsUser.createToken('ipfs://123', { value: mintFee });
             await tx.wait();
 
-            tx = await hodlNFTAsUser.createToken('ipfs://456');
+            tx = await hodlNFTAsUser.createToken('ipfs://456', { value: mintFee });
             await tx.wait();
 
-            tx = await hodlNFTAsUser.createToken('ipfs://789');
+            tx = await hodlNFTAsUser.createToken('ipfs://789', { value: mintFee });
             await tx.wait();
             
             tx = await hodlMarketAsUser.listToken(hodlNFTAddress, 1, ethers.utils.parseEther("10"));

@@ -22,6 +22,10 @@ export const MintTokenAction: FC<MintProps> = ({
 
     const {metadataUrl} = formData;
 
+    if (metadataUrl.indexOf('ipfs://') === -1) {
+      enqueueSnackbar("Expected metadata to be on IPFS. Aborting", { variant: "error" });
+    }
+
     try {
       const tokenId = await mintToken(metadataUrl);
       setLoading(false);

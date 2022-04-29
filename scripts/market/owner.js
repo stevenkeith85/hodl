@@ -1,17 +1,17 @@
 const { ethers } = require("hardhat");
-const dotenv = require('dotenv');
 const fs = require('fs');
 
-dotenv.config({ path: '../.env' })
+const dotenv = require('dotenv');
+dotenv.config({ path: '.env.local' })
 
-const HodlNFTProxy = JSON.parse(fs.readFileSync('./scripts/addresses.json')).HodlNFTProxy;
-const HodlNFTABI = JSON.parse(fs.readFileSync('artifacts/contracts/HodlNFT.sol/HodlNFT.json'));
+const MarketProxy = JSON.parse(fs.readFileSync('./scripts/addresses.json')).HodlMarketProxy;
+const MarketABI = JSON.parse(fs.readFileSync('artifacts/contracts/HodlMarket.sol/HodlMarket.json'));
 
 async function main() {
   const ownerAccount = new ethers.Wallet(process.env.ACCOUNT0_PRIVATE_KEY, ethers.provider);
-  const hodlNFTAsOwner = new ethers.Contract(HodlNFTProxy, HodlNFTABI.abi, ownerAccount);
+  const marketContract = new ethers.Contract(MarketProxy, MarketABI.abi, ownerAccount);
 
-  await hodlNFTAsOwner.unpauseContract();
+  console.log(await marketContract.owner());
 }
 
 // We recommend this pattern to be able to use async/await everywhere

@@ -1,5 +1,4 @@
 import { Box, Skeleton } from "@mui/material";
-import Head from "next/head";
 import { useEffect, useRef } from "react";
 import { createCloudinaryUrl } from "../lib/utils";
 
@@ -66,7 +65,6 @@ export const HodlVideo = ({
             <video
                 onLoadedData={() => {
                     if (onLoad) {
-                        console.log('calling onload')
                         onLoad()
                     }
                 }

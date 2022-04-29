@@ -10,7 +10,8 @@ export const mintToken = async (url) => {
     const signer = await getMetaMaskSigner();
     const tokenContract = new ethers.Contract(nftaddress, NFT.abi, signer);
   
-    const tx = await tokenContract.createToken(url);
+    const mintFee = await tokenContract.mintFee();
+    const tx = await tokenContract.createToken(url, { value: mintFee });
     const receipt = await tx.wait();
   
     const event = receipt.events[0];
