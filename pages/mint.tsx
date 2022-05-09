@@ -34,6 +34,7 @@ const Mint = () => {
     filter: null,
     name: null,
     description: null,
+    privilege: null,
     metadataUrl: null,
     tokenId: null,
   })

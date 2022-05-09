@@ -1,5 +1,5 @@
 import { Upload } from "@mui/icons-material";
-import { Button, LinearProgress, Stack } from "@mui/material";
+import { Button, LinearProgress, Stack, Tooltip } from "@mui/material";
 import { FC, useEffect } from "react";
 import { useSnackbar } from 'notistack';
 import { useIpfsUpload } from "../../hooks/useIpfsUpload";
@@ -7,6 +7,7 @@ import { MintProps } from "./models";
 import { Form, Formik } from "formik";
 import { HodlFormikTextField } from "../formFields/HodlFormikTextField";
 import { uploadToIPFSValidationSchema } from "../../validationSchema/uploadToIPFS";
+import { commercial, nonCommercial, token } from "../../lib/copyright";
 
 export const UploadToIpfsAction: FC<MintProps> = ({
   formData,
@@ -40,9 +41,10 @@ export const UploadToIpfsAction: FC<MintProps> = ({
     let { success, imageCid, metadataUrl } = await uploadToIpfs(
       values.name,
       values.description,
+      values.privilege,
       values.fileName,
       values.mimeType,
-      values.filter
+      values.filter,
     );
 
     if (success) {
@@ -50,6 +52,7 @@ export const UploadToIpfsAction: FC<MintProps> = ({
         ...prev,
         name: values.name,
         description: values.description,
+        privilege: values.privilege,
         metadataUrl
       }))
       enqueueSnackbar('IPFS Upload Success', { variant: "success" });
@@ -65,6 +68,7 @@ export const UploadToIpfsAction: FC<MintProps> = ({
         initialValues={{
           name: formData.name,
           description: formData.description,
+          privilege: formData.privilege,
           fileName: formData.fileName,
           mimeType: formData.mimeType,
           filter: formData.filter
@@ -72,8 +76,9 @@ export const UploadToIpfsAction: FC<MintProps> = ({
         validationSchema={uploadToIPFSValidationSchema}
         onSubmit={ipfsUpload}
       >
-        {({ isSubmitting }) => (
+        {({ isSubmitting, values, setFieldValue, errors}) => (
           <>
+          {/* <pre>{JSON.stringify(errors, null, 2)}</pre> */}
             <Form>
               <Stack spacing={2}>
                 <HodlFormikTextField
@@ -90,6 +95,30 @@ export const UploadToIpfsAction: FC<MintProps> = ({
                   minRows={8}
                   disabled={stepComplete === 1}
                 />
+                <HodlFormikTextField
+                  name="privilege"
+                  type="text"
+                  label="Hodler's privilege"
+                  InputLabelProps={{ shrink: true }}
+                  disabled
+                />
+                <Stack spacing={2} direction="row">
+                  <Tooltip title={token}>
+                    <Button
+                      color={values.privilege === token ? 'secondary' : 'primary'}
+                      onClick={() => setFieldValue('privilege', token)}>Token</Button>
+                  </Tooltip>
+                  <Tooltip title={nonCommercial}>
+                    <Button
+                      color={values.privilege === nonCommercial ? 'secondary' : 'primary'}
+                      onClick={() => setFieldValue('privilege', nonCommercial)}>Non Commercial</Button>
+                  </Tooltip>
+                  <Tooltip title={commercial}>
+                    <Button
+                      color={values.privilege === commercial ? 'secondary' : 'primary'}
+                      onClick={() => setFieldValue('privilege', commercial)}>Commercial</Button>
+                  </Tooltip>
+                </Stack>
                 <div>
                   <Button
                     startIcon={<Upload fontSize="large" />}

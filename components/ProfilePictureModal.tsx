@@ -33,14 +33,12 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
 
     if (!swr.data) {
         return null;
-      }
+    }
 
-
-      console.log(swr)
     if (swr?.error) {
         console.log('swr infinite error', swr.error)
         return null;
-      }
+    }
 
     return (
         <>
@@ -50,15 +48,15 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
             >
                 <Stack spacing={2} >
                     <RocketTitle title="Set Profile NFT" />
-                    <Typography>Tired of looking a bit generic?</Typography>
                     <InfiniteScroll
                         swr={swr}
                         loadingIndicator={<HodlLoadingSpinner />}
                         isReachingEnd={swr => swr.data?.[0]?.items.length === 0 || swr.data?.[swr.data?.length - 1]?.items.length < lim}
                     >
                         {
-                            ({ items }) => 
+                            ({ items }) =>
                                 <SelectProfileNFT
+                                    selectedTokenId={token}
                                     nfts={items}
                                     onClick={(tokenId) => setToken(tokenId)}
                                 />

@@ -1,9 +1,18 @@
-import { Box, imageListItemClasses, ImageListItem } from '@mui/material'
+import { Box, imageListItemClasses, ImageListItem, Typography } from '@mui/material'
 import { NftAvatar } from './ProfileAvatar';
 
+interface SelectProfileNFTProps {
+    nfts: any[];
+    onClick: Function;
+    selectedTokenId: number; // tokenId
+}
 
-const SelectProfileNFT = ({ nfts, onClick }) => {
-    
+const SelectProfileNFT = ({ nfts, onClick, selectedTokenId }: SelectProfileNFTProps) => {
+
+    if (!nfts.length) {
+        return <Typography>You need to hodl an NFT to set a custom avatar.</Typography>
+    }
+
     return (
         <Box
             sx={{
@@ -23,7 +32,8 @@ const SelectProfileNFT = ({ nfts, onClick }) => {
                         onClick(nft.tokenId);
                     }}
                 >
-                    <NftAvatar token={nft} size={90} />
+
+                    <NftAvatar token={nft} size={90} highlight={nft.tokenId === selectedTokenId} navigate={false} />
                 </ImageListItem>
             )
             )}

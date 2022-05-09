@@ -10,16 +10,25 @@ import { HodlVideo } from "./HodlVideo";
 import { memo } from "react";
 import theme from "../theme";
 
-export const NftAvatar = ({ token, size, navigate=true }: any) => {
+export const NftAvatarWithLink = ({token, size, highlight=false}: any) => (
+    <Link href={`/nft/${token.tokenId}`} passHref>
+        <a>
+        <NftAvatar token={token} size={size} highlight={highlight}/>
+        </a>
+    </Link>
+)
+
+export const NftAvatar = ({ token, size, highlight=false }: any) => {
     const isGif = (mimeType) => mimeType && mimeType.indexOf('gif') !== -1;
     const isImage = (mimeType) => mimeType && mimeType.indexOf('image') !== -1;
     const isVideo = (mimeType) => mimeType && mimeType.indexOf('video') !== -1;
 
     return (
-        <Link href={ navigate ? `/nft/${token.tokenId}` : ''}>
             <Avatar
                 className="avatar"
                 sx={{
+                    border: highlight ? '2px solid': 'none',
+                    borderColor: highlight ? theme => theme.palette.secondary.main: 'none',
                     height: size,
                     width: size,
                     transition: theme.transitions.create(['background-color', 'transform'], {
@@ -51,11 +60,10 @@ export const NftAvatar = ({ token, size, navigate=true }: any) => {
                         onlyPoster={true}
                     />}
             </Avatar>
-        </Link>
     )
 }
 
-export const NftAvatarMemo = memo(NftAvatar, (prev: any, next: any) => prev.size === next.size && prev.token.tokenId === next.token.tokenId);
+export const NftAvatarMemo = memo(NftAvatarWithLink, (prev: any, next: any) => prev.size === next.size && prev.token.tokenId === next.token.tokenId);
 
 const AvatarText: React.FC<{ size: string, href?: string, children?: any, color: string }> = ({ size, href, children, color }) => {
     const mappings = {

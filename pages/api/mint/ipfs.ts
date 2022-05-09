@@ -31,7 +31,7 @@ cloudinary.v2.config({
 });
 
 // https://community.infura.io/t/ipfs-api-rate-limit/4995
-const uploadNFT = async (name, description, path, filter, isVideo) => {
+const uploadNFT = async (name, description, privilege, path, filter, isVideo) => {
   const url = !isVideo ?
     createCloudinaryUrl('image', 'upload', filter, 'uploads', path.split('/')[2]) :
     createCloudinaryUrl('video', 'upload', filter, 'uploads', path.split('/')[2])
@@ -39,7 +39,7 @@ const uploadNFT = async (name, description, path, filter, isVideo) => {
   // @ts-ignore
   const image = await ipfs.add(urlSource(url), { cidVersion: 1 });
 
-  const data = JSON.stringify({ name, description, image: `ipfs://${image.cid}` });
+  const data = JSON.stringify({ name, description, privilege, image: `ipfs://${image.cid}` });
   const metadata = await ipfs.add(data, { cidVersion: 1 });
 
   return { imageCid: image.cid.toString(), metadataCid: metadata.cid.toString() };
@@ -55,12 +55,13 @@ route.post(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'Invalid data supplied' });
   }
 
-  const { name, description, fileName, mimeType, filter } = req.body;
+  const { name, description, privilege, fileName, mimeType, filter } = req.body;
   const isVideo = mimeType.indexOf('video') !== -1;
 
   const { imageCid, metadataCid } = await uploadNFT(
     name, 
-    description, 
+    description,
+    privilege, 
     fileName, 
     filter, 
     isVideo

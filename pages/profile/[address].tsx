@@ -50,8 +50,6 @@ export async function getServerSideProps({ params, query }) {
   const limit = 8;
   const tab = Number(query.tab) || 0;
 
-  console.log('tab', tab)
-
   const isValid = await isValidAddress(params.address);
 
   if (isValid) {
@@ -60,7 +58,7 @@ export async function getServerSideProps({ params, query }) {
     if (nickname !== null) {
       return {
         redirect: {
-          destination: `/profile/${nickname}`
+          destination: tab ? `/profile/${nickname}?tab=${tab}` : `/profile/${nickname}`
         }
       }
     }

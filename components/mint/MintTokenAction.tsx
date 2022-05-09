@@ -38,6 +38,7 @@ export const MintTokenAction: FC<MintProps> = ({
       enqueueSnackbar(`NFT minted on the blockchain with token id ${tokenId}`, { variant: "success" });
       setStepComplete(2);
     } catch (e) {
+      console.log(e)
       enqueueSnackbar('Unable to mint at the moment. Please try again', { variant: "warning" });
       setLoading(false);
     }

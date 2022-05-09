@@ -16,7 +16,7 @@ export const SuccessModal = ({modalOpen, setModalOpen, message, tab=1}) => {
         open={modalOpen}
         setOpen={setModalOpen}
       >
-          <Stack spacing={4}>
+          <Stack spacing={2}>
             <RocketTitle title="Success" />
             <Typography sx={{ span: { fontWeight: 600 } }}>
               { message }

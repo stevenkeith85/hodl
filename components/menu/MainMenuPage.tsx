@@ -7,7 +7,12 @@ import { useNickname } from "../../hooks/useNickname";
 import { truncateText, getShortAddress } from "../../lib/utils";
 import { WalletContext } from '../../contexts/WalletContext';
 
-export const MainMenuPage = ({ pages, closeMenu, router, setMenuPage }) => {
+export const MainMenuPage = ({ 
+    pages, 
+    // closeMenu, 
+    router, 
+    setMenuPage 
+}) => {
     const [_update, _apiError, _setApiError, nickname] = useNickname();
     const { signer, address } = useContext(WalletContext);
     const [connect] = useConnect();
@@ -64,7 +69,7 @@ export const MainMenuPage = ({ pages, closeMenu, router, setMenuPage }) => {
                                 {page.icon}
                                 <Typography
                                     component="a"
-                                    onClick={closeMenu}
+                                   // onClick={closeMenu}
                                     sx={{
                                         fontSize: 16,
                                         textDecoration: 'none',

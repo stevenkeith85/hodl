@@ -7,7 +7,12 @@ import { useNickname } from "../../hooks/useNickname";
 import { truncateText, getShortAddress } from "../../lib/utils";
 import { WalletContext } from '../../contexts/WalletContext';
 
-export const WalletMenuPage = ({ closeMenu, setMenuPage, setNicknameModalOpen, setProfilePictureModalOpen, showBack=true }) => {
+export const WalletMenuPage = ({ 
+    // closeMenu, 
+    setMenuPage, 
+    setNicknameModalOpen, 
+    setProfilePictureModalOpen, 
+    showBack=true }) => {
     const [connect, disconnect] = useConnect();
     const [_update, _apiError, _setApiError, nickname] = useNickname();
     const { signer, address } = useContext(WalletContext);

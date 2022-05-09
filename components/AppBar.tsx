@@ -18,6 +18,8 @@ import { AccountBalanceWallet, AccountCircle, Spa, Storefront } from '@mui/icons
 import { useConnect } from '../hooks/useConnect';
 import { WalletContext } from '../contexts/WalletContext';
 import { useNickname } from '../hooks/useNickname';
+import { NicknameModal } from './modals/NicknameModal';
+import { ProfilePictureModal } from './ProfilePictureModal';
 
 
 const ResponsiveAppBar = () => {
@@ -26,26 +28,28 @@ const ResponsiveAppBar = () => {
     const router = useRouter();
     const [connect] = useConnect();
 
+    const [nicknameModalOpen, setNicknameModalOpen] = useState(false);
+    const [profilePictureModalOpen, setProfilePictureModalOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const [pages] = useState([
-        { 
-            label: 'Market', 
-            url: '/', 
-            icon: <Storefront />, 
-            publicPage: true 
+        {
+            label: 'Market',
+            url: '/',
+            icon: <Storefront />,
+            publicPage: true
         },
-        { 
-            label: 'Mint NFT', 
-            url: '/mint', 
-            icon: <Spa />, 
-            publicPage: false 
+        {
+            label: 'Mint NFT',
+            url: '/mint',
+            icon: <Spa />,
+            publicPage: false
         },
-        { 
-            label: 'My Profile', 
-            url: `/profile`, 
-            icon: <AccountCircle />, 
-            publicPage: false 
+        {
+            label: 'My Profile',
+            url: `/profile`,
+            icon: <AccountCircle />,
+            publicPage: false
         },
     ]);
 
@@ -63,6 +67,8 @@ const ResponsiveAppBar = () => {
 
     return (
         <>
+            <NicknameModal nicknameModalOpen={nicknameModalOpen} setNicknameModalOpen={setNicknameModalOpen}></NicknameModal>
+            <ProfilePictureModal profilePictureModalOpen={profilePictureModalOpen} setProfilePictureModalOpen={setProfilePictureModalOpen}></ProfilePictureModal>
             <AppBar position="fixed" sx={{ maxWidth: `100vw`, left: 0 }}>
                 <Container maxWidth="xl" sx={{ width: '100%', position: 'relative' }}>
                     <Toolbar disableGutters>
@@ -72,6 +78,10 @@ const ResponsiveAppBar = () => {
                                 pages={pages}
                                 mobileMenuOpen={mobileMenuOpen}
                                 setMobileMenuOpen={setMobileMenuOpen}
+                                nicknameModalOpen={nicknameModalOpen}
+                                setNicknameModalOpen={setNicknameModalOpen}
+                                profilePictureModalOpen={profilePictureModalOpen}
+                                setProfilePictureModalOpen={setProfilePictureModalOpen}
                             />
                             <Logo />
                             <Box>
@@ -96,11 +106,11 @@ const ResponsiveAppBar = () => {
 
                                 }}>
                                     {pages.filter(p => p.publicPage || address).map(page => (
-                                        <Link 
-                                            key={page.url} 
-                                            href={page.url === '/profile' ? `${page.url}/${nickname || address}`: page.url} 
+                                        <Link
+                                            key={page.url}
+                                            href={page.url === '/profile' ? `${page.url}/${nickname || address}` : page.url}
                                             passHref
-                                            >
+                                        >
                                             {router.asPath === page.url ?
                                                 <Typography
                                                     key={page.label}
@@ -154,10 +164,17 @@ const ResponsiveAppBar = () => {
                                     pages={pages}
                                     mobileMenuOpen={mobileMenuOpen}
                                     setMobileMenuOpen={setMobileMenuOpen}
+                                    nicknameModalOpen={nicknameModalOpen}
+                                    setNicknameModalOpen={setNicknameModalOpen}
+                                    profilePictureModalOpen={profilePictureModalOpen}
+                                    setProfilePictureModalOpen={setProfilePictureModalOpen}
                                 />}
                                 <IconButton
                                     size="large"
-                                    onClick={() => setMobileMenuOpen(prev => !prev)}
+                                    onClick={(e) => {
+                                        setMobileMenuOpen(prev => !prev);
+                                        e.stopPropagation();
+                                    }}
                                     color="inherit"
                                     aria-label='Account Menu'
                                 >

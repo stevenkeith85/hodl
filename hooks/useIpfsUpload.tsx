@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 
 export const useIpfsUpload = (): [
-  (name: string, description: string, fileName: string, mimeType: string, filter: string) => any,
+  (name: string, description: string, privilege: string, fileName: string, mimeType: string, filter: string) => any,
   number,
   string,
   Function
@@ -14,7 +14,7 @@ export const useIpfsUpload = (): [
   const [error, setError] = useState('');
   const [progress, setProgress] = useState(0);
 
-  const uploadToIpfs = async (name: string, description: string, fileName: string, mimeType: string, filter: string) => {
+  const uploadToIpfs = async (name: string, description: string, privilege: string, fileName: string, mimeType: string, filter: string) => {
     setProgress(0);
 
     if (hasExpired(localStorage.getItem('jwt'))) {
@@ -27,6 +27,7 @@ export const useIpfsUpload = (): [
         {
           name,
           description,
+          privilege,
           fileName,
           mimeType,
           filter

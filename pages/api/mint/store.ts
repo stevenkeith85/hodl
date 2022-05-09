@@ -33,11 +33,11 @@ route.post(async (req, res: NextApiResponse) => {
   const r = await fetch(ipfsUriToGatewayUrl(tokenUri), { headers : getInfuraIPFSAuth() }); 
   sleep(1000);
 
-  const { name, description, image } = await r.json()
+  const { name, description, privilege, image } = await r.json()
 
-  client.set("token:" + tokenId, JSON.stringify({ tokenId, name, description, image, mimeType, filter }));
+  client.set("token:" + tokenId, JSON.stringify({ tokenId, name, description, privilege, image, mimeType, filter }));
 
-  res.status(200).json({ tokenId, name, description, image });
+  res.status(200).json({ tokenId, name, description, privilege, image });
 });
 
 

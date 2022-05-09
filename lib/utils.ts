@@ -1,3 +1,5 @@
+import { commercial, nonCommercial, token } from "./copyright";
+
 export function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -24,6 +26,16 @@ export const validFilter = (filter) => {
   const codes = imageFilters.map(f => f.code);
 
   return codes.find(code => code === filter);
+}
+
+export const validPrivilegeValue = (value) => {
+  const values = [
+    token,
+    nonCommercial,
+    commercial
+  ]
+
+  return values.indexOf(value) !== -1;
 }
 
 export const createCloudinaryUrl = (assetType = "image", deliveryType = "upload", transformations = null, folder, cid, ext = null) => {

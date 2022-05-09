@@ -46,7 +46,7 @@ export const NftActionButtons = ({ nft }) => {
                 open={listModalOpen}
                 setOpen={setListModalOpen}
             >
-                <Stack spacing={6}>
+                <Stack spacing={2}>
                     <RocketTitle 
                         title="List this token on the market" 
                     />
