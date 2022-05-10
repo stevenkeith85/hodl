@@ -1,6 +1,7 @@
 import { RocketSharp } from "@mui/icons-material";
 import { Alert, Box, Stack, Typography } from "@mui/material";
 import Link from "next/link";
+import { HodlNotifications } from "../components/HodlNotifications";
 
 export default function About() {
     return (

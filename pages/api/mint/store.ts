@@ -5,6 +5,7 @@ import { ipfsUriToGatewayUrl, sleep } from "../../../lib/utils";
 import memoize from 'memoizee';
 import apiRoute from "../handler";
 import { getTokenUriAndOwner } from "../../../lib/server/nft";
+import { getToken } from "../token/[tokenId]";
 
 dotenv.config({ path: '../.env' })
 
@@ -36,6 +37,8 @@ route.post(async (req, res: NextApiResponse) => {
   const { name, description, privilege, image } = await r.json()
 
   client.set("token:" + tokenId, JSON.stringify({ tokenId, name, description, privilege, image, mimeType, filter }));
+
+  getToken.delete(tokenId);
 
   res.status(200).json({ tokenId, name, description, privilege, image });
 });

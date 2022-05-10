@@ -23,9 +23,9 @@ export const MobileMenu = ({ pages, mobileMenuOpen, setMobileMenuOpen, page = 0,
         setMobileMenuOpen(false)
     }
 
-    // if (!mobileMenuOpen) {
-    //     return null;
-    // }
+    if (!mobileMenuOpen) {
+        return null;
+    }
     return (
         <>
             {/* <NicknameModal nicknameModalOpen={nicknameModalOpen} setNicknameModalOpen={setNicknameModalOpen}></NicknameModal>
@@ -40,7 +40,7 @@ export const MobileMenu = ({ pages, mobileMenuOpen, setMobileMenuOpen, page = 0,
                         color: theme => theme.palette.primary.dark,
                         height: { xs: `calc(100% - 56px)`, sm: '100%' },
                         width: { xs: '100%' },
-                        top: '56px',
+                        top: '60px',
                         animation: xs ? `slidein 0.25s forwards` : `fadein 0.25s forwards`,
                         zIndex: 100,
                         padding: 0

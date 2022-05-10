@@ -98,7 +98,7 @@ export const UploadToIpfsAction: FC<MintProps> = ({
                 <HodlFormikTextField
                   name="privilege"
                   type="text"
-                  label="Hodler's privilege"
+                  label="Hodler privilege"
                   InputLabelProps={{ shrink: true }}
                   disabled
                 />

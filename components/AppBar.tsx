@@ -20,7 +20,7 @@ import { WalletContext } from '../contexts/WalletContext';
 import { useNickname } from '../hooks/useNickname';
 import { NicknameModal } from './modals/NicknameModal';
 import { ProfilePictureModal } from './ProfilePictureModal';
-
+import { HodlNotifications } from './HodlNotifications';
 
 const ResponsiveAppBar = () => {
     const { address } = useContext(WalletContext);
@@ -72,6 +72,7 @@ const ResponsiveAppBar = () => {
             <AppBar position="fixed" sx={{ maxWidth: `100vw`, left: 0 }}>
                 <Container maxWidth="xl" sx={{ width: '100%', position: 'relative' }}>
                     <Toolbar disableGutters>
+
                         {/* Mobile */}
                         <Box sx={{ display: { xs: 'flex', md: 'none' }, width: '100%', justifyContent: 'space-between' }}>
                             <MobileMenu
@@ -87,13 +88,17 @@ const ResponsiveAppBar = () => {
                             <Box>
                                 <IconButton
                                     size="large"
-                                    onClick={() => setMobileMenuOpen(prev => !prev)}
+                                    onClick={(e) => {
+                                        setMobileMenuOpen(prev => !prev);
+                                        e.stopPropagation();
+                                    }}
                                     color="inherit"
                                 >
                                     {mobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
                                 </IconButton>
                             </Box>
                         </Box>
+
 
                         {/* Desktop */}
                         <Box sx={{ display: { xs: 'none', md: 'flex' }, width: '100%', justifyContent: 'space-between' }}>
@@ -156,8 +161,10 @@ const ResponsiveAppBar = () => {
                             <Stack
                                 direction="row"
                                 spacing={1}
-                                sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}
+                                sx={{ position: 'relative', display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}
                             >
+                                <HodlNotifications />
+
                                 {mobileMenuOpen && <MobileMenu
                                     page={1}
                                     showBack={false}
@@ -182,6 +189,8 @@ const ResponsiveAppBar = () => {
                                 </IconButton>
                             </Stack>
                         </Box>
+
+
                     </Toolbar>
                 </Container>
             </AppBar>

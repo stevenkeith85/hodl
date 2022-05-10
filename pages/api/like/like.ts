@@ -8,6 +8,8 @@ import { getLikeCount } from './likeCount';
 
 const client = Redis.fromEnv()
 import apiRoute from "../handler";
+import { addNotification } from "../notifications/add";
+import { HodlNotification, NftAction } from "../notifications/models";
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
@@ -40,6 +42,16 @@ route.post(async (req, res: NextApiResponse) => {
   
   likesToken.delete(req.address, token);
   getLikeCount.delete(token);
+
+  if (liked) {
+    const notification: HodlNotification = {
+      subject: req.address,
+      action: NftAction.Liked,
+      token
+    };
+  
+    const success = addNotification(notification);
+  }
   
   res.status(200).json({liked});
 });

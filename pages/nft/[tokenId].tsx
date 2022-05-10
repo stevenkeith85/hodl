@@ -39,7 +39,6 @@ export async function getServerSideProps({ params }) {
 }
 
 const NftDetail = ({ nft, priceHistory }) => {
-  console.log(nft)
   return (
     <>
       <Head>
@@ -73,7 +72,7 @@ const NftDetail = ({ nft, priceHistory }) => {
             { nft.privilege &&
             <Card variant="outlined">
               <CardContent>
-                <Typography variant="h3" sx={{ marginBottom: 2 }}>Hodler's Privilege</Typography>
+                <Typography variant="h3" sx={{ marginBottom: 2 }}>Hodler Privilege</Typography>
                 <Stack spacing={2} direction="row">
                   <Tooltip title={token}>
                     <Button

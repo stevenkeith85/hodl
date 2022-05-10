@@ -16,6 +16,7 @@ export const getToken = memoize(async (tokenId) => {
   const token = await client.get('token:' + tokenId);
   return token;
 }, { 
+  async: true,
   primitive: true,
   max: 10000, 
 });
