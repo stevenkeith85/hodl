@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { messageToSign } from "../lib/utils";
 import { getMetaMaskSigner } from '../lib/connections';
 import { WalletContext } from '../contexts/WalletContext';
-
+import axios from 'axios'
 
 export const useConnect = () => {
 
@@ -17,32 +17,30 @@ export const useConnect = () => {
 
       if (!returningUser || jwtExpired) {
         // get nonce
-        const rNonce = await fetch(`/api/auth/nonce?address=${_address}`);
-        const { nonce } = await rNonce.json();
+        const rNonce = await axios.get(`/api/auth/nonce?address=${_address}`);
+        const { nonce } = await rNonce.data;
 
         // get user to sign message + nonce
         const signature = await _signer.signMessage(messageToSign + nonce);
 
-        // send the sign to the BE
-        const rSig = await fetch('/api/auth/signature', {
-          credentials: 'include',
-          method: 'POST',
-          headers: new Headers({
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          }),
-          body: JSON.stringify({
-            signature,
-            address: _address
-          })
-        });
+        try {
+          const r = await axios.post(
+            '/api/auth/signature',
+            {
+              signature,
+              address: _address
+            },
+            {
+              headers: {
+                'Accept': 'application/json'
+              },
+            }
+          );
 
-        if (rSig.status !== 200) {
-          return false;
+          const { token } = await r.data;
+          localStorage.setItem('jwt', token);
+        } catch (error) {
         }
-
-        const { token } = await rSig.json();
-        localStorage.setItem('jwt', token);
       }
 
       setSigner(_signer);
@@ -57,7 +55,20 @@ export const useConnect = () => {
   const disconnect = async () => {
     setSigner(null);
     setAddress(null);
-    localStorage.setItem('jwt', '');
+    localStorage.removeItem('jwt');
+
+    try {
+      const r = await axios.post(
+        '/api/auth/logout',
+        {
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': localStorage.getItem('jwt')
+          },
+        }
+      )
+    } catch (error) {
+    }
   }
 
   return [connect, disconnect];

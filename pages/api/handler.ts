@@ -16,9 +16,9 @@ const client = Redis.fromEnv();
 
 // Comment out for development to save db calls
 const rateLimits = {
-  'POST:/api/mint/upload': 3,
-  'POST:/api/mint/ipfs': 1,
-  // 'POST:/api/like/like': 10,
+  // 'POST:/api/mint/upload': 3,
+  // 'POST:/api/mint/ipfs': 1,
+  // 'POST:/api/like/like': 2,
   // 'POST:/api/follow/follow': 10
 }
 
@@ -70,23 +70,43 @@ const handler = () => nc<HodlApiRequest, NextApiResponse>({
     }
     next();
   })
-  .use((req, res, next) => {
+  .use(async (req, res, next) => {
     const { authorization } = req.headers;
+    const { refreshToken } = req.cookies;
+
     if (!authorization) {
-      next();
-    } else {
-      try {
-        const { address } = jwt.verify(authorization, process.env.JWT_SECRET);
-        req.address = address;
-        next();
-      } catch (e) {
-        if (e instanceof jwt.TokenExpiredError) {
-          return res.status(403).json({ message: 'jwt has expired' })
+      return next();
+    }
+
+    try {
+      const { address } = jwt.verify(authorization, process.env.JWT_SECRET);
+      req.address = address;
+      return next();
+    } catch (e) {
+      if (e instanceof jwt.TokenExpiredError) {
+        try {
+          const { sessionId } = jwt.verify(refreshToken, process.env.JWT_SECRET);
+          const { address } = jwt.decode(authorization);
+
+          const storedSessionId = await client.hget(`user:${address}`, 'sessionId');
+
+          if (sessionId == storedSessionId) { // create a new access token
+            const accessToken = jwt.sign(
+              { address, sessionId }, process.env.JWT_SECRET, { expiresIn: 60 }
+            ); 
+            return res.status(401).json({ refreshed: true, accessToken }); // refresh token is still valid. give the user a new access token to store and let them retry
+          }
+
+          return res.status(401).json({ refreshed: false }); // sessionId has been removed from the db (user may have logged out, or we may have revoked access). user will need to re-login
+        } catch (e) {
+          return res.status(401).json({ refreshed: false }); // refresh token has expired. user will need to re-login
         }
 
-        throw e;
       }
+
+      throw e; // we don't handle other jwt issues. likely a malicious user
     }
+
   })
 
 

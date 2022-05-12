@@ -1,31 +1,26 @@
-import { Button, Stack, Typography } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import { useContext, useState } from "react";
 import { WalletContext } from '../contexts/WalletContext';
 import { HodlModal } from "./HodlModal";
 import { RocketTitle } from "./RocketTitle";
-import NftList from "./NftList";
-import { useConnect } from "../hooks/useConnect";
-import { mutate } from "swr";
-import { hasExpired } from "../lib/utils";
-
+import axios from 'axios'
 import useSWRInfinite from 'swr/infinite'
 import InfiniteScroll from 'react-swr-infinite-scroll'
 import { HodlLoadingSpinner } from "./HodlLoadingSpinner";
 import SelectProfileNFT from "./SelectProfileNFT";
+import { mutate } from "swr";
 
 
 export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePictureModalOpen, lim = 10 }) => {
     const [token, setToken] = useState(null);
     const { address } = useContext(WalletContext);
-    const [connect] = useConnect();
-
 
     const getKey = (index, previous) => {
         return [`/api/profile/hodling?address=${address}`, index * lim, lim];
     }
 
-    const fetcher = async (key, offset, limit) => await fetch(`/api/profile/hodling?address=${address}&offset=${offset}&limit=${limit}`)
-        .then(r => r.json())
+    const fetcher = async (key, offset, limit) => await axios.get(`/api/profile/hodling?address=${address}&offset=${offset}&limit=${limit}`)
+        .then(r => r.data)
 
     const swr = useSWRInfinite(getKey, fetcher, {
         dedupingInterval: 10000
@@ -66,25 +61,22 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                         disabled={!token}
                         onClick={async () => {
                             if (token) {
-                                if (hasExpired(localStorage.getItem('jwt'))) {
-                                    await connect(true, true);
-                                }
+                                try {
+                                    const r = await axios.post(
+                                        '/api/profile/picture',
+                                        { token },
+                                        {
+                                            headers: {
+                                                'Accept': 'application/json',
+                                                'Authorization': localStorage.getItem('jwt')
+                                            },
+                                        }
+                                    );
 
-                                const r = await fetch('/api/profile/picture', {
-                                    method: 'POST',
-                                    headers: new Headers({
-                                        'Accept': 'application/json',
-                                        'Content-Type': 'application/json',
-                                        'Authorization': localStorage.getItem('jwt')
-                                    }),
-                                    body: JSON.stringify({ token }),
-                                });
-
-                                if (r.status === 200) {
                                     mutate([`/api/profile/picture`, address])
                                     setProfilePictureModalOpen(false);
-                                } else if (r.status === 403) {
-                                    connect()
+
+                                } catch (error) {
                                 }
                             }
                         }}

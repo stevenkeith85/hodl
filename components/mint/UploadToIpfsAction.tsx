@@ -19,14 +19,14 @@ export const UploadToIpfsAction: FC<MintProps> = ({
   const { enqueueSnackbar } = useSnackbar();
   const [uploadToIpfs, progress, error, setError] = useIpfsUpload();
 
-  useEffect(() => {
-    if (error !== '') {
-      enqueueSnackbar(error, { variant: "error" });
-      // @ts-ignore
-      setError('');
-    }
-    // @ts-ignore
-  }, [error])
+  // useEffect(() => {
+  //   if (error !== '') {
+  //     enqueueSnackbar(error, { variant: "error" });
+  //     // @ts-ignore
+  //     setError('');
+  //   }
+  //   // @ts-ignore
+  // }, [error])
 
   async function ipfsUpload(values, { setSubmitting }) {
     setLoading(true);

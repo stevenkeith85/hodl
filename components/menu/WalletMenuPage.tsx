@@ -7,12 +7,12 @@ import { useNickname } from "../../hooks/useNickname";
 import { truncateText, getShortAddress } from "../../lib/utils";
 import { WalletContext } from '../../contexts/WalletContext';
 
-export const WalletMenuPage = ({ 
-    // closeMenu, 
-    setMenuPage, 
-    setNicknameModalOpen, 
-    setProfilePictureModalOpen, 
-    showBack=true }) => {
+export const WalletMenuPage = ({
+    closeMenu,
+    setMenuPage,
+    setNicknameModalOpen,
+    setProfilePictureModalOpen,
+    showBack = true }) => {
     const [connect, disconnect] = useConnect();
     const [_update, _apiError, _setApiError, nickname] = useNickname();
     const { signer, address } = useContext(WalletContext);
@@ -33,7 +33,7 @@ export const WalletMenuPage = ({
         { label: 'Disconnect', action: () => disconnect(), icon: <CloudOff /> },
     ]);
 
-    
+
     const isMobileDevice = () => {
         return 'ontouchstart' in window || 'onmsgesturechange' in window;
     }
@@ -44,23 +44,21 @@ export const WalletMenuPage = ({
 
     return (
         <Box sx={{
-            padding: 2,
-            // background: 'blue',
             display: 'flex',
             flexDirection: 'column',
-            flexGrow: 1
+            flexGrow: 1,
+            height: '100%'
         }}>
             <Box sx={{
                 flexGrow: 1,
                 flexShrink: 0,
                 flexBasis: 'auto',
             }}>
-              {localStorage.getItem('jwt') && <Stack spacing={0} m={0} >
+                {address && <Stack spacing={0} m={0} >
                     {walletPages.map((page, i) => (
                         <Stack
                             key={i}
                             direction="row"
-                            spacing={1}
                             sx={{
                                 display: 'flex',
                                 alignItems: 'center',
@@ -71,16 +69,16 @@ export const WalletMenuPage = ({
                             }}
                             onClick={(e) => {
                                 e.stopPropagation(),
-                                page.action();
+                                    page.action();
                             }}
                         >
                             {page.icon}
                             <Typography
                                 component="a"
                                 sx={{
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     textDecoration: 'none',
-                                    padding: 2,
+                                    padding: 1,
 
                                 }} >
                                 {page.label}
@@ -90,15 +88,15 @@ export const WalletMenuPage = ({
                     ))}
                 </Stack>}
                 {
-                    !localStorage.getItem('jwt') && 
+                    !address &&
                     <Box>
                         <Typography mb={2} variant="h1">Sign In</Typography>
                         <Typography mb={2} >Connect your wallet to access your account.</Typography>
                         <Typography>We officially support <Link href="https://metamask.io/download/">MetaMask</Link></Typography>
-                        
+
                     </Box>}
             </Box>
-            { showBack && <Button
+            {showBack && <Button
                 color="secondary"
                 onClick={(e) => {
                     e.stopPropagation();

@@ -1,35 +1,29 @@
-import { hasExpired } from '../lib/utils';
-import { useConnect } from './useConnect';
+import axios from 'axios'
 
 export const useStoreToken = () => {
-  const [connect] = useConnect();
 
   const store = async (tokenId, mimeType, filter) => {
-    if (hasExpired(localStorage.getItem('jwt'))) {
-      await connect(true, true);
-    }
-    
-    const r = await fetch('/api/mint/store', {
-      method: 'POST',
-      headers: new Headers({
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': localStorage.getItem('jwt')
-      }),
-      body: JSON.stringify({ 
-        tokenId, 
-        mimeType,
-        filter
-      })
-    });
-    if (r.status === 403) {
-      await connect(false);
-    }
-    else if (r.status === 200) {
-      return true;
-    } 
+    try {
+      const r = await axios.post(
+        '/api/mint/store',
+        {
+          tokenId,
+          mimeType,
+          filter
+        },
+        {
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': localStorage.getItem('jwt')
+          },
+        }
+      );
 
-    return false;
+      return true;
+
+    } catch (error) {
+      return false;
+    }
   }
 
   return [store];

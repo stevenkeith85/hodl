@@ -6,7 +6,7 @@ import { HodlNotifications } from "../components/HodlNotifications";
 export default function About() {
     return (
         <Box marginY={4}>
-            <Stack spacing={6}>
+            <Stack spacing={4}>
                 <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
                     <RocketSharp color="secondary" />
                     <Typography color="secondary" variant="h1">
@@ -30,7 +30,7 @@ export default function About() {
                 <Box>
                     <Typography mb={1} variant="h2" color="primary">Minting</Typography>
                     <Typography mb={0}>
-                        Minting a token is cheap. We charge you nothing. It will only cost you gas (a blockchain transaction fee), which is super cheap on Polygon (compared to Layer 1 blockchains).
+                        Minting a token is cheap. We charge a flat rate of 1 Matic (+ gas)
                     </Typography>
                 </Box>
                 <Box>
@@ -64,12 +64,12 @@ export default function About() {
                             <li>Check the selling history (if any) of the token</li>
                             <li>Check for social validation </li>
                             <li>Do a Google image search</li>
-                            <li>Check what you are getting (<Link href="#copyright">See Copyright section</Link>)</li>
+                            <li>Check what you are getting (<Link href="#copyright">See Hodler Privilege section</Link>)</li>
                         </ol>
                     </Alert>
                 </Box>
                 <Box>
-                    <Typography id="copyright" mb={2} variant="h2" color="primary">Copyright</Typography>
+                    <Typography id="copyright" mb={2} variant="h2" color="primary">Hodler Privilege</Typography>
                     <Alert sx={{
                         ol: {
                             p: 0,
@@ -97,7 +97,7 @@ export default function About() {
                 <Box>
                     <Typography mb={1} variant="h2" color="primary">Disclaimer</Typography>
                     <Typography mb={1} sx={{ span: { fontWeight: 600 } }}>
-                        Finally, <span>we will do our best</span> to make this a great place for all; but accept no legal responsibility for the actions of our users&apos;.
+                       Being a platform, we will do our best to help out with any disputes, but ultimately accept no legal responsibility for the actions of our users&apos;.
                     </Typography>
                 </Box>
             </Stack>

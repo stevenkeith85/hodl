@@ -17,9 +17,9 @@ export const useIpfsUpload = (): [
   const uploadToIpfs = async (name: string, description: string, privilege: string, fileName: string, mimeType: string, filter: string) => {
     setProgress(0);
 
-    if (hasExpired(localStorage.getItem('jwt'))) {
-      await connect(true, true);
-    }
+    // if (hasExpired(localStorage.getItem('jwt'))) {
+    //   await connect(true, true);
+    // }
 
     try {
       const r = await axios.post(
@@ -53,8 +53,6 @@ export const useIpfsUpload = (): [
       if (error.response.status === 400 || error.response.status === 429) {
         const { message } = error.response.data;
         setError(message);
-      } else if (error.response.status === 403) {
-        await connect(false);
       } else {
         setError('Something has gone wrong')
       }

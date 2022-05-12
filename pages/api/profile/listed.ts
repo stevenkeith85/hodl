@@ -5,6 +5,7 @@ import { getProvider } from '../../../lib/server/connections';
 import { nftmarketaddress } from '../../../config';
 import HodlMarket from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
 import { ipfsUriToCloudinaryUrl } from '../../../lib/utils';
+import axios from 'axios';
 
 import apiRoute from '../handler';
 
@@ -30,7 +31,7 @@ export const getListed = async (address, offset, limit) => {
 
         
         const tokens = await Promise.all(
-            tokenIds.map(id => fetch(`${process.env.NEXT_PUBLIC_HODL_API_ADDRESS}/token/${id}`).then(r => r.json()).then(json => json.token))
+            tokenIds.map(id => axios.get(`${process.env.NEXT_PUBLIC_HODL_API_ADDRESS}/token/${id}`).then(r => r.data.token))
         );
 
         const items =  tokens.map(token => {

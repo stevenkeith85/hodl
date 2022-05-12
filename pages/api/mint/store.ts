@@ -6,6 +6,7 @@ import memoize from 'memoizee';
 import apiRoute from "../handler";
 import { getTokenUriAndOwner } from "../../../lib/server/nft";
 import { getToken } from "../token/[tokenId]";
+import axios from 'axios'
 
 dotenv.config({ path: '../.env' })
 
@@ -31,10 +32,9 @@ route.post(async (req, res: NextApiResponse) => {
   }
 
   // https://community.infura.io/t/ipfs-api-rate-limit/4995
-  const r = await fetch(ipfsUriToGatewayUrl(tokenUri), { headers : getInfuraIPFSAuth() }); 
-  sleep(1000);
+  const r = await axios.get(ipfsUriToGatewayUrl(tokenUri), { headers : getInfuraIPFSAuth() });
 
-  const { name, description, privilege, image } = await r.json()
+  const { name, description, privilege, image } = await r.data;
 
   client.set("token:" + tokenId, JSON.stringify({ tokenId, name, description, privilege, image, mimeType, filter }));
 

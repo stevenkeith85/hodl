@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { Box, Container, CssBaseline, ThemeProvider } from '@mui/material';
 import ResponsiveAppBar from '../components/AppBar';
@@ -11,8 +11,12 @@ import { CacheProvider } from '@emotion/react';
 import { WalletContext } from '../contexts/WalletContext';
 import '../styles/globals.css'
 
+import { useConnect } from '../hooks/useConnect';
+
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
+
+
 
 function MyApp(props) {
   const [signer, setSigner] = useState('');
@@ -20,6 +24,9 @@ function MyApp(props) {
   const [nickname, setNickname] = useState(''); // This will be getting removed
 
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
+
+  
+
 
   return (
     <CacheProvider value={emotionCache}>

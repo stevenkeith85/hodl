@@ -21,9 +21,11 @@ import { useNickname } from '../hooks/useNickname';
 import { NicknameModal } from './modals/NicknameModal';
 import { ProfilePictureModal } from './ProfilePictureModal';
 import { HodlNotifications } from './HodlNotifications';
+import axios from 'axios'
+import { useSnackbar } from 'notistack';
 
 const ResponsiveAppBar = () => {
-    const { address } = useContext(WalletContext);
+    const { address, setAddress, setSigner } = useContext(WalletContext);
 
     const router = useRouter();
     const [connect] = useConnect();
@@ -31,6 +33,9 @@ const ResponsiveAppBar = () => {
     const [nicknameModalOpen, setNicknameModalOpen] = useState(false);
     const [profilePictureModalOpen, setProfilePictureModalOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+    const { enqueueSnackbar } = useSnackbar();
+    const [error, setError] = useState('');
 
     const [pages] = useState([
         {
@@ -65,6 +70,46 @@ const ResponsiveAppBar = () => {
         load();
     }, [])
 
+    useEffect(() => {
+        if (error !== '') {
+            enqueueSnackbar(error, { variant: "error" });
+            // @ts-ignore
+            setError('');
+        }
+        // @ts-ignore
+    }, [error])
+
+    useEffect(() => {
+        axios.interceptors.response.use(null, async (error) => {
+            if (error.config && error.response && error.response.status === 401 && !error.config.__isRetry) {
+                const { refreshed, accessToken } = error.response.data;
+
+                error.config.__isRetry = true;
+
+                if (refreshed) {
+                    localStorage.setItem('jwt', accessToken);
+
+                    error.config.headers.Authorization = accessToken;
+                    return axios.request(error.config);
+                } else {
+                    setSigner(null);
+                    setAddress(null);
+                    localStorage.removeItem('jwt');
+
+                    // await connect(false);
+                    // error.config.headers.Authorization = localStorage.getItem('jwt');
+                    // return axios.request(error.config);
+                }
+
+            } else if (error.config && error.response && error.response.status === 429) {
+                const { message } = error.response.data;
+                setError(message);
+            }
+
+            return Promise.reject(error);
+        });
+    }, []);
+
     return (
         <>
             <NicknameModal nicknameModalOpen={nicknameModalOpen} setNicknameModalOpen={setNicknameModalOpen}></NicknameModal>
@@ -86,11 +131,14 @@ const ResponsiveAppBar = () => {
                             />
                             <Logo />
                             <Box>
+
                                 <IconButton
+                                    sx={{ zIndex: 999 }}
                                     size="large"
                                     onClick={(e) => {
+                                        console.log('clicked')
                                         setMobileMenuOpen(prev => !prev);
-                                        e.stopPropagation();
+                                        // e.stopPropagation();
                                     }}
                                     color="inherit"
                                 >
@@ -101,7 +149,11 @@ const ResponsiveAppBar = () => {
 
 
                         {/* Desktop */}
-                        <Box sx={{ display: { xs: 'none', md: 'flex' }, width: '100%', justifyContent: 'space-between' }}>
+                        <Box sx={{
+                            display: { xs: 'none', md: 'flex' },
+                            width: '100%',
+                            justifyContent: 'space-between'
+                        }}>
                             <Stack direction="row" spacing={12} sx={{ alignItems: 'center' }}>
                                 <Logo />
                                 <Box sx={{
@@ -161,11 +213,15 @@ const ResponsiveAppBar = () => {
                             <Stack
                                 direction="row"
                                 spacing={1}
-                                sx={{ position: 'relative', display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}
+                                sx={{
+                                    position: { sm: 'relative' },
+                                    display: { xs: 'none', md: 'flex' },
+                                    alignItems: 'center'
+                                }}
                             >
                                 <HodlNotifications />
 
-                                {mobileMenuOpen && <MobileMenu
+                                <MobileMenu
                                     page={1}
                                     showBack={false}
                                     pages={pages}
@@ -175,12 +231,13 @@ const ResponsiveAppBar = () => {
                                     setNicknameModalOpen={setNicknameModalOpen}
                                     profilePictureModalOpen={profilePictureModalOpen}
                                     setProfilePictureModalOpen={setProfilePictureModalOpen}
-                                />}
+                                />
                                 <IconButton
                                     size="large"
                                     onClick={(e) => {
+                                        console.log('also clicked')
                                         setMobileMenuOpen(prev => !prev);
-                                        e.stopPropagation();
+                                        // e.stopPropagation();
                                     }}
                                     color="inherit"
                                     aria-label='Account Menu'

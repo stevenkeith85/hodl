@@ -7,11 +7,11 @@ import { useNickname } from "../../hooks/useNickname";
 import { truncateText, getShortAddress } from "../../lib/utils";
 import { WalletContext } from '../../contexts/WalletContext';
 
-export const MainMenuPage = ({ 
-    pages, 
-    // closeMenu, 
-    router, 
-    setMenuPage 
+export const MainMenuPage = ({
+    pages,
+    closeMenu,
+    router,
+    setMenuPage
 }) => {
     const [_update, _apiError, _setApiError, nickname] = useNickname();
     const { signer, address } = useContext(WalletContext);
@@ -37,23 +37,17 @@ export const MainMenuPage = ({
 
     return (
         <Box sx={{
-            padding: 2,
-            // background: 'blue',
             display: 'flex',
             flexDirection: 'column',
-            flexGrow: 1
+            height: '100%'
         }}>
             <Box sx={{
                 flexGrow: 1,
-                flexShrink: 0,
-                flexBasis: 'auto',
             }}>
-                <Stack 
-                    spacing={0} 
-                    m={0} 
-                    sx={{ 
-                        // background: 'red'
-                        }}>
+                <Stack
+                    spacing={0}
+                    m={0}
+                    >
                     {pages.filter(p => p.publicPage || address).map((page, i) => (
                         <Link key={i} href={page.url} passHref>
                             <Stack
@@ -69,12 +63,12 @@ export const MainMenuPage = ({
                                 {page.icon}
                                 <Typography
                                     component="a"
-                                   // onClick={closeMenu}
+                                  //  onClick={closeMenu}
                                     sx={{
-                                        fontSize: 16,
+                                        fontSize: 14,
                                         textDecoration: 'none',
                                         fontWeight: (theme) => router.asPath === page.url ? 900 : 300,
-                                        padding: 2,
+                                        padding: 1,
                                     }} >
                                     {page.label}
                                 </Typography>

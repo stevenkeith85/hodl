@@ -6,12 +6,14 @@ import { ethers } from "ethers"
 import jwt from 'jsonwebtoken'
 import apiRoute from "../handler";
 import { getNonceForAddress } from "./nonce"
+import cookie from 'cookie'
 
 dotenv.config({ path: '../.env' })
 
 const client = Redis.fromEnv()
 const route = apiRoute();
 
+// Should really just be 'login'
 route.post(async (req: NextApiRequest, res: NextApiResponse) => {
   const { signature, address } = req.body;
 
@@ -19,7 +21,6 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(200).json({ error: 'No signed message supplied' });
   }
 
-  console.log("CALLING REDIS TO GET NONCE TO AUTHENTICATE ADDRESS", address);
   const exists = await client.hexists(`user:${address}`, 'nonce');
 
   if (exists) {
@@ -32,9 +33,21 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
       await client.hset(`user:${address}`, { 'nonce': newNonce });
       getNonceForAddress.delete(address);
 
-      const token = jwt.sign({ address }, process.env.JWT_SECRET, { expiresIn: 60 * 60 }); // expires every 60 mins
+      // Create a session in the db here
+      const sessionId = `${Math.floor(Math.random() * 1000000)}`;
+      await client.hset(`user:${address}`, { 'sessionId': sessionId });
 
-      return res.status(200).json({ success: true, token, address, msg: "You are now logged in." });
+      const accessToken = jwt.sign(
+        { address, sessionId }, process.env.JWT_SECRET, { expiresIn: 60 } // expires every 60 seconds
+      ); 
+
+      const refreshToken = jwt.sign(
+        { sessionId }, process.env.JWT_SECRET, { expiresIn: 60 * 10 } // expires every 10 mins
+      ); 
+
+      res.setHeader('Set-Cookie', cookie.serialize('refreshToken', refreshToken, { httpOnly: true, path: '/' }))
+
+      return res.status(200).json({ success: true, token: accessToken, address, msg: "You are now logged in." });
     } else {
       return res.status(401).json({ success: false, address, msg: "You didn't provide the correct signature" });
     }

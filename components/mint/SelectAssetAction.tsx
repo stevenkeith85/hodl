@@ -16,14 +16,14 @@ export const SelectAssetAction: FC<MintProps> = ({
   const { enqueueSnackbar } = useSnackbar();
   const [uploadToCloudinary, progress, error, setError] = useCloudinaryUpload();
 
-  useEffect(() => {
-    if (error !== '') {
-        enqueueSnackbar(error, { variant: "error" });
-        // @ts-ignore
-        setError('');
-    }
-    // @ts-ignore
-}, [error])
+//   useEffect(() => {
+//     if (error !== '') {
+//         enqueueSnackbar(error, { variant: "error" });
+//         // @ts-ignore
+//         setError('');
+//     }
+//     // @ts-ignore
+// }, [error])
 
   const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
     if (rejectedFiles.length === 1) {

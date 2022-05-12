@@ -9,12 +9,12 @@ export const Likes = ({ tokenId, sx = {} }) => {
     const [tokenLikesCount, userLikesThisToken, toggleLike, error, setError] = useLike(tokenId);
     const { enqueueSnackbar } = useSnackbar();
 
-    useEffect(() => {
-        if (error !== '') {
-            enqueueSnackbar(error, { variant: "error" });
-            setError('')
-        }
-    }, [error])
+    // useEffect(() => {
+    //     if (error !== '') {
+    //         enqueueSnackbar(error, { variant: "error" });
+    //         setError('')
+    //     }
+    // }, [error])
 
     return (
         <>

@@ -9,6 +9,7 @@ import { HodlImage } from "./HodlImage";
 import { HodlVideo } from "./HodlVideo";
 import { memo } from "react";
 import theme from "../theme";
+import axios from 'axios';
 
 export const NftAvatarWithLink = ({token, size, highlight=false}: any) => (
     <Link href={`/nft/${token.tokenId}`} passHref>
@@ -41,7 +42,7 @@ export const NftAvatar = ({ token, size, highlight=false }: any) => {
                 {isImage(token.mimeType) && !isGif(token.mimeType) &&
                     <HodlImage
                         cid={token?.image.split('//')[1] || token?.image}
-                        effect={`ar_1.0,c_fill,r_max`}
+                        effect={token?.filter ? `${token.filter},ar_1.0,c_fill,r_max,g_face`: `ar_1.0,c_fill,r_max,g_face`}
                         height={size}
                         srcSetSizes={[Math.ceil(size), Math.ceil(size * 1.5), Math.ceil(size * 2), Math.ceil(size * 2.5)]} // we want it big enough for the scale effect
                         sizes=""
@@ -80,7 +81,7 @@ const AvatarText: React.FC<{ size: string, href?: string, children?: any, color:
             sx={{
                 fontSize: mappings[size],
                 textDecoration: 'none',
-                color: color === 'greyscale' ? 'white' : 'black'
+                color: color === 'greyscale' ? 'white' : '#000'
             }}>
             {children}
         </Typography>
@@ -89,19 +90,13 @@ const AvatarText: React.FC<{ size: string, href?: string, children?: any, color:
 
 export const ProfileAvatar = ({ profileAddress, reverse = false, size = "medium", color = "secondary" }) => {
     const { data: profileNickname } = useSWR(profileAddress ? [`/api/profile/nickname`, profileAddress] : null,
-        (url, query) => fetch(`${url}?address=${query}`)
-            .then(r => r.json())
-            .then(json => json.nickname))
+        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.nickname))
 
     const { data: tokenId } = useSWR(profileAddress ? [`/api/profile/picture`, profileAddress] : null,
-        (url, query) => fetch(`${url}?address=${query}`)
-            .then(r => r.json())
-            .then(json => json.token))
+        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.token))
 
     const { data: token } = useSWR(tokenId ? [`/api/token`, tokenId] : null,
-        (url, query) => fetch(`${url}/${query}`)
-            .then(r => r.json())
-            .then(json => json.token))
+        (url, query) => axios.get(`${url}/${query}`).then(r => r.data.token))
 
 
     const getSize = () => {
