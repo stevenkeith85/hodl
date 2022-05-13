@@ -6,11 +6,13 @@ import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Link from "next/link";
 import { ProfileAvatar } from "./ProfileAvatar";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { truncateText } from "../lib/utils";
 import axios from 'axios';
+import { WalletContext } from "../contexts/WalletContext";
 
 const HodlNotification = ({ item }) => {
+    const { address } = useContext(WalletContext);
     const { data: token } = useSWR(item.token ? [`/api/token`, item.token] : null,
         (url, query) => axios.get(`${url}/${query}`).then(r => r.data.token));
 
@@ -19,11 +21,12 @@ const HodlNotification = ({ item }) => {
             <Stack direction="row" spacing={0.5} display="flex" alignItems="center">
                 <ProfileAvatar profileAddress={item.subject} size="small" />
                 <Box>{item.action}</Box>
-                <Link href={`/nft/${item.token}`}>
+                {item.token && <Link href={`/nft/${item.token}`}>
                     <Typography component="a" sx={{ cursor: "pointer" }}>
                         &quot;{truncateText(token?.name)}&quot;
                     </Typography>
-                </Link>
+                </Link>}
+                {item.object === address && <Typography>you</Typography>}
             </Stack>
         </Box>
     )
@@ -31,21 +34,21 @@ const HodlNotification = ({ item }) => {
 
 export const HodlNotifications = () => {
     const theme = useTheme();
+    const { address } = useContext(WalletContext);
     const xs = useMediaQuery(theme.breakpoints.only('xs'));
 
     const [showNotifications, setShowNotifications] = useState(false);
-    const { data: notifications } = useSWR(`/api/notifications/get`, fetchWithAuth)
+    const { data: notifications } = useSWR( address ? `/api/notifications/get` : null, fetchWithAuth)
 
     const toggleNotifications = async () => {
         setShowNotifications(prev => !prev);
     }
 
-
     return (
         <>
             {notifications ? <NotificationsIcon onClick={toggleNotifications} /> : <NotificationsNoneIcon onClick={toggleNotifications} />}
             {showNotifications &&
-                <ClickAwayListener onClickAway={() => setShowNotifications(false)} touch={false}>
+                <ClickAwayListener onClickAway={() => setShowNotifications(false)} touchEvent={false}>
                     <Box
                         sx={{
                             position: 'absolute',
@@ -54,9 +57,12 @@ export const HodlNotifications = () => {
                             top: 60,
                             right: 0,
                             minWidth: '350px',
-                            maxHeight: '500px',
+                            maxHeight: xs ? '100vh': '500px',
                             overflow: 'auto',
                             border: `1px solid #f0f0f0`,
+                            marginLeft: xs? '-16px' : 0,
+                            marginRight: xs? '-16px' : 0,
+                            height: xs ? 'calc(100vh - 60px)': 'auto',
                             borderRadius: 1,
                             padding: 2,
                             animation: xs ?

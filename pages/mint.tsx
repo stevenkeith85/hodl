@@ -54,7 +54,7 @@ const Mint = () => {
   return (
     <>
       <Head>
-        <title>Mint NFT</title>
+        <title>Mint NFT | NFT Market | HodlMyMoon</title>
       </Head>
       <Stack spacing={2} marginY={4}>
         <MintTitle />

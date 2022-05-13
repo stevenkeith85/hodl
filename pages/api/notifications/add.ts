@@ -9,11 +9,12 @@ import { getProvider } from "../../../lib/server/connections";
 import { ethers } from "ethers";
 import { nftaddress } from "../../../config";
 import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
-import { HodlNotification, NftAction } from './models';
-import { getPriceHistory } from "../priceHistory/[tokenId]";
+import { AddressAction, HodlNotification, NftAction } from './models';
+import { getPriceHistory } from "../token-bought/[tokenId]";
 import { likesToken } from "../like/likes";
-import { getTokensListed } from "../tokenListed/[tokenId]";
+import { getTokensListed } from "../token-listed/[tokenId]";
 import { getFollowers } from "../follow/followers";
+import { isFollowing } from "../follow/follows";
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
@@ -28,12 +29,28 @@ export const addNotification = async (notification: HodlNotification) => {
 
     const likes = await likesToken(notification.subject, notification.token);
 
-    if (!likes) {
+    if (!likes || owner === notification.subject) { // don't notify yourself that you liked your own NFT
       return; 
     }
 
     return await client.zadd(
       `notifications:${owner}`,
+      {
+        score: Date.now(),
+        member: JSON.stringify(notification)
+      }
+    );
+  }
+
+  if (notification.action === AddressAction.Followed) { // tell the account someone followed it
+    const follows = await isFollowing(notification.subject, notification.object);
+
+    if (!follows) {
+      return; 
+    }
+
+    return await client.zadd(
+      `notifications:${notification.object}`,
       {
         score: Date.now(),
         member: JSON.stringify(notification)
@@ -77,7 +94,6 @@ export const addNotification = async (notification: HodlNotification) => {
       return;
     }
 
-    console.log('adding listed notification')
     const followers = await getFollowers(notification.subject);
 
     for (let address of followers) {

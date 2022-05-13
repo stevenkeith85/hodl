@@ -92,7 +92,7 @@ const handler = () => nc<HodlApiRequest, NextApiResponse>({
 
           if (sessionId == storedSessionId) { // create a new access token
             const accessToken = jwt.sign(
-              { address, sessionId }, process.env.JWT_SECRET, { expiresIn: 60 }
+              { address, sessionId }, process.env.JWT_SECRET, { expiresIn: 60 * 10 }
             ); 
             return res.status(401).json({ refreshed: true, accessToken }); // refresh token is still valid. give the user a new access token to store and let them retry
           }

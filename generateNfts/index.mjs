@@ -6,9 +6,11 @@ import { nftmarketaddress, nftaddress } from './config.js'
 import { readFileSync } from 'fs'
 import dotenv from 'dotenv'
 import cloudinary from 'cloudinary'
-import Redis from 'ioredis';
-dotenv.config({ path: '../.env.local' })
+import { Redis } from '@upstash/redis';
 
+dotenv.config({path: '../.env.local'})
+
+const client = Redis.fromEnv()
 const Market = JSON.parse(fs.readFileSync('../artifacts/contracts/HodlMarket.sol/HodlMarket.json'));
 const NFT = JSON.parse(fs.readFileSync('../artifacts/contracts/HodlNFT.sol/HodlNFT.json'));
 
@@ -21,7 +23,7 @@ const ipfs = create({
   },
 });
 
-console.log('process.env.CLOUDINARY_NAME', process.env.CLOUDINARY_NAME)
+console.log('process.env.CLOUDINARY_NAME', process.env.NEXT_PUBLIC_CLOUDINARY_NAME)
 // @ts-ignore
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_NAME,
@@ -78,7 +80,7 @@ async function createNFTs(dirpath) {
       const result = await uploadToCloudinary(fullPath, imageCid);
       console.log(result);
 
-      const tokenCreated = await tokenContract.createToken(`ipfs://${metadataCid}`);
+      const tokenCreated = await tokenContract.createToken(`ipfs://${metadataCid}`, { value: ethers.utils.parseEther("1")});
       const tx = await tokenCreated.wait();
       const event = tx.events[0];
       const value = event.args[2];
@@ -86,7 +88,6 @@ async function createNFTs(dirpath) {
 
       console.log('created token', tokenId);
 
-      let client = new Redis(process.env.REDIS_CONNECTION_STRING);
       client.set("token:" + tokenId, JSON.stringify({
         tokenId,
         name: token.name,
@@ -94,16 +95,13 @@ async function createNFTs(dirpath) {
         image: `ipfs://${imageCid.toString()}`,
         phash: result.phash
       }));
-      await client.quit();
-      
+
       if (token.price) {
         const price = ethers.utils.parseUnits(token.price, 'ether');
         const tx = await marketContract.listToken(nftaddress, tokenId, price);
         await tx.wait();
         console.log("token listed");
       }
-
-      sleep(2000);
     }
   }
 

@@ -5,7 +5,7 @@ import { nftaddress } from '../../../config';
 import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import { ipfsUriToCloudinaryUrl } from '../../../lib/utils';
 import apiRoute from '../handler';
-import axios from 'axios'
+import { getToken } from '../token/[tokenId]';
 
 dotenv.config({ path: '../.env' })
 
@@ -25,7 +25,7 @@ export const getHodling = async (address, offset, limit) => {
         }
 
         const tokens = await Promise.all(
-            tokenIds.map(id => axios.get(`${process.env.NEXT_PUBLIC_HODL_API_ADDRESS}/token/${id}`).then(r => r.data.token))
+            tokenIds.map(id => getToken(id))
         );
 
         const items = tokens.map(token => {

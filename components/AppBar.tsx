@@ -96,9 +96,7 @@ const ResponsiveAppBar = () => {
                     setAddress(null);
                     localStorage.removeItem('jwt');
 
-                    // await connect(false);
-                    // error.config.headers.Authorization = localStorage.getItem('jwt');
-                    // return axios.request(error.config);
+                    // TODO: Modal dialog about the session expiring
                 }
 
             } else if (error.config && error.response && error.response.status === 429) {
@@ -130,8 +128,16 @@ const ResponsiveAppBar = () => {
                                 setProfilePictureModalOpen={setProfilePictureModalOpen}
                             />
                             <Logo />
-                            <Box>
-
+                            <Stack
+                                direction="row"
+                                // spacing={1}
+                                sx={{
+                                    position: { sm: 'relative' },
+                                    display: { xs: 'flex', md: 'none' },
+                                    alignItems: 'center'
+                                }}
+                            >
+                                <HodlNotifications />
                                 <IconButton
                                     sx={{ zIndex: 999 }}
                                     size="large"
@@ -144,7 +150,7 @@ const ResponsiveAppBar = () => {
                                 >
                                     {mobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
                                 </IconButton>
-                            </Box>
+                            </Stack>
                         </Box>
 
 
@@ -212,7 +218,6 @@ const ResponsiveAppBar = () => {
                             </Stack>
                             <Stack
                                 direction="row"
-                                spacing={1}
                                 sx={{
                                     position: { sm: 'relative' },
                                     display: { xs: 'none', md: 'flex' },

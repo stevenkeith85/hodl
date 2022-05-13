@@ -38,11 +38,11 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
       await client.hset(`user:${address}`, { 'sessionId': sessionId });
 
       const accessToken = jwt.sign(
-        { address, sessionId }, process.env.JWT_SECRET, { expiresIn: 60 } // expires every 60 seconds
+        { address, sessionId }, process.env.JWT_SECRET, { expiresIn: 60 * 10} // expires every ten mins
       ); 
 
       const refreshToken = jwt.sign(
-        { sessionId }, process.env.JWT_SECRET, { expiresIn: 60 * 10 } // expires every 10 mins
+        { sessionId }, process.env.JWT_SECRET, { expiresIn: 60 * 120 } // expires every 2 hours
       ); 
 
       res.setHeader('Set-Cookie', cookie.serialize('refreshToken', refreshToken, { httpOnly: true, path: '/' }))

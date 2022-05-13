@@ -5,9 +5,9 @@ import { getProvider } from '../../../lib/server/connections';
 import { nftmarketaddress } from '../../../config';
 import HodlMarket from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
 import { ipfsUriToCloudinaryUrl } from '../../../lib/utils';
-import axios from 'axios';
 
 import apiRoute from '../handler';
+import { getToken } from '../token/[tokenId]';
 
 dotenv.config({ path: '../.env' })
 
@@ -29,9 +29,8 @@ export const getListed = async (address, offset, limit) => {
             tokenIds.push(listing.tokenId);
         }
 
-        
         const tokens = await Promise.all(
-            tokenIds.map(id => axios.get(`${process.env.NEXT_PUBLIC_HODL_API_ADDRESS}/token/${id}`).then(r => r.data.token))
+            tokenIds.map(id => getToken(id))
         );
 
         const items =  tokens.map(token => {

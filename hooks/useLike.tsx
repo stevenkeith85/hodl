@@ -14,6 +14,10 @@ export const useLike = (tokenId) => {
     (url, address, tokenId) => axios.get(`${url}?address=${address}&token=${tokenId}`).then(r => Boolean(r.data.likes)));
 
   const toggleLike = async () => {
+    if (!address) {
+      return;
+    }
+    
     mutateLikesCount(old => userLikesThisToken ? old - 1 : old + 1, { revalidate: false });
     mutateUserLikesThisToken(old => !old, { revalidate: false })
 
@@ -29,10 +33,8 @@ export const useLike = (tokenId) => {
         }
       )
     } catch (error) {
-      if (error.response.status === 429) {
-        mutateLikesCount();
-        mutateUserLikesThisToken();
-      }
+      mutateLikesCount();
+      mutateUserLikesThisToken();
 
       return { success: false, fileName: null, mimeType: null };
     }

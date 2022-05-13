@@ -13,6 +13,7 @@ export enum AddressAction {
 
 export interface HodlNotification {
     subject: string; // address
-    action: NftAction;
-    token: number;
+    action: NftAction | AddressAction;
+    object?: string; // address
+    token?: number;
 }

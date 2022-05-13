@@ -23,7 +23,7 @@ import { truncateText } from "../../lib/utils";
 import { ProfileAvatar } from "../../components/ProfileAvatar";
 import { Likes } from "../../components/Likes";
 import Head from "next/head";
-import { getPriceHistory } from "../api/priceHistory/[tokenId]";
+import { getPriceHistory } from "../api/token-bought/[tokenId]";
 import { token, nonCommercial, commercial } from "../../lib/copyright";
 
 export async function getServerSideProps({ params }) {
@@ -42,7 +42,7 @@ const NftDetail = ({ nft, priceHistory }) => {
   return (
     <>
       <Head>
-        <title>{nft.name} - {truncateText(nft.description)}</title>
+        <title>{nft.name} | {truncateText(nft.description)} | NFT Market | HodlMyMoon</title>
       </Head>
       <Grid container>
         <Grid item xs={12} marginY={2}>

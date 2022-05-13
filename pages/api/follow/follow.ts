@@ -7,6 +7,8 @@ import apiRoute from "../handler";
 import { isValidAddress } from '../../../lib/profile';
 import { getFollowingCount } from './followingCount';
 import { getFollowersCount } from './followersCount';
+import { AddressAction, HodlNotification } from '../notifications/models';
+import { addNotification } from '../notifications/add';
 
 dotenv.config({ path: '../.env' })
 const client = Redis.fromEnv()
@@ -51,9 +53,18 @@ route.post(async (req, res) => {
   getFollowing.delete(req.address);
   getFollowingCount.delete(req.address);
 
-  console.log('deleting the memo')
   getFollowers.delete(address);
   getFollowersCount.delete(address);
+
+  if (followed) {
+    const notification: HodlNotification = {
+      subject: req.address,
+      object: address,
+      action: AddressAction.Followed
+    };
+  
+    const success = addNotification(notification);
+  }
   
   res.status(200).json({followed});
 });

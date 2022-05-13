@@ -21,7 +21,7 @@ export default function Home({ limit, prefetchedListed }) {
   return (
     <>
       <Head>
-        <title>HodlMyMoon | Mint, Showcase, and Trade NFTs | NFT Market</title>
+        <title>Mint, Showcase, and Trade NFTs | NFT Market | HodlMyMoon</title>
         <meta name="description" content="Mint, Showcase, and Trade NFTs at HodlMyMoon. Browse the Market Today!"></meta>
       </Head>
       <InfiniteScrollTab swr={swr} limit={limit} />
