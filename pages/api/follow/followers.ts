@@ -11,7 +11,7 @@ const client = Redis.fromEnv()
 const route = apiRoute();
 
 export const getFollowers = memoize(async (address) => {
-  console.log("CALLING REDIS TO SEE WHO IS FOLLOWING ADDRESS", address);
+  // console.log("CALLING REDIS TO SEE WHO IS FOLLOWING ADDRESS", address);
   const followers = await client.hkeys(`followers:${address}`)
 
   return followers;

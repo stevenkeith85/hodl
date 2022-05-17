@@ -16,7 +16,7 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
     const { address } = useContext(WalletContext);
 
     const getKey = (index, previous) => {
-        return [`/api/profile/hodling?address=${address}`, index * lim, lim];
+        return address ? [`/api/profile/hodling?address=${address}`, index * lim, lim]: null;
     }
 
     const fetcher = async (key, offset, limit) => await axios.get(`/api/profile/hodling?address=${address}&offset=${offset}&limit=${limit}`)
@@ -31,8 +31,11 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
     }
 
     if (swr?.error) {
-        console.log('swr infinite error', swr.error)
         return null;
+    }
+
+    if (!profilePictureModalOpen) {
+        return null
     }
 
     return (

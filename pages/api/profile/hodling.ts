@@ -41,8 +41,8 @@ export const getHodling = async (address, offset, limit) => {
                 name: token.name,
                 description: token.description,
                 image: ipfsUriToCloudinaryUrl(token.image),
-                mimeType: token.mimeType,
-                filter: token.filter
+                mimeType: token.mimeType || null,
+                filter: token.filter || null
             }
         });
 

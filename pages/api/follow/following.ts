@@ -13,7 +13,7 @@ const route = apiRoute();
 
 
 export const getFollowing = memoize(async (address) => {
-  console.log("CALLING REDIS TO SEE WHO ADDRESS IS FOLLOWING", address);
+  // console.log("CALLING REDIS TO SEE WHO ADDRESS IS FOLLOWING", address);
   const following = await client.hkeys(`following:${address}`)
 
   return following;

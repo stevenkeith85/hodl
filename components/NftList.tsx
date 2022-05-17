@@ -75,7 +75,7 @@ const NftList = ({
                                 {showAvatar && 
                                     <ProfileAvatar 
                                         size="small" 
-                                        profileAddress={nft?.seller} 
+                                        profileAddress={nft?.seller || nft?.owner} 
                                         color="greyscale" 
                                 />}
                                 {showName && 

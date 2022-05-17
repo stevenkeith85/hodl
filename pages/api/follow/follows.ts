@@ -14,7 +14,7 @@ const route = apiRoute();
 // Find out if adress1 follows address2
 // Memo cleared when 'follow' is toggled
 export const isFollowing = memoize(async (address1, address2) => {
-  console.log("CALLING REDIS TO SEE IF ADDRESS1 IS FOLLOWING ADDRESS2", address1, address2);
+  // console.log("CALLING REDIS TO SEE IF ADDRESS1 IS FOLLOWING ADDRESS2", address1, address2);
   const follows = await client.hexists(`following:${address1}`, address2);
   return follows;
 }, { 

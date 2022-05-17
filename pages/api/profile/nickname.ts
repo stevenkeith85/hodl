@@ -12,7 +12,7 @@ const client = Redis.fromEnv()
 const route = apiRoute();
 
 export const getNickname = memoize(async (address) => {
-  console.log("CALLING REDIS FOR NICKNAME FOR ADDRESS", address);
+  // console.log("CALLING REDIS FOR NICKNAME FOR ADDRESS", address);
 
   const nickname = await client.get(`nickname:${address}`);
   return nickname;

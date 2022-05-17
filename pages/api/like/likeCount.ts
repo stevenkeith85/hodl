@@ -11,7 +11,7 @@ const route = apiRoute();
 
 // Memo cleared when someone likes/dislikes the token
 export const getLikeCount = memoize(async (token) => {
-  console.log("CALLING REDIS TO GET TOKEN LIKE COUNT", token);
+  // console.log("CALLING REDIS TO GET TOKEN LIKE COUNT", token);
     
   const count = await client.hlen(`likedby:${token}`);
   return count;

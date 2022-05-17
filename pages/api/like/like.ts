@@ -28,7 +28,7 @@ route.post(async (req, res: NextApiResponse) => {
 
   let liked = false;
 
-  console.log("CALLING REDIS TO TOGGLE WHETHER ADDRESS LIKES TOKEN", req.address, token);
+  // console.log("CALLING REDIS TO TOGGLE WHETHER ADDRESS LIKES TOKEN", req.address, token);
   const exists = await client.hexists(`likes:${req.address}`, token); // O(1)
 
   if (exists) {

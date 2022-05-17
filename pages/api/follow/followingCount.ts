@@ -10,7 +10,7 @@ const client = Redis.fromEnv()
 const route = apiRoute();
 
 export const getFollowingCount = memoize(async (address) => {
-  console.log("CALLING REDIS TO GET FOLLOWING COUNT", address);
+  // console.log("CALLING REDIS TO GET FOLLOWING COUNT", address);
 
   const count = await client.hlen(`following:${address}`);
   return count;

@@ -38,7 +38,7 @@ const uploadNFT = async (name, description, privilege, path, filter, isVideo) =>
 
   // @ts-ignore
   const image = await ipfs.add(urlSource(url), { cidVersion: 1 });
-
+  console.log('ADDED')
   const data = JSON.stringify({ name, description, privilege, image: `ipfs://${image.cid}` });
   const metadata = await ipfs.add(data, { cidVersion: 1 });
 
@@ -59,17 +59,18 @@ route.post(async (req, res: NextApiResponse) => {
   const isVideo = mimeType.indexOf('video') !== -1;
 
   const { imageCid, metadataCid } = await uploadNFT(
-    name, 
+    name,
     description,
-    privilege, 
-    fileName, 
-    filter, 
+    privilege,
+    fileName,
+    filter,
     isVideo
   );
 
+  console.log('uploaded NFT')
   await renameOnCloudinary(
-    fileName, 
-    process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER + '/nfts/' + imageCid, 
+    fileName,
+    process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER + '/nfts/' + imageCid,
     isVideo
   );
 

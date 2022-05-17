@@ -13,7 +13,7 @@ const route = apiRoute();
 // Find out if adress likes token
 // Memo cleared when 'like' is toggled
 export const likesToken = memoize(async (address, token) => {
-  console.log("CALLING REDIS TO SEE IF ADDRESS LIKES TOKEN", address, token);
+  // console.log("CALLING REDIS TO SEE IF ADDRESS LIKES TOKEN", address, token);
   const likes = await client.hexists(`likes:${address}`, token);
   return likes;
 }, { 

@@ -11,26 +11,22 @@ dotenv.config({ path: '../.env' })
 const client = Redis.fromEnv()
 const route = apiRoute();
 
-export const getToken = memoize(async (tokenId) => {
-  // console.log('CALLING REDIS TO GET TOKEN INFORMATION FOR', tokenId);
-  const token = await client.get('token:' + tokenId);
-  return token;
-}, { 
-  async: true,
-  primitive: true,
-  max: 10000, 
-});
+export const getTagsForToken = async token => {
+  const tags = await client.zrange(`tags:${token}`, 0, -1);
+
+  return tags
+};
 
 
 route.get(async (req: NextApiRequest, res: NextApiResponse) => {
-  const { tokenId } = req.query;
+  const { token } = req.query;
 
-  if (!tokenId) {
+  if (!token) {
     return res.status(400).json({message: 'Bad Request'});
   }
 
-  const token = await getToken(tokenId);
-  res.status(200).json({ token })
+  const tags = await getTagsForToken(token);
+  res.status(200).json(tags)
 });
 
 export default route;

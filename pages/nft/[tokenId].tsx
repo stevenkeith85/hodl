@@ -24,21 +24,25 @@ import { ProfileAvatar } from "../../components/ProfileAvatar";
 import { Likes } from "../../components/Likes";
 import Head from "next/head";
 import { getPriceHistory } from "../api/token-bought/[tokenId]";
-import { token, nonCommercial, commercial } from "../../lib/copyright";
+import { getTagsForToken } from "../api/tags/[token]";
+import { HodlerPrivilege } from "../../components/nft/HodlerPrivilege";
+import { HodlTagCloud } from "../../components/nft/HodlTagCloud";
 
 export async function getServerSideProps({ params }) {
   const nft = await fetchNFT(params.tokenId);
+  const prefetchedTags = await getTagsForToken(params.tokenId);
   const priceHistory = await getPriceHistory(params.tokenId);
 
   return {
     props: {
       nft,
+      prefetchedTags,
       priceHistory
     },
   }
 }
 
-const NftDetail = ({ nft, priceHistory }) => {
+const NftDetail = ({ nft, prefetchedTags, priceHistory }) => {
   return (
     <>
       <Head>
@@ -68,32 +72,8 @@ const NftDetail = ({ nft, priceHistory }) => {
         <Grid item xs={12} md={6} marginBottom={2} paddingLeft={{ md: 1 }}>
           <Stack spacing={2}>
             <DescriptionCard nft={nft} />
-
-            { nft.privilege &&
-            <Card variant="outlined">
-              <CardContent>
-                <Typography variant="h3" sx={{ marginBottom: 2 }}>Hodler Privilege</Typography>
-                <Stack spacing={2} direction="row">
-                  <Tooltip title={token}>
-                    <Button
-                      color={nft.privilege === token ? 'secondary' : 'primary'}
-                    >Token</Button>
-                  </Tooltip>
-                  <Tooltip title={nonCommercial}>
-                    <Button
-                      color={nft.privilege === nonCommercial ? 'secondary' : 'primary'}
-                    >Non Commercial</Button>
-                  </Tooltip>
-                  <Tooltip title={commercial}>
-                    <Button
-                      color={nft.privilege === commercial ? 'secondary' : 'primary'}
-                    >Commercial</Button>
-                  </Tooltip>
-                </Stack>
-              </CardContent>
-            </Card>
-            }
-
+            <HodlerPrivilege nft={nft}/>
+            <HodlTagCloud nft={nft} prefetchedTags={prefetchedTags}/>
             <IpfsCard nft={nft} />
             {Boolean(nft?.forSale) && <PriceCard nft={nft} />}
             {Boolean(priceHistory.length) && <PriceHistory priceHistory={priceHistory} />}

@@ -54,6 +54,7 @@ export const HodlVideo = ({
         <>
         <Box sx={{
             display: 'flex',
+            height: height,
             video: {
                 objectFit: 'cover',
                 objectPosition: 'top',
@@ -61,7 +62,7 @@ export const HodlVideo = ({
             },
             ...sx
         }}>
-            <Skeleton variant="rectangular" width="100%" height={height}></Skeleton>
+            {/* <Skeleton variant="rectangular" width="100%" height={height}></Skeleton> */}
             <video
                 onLoadedData={() => {
                     if (onLoad) {
@@ -70,8 +71,7 @@ export const HodlVideo = ({
                 }
                 }
                 preload={preload}
-                width={`100%`}
-                height={height}
+                width="100%"
                 ref={video}
                 autoPlay={gif}
                 loop={gif}

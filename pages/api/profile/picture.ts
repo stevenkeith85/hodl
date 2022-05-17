@@ -26,7 +26,7 @@ const isOwner = async (token, address) => {
 }
 
 const getProfilePicture = memoize(async (address) => {
-  console.log("CALLING REDIS TO GET PROFILE PIC FOR ADDRESS", address);
+  // console.log("CALLING REDIS TO GET PROFILE PIC FOR ADDRESS", address);
   const token = await client.hget(`user:${address}`, 'picture');
   return token;
 }, {
@@ -68,7 +68,7 @@ route.post(async (req, res: NextApiResponse) => {
     return res.status(400).json({ error: 'bad request' });
   }
 
-  console.log("CALLING REDIS TO SET USER'S PROFILE PIC TO NFT", token);
+  // console.log("CALLING REDIS TO SET USER'S PROFILE PIC TO NFT", token);
   await client.hset(`user:${req.address}`, {'picture': token});
 
   getProfilePicture.delete(req.address);

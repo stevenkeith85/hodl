@@ -12,7 +12,7 @@ const route = apiRoute();
 
 
 export const getAddress = memoize(async (nickname) => {
-    console.log("CALLING REDIS FOR ADDRESS FOR NICKNAME", nickname);
+    // console.log("CALLING REDIS FOR ADDRESS FOR NICKNAME", nickname);
     const address = await client.get(`address:${nickname}`);
     return address;
 }, { 

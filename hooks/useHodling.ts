@@ -22,7 +22,3 @@ export const useHodling = (address, limit = 10, prefetchedHodlingCount = null, p
 
     return [hodlingCount?.count, swr];
 }
-
-
-
-

@@ -19,7 +19,10 @@ const rateLimits = {
   // 'POST:/api/mint/upload': 3,
   // 'POST:/api/mint/ipfs': 1,
   // 'POST:/api/like/like': 2,
-  // 'POST:/api/follow/follow': 10
+  // 'POST:/api/follow/follow': 10,
+  // 'POST:/api/tags/add': 12,
+  // 'DELETE:/api/tags/delete': 12,
+  // 'GET:/api/search/results': 60,
 }
 
 
@@ -92,7 +95,7 @@ const handler = () => nc<HodlApiRequest, NextApiResponse>({
 
           if (sessionId == storedSessionId) { // create a new access token
             const accessToken = jwt.sign(
-              { address, sessionId }, process.env.JWT_SECRET, { expiresIn: 60 * 10 }
+              { address, sessionId }, process.env.JWT_SECRET, { expiresIn: 60 * 30 } // every 30 mins
             ); 
             return res.status(401).json({ refreshed: true, accessToken }); // refresh token is still valid. give the user a new access token to store and let them retry
           }

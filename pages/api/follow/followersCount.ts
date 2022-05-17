@@ -10,7 +10,7 @@ const client = Redis.fromEnv()
 const route = apiRoute();
 
 export const getFollowersCount = memoize(async (address) => {
-  console.log("CALLING REDIS TO GET FOLLOWERS COUNT", address);
+  // console.log("CALLING REDIS TO GET FOLLOWERS COUNT", address);
 
   const count = await client.hlen(`followers:${address}`);
   return count;
