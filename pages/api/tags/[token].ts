@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
 import dotenv from 'dotenv'
-import memoize from 'memoizee';
 import apiRoute from '../handler';
 
 import { Redis } from '@upstash/redis';
@@ -16,7 +15,6 @@ export const getTagsForToken = async token => {
 
   return tags
 };
-
 
 route.get(async (req: NextApiRequest, res: NextApiResponse) => {
   const { token } = req.query;

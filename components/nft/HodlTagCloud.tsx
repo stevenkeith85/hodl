@@ -1,4 +1,4 @@
-import { Card, CardContent, Typography, Stack, Chip, Box } from "@mui/material";
+import { Card, CardContent, Typography, Chip, Box } from "@mui/material";
 import { useRouter } from "next/router";
 import axios from 'axios';
 import useSWR from "swr";
@@ -7,6 +7,7 @@ import { WalletContext } from "../../contexts/WalletContext";
 import { Formik, Form, Field } from "formik";
 import { InputBase } from 'formik-mui';
 import { AddTagValidationSchema } from "../../validationSchema/addTag";
+import { MAX_TAGS_PER_TOKEN } from "../../lib/utils";
 
 export const HodlTagCloud = ({ nft, prefetchedTags }) => {
     const router = useRouter();
@@ -29,44 +30,43 @@ export const HodlTagCloud = ({ nft, prefetchedTags }) => {
             <CardContent>
                 <Typography variant="h3" sx={{ marginBottom: 2 }}>Tags</Typography>
                 <Box sx={{
-                    display: 'grid',
-                    gap: 2,
-                    gridTemplateColumns: '1fr 1fr 1fr 1fr'
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: 1,
                 }}>
                     {isOwner() ?
 
-                        (tags || []).map(tag => <Chip 
-                            label={tag} 
+                        (tags || []).map(tag => <Chip key={tag}
+                            label={tag}
                             onClick={async (values) => {
                                 router.push(`/search?q=${tag}`);
                             }}
                             onDelete={async () => {
-                            try {
-                                mutateTags(old => old.filter(t => t !== tag), { revalidate: false });
-                                const r = await axios.delete(
-                                    '/api/tags/delete',
-                                    {
-                                        headers: {
-                                            'Accept': 'application/json',
-                                            'Authorization': localStorage.getItem('jwt')
-                                        },
-                                        data: {
-                                            tag,
-                                            token: nft.tokenId
-                                        },
+                                try {
+                                    mutateTags(old => old.filter(t => t !== tag), { revalidate: false });
+                                    const r = await axios.delete(
+                                        '/api/tags/delete',
+                                        {
+                                            headers: {
+                                                'Accept': 'application/json',
+                                                'Authorization': localStorage.getItem('jwt')
+                                            },
+                                            data: {
+                                                tag,
+                                                token: nft.tokenId
+                                            },
 
-                                    });
-                            } catch (error) {
-                                mutateTags();
-                            }
-                        }} />)
-                        : tags.map(tag => <Chip label={tag} onClick={async (values) => {
+                                        });
+                                } catch (error) {
+                                    mutateTags();
+                                }
+                            }} />)
+                        : tags.map(tag => <Chip label={tag} key={tag} onClick={async (values) => {
                             router.push(`/search?q=${tag}`);
                         }} />)
                     }
 
-                    {isOwner() && tags.length < 6 &&
-
+                    {isOwner() && tags.length < MAX_TAGS_PER_TOKEN &&
                         <Formik
                             initialValues={{
                                 tag: '',
@@ -104,10 +104,11 @@ export const HodlTagCloud = ({ nft, prefetchedTags }) => {
                                     <Field
                                         inputRef={newTagRef}
                                         component={InputBase}
-                                        sx={{ width: '120px', border: errors.tag ? theme => `1px solid ${theme.palette.error.main}`: '1px solid #999', borderRadius: 2, paddingX: 2 }}
+                                        sx={{ width: '120px', border: errors.tag ? theme => `1px solid ${theme.palette.error.main}` : '1px solid #999', borderRadius: 2, paddingX: 2 }}
                                         placeholder="add new tag"
                                         name="tag"
                                         type="text"
+                                        autoComplete='off'
                                         onChange={e => {
                                             const value = e.target.value || "";
                                             setFieldValue('tag', value.toLowerCase());
@@ -116,14 +117,8 @@ export const HodlTagCloud = ({ nft, prefetchedTags }) => {
                                 </Form>
                             )}
                         </Formik>
-
-
                     }
-
-
-
                 </Box>
-
             </CardContent>
         </Card>
     )

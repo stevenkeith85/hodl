@@ -1,4 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
@@ -19,9 +18,10 @@ import { isFollowing } from "../follow/follows";
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
 
-// Integer reply, specifically:
-// When used without optional arguments, the number of elements added to the sorted set (excluding score updates).
+// we overwrite the timestamp, as we don't trust users
 export const addNotification = async (notification: HodlNotification) => {
+  notification.timestamp = Date.now();
+
   if (notification.action === NftAction.Liked) { // tell the token owner you liked it
     const provider = await getProvider();
     const tokenContract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
@@ -36,11 +36,30 @@ export const addNotification = async (notification: HodlNotification) => {
     return await client.zadd(
       `notifications:${owner}`,
       {
-        score: Date.now(),
+        score: notification.timestamp,
         member: JSON.stringify(notification)
       }
     );
   }
+
+  if (notification.action === NftAction.CommentedOn) { // tell the token owner someone commented on their token
+    const provider = await getProvider();
+    const tokenContract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
+    const owner = await tokenContract.ownerOf(notification.token);
+
+    if (owner === notification.subject) {
+      return; // We don't need to notify ourselves that we commented on something
+    }
+
+    return await client.zadd(
+      `notifications:${owner}`,
+      {
+        score: notification.timestamp,
+        member: JSON.stringify(notification)
+      }
+    );
+  }
+
 
   if (notification.action === AddressAction.Followed) { // tell the account someone followed it
     const follows = await isFollowing(notification.subject, notification.object);
@@ -52,7 +71,7 @@ export const addNotification = async (notification: HodlNotification) => {
     return await client.zadd(
       `notifications:${notification.object}`,
       {
-        score: Date.now(),
+        score: notification.timestamp,
         member: JSON.stringify(notification)
       }
     );
@@ -70,7 +89,7 @@ export const addNotification = async (notification: HodlNotification) => {
     const first = await client.zadd(
       `notifications:${buyer}`,
       {
-        score: Date.now(),
+        score: notification.timestamp,
         member: JSON.stringify(notification)
       }
     );
@@ -78,7 +97,7 @@ export const addNotification = async (notification: HodlNotification) => {
     const second = await client.zadd(
       `notifications:${seller}`,
       {
-        score: Date.now(),
+        score: notification.timestamp,
         member: JSON.stringify(notification)
       }
     );
@@ -100,7 +119,7 @@ export const addNotification = async (notification: HodlNotification) => {
       await client.zadd(
         `notifications:${address}`,
         {
-          score: Date.now(),
+          score: notification.timestamp,
           member: JSON.stringify(notification)
         }
       );
@@ -130,7 +149,7 @@ route.post(async (req, res: NextApiResponse) => {
     token
   };
 
-  const success = addNotification(notification);
+  const success = await addNotification(notification);
 
   if (success) {
     return res.status(200).json({ message: 'success' });

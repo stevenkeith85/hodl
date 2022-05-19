@@ -15,6 +15,7 @@ export interface HodlApiRequest extends NextApiRequest {
 const client = Redis.fromEnv();
 
 // Comment out for development to save db calls
+// TODO: Go through every route and make sure we haven't missed any
 const rateLimits = {
   // 'POST:/api/mint/upload': 3,
   // 'POST:/api/mint/ipfs': 1,

@@ -1,5 +1,7 @@
 import { commercial, nonCommercial, token } from "./copyright";
 
+export const MAX_TAGS_PER_TOKEN = 6;
+
 export function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -11,7 +13,6 @@ export const hasExpired = jwt => {
   
   return Date.now() >= (JSON.parse(atob(jwt.split('.')[1]))).exp * 1000
 }
-
 
 export const imageFilters = [
   { code: null, name: 'original' },

@@ -10,6 +10,8 @@ import { useContext, useState } from "react";
 import { truncateText } from "../lib/utils";
 import axios from 'axios';
 import { WalletContext } from "../contexts/WalletContext";
+import formatDistance from 'date-fns/formatDistance';
+
 
 const HodlNotification = ({ item }) => {
     const { address } = useContext(WalletContext);
@@ -27,6 +29,7 @@ const HodlNotification = ({ item }) => {
                     </Typography>
                 </Link>}
                 {item.object === address && <Typography>you</Typography>}
+                <Typography sx={{ fontSize: 10, color: "#999"}}>{item.timestamp && formatDistance(new Date(item.timestamp), new Date(), { addSuffix: true } )}</Typography>
             </Stack>
         </Box>
     )
@@ -44,6 +47,10 @@ export const HodlNotifications = () => {
         setShowNotifications(prev => !prev);
     }
 
+    if (!address) {
+        return null;
+    }
+
     return (
         <>
             {notifications ? <NotificationsIcon onClick={toggleNotifications} /> : <NotificationsNoneIcon onClick={toggleNotifications} />}
@@ -54,7 +61,7 @@ export const HodlNotifications = () => {
                             position: 'absolute',
                             background: 'white',
                             color: 'black',
-                            top: 60,
+                            top: 56,
                             right: 0,
                             minWidth: '350px',
                             maxHeight: xs ? '100vh': '500px',
@@ -62,8 +69,8 @@ export const HodlNotifications = () => {
                             border: `1px solid #f0f0f0`,
                             marginLeft: xs? '-16px' : 0,
                             marginRight: xs? '-16px' : 0,
-                            height: xs ? 'calc(100vh - 60px)': 'auto',
-                            borderRadius: 1,
+                            height: xs ? 'calc(100vh - 56px)': 'auto',
+                            borderRadius: xs ? 0: 1,
                             padding: 2,
                             animation: xs ?
                                 showNotifications ? `slidein 0.25s forwards` : `slideout 0.25s forwards` :

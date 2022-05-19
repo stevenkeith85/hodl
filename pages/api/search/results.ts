@@ -8,6 +8,7 @@ import { nftaddress, nftmarketaddress } from '../../../config';
 import { getProvider } from '../../../lib/server/connections';
 import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import HodlMarket from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
+import { SearchValidationSchema } from '../../../validationSchema/search';
 
 const client = Redis.fromEnv()
 
@@ -71,6 +72,11 @@ route.get(async (req, res) => {
 
     if (!q || !offset || !limit) {
         return res.status(400).json({ message: 'Bad Request' });
+    }
+
+    const isValid = await SearchValidationSchema.isValid({q})
+    if (!isValid) {
+        return res.status(400).json({ message: 'Invalid data supplied' });
     }
 
     const data = await getSearchResults(q, offset, limit);

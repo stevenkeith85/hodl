@@ -11,6 +11,7 @@ import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 const client = Redis.fromEnv()
 import apiRoute from "../handler";
 import { AddTagValidationSchema } from "../../../validationSchema/addTag";
+import { MAX_TAGS_PER_TOKEN } from "../../../lib/utils";
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
@@ -18,8 +19,7 @@ const route = apiRoute();
 const addTokenToTag = async (tag, token) => {
   const total = await client.zcount(`tags:${token}`, '-inf', '+inf');
 
-  if (total >= 6) {
-    console.log('max tags for token reached')
+  if (total >= MAX_TAGS_PER_TOKEN) {
     return 0;
   }
 

@@ -6,7 +6,6 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
-import SearchIcon from '@mui/icons-material/Search';
 import Container from '@mui/material/Container';
 import { useState, useContext, useEffect } from 'react';
 import Link from 'next/link';
@@ -15,7 +14,7 @@ import { Logo } from './Logo';
 import { Stack } from '@mui/material';
 import { useRouter } from 'next/router';
 import { MobileMenu } from './MobileMenu';
-import { AccountBalanceWallet, AccountCircle, Clear, Spa, Storefront } from '@mui/icons-material';
+import { AccountBalanceWallet, AccountCircle, Spa, Storefront } from '@mui/icons-material';
 import { useConnect } from '../hooks/useConnect';
 import { WalletContext } from '../contexts/WalletContext';
 import { useNickname } from '../hooks/useNickname';
@@ -24,53 +23,7 @@ import { ProfilePictureModal } from './ProfilePictureModal';
 import { HodlNotifications } from './HodlNotifications';
 import axios from 'axios'
 import { useSnackbar } from 'notistack';
-
-import { styled, alpha } from '@mui/material/styles';
-import { Field, Form, Formik } from 'formik';
-import { TextField, InputBase } from 'formik-mui';
-
-const Search = styled('div')(({ theme }) => ({
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
-    '&:hover': {
-        backgroundColor: alpha(theme.palette.common.white, 0.25),
-    },
-    marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-        marginLeft: theme.spacing(1),
-        width: 'auto',
-    },
-}));
-
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-    padding: theme.spacing(0, 2),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    color: 'inherit',
-    '& .MuiInputBase-input': {
-        padding: theme.spacing(1, 1, 1, 0),
-        // vertical padding + font size from searchIcon
-        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-        transition: theme.transitions.create('width'),
-        width: '100%',
-        [theme.breakpoints.up('sm')]: {
-            width: '12ch',
-            '&:focus': {
-                width: '20ch',
-            },
-        },
-    },
-}));
-
+import { SearchBox } from './Search';
 
 const ResponsiveAppBar = () => {
     const { address, setAddress, setSigner } = useContext(WalletContext);
@@ -93,13 +46,13 @@ const ResponsiveAppBar = () => {
             publicPage: true
         },
         {
-            label: 'Mint NFT',
+            label: 'Create',
             url: '/mint',
             icon: <Spa />,
             publicPage: false
         },
         {
-            label: 'My Profile',
+            label: 'Profile',
             url: `/profile`,
             icon: <AccountCircle />,
             publicPage: false
@@ -208,7 +161,7 @@ const ResponsiveAppBar = () => {
                             width: '100%',
                             justifyContent: 'space-between'
                         }}>
-                            <Stack direction="row" spacing={12} sx={{ alignItems: 'center' }}>
+                            <Stack direction="row" spacing={10} sx={{ alignItems: 'center' }}>
                                 <Logo />
                                 <Box sx={{
                                     display: 'grid',
@@ -273,30 +226,7 @@ const ResponsiveAppBar = () => {
                                     alignItems: 'center'
                                 }}
                             >
-                                <Formik
-                                    initialValues={{
-                                        q: router?.query?.q || ''
-                                    }}
-                                    onSubmit={async (values) => {
-                                        router.push(`/search?q=${values.q}`);
-                                    }}
-                                >
-                                    <Form>
-                                        <Search>
-                                            <SearchIconWrapper>
-                                                <SearchIcon />
-                                            </SearchIconWrapper>
-                                            <Field
-                                                component={StyledInputBase}
-                                                name="q"
-                                                type="text"
-                                                label="Search..."
-                                            />
-                                        </Search>
-                                    </Form>
-                                </Formik>
-
-
+                                <SearchBox closeMenu={undefined} />
                                 <HodlNotifications />
 
                                 <MobileMenu

@@ -1,4 +1,4 @@
-import { Card, CardContent, Typography, Stack, Tooltip, Button } from "@mui/material";
+import { Card, CardContent, Typography, Stack, Tooltip, Button, Chip } from "@mui/material";
 import { token, nonCommercial, commercial } from "../../lib/copyright";
 
 export const HodlerPrivilege = ({ nft }) => {
@@ -10,21 +10,30 @@ export const HodlerPrivilege = ({ nft }) => {
         <Card variant="outlined">
             <CardContent>
                 <Typography variant="h3" sx={{ marginBottom: 2 }}>Hodler Privilege</Typography>
-                <Stack spacing={2} direction="row">
+                <Stack spacing={1} direction="row">
                     <Tooltip title={token}>
-                        <Button
-                            color={nft.privilege === token ? 'secondary' : 'primary'}
-                        >Token</Button>
+                        <Chip
+                            disabled={nft.privilege !== token}
+                            label="Token Only"
+                            color={nft.privilege === token ? "success" : "default"}
+                            variant="outlined"
+                        ></Chip>
                     </Tooltip>
                     <Tooltip title={nonCommercial}>
-                        <Button
-                            color={nft.privilege === nonCommercial ? 'secondary' : 'primary'}
-                        >Non Commercial</Button>
+                        <Chip
+                            disabled={nft.privilege !== nonCommercial}
+                            label="Non Commercial"
+                            color={nft.privilege === nonCommercial ? "success" : "default"}
+                            variant="outlined"
+                        ></Chip>
                     </Tooltip>
                     <Tooltip title={commercial}>
-                        <Button
-                            color={nft.privilege === commercial ? 'secondary' : 'primary'}
-                        >Commercial</Button>
+                        <Chip
+                            disabled={nft.privilege !== commercial}
+                            label="Commercial"
+                            color={nft.privilege === commercial ? "success" : "default"}
+                            variant="outlined"
+                        ></Chip>
                     </Tooltip>
                 </Stack>
             </CardContent>

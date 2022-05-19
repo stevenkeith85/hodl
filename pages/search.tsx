@@ -2,13 +2,22 @@ import Head from 'next/head';
 import { InfiniteScrollSearchResults } from '../components/profile/InfiniteScrollSearchResults';
 import { InfiniteScrollTab } from '../components/profile/InfiniteScrollTab';
 import { useSearch } from '../hooks/useSearch';
+import { SearchValidationSchema } from '../validationSchema/search';
 import { getSearchResults } from './api/search/results';
 
-export async function getServerSideProps({query}) {  
+export async function getServerSideProps({ query }) {
   const { q = '' } = query;
 
+  let prefetchedResults;
+
   const limit = 4;
-  const prefetchedResults = await getSearchResults(q, 0, limit);
+  const isValid = await SearchValidationSchema.isValid({ q })
+  if (isValid) {
+    prefetchedResults = await getSearchResults(q, 0, limit);
+  } else {
+    console.log('invalid search query')
+    prefetchedResults = { items: [], next: 0, total: 0 };
+  }
   return {
     props: {
       q,

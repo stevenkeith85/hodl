@@ -1,4 +1,4 @@
-import { Box, imageListItemClasses, ImageListItem, ImageListItemBar, Typography, Button, Skeleton } from '@mui/material'
+import { Box, imageListItemClasses, ImageListItem, ImageListItemBar, Typography, Button, Skeleton, Stack } from '@mui/material'
 import Link from 'next/link';
 import { assetType, truncateText } from '../lib/utils';
 import { ProfileAvatar } from './ProfileAvatar';
@@ -7,13 +7,14 @@ import { Likes } from './Likes';
 import { HodlImage } from './HodlImage';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { Comments } from './Comments';
 
 const NftList = ({
     nfts,
-    showTop=true,
-    showBottom=true,
-    showAvatar=true,
-    showName=true,
+    showTop = true,
+    showBottom = true,
+    showAvatar = true,
+    showName = true,
 }) => {
     const theme = useTheme();
     const matches = useMediaQuery(theme.breakpoints.up('sm'));
@@ -37,30 +38,30 @@ const NftList = ({
         >
             {(nfts || []).filter(nft => nft).map((nft, i) => (
                 <ImageListItem key={i}>
-                        {assetType(nft) === 'gif' &&
-                            <HodlVideo
-                                cid={nft?.image}
-                                transformations={nft?.filter}
-                                gif={true}
-                                height={matches ? '400px': '500px'}
-                            />}
-                        {assetType(nft) === 'video' &&
-                            <HodlVideo
-                                cid={nft?.image}
-                                controls={false}
-                                onlyPoster={true}
-                                preload="none"
-                                transformations='l_text:Arial_100_bold:VIDEO,co_rgb:FFFFFF'
-                                height={matches ? '400px': '500px'}
-                            />
-                            }
-                        {assetType(nft) === 'image' &&
-                            <HodlImage
-                                cid={nft?.image}
-                                effect={nft?.filter}
-                                height={matches ? '400px': '500px'}
-                            />
-                            }
+                    {assetType(nft) === 'gif' &&
+                        <HodlVideo
+                            cid={nft?.image}
+                            transformations={nft?.filter}
+                            gif={true}
+                            height={matches ? '400px' : '500px'}
+                        />}
+                    {assetType(nft) === 'video' &&
+                        <HodlVideo
+                            cid={nft?.image}
+                            controls={false}
+                            onlyPoster={true}
+                            preload="none"
+                            transformations='l_text:Arial_100_bold:VIDEO,co_rgb:FFFFFF'
+                            height={matches ? '400px' : '500px'}
+                        />
+                    }
+                    {assetType(nft) === 'image' &&
+                        <HodlImage
+                            cid={nft?.image}
+                            effect={nft?.filter}
+                            height={matches ? '400px' : '500px'}
+                        />
+                    }
                     <ImageListItemBar
                         sx={{
                             display: () => showTop ? 'flex' : 'none',
@@ -72,14 +73,14 @@ const NftList = ({
                                 justifyContent: 'space-between',
                                 alignItems: "center",
                             }}>
-                                {showAvatar && 
-                                    <ProfileAvatar 
-                                        size="small" 
-                                        profileAddress={nft?.seller || nft?.owner} 
-                                        color="greyscale" 
-                                />}
-                                {showName && 
-                                    <Typography 
+                                {showAvatar &&
+                                    <ProfileAvatar
+                                        size="small"
+                                        profileAddress={nft?.seller || nft?.owner}
+                                        color="greyscale"
+                                    />}
+                                {showName &&
+                                    <Typography
                                         sx={{ paddingY: 1 }}
                                     >
                                         {truncateText(nft.name, 20)}
@@ -102,9 +103,13 @@ const NftList = ({
                                 justifyContent: 'space-between',
                                 alignItems: "center",
                             }}>
-                                <Likes 
-                                    tokenId={nft?.tokenId} 
-                                />
+                                <Stack spacing={1} direction="row" sx={{ display: 'flex', alignContent: 'center' }}>
+                                    <Likes
+                                        tokenId={nft?.tokenId}
+                                    />
+                                    <Comments nft={nft} />
+                                </Stack>
+
                                 <Link href={`/nft/${nft?.tokenId}`}>
                                     <Button
                                         sx={{

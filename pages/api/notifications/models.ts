@@ -4,6 +4,7 @@ export enum NftAction {
     Delisted = 'delisted',
     Bought = 'bought',
     Liked = 'liked',
+    CommentedOn = 'commented on'
 }
 
 export enum AddressAction {
@@ -16,4 +17,5 @@ export interface HodlNotification {
     action: NftAction | AddressAction;
     object?: string; // address
     token?: number;
+    timestamp?: number;
 }

@@ -6,6 +6,8 @@ import { useConnect } from "../../hooks/useConnect";
 import { useNickname } from "../../hooks/useNickname";
 import { truncateText, getShortAddress } from "../../lib/utils";
 import { WalletContext } from '../../contexts/WalletContext';
+import { SearchBox } from "../Search";
+
 
 export const MainMenuPage = ({
     pages,
@@ -47,7 +49,7 @@ export const MainMenuPage = ({
                 <Stack
                     spacing={0}
                     m={0}
-                    >
+                >
                     {pages.filter(p => p.publicPage || address).map((page, i) => (
                         <Link key={i} href={page.url} passHref>
                             <Stack
@@ -63,7 +65,7 @@ export const MainMenuPage = ({
                                 {page.icon}
                                 <Typography
                                     component="a"
-                                  //  onClick={closeMenu}
+                                    //  onClick={closeMenu}
                                     sx={{
                                         fontSize: 14,
                                         textDecoration: 'none',
@@ -76,6 +78,9 @@ export const MainMenuPage = ({
                         </Link>
 
                     ))}
+
+                    <SearchBox closeMenu={closeMenu} sx={{ marginY: 1 }} />
+
                 </Stack>
             </Box>
             <Button

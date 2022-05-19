@@ -89,6 +89,17 @@ let theme = createTheme({
         }
       }
     },
+    MuiCardContent: {
+      styleOverrides: {
+        root: {
+          padding: '12px',
+          '&:last-child': {
+            paddingBottom: '12px'
+          }
+          
+        }
+      }
+    },
     MuiImageListItemBar: {
       styleOverrides: {
         root: ({ ownerState, theme }) => ({

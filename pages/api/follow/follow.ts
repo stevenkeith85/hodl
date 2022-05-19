@@ -60,7 +60,7 @@ route.post(async (req, res) => {
     const notification: HodlNotification = {
       subject: req.address,
       object: address,
-      action: AddressAction.Followed
+      action: AddressAction.Followed,
     };
   
     const success = addNotification(notification);

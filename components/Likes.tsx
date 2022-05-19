@@ -9,7 +9,7 @@ export const Likes = ({ tokenId, sx = {} }) => {
     return (
         <>
             <Stack
-                spacing={1}
+                spacing={0.5}
                 direction="row"
                 sx={{
                     color: "white",
