@@ -8,7 +8,7 @@ import { getProvider } from "../../../lib/server/connections";
 import { ethers } from "ethers";
 import { nftaddress } from "../../../config";
 import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
-import { AddressAction, HodlNotification, NftAction } from './models';
+import { AddressAction, HodlNotification, NftAction } from '../../../models/HodlNotifications';
 import { getPriceHistory } from "../token-bought/[tokenId]";
 import { likesToken } from "../like/likes";
 import { getTokensListed } from "../token-listed/[tokenId]";
@@ -20,7 +20,14 @@ const route = apiRoute();
 
 // we overwrite the timestamp, as we don't trust users
 export const addNotification = async (notification: HodlNotification) => {
-  notification.timestamp = Date.now();
+  // if there's a timestamp and it's on a comment, then we keep it 
+  // as we'd like the comment timestamp to match the notification timestamp. (to allow us to highlight it in the UI easily)
+  // NB: We do not allow users to create CommentedOn notifications via the API directly
+  if (
+    notification.timestamp && 
+    notification.action !== NftAction.CommentedOn) { 
+    notification.timestamp = Date.now();
+  }
 
   if (notification.action === NftAction.Liked) { // tell the token owner you liked it
     const provider = await getProvider();
@@ -131,7 +138,7 @@ export const addNotification = async (notification: HodlNotification) => {
   return 0;
 }
 
-// TODO: We might not want this to be callable from client side?
+// TODO: We might restrict this to certain actions client side
 route.post(async (req, res: NextApiResponse) => {
   if (!req.address) {
     return res.status(403).json({ message: "Not Authenticated" });
@@ -140,6 +147,12 @@ route.post(async (req, res: NextApiResponse) => {
   const { action, token } = req.body;
 
   if (!action || !token) {
+    return res.status(400).json({ message: 'Bad Request' });
+  }
+
+  // block some actions in the API, as we don't need these to be directly called from the FE- 
+  // i.e. adding a comment will already trigger the creation of a notification when that endpoint calls 'addNotification'
+  if (action === NftAction.CommentedOn) {
     return res.status(400).json({ message: 'Bad Request' });
   }
 

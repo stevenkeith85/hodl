@@ -7,7 +7,7 @@ import apiRoute from "../handler";
 import { isValidAddress } from '../../../lib/profile';
 import { getFollowingCount } from './followingCount';
 import { getFollowersCount } from './followersCount';
-import { AddressAction, HodlNotification } from '../notifications/models';
+import { AddressAction, HodlNotification } from '../../../models/HodlNotifications';
 import { addNotification } from '../notifications/add';
 
 dotenv.config({ path: '../.env' })

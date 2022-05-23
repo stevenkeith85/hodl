@@ -11,19 +11,22 @@ import { truncateText } from "../lib/utils";
 import axios from 'axios';
 import { WalletContext } from "../contexts/WalletContext";
 import formatDistance from 'date-fns/formatDistance';
+import { NftAction } from "../models/HodlNotifications";
 
 
-const HodlNotification = ({ item }) => {
+const HodlNotification = ({ item, setShowNotifications }) => {
     const { address } = useContext(WalletContext);
     const { data: token } = useSWR(item.token ? [`/api/token`, item.token] : null,
         (url, query) => axios.get(`${url}/${query}`).then(r => r.data.token));
+    
+    const lastRead = (localStorage.getItem(`notifications-${address}-last-read`) || 0);
 
     return (
-        <Box marginY={1.5}>
-            <Stack direction="row" spacing={0.5} display="flex" alignItems="center">
+        <Box marginY={1.5} sx={{ color: lastRead >= (item.timestamp || 0) ? '#999' : 'black'}}>
+            <Stack direction="row" spacing={0.5} display="flex" alignItems="center" onClick={() => setShowNotifications(false)}>
                 <ProfileAvatar profileAddress={item.subject} size="small" />
                 <Box>{item.action}</Box>
-                {item.token && <Link href={`/nft/${item.token}`}>
+                {item.token && <Link href={ item.action === NftAction.CommentedOn ? `/nft/${item.token}?comment=${item.subject}-${item.timestamp}`: `/nft/${item.token}`}>
                     <Typography component="a" sx={{ cursor: "pointer" }}>
                         &quot;{truncateText(token?.name)}&quot;
                     </Typography>
@@ -44,16 +47,23 @@ export const HodlNotifications = () => {
     const { data: notifications } = useSWR( address ? `/api/notifications/get` : null, fetchWithAuth)
 
     const toggleNotifications = async () => {
+        
         setShowNotifications(prev => !prev);
+
+        setTimeout(() => {
+            localStorage.setItem(`notifications-${address}-last-read`, Date.now().toString());
+        }, 5000)
     }
 
     if (!address) {
         return null;
     }
 
+    const lastRead = (localStorage.getItem(`notifications-${address}-last-read`) || 0);
+
     return (
         <>
-            {notifications ? <NotificationsIcon onClick={toggleNotifications} /> : <NotificationsNoneIcon onClick={toggleNotifications} />}
+            {notifications && lastRead < (notifications[0]?.timestamp || 0) ? <NotificationsIcon onClick={toggleNotifications} /> : <NotificationsNoneIcon onClick={toggleNotifications} />}
             {showNotifications &&
                 <ClickAwayListener onClickAway={() => setShowNotifications(false)} touchEvent={false}>
                     <Box
@@ -63,7 +73,7 @@ export const HodlNotifications = () => {
                             color: 'black',
                             top: 56,
                             right: 0,
-                            minWidth: '350px',
+                            minWidth: '500px',
                             maxHeight: xs ? '100vh': '500px',
                             overflow: 'auto',
                             border: `1px solid #f0f0f0`,
@@ -77,7 +87,7 @@ export const HodlNotifications = () => {
                                 showNotifications ? `fadein 0.25s forwards` : `fadeout 0.25s forwards`,
 
                         }}>
-                        {(notifications || []).map((item, i) => <HodlNotification key={i} item={item} />)}
+                        {(notifications || []).map((item, i) => <HodlNotification key={i} item={item} setShowNotifications={setShowNotifications} />)}
                     </Box>
                 </ClickAwayListener>
 

@@ -4,16 +4,22 @@ import dotenv from 'dotenv'
 
 const client = Redis.fromEnv()
 import apiRoute from "../handler";
-import { HodlComment } from "./models";
-import { HodlNotification, NftAction } from "../notifications/models";
+
+import { HodlNotification, NftAction } from "../../../models/HodlNotifications";
 import { addNotification } from "../notifications/add";
 import { getCommentCount } from "./count";
+import { CommentValidationSchema } from "../../../validationSchema/comments";
+import { ethers } from "ethers";
+import { nftaddress } from "../../../config";
+import { getProvider } from "../../../lib/server/connections";
+import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
+import { HodlComment } from "../../../models/HodlComment";
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
 
 
-export const addComment = async (comment: HodlComment) => {
+export const addComment = async (comment: HodlComment) => {  
   comment.timestamp = Date.now();
 
   const userRecordAdded = await client.zadd(
@@ -37,7 +43,8 @@ export const addComment = async (comment: HodlComment) => {
     const notification: HodlNotification = {
       subject: comment.subject,
       action: NftAction.CommentedOn,
-      token: comment.token
+      token: comment.token,
+      timestamp: comment.timestamp
     };
 
     notificationAdded = await addNotification(notification);
@@ -57,6 +64,19 @@ route.post(async (req, res: NextApiResponse) => {
   const { comment, token } = req.body;
 
   if (!comment || !token) {
+    return res.status(400).json({ message: 'Bad Request' });
+  }
+
+  const isValid = await CommentValidationSchema.isValid(req.body)
+  if (!isValid) {
+      return res.status(400).json({ message: 'Invalid data supplied' });
+  }
+
+  const provider = await getProvider();
+  const contract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
+  const tokenExists = await contract.exists(token);
+
+  if (!tokenExists) { 
     return res.status(400).json({ message: 'Bad Request' });
   }
 

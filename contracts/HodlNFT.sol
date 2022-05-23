@@ -45,6 +45,10 @@ contract HodlNFT is
         mintFee = _mintFee;
     }
 
+    function exists(uint256 tokenId) public view returns (bool) {
+        return _exists(tokenId);
+    }
+
     // e.g. offset of 0, limit of 10, total items of 100
     // we return [ [0 -> 9], 0 + 10, 100 ]
     function addressToTokenIds(

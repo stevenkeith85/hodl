@@ -9,7 +9,7 @@ import { getLikeCount } from './likeCount';
 const client = Redis.fromEnv()
 import apiRoute from "../handler";
 import { addNotification } from "../notifications/add";
-import { HodlNotification, NftAction } from "../notifications/models";
+import { HodlNotification, NftAction } from "../../../models/HodlNotifications";
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();

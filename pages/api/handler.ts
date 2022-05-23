@@ -24,6 +24,7 @@ const rateLimits = {
   // 'POST:/api/tags/add': 12,
   // 'DELETE:/api/tags/delete': 12,
   // 'GET:/api/search/results': 60,
+  // 'POST:/api/comments/add': 3,
 }
 
 

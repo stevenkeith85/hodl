@@ -46,7 +46,7 @@ route.delete(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
-  const success = removeTokenFromTag(tag, token);
+  const success = await removeTokenFromTag(tag, token);
 
   if (success) {
     return res.status(200).json({ message: 'success' });

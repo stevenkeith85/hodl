@@ -31,6 +31,11 @@ import { Comments } from "../../components/Comments";
 
 export async function getServerSideProps({ params }) {
   const nft = await fetchNFT(params.tokenId);
+
+  if (!nft) {
+      return { notFound: true }
+  }
+
   const prefetchedTags = await getTagsForToken(params.tokenId);
   const prefetchedComments = await getCommentsForToken(params.tokenId);
   const priceHistory = await getPriceHistory(params.tokenId);
