@@ -27,6 +27,7 @@ import { HodlTagCloud } from "../../components/nft/HodlTagCloud";
 import { getCommentsForToken } from "../api/comments/[token]";
 import { HodlCommentsBox } from "../../components/nft/HodlCommentsBox";
 import { Comments } from "../../components/Comments";
+import { getCommentCount } from "../api/comments/count";
 
 
 export async function getServerSideProps({ params }) {
@@ -38,6 +39,7 @@ export async function getServerSideProps({ params }) {
 
   const prefetchedTags = await getTagsForToken(params.tokenId);
   const prefetchedComments = await getCommentsForToken(params.tokenId);
+  const prefetchedCommentCount = await getCommentCount(params.tokenId);
   const priceHistory = await getPriceHistory(params.tokenId);
 
   return {
@@ -45,12 +47,13 @@ export async function getServerSideProps({ params }) {
       nft,
       prefetchedTags,
       prefetchedComments,
+      prefetchedCommentCount,
       priceHistory
     },
   }
 }
 
-const NftDetail = ({ nft, prefetchedTags, prefetchedComments, priceHistory }) => {
+const NftDetail = ({ nft, prefetchedTags, prefetchedComments, prefetchedCommentCount, priceHistory }) => {
   return (
     <>
       <Head>
@@ -73,7 +76,7 @@ const NftDetail = ({ nft, prefetchedTags, prefetchedComments, priceHistory }) =>
         </Grid>
         <Grid item xs={12} md={6} marginBottom={2} paddingRight={{ md: 1 }}>
           <Stack spacing={2}>
-            <NoSsr><DetailPageImage token={nft} /></NoSsr>
+            <DetailPageImage token={nft} />
             <Stack spacing={1} direction="row" sx={{ display: 'flex', alignContent: 'center'}}>
               <Likes sx={{ color: theme => theme.palette.secondary.main, '.MuiTypography-body1': { color: '#666' } }} tokenId={nft.tokenId} />
               <Comments nft={nft} popUp={false} sx={{ color: '#333'}}/>
@@ -85,7 +88,7 @@ const NftDetail = ({ nft, prefetchedTags, prefetchedComments, priceHistory }) =>
             <DescriptionCard nft={nft} />
             <HodlerPrivilege nft={nft} />
             <HodlTagCloud nft={nft} prefetchedTags={prefetchedTags} />
-            <HodlCommentsBox nft={nft} prefetchedComments={prefetchedComments} />
+            <HodlCommentsBox nft={nft} prefetchedComments={prefetchedComments} prefetchedCommentCount={prefetchedCommentCount}/>
             <IpfsCard nft={nft} />
             {Boolean(nft?.forSale) && <PriceCard nft={nft} />}
             {Boolean(priceHistory.length) && <PriceHistory priceHistory={priceHistory} />}

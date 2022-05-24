@@ -9,7 +9,6 @@ dotenv.config({ path: '../.env' })
 const client = Redis.fromEnv()
 const route = apiRoute();
 
-// Memo cleared when someone likes/dislikes the token
 export const getCommentCount = memoize(async (token) => {
   const count = await client.zcount(`comments:${token}`, '-inf', '+inf');
   return count;

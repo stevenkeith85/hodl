@@ -24,6 +24,7 @@ import { HodlNotifications } from './HodlNotifications';
 import axios from 'axios'
 import { useSnackbar } from 'notistack';
 import { SearchBox } from './Search';
+import { ProfileAvatar } from './ProfileAvatar';
 
 const ResponsiveAppBar = () => {
     const { address, setAddress, setSigner } = useContext(WalletContext);
@@ -47,14 +48,8 @@ const ResponsiveAppBar = () => {
         },
         {
             label: 'Create',
-            url: '/mint',
+            url: '/create',
             icon: <Spa />,
-            publicPage: false
-        },
-        {
-            label: 'Profile',
-            url: `/profile`,
-            icon: <AccountCircle />,
             publicPage: false
         },
     ]);
@@ -228,7 +223,6 @@ const ResponsiveAppBar = () => {
                             >
                                 <SearchBox closeMenu={undefined} />
                                 <HodlNotifications />
-
                                 <MobileMenu
                                     page={1}
                                     showBack={false}
@@ -244,14 +238,19 @@ const ResponsiveAppBar = () => {
                                     size="large"
                                     sx={{ margin: 0, padding: 0 }}
                                     onClick={(e) => {
-                                        console.log('also clicked')
                                         setMobileMenuOpen(prev => !prev);
                                         // e.stopPropagation();
                                     }}
                                     color="inherit"
                                     aria-label='Account Menu'
                                 >
-                                    {mobileMenuOpen ? <CloseIcon /> : <AccountBalanceWallet />}
+                                    {
+                                        mobileMenuOpen ?
+                                            <Box width={36} display="flex" alignItems="center" justifyContent="center"><CloseIcon /></Box> :
+                                            address ?
+                                                <ProfileAvatar profileAddress={address} size="small" showNickname={false} withLink={false} /> :
+                                                <Box width={36} display="flex" alignItems="center" justifyContent="center"><AccountBalanceWallet /></Box>
+                                    }
                                 </IconButton>
                             </Stack>
                         </Box>

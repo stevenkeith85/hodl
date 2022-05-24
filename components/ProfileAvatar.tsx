@@ -11,60 +11,64 @@ import { memo } from "react";
 import theme from "../theme";
 import axios from 'axios';
 
-export const NftAvatarWithLink = ({token, size, highlight=false}: any) => (
+export const NftAvatarWithLink = ({ token, size, highlight = false }: any) => (
     <Link href={`/nft/${token.tokenId}`} passHref>
         <a>
-        <NftAvatar token={token} size={size} highlight={highlight}/>
+            <NftAvatar token={token} size={size} highlight={highlight} />
         </a>
     </Link>
 )
 
-export const NftAvatar = ({ token, size, highlight=false }: any) => {
-    const isGif = (mimeType) => mimeType && mimeType.indexOf('gif') !== -1;
-    const isImage = (mimeType) => mimeType && mimeType.indexOf('image') !== -1;
-    const isVideo = (mimeType) => mimeType && mimeType.indexOf('video') !== -1;
+export const NftAvatar = ({ token, size, highlight = false }: any) => {
+    const isGif = mimeType => mimeType && mimeType.indexOf('gif') !== -1;
+    const isImage = mimeType => mimeType && mimeType.indexOf('image') !== -1;
+    const isVideo = mimeType => mimeType && mimeType.indexOf('video') !== -1;
+    const isUnknown = mimeType => !mimeType;
 
     return (
-            <Avatar
-                className="avatar"
-                sx={{
-                    border: highlight ? '2px solid': 'none',
-                    borderColor: highlight ? theme => theme.palette.secondary.main: 'none',
-                    height: size,
-                    width: size,
-                    transition: theme.transitions.create(['background-color', 'transform'], {
-                        duration: theme.transitions.duration.standard,
-                    }),
-                    '&:hover': {
-                        transform: 'scale(1.2)',
-                    }
-                }}>
-                {isImage(token.mimeType) && !isGif(token.mimeType) &&
-                    <HodlImage
-                        cid={token?.image.split('//')[1] || token?.image}
-                        effect={token?.filter ? `${token.filter},ar_1.0,c_fill,r_max,g_face`: `ar_1.0,c_fill,r_max,g_face`}
-                        height={size}
-                        srcSetSizes={[Math.ceil(size), Math.ceil(size * 1.5), Math.ceil(size * 2), Math.ceil(size * 2.5)]} // we want it big enough for the scale effect
-                        sizes=""
-                    />}
-                {isImage(token.mimeType) && isGif(token.mimeType) &&
-                    <HodlVideo
-                        gif={true}
-                        cid={token?.image.split('//')[1] || token?.image}
-                        transformations={`w_${size},h_${size}${token?.filter ? ',' + token.filter : ''},ar_1.0,c_fill,r_max`}
-                    />}
-                {isVideo(token.mimeType) &&
-                    <HodlVideo
-                        controls={false}
-                        cid={token?.image.split('//')[1] || token?.image }
-                        transformations={`w_${size},h_${size}${token?.filter ? ',' + token.filter : ''},ar_1.0,c_fill,r_max`}
-                        onlyPoster={true}
-                    />}
-            </Avatar>
+        <Avatar
+            className="avatar"
+            sx={{
+                border: highlight ? '2px solid' : 'none',
+                borderColor: highlight ? theme => theme.palette.secondary.main : 'none',
+                height: size,
+                width: size,
+                transition: theme.transitions.create(['background-color', 'transform'], {
+                    duration: theme.transitions.duration.standard,
+                }),
+                '&:hover': {
+                    transform: 'scale(1.2)',
+                }
+            }}>
+            {((isImage(token.mimeType) && !isGif(token.mimeType)) || isUnknown(token.mimeType))&&
+                <HodlImage
+                    cid={token?.image.split('//')[1] || token?.image}
+                    effect={token?.filter ? `${token.filter},ar_1.0,c_fill,r_max,g_face` : `ar_1.0,c_fill,r_max,g_face`}
+                    height={size}
+                    srcSetSizes={[Math.ceil(size), Math.ceil(size * 1.5), Math.ceil(size * 2), Math.ceil(size * 2.5)]} // we want it big enough for the scale effect
+                    sizes=""
+                />}
+            {isImage(token.mimeType) && isGif(token.mimeType) &&
+                <HodlVideo
+                    gif={true}
+                    cid={token?.image.split('//')[1] || token?.image}
+                    transformations={`w_${size * 2.5},h_${size * 2.5}${token?.filter ? ',' + token.filter : ''},ar_1.0,c_fill,r_max`}
+                    
+                />}
+            {isVideo(token.mimeType) &&
+                <HodlVideo
+                    controls={false}
+                    cid={token?.image.split('//')[1] || token?.image}
+                    transformations={`w_${size * 2.5},h_${size * 2.5}${token?.filter ? ',' + token.filter : ''},ar_1.0,c_fill,r_max`}
+                    onlyPoster={true}
+                />}
+            
+        </Avatar>
     )
 }
 
-export const NftAvatarMemo = memo(NftAvatarWithLink, (prev: any, next: any) => prev.size === next.size && prev.token.tokenId === next.token.tokenId);
+export const NftAvatarWithLinkMemo = memo(NftAvatarWithLink, (prev: any, next: any) => prev.size === next.size && prev.token.tokenId === next.token.tokenId);
+export const NftAvatarMemo = memo(NftAvatar, (prev: any, next: any) => prev.size === next.size && prev.token.tokenId === next.token.tokenId);
 
 const AvatarText: React.FC<{ size: string, href?: string, children?: any, color: string }> = ({ size, href, children, color }) => {
     const mappings = {
@@ -88,7 +92,7 @@ const AvatarText: React.FC<{ size: string, href?: string, children?: any, color:
     )
 }
 
-export const ProfileAvatar = ({ profileAddress, reverse = false, size = "medium", color = "secondary" }) => {
+export const ProfileAvatar = ({ profileAddress, reverse = false, size = "medium", color = "secondary", showNickname = true, withLink = true }) => {
     const { data: profileNickname } = useSWR(profileAddress ? [`/api/profile/nickname`, profileAddress] : null,
         (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.nickname))
 
@@ -127,8 +131,12 @@ export const ProfileAvatar = ({ profileAddress, reverse = false, size = "medium"
             spacing={size === 'small' ? 1 : 2}
             direction={reverse ? 'row-reverse' : 'row'}
         >
-            {token ?
-                <NftAvatarMemo token={token} size={getSize()} /> :
+            {token
+                ?
+                (withLink ?
+                    <NftAvatarWithLinkMemo token={token} size={getSize()} /> :
+                    <NftAvatarMemo token={token} size={getSize()} />)
+                :
                 <Link href={profileAddress ? `/profile/${profileNickname || profileAddress}` : ''}>
                     <Avatar
                         className="avatar"
@@ -159,7 +167,7 @@ export const ProfileAvatar = ({ profileAddress, reverse = false, size = "medium"
                     </Avatar>
                 </Link >
             }
-            <Link href={`/profile/${profileNickname || profileAddress}`} passHref>
+            {showNickname && <Link href={`/profile/${profileNickname || profileAddress}`} passHref>
                 {
                     profileNickname ?
                         <Tooltip title={profileNickname}>
@@ -174,6 +182,7 @@ export const ProfileAvatar = ({ profileAddress, reverse = false, size = "medium"
                         </Tooltip>
                 }
             </Link>
+            }
         </Stack>
     )
 }

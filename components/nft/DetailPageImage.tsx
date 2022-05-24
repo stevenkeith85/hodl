@@ -5,7 +5,7 @@ import { HodlImage } from "../HodlImage";
 import { useState } from "react";
 
 
-export const DetailPageImage = ({ token, folder = 'nfts' }) => {
+export const DetailPageImage = ({ token }) => {
     const [assetModalOpen, setAssetModalOpen] = useState(false);
 
     return (token &&
@@ -65,8 +65,7 @@ export const DetailPageImage = ({ token, folder = 'nfts' }) => {
                         <HodlImage 
                             cid={token?.image} 
                             effect={token?.filter} 
-                            loading="eager"
-                            fit="scale-down" 
+                            // fit="scale-down" 
                             sizes = "(max-width:599px) 600px, (max-width:899px) 900px, 600px"
                         />}
                 </Box>

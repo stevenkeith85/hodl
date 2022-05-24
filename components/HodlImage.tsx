@@ -16,6 +16,7 @@ interface HodlImageProps {
     sx?: object;
     sizes?: string;
     height?: string;
+    width?: string;
     srcSetSizes?: number[];
     onLoad?: Function;
 }
@@ -32,6 +33,7 @@ export const HodlImage = ({
     sx = {},
     sizes = "(max-width:599px) 600px, (max-width:899px) 450px, (max-width:1199px) 400px, 300px",
     height = 'auto',
+    width = '100%',
     srcSetSizes = imageSizes,
     onLoad = null
 }: HodlImageProps) => {
@@ -98,13 +100,13 @@ export const HodlImage = ({
                     src={url}
                     srcSet={sources()}
                     sizes={sizes}
-                    width="100%"
+                    width={width}
                     height={height}       
                 />
-                { !loaded && <Skeleton   
+                {/* { !loaded && <Skeleton   
                     variant="rectangular"
                     width="100%"
-                    height={height} /> }
+                    height={height} /> } */}
             </Box>
 
         </>

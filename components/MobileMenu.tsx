@@ -39,11 +39,12 @@ export const MobileMenu = ({ pages, mobileMenuOpen, setMobileMenuOpen, page = 0,
                         height: { xs: 'calc(100vh - 56px)', sm: '300px'},
                         width: { xs: 'calc(100vw)', sm: 'auto'},
                         overflow: 'auto',
-                        border: `1px solid #f0f0f0`,
+                        border: `1px solid #ddd`,
                         margin: 0,
                         marginLeft: '-16px',
                         padding: 2,
-                        borderRadius: xs ? 0: 1
+                        borderRadius: xs ? 0: 1,
+                        boxShadow: '0 0 2px 1px #eee;'
                     }}
                 >
                     <ClickAwayListener onClickAway={closeMenu} touchEvent={false}>

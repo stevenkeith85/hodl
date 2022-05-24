@@ -28,7 +28,7 @@ export const NicknameForm = ({onSuccess=null}) => {
                         <Stack spacing={2}>
                             <HodlFormikTextField name="nickname" type="text" label="nickname" apiError={apiError} setApiError={setApiError}/>
                             <Button type="submit" disabled={isSubmitting || apiError}>
-                                Submit
+                                Select
                             </Button>
                         </Stack>
                     </Form>

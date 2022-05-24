@@ -1,6 +1,6 @@
-import { DisplaySettings, CameraAlt, CloudOff, AccountBalanceWallet } from "@mui/icons-material";
+import { DisplaySettings, CameraAlt, CloudOff, AccountBalanceWallet, AccountCircle } from "@mui/icons-material";
 import { Tooltip, Typography, Box, Stack, Link, Button } from "@mui/material";
-import router from "next/router";
+import { useRouter } from "next/router";
 import { useContext, useState } from "react";
 import { useConnect } from "../../hooks/useConnect";
 import { useNickname } from "../../hooks/useNickname";
@@ -13,6 +13,7 @@ export const WalletMenuPage = ({
     setNicknameModalOpen,
     setProfilePictureModalOpen,
     showBack = true }) => {
+    const router = useRouter();
     const [connect, disconnect] = useConnect();
     const [_update, _apiError, _setApiError, nickname] = useNickname();
     const { signer, address } = useContext(WalletContext);
@@ -28,8 +29,9 @@ export const WalletMenuPage = ({
     }
 
     const [walletPages] = useState([
+        { label: 'Profile', action: () => { router.push(`/profile/${nickname || address}`); closeMenu() }, icon: <AccountCircle /> },
         { label: 'Nickname', action: () => setNicknameModalOpen(true), icon: <DisplaySettings /> },
-        { label: 'Profile NFT', action: () => setProfilePictureModalOpen(true), icon: <CameraAlt /> },
+        { label: 'Avatar', action: () => setProfilePictureModalOpen(true), icon: <CameraAlt /> },
         { label: 'Disconnect', action: () => disconnect(), icon: <CloudOff /> },
     ]);
 
@@ -62,6 +64,7 @@ export const WalletMenuPage = ({
                             sx={{
                                 display: 'flex',
                                 alignItems: 'center',
+                                color: theme => theme.palette.primary.dark,
                                 '&:hover': {
                                     cursor: 'pointer',
                                     color: theme => theme.palette.secondary.main,

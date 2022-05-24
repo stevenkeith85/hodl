@@ -9,7 +9,7 @@ export const RocketTitle = ({ title }) => (
         sx={{ 
             alignItems: 'center' 
         }}>
-        <RocketLaunchIcon color="secondary" fontSize="large" />
+        <RocketLaunchIcon color="secondary" />
         <Typography variant="h1">
             {title}
         </Typography>

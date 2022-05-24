@@ -11,7 +11,7 @@ export const MintTitle = () => (
       }}>
       <Spa color="secondary" />
       <Typography color="secondary" variant="h1">
-        Mint
+        Create
       </Typography>
     </Stack>
   )

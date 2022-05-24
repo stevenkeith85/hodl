@@ -14,6 +14,7 @@ export const Likes = ({ tokenId, sx = {} }) => {
                 sx={{
                     color: "white",
                     alignItems: "center",
+                    cursor: 'pointer',
                     ...sx
                 }}>
                 {

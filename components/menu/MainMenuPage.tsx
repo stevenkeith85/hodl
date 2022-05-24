@@ -47,9 +47,10 @@ export const MainMenuPage = ({
                 flexGrow: 1,
             }}>
                 <Stack
-                    spacing={0}
+                    spacing={1}
                     m={0}
                 >
+                    <SearchBox closeMenu={closeMenu}  />
                     {pages.filter(p => p.publicPage || address).map((page, i) => (
                         <Link key={i} href={page.url} passHref>
                             <Stack
@@ -79,7 +80,7 @@ export const MainMenuPage = ({
 
                     ))}
 
-                    <SearchBox closeMenu={closeMenu} sx={{ marginY: 1 }} />
+                    
 
                 </Stack>
             </Box>

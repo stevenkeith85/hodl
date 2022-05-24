@@ -10,6 +10,7 @@ import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 const client = Redis.fromEnv()
 import apiRoute from "../handler";
 import { HodlComment } from "../../../models/HodlComment";
+import { getCommentCount } from "./count";
 
 
 dotenv.config({ path: '../.env' })
@@ -24,6 +25,8 @@ const removeComment = async (comment: HodlComment) => {
   const result2 = await client.zrem(
     `comments:${comment.token}`, JSON.stringify(comment)
   );
+
+  getCommentCount.delete(comment.token);
 
   return result1 + result2;
 

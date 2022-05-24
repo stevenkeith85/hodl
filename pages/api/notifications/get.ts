@@ -2,8 +2,9 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
+import axios from 'axios'
 
-const client = Redis.fromEnv()
+// const client = Redis.fromEnv()
 import apiRoute from "../handler";
 
 dotenv.config({ path: '../.env' })
@@ -20,11 +21,15 @@ route.get(async (req, res: NextApiResponse) => {
     return res.status(403).json({ message: "Not Authenticated" });
   }
 
-  const notifications = await client.zrange(`notifications:${req.address}`, getTimeStampAgo(7), getTimeStampAgo(0), {
-    byScore: true
-  });
+  const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/notifications:${req.address}/+inf/${getTimeStampAgo(7)}/rev/byscore`, {
+    headers: {
+      Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
+    }
+  })
 
-  res.status(200).json(notifications.reverse());
+  const notifications = r.data.result.map(item => JSON.parse(item));
+
+  res.status(200).json(notifications);
 
 });
 

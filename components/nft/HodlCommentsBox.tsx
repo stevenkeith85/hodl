@@ -1,4 +1,4 @@
-import { Card, CardContent, Typography, Chip, Box, Link, Stack } from "@mui/material";
+import { Card, CardContent, Typography, Chip, Box, Link, Stack, Tooltip, Badge } from "@mui/material";
 import { useRouter } from "next/router";
 import axios from 'axios';
 import useSWR, { useSWRConfig } from "swr";
@@ -22,7 +22,7 @@ const HodlComment = ({ comment, color = "secondary", sx = {} }) => {
     const router = useRouter();
 
     const selected = router?.query?.comment === `${comment.subject}-${comment.timestamp}`;
-    
+
     return (
         <Box paddingY={0.5} sx={{ background: selected ? yellow[100] : 'none', ...sx }} id={`hodl-comments-${comment.subject}-${comment.timestamp}`}>
             <Stack direction="row" spacing={1} display="flex" alignItems="center">
@@ -43,13 +43,15 @@ const HodlComment = ({ comment, color = "secondary", sx = {} }) => {
 }
 
 interface HodlCommentsBoxProps {
-    nft: any, 
-    prefetchedComments: any
+    nft: any,
+    prefetchedComments: any,
+    prefetchedCommentCount: number
 }
 
-export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({ 
-    nft, 
-    prefetchedComments
+export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
+    nft,
+    prefetchedComments,
+    prefetchedCommentCount
 }) => {
     const router = useRouter();
     const { mutate } = useSWRConfig()
@@ -62,7 +64,9 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
     );
 
     const { data: count } = useSWR(nft.tokenId ? [`/api/comments/count`, nft.tokenId] : null,
-        (url, tokenId) => axios.get(`${url}?token=${tokenId}`).then(r => r.data.count));
+        (url, tokenId) => axios.get(`${url}?token=${tokenId}`).then(r => r.data.count),
+        { fallbackData: prefetchedCommentCount }
+    );
 
     const canDeleteComment = (comment) => Boolean(nft?.owner?.toLowerCase() === address?.toLowerCase() || comment.subject === address)
 
@@ -89,8 +93,8 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
 
     useEffect(() => {
         if (router.query.comment) {
-            setTimeout(() =>{
-                document.querySelector(`#hodl-comments-${router.query.comment}`)?.scrollIntoView({behavior: "smooth", block: "end", inline: "nearest"});
+            setTimeout(() => {
+                document.querySelector(`#hodl-comments-${router.query.comment}`)?.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
             }, 1000)
         }
     }, []);
@@ -98,7 +102,7 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
     return (
         <Card variant="outlined">
             <CardContent>
-                <Typography variant="h3" sx={{ marginBottom: 2 }}>Comments ({ count })</Typography>
+                <Typography variant="h3" sx={{ marginBottom: 2 }}>Comments <Badge sx={{ p: '6px 3px' }} showZero badgeContent={count}></Badge></Typography>
                 <Box sx={{
                     maxHeight: '250px',
                     overflow: 'auto'
@@ -106,10 +110,10 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
                     {comments?.length ?
                         comments.map(
                             (comment, i) =>
-                            <Box display="flex" alignItems="center">
-                                <HodlComment comment={comment} key={comment.comment} color={i % 2 ? 'primary' : 'secondary'} sx={{ flexGrow: 1 }} />
-                                {canDeleteComment(comment) && <Box p={1} color="#999"><HighlightOffOutlined fontSize="small" onClick={() => deleteComment(comment)} /></Box>}
-                            </Box>
+                                <Box display="flex" alignItems="center" key={comment.comment}>
+                                    <HodlComment comment={comment} color={i % 2 ? 'primary' : 'secondary'} sx={{ flexGrow: 1 }} />
+                                    {canDeleteComment(comment) && <Box p={1} color="#999"><HighlightOffOutlined fontSize="small" onClick={() => deleteComment(comment)} /></Box>}
+                                </Box>
                         )
                         :
                         <Typography sx={{ color: '#999' }}>It&apos;s, oh, so quiet...</Typography>
@@ -154,20 +158,21 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
                         <>
                             <Form>
                                 <Box display="flex" alignItems="center" marginTop={2}>
-                                    <Field
-                                        validateOnChange
-                                        autoComplete='off'
-                                        inputRef={newTagRef}
-                                        component={InputBase}
-                                        sx={{ flexGrow: 1, border: errors.comment ? theme => `1px solid ${theme.palette.error.main}` : `1px solid #ccc`, borderRadius: 1,  paddingX: 1.5 }}
-                                        placeholder="add comment"
-                                        name="comment"
-                                        id="hodl-comments-add"
-                                        type="text"
-                                    />
-                                    <Typography sx={{ textAlign: 'right', fontSize: 10,  paddingLeft: 0.75 }}>{values?.comment?.length} / 150</Typography>
+                                    <Tooltip title={errors?.comment || ''} >
+                                        <Field
+                                            validateOnChange
+                                            autoComplete='off'
+                                            inputRef={newTagRef}
+                                            component={InputBase}
+                                            sx={{ flexGrow: 1, border: errors.comment ? theme => `1px solid ${theme.palette.error.main}` : `1px solid #ccc`, borderRadius: 1, paddingX: 1.5 }}
+                                            placeholder="add comment"
+                                            name="comment"
+                                            id="hodl-comments-add"
+                                            type="text"
+                                        />
+                                    </Tooltip>
+                                    <Typography sx={{ textAlign: 'right', fontSize: 10, paddingLeft: 0.75 }}>{values?.comment?.length} / 150</Typography>
                                 </Box>
-                                <Typography sx={{ fontSize: 10, paddingTop: 0.5 }}>{errors.comment}</Typography>
                             </Form>
                         </>)}
                 </Formik>}

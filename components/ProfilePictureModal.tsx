@@ -45,7 +45,7 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                 setOpen={setProfilePictureModalOpen}
             >
                 <Stack spacing={2} >
-                    <RocketTitle title="Set Profile NFT" />
+                    <RocketTitle title="Avatar" />
                     <InfiniteScroll
                         swr={swr}
                         loadingIndicator={<HodlLoadingSpinner />}

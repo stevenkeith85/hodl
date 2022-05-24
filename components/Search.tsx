@@ -48,7 +48,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 
-export const SearchBox = ({ closeMenu=null, sx=null }) => {
+export const SearchBox = ({ closeMenu = null, sx = null }) => {
     const router = useRouter();
 
     return (
@@ -65,30 +65,39 @@ export const SearchBox = ({ closeMenu=null, sx=null }) => {
             }}
         >
             {({ setFieldValue, errors, values }) => (
-            <Form>
-                <Search>
-                    <SearchIconWrapper>
-                        <SearchIcon />
-                    </SearchIconWrapper>
-                    <Field
-                       sx={{ width: '100%', border: errors.q && values.q ? theme => `1px solid ${theme.palette.secondary.main}`: theme => `1px solid #ccc`, borderRadius: 1, ...sx}} 
-                        component={StyledInputBase}
-                        name="q"
-                        type="text"
-                        label="Search..."
-                        onClick={e => {
-                            e.stopPropagation();
-                            // setSearchOpen(old => !old)
-                        }}
-                        onChange={e => {
-                            const value = e.target.value || "";
-                            setFieldValue('q', value.toLowerCase());
-                        }}
-                        autoComplete='off'
-                    />
-                    {/* { errors.q} */}
-                </Search>
-            </Form>
+                <Form>
+                    <Search>
+                        <SearchIconWrapper>
+                            <SearchIcon />
+                        </SearchIconWrapper>
+                        <Field
+                            sx={{ 
+                                width: '100%', 
+                                border: errors.q && values.q ? theme => `1px solid ${theme.palette.secondary.main}` : theme => `1px solid #ccc`, 
+                                borderRadius: 1, 
+                                input: {
+                                    caretColor: 'white',
+                                    cursor: 'pointer'
+                                },
+                                ...sx 
+                            }}
+                            component={StyledInputBase}
+                            name="q"
+                            type="text"
+                            label="Search..."
+                            onClick={e => {
+                                e.stopPropagation();
+                                // setSearchOpen(old => !old)
+                            }}
+                            onChange={e => {
+                                const value = e.target.value || "";
+                                setFieldValue('q', value.toLowerCase());
+                            }}
+                            autoComplete='off'
+                        />
+                        {/* { errors.q} */}
+                    </Search>
+                </Form>
             )}
         </Formik>
     )
