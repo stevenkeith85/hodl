@@ -44,7 +44,7 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                 open={profilePictureModalOpen}
                 setOpen={setProfilePictureModalOpen}
             >
-                <Stack spacing={2} >
+                <Stack spacing={3} >
                     <RocketTitle title="Avatar" />
                     <InfiniteScroll
                         swr={swr}

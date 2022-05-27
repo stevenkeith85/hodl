@@ -1,118 +1,121 @@
-import { AccountBalanceWallet } from "@mui/icons-material";
-import { Tooltip, Typography, Box, Stack, Button } from "@mui/material";
+import { AccountCircle, ArrowRightAlt, ChevronRightOutlined } from "@mui/icons-material";
+import { Typography, Box, Stack, ClickAwayListener, useTheme, useMediaQuery } from "@mui/material";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useContext, useEffect } from "react";
-import { useConnect } from "../../hooks/useConnect";
-import { useNickname } from "../../hooks/useNickname";
-import { truncateText, getShortAddress } from "../../lib/utils";
 import { WalletContext } from '../../contexts/WalletContext';
 import { SearchBox } from "../Search";
 
 
 export const MainMenuPage = ({
     pages,
-    closeMenu,
-    router,
+    hoverMenuOpen,
+    setHoverMenuOpen,
     setMenuPage
 }) => {
-    const [_update, _apiError, _setApiError, nickname] = useNickname();
-    const { signer, address } = useContext(WalletContext);
-    const [connect] = useConnect();
+    const { address } = useContext(WalletContext);
+    const router = useRouter();
+    const theme = useTheme();
+    const matches = useMediaQuery(theme.breakpoints.down('md'));
 
-    const buttonText = () => {
-        if (nickname) {
-            return <Tooltip title={nickname}><Typography>{truncateText(nickname, 20)}</Typography></Tooltip>
-        } else if (address) {
-            return <Tooltip title={address}><Typography>{getShortAddress(address).toLowerCase()}</Typography></Tooltip>
-        } else {
-            return 'Connect';
+    const handleRouteChange = () => {
+        if (hoverMenuOpen) {
+            setHoverMenuOpen(false)
         }
     }
 
-    const isMobileDevice = () => {
-        return 'ontouchstart' in window || 'onmsgesturechange' in window;
-    }
-
-    const connectMobile = () => {
-        router.push("https://metamask.app.link/dapp/192.168.1.242:3001/");
-    }
+    useEffect(() => {
+        router.events.on('routeChangeComplete', handleRouteChange)
+        return () => {
+          router.events.off('routeChangeComplete', handleRouteChange)
+        };
+            
+      }, [router.events]);
 
     return (
+
         <Box sx={{
             display: 'flex',
             flexDirection: 'column',
             height: '100%'
         }}>
-            <Box sx={{
-                flexGrow: 1,
-            }}>
-                <Stack
-                    spacing={1}
-                    m={0}
-                >
-                    <SearchBox closeMenu={closeMenu}  />
-                    {pages.filter(p => p.publicPage || address).map((page, i) => (
-                        <Link key={i} href={page.url} passHref>
-                            <Stack
-                                direction="row"
-                                sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    '&:hover': {
-                                        cursor: 'pointer',
-                                        color: theme => theme.palette.secondary.main,
-                                    }
-                                }}>
-                                {page.icon}
+            <Box sx={{ flexGrow: 1, }}>
+                <ClickAwayListener onClickAway={(e) => { e.stopPropagation(); setHoverMenuOpen(false) }} touchEvent={false}>
+                    <Stack spacing={0}>
+                        {matches && <Box
+                            sx={{
+                                borderBottom: '1px solid #f0f0f0',
+                                paddingBottom: 2,
+                                marginBottom: 2
+                            }}>
+                            <SearchBox
+                                setHoverMenuOpen={setHoverMenuOpen}
+                            />
+                        </Box>
+                        }
+                        {pages.filter(p => p.publicPage || address).map((page, i) => (
+                            <Link key={i} href={page.url} passHref>
+                                <Box
+                                    display="flex"
+                                    alignItems="center"
+                                    sx={{
+                                        color: theme => theme.palette.primary.dark,
+                                        '&:hover': {
+                                            cursor: 'pointer',
+                                            color: theme => theme.palette.secondary.main,
+                                        },
+                                        borderBottom: '1px solid #f0f0f0',
+                                        paddingBottom: 2,
+                                        marginBottom: 2
+                                    }}>
+                                    {page.icon}
+                                    <Typography
+                                        component="a"
+                                        sx={{
+                                            textDecoration: 'none',
+                                            fontWeight: router.asPath === page.url ? 900 : 300,
+                                            marginLeft: 1,
+                                        }} >
+                                        {page.label}
+                                    </Typography>
+                                </Box>
+                            </Link>
+                        ))}
+                        <Box
+                            display="flex"
+                            alignItems="center"
+                            sx={{
+                                color: theme => theme.palette.primary.dark,
+                                '&:hover': {
+                                    cursor: 'pointer',
+                                    color: theme => theme.palette.secondary.main,
+                                }
+                            }}
+                            onClick={e => {
+                                e.stopPropagation(); // TODO: For some reason the click away listener is calling onClickAway whenever we click on a menu item. working around by stopping propagation at the moment
+                                setMenuPage(1)
+                            }}
+                        >
+                            <Box
+                                flexGrow="1"
+                                display="flex"
+                                alignItems="center">
+                                <AccountCircle />
                                 <Typography
                                     component="a"
-                                    //  onClick={closeMenu}
                                     sx={{
-                                        fontSize: 14,
                                         textDecoration: 'none',
-                                        fontWeight: (theme) => router.asPath === page.url ? 900 : 300,
-                                        padding: 1,
+                                        marginLeft: 1,
                                     }} >
-                                    {page.label}
+                                    Account
                                 </Typography>
-                            </Stack>
-                        </Link>
-
-                    ))}
-
-                    
-
-                </Stack>
+                            </Box>
+                            <ChevronRightOutlined />
+                        </Box>
+                    </Stack>
+                </ClickAwayListener>
             </Box>
-            <Button
-                color="secondary"
-                onClick={(e) => {
-                    e.stopPropagation();
-                    if (signer) {
-                        setMenuPage(1);
-                    } else if (isMobileDevice()) {
-                        connectMobile();
-                    }
-                    else {
-                        connect(false);
-                    }
-                }
-                }
-                sx={{
-                    flexGrow: 0,
-                    flexShrink: 0,
-                    flexBasis: 'auto',
-                }}
-            >
-                <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-                    <AccountBalanceWallet />
-                    <Typography sx={{
-                        fontSize: 16
-                    }}>
-                        {buttonText()}
-                    </Typography>
-                </Stack>
-            </Button>
         </Box>
+
     )
 }

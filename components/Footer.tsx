@@ -68,9 +68,8 @@ const Footer = () => {
                             <Logo sx={{ 
                                 justifyContent: { xs: "center", md: "right" }
                             }} />
-                            <Typography sx={{ fontSize: 18, fontWeight: 500, textAlign: 'right' }}>
-                                {/* Mint, Showcase, and Trade NFTs */}
-                                NFTs
+                            <Typography sx={{ fontSize: 18, fontWeight: 500, textAlign: 'center' }}>
+                                Create, Showcase, and Trade NFTs
                             </Typography>                        
                     </Stack>
                 </Stack>

@@ -38,6 +38,8 @@ export async function getServerSideProps({ params }) {
   }
 
   const prefetchedTags = await getTagsForToken(params.tokenId);
+
+  // TODO: What if there are 1000's of comments?
   const prefetchedComments = await getCommentsForToken(params.tokenId);
   const prefetchedCommentCount = await getCommentCount(params.tokenId);
   const priceHistory = await getPriceHistory(params.tokenId);
@@ -57,7 +59,7 @@ const NftDetail = ({ nft, prefetchedTags, prefetchedComments, prefetchedCommentC
   return (
     <>
       <Head>
-        <title>{nft.name} | {truncateText(nft.description)} | NFT Market | HodlMyMoon</title>
+        <title>{nft.name} | HodlMyMoon</title>
       </Head>
       <Grid container>
         <Grid item xs={12} marginY={2}>

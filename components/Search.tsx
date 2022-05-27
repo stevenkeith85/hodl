@@ -48,7 +48,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 
-export const SearchBox = ({ closeMenu = null, sx = null }) => {
+export const SearchBox = ({ setHoverMenuOpen = null, sx = null }) => {
     const router = useRouter();
 
     return (
@@ -58,8 +58,8 @@ export const SearchBox = ({ closeMenu = null, sx = null }) => {
             }}
             validationSchema={SearchValidationSchema}
             onSubmit={async (values) => {
-                if (closeMenu) {
-                    closeMenu();
+                if (setHoverMenuOpen) {
+                    setHoverMenuOpen(false);
                 }
                 router.push(`/search?q=${values.q}`);
             }}
@@ -76,7 +76,7 @@ export const SearchBox = ({ closeMenu = null, sx = null }) => {
                                 border: errors.q && values.q ? theme => `1px solid ${theme.palette.secondary.main}` : theme => `1px solid #ccc`, 
                                 borderRadius: 1, 
                                 input: {
-                                    caretColor: 'white',
+                                    caretColor: setHoverMenuOpen ? 'black' : 'white',
                                     cursor: 'pointer'
                                 },
                                 ...sx 
@@ -87,7 +87,6 @@ export const SearchBox = ({ closeMenu = null, sx = null }) => {
                             label="Search..."
                             onClick={e => {
                                 e.stopPropagation();
-                                // setSearchOpen(old => !old)
                             }}
                             onChange={e => {
                                 const value = e.target.value || "";
@@ -95,7 +94,6 @@ export const SearchBox = ({ closeMenu = null, sx = null }) => {
                             }}
                             autoComplete='off'
                         />
-                        {/* { errors.q} */}
                     </Search>
                 </Form>
             )}

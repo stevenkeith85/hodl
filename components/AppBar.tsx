@@ -11,15 +11,13 @@ import { useState, useContext, useEffect } from 'react';
 import Link from 'next/link';
 import { Logo } from './Logo';
 
-import { Stack } from '@mui/material';
+import { Stack, useMediaQuery, useTheme } from '@mui/material';
 import { useRouter } from 'next/router';
-import { MobileMenu } from './MobileMenu';
-import { AccountBalanceWallet, AccountCircle, Spa, Storefront } from '@mui/icons-material';
+import { HoverMenu } from './MobileMenu';
+import { AccountBalanceWallet, Spa, Storefront } from '@mui/icons-material';
 import { useConnect } from '../hooks/useConnect';
 import { WalletContext } from '../contexts/WalletContext';
 import { useNickname } from '../hooks/useNickname';
-import { NicknameModal } from './modals/NicknameModal';
-import { ProfilePictureModal } from './ProfilePictureModal';
 import { HodlNotifications } from './HodlNotifications';
 import axios from 'axios'
 import { useSnackbar } from 'notistack';
@@ -32,9 +30,8 @@ const ResponsiveAppBar = () => {
     const router = useRouter();
     const [connect] = useConnect();
 
-    const [nicknameModalOpen, setNicknameModalOpen] = useState(false);
-    const [profilePictureModalOpen, setProfilePictureModalOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [desktopMenuOpen, setDesktopMenuOpen] = useState(false);
 
     const { enqueueSnackbar } = useSnackbar();
     const [error, setError] = useState('');
@@ -55,6 +52,9 @@ const ResponsiveAppBar = () => {
     ]);
 
     const [_update, _apiError, _setApiError, nickname] = useNickname()
+
+    // const theme = useTheme();
+    // const matches = useMediaQuery(theme.breakpoints.down('md'));
 
     useEffect(() => {
         const load = async () => {
@@ -106,27 +106,20 @@ const ResponsiveAppBar = () => {
 
     return (
         <>
-            <NicknameModal nicknameModalOpen={nicknameModalOpen} setNicknameModalOpen={setNicknameModalOpen}></NicknameModal>
-            <ProfilePictureModal profilePictureModalOpen={profilePictureModalOpen} setProfilePictureModalOpen={setProfilePictureModalOpen}></ProfilePictureModal>
             <AppBar position="fixed" sx={{ maxWidth: `100vw`, left: 0 }}>
                 <Container maxWidth="xl" sx={{ width: '100%', position: 'relative' }}>
                     <Toolbar disableGutters>
-
                         {/* Mobile */}
                         <Box sx={{ display: { xs: 'flex', md: 'none' }, width: '100%', justifyContent: 'space-between' }}>
-                            <MobileMenu
+                            <HoverMenu
+                                page={0}
                                 pages={pages}
-                                mobileMenuOpen={mobileMenuOpen}
-                                setMobileMenuOpen={setMobileMenuOpen}
-                                nicknameModalOpen={nicknameModalOpen}
-                                setNicknameModalOpen={setNicknameModalOpen}
-                                profilePictureModalOpen={profilePictureModalOpen}
-                                setProfilePictureModalOpen={setProfilePictureModalOpen}
+                                hoverMenuOpen={mobileMenuOpen}
+                                setHoverMenuOpen={setMobileMenuOpen}
                             />
                             <Logo />
                             <Stack
                                 direction="row"
-                                // spacing={1}
                                 sx={{
                                     position: { sm: 'relative' },
                                     display: { xs: 'flex', md: 'none' },
@@ -137,10 +130,8 @@ const ResponsiveAppBar = () => {
                                 <IconButton
                                     sx={{ zIndex: 999 }}
                                     size="large"
-                                    onClick={(e) => {
-                                        console.log('clicked')
+                                    onClick={e => {
                                         setMobileMenuOpen(prev => !prev);
-                                        // e.stopPropagation();
                                     }}
                                     color="inherit"
                                 >
@@ -221,31 +212,25 @@ const ResponsiveAppBar = () => {
                                     alignItems: 'center'
                                 }}
                             >
-                                <SearchBox closeMenu={undefined} />
+                                <SearchBox setHoverMenuOpen={null} />
                                 <HodlNotifications />
-                                <MobileMenu
+                                <HoverMenu
                                     page={1}
-                                    showBack={false}
                                     pages={pages}
-                                    mobileMenuOpen={mobileMenuOpen}
-                                    setMobileMenuOpen={setMobileMenuOpen}
-                                    nicknameModalOpen={nicknameModalOpen}
-                                    setNicknameModalOpen={setNicknameModalOpen}
-                                    profilePictureModalOpen={profilePictureModalOpen}
-                                    setProfilePictureModalOpen={setProfilePictureModalOpen}
+                                    hoverMenuOpen={desktopMenuOpen}
+                                    setHoverMenuOpen={setDesktopMenuOpen}
                                 />
                                 <IconButton
                                     size="large"
                                     sx={{ margin: 0, padding: 0 }}
                                     onClick={(e) => {
-                                        setMobileMenuOpen(prev => !prev);
-                                        // e.stopPropagation();
+                                        setDesktopMenuOpen(prev => !prev);
                                     }}
                                     color="inherit"
                                     aria-label='Account Menu'
                                 >
                                     {
-                                        mobileMenuOpen ?
+                                        desktopMenuOpen ?
                                             <Box width={36} display="flex" alignItems="center" justifyContent="center"><CloseIcon /></Box> :
                                             address ?
                                                 <ProfileAvatar profileAddress={address} size="small" showNickname={false} withLink={false} /> :
