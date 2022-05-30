@@ -13,12 +13,7 @@ export const Logo = ({ sx = {} }) => (
                 ...sx
             }}
         >
-            <RocketLaunchIcon sx={{
-                '&:hover': {
-                    transform: 'rotate(1turn)',
-                    transition: 'transform 2s'
-                }
-            }} />
+            <RocketLaunchIcon />
             <Typography
                 sx={{
                     fontFamily: theme => theme.logo.fontFamily,

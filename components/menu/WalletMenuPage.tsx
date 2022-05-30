@@ -1,4 +1,4 @@
-import { DisplaySettings, CameraAlt, AccountCircle, ArrowLeftOutlined, ChevronLeftOutlined, Person, DisplaySettingsOutlined, CameraAltOutlined } from "@mui/icons-material";
+import { AccountCircle, ChevronLeftOutlined, DisplaySettingsOutlined, CameraAltOutlined } from "@mui/icons-material";
 import { Typography, Box, Stack, Link, ClickAwayListener, useMediaQuery, useTheme } from "@mui/material";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
@@ -21,34 +21,32 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
     const matches = useMediaQuery(theme.breakpoints.down('md'));
 
     const [walletPages] = useState([
-        {
-            label: '', action: () => {
-                router.push(`/profile/${nickname || address}`);
-            }, icon: <ProfileAvatar profileAddress={address} size="small" showNickname={true} withLink={false} />
-        },
         { label: 'Nickname', action: () => setNicknameModalOpen(true), icon: <DisplaySettingsOutlined /> },
         { label: 'Avatar', action: () => setProfilePictureModalOpen(true), icon: <CameraAltOutlined /> },
     ]);
 
     const handleRouteChange = () => {
-        if (hoverMenuOpen) {
-            setHoverMenuOpen(false)
-        }
+        setHoverMenuOpen(false)
     }
 
     useEffect(() => {
         router.events.on('routeChangeComplete', handleRouteChange)
         return () => {
-          router.events.off('routeChangeComplete', handleRouteChange)
+            router.events.off('routeChangeComplete', handleRouteChange)
         };
-            
-      }, [router.events]);
-      
+
+    }, [router.events]);
+
+
     return (
-        <ClickAwayListener onClickAway={(e) => {
-            e.stopPropagation();
-            setHoverMenuOpen(false)
-        }} touchEvent={false}>
+        <ClickAwayListener
+            onClickAway={e => {
+                e.stopPropagation();
+                if (hoverMenuOpen) {
+                    setHoverMenuOpen(false)
+                }
+
+            }} touchEvent={false}>
             <Box sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -57,7 +55,6 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
             }}>
                 <NicknameModal nicknameModalOpen={nicknameModalOpen} setNicknameModalOpen={setNicknameModalOpen}></NicknameModal>
                 <ProfilePictureModal profilePictureModalOpen={profilePictureModalOpen} setProfilePictureModalOpen={setProfilePictureModalOpen}></ProfilePictureModal>
-
                 <Box sx={{
                     flexGrow: 1,
                     flexShrink: 0,
@@ -77,7 +74,7 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
                             marginBottom: 2
                         }}
                         onClick={e => {
-                            e.stopPropagation(); // TODO: For some reason the click away listener is calling onClickAway whenever we click on a menu item. working around by stopping propagation at the moment
+                            e.stopPropagation();
                             setMenuPage(0)
                         }}
                     >
@@ -100,6 +97,28 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
                     {
                         address &&
                         <Stack spacing={0} m={0} >
+                            <Stack
+                                key={'avatar'}
+                                direction="row"
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    '&:hover': {
+                                        cursor: 'pointer',
+                                        color: theme => theme.palette.secondary.main,
+                                    },
+                                    borderBottom: '1px solid #f0f0f0',
+                                    paddingBottom: 2,
+                                    marginBottom: 2
+
+                                }}
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    router.push(`/profile/${nickname || address}`)
+                                }}
+                            >
+                                <ProfileAvatar profileAddress={address} size="small" showNickname={true} withLink={false} />
+                            </Stack>
                             {walletPages.map((page, i) => (
                                 <Stack
                                     key={i}
@@ -126,7 +145,6 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
                                     <Typography
                                         component="a"
                                         sx={{
-                                            // fontSize: 14,
                                             textDecoration: 'none',
                                             marginLeft: 2,
 
@@ -144,7 +162,6 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
                             <Typography mb={2} variant="h1">Sign In</Typography>
                             <Typography mb={2} >Connect your wallet to access your account.</Typography>
                             <Typography>We officially support <Link href="https://metamask.io/download/">MetaMask</Link></Typography>
-
                         </Box>
                     }
                 </Box>

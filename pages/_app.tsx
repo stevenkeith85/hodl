@@ -16,8 +16,6 @@ import { useConnect } from '../hooks/useConnect';
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
-
-
 function MyApp(props) {
   const [signer, setSigner] = useState('');
   const [address, setAddress] = useState('');
@@ -25,16 +23,13 @@ function MyApp(props) {
 
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
 
-  
-
-
   return (
     <CacheProvider value={emotionCache}>
       <Head>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
       <SWRConfig value={{
-        dedupingInterval: 4000, // default is 2000
+        dedupingInterval: 10000, // default is 2000
         focusThrottleInterval: 10000, // default is 5000
         errorRetryCount: 1,
       }}>

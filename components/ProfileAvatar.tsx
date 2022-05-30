@@ -40,29 +40,32 @@ export const NftAvatar = ({ token, size, highlight = false }: any) => {
                     transform: 'scale(1.2)',
                 }
             }}>
-            {((isImage(token.mimeType) && !isGif(token.mimeType)) || isUnknown(token.mimeType))&&
+            {((isImage(token.mimeType) && !isGif(token.mimeType)) || isUnknown(token.mimeType)) &&
                 <HodlImage
                     cid={token?.image.split('//')[1] || token?.image}
                     effect={token?.filter ? `${token.filter},ar_1.0,c_fill,r_max,g_face` : `ar_1.0,c_fill,r_max,g_face`}
                     height={size}
                     srcSetSizes={[Math.ceil(size), Math.ceil(size * 1.5), Math.ceil(size * 2), Math.ceil(size * 2.5)]} // we want it big enough for the scale effect
                     sizes=""
-                />}
+                />
+            }
             {isImage(token.mimeType) && isGif(token.mimeType) &&
                 <HodlVideo
                     gif={true}
                     cid={token?.image.split('//')[1] || token?.image}
                     transformations={`w_${size * 2.5},h_${size * 2.5}${token?.filter ? ',' + token.filter : ''},ar_1.0,c_fill,r_max`}
-                    
-                />}
+
+                />
+                }
             {isVideo(token.mimeType) &&
                 <HodlVideo
                     controls={false}
                     cid={token?.image.split('//')[1] || token?.image}
                     transformations={`w_${size * 2.5},h_${size * 2.5}${token?.filter ? ',' + token.filter : ''},ar_1.0,c_fill,r_max`}
                     onlyPoster={true}
-                />}
-            
+                />
+                }
+
         </Avatar>
     )
 }
@@ -131,12 +134,8 @@ export const ProfileAvatar = ({ profileAddress, reverse = false, size = "medium"
             spacing={size === 'small' ? 1 : 2}
             direction={reverse ? 'row-reverse' : 'row'}
         >
-            {token
-                ?
-                (withLink ?
-                    <NftAvatarWithLinkMemo token={token} size={getSize()} /> :
-                    <NftAvatarMemo token={token} size={getSize()} />)
-                :
+            {token ?
+                withLink ? <NftAvatarWithLinkMemo token={token} size={getSize()} /> : <NftAvatarMemo token={token} size={getSize()} /> :
                 <Link href={profileAddress ? `/profile/${profileNickname || profileAddress}` : ''}>
                     <Avatar
                         className="avatar"
@@ -166,6 +165,7 @@ export const ProfileAvatar = ({ profileAddress, reverse = false, size = "medium"
                         />
                     </Avatar>
                 </Link >
+
             }
             {showNickname && <Link href={`/profile/${profileNickname || profileAddress}`} passHref>
                 {

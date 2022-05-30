@@ -40,7 +40,16 @@ export const MainMenuPage = ({
             height: '100%'
         }}>
             <Box sx={{ flexGrow: 1, }}>
-                <ClickAwayListener onClickAway={(e) => { e.stopPropagation(); setHoverMenuOpen(false) }} touchEvent={false}>
+                <ClickAwayListener 
+                    onClickAway={e => { 
+                        console.log(e.target)
+                        // e.stopPropagation(); 
+                        console.log('main menu click away');
+                        if (hoverMenuOpen) {
+                            setHoverMenuOpen(false)
+                        }
+                        
+                    }} touchEvent={false}>
                     <Stack spacing={0}>
                         {matches && <Box
                             sx={{
@@ -59,7 +68,7 @@ export const MainMenuPage = ({
                                     display="flex"
                                     alignItems="center"
                                     sx={{
-                                        color: theme => theme.palette.primary.dark,
+                                        color: '#666',
                                         '&:hover': {
                                             cursor: 'pointer',
                                             color: theme => theme.palette.secondary.main,
@@ -85,14 +94,14 @@ export const MainMenuPage = ({
                             display="flex"
                             alignItems="center"
                             sx={{
-                                color: theme => theme.palette.primary.dark,
+                                color: '#666',
                                 '&:hover': {
                                     cursor: 'pointer',
                                     color: theme => theme.palette.secondary.main,
                                 }
                             }}
                             onClick={e => {
-                                e.stopPropagation(); // TODO: For some reason the click away listener is calling onClickAway whenever we click on a menu item. working around by stopping propagation at the moment
+                                e.stopPropagation();
                                 setMenuPage(1)
                             }}
                         >

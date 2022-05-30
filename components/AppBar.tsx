@@ -13,7 +13,7 @@ import { Logo } from './Logo';
 
 import { Stack, useMediaQuery, useTheme } from '@mui/material';
 import { useRouter } from 'next/router';
-import { HoverMenu } from './MobileMenu';
+import { HoverMenu } from './HoverMenu';
 import { AccountBalanceWallet, Spa, Storefront } from '@mui/icons-material';
 import { useConnect } from '../hooks/useConnect';
 import { WalletContext } from '../contexts/WalletContext';
@@ -32,6 +32,9 @@ const ResponsiveAppBar = () => {
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [desktopMenuOpen, setDesktopMenuOpen] = useState(false);
+
+    const [showMobileNotifications, setShowMobileNotifications] = useState(false);
+    const [showDesktopNotifications, setShowDesktopNotifications] = useState(false);
 
     const { enqueueSnackbar } = useSnackbar();
     const [error, setError] = useState('');
@@ -52,9 +55,6 @@ const ResponsiveAppBar = () => {
     ]);
 
     const [_update, _apiError, _setApiError, nickname] = useNickname()
-
-    // const theme = useTheme();
-    // const matches = useMediaQuery(theme.breakpoints.down('md'));
 
     useEffect(() => {
         const load = async () => {
@@ -126,12 +126,18 @@ const ResponsiveAppBar = () => {
                                     alignItems: 'center'
                                 }}
                             >
-                                <HodlNotifications />
+                                <HodlNotifications
+                                    setHoverMenuOpen={setMobileMenuOpen}
+                                    showNotifications={showMobileNotifications}
+                                    setShowNotifications={setShowMobileNotifications}
+                                />
                                 <IconButton
                                     sx={{ zIndex: 999 }}
                                     size="large"
                                     onClick={e => {
+                                        setShowMobileNotifications(false);
                                         setMobileMenuOpen(prev => !prev);
+                                        e.stopPropagation();
                                     }}
                                     color="inherit"
                                 >
@@ -213,7 +219,11 @@ const ResponsiveAppBar = () => {
                                 }}
                             >
                                 <SearchBox setHoverMenuOpen={null} />
-                                <HodlNotifications />
+                                <HodlNotifications
+                                    setHoverMenuOpen={setDesktopMenuOpen}
+                                    showNotifications={showDesktopNotifications}
+                                    setShowNotifications={setShowDesktopNotifications}
+                                />
                                 <HoverMenu
                                     page={1}
                                     pages={pages}
@@ -223,8 +233,10 @@ const ResponsiveAppBar = () => {
                                 <IconButton
                                     size="large"
                                     sx={{ margin: 0, padding: 0 }}
-                                    onClick={(e) => {
+                                    onClick={e => {
+                                        setShowDesktopNotifications(false);
                                         setDesktopMenuOpen(prev => !prev);
+                                        e.stopPropagation();
                                     }}
                                     color="inherit"
                                     aria-label='Account Menu'
