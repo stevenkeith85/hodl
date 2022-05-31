@@ -8,6 +8,7 @@ import { HodlImage } from './HodlImage';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Comments } from './Comments';
+import { Videocam } from '@mui/icons-material'
 
 const NftList = ({
     nfts,
@@ -45,15 +46,19 @@ const NftList = ({
                             gif={true}
                             height={matches ? '400px' : '500px'}
                         />}
-                    {assetType(nft) === 'video' &&
-                        <HodlVideo
-                            cid={nft?.image}
-                            controls={false}
-                            onlyPoster={true}
-                            preload="none"
-                            transformations='l_text:Arial_100_bold:VIDEO,co_rgb:FFFFFF'
-                            height={matches ? '400px' : '500px'}
-                        />
+                    {(assetType(nft) === 'video' || assetType(nft) === 'audio') &&
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+                            {assetType(nft) === 'video' && <Videocam fontSize="large" sx={{ position: 'absolute' }} />}
+                            <HodlVideo
+                                cid={nft?.image}
+                                controls={false}
+                                onlyPoster={true}
+                                preload="none"
+                                audio={assetType(nft) === 'audio'}
+                                // transformations='l_text:Arial_100_bold:Video,co_rgb:FFFFFF'
+                                height={matches ? '400px' : '500px'}
+                            />
+                        </Box>
                     }
                     {assetType(nft) === 'image' &&
                         <HodlImage

@@ -107,6 +107,7 @@ export const HodlNotifications = ({ setHoverMenuOpen, showNotifications, setShow
         flexDirection="column"
         gap={2}
     >
+        {notifications && notifications.length === 0 && 'You are up to date'}
         {(notifications || []).map((item, i) => <HodlNotification key={i} item={item} setShowNotifications={setShowNotifications} />)}
     </Box>
 

@@ -24,7 +24,7 @@ export const DetailPageImage = ({ token }) => {
                             }
                         }}
                         cid={token?.image} transformations={token?.filter} gif={true} />}
-                    {assetType(token) === 'video' && <HodlVideo
+                    {(assetType(token) === 'video' || assetType(token) === 'audio') && <HodlVideo
                         sx={{
                             pointerEvents: 'none',
                             justifyContent: 'center',
@@ -35,8 +35,9 @@ export const DetailPageImage = ({ token }) => {
                                 objectFit: 'scale-down',
                             }
                         }}
-
-                        cid={token?.image} folder={'video/upload/nfts/'} />}
+                        cid={token?.image} folder={'video/upload/nfts/'} />
+                        
+                        }
                     {assetType(token) === 'image' && <HodlImage
                         loading="eager"
                         sx={{
@@ -70,7 +71,12 @@ export const DetailPageImage = ({ token }) => {
                         />}
                 </Box>
                 <Box>
-                    {assetType(token) === 'video' && <HodlVideo cid={token?.image} transformations={token?.filter} />}
+                {(assetType(token) === 'video' || assetType(token) === 'audio') && <HodlVideo
+                    cid={token?.image} 
+                    audio={assetType(token) === 'audio'}
+                    height={assetType(token) === 'audio' ? '400px': 'auto'}
+                    transformations={token?.filter} 
+                    />}
                 </Box>
             </Box>
 

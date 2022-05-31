@@ -153,7 +153,7 @@ const ResponsiveAppBar = () => {
                             width: '100%',
                             justifyContent: 'space-between'
                         }}>
-                            <Stack direction="row" spacing={10} sx={{ alignItems: 'center' }}>
+                            <Stack direction="row" spacing={8} sx={{ alignItems: 'center' }}>
                                 <Logo />
                                 <Box sx={{
                                     display: 'grid',
@@ -171,9 +171,10 @@ const ResponsiveAppBar = () => {
                                                 <Typography
                                                     key={page.label}
                                                     sx={{
-                                                        display: 'block',
-                                                        textAlign: 'center',
-                                                        padding: 1,
+                                                        // display: 'block',
+                                                        // textAlign: 'center',
+                                                        // padding: 1,
+                                                        fontFamily: theme => theme.logo.fontFamily,
                                                         cursor: 'pointer',
                                                         color: 'white',
                                                         textTransform: 'none',
@@ -188,9 +189,10 @@ const ResponsiveAppBar = () => {
                                                 : <Typography
                                                     key={page.label}
                                                     sx={{
-                                                        display: 'block',
-                                                        textAlign: 'center',
-                                                        padding: 1,
+                                                        // display: 'block',
+                                                        // textAlign: 'center',
+                                                        // padding: 1,
+                                                        fontFamily: theme => theme.logo.fontFamily,
                                                         cursor: 'pointer',
                                                         color: 'white',
                                                         textTransform: 'none',

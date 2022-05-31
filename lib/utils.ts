@@ -110,6 +110,10 @@ export const assetType = nft => {
   if (nft.mimeType.indexOf('image') !== -1) {
     return 'image'
   }
+
+  if (nft.mimeType.indexOf('audio') !== -1) {
+    return 'audio'
+  }
 }
 
 export const messageToSign = `

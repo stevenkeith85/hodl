@@ -71,6 +71,7 @@ const NftDetail = ({ nft, prefetchedTags, prefetchedComments, prefetchedCommentC
               alignItems: 'center'
             }}>
             <Tooltip title={nft.name}>
+              
               <Typography variant="h1">{truncateText(nft?.name, 100)}</Typography>
             </Tooltip>
             <ProfileAvatar reverse={true} profileAddress={nft?.owner} />
@@ -80,6 +81,7 @@ const NftDetail = ({ nft, prefetchedTags, prefetchedComments, prefetchedCommentC
           <Stack spacing={2}>
             <DetailPageImage token={nft} />
             <Stack spacing={1} direction="row" sx={{ display: 'flex', alignContent: 'center'}}>
+            {/* { JSON.stringify(nft) } */}
               <Likes sx={{ color: theme => theme.palette.secondary.main, '.MuiTypography-body1': { color: '#666' } }} tokenId={nft.tokenId} />
               <Comments nft={nft} popUp={false} sx={{ color: '#333'}}/>
             </Stack>

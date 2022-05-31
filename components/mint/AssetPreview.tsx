@@ -15,10 +15,10 @@ export const AssetPreview: FC<MintProps> = ({
 
   const isImage = () => mimeType && mimeType.indexOf('image') !== -1;
   const isVideo = () => mimeType && mimeType.indexOf('video') !== -1;
+  const isAudio = () => mimeType && mimeType.indexOf('audio') !== -1;
   
   return (
     <Stack spacing={2} sx={{ flexBasis: `50%`, justifyContent: 'center' }}>
-      
       <Stack
         sx={{
           border: !fileName ? `1px solid #d0d0d0` : 'none',
@@ -38,7 +38,7 @@ export const AssetPreview: FC<MintProps> = ({
             fileName={fileName} 
             onLoad={setLoading} 
           />}
-        {fileName && isVideo() && 
+        {fileName && (isVideo() || isAudio()) && 
           // Video transformations are too expensive on cloudinary
           // <FilteredVideoMemo 
           //   filter={filter} 

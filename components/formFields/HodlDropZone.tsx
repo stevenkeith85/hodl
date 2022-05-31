@@ -1,4 +1,4 @@
-import { Box, Button, LinearProgress, Stack, Typography } from '@mui/material'
+import { Box, Button, LinearProgress, Stack, Tooltip, Typography } from '@mui/material'
 import React from 'react'
 import { useDropzone } from 'react-dropzone'
 
@@ -35,7 +35,8 @@ export const HodlDropzone = ({ onDrop, progress }) => {
             justifyItems: 'space-between',
             overflow: 'hidden',
             padding: 0,
-            margin: 0
+            margin: 0,
+            cursor: 'pointer'
         }}
         >
             <Box
@@ -46,9 +47,7 @@ export const HodlDropzone = ({ onDrop, progress }) => {
                 }}>
                 <input {...getInputProps()} />
                 <Stack spacing={2} sx={{ textAlign: 'center' }}>
-                    <Typography>Drag &apos;n&apos; drop your file here</Typography>
-                    <Typography>Images up to 10MB; Audio/Video up to 100MB</Typography>
-                    <div><Button>Browse Files</Button></div>
+                    <Typography>Image, Video, or Audio</Typography>
                 </Stack>
             </Box>
             <Box

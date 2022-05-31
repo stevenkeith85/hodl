@@ -11,6 +11,7 @@ interface HodlVideoProps {
     onlyPoster?: boolean;
     pauseWhenOffScreen?: boolean;
     gif?: boolean;
+    audio?: boolean;
     height?: string;
     preload?: string,
     onLoad?: Function;
@@ -25,6 +26,7 @@ export const HodlVideo = ({
     onlyPoster = false,
     pauseWhenOffScreen = true,
     gif = false,
+    audio = false,
     height = 'auto',
     preload="auto",
     onLoad = null,
@@ -50,15 +52,28 @@ export const HodlVideo = ({
         }
     }, [video?.current])
 
+    const getPoster = () => {
+        if (gif) {
+            return null;
+        }
+        
+        if (audio) {
+            return '/hodlmymoonmusic.png'
+        }
+        
+        return `${asset}.jpg`;
+    }
+
     return (
         <>
         <Box sx={{
             display: 'flex',
             height: height,
             video: {
-                objectFit: 'cover',
-                objectPosition: 'top',
+                objectFit: audio ? 'scale-down': 'cover',
+                objectPosition: 'center',
                 borderRadius: 1,
+                background: '#fafafa'
             },
             ...sx
         }}>
@@ -78,7 +93,7 @@ export const HodlVideo = ({
                 muted={gif}
                 controls={!gif && controls}
                 controlsList="nodownload"
-                poster={gif ? null : `${asset}.jpg`}>
+                poster={getPoster()}>
                 {!onlyPoster && (<>
                     <source type="video/mp4" src={`${asset}.mp4`} />
                     <source type="video/webm" src={`${asset}.webm`} />

@@ -1,4 +1,4 @@
-import { Card, CardContent, Typography, Chip, Box } from "@mui/material";
+import { Card, CardContent, Typography, Chip, Box, Tooltip } from "@mui/material";
 import { useRouter } from "next/router";
 import axios from 'axios';
 import useSWR from "swr";
@@ -35,7 +35,6 @@ export const HodlTagCloud = ({ nft, prefetchedTags }) => {
                     gap: 1,
                 }}>
                     {isOwner() ?
-
                         (tags || []).map(tag => <Chip key={tag}
                             label={tag}
                             onClick={async (values) => {
@@ -99,8 +98,9 @@ export const HodlTagCloud = ({ nft, prefetchedTags }) => {
                                 }
                             }}
                         >
-                            {({ setFieldValue, errors }) => (
+                            {({ setFieldValue, errors }) => (<>
                                 <Form>
+                                    <Tooltip title={errors?.tag || ''}>
                                     <Field
                                         inputRef={newTagRef}
                                         component={InputBase}
@@ -114,7 +114,9 @@ export const HodlTagCloud = ({ nft, prefetchedTags }) => {
                                             setFieldValue('tag', value.toLowerCase());
                                         }}
                                     />
+                                    </Tooltip>
                                 </Form>
+                                </>
                             )}
                         </Formik>
                     }
