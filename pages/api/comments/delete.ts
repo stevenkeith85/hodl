@@ -44,9 +44,9 @@ route.delete(async (req, res: NextApiResponse) => {
 
   const { subject, comment, token, timestamp } = req.body;
 
-  // if (!subject || !comment || !token || !timestamp) {
-  //   return res.status(400).json({ message: 'Bad Request' });
-  // }
+  if (!subject || !comment || !token || !timestamp) {
+    return res.status(400).json({ message: 'Bad Request' });
+  }
 
   const provider = await getProvider();
   const contract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);

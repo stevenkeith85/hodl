@@ -26,10 +26,13 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
     ]);
 
     const handleRouteChange = () => {
-        setHoverMenuOpen(false)
+        if (hoverMenuOpen) {
+            setHoverMenuOpen(false)
+        }
     }
 
     useEffect(() => {
+        console.log('wallet menu route change')
         router.events.on('routeChangeComplete', handleRouteChange)
         return () => {
             router.events.off('routeChangeComplete', handleRouteChange)

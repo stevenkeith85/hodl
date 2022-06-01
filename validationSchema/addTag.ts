@@ -10,7 +10,7 @@ export const AddTagValidationSchema = yup.object({
     .max(25)
     .lowercase()
     .strict()
-    .matches(/^[\d\w._\s]+$/, 'Only letters, numbers, underscores, spaces and period accepted'),
+    .matches(/^[\d\w_]+$/, 'Only letters, numbers, underscores accepted'),
   token: yup
     .number()
     .required()

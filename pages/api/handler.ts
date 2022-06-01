@@ -21,8 +21,8 @@ const rateLimits = {
   // 'POST:/api/mint/ipfs': 1,
   // 'POST:/api/like/like': 2,
   // 'POST:/api/follow/follow': 10,
-  // 'POST:/api/tags/add': 12,
-  // 'DELETE:/api/tags/delete': 12,
+  'POST:/api/tags/add': 6,
+  'DELETE:/api/tags/delete': 6,
   // 'GET:/api/search/results': 60,
   // 'POST:/api/comments/add': 3,
 }
@@ -66,7 +66,6 @@ const handler = () => nc<HodlApiRequest, NextApiResponse>({
     const limit = rateLimits[routeKey];
 
     if (limit) {
-      console.log('This is a rate limited route')
       const limited = await isRateLimited(ip, routeKey, limit);
 
       if (limited) {

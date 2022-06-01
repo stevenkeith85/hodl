@@ -84,7 +84,7 @@ export const SearchBox = ({ setHoverMenuOpen = null, sx = null }) => {
                             component={StyledInputBase}
                             name="q"
                             type="text"
-                            label="Search..."
+                            placeholder="Search Tags"
                             onClick={e => {
                                 e.stopPropagation();
                             }}

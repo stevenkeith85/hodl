@@ -112,7 +112,7 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
                             (comment, i) =>
                                 <Box display="flex" alignItems="center" key={comment.comment}>
                                     <HodlComment comment={comment} color={i % 2 ? 'primary' : 'secondary'} sx={{ flexGrow: 1 }} />
-                                    {canDeleteComment(comment) && <Box p={1} color="#999"><HighlightOffOutlined fontSize="small" onClick={() => deleteComment(comment)} /></Box>}
+                                    {canDeleteComment(comment) && <Box p={1} color="#999"><HighlightOffOutlined sx={{ cursor: 'pointer' }} fontSize="small" onClick={() => deleteComment(comment)} /></Box>}
                                 </Box>
                         )
                         :

@@ -1,11 +1,12 @@
-import { Button, Stack } from "@mui/material";
+import { Box, Button, Stack, Tooltip } from "@mui/material";
 import { useNickname } from "../../hooks/useNickname";
-import { Formik, Form } from 'formik';
+import { Formik, Form, Field } from 'formik';
 import { HodlFormikTextField } from "../formFields/HodlFormikTextField";
 import { nicknameValidationSchema } from "../../validationSchema/nickname";
+import { InputBase, TextField } from "formik-mui";
 
 
-export const NicknameForm = ({onSuccess=null}) => {
+export const NicknameForm = ({ onSuccess = null }) => {
     const [update, apiError, setApiError, nickname] = useNickname();
 
     return (
@@ -23,13 +24,36 @@ export const NicknameForm = ({onSuccess=null}) => {
                     }
                 }}
             >
-                {({ isSubmitting }) => (
+                {({ isSubmitting, errors, setFieldValue }) => (
                     <Form>
                         <Stack spacing={2}>
-                            <HodlFormikTextField name="nickname" type="text" apiError={apiError} setApiError={setApiError}/>
-                            <Button type="submit" disabled={isSubmitting || apiError}>
-                                Select
-                            </Button>
+                            <Tooltip title={errors?.nickname || ''} >
+                                <Field
+                                    validateOnChange
+                                    autoComplete='off'
+                                    component={InputBase}
+                                    sx={{ 
+                                        border: errors.nickname ? theme => `1px solid ${theme.palette.error.main}` : `1px solid #ccc`, 
+                                        borderRadius: 1, 
+                                        paddingY: 1,
+                                        paddingX: 1.5 
+                                    }}
+                                    fullWidth
+                                    placeholder=""
+                                    name="nickname"
+                                    type="text"
+                                    onChange={e => {
+                                        const value = e.target.value || "";
+                                        setFieldValue('nickname', value.toLowerCase());
+                                    }}
+                                />
+                            </Tooltip>
+                            <div>
+                                <Button type="submit" disabled={isSubmitting || apiError}>
+                                    Select
+                                </Button>
+                            </div>
+
                         </Stack>
                     </Form>
                 )}

@@ -48,6 +48,7 @@ export const HodlDropzone = ({ onDrop, progress }) => {
                 <input {...getInputProps()} />
                 <Stack spacing={2} sx={{ textAlign: 'center' }}>
                     <Typography>Image, Video, or Audio</Typography>
+                    <div><Button>Browse Files</Button></div>
                 </Stack>
             </Box>
             <Box

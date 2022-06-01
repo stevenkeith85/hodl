@@ -60,8 +60,8 @@ const Footer = () => {
                         </Stack>
                         <Stack spacing={0.5}>
                             <Typography sx={{ fontWeight: 800, marginBottom: 0.5 }}>Non Fungible Tokens</Typography>
-                            { address && <HodlLink href="/create">Create</HodlLink> }
                             <HodlLink href="/">Market</HodlLink>
+                            { address && <HodlLink href="/create">Create</HodlLink> }
                         </Stack>
                     </Stack>
                     <Stack>

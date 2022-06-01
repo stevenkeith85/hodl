@@ -60,6 +60,7 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                                 />
                         }
                     </InfiniteScroll>
+                    <div>
                     <Button
                         disabled={!token}
                         onClick={async () => {
@@ -86,6 +87,7 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                     >
                         Select
                     </Button>
+                    </div>
                 </Stack>
             </HodlModal>
         </>

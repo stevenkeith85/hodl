@@ -171,9 +171,6 @@ const ResponsiveAppBar = () => {
                                                 <Typography
                                                     key={page.label}
                                                     sx={{
-                                                        // display: 'block',
-                                                        // textAlign: 'center',
-                                                        // padding: 1,
                                                         fontFamily: theme => theme.logo.fontFamily,
                                                         cursor: 'pointer',
                                                         color: 'white',
@@ -189,9 +186,6 @@ const ResponsiveAppBar = () => {
                                                 : <Typography
                                                     key={page.label}
                                                     sx={{
-                                                        // display: 'block',
-                                                        // textAlign: 'center',
-                                                        // padding: 1,
                                                         fontFamily: theme => theme.logo.fontFamily,
                                                         cursor: 'pointer',
                                                         color: 'white',

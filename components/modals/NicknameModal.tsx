@@ -11,7 +11,7 @@ export const NicknameModal = ({ nicknameModalOpen, setNicknameModalOpen }) => {
                 open={nicknameModalOpen}
                 setOpen={setNicknameModalOpen}
             >
-                <Stack spacing={3}>
+                <Stack spacing={2}>
                     <RocketTitle title="Nickname" />
                     <NicknameForm onSuccess={() => setNicknameModalOpen(false)}/>
                 </Stack>

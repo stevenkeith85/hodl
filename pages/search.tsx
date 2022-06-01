@@ -1,3 +1,4 @@
+import { Typography } from '@mui/material';
 import Head from 'next/head';
 import { InfiniteScrollSearchResults } from '../components/profile/InfiniteScrollSearchResults';
 import { InfiniteScrollTab } from '../components/profile/InfiniteScrollTab';
@@ -15,7 +16,6 @@ export async function getServerSideProps({ query }) {
   if (isValid) {
     prefetchedResults = await getSearchResults(q, 0, limit);
   } else {
-    console.log('invalid search query')
     prefetchedResults = { items: [], next: 0, total: 0 };
   }
   return {
@@ -34,9 +34,13 @@ export default function Search({ q, limit, prefetchedResults }) {
   return (
     <>
       <Head>
-        <title>Mint, Showcase, and Trade NFTs | NFT Market | HodlMyMoon</title>
-        <meta name="description" content="Mint, Showcase, and Trade NFTs at HodlMyMoon. Browse the Market Today!"></meta>
+        <title>Create, Showcase, and Trade NFTs | HodlMyMoon</title>
+        <meta name="description" content="Create, Showcase, and Trade NFTs at HodlMyMoon. Browse the Market Today!"></meta>
       </Head>
+
+      { swr?.data[0]?.total === 0 && 
+        <Typography marginY={2}>We cannot find any NFTs with that tag</Typography>
+      }
       <InfiniteScrollSearchResults swr={swr} limit={limit} />
     </>
   )

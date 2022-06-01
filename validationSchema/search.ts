@@ -9,5 +9,6 @@ export const SearchValidationSchema = yup.object({
     .min(3)
     .max(30)
     .lowercase()
-    .strict(),
+    .strict()
+    .matches(/^[\d\w_]+$/, 'Only letters, numbers, underscores accepted'),
 });

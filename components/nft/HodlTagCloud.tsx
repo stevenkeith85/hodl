@@ -60,7 +60,7 @@ export const HodlTagCloud = ({ nft, prefetchedTags }) => {
                                     mutateTags();
                                 }
                             }} />)
-                        : tags.map(tag => <Chip label={tag} key={tag} onClick={async (values) => {
+                        : tags.map(tag => <Chip label={tag} key={tag} onClick={async _values => {
                             router.push(`/search?q=${tag}`);
                         }} />)
                     }
@@ -95,6 +95,12 @@ export const HodlTagCloud = ({ nft, prefetchedTags }) => {
 
                                 } catch (error) {
                                     mutateTags();
+                                    values.tag = '';
+                                    setTimeout(() => {
+                                        // @ts-ignore
+                                        newTagRef?.current?.focus();
+                                    })
+                                    
                                 }
                             }}
                         >

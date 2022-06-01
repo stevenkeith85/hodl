@@ -25,6 +25,7 @@ export const MainMenuPage = ({
     }
 
     useEffect(() => {
+        console.log('main menu route change')
         router.events.on('routeChangeComplete', handleRouteChange)
         return () => {
           router.events.off('routeChangeComplete', handleRouteChange)
@@ -33,7 +34,6 @@ export const MainMenuPage = ({
       }, [router.events]);
 
     return (
-
         <Box sx={{
             display: 'flex',
             flexDirection: 'column',
@@ -42,9 +42,7 @@ export const MainMenuPage = ({
             <Box sx={{ flexGrow: 1, }}>
                 <ClickAwayListener 
                     onClickAway={e => { 
-                        console.log(e.target)
-                        // e.stopPropagation(); 
-                        console.log('main menu click away');
+                        e.stopPropagation();
                         if (hoverMenuOpen) {
                             setHoverMenuOpen(false)
                         }

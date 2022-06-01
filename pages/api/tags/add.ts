@@ -4,8 +4,9 @@ import dotenv from 'dotenv'
 
 import { getProvider } from "../../../lib/server/connections";
 import { ethers } from "ethers";
-import { nftaddress } from "../../../config";
+import { nftaddress, nftmarketaddress } from "../../../config";
 import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
+import HodlMarket from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 
 const client = Redis.fromEnv()
 import apiRoute from "../handler";
@@ -55,14 +56,24 @@ route.post(async (req, res: NextApiResponse) => {
 
   const isValid = await AddTagValidationSchema.isValid(req.body)
   if (!isValid) {
-    return res.status(400).json({ message: 'Invalid data supplied' });
+    return res.status(400).json({ message: 'Bad Request' });
   }
 
   const provider = await getProvider();
   const tokenContract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
+  const tokenExists = await tokenContract.exists(token);
+  if (!tokenExists) { 
+    return res.status(400).json({ message: 'Bad Request' });
+  }
+
+  // Owner (when not listed) or Seller (when listed) can modify tags
   const owner = await tokenContract.ownerOf(token);
 
-  if (req.address !== owner) {
+  const marketContract = new ethers.Contract(nftmarketaddress, HodlMarket.abi, provider);
+  const marketItem = await marketContract.getListing(token);
+  const seller = marketItem.seller;
+
+  if (req.address !== owner && req.address !== seller) {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
