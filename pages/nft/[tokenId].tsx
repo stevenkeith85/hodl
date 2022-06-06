@@ -24,7 +24,7 @@ import { getPriceHistory } from "../api/token-bought/[tokenId]";
 import { getTagsForToken } from "../api/tags/[token]";
 import { HodlerPrivilege } from "../../components/nft/HodlerPrivilege";
 import { HodlTagCloud } from "../../components/nft/HodlTagCloud";
-import { getCommentsForToken } from "../api/comments/[token]";
+import { getCommentsForToken } from "../api/comments";
 import { HodlCommentsBox } from "../../components/nft/HodlCommentsBox";
 import { Comments } from "../../components/Comments";
 import { getCommentCount } from "../api/comments/count";
@@ -32,6 +32,7 @@ import { getCommentCount } from "../api/comments/count";
 
 export async function getServerSideProps({ params }) {
   const nft = await fetchNFT(params.tokenId);
+  const limit = 12;
 
   if (!nft) {
       return { notFound: true }
@@ -39,23 +40,24 @@ export async function getServerSideProps({ params }) {
 
   const prefetchedTags = await getTagsForToken(params.tokenId);
 
-  // TODO: What if there are 1000's of comments?
-  const prefetchedComments = await getCommentsForToken(params.tokenId);
+  const prefetchedComments = await getCommentsForToken(params.tokenId, 0, limit);
   const prefetchedCommentCount = await getCommentCount(params.tokenId);
   const priceHistory = await getPriceHistory(params.tokenId);
 
+  
   return {
     props: {
       nft,
       prefetchedTags,
-      prefetchedComments,
+      prefetchedComments: [prefetchedComments],
+      limit,
       prefetchedCommentCount,
       priceHistory
     },
   }
 }
 
-const NftDetail = ({ nft, prefetchedTags, prefetchedComments, prefetchedCommentCount, priceHistory }) => {
+const NftDetail = ({ nft, prefetchedTags, prefetchedComments, limit, prefetchedCommentCount, priceHistory }) => {
   return (
     <>
       <Head>
@@ -71,7 +73,6 @@ const NftDetail = ({ nft, prefetchedTags, prefetchedComments, prefetchedCommentC
               alignItems: 'center'
             }}>
             <Tooltip title={nft.name}>
-              
               <Typography variant="h1">{truncateText(nft?.name, 100)}</Typography>
             </Tooltip>
             <ProfileAvatar reverse={true} profileAddress={nft?.owner} />
@@ -81,7 +82,6 @@ const NftDetail = ({ nft, prefetchedTags, prefetchedComments, prefetchedCommentC
           <Stack spacing={2}>
             <DetailPageImage token={nft} />
             <Stack spacing={1} direction="row" sx={{ display: 'flex', alignContent: 'center'}}>
-            {/* { JSON.stringify(nft) } */}
               <Likes sx={{ color: theme => theme.palette.secondary.main, '.MuiTypography-body1': { color: '#666' } }} tokenId={nft.tokenId} />
               <Comments nft={nft} popUp={false} sx={{ color: '#333'}}/>
             </Stack>
@@ -92,7 +92,7 @@ const NftDetail = ({ nft, prefetchedTags, prefetchedComments, prefetchedCommentC
             <DescriptionCard nft={nft} />
             <HodlerPrivilege nft={nft} />
             <HodlTagCloud nft={nft} prefetchedTags={prefetchedTags} />
-            <HodlCommentsBox nft={nft} prefetchedComments={prefetchedComments} prefetchedCommentCount={prefetchedCommentCount}/>
+            <HodlCommentsBox nft={nft} prefetchedComments={prefetchedComments} prefetchedCommentCount={prefetchedCommentCount} limit={limit}/>
             <IpfsCard nft={nft} />
             {Boolean(nft?.forSale) && <PriceCard nft={nft} />}
             {Boolean(priceHistory.length) && <PriceHistory priceHistory={priceHistory} />}

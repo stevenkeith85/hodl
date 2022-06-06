@@ -1,4 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
@@ -11,6 +10,7 @@ import HodlMarket from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.j
 
 const client = Redis.fromEnv()
 import apiRoute from "../handler";
+import { getTagsForToken } from "./[token]";
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
@@ -24,6 +24,8 @@ const removeTokenFromTag = async (tag, token) => {
     `tags:${token}`, tag
   );
 
+  getTagsForToken.delete(token);
+  
   return result1 + result2;
 }
 

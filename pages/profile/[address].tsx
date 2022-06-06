@@ -13,12 +13,12 @@ import { getNickname } from '../api/profile/nickname'
 import { getAddress } from '../api/profile/address'
 import { getHodlingCount } from '../api/profile/hodlingCount'
 import { getListedCount } from '../api/profile/listedCount'
-import { getFollowingCount } from '../api/follow/followingCount'
-import { getFollowersCount } from '../api/follow/followersCount'
+import { getFollowingCount } from '../api/follow2/followingCount'
+import { getFollowersCount } from '../api/follow2/followersCount'
 import { getHodling } from '../api/profile/hodling'
 import { getListed } from '../api/profile/listed'
-import { getFollowing } from '../api/follow/following'
-import { getFollowers } from '../api/follow/followers'
+import { getFollowing } from '../api/follow2/following'
+import { getFollowers } from '../api/follow2/followers'
 import { useFollowing } from '../../hooks/useFollowing';
 import { useFollowers } from '../../hooks/useFollowers';
 import { useListed } from '../../hooks/useListed';

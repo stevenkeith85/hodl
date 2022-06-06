@@ -15,7 +15,7 @@ export const Comments = ({ nft, popUp=true, sx={} }) => {
     return (
         <>
             <HodlModal open={open} setOpen={setOpen} sx={{ padding: 0, width: {xs: '90vw', md: '50vw'}}} >
-                <HodlCommentsBox nft={nft} prefetchedComments={null} prefetchedCommentCount={null} />
+                <HodlCommentsBox nft={nft} prefetchedComments={null} prefetchedCommentCount={null} limit={12} />
             </HodlModal>
             <Stack direction="row" spacing={0.5} sx={{ display: 'flex', alignItems: 'center', color: 'white', cursor: 'pointer', ...sx }}>
                 <CommentOutlined sx={{ fontWeight: '300' }} onClick={() => {

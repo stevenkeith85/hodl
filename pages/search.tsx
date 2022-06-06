@@ -1,7 +1,6 @@
 import { Typography } from '@mui/material';
 import Head from 'next/head';
 import { InfiniteScrollSearchResults } from '../components/profile/InfiniteScrollSearchResults';
-import { InfiniteScrollTab } from '../components/profile/InfiniteScrollTab';
 import { useSearch } from '../hooks/useSearch';
 import { SearchValidationSchema } from '../validationSchema/search';
 import { getSearchResults } from './api/search/results';

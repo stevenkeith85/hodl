@@ -1,67 +1,37 @@
-import { Card, CardContent, Typography, Chip, Box, Link, Stack, Tooltip, Badge } from "@mui/material";
+import { Card, CardContent, Typography, Box, Tooltip, Badge } from "@mui/material";
 import { useRouter } from "next/router";
 import axios from 'axios';
 import useSWR, { useSWRConfig } from "swr";
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { WalletContext } from "../../contexts/WalletContext";
 import { Formik, Form, Field } from "formik";
-import { TextField, InputBase } from 'formik-mui';
-import { AddTagValidationSchema } from "../../validationSchema/addTag";
-import { MAX_TAGS_PER_TOKEN, truncateText } from "../../lib/utils";
-import { token } from "../../lib/copyright";
-import address from "../../pages/api/profile/address";
-import { ProfileAvatar } from "../ProfileAvatar";
-import theme from "../../theme";
+import { InputBase } from 'formik-mui';
 import { HodlComment } from "../../models/HodlComment";
-import formatDistance from 'date-fns/formatDistance';
 import { CommentValidationSchema } from "../../validationSchema/comments";
-import { Calculate, Delete, DeleteForever, DeleteOutlined, HighlightOffOutlined } from "@mui/icons-material";
-import { yellow } from '@mui/material/colors';
-
-const HodlComment = ({ comment, color = "secondary", sx = {} }) => {
-    const router = useRouter();
-
-    const selected = router?.query?.comment === `${comment.subject}-${comment.timestamp}`;
-
-    return (
-        <Box paddingY={0.5} sx={{ background: selected ? yellow[100] : 'none', ...sx }} id={`hodl-comments-${comment.subject}-${comment.timestamp}`}>
-            <Stack direction="row" spacing={1} display="flex" alignItems="center">
-                <ProfileAvatar profileAddress={comment.subject} size="small" />
-                <Box display="flex" alignItems="center">
-                    <Typography
-                        sx={{
-                            color: theme => theme.palette[color].light,
-                            span: { fontSize: 10, color: "#999" }
-                        }}>
-                        &quot;{comment.comment}&quot;
-                        <span> {comment.timestamp && formatDistance(new Date(comment.timestamp), new Date(), { addSuffix: false })}</span>
-                    </Typography>
-                </Box>
-            </Stack>
-        </Box>
-    )
-}
+import { useComments } from "../../hooks/useComments";
+import { InfiniteScrollComments } from "../profile/InfiniteScrollComments";
+import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 
 interface HodlCommentsBoxProps {
     nft: any,
     prefetchedComments: any,
-    prefetchedCommentCount: number
+    prefetchedCommentCount: number,
+    limit: number
 }
 
 export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
     nft,
     prefetchedComments,
-    prefetchedCommentCount
+    prefetchedCommentCount,
+    limit
 }) => {
     const router = useRouter();
     const { mutate } = useSWRConfig()
     const newTagRef = useRef();
     const { address } = useContext(WalletContext);
+    const [loading, setLoading] = useState(false);
 
-    const { data: comments, mutate: mutateComments } = useSWR(nft.tokenId ? [`/api/comments`, nft.tokenId] : null,
-        (url, token) => axios.get(`${url}/${token}`).then(r => r.data),
-        { fallbackData: prefetchedComments }
-    );
+    const [swr] = useComments(nft.tokenId, limit, prefetchedComments);
 
     const { data: count } = useSWR(nft.tokenId ? [`/api/comments/count`, nft.tokenId] : null,
         (url, tokenId) => axios.get(`${url}?token=${tokenId}`).then(r => r.data.count),
@@ -72,8 +42,7 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
 
     const deleteComment = async (comment) => {
         try {
-
-            mutateComments(old => old.filter(c => c !== comment), { revalidate: false });
+            setLoading(true)
             mutate([`/api/comments/count`, nft.tokenId], old => old - 1, { revalidate: false })
             const r = await axios.delete(
                 '/api/comments/delete',
@@ -85,9 +54,12 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
                     data: comment,
 
                 });
+            swr.mutate();
+            setLoading(false);
         } catch (error) {
-            mutateComments();
+            swr.mutate();
             mutate([`/api/comments/count`, nft.tokenId]);
+            setLoading(false);
         }
     }
 
@@ -105,19 +77,25 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
                 <Typography variant="h3" sx={{ marginBottom: 2 }}>Comments <Badge sx={{ p: '6px 3px' }} showZero badgeContent={count}></Badge></Typography>
                 <Box sx={{
                     maxHeight: '250px',
-                    overflow: 'auto'
+                    overflow: 'auto',
+                    position: 'relative'
                 }}>
-                    {comments?.length ?
-                        comments.map(
-                            (comment, i) =>
-                                <Box display="flex" alignItems="center" key={comment.comment}>
-                                    <HodlComment comment={comment} color={i % 2 ? 'primary' : 'secondary'} sx={{ flexGrow: 1 }} />
-                                    {canDeleteComment(comment) && <Box p={1} color="#999"><HighlightOffOutlined sx={{ cursor: 'pointer' }} fontSize="small" onClick={() => deleteComment(comment)} /></Box>}
-                                </Box>
-                        )
-                        :
+                    {swr?.data && swr?.data[0]?.total === 0 &&
                         <Typography sx={{ color: '#999' }}>It&apos;s, oh, so quiet...</Typography>
                     }
+                    { loading && <Box sx={{ 
+                        position: 'absolute', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center', 
+                        width: '100%',
+                        height: '100%',
+                        }}>
+                            <HodlLoadingSpinner /> 
+                        </Box>
+                    }
+                    <InfiniteScrollComments swr={swr} limit={limit} canDeleteComment={canDeleteComment} deleteComment={deleteComment} />
+
                 </Box>
                 {address && <Formik
                     initialValues={{
@@ -127,8 +105,7 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
                     validationSchema={CommentValidationSchema}
                     onSubmit={async (values) => {
                         try {
-                            const newComment: HodlComment = { subject: address, comment: values.comment, token: nft.tokenId, timestamp: Date.now() }
-                            mutateComments(old => [newComment, ...old], { revalidate: false });
+                            setLoading(true)
                             mutate([`/api/comments/count`, nft.tokenId], old => old + 1, { revalidate: false })
                             const r = await axios.post(
                                 '/api/comments/add',
@@ -142,15 +119,17 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
                                         'Authorization': localStorage.getItem('jwt')
                                     }
                                 });
+                            swr.mutate();
+                            setLoading(false)
                             values.comment = '';
                             setTimeout(() => {
                                 // @ts-ignore
                                 newTagRef?.current?.focus();
                             })
-
                         } catch (error) {
-                            mutateComments();
+                            swr.mutate();
                             mutate([`/api/comments/count`, nft.tokenId]);
+                            setLoading(false);
                         }
                     }}
                 >

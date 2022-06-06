@@ -27,13 +27,13 @@ export const NicknameForm = ({ onSuccess = null }) => {
                 {({ isSubmitting, errors, setFieldValue }) => (
                     <Form>
                         <Stack spacing={2}>
-                            <Tooltip title={errors?.nickname || ''} >
+                            <Tooltip title={errors?.nickname || apiError || ''} >
                                 <Field
                                     validateOnChange
                                     autoComplete='off'
                                     component={InputBase}
                                     sx={{ 
-                                        border: errors.nickname ? theme => `1px solid ${theme.palette.error.main}` : `1px solid #ccc`, 
+                                        border: (errors.nickname || apiError )? theme => `1px solid ${theme.palette.error.main}` : `1px solid #ccc`, 
                                         borderRadius: 1, 
                                         paddingY: 1,
                                         paddingX: 1.5 

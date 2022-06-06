@@ -6,21 +6,21 @@ import axios from 'axios';
 export const useFollow = (profileAddress) => {
   const { address } = useContext(WalletContext);
 
-  const { data: isFollowing, mutate: mutateIsFollowing } = useSWR(address && address !== profileAddress ? [`/api/follow/follows`, address, profileAddress] : null,
+  const { data: isFollowing, mutate: mutateIsFollowing } = useSWR(address && address !== profileAddress ? [`/api/follow2/follows`, address, profileAddress] : null,
     (url, address, profileAddress) => axios.get(`${url}?address1=${address}&address2=${profileAddress}`)
       .then(r => Boolean(r.data.follows))
   );
 
   const follow = async () => {
-    mutate([`/api/follow/followersCount`, profileAddress],
+    mutate([`/api/follow2/followersCount`, profileAddress],
       async ({ count }) => {
         return ({ count: isFollowing ? count - 1 : count + 1 })
       },
       { revalidate: false });
 
-    mutate([`/api/follow/followers`, profileAddress],
+    mutate([`/api/follow2/followers`, profileAddress],
       async ({ followers }) => {
-        return ({ followers: isFollowing ? (followers || []).filter(a => a !== address) : [...(followers || []), address] })
+        return ({ followers: isFollowing ? (followers || []).filter(a => a !== address) : [address, ...(followers || [])] })
       },
       { revalidate: false });
 
@@ -28,7 +28,7 @@ export const useFollow = (profileAddress) => {
 
     try {
       const r = await axios.post(
-        '/api/follow/follow',
+        '/api/follow2/follow',
         { address: profileAddress },
         {
           headers: {
@@ -40,8 +40,8 @@ export const useFollow = (profileAddress) => {
       return true;
     } catch (error) {
       if (error.response.status === 429) {
-        mutate([`/api/follow/followersCount`, profileAddress]);
-        mutate([`/api/follow/followers`, profileAddress]);
+        mutate([`/api/follow2/followersCount`, profileAddress]);
+        mutate([`/api/follow2/followers`, profileAddress]);
         mutateIsFollowing();
         return false;
       }
