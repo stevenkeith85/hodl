@@ -21,10 +21,17 @@ const rateLimits = {
   // 'POST:/api/mint/ipfs': 1,
   // 'POST:/api/like/like': 2,
   // 'POST:/api/follow2/follow': 10,
+
+  'GET:/api/tags': 30,
   'POST:/api/tags/add': 6,
   'DELETE:/api/tags/delete': 6,
+  
+  'GET:/api/comments': 30,
+  'GET:/api/comments/count': 30,
+  'POST:/api/comments/add': 6,
+  'DELETE:/api/comments/delete': 6,
+  
   // 'GET:/api/search/results': 60,
-  // 'POST:/api/comments/add': 3,
 }
 
 
@@ -71,6 +78,8 @@ const handler = () => nc<HodlApiRequest, NextApiResponse>({
       if (limited) {
         return res.status(429).json({ message: 'Slow down a little' })
       }
+    } else {
+      console.log('no limit', routeKey)
     }
     next();
   })

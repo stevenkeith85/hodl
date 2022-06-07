@@ -1,7 +1,10 @@
 import {
+  Box,
   Grid,
   NoSsr,
   Stack,
+  Tab,
+  Tabs,
   Tooltip,
   Typography
 } from "@mui/material";
@@ -21,21 +24,23 @@ import { ProfileAvatar } from "../../components/ProfileAvatar";
 import { Likes } from "../../components/Likes";
 import Head from "next/head";
 import { getPriceHistory } from "../api/token-bought/[tokenId]";
-import { getTagsForToken } from "../api/tags/[token]";
+import { getTagsForToken } from "../api/tags";
 import { HodlerPrivilege } from "../../components/nft/HodlerPrivilege";
 import { HodlTagCloud } from "../../components/nft/HodlTagCloud";
 import { getCommentsForToken } from "../api/comments";
 import { HodlCommentsBox } from "../../components/nft/HodlCommentsBox";
 import { Comments } from "../../components/Comments";
 import { getCommentCount } from "../api/comments/count";
+import { useState } from "react";
+import { Forum, Info, Insights } from "@mui/icons-material";
 
 
 export async function getServerSideProps({ params }) {
   const nft = await fetchNFT(params.tokenId);
-  const limit = 12;
+  const limit = 20;
 
   if (!nft) {
-      return { notFound: true }
+    return { notFound: true }
   }
 
   const prefetchedTags = await getTagsForToken(params.tokenId);
@@ -44,7 +49,7 @@ export async function getServerSideProps({ params }) {
   const prefetchedCommentCount = await getCommentCount(params.tokenId);
   const priceHistory = await getPriceHistory(params.tokenId);
 
-  
+
   return {
     props: {
       nft,
@@ -58,6 +63,8 @@ export async function getServerSideProps({ params }) {
 }
 
 const NftDetail = ({ nft, prefetchedTags, prefetchedComments, limit, prefetchedCommentCount, priceHistory }) => {
+  const [value, setValue] = useState(0);
+
   return (
     <>
       <Head>
@@ -81,27 +88,49 @@ const NftDetail = ({ nft, prefetchedTags, prefetchedComments, limit, prefetchedC
         <Grid item xs={12} md={6} marginBottom={2} paddingRight={{ md: 1 }}>
           <Stack spacing={2}>
             <DetailPageImage token={nft} />
-            <Stack spacing={1} direction="row" sx={{ display: 'flex', alignContent: 'center'}}>
+            <Stack spacing={1} direction="row" sx={{ display: 'flex', alignContent: 'center' }}>
               <Likes sx={{ color: theme => theme.palette.secondary.main, '.MuiTypography-body1': { color: '#666' } }} tokenId={nft.tokenId} />
-              <Comments nft={nft} popUp={false} sx={{ color: '#333'}}/>
+              <Comments nft={nft} popUp={false} sx={{ color: '#333' }} />
             </Stack>
           </Stack>
         </Grid>
         <Grid item xs={12} md={6} marginBottom={2} paddingLeft={{ md: 1 }}>
-          <Stack spacing={2}>
-            <DescriptionCard nft={nft} />
-            <HodlerPrivilege nft={nft} />
-            <HodlTagCloud nft={nft} prefetchedTags={prefetchedTags} />
-            <HodlCommentsBox nft={nft} prefetchedComments={prefetchedComments} prefetchedCommentCount={prefetchedCommentCount} limit={limit}/>
-            <IpfsCard nft={nft} />
-            {Boolean(nft?.forSale) && <PriceCard nft={nft} />}
-            {Boolean(priceHistory.length) && <PriceHistory priceHistory={priceHistory} />}
-            <NftActionButtons nft={nft} />
-          </Stack>
+          <Box display="flex" justifyContent="start" sx={{
+            marginBottom: 2
+          }}>
+            <Tabs
+              value={value}
+              onChange={(e, v) => {
+                setValue(v);
+              }}
+              textColor="secondary"
+              indicatorColor="secondary"
+            >
+              <Tab key={0} value={0} icon={<Forum />} />
+              <Tab key={1} value={1} icon={<Insights />} />
+            </Tabs>
+          </Box>
+          <div hidden={value !== 0}>
+            <Stack spacing={2}>
+              <DescriptionCard nft={nft} />
+              <HodlCommentsBox nft={nft} prefetchedComments={prefetchedComments} prefetchedCommentCount={prefetchedCommentCount} limit={limit} />
+              <HodlTagCloud nft={nft} prefetchedTags={prefetchedTags} />
+            </Stack>
+          </div>
+          <div hidden={value !== 1}>
+            <Stack spacing={2}>
+              {Boolean(nft?.forSale) && <PriceCard nft={nft} />}
+              <HodlerPrivilege nft={nft} />
+              <IpfsCard nft={nft} />
+              {Boolean(priceHistory.length) && <PriceHistory priceHistory={priceHistory} />}
+              <NftActionButtons nft={nft} />
+            </Stack>
+          </div>
         </Grid>
-      </Grid>
+      </Grid >
     </>
   )
 }
 
 export default NftDetail;
+

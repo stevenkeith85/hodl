@@ -12,7 +12,7 @@ const client = Redis.fromEnv()
 import apiRoute from "../handler";
 import { AddTagValidationSchema } from "../../../validationSchema/addTag";
 import { MAX_TAGS_PER_TOKEN } from "../../../lib/utils";
-import { getTagsForToken } from "./[token]";
+import { getTagsForToken } from ".";
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();

@@ -12,8 +12,8 @@ import { AddressAction, HodlNotification, NftAction } from '../../../models/Hodl
 import { getPriceHistory } from "../token-bought/[tokenId]";
 import { likesToken } from "../like/likes";
 import { getTokensListed } from "../token-listed/[tokenId]";
-import { getFollowers } from "../follow/followers";
-import { isFollowing } from "../follow/follows";
+import { getFollowers } from "../follow2/followers";
+import { isFollowing } from "../follow2/follows";
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
@@ -23,9 +23,7 @@ export const addNotification = async (notification: HodlNotification) => {
   // if there's a timestamp and it's on a comment, then we keep it 
   // as we'd like the comment timestamp to match the notification timestamp. (to allow us to highlight it in the UI easily)
   // NB: We do not allow users to create CommentedOn notifications via the API directly
-  if (
-    notification.timestamp && 
-    notification.action !== NftAction.CommentedOn) { 
+  if (notification?.action !== NftAction.CommentedOn) { 
     notification.timestamp = Date.now();
   }
 
@@ -93,6 +91,10 @@ export const addNotification = async (notification: HodlNotification) => {
       return;
     }
 
+    console.log('buyer', buyer)
+    console.log('seller', seller)
+    console.log('notification', JSON.stringify(notification))
+
     const first = await client.zadd(
       `notifications:${buyer}`,
       {
@@ -121,6 +123,8 @@ export const addNotification = async (notification: HodlNotification) => {
     }
 
     const followers = await getFollowers(notification.subject);
+
+    console.log('notification', notification)
 
     for (let address of followers) {
       await client.zadd(

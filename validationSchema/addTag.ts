@@ -14,4 +14,6 @@ export const AddTagValidationSchema = yup.object({
   token: yup
     .number()
     .required()
+    .positive()
+    .integer()
 });

@@ -5,14 +5,14 @@ import memoize from 'memoizee';
 import axios from 'axios';
 const client = Redis.fromEnv()
 import apiRoute from "../handler";
+import { GetCommentsValidationSchema } from "../../../validationSchema/comments/getComments";
+import { ethers } from "ethers";
+import { nftaddress } from "../../../config";
+import { getProvider } from "../../../lib/server/connections";
+import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
-
-// export const getCommentsForToken = async (token) => {
-//   const comments = await client.zrange(`comments:${token}`, 0, -1);
-//   return comments;
-// }
 
 export const getCommentsForToken = async (token: number, offset: number, limit: number) => {
   try {
@@ -27,17 +27,23 @@ export const getCommentsForToken = async (token: number, offset: number, limit: 
   } catch (e) {
     return { items: [], next: 0, total: 0 };
   }
-};
-
+}
 
 route.get(async (req, res: NextApiResponse) => {
-  const { token, offset, limit } = req.query;
+  const token = Array.isArray(req.query.token) ? req.query.token[0] : req.query.token;
+  const offset = Array.isArray(req.query.offset) ? req.query.offset[0] : req.query.offset;
+  const limit = Array.isArray(req.query.token) ? req.query.limit[0] : req.query.limit;
 
-  if (!token || !offset || !limit) {
+  const isValid = await GetCommentsValidationSchema.isValid(req.query)
+  if (!isValid) {
       return res.status(400).json({ message: 'Bad Request' });
   }
 
-  if (!token) {
+  const provider = await getProvider();
+  const contract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
+  const tokenExists = await contract.exists(token);
+
+  if (!tokenExists) { 
     return res.status(400).json({ message: 'Bad Request' });
   }
 

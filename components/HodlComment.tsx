@@ -1,29 +1,45 @@
-import { Typography, Box, Stack } from "@mui/material";
+import { Typography, Box, Stack, Link, Tooltip } from "@mui/material";
 import { useRouter } from "next/router";
 import { ProfileAvatar } from "./ProfileAvatar";
 import formatDistance from 'date-fns/formatDistance';
 import { yellow } from '@mui/material/colors';
+import axios from 'axios'
+import useSWR from "swr";
+import { getShortAddress, truncateText } from "../lib/utils";
 
 export const HodlComment = ({ comment, color = "secondary", sx = {} }) => {
     const router = useRouter();
 
     const selected = router?.query?.comment === `${comment.subject}-${comment.timestamp}`;
 
+    const { data: profileNickname } = useSWR(comment.subject ? [`/api/profile/nickname`, comment.subject] : null,
+        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.nickname))
+
     return (
-        <Box paddingY={0.5} sx={{ background: selected ? yellow[100] : 'none', ...sx }} id={`hodl-comments-${comment.subject}-${comment.timestamp}`}>
-            <Stack direction="row" spacing={1} display="flex" alignItems="center">
-                <ProfileAvatar profileAddress={comment.subject} size="small" />
-                <Box display="flex" alignItems="center">
-                    <Typography
-                        sx={{
-                            color: theme => theme.palette[color].light,
-                            span: { fontSize: 10, color: "#999" }
-                        }}>
-                        &quot;{comment.comment}&quot;
-                        <span> {comment.timestamp && formatDistance(new Date(comment.timestamp), new Date(), { addSuffix: false })}</span>
+        <Box
+            display="flex"
+            alignItems="start"
+            gap={1}
+            paddingY={1}
+            sx={{ background: selected ? yellow[100] : 'none', ...sx }}
+            id={`hodl-comments-${comment.subject}-${comment.timestamp}`}
+        >
+            <ProfileAvatar profileAddress={comment.subject} size="small" showNickname={false} />
+            <Box display="flex" flexDirection="column">
+                <Box display="flex" flexDirection="column" flexWrap="wrap">
+                    {
+                        profileNickname ?
+                            <Typography sx={{ color: theme => theme.palette[color].light }}>{truncateText(profileNickname, 20)}</Typography> :
+                            <Tooltip title={comment.subject}>
+                                <Typography sx={{ color: theme => theme.palette[color].light }}>{getShortAddress(comment.subject)?.toLowerCase()}</Typography>
+                            </Tooltip>
+                    }
+                    <Typography>
+                        {comment.comment}
                     </Typography>
                 </Box>
-            </Stack>
+                <Typography sx={{ fontSize: 10, color: "#999" }}>{comment.timestamp && formatDistance(new Date(comment.timestamp), new Date(), { addSuffix: false })}</Typography>
+            </Box>
         </Box>
     );
 };

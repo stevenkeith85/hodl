@@ -10,7 +10,7 @@ import HodlMarket from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.j
 
 const client = Redis.fromEnv()
 import apiRoute from "../handler";
-import { getTagsForToken } from "./[token]";
+import { getTagsForToken } from ".";
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();

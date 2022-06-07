@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 
-export const CommentValidationSchema = yup.object({
+export const AddCommentValidationSchema = yup.object({
   comment: yup
     .string()
     .ensure()
@@ -9,7 +9,9 @@ export const CommentValidationSchema = yup.object({
     .min(3)
     .max(150)
     .strict(),
-  token: yup
+    token: yup
     .number()
     .required()
+    .positive()
+    .integer()
 });

@@ -1,10 +1,18 @@
-import { Card, CardContent, Typography } from "@mui/material";
+import { Box, Card, CardContent, Typography } from "@mui/material";
 
-export const DescriptionCard = ({nft}) => (
+export const DescriptionCard = ({ nft }) => (
     <Card variant="outlined">
-        <CardContent sx={{ whiteSpace: 'pre-line', maxHeight: 300, overflowY: 'auto'}}>
+        <CardContent>
             <Typography variant="h3" sx={{ marginBottom: 2 }}>Description</Typography>
-            <Typography>{nft?.description || ""}</Typography>
+            <Box sx={{
+                whiteSpace: 'pre-line',
+                maxHeight: '250px',
+                overflow: 'auto',
+                position: 'relative'
+            }}>
+                <Typography>{nft?.description || ""}</Typography>
+            </Box>
+
         </CardContent>
     </Card>
 )

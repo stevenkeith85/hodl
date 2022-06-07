@@ -9,7 +9,7 @@ export const HodlerPrivilege = ({ nft }) => {
     return (
         <Card variant="outlined">
             <CardContent>
-                <Typography variant="h3" sx={{ marginBottom: 2 }}>Hodler Privilege</Typography>
+                <Typography variant="h3" sx={{ marginBottom: 2 }}>Usage</Typography>
                 <Stack spacing={1} direction="row">
                     <Tooltip title={token}>
                         <Chip

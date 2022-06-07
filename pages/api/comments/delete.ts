@@ -11,6 +11,7 @@ const client = Redis.fromEnv()
 import apiRoute from "../handler";
 import { HodlComment } from "../../../models/HodlComment";
 import { getCommentCount } from "./count";
+import { DeleteCommentValidationSchema } from "../../../validationSchema/comments/deleteComment";
 
 
 dotenv.config({ path: '../.env' })
@@ -33,8 +34,6 @@ const removeComment = async (comment: HodlComment) => {
   // TODO - Remove notification
 }
 
-// TODO: Could we use yup for validation?
-
 // user can remove their own comment. 
 // token owner can remove any comment on their token
 route.delete(async (req, res: NextApiResponse) => {
@@ -44,8 +43,9 @@ route.delete(async (req, res: NextApiResponse) => {
 
   const { subject, comment, token, timestamp } = req.body;
 
-  if (!subject || !comment || !token || !timestamp) {
-    return res.status(400).json({ message: 'Bad Request' });
+  const isValid = await DeleteCommentValidationSchema.isValid(req.body)
+  if (!isValid) {
+      return res.status(400).json({ message: 'Bad Request' });
   }
 
   const provider = await getProvider();

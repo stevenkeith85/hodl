@@ -1,4 +1,4 @@
-import { Box, ClickAwayListener, Fade, Slide, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Box, ClickAwayListener, Fade, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
 import useSWR from "swr";
 import { fetchWithAuth } from "../lib/swrFetchers";
 import CloseIcon from '@mui/icons-material/Close';
@@ -6,8 +6,7 @@ import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Link from "next/link";
 import { ProfileAvatar } from "./ProfileAvatar";
-import { useContext, useEffect, useState } from "react";
-import { truncateText } from "../lib/utils";
+import { useContext, useEffect } from "react";
 import axios from 'axios';
 import { WalletContext } from "../contexts/WalletContext";
 import formatDistance from 'date-fns/formatDistance';
@@ -31,7 +30,7 @@ const HodlNotification = ({ item, setShowNotifications }) => {
                     <Box>{item.action}</Box>
                     {item.token && <Link href={item.action === NftAction.CommentedOn ? `/nft/${item.token}?comment=${item.subject}-${item.timestamp}` : `/nft/${item.token}`}>
                         <Typography component="a" sx={{ cursor: "pointer" }}>
-                            &quot;{truncateText(token?.name)}&quot;
+                            an NFT
                         </Typography>
                     </Link>}
                     {item.object === address && <Typography>you</Typography>}

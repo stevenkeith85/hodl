@@ -24,9 +24,13 @@ export const getTagsForToken = memoize(async token => {
 });
 
 route.get(async (req: NextApiRequest, res: NextApiResponse) => {
-  const { token } = req.query;
+  const token = Array.isArray(req.query.token) ? req.query.token[0] : req.query.token;
 
   if (!token) {
+    return res.status(400).json({message: 'Bad Request'});
+  }
+
+  if (!parseInt(token as string)) {
     return res.status(400).json({message: 'Bad Request'});
   }
 

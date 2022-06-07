@@ -67,6 +67,7 @@ const ResponsiveAppBar = () => {
     }, [])
 
     useEffect(() => {
+        console.log('error is',)
         if (error !== '') {
             enqueueSnackbar(error, { variant: "error" });
             // @ts-ignore
@@ -98,6 +99,8 @@ const ResponsiveAppBar = () => {
             } else if (error.config && error.response && error.response.status === 429) {
                 const { message } = error.response.data;
                 setError(message);
+            } else if (error.config && error.response && error.response.status === 500) {
+                setError("Something hasn't worked as expected; sorry");
             }
 
             return Promise.reject(error);

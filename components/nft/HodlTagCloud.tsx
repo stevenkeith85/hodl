@@ -8,6 +8,7 @@ import { Formik, Form, Field } from "formik";
 import { InputBase } from 'formik-mui';
 import { AddTagValidationSchema } from "../../validationSchema/addTag";
 import { MAX_TAGS_PER_TOKEN } from "../../lib/utils";
+import { fetchWithToken } from "../../lib/swrFetchers";
 
 export const HodlTagCloud = ({ nft, prefetchedTags }) => {
     const router = useRouter();
@@ -15,7 +16,7 @@ export const HodlTagCloud = ({ nft, prefetchedTags }) => {
     const { address } = useContext(WalletContext);
 
     const { data: tags, mutate: mutateTags } = useSWR(nft.tokenId ? [`/api/tags`, nft.tokenId] : null,
-        (url, token) => axios.get(`${url}/${token}`).then(r => r.data),
+        fetchWithToken,
         { fallbackData: prefetchedTags }
     );
 
@@ -42,6 +43,7 @@ export const HodlTagCloud = ({ nft, prefetchedTags }) => {
                             }}
                             onDelete={async () => {
                                 try {
+                                    alert(tag)
                                     mutateTags(old => old.filter(t => t !== tag), { revalidate: false });
                                     const r = await axios.delete(
                                         '/api/tags/delete',
@@ -87,13 +89,15 @@ export const HodlTagCloud = ({ nft, prefetchedTags }) => {
                                                 'Authorization': localStorage.getItem('jwt')
                                             }
                                         });
-                                    values.tag = '';
+                                    
                                     setTimeout(() => {
+                                        values.tag = '';
                                         // @ts-ignore
                                         newTagRef?.current?.focus();
                                     })
 
                                 } catch (error) {
+                                    alert(error)
                                     mutateTags();
                                     values.tag = '';
                                     setTimeout(() => {

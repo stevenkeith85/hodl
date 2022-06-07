@@ -8,7 +8,7 @@ import apiRoute from "../handler";
 import { HodlNotification, NftAction } from "../../../models/HodlNotifications";
 import { addNotification } from "../notifications/add";
 import { getCommentCount } from "./count";
-import { CommentValidationSchema } from "../../../validationSchema/comments";
+import { AddCommentValidationSchema } from "../../../validationSchema/comments/addComments";
 import { ethers } from "ethers";
 import { nftaddress } from "../../../config";
 import { getProvider } from "../../../lib/server/connections";
@@ -63,13 +63,9 @@ route.post(async (req, res: NextApiResponse) => {
 
   const { comment, token } = req.body;
 
-  if (!comment || !token) {
-    return res.status(400).json({ message: 'Bad Request' });
-  }
-
-  const isValid = await CommentValidationSchema.isValid(req.body)
+  const isValid = await AddCommentValidationSchema.isValid(req.body)
   if (!isValid) {
-      return res.status(400).json({ message: 'Invalid data supplied' });
+      return res.status(400).json({ message: 'Bad Request' });
   }
 
   const provider = await getProvider();

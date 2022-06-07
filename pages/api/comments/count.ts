@@ -2,6 +2,10 @@ import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
 import apiRoute from "../handler";
 import memoize from 'memoizee';
+import { ethers } from "ethers";
+import { nftaddress } from "../../../config";
+import { getProvider } from "../../../lib/server/connections";
+import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 
 dotenv.config({ path: '../.env' })
 
@@ -18,10 +22,22 @@ export const getCommentCount = memoize(async (token) => {
 
 
 route.get(async (req, res) => {
-  const { token } = req.query;
+  const token = Array.isArray(req.query.token) ? req.query.token[0] : req.query.token;
 
   if (!token) {
     return res.status(400).json({message: 'Bad Request'});
+  }
+
+  if (!parseInt(token as string)) {
+    return res.status(400).json({message: 'Bad Request'});
+  }
+
+  const provider = await getProvider();
+  const contract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
+  const tokenExists = await contract.exists(token);
+
+  if (!tokenExists) { 
+    return res.status(400).json({ message: 'Bad Request' });
   }
 
   const count = await getCommentCount(token);
