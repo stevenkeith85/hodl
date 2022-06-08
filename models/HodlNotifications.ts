@@ -17,5 +17,6 @@ export interface HodlNotification {
     action: NftAction | AddressAction;
     object?: string; // address
     token?: number;
+    comment?: number;
     timestamp?: number;
 }

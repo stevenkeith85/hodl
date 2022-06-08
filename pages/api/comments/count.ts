@@ -13,7 +13,7 @@ const client = Redis.fromEnv()
 const route = apiRoute();
 
 export const getCommentCount = memoize(async (token) => {
-  const count = await client.zcard(`comments:${token}`);
+  const count = await client.zcard(`comments:token:${token}`);
   return count;
 }, { 
   primitive: true,

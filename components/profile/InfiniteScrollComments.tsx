@@ -3,6 +3,7 @@ import { Box } from "@mui/material";
 import InfiniteScroll from 'react-swr-infinite-scroll'
 import { HodlComment } from "../HodlComment";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
+import { Likes } from "../Likes";
 
 
 interface InfiniteScrollCommentsProps {
@@ -27,25 +28,28 @@ export const InfiniteScrollComments: React.FC<InfiniteScrollCommentsProps> = ({ 
       loadingIndicator={<HodlLoadingSpinner />}
       isReachingEnd={
         swr => {
-          // console.log('reaching end ???', swr.data[swr.data.length - 1]?.items?.length < limit  )
           return !swr.data[0]?.items?.length || swr.data[swr.data.length - 1]?.items?.length < limit
         }
       }
     >
       {
-
         ({ items, next, total }) => <Box key={next}>
           {
             (items || []).map(
               (comment, i) =>
-                <Box display="flex" alignItems="center" key={`hodl-comments-${comment.subject}-${comment.timestamp}`}>
+                <Box display="flex" gap={1} alignItems="center" key={`hodl-comments-${comment.id}`} paddingRight={1}>
                   <HodlComment comment={comment} color={i % 2 ? 'primary' : 'secondary'} sx={{ flexGrow: 1 }} />
+                  <Likes
+                    id={comment.id}
+                    token={false}
+                    fontSize="inherit"
+                  />
+                  
                   {
                     canDeleteComment(comment) &&
-                    <Box p={1} color="#999">
-                      <HighlightOffOutlined sx={{ cursor: 'pointer' }} fontSize="small" onClick={() => deleteComment(comment)} />
-                    </Box>
+                      <HighlightOffOutlined sx={{ cursor: 'pointer', color: '#999' }} fontSize="inherit" onClick={() => deleteComment(comment)} />                   
                   }
+                  
                 </Box>
             )
           }

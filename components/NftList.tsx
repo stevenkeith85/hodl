@@ -108,11 +108,13 @@ const NftList = ({
                                 justifyContent: 'space-between',
                                 alignItems: "center",
                             }}>
-                                <Stack spacing={1} direction="row" sx={{ display: 'flex', alignContent: 'center' }}>
+                                <Stack spacing={2} direction="row" sx={{ display: 'flex', alignItems: 'center' }}>
                                     <Likes
-                                        tokenId={nft?.tokenId}
+                                        id={nft?.tokenId}
+                                        token={true}
+                                        color='inherit'
                                     />
-                                    <Comments nft={nft} />
+                                    <Comments nft={nft} color='inherit'/>
                                 </Stack>
 
                                 <Link href={`/nft/${nft?.tokenId}`}>

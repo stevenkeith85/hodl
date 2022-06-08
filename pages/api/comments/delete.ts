@@ -17,21 +17,15 @@ import { DeleteCommentValidationSchema } from "../../../validationSchema/comment
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
 
-const removeComment = async (comment: HodlComment) => {
-  console.log(JSON.stringify(comment))
-  const result1 = await client.zrem(
-    `commented:${comment.subject}`, JSON.stringify(comment)
-  );
+const removeComment = async (address, token, id) => {
+  // TODO: Can these be done in a transaction with redis?
+  const commentDeleted = await client.hdel(`comment`, id);
+  const userRecordDeleted = await client.zrem(`commented:${address}`, id);
+  const tokenRecordDeleted = await client.zrem(`comments:token:${token}`, id);
 
-  const result2 = await client.zrem(
-    `comments:${comment.token}`, JSON.stringify(comment)
-  );
+  getCommentCount.delete(token);
 
-  getCommentCount.delete(comment.token);
-
-  return result1 + result2;
-
-  // TODO - Remove notification
+  return commentDeleted + userRecordDeleted + tokenRecordDeleted;
 }
 
 // user can remove their own comment. 
@@ -41,18 +35,18 @@ route.delete(async (req, res: NextApiResponse) => {
     return res.status(403).json({ message: "Not Authenticated" });
   }
 
-  const { subject, comment, token, timestamp } = req.body;
+  const { subject, token, id } = req.body;
 
   const isValid = await DeleteCommentValidationSchema.isValid(req.body)
   if (!isValid) {
-      return res.status(400).json({ message: 'Bad Request' });
+      return res.status(400).json({ message: 'Bad Request - yup' });
   }
 
   const provider = await getProvider();
   const contract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
   const tokenExists = await contract.exists(token);
   if (!tokenExists) {
-    return res.status(400).json({ message: 'Bad Request' });
+    return res.status(400).json({ message: 'Bad Request - blockchain' });
   }
   const owner = await contract.ownerOf(token);
 
@@ -63,8 +57,7 @@ route.delete(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'Bad Request - You cannot delete this comment' });
   }
 
-  const hodlComment: HodlComment = { subject, comment, token, timestamp };
-  const success = await removeComment(hodlComment);
+  const success = await removeComment(subject, token, id);
 
   if (success) {
     return res.status(200).json({ message: 'success' });

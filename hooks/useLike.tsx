@@ -3,15 +3,17 @@ import useSWR from 'swr';
 import { WalletContext } from '../contexts/WalletContext';
 import axios from 'axios'
 
-export const useLike = (tokenId) => {
+export const useLike = (id, token=true) => {
   const { address } = useContext(WalletContext);
   const [error, setError] = useState('');
 
-  const { data: tokenLikesCount, mutate: mutateLikesCount } = useSWR(tokenId ? [`/api/like/likeCount`, tokenId] : null,
-    (url, tokenId) => axios.get(`${url}?token=${tokenId}`).then(r => r.data.count));
+  const baseUrl = token ? `/api/like2/token/`: `/api/like2/comment/`;
 
-  const { data: userLikesThisToken, mutate: mutateUserLikesThisToken } = useSWR(address && tokenId ? [`/api/like/likes`, address, tokenId] : null,
-    (url, address, tokenId) => axios.get(`${url}?address=${address}&token=${tokenId}`).then(r => Boolean(r.data.likes)));
+  const { data: tokenLikesCount, mutate: mutateLikesCount } = useSWR(id ? [baseUrl + `count`, id] : null,
+    (url, id) => axios.get(`${url}?id=${id}`).then(r => r.data.count));
+
+  const { data: userLikesThisToken, mutate: mutateUserLikesThisToken } = useSWR(address && id ? [baseUrl + 'likes', address, id] : null,
+    (url, address, id) => axios.get(`${url}?address=${address}&id=${id}`).then(r => Boolean(r.data.likes)));
 
   const toggleLike = async () => {
     if (!address) {
@@ -23,8 +25,8 @@ export const useLike = (tokenId) => {
 
     try {
       const r = await axios.post(
-        '/api/like/like',
-        { token: tokenId },
+        baseUrl + 'like',
+        { id },
         {
           headers: {
             'Accept': 'application/json',

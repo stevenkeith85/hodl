@@ -9,6 +9,8 @@ export const fetchWithAuth = url => axios.get(
         }
     }).then(r => r.data);
 
+export const fetchWithId = (url, id) => axios.get(url, { params: { id } }).then(r => r.data);
+
 export const fetchWithAddress = (url, address) => axios.get(url, { params: { address } }).then(r => r.data);
 export const fetchWithAddressOffsetLimit = (url, address, offset, limit) => axios.get(url, { params: { address, offset, limit } }).then(r => r.data);
 

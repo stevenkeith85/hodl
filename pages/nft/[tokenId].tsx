@@ -88,10 +88,10 @@ const NftDetail = ({ nft, prefetchedTags, prefetchedComments, limit, prefetchedC
         <Grid item xs={12} md={6} marginBottom={2} paddingRight={{ md: 1 }}>
           <Stack spacing={2}>
             <DetailPageImage token={nft} />
-            <Stack spacing={1} direction="row" sx={{ display: 'flex', alignContent: 'center' }}>
-              <Likes sx={{ color: theme => theme.palette.secondary.main, '.MuiTypography-body1': { color: '#666' } }} tokenId={nft.tokenId} />
+            <Box gap={2} display='flex' alignItems='center'>
+              <Likes sx={{ color: theme => theme.palette.secondary.main, '.MuiTypography-body1': { color: '#666' } }} id={nft.tokenId} token={true} />
               <Comments nft={nft} popUp={false} sx={{ color: '#333' }} />
-            </Stack>
+            </Box>
           </Stack>
         </Grid>
         <Grid item xs={12} md={6} marginBottom={2} paddingLeft={{ md: 1 }}>

@@ -43,7 +43,6 @@ export const HodlTagCloud = ({ nft, prefetchedTags }) => {
                             }}
                             onDelete={async () => {
                                 try {
-                                    alert(tag)
                                     mutateTags(old => old.filter(t => t !== tag), { revalidate: false });
                                     const r = await axios.delete(
                                         '/api/tags/delete',
@@ -97,7 +96,6 @@ export const HodlTagCloud = ({ nft, prefetchedTags }) => {
                                     })
 
                                 } catch (error) {
-                                    alert(error)
                                     mutateTags();
                                     values.tag = '';
                                     setTimeout(() => {

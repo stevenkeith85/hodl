@@ -58,7 +58,7 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
                         'Accept': 'application/json',
                         'Authorization': localStorage.getItem('jwt')
                     },
-                    data: comment,
+                    data: { subject: comment.subject, token: comment.token, id: comment.id},
 
                 });
             swr.mutate();
@@ -74,16 +74,16 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
         if (router.query.comment) {
             setTimeout(() => {
                 document.querySelector(`#hodl-comments-${router.query.comment}`)?.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
-            }, 1000)
+            }, 300)
         }
-    }, []);
+    }, [router.query.comment]);
 
     return (
         <>
             <Card variant="outlined">
                 <CardContent>
                     <Box display="flex" justifyContent="space-between">
-                        <Typography variant="h3" sx={{ marginBottom: 2 }}>Comments <Badge sx={{ p: '6px 6px' }} showZero badgeContent={count} max={1000}></Badge></Typography>
+                        <Typography variant="h3" sx={{ marginBottom: 2 }}>Comments <Badge sx={{ p: '6px 3px' }} showZero badgeContent={count} max={1000}></Badge></Typography>
                     </Box>
                     <Box sx={{
                         maxHeight,
@@ -105,12 +105,10 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
                         </Box>
                         }
                         <InfiniteScrollComments swr={swr} limit={limit} canDeleteComment={canDeleteComment} deleteComment={deleteComment} />
-
                     </Box>
                     {address && <Formik
                         initialValues={{
-                            comment: '',
-                            token: nft.tokenId
+                            comment: ''
                         }}
                         validationSchema={AddCommentValidationSchema}
                         onSubmit={async (values) => {
@@ -121,7 +119,7 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
                                     '/api/comments/add',
                                     {
                                         comment: values.comment,
-                                        token: values.token
+                                        token: nft.tokenId
                                     },
                                     {
                                         headers: {

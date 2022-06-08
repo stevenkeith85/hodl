@@ -1,6 +1,6 @@
 import { Box, ClickAwayListener, Fade, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
 import useSWR from "swr";
-import { fetchWithAuth } from "../lib/swrFetchers";
+import { fetchWithAuth, fetchWithId } from "../lib/swrFetchers";
 import CloseIcon from '@mui/icons-material/Close';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import NotificationsIcon from '@mui/icons-material/Notifications';
@@ -17,8 +17,12 @@ import { useRouter } from "next/router";
 
 const HodlNotification = ({ item, setShowNotifications }) => {
     const { address } = useContext(WalletContext);
+
     const { data: token } = useSWR(item.token ? [`/api/token`, item.token] : null,
         (url, query) => axios.get(`${url}/${query}`).then(r => r.data.token));
+
+    const { data: comment } = useSWR(item.comment ? [`/api/comment`, item.comment] : null, fetchWithId);
+
 
     const lastRead = (localStorage.getItem(`notifications-${address}-last-read`) || 0);
 
@@ -28,17 +32,34 @@ const HodlNotification = ({ item, setShowNotifications }) => {
                 <Stack direction="row" spacing={0.5} display="flex" alignItems="center" onClick={() => setShowNotifications(false)} flexGrow={1}>
                     <ProfileAvatar profileAddress={item.subject} size="small" />
                     <Box>{item.action}</Box>
-                    {item.token && <Link href={item.action === NftAction.CommentedOn ? `/nft/${item.token}?comment=${item.subject}-${item.timestamp}` : `/nft/${item.token}`}>
-                        <Typography component="a" sx={{ cursor: "pointer" }}>
-                            an NFT
-                        </Typography>
-                    </Link>}
+                    {
+                        item.token && (item.action === NftAction.Listed || item.action === NftAction.Bought) &&
+                        <Link href={`/nft/${item.token}`}>
+                            <Typography component="a" sx={{ cursor: "pointer" }}>
+                                an NFT
+                            </Typography>
+                        </Link>
+                    }
+                    {
+                        item.token && comment && item.action === NftAction.CommentedOn &&
+                        <Link href={`/nft/${item.token}?comment=${comment.id}`}>
+                            <Typography component="a" sx={{ cursor: "pointer" }}>
+                                an NFT
+                            </Typography>
+                        </Link>
+                    }
+                    {
+                        item?.comment && comment && item.action === NftAction.Liked &&
+                        <Link href={item.action === NftAction.Liked ? `/nft/${comment.token}?comment=${comment.id}` : `/nft/${comment.token}`} passHref>
+                            <Typography component="a" sx={{ textDecoration: 'none', color: '#333'}}>your comment</Typography>
+                        </Link>
+                    }
                     {item.object === address && <Typography>you</Typography>}
                     <Typography sx={{ fontSize: 10, color: "#999" }}>{item.timestamp && formatDistance(new Date(item.timestamp), new Date(), { addSuffix: false })}</Typography>
                 </Stack>
                 {
                     item?.token && token?.image &&
-                    <Link href={item.action === NftAction.CommentedOn ? `/nft/${item.token}?comment=${item.subject}-${item.timestamp}` : `/nft/${item.token}`}>
+                    <Link href={`/nft/${item.token}`}>
                         <a><HodlImage cid={token.image.split('//')[1]} effect={token.filter} height={'40px'} width={'40px'} /></a>
                     </Link>
                 }

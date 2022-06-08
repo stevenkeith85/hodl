@@ -14,37 +14,47 @@ import { nftaddress } from "../../../config";
 import { getProvider } from "../../../lib/server/connections";
 import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import { HodlComment } from "../../../models/HodlComment";
+import axios from 'axios';
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
+
+// Data Structures:
+//
+// "comment" -> {
+//   1: "{ subject, comment, token, timestamp }", 
+//   2: "{ subject, comment, token, timestamp }"
+// }
+//
+// "commented:0x1234" -> (1, 2, 3)
+// "comments:token:1" -> (0x1234, 0x5678)
 
 
 export const addComment = async (comment: HodlComment) => {  
   comment.timestamp = Date.now();
 
-  const userRecordAdded = await client.zadd(
-    `commented:${comment.subject}`,
-    {
-      score: comment.timestamp,
-      member: JSON.stringify(comment)
-    }
-  );
+  // This should be in a transaction (multi/exec) but the rest api/upstash client doesn't support them
+  // We are using the rest api as it handles concurrent connections better
+  // https://docs.upstash.com/redis/features/restapi
 
-  const tokenRecordAdded = await client.zadd(
-    `comments:${comment.token}`,
-    {
-      score: comment.timestamp,
-      member: JSON.stringify(comment)
-    }
-  );
+  // It will not lead to data corruption, but there's always a chance we store a comment, but don't add the reference to the Sets
+  const commentId = await client.incr("commentId")
+  comment.id = commentId;
+  
+  const commentAdded = client.hset("comment", {[commentId]: JSON.stringify(comment)});
+  
+  const userRecordAdded = await client.zadd(`commented:${comment.subject}`, { score: comment.timestamp, member: commentId });
 
+  // TODO: We should have 'comments:token:1' for comments on tokens and 'comments:comment:1' for comments on a comment (i.e. a reply)
+  const tokenRecordAdded = await client.zadd(`comments:token:${comment.token}`, { score: comment.timestamp, member: commentId});
+  
   let notificationAdded = 0;
   if (tokenRecordAdded) {
     const notification: HodlNotification = {
       subject: comment.subject,
       action: NftAction.CommentedOn,
       token: comment.token,
-      timestamp: comment.timestamp
+      comment: comment.id
     };
 
     notificationAdded = await addNotification(notification);
@@ -52,7 +62,7 @@ export const addComment = async (comment: HodlComment) => {
 
   getCommentCount.delete(comment.token);
 
-  return [userRecordAdded, tokenRecordAdded, notificationAdded]
+  return [commentAdded, userRecordAdded, tokenRecordAdded, notificationAdded]
 }
 
 

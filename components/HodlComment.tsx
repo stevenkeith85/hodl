@@ -10,7 +10,7 @@ import { getShortAddress, truncateText } from "../lib/utils";
 export const HodlComment = ({ comment, color = "secondary", sx = {} }) => {
     const router = useRouter();
 
-    const selected = router?.query?.comment === `${comment.subject}-${comment.timestamp}`;
+    const selected = router?.query?.comment == comment.id;
 
     const { data: profileNickname } = useSWR(comment.subject ? [`/api/profile/nickname`, comment.subject] : null,
         (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.nickname))
@@ -22,7 +22,7 @@ export const HodlComment = ({ comment, color = "secondary", sx = {} }) => {
             gap={1}
             paddingY={1}
             sx={{ background: selected ? yellow[100] : 'none', ...sx }}
-            id={`hodl-comments-${comment.subject}-${comment.timestamp}`}
+            id={`hodl-comments-${comment.id}`}
         >
             <ProfileAvatar profileAddress={comment.subject} size="small" showNickname={false} />
             <Box display="flex" flexDirection="column">

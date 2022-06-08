@@ -14,6 +14,7 @@ import { likesToken } from "../like/likes";
 import { getTokensListed } from "../token-listed/[tokenId]";
 import { getFollowers } from "../follow2/followers";
 import { isFollowing } from "../follow2/follows";
+import { likesComment } from "../like2/comment/likes";
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
@@ -23,28 +24,50 @@ export const addNotification = async (notification: HodlNotification) => {
   // if there's a timestamp and it's on a comment, then we keep it 
   // as we'd like the comment timestamp to match the notification timestamp. (to allow us to highlight it in the UI easily)
   // NB: We do not allow users to create CommentedOn notifications via the API directly
-  if (notification?.action !== NftAction.CommentedOn) { 
+
+  // TODO: We've got id's for comments now, so this can be refactored/simplified
+  // if (notification?.action !== NftAction.CommentedOn && notification?.action !== NftAction.Liked) {
     notification.timestamp = Date.now();
-  }
+  // }
 
   if (notification.action === NftAction.Liked) { // tell the token owner you liked it
-    const provider = await getProvider();
-    const tokenContract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
-    const owner = await tokenContract.ownerOf(notification.token);
 
-    const likes = await likesToken(notification.subject, notification.token);
+    if (notification.token) {
+      const provider = await getProvider();
+      const tokenContract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
+      const owner = await tokenContract.ownerOf(notification.token);
 
-    if (!likes || owner === notification.subject) { // don't notify yourself that you liked your own NFT
-      return; 
+      const likes = await likesToken(notification.subject, notification.token);
+
+      if (!likes || owner === notification.subject) { // don't notify yourself that you liked your own NFT
+        return;
+      }
+
+      return await client.zadd(
+        `notifications:${owner}`,
+        {
+          score: notification.timestamp,
+          member: JSON.stringify(notification)
+        }
+      );
+    } else if (notification.comment) {
+      const likes = await likesComment(notification.subject, notification.comment);
+
+      const comment = await client.hget(`comment`, `${notification.comment}`);
+      
+      if (!likes || comment.subject === notification.subject) { // don't notify yourself that you liked your own NFT
+        return;
+      }
+
+      return await client.zadd(
+        `notifications:${comment.subject}`,
+        {
+          score: notification.timestamp,
+          member: JSON.stringify(notification)
+        }
+      );
     }
 
-    return await client.zadd(
-      `notifications:${owner}`,
-      {
-        score: notification.timestamp,
-        member: JSON.stringify(notification)
-      }
-    );
   }
 
   if (notification.action === NftAction.CommentedOn) { // tell the token owner someone commented on their token
@@ -70,7 +93,7 @@ export const addNotification = async (notification: HodlNotification) => {
     const follows = await isFollowing(notification.subject, notification.object);
 
     if (!follows) {
-      return; 
+      return;
     }
 
     return await client.zadd(
@@ -135,7 +158,7 @@ export const addNotification = async (notification: HodlNotification) => {
         }
       );
     }
-    
+
     return followers.length;
   }
 
