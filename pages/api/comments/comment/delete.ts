@@ -2,16 +2,16 @@ import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
 
-import { getProvider } from "../../../lib/server/connections";
+import { getProvider } from "../../../../lib/server/connections";
 import { ethers } from "ethers";
-import { nftaddress } from "../../../config";
-import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
+import { nftaddress } from "../../../../config";
+import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 
 const client = Redis.fromEnv()
-import apiRoute from "../handler";
-import { HodlComment } from "../../../models/HodlComment";
-import { getCommentCount } from "./count";
-import { DeleteCommentValidationSchema } from "../../../validationSchema/comments/deleteComment";
+import apiRoute from "../../handler";
+import { HodlComment } from "../../../../models/HodlComment";
+import { getReplyCount } from "./count";
+import { DeleteCommentValidationSchema } from "../../../../validationSchema/comments/deleteComment";
 
 
 dotenv.config({ path: '../.env' })
@@ -21,9 +21,9 @@ const removeComment = async (address, token, id) => {
   // TODO: Can these be done in a transaction with redis?
   const commentDeleted = await client.hdel(`comment`, id);
   const userRecordDeleted = await client.zrem(`commented:${address}`, id);
-  const tokenRecordDeleted = await client.zrem(`comments:token:${token}`, id);
+  const tokenRecordDeleted = await client.zrem(`comments:comment:${token}`, id);
 
-  getCommentCount.delete(token);
+  getReplyCount.delete(token);
 
   return commentDeleted + userRecordDeleted + tokenRecordDeleted;
 }

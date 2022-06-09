@@ -3,17 +3,17 @@ import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
 
 const client = Redis.fromEnv()
-import apiRoute from "../handler";
+import apiRoute from "../../handler";
 
-import { HodlNotification, NftAction } from "../../../models/HodlNotifications";
-import { addNotification } from "../notifications/add";
+import { HodlNotification, NftAction } from "../../../../models/HodlNotifications";
+import { addNotification } from "../../notifications/add";
 import { getCommentCount } from "./count";
-import { AddCommentValidationSchema } from "../../../validationSchema/comments/addComments";
+import { AddCommentValidationSchema } from "../../../../validationSchema/comments/addComments";
 import { ethers } from "ethers";
-import { nftaddress } from "../../../config";
-import { getProvider } from "../../../lib/server/connections";
-import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
-import { HodlComment } from "../../../models/HodlComment";
+import { nftaddress } from "../../../../config";
+import { getProvider } from "../../../../lib/server/connections";
+import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
+import { HodlComment } from "../../../../models/HodlComment";
 import axios from 'axios';
 
 dotenv.config({ path: '../.env' })
@@ -46,21 +46,21 @@ export const addComment = async (comment: HodlComment) => {
   const userRecordAdded = await client.zadd(`commented:${comment.subject}`, { score: comment.timestamp, member: commentId });
 
   // TODO: We should have 'comments:token:1' for comments on tokens and 'comments:comment:1' for comments on a comment (i.e. a reply)
-  const tokenRecordAdded = await client.zadd(`comments:token:${comment.token}`, { score: comment.timestamp, member: commentId});
+  const tokenRecordAdded = await client.zadd(`comments:token:${comment.object}`, { score: comment.timestamp, member: commentId});
   
   let notificationAdded = 0;
   if (tokenRecordAdded) {
     const notification: HodlNotification = {
       subject: comment.subject,
       action: NftAction.CommentedOn,
-      token: comment.token,
+      token: comment.object,
       comment: comment.id
     };
 
     notificationAdded = await addNotification(notification);
   }
 
-  getCommentCount.delete(comment.token);
+  getCommentCount.delete(comment.object);
 
   return [commentAdded, userRecordAdded, tokenRecordAdded, notificationAdded]
 }
@@ -71,7 +71,7 @@ route.post(async (req, res: NextApiResponse) => {
     return res.status(403).json({ message: "Not Authenticated" });
   }
 
-  const { comment, token } = req.body;
+  const { comment, id: token } = req.body;
 
   const isValid = await AddCommentValidationSchema.isValid(req.body)
   if (!isValid) {
@@ -89,7 +89,7 @@ route.post(async (req, res: NextApiResponse) => {
   const hodlComment: HodlComment = {
     subject: req.address,
     comment,
-    token
+    object: token
   };
 
   const success = await addComment(hodlComment);

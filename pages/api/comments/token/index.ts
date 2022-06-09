@@ -4,12 +4,12 @@ import dotenv from 'dotenv'
 import memoize from 'memoizee';
 import axios from 'axios';
 const client = Redis.fromEnv()
-import apiRoute from "../handler";
-import { GetCommentsValidationSchema } from "../../../validationSchema/comments/getComments";
+import apiRoute from "../../handler";
+import { GetCommentsValidationSchema } from "../../../../validationSchema/comments/getComments";
 import { ethers } from "ethers";
-import { nftaddress } from "../../../config";
-import { getProvider } from "../../../lib/server/connections";
-import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
+import { nftaddress } from "../../../../config";
+import { getProvider } from "../../../../lib/server/connections";
+import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
@@ -37,9 +37,9 @@ export const getCommentsForToken = async (token: number, offset: number, limit: 
 }
 
 route.get(async (req, res: NextApiResponse) => {
-  const token = Array.isArray(req.query.token) ? req.query.token[0] : req.query.token;
+  const token = Array.isArray(req.query.id) ? req.query.token[0] : req.query.id;
   const offset = Array.isArray(req.query.offset) ? req.query.offset[0] : req.query.offset;
-  const limit = Array.isArray(req.query.token) ? req.query.limit[0] : req.query.limit;
+  const limit = Array.isArray(req.query.limit) ? req.query.limit[0] : req.query.limit;
 
   const isValid = await GetCommentsValidationSchema.isValid(req.query)
   if (!isValid) {

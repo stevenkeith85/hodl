@@ -8,7 +8,7 @@ export const GetCommentsValidationSchema = yup.object({
     .number()
     .max(100)
     .required(),
-  token: yup
+  id: yup
     .number()
     .required()
     .positive()

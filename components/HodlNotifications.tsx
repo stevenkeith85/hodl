@@ -114,6 +114,7 @@ export const HodlNotifications = ({ setHoverMenuOpen, showNotifications, setShow
             top: 56,
             right: 0,
             minWidth: { xs: 'none', sm: 'max-content' },
+            maxHeight: '50vh',
             height: { xs: 'calc(100vh - 56px)', sm: 'auto' },
             width: { xs: '100%', sm: 'auto' },
             overflow: 'auto',

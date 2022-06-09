@@ -1,19 +1,18 @@
-import { HighlightOffOutlined } from "@mui/icons-material";
 import { Box } from "@mui/material";
 import InfiniteScroll from 'react-swr-infinite-scroll'
 import { HodlComment } from "../HodlComment";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
-import { Likes } from "../Likes";
 
 
 interface InfiniteScrollCommentsProps {
   swr: any,
   limit: number,
   canDeleteComment: Function,
-  deleteComment: Function
+  deleteComment: Function,
+  setCommentingOn: Function
 }
 
-export const InfiniteScrollComments: React.FC<InfiniteScrollCommentsProps> = ({ swr, limit, canDeleteComment, deleteComment }) => {
+export const InfiniteScrollComments: React.FC<InfiniteScrollCommentsProps> = ({ swr, limit, canDeleteComment, deleteComment, setCommentingOn }) => {
   if (swr.error) {
     return null;
   }
@@ -33,24 +32,19 @@ export const InfiniteScrollComments: React.FC<InfiniteScrollCommentsProps> = ({ 
       }
     >
       {
-        ({ items, next, total }) => <Box key={next}>
+        ({ items, next, total }) => <Box key={next} display="flex" flexDirection="column" gap={1}>
           {
             (items || []).map(
               (comment, i) =>
-                <Box display="flex" gap={1} alignItems="center" key={`hodl-comments-${comment.id}`} paddingRight={1}>
-                  <HodlComment comment={comment} color={i % 2 ? 'primary' : 'secondary'} sx={{ flexGrow: 1 }} />
-                  <Likes
-                    id={comment.id}
-                    token={false}
-                    fontSize="inherit"
+                  <HodlComment 
+                    key={`hodl-comments-${comment.id}`} 
+                    comment={comment} 
+                    color={i % 2 ? 'primary' : 'secondary'}  
+                    canDeleteComment={canDeleteComment} 
+                    deleteComment={deleteComment} 
+                    setCommentingOn={setCommentingOn}
+                    sx={{ flexGrow: 1 }} 
                   />
-                  
-                  {
-                    canDeleteComment(comment) &&
-                      <HighlightOffOutlined sx={{ cursor: 'pointer', color: '#999' }} fontSize="inherit" onClick={() => deleteComment(comment)} />                   
-                  }
-                  
-                </Box>
             )
           }
         </Box>

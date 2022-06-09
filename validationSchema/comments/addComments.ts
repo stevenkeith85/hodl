@@ -9,7 +9,7 @@ export const AddCommentValidationSchema = yup.object({
     .min(3)
     .max(150)
     .strict(),
-    token: yup
+  id: yup
     .number()
     .required()
     .positive()

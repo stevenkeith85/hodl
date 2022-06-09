@@ -70,23 +70,23 @@ export const addNotification = async (notification: HodlNotification) => {
 
   }
 
-  if (notification.action === NftAction.CommentedOn) { // tell the token owner someone commented on their token
-    const provider = await getProvider();
-    const tokenContract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
-    const owner = await tokenContract.ownerOf(notification.token);
+  // if (notification.action === NftAction.CommentedOn) { // tell the token owner someone commented on their token
+  //   const provider = await getProvider();
+  //   const tokenContract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
+  //   const owner = await tokenContract.ownerOf(notification.token);
 
-    if (owner === notification.subject) {
-      return; // We don't need to notify ourselves that we commented on something
-    }
+  //   if (owner === notification.subject) {
+  //     return; // We don't need to notify ourselves that we commented on something
+  //   }
 
-    return await client.zadd(
-      `notifications:${owner}`,
-      {
-        score: notification.timestamp,
-        member: JSON.stringify(notification)
-      }
-    );
-  }
+  //   return await client.zadd(
+  //     `notifications:${owner}`,
+  //     {
+  //       score: notification.timestamp,
+  //       member: JSON.stringify(notification)
+  //     }
+  //   );
+  // }
 
 
   if (notification.action === AddressAction.Followed) { // tell the account someone followed it

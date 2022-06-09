@@ -1,10 +1,10 @@
 import { CommentOutlined } from "@mui/icons-material";
 import useSWR from "swr";
-import axios from 'axios';
-import { Badge, Box, Stack, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { HodlModal } from "./HodlModal";
 import { HodlCommentsBox } from "./nft/HodlCommentsBox";
 import { FC, useState } from "react";
+import { fetchWithId } from "../lib/swrFetchers";
 
 export interface CommentsProps {
     nft: any,
@@ -15,8 +15,7 @@ export interface CommentsProps {
 }
 
 export const Comments: FC<CommentsProps> = ({ nft, popUp = true, color = "primary", fontSize = "small", sx = {} }) => {
-    const { data: count } = useSWR(nft.tokenId ? [`/api/comments/count`, nft.tokenId] : null,
-        (url, tokenId) => axios.get(`${url}?token=${tokenId}`).then(r => r.data.count));
+    const { data: count } = useSWR(nft.tokenId ? [`/api/comments/token/count`, nft.tokenId] : null, fetchWithId);
 
     const [open, setOpen] = useState(false);
 

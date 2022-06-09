@@ -1,11 +1,11 @@
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
-import apiRoute from "../handler";
+import apiRoute from "../../handler";
 import memoize from 'memoizee';
 import { ethers } from "ethers";
-import { nftaddress } from "../../../config";
-import { getProvider } from "../../../lib/server/connections";
-import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
+import { nftaddress } from "../../../../config";
+import { getProvider } from "../../../../lib/server/connections";
+import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 
 dotenv.config({ path: '../.env' })
 
@@ -22,7 +22,7 @@ export const getCommentCount = memoize(async (token) => {
 
 
 route.get(async (req, res) => {
-  const token = Array.isArray(req.query.token) ? req.query.token[0] : req.query.token;
+  const token = Array.isArray(req.query.id) ? req.query.id[0] : req.query.id;
 
   if (!token) {
     return res.status(400).json({message: 'Bad Request'});
@@ -41,7 +41,7 @@ route.get(async (req, res) => {
   }
 
   const count = await getCommentCount(token);
-  res.status(200).json({count});
+  res.status(200).json(count);
 });
 
 

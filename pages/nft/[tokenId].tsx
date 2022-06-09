@@ -27,10 +27,10 @@ import { getPriceHistory } from "../api/token-bought/[tokenId]";
 import { getTagsForToken } from "../api/tags";
 import { HodlerPrivilege } from "../../components/nft/HodlerPrivilege";
 import { HodlTagCloud } from "../../components/nft/HodlTagCloud";
-import { getCommentsForToken } from "../api/comments";
+import { getCommentsForToken } from "../api/comments/token";
 import { HodlCommentsBox } from "../../components/nft/HodlCommentsBox";
 import { Comments } from "../../components/Comments";
-import { getCommentCount } from "../api/comments/count";
+import { getCommentCount } from "../api/comments/token/count";
 import { useState } from "react";
 import { Forum, Info, Insights } from "@mui/icons-material";
 
