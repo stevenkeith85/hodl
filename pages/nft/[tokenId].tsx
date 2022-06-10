@@ -33,11 +33,12 @@ import { Comments } from "../../components/Comments";
 import { getCommentCount } from "../api/comments/token/count";
 import { useState } from "react";
 import { Forum, Info, Insights } from "@mui/icons-material";
+import { getLikeCount } from "../api/like/likeCount";
 
 
 export async function getServerSideProps({ params }) {
   const nft = await fetchNFT(params.tokenId);
-  const limit = 20;
+  const limit = 6;
 
   if (!nft) {
     return { notFound: true }
@@ -47,22 +48,33 @@ export async function getServerSideProps({ params }) {
 
   const prefetchedComments = await getCommentsForToken(params.tokenId, 0, limit);
   const prefetchedCommentCount = await getCommentCount(params.tokenId);
+  
   const priceHistory = await getPriceHistory(params.tokenId);
 
+  const prefetchedLikeCount = await getLikeCount(params.tokenId);
 
   return {
     props: {
       nft,
       prefetchedTags,
-      prefetchedComments: [prefetchedComments],
+      prefetchedComments: null,//[prefetchedComments],
       limit,
       prefetchedCommentCount,
-      priceHistory
+      priceHistory,
+      prefetchedLikeCount
     },
   }
 }
 
-const NftDetail = ({ nft, prefetchedTags, prefetchedComments, limit, prefetchedCommentCount, priceHistory }) => {
+const NftDetail = ({ 
+  nft, 
+  prefetchedTags, 
+  prefetchedComments, 
+  limit, 
+  prefetchedCommentCount, 
+  priceHistory, 
+  prefetchedLikeCount 
+}) => {
   const [value, setValue] = useState(0);
 
   return (
@@ -89,8 +101,18 @@ const NftDetail = ({ nft, prefetchedTags, prefetchedComments, limit, prefetchedC
           <Stack spacing={2}>
             <DetailPageImage token={nft} />
             <Box gap={2} display='flex' alignItems='center'>
-              <Likes sx={{ color: theme => theme.palette.secondary.main, '.MuiTypography-body1': { color: '#666' } }} id={nft.tokenId} token={true} />
-              <Comments nft={nft} popUp={false} sx={{ color: '#333' }} />
+              <Likes 
+                sx={{ color: theme => theme.palette.secondary.main, '.MuiTypography-body1': { color: '#666' } }} 
+                id={nft.tokenId} 
+                token={true} 
+                prefetchedLikeCount={prefetchedLikeCount}
+                />
+              <Comments 
+                nft={nft} 
+                popUp={false} 
+                prefetchedCommentCount={prefetchedCommentCount}
+                sx={{ color: '#333' }} 
+              />
             </Box>
           </Stack>
         </Grid>
@@ -113,8 +135,16 @@ const NftDetail = ({ nft, prefetchedTags, prefetchedComments, limit, prefetchedC
           <div hidden={value !== 0}>
             <Stack spacing={2}>
               <DescriptionCard nft={nft} />
-              <HodlCommentsBox nft={nft} prefetchedComments={prefetchedComments} prefetchedCommentCount={prefetchedCommentCount} limit={limit} />
-              <HodlTagCloud nft={nft} prefetchedTags={prefetchedTags} />
+              <HodlCommentsBox 
+                nft={nft} 
+                prefetchedComments={prefetchedComments} 
+                prefetchedCommentCount={prefetchedCommentCount} 
+                limit={limit} 
+              />
+              <HodlTagCloud 
+                nft={nft} 
+                prefetchedTags={prefetchedTags} 
+              />
             </Stack>
           </div>
           <div hidden={value !== 1}>

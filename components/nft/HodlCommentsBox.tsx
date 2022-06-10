@@ -33,11 +33,29 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
     const [loading, setLoading] = useState(false);
 
     const [commentingOn, setCommentingOn] = useState({
-        token: true,
-        id: nft.tokenId
+        object: "token",
+        objectId: nft.tokenId
     });
 
-    const [swr, addComment, deleteComment, count] = useComments(commentingOn.id, limit, setLoading, commentingOn.token, prefetchedComments, prefetchedCommentCount);
+    const [_tokenSwr, _tokenAddComment, _tokenDeleteComment, tokenCount] = useComments(
+        nft.tokenId, 
+        nft.tokenId, 
+        limit, 
+        setLoading, 
+        "token", 
+        prefetchedComments, 
+        prefetchedCommentCount);
+
+    const [_swr, addComment,] = useComments(
+        nft.tokenId,
+        commentingOn.objectId, 
+        limit, 
+        setLoading, 
+        commentingOn.object, 
+        prefetchedComments, 
+        prefetchedCommentCount
+    );
+
 
     useEffect(() => {
         if (router.query.comment) {
@@ -52,16 +70,16 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
             // @ts-ignore
             newTagRef?.current?.focus();
         })
-    }, [commentingOn.id])
+    }, [commentingOn.objectId])
 
     return (
         <>
             <Card variant="outlined">
                 <CardContent>
                     <Box display="flex" justifyContent="space-between">
-                        <Typography variant="h3" sx={{ marginBottom: 2 }}>Comments <Badge sx={{ p: '6px 3px' }} showZero badgeContent={count} max={1000}></Badge></Typography>
+                        <Typography variant="h3" sx={{ marginBottom: 2 }}>Comments <Badge sx={{ p: '6px 3px' }} showZero badgeContent={tokenCount} max={1000}></Badge></Typography>
                     </Box>
-                    <Box sx={{ maxHeight, overflow: 'auto', position: 'relative' }}>
+                    <Box sx={{ maxHeight, minHeight: maxHeight, overflow: 'auto', position: 'relative' }}>
                         {loading && <Box sx={{
                             position: 'absolute',
                             display: 'flex',
@@ -73,16 +91,24 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
                             <HodlLoadingSpinner />
                         </Box>
                         }
-                        <CommentThread id={nft.tokenId} nft={nft} setLoading={setLoading} token={true} limit={limit} setCommentingOn={setCommentingOn} />
+                        <CommentThread
+                            nft={nft} 
+                            setLoading={setLoading} 
+                            token={true} 
+                            limit={limit} 
+                            setCommentingOn={setCommentingOn} 
+                            prefetchedComments={prefetchedComments}
+                            prefetchedCommentCount={prefetchedCommentCount}
+                        />
                     </Box>
                     {address && <Formik
                         initialValues={{
                             comment: '',
-                            id: commentingOn.id
+                            id: commentingOn.objectId
                         }}
                         validationSchema={AddCommentValidationSchema}
                         onSubmit={async (values) => {
-                            await addComment(values.comment);
+                            await addComment(values.comment, commentingOn.object);
                             values.comment = '';
                             setTimeout(() => {
                                 // @ts-ignore
@@ -103,7 +129,7 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
                                                     inputRef={newTagRef}
                                                     component={InputBase}
                                                     sx={{ flexGrow: 1, border: errors.comment ? theme => `1px solid ${theme.palette.error.main}` : `1px solid #ccc`, borderRadius: 1, paddingX: 1.5 }}
-                                                    placeholder={commentingOn.token ? "comment on token " + commentingOn.id : "replying to comment " + commentingOn.id}
+                                                    placeholder={commentingOn.object ? "comment on token " + commentingOn.objectId : "replying to comment " + commentingOn.objectId}
                                                     name="comment"
                                                     id="hodl-comments-add"
                                                     type="text"
@@ -112,8 +138,8 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
                                                     sx={{ cursor: 'pointer', position: 'absolute', right: 8, top: 8, color: '#999' }}
                                                     fontSize="inherit"
                                                     onClick={() => setCommentingOn({
-                                                        token: true,
-                                                        id: nft.tokenId
+                                                        object: "token",
+                                                        objectId: nft.tokenId
                                                     })} />
                                             </Box>
                                         </Tooltip>

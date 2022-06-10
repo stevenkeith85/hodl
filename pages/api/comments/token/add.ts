@@ -46,21 +46,21 @@ export const addComment = async (comment: HodlComment) => {
   const userRecordAdded = await client.zadd(`commented:${comment.subject}`, { score: comment.timestamp, member: commentId });
 
   // TODO: We should have 'comments:token:1' for comments on tokens and 'comments:comment:1' for comments on a comment (i.e. a reply)
-  const tokenRecordAdded = await client.zadd(`comments:token:${comment.object}`, { score: comment.timestamp, member: commentId});
+  const tokenRecordAdded = await client.zadd(`comments:token:${comment.objectId}`, { score: comment.timestamp, member: commentId});
   
   let notificationAdded = 0;
   if (tokenRecordAdded) {
     const notification: HodlNotification = {
       subject: comment.subject,
       action: NftAction.CommentedOn,
-      token: comment.object,
+      token: comment.objectId,
       comment: comment.id
     };
 
     notificationAdded = await addNotification(notification);
   }
 
-  getCommentCount.delete(comment.object);
+  getCommentCount.delete(comment.objectId);
 
   return [commentAdded, userRecordAdded, tokenRecordAdded, notificationAdded]
 }
@@ -89,7 +89,8 @@ route.post(async (req, res: NextApiResponse) => {
   const hodlComment: HodlComment = {
     subject: req.address,
     comment,
-    object: token
+    object: "token",
+    objectId: token
   };
 
   const success = await addComment(hodlComment);

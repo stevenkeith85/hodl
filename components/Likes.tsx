@@ -10,11 +10,20 @@ export interface LikesProps {
     color?: "inherit" | "disabled" | "action" | "secondary" | "primary" | "error" | "info" | "success" | "warning",
     fontSize?: "small" | "inherit" | "large" | "medium",
     showCount?: boolean,
+    prefetchedLikeCount?: number | null,
     sx?: any
 }
 
-export const Likes: FC<LikesProps> = ({ id, token = true, color = "secondary", fontSize = 'small', showCount=true, sx = {} }) => {
-    const [tokenLikesCount, userLikesThisToken, toggleLike] = useLike(id, token);
+export const Likes: FC<LikesProps> = ({ 
+    id, 
+    token = true, 
+    color = "secondary", 
+    fontSize = 'small', 
+    showCount=true, 
+    prefetchedLikeCount=null,
+    sx = {} 
+}) => {
+    const [tokenLikesCount, userLikesThisToken, toggleLike] = useLike(id, token, prefetchedLikeCount);
 
     return (
         <>

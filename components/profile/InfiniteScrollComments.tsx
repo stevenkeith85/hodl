@@ -5,14 +5,14 @@ import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 
 
 interface InfiniteScrollCommentsProps {
+  nft: any,
   swr: any,
   limit: number,
   canDeleteComment: Function,
-  deleteComment: Function,
   setCommentingOn: Function
 }
 
-export const InfiniteScrollComments: React.FC<InfiniteScrollCommentsProps> = ({ swr, limit, canDeleteComment, deleteComment, setCommentingOn }) => {
+export const InfiniteScrollComments: React.FC<InfiniteScrollCommentsProps> = ({ nft, swr, limit, canDeleteComment, setCommentingOn }) => {
   if (swr.error) {
     return null;
   }
@@ -37,11 +37,11 @@ export const InfiniteScrollComments: React.FC<InfiniteScrollCommentsProps> = ({ 
             (items || []).map(
               (comment, i) =>
                   <HodlComment 
+                    nft={nft}
                     key={`hodl-comments-${comment.id}`} 
                     comment={comment} 
                     color={i % 2 ? 'primary' : 'secondary'}  
                     canDeleteComment={canDeleteComment} 
-                    deleteComment={deleteComment} 
                     setCommentingOn={setCommentingOn}
                     sx={{ flexGrow: 1 }} 
                   />

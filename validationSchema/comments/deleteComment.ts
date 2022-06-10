@@ -11,6 +11,12 @@ export const DeleteCommentValidationSchema = yup.object({
     .required()
     .positive()
     .integer(),
+  object: yup // TODO: Ensure it is only "comment" or "token"
+    .string()
+    .required(),
+  objectId: yup // TODO: Ensure it is only "comment" or "token"
+    .number()
+    .required(),
   id: yup
     .number()
     .required()

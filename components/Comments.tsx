@@ -11,18 +11,23 @@ export interface CommentsProps {
     popUp?: boolean,
     color?: "inherit" | "disabled" | "action" | "secondary" | "primary" | "error" | "info" | "success" | "warning",
     fontSize?: "small" | "inherit" | "large" | "medium",
+    prefetchedCommentCount?: null | number,
     sx?: any
 }
 
-export const Comments: FC<CommentsProps> = ({ nft, popUp = true, color = "primary", fontSize = "small", sx = {} }) => {
-    const { data: count } = useSWR(nft.tokenId ? [`/api/comments/token/count`, nft.tokenId] : null, fetchWithId);
+export const Comments: FC<CommentsProps> = ({ nft, popUp = true, color = "primary", fontSize = "small", prefetchedCommentCount=null, sx = {} }) => {
+    const { data: count } = useSWR(
+        nft.tokenId ? [`/api/comments/token/count`, nft.tokenId] : null, 
+        fetchWithId,
+        { fallbackData: prefetchedCommentCount }
+    );
 
     const [open, setOpen] = useState(false);
 
     return (
         <>
             <HodlModal open={open} setOpen={setOpen} sx={{ padding: 0, width: { xs: '90vw', md: '50vw' } }} >
-                <HodlCommentsBox nft={nft} prefetchedComments={null} prefetchedCommentCount={null} limit={20} maxHeight="50vh" />
+                <HodlCommentsBox nft={nft} prefetchedComments={null} prefetchedCommentCount={prefetchedCommentCount} limit={6} maxHeight="50vh" />
             </HodlModal>
             <Box
                 display="flex"

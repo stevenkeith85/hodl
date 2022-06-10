@@ -1,7 +1,8 @@
 export interface HodlComment {
-    id?: number; // id to tie things up
-    subject: string; // address
-    comment?: string; // the actual comment
-    object?: number; // the nft or comment the comment was made about
-    timestamp?: number; // when the comment was made
+    id?: number; // the id that the comment will be stored against
+    subject: string; // the address that made the comment
+    comment?: string; // the comment string
+    object: "token" | "comment"; // what was this comment about
+    objectId?: number; // the object's Id
+    timestamp?: number; // when was the comment was made
 }

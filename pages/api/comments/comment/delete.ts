@@ -17,13 +17,12 @@ import { DeleteCommentValidationSchema } from "../../../../validationSchema/comm
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
 
-const removeComment = async (address, token, id) => {
-  // TODO: Can these be done in a transaction with redis?
+const removeComment = async (address, objectId, id) => {
   const commentDeleted = await client.hdel(`comment`, id);
   const userRecordDeleted = await client.zrem(`commented:${address}`, id);
-  const tokenRecordDeleted = await client.zrem(`comments:comment:${token}`, id);
+  const tokenRecordDeleted = await client.zrem(`comments:comment:${objectId}`, id);
 
-  getReplyCount.delete(token);
+  getReplyCount.delete(objectId);
 
   return commentDeleted + userRecordDeleted + tokenRecordDeleted;
 }
@@ -35,7 +34,7 @@ route.delete(async (req, res: NextApiResponse) => {
     return res.status(403).json({ message: "Not Authenticated" });
   }
 
-  const { subject, token, id } = req.body;
+  const { subject, token, object, objectId, id } = req.body;
 
   const isValid = await DeleteCommentValidationSchema.isValid(req.body)
   if (!isValid) {
@@ -57,7 +56,7 @@ route.delete(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'Bad Request - You cannot delete this comment' });
   }
 
-  const success = await removeComment(subject, token, id);
+  const success = await removeComment(subject, objectId, id);
 
   if (success) {
     return res.status(200).json({ message: 'success' });

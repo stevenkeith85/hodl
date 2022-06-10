@@ -29,9 +29,12 @@ function MyApp(props) {
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
       <SWRConfig value={{
-        dedupingInterval: 10000, // default is 2000
-        focusThrottleInterval: 10000, // default is 5000
+        dedupingInterval: 30000, // default is 2000
+        focusThrottleInterval: 30000, // default is 5000
         errorRetryCount: 1,
+        revalidateOnMount: false,
+        revalidateOnFocus: false,
+        revalidateOnReconnect: false
       }}>
         <WalletContext.Provider value={{ signer, setSigner, address, setAddress, nickname, setNickname }}>
           <ThemeProvider theme={theme}>
