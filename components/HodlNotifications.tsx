@@ -23,7 +23,6 @@ const HodlNotification = ({ item, setShowNotifications }) => {
 
     const { data: comment } = useSWR(item.comment ? [`/api/comment`, item.comment] : null, fetchWithId);
 
-
     const lastRead = (localStorage.getItem(`notifications-${address}-last-read`) || 0);
 
     return (

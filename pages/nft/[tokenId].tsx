@@ -57,7 +57,7 @@ export async function getServerSideProps({ params }) {
     props: {
       nft,
       prefetchedTags,
-      prefetchedComments: null,//[prefetchedComments],
+      prefetchedComments: [prefetchedComments],
       limit,
       prefetchedCommentCount,
       priceHistory,

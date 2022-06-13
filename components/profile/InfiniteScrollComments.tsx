@@ -9,10 +9,19 @@ interface InfiniteScrollCommentsProps {
   swr: any,
   limit: number,
   canDeleteComment: Function,
-  setCommentingOn: Function
+  setCommentingOn: Function,
+  addCommentInput: any,
+  parentMutateCount: Function
 }
 
-export const InfiniteScrollComments: React.FC<InfiniteScrollCommentsProps> = ({ nft, swr, limit, canDeleteComment, setCommentingOn }) => {
+export const InfiniteScrollComments: React.FC<InfiniteScrollCommentsProps> = ({ 
+  nft, 
+  swr, 
+  limit, 
+  canDeleteComment,
+  setCommentingOn, 
+  addCommentInput, 
+  parentMutateCount }) => {
   if (swr.error) {
     return null;
   }
@@ -43,7 +52,10 @@ export const InfiniteScrollComments: React.FC<InfiniteScrollCommentsProps> = ({ 
                     color={i % 2 ? 'primary' : 'secondary'}  
                     canDeleteComment={canDeleteComment} 
                     setCommentingOn={setCommentingOn}
+                    addCommentInput={addCommentInput}
                     sx={{ flexGrow: 1 }} 
+                    parentMutateList={swr.mutate}
+                    parentMutateCount={parentMutateCount}
                   />
             )
           }

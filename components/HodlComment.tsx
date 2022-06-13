@@ -9,12 +9,11 @@ import { getShortAddress, truncateText } from "../lib/utils";
 import { Likes } from "./Likes";
 import { HighlightOffOutlined, Reply } from "@mui/icons-material";
 import { useLike } from "../hooks/useLike";
-import { useComments } from "../hooks/useComments";
+import { useComments, useCommentCount, useDeleteComment } from "../hooks/useComments";
 import { useState } from "react";
-import { InfiniteScrollComments } from "./profile/InfiniteScrollComments";
 
 
-export const HodlComment = ({ nft, comment, color = "secondary", canDeleteComment, setCommentingOn, sx = {} }) => {
+export const HodlComment = ({ nft, comment, color = "secondary", canDeleteComment, setCommentingOn, addCommentInput, parentMutateList, parentMutateCount, sx = {} }) => {
     const router = useRouter();
 
     const selected = router?.query?.comment == comment.id;
@@ -30,7 +29,9 @@ export const HodlComment = ({ nft, comment, color = "secondary", canDeleteCommen
 
     const [showThread, setShowThread] = useState(false);
 
-    const [swr, _add, deleteComment, count] = useComments(nft.tokenId, comment.id, 2, setLoading, "comment", null, null, showThread);
+    const swr = useComments(comment.id, 10, "comment", null, showThread);
+    const [count, mutateCount] = useCommentCount(comment.id, "comment", null);
+    const [deleteComment] = useDeleteComment();
 
     return (
         <>
@@ -76,10 +77,18 @@ export const HodlComment = ({ nft, comment, color = "secondary", canDeleteCommen
                 </Box>
                 <Reply
                     fontSize="inherit"
-                    onClick={() => setCommentingOn({
-                        object: "comment",
-                        objectId: comment.id
-                    })} />
+                    onClick={() => {
+                        setCommentingOn({
+                            object: "comment",
+                            objectId: comment.id,
+                            mutateList: swr.mutate,
+                            mutateCount: mutateCount
+                        })
+
+                        router?.query?.comment = comment.id;
+                        addCommentInput?.focus();
+                    }
+                    } />
                 <Likes
                     id={comment.id}
                     token={false}
@@ -88,30 +97,35 @@ export const HodlComment = ({ nft, comment, color = "secondary", canDeleteCommen
                 />
                 {
                     canDeleteComment(comment) &&
-                    <HighlightOffOutlined sx={{ cursor: 'pointer', color: '#999' }} fontSize="inherit" onClick={() => deleteComment(comment)} />
+                    <HighlightOffOutlined
+                        sx={{ cursor: 'pointer', color: '#999' }}
+                        fontSize="inherit"
+                        onClick={
+                            () => deleteComment(
+                                comment,
+                                parentMutateList,
+                                parentMutateCount
+                            )
+                        }
+                    />
                 }
             </Box>
-            {Boolean(count) && <Box 
+            {Boolean(count) && <Box
                 display="flex"
                 flexDirection="column"
                 gap={1}
                 marginLeft={'45px'}>
-                <Typography sx={{ fontSize: 10, color: "#999", cursor: 'pointer' }} onClick={() => setShowThread(old => !old)}>
-                    {!showThread ? 'Show Replies...' : 'Hide Replies...'}
-                </Typography>
-                {showThread && !swr.error && !swr.data && <Box sx={{
-                    position: 'absolute',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    height: '100%',
-                }}>
-                    Loading....
-                </Box>
+
+                {showThread && !swr.error && !swr.data ?
+                    <Typography sx={{ fontSize: 10, color: "#999", cursor: 'pointer' }}>
+                        Loading...
+                    </Typography> :
+                    <Typography sx={{ fontSize: 10, color: "#999", cursor: 'pointer' }} onClick={() => setShowThread(old => !old)}>
+                        {!showThread ? 'Show Replies...' : 'Hide Replies...'}
+                    </Typography>
                 }
                 {
-                    showThread && (<>
+                    (<>
                         {
                             swr?.data?.map(({ items, next, total }) => (<>
                                 <Box key={next} display="flex" flexDirection="column" gap={1}> {
@@ -124,31 +138,26 @@ export const HodlComment = ({ nft, comment, color = "secondary", canDeleteCommen
                                             canDeleteComment={canDeleteComment}
                                             setCommentingOn={setCommentingOn}
                                             sx={{ flexGrow: 1 }}
+                                            addCommentInput={addCommentInput}
+                                            parentMutateList={swr.mutate}
+                                            parentMutateCount={mutateCount}
                                         />)
                                     )
                                 }</Box>
-                                
+
                             </>
                             )
                             )
                         }
                         {swr.data && swr.data.length && swr.data[swr.data.length - 1].next !== swr.data[swr.data.length - 1].total && <Typography
-                                    sx={{ fontSize: 10, color: "#999", cursor: 'pointer', marginY: 1, marginLeft: '45px' }}
-                                    onClick={() => swr.setSize(old => old + 1)}
-                                >
-                                    View More Replies...
-                                </Typography>}
+                            sx={{ fontSize: 10, color: "#999", cursor: 'pointer', marginY: 1, marginLeft: '45px' }}
+                            onClick={() => swr.setSize(old => old + 1)}
+                        >
+                            View More Replies...
+                        </Typography>}
                     </>
                     )
                 }
-
-                {/*<InfiniteScrollComments
-                    nft={nft}
-                    swr={swr}
-                    limit={5}
-                    canDeleteComment={canDeleteComment}
-                    setCommentingOn={setCommentingOn}
-                />} */}
             </Box>}
         </>
     );

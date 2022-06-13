@@ -6,18 +6,14 @@ export const DeleteCommentValidationSchema = yup.object({
     .string()
     .required()
     .test('isAnAddress', 'Subject should be an address', async value => (await isValidAddress(value))),
-  token: yup
-    .number()
-    .required()
-    .positive()
-    .integer(),
   object: yup // TODO: Ensure it is only "comment" or "token"
     .string()
-    .required(),
-  objectId: yup // TODO: Ensure it is only "comment" or "token"
+    .required()
+    .test('isValidObjectType', 'Unexpected object type', async value => value === "token" || value === "comment"),
+  objectId: yup 
     .number()
     .required(),
-  id: yup
+  id: yup // the comment id
     .number()
     .required()
     .min(0)

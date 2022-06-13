@@ -24,7 +24,8 @@ function MyApp(props) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
 
   return (
-    <CacheProvider value={emotionCache}>
+    // <CacheProvider value={emotionCache}>
+    <>
       <Head>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
@@ -80,7 +81,8 @@ function MyApp(props) {
           </ThemeProvider>
         </WalletContext.Provider>
       </SWRConfig>
-    </CacheProvider>
+      </>
+    // </CacheProvider>
   )
 }
 

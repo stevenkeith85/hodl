@@ -16,12 +16,12 @@ import { DeleteCommentValidationSchema } from "../../../../validationSchema/comm
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
 
-const removeComment = async (address, token, id) => {
+const removeComment = async (address, object, objectId, id) => {
   const commentDeleted = await client.hdel(`comment`, id);
   const userRecordDeleted = await client.zrem(`commented:${address}`, id);
-  const tokenRecordDeleted = await client.zrem(`comments:token:${token}`, id);
+  const tokenRecordDeleted = await client.zrem(`comments:${object}:${objectId}`, id);
 
-  getCommentCount.delete(token);
+  getCommentCount.delete(objectId);
 
   return commentDeleted + userRecordDeleted + tokenRecordDeleted;
 }
@@ -33,29 +33,39 @@ route.delete(async (req, res: NextApiResponse) => {
     return res.status(403).json({ message: "Not Authenticated" });
   }
 
-  const { subject, token, id } = req.body;
+  const { id, object, objectId, subject } = req.body; // We should look up the comment, as the user could just pass any 'subject' here
 
   const isValid = await DeleteCommentValidationSchema.isValid(req.body)
   if (!isValid) {
-      return res.status(400).json({ message: 'Bad Request - yup' });
+    return res.status(400).json({ message: 'Bad Request - yup' });
   }
 
-  const provider = await getProvider();
-  const contract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
-  const tokenExists = await contract.exists(token);
-  if (!tokenExists) {
-    return res.status(400).json({ message: 'Bad Request - blockchain' });
+  if (object === "token") {
+    const provider = await getProvider();
+    const contract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
+    const tokenExists = await contract.exists(objectId);
+
+    if (!tokenExists) {
+      return res.status(400).json({ message: 'Bad Request - blockchain' });
+    }
+
+    const owner = await contract.ownerOf(objectId);
+
+    const notTokenOwner = req.address !== owner;
+    const notMyComment = req.address !== subject;
+
+    if (notMyComment && notTokenOwner) {
+      return res.status(400).json({ message: 'Bad Request - You cannot delete this comment' });
+    }
+  } else if (object === "comment") {
+    const notMyComment = req.address !== subject;
+
+    if (notMyComment) {
+      return res.status(400).json({ message: 'Bad Request - You cannot delete this comment' });
+    }
   }
-  const owner = await contract.ownerOf(token);
 
-  const notTokenOwner = req.address !== owner;
-  const notMyComment = req.address !== subject;
-
-  if (notMyComment && notTokenOwner) {
-    return res.status(400).json({ message: 'Bad Request - You cannot delete this comment' });
-  }
-
-  const success = await removeComment(subject, token, id);
+  const success = await removeComment(subject, object, objectId, id);
 
   if (success) {
     return res.status(200).json({ message: 'success' });
