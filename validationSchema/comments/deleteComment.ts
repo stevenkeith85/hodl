@@ -6,7 +6,7 @@ export const DeleteCommentValidationSchema = yup.object({
     .string()
     .required()
     .test('isAnAddress', 'Subject should be an address', async value => (await isValidAddress(value))),
-  object: yup // TODO: Ensure it is only "comment" or "token"
+  object: yup
     .string()
     .required()
     .test('isValidObjectType', 'Unexpected object type', async value => value === "token" || value === "comment"),

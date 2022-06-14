@@ -13,6 +13,7 @@ import { CommentThread } from "../comments/CommentThread";
 import { BackspaceOutlined, HighlightOffOutlined } from "@mui/icons-material";
 import { HodlComment } from "../../models/HodlComment";
 import { fetchWithId } from "../../lib/swrFetchers";
+import { truncateText } from "../../lib/utils";
 
 interface HodlCommentsBoxProps {
     nft: any,
@@ -39,11 +40,18 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
     const [count, mutateCount] = useCommentCount(nft.tokenId, "token", prefetchedCommentCount);
     const [addComment] = useAddComment();
 
-    const [commentingOn, setCommentingOn] = useState<{ object: "token" | "comment", objectId: number, mutateList: Function, mutateCount: Function }>({
+    const [commentingOn, setCommentingOn] = useState<{
+        object: "token" | "comment",
+        objectId: number,
+        mutateList: Function,
+        mutateCount: Function,
+        setShowThread: Function
+    }>({
         object: "token",
         objectId: nft.tokenId,
         mutateList: swr.mutate,
-        mutateCount: mutateCount
+        mutateCount: mutateCount,
+        setShowThread: () => null
     });
 
     const { data: comment } = useSWR(commentingOn.objectId ? [`/api/comment`, commentingOn.objectId] : null, fetchWithId);
@@ -93,7 +101,8 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
                     {address && <Formik
                         initialValues={{
                             comment: '',
-                            id: commentingOn.objectId
+                            id: commentingOn.objectId,
+                            object: commentingOn.object,
                         }}
                         validationSchema={AddCommentValidationSchema}
                         onSubmit={async (values) => {
@@ -103,54 +112,92 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
                                 subject: address,
                                 comment: values.comment,
                             }
-                            setLoading(true)
-                            await addComment(
-                                comment,
-                                commentingOn.mutateList,
-                                commentingOn.mutateCount);
+                            setLoading(true);
+                            
+                            await addComment(comment);
+
+                            commentingOn.setShowThread(true);
+                            commentingOn.mutateList();
+                            commentingOn.mutateCount();
                             setLoading(false);
+
+                            setCommentingOn({
+                                object: "token",
+                                objectId: nft.tokenId,
+                                mutateList: swr.mutate,
+                                mutateCount: mutateCount,
+                                setShowThread: () => null
+                            });
                             values.comment = '';
-                            // setTimeout(() => {
-                            //     // @ts-ignore
-                            //     newTagRef?.current?.focus();
-                            // })
+                            setTimeout(() => {
+                                // @ts-ignore
+                                newTagRef?.current?.focus();
+                            });
                         }}
                     >
                         {({ errors, values }) => (
                             <>
-                                {/* {JSON.stringify(errors)} */}
+                                {/* {JSON.stringify(errors)}
+                                {JSON.stringify(values)} */}
                                 <Form>
                                     <Box display="flex" alignItems="center" marginTop={2}>
                                         <Tooltip title={errors?.comment || ''} >
                                             <Box display="flex" flexDirection="column" position="relative" flexGrow={1}>
-                                                <Field
-                                                    validateOnChange
-                                                    autoComplete='off'
-                                                    inputRef={newTagRef}
-                                                    component={InputBase}
-                                                    sx={{ flexGrow: 1, border: errors.comment ? theme => `1px solid ${theme.palette.error.main}` : `1px solid #ccc`, borderRadius: 1, paddingX: 1.5, paddingRight: 3 }}
-                                                    placeholder={
-                                                        commentingOn.object === "token" ?
-                                                            "Comment on this NFT" :
-                                                            "Reply to " + commenter + "'s comment"
-                                                    }
-                                                    name="comment"
-                                                    id="hodl-comments-add"
-                                                    type="text"
-                                                />
-                                                <BackspaceOutlined
-                                                    sx={{ cursor: 'pointer', position: 'absolute', right: 8, top: 8, color: '#999' }}
-                                                    fontSize="inherit"
-                                                    onClick={() => {
-                                                        setCommentingOn({
-                                                            object: "token",
-                                                            objectId: nft.tokenId,
-                                                            mutateList: swr.mutate,
-                                                            mutateCount: mutateCount
-                                                        });
-                                                        router?.query?.comment = null;
-                                                    }
-                                                    } />
+                                                <Box
+                                                    display="flex"
+                                                    flexDirection="column"
+                                                    gap={0.5}
+                                                    sx={{
+
+                                                        border: errors.comment ? theme => `1px solid ${theme.palette.error.main}` : `1px solid #ccc`,
+                                                        borderRadius: 1,
+                                                        padding: 1,
+                                                    }}
+                                                >
+                                                    {commentingOn.object === "comment" && <Box
+                                                        position="relative"
+                                                        sx={{
+                                                            background: '#f0f0f0',
+                                                            padding: 1,
+                                                            borderRadius: 0.5,
+                                                            borderLeft: "5px solid #999"
+                                                        }}
+                                                    >
+                                                        <Box>
+                                                            <Typography sx={{ fontWeight: 'bold'}}>{ commenter }</Typography>
+                                                            <Typography sx={{ color: '#666'}}>{truncateText(comment?.comment || '...')}</Typography>
+                                                        </Box>
+                                                        <HighlightOffOutlined
+                                                            sx={{ cursor: 'pointer', position: 'absolute', right: 8, top: 8, color: '#999' }}
+                                                            fontSize="inherit"
+                                                            onClick={() => {
+                                                                setCommentingOn({
+                                                                    object: "token",
+                                                                    objectId: nft.tokenId,
+                                                                    mutateList: swr.mutate,
+                                                                    mutateCount: mutateCount,
+                                                                    setShowThread: () => null
+                                                                });
+                                                                // @ts-ignore
+                                                                newTagRef?.current?.focus();
+                                                            }
+                                                            } />
+                                                    </Box>}
+
+                                                    <Field
+                                                        validateOnChange
+                                                        autoComplete='off'
+                                                        inputRef={newTagRef}
+                                                        component={InputBase}
+                                                        sx={{
+                                                            flexGrow: 1,
+                                                        }}
+                                                        placeholder="Message"
+                                                        name="comment"
+                                                        id="hodl-comments-add"
+                                                        type="text"
+                                                    />
+                                                </Box>
                                             </Box>
                                         </Tooltip>
                                         <Typography sx={{ textAlign: 'right', fontSize: 10, paddingLeft: 0.75 }}>{values?.comment?.length} / 150</Typography>

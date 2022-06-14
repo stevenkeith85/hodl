@@ -26,7 +26,7 @@ export const Comments: FC<CommentsProps> = ({ nft, popUp = true, color = "primar
 
     return (
         <>
-            <HodlModal open={open} setOpen={setOpen} sx={{ padding: 0, width: { xs: '90vw', md: '50vw' } }} >
+            <HodlModal open={open} setOpen={setOpen} sx={{ padding: 0, width: { xs: '90vw', md: '60vw' } }} >
                 <HodlCommentsBox nft={nft} prefetchedComments={null} prefetchedCommentCount={prefetchedCommentCount} limit={6} maxHeight="50vh" />
             </HodlModal>
             <Box

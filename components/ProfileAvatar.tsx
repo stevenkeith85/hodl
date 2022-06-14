@@ -139,7 +139,9 @@ const AvatarText: React.FC<{ size: string, href?: string, children?: any, color:
 
 export const ProfileAvatar = ({ profileAddress, reverse = false, size = "medium", color = "secondary", showNickname = true, withLink = true }) => {
     const { data: profileNickname } = useSWR(profileAddress ? [`/api/profile/nickname`, profileAddress] : null,
-        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.nickname))
+        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.nickname),
+        { revalidateOnMount: true }
+        )
 
     const { data: tokenId } = useSWR(
         profileAddress ? [`/api/profile/picture`, profileAddress] : null,

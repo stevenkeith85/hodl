@@ -14,6 +14,7 @@ import { useState } from "react";
 
 
 export const HodlComment = ({ nft, comment, color = "secondary", canDeleteComment, setCommentingOn, addCommentInput, parentMutateList, parentMutateCount, sx = {} }) => {
+    
     const router = useRouter();
 
     const selected = router?.query?.comment == comment.id;
@@ -25,12 +26,11 @@ export const HodlComment = ({ nft, comment, color = "secondary", canDeleteCommen
     )
 
     const [tokenLikesCount] = useLike(comment.id, false);
-    const [loading, setLoading] = useState(false);
 
     const [showThread, setShowThread] = useState(false);
 
-    const swr = useComments(comment.id, 10, "comment", null, showThread);
     const [count, mutateCount] = useCommentCount(comment.id, "comment", null);
+    const swr = useComments(comment.id, 10, "comment", null, showThread);
     const [deleteComment] = useDeleteComment();
 
     return (
@@ -82,10 +82,9 @@ export const HodlComment = ({ nft, comment, color = "secondary", canDeleteCommen
                             object: "comment",
                             objectId: comment.id,
                             mutateList: swr.mutate,
-                            mutateCount: mutateCount
+                            mutateCount: mutateCount,
+                            setShowThread
                         })
-
-                        router?.query?.comment = comment.id;
                         addCommentInput?.focus();
                     }
                     } />

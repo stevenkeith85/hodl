@@ -1,17 +1,18 @@
-import useSWR, { useSWRConfig } from 'swr';
+import useSWR from 'swr';
 import useSWRInfinite from 'swr/infinite'
-import { fetchWithId, fetchWithIdOffsetLimit } from '../lib/swrFetchers';
+import { fetchWithIdOffsetLimit, fetchWithObjectAndId } from '../lib/swrFetchers';
 import axios from 'axios';
 import { HodlComment } from '../models/HodlComment';
 
-export const useAddComment = (): [(comment: HodlComment, mutateList: Function, mutateCount: Function) => Promise<void>] => {
-    const addComment = async (comment: HodlComment, mutateList: Function, mutateCount: Function) => {
+export const useAddComment = (): [(comment: HodlComment) => Promise<void>] => {
+    const addComment = async (comment: HodlComment) => {
         try {
             const r = await axios.post(
-                `/api/comments/${comment.object}/add`, // TODO: Possible just have one endpoint rather than separate token/comment endpoints
+                `/api/comments/token/add`,
                 {
-                    comment: comment.comment,
-                    id: comment.objectId // the comment's id or the nfts id
+                    comment: comment.comment, // the text string
+                    id: comment.objectId, // the id of what we are commenting on. TODO: Rename to objectId
+                    object: comment.object // the type of object we are commenting on
                 },
                 {
                     headers: {
@@ -19,12 +20,7 @@ export const useAddComment = (): [(comment: HodlComment, mutateList: Function, m
                         'Authorization': localStorage.getItem('jwt')
                     }
                 });
-
-            mutateList();
-            mutateCount();
         } catch (error) {
-            mutateList();
-            mutateCount();
         }
     }
 
@@ -66,8 +62,8 @@ export const useCommentCount = (
     prefetched = null,
 ) => {
     const { data, mutate } = useSWR(
-        id ? [`/api/comments/${object}/count`, id] : null,
-        fetchWithId,
+        id ? [`/api/comments/token/count`, object, id] : null,
+        fetchWithObjectAndId,
         {
             fallbackData: prefetched,
             revalidateOnMount: true

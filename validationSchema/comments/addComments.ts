@@ -13,5 +13,9 @@ export const AddCommentValidationSchema = yup.object({
     .number()
     .required()
     .positive()
-    .integer()
+    .integer(),
+  object: yup
+    .string()
+    .required()
+    .test('isValidObjectType', 'Unexpected object type', async value => value === "token" || value === "comment")
 });

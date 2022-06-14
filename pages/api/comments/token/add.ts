@@ -30,7 +30,7 @@ const route = apiRoute();
 // "comments:token:1" -> (0x1234, 0x5678)
 
 
-export const addComment = async (comment: HodlComment) => {  
+export const addComment = async (comment: HodlComment) => {
   comment.timestamp = Date.now();
 
   // This should be in a transaction (multi/exec) but the rest api/upstash client doesn't support them
@@ -40,14 +40,13 @@ export const addComment = async (comment: HodlComment) => {
   // It will not lead to data corruption, but there's always a chance we store a comment, but don't add the reference to the Sets
   const commentId = await client.incr("commentId")
   comment.id = commentId;
-  
-  const commentAdded = client.hset("comment", {[commentId]: JSON.stringify(comment)});
-  
+
+  const commentAdded = client.hset("comment", { [commentId]: JSON.stringify(comment) });
+
   const userRecordAdded = await client.zadd(`commented:${comment.subject}`, { score: comment.timestamp, member: commentId });
 
-  // TODO: We should have 'comments:token:1' for comments on tokens and 'comments:comment:1' for comments on a comment (i.e. a reply)
-  const tokenRecordAdded = await client.zadd(`comments:token:${comment.objectId}`, { score: comment.timestamp, member: commentId});
-  
+  const tokenRecordAdded = await client.zadd(`comments:${comment.object}:${comment.objectId}`, { score: comment.timestamp, member: commentId });
+
   let notificationAdded = 0;
   if (tokenRecordAdded) {
     const notification: HodlNotification = {
@@ -71,31 +70,34 @@ route.post(async (req, res: NextApiResponse) => {
     return res.status(403).json({ message: "Not Authenticated" });
   }
 
-  const { comment, id: token } = req.body;
+  const { comment, id, object } = req.body;
 
   const isValid = await AddCommentValidationSchema.isValid(req.body)
   if (!isValid) {
-      return res.status(400).json({ message: 'Bad Request' });
+    return res.status(400).json({ message: 'Bad Request' });
   }
 
-  const provider = await getProvider();
-  const contract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
-  const tokenExists = await contract.exists(token);
+  if (object === "token") {
+    const provider = await getProvider();
+    const contract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
+    const tokenExists = await contract.exists(id);
 
-  if (!tokenExists) { 
-    return res.status(400).json({ message: 'Bad Request' });
+    if (!tokenExists) {
+      return res.status(400).json({ message: 'Bad Request' });
+    }
   }
 
   const hodlComment: HodlComment = {
     subject: req.address,
     comment,
-    object: "token",
-    objectId: token
+    object,
+    objectId: id
   };
 
   const success = await addComment(hodlComment);
 
   if (success) {
+    getCommentCount.delete(object, id);
     return res.status(200).json({ message: 'success' });
   } else {
     res.status(500).json({ message: 'comment not added' });

@@ -54,12 +54,14 @@ export const addNotification = async (notification: HodlNotification) => {
       const likes = await likesComment(notification.subject, notification.comment);
 
       const comment = await client.hget(`comment`, `${notification.comment}`);
-      
+
+      // @ts-ignore
       if (!likes || comment.subject === notification.subject) { // don't notify yourself that you liked your own NFT
         return;
       }
 
       return await client.zadd(
+        // @ts-ignore
         `notifications:${comment.subject}`,
         {
           score: notification.timestamp,
