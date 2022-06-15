@@ -7,7 +7,10 @@ export const useListed = (address, limit = 10, prefetchedListedCount = null, pre
     const { data: listedCount } = useSWR(
         address ? [`/api/profile/listedCount`, address] : null,
         fetchWithAddress,
-        { fallbackData: prefetchedListedCount }
+        { 
+            fallbackData: prefetchedListedCount,
+            revalidateOnMount: true
+        }
     )
 
     const getKey = (index, _previous) => {
@@ -17,7 +20,10 @@ export const useListed = (address, limit = 10, prefetchedListedCount = null, pre
     const swr = useSWRInfinite(
         getKey, 
         fetchWithAddressOffsetLimit, 
-        { fallbackData: prefetchedListed });
+        { 
+            fallbackData: prefetchedListed,
+            revalidateOnMount: true
+        });
 
 
     return [listedCount?.count, swr];

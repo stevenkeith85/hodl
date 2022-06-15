@@ -1,10 +1,9 @@
 import { CommentOutlined } from "@mui/icons-material";
-import useSWR from "swr";
 import { Box, Typography } from "@mui/material";
 import { HodlModal } from "./HodlModal";
 import { HodlCommentsBox } from "./nft/HodlCommentsBox";
 import { FC, useState } from "react";
-import { fetchWithId } from "../lib/swrFetchers";
+import { useCommentCount } from "../hooks/useComments";
 
 export interface CommentsProps {
     nft: any,
@@ -15,19 +14,46 @@ export interface CommentsProps {
     sx?: any
 }
 
-export const Comments: FC<CommentsProps> = ({ nft, popUp = true, color = "primary", fontSize = "small", prefetchedCommentCount=null, sx = {} }) => {
-    const { data: count } = useSWR(
-        nft.tokenId ? [`/api/comments/token/count`, nft.tokenId] : null, 
-        fetchWithId,
-        { fallbackData: prefetchedCommentCount }
-    );
+export const Comments: FC<CommentsProps> = ({ 
+    nft, 
+    popUp = true, 
+    color = "primary", 
+    fontSize = "small", 
+    prefetchedCommentCount=null, 
+    sx = {} 
+}) => {
+    const {data:count} = useCommentCount(nft.tokenId, "token", prefetchedCommentCount)
 
     const [open, setOpen] = useState(false);
+
+    const [topLevel, setTopLevel] = useState<{
+        objectId:number, 
+        object:"token" | "comment"
+    }>({
+        objectId: nft.tokenId, 
+        object: "token"
+    })
+
+    const clearTopLevel = () => {
+        setTopLevel({
+            objectId: nft.tokenId, 
+            object: "token"
+        })   
+    }
 
     return (
         <>
             <HodlModal open={open} setOpen={setOpen} sx={{ padding: 0, width: { xs: '90vw', md: '60vw' } }} >
-                <HodlCommentsBox nft={nft} prefetchedComments={null} prefetchedCommentCount={prefetchedCommentCount} limit={6} maxHeight="50vh" />
+                <HodlCommentsBox 
+                    setTopLevel={setTopLevel}
+                    clearTopLevel={clearTopLevel}
+                    objectId={topLevel.objectId} 
+                    object={topLevel.object}
+                    prefetchedComments={null} 
+                    prefetchedCommentCount={prefetchedCommentCount} 
+                    limit={10} 
+                    maxHeight="50vh" 
+                />
             </HodlModal>
             <Box
                 display="flex"

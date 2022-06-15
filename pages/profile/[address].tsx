@@ -80,6 +80,7 @@ export async function getServerSideProps({ params, query }) {
   const prefetchedHodling = tab == 0 ? await getHodling(profileAddress, 0, limit) : null;
 
   const prefetchedListedCount = await getListedCount(profileAddress);
+  console.log('prefetchedListedCount', prefetchedListedCount)
   const prefetchedListed = tab == 1 ? await getListed(profileAddress, 0, limit) : null;
 
   const prefetchedFollowingCount = await getFollowingCount(profileAddress);
@@ -129,6 +130,7 @@ const Profile = ({
   const [followersCount, followers] = useFollowers(profileAddress, prefetchedFollowersCount, prefetchedFollowers);
   const [followingCount, following] = useFollowing(profileAddress, prefetchedFollowingCount, prefetchedFollowing);
 
+  console.log('listedCount', listedCount)
   useEffect(() => {
     if (!router?.query?.tab) {
       setValue(0)// redirect to first tab on route change

@@ -5,7 +5,10 @@ export const useFollowers = (address, prefetchedFollowersCount=null, prefetchedF
     const { data: followersCount } = useSWR(
         address ? [`/api/follow2/followersCount`, address] : null,
         fetchWithAddress,
-        { fallbackData: prefetchedFollowersCount }
+        { 
+            fallbackData: prefetchedFollowersCount,
+            revalidateOnMount: true
+        }
     )
 
     const { data: followers } = useSWR(

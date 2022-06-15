@@ -8,7 +8,10 @@ export const useFollow = (profileAddress) => {
 
   const { data: isFollowing, mutate: mutateIsFollowing } = useSWR(address && address !== profileAddress ? [`/api/follow2/follows`, address, profileAddress] : null,
     (url, address, profileAddress) => axios.get(`${url}?address1=${address}&address2=${profileAddress}`)
-      .then(r => Boolean(r.data.follows))
+      .then(r => Boolean(r.data.follows)),
+    {
+      revalidateOnMount: true
+    }
   );
 
   const follow = async () => {
@@ -16,13 +19,17 @@ export const useFollow = (profileAddress) => {
       async ({ count }) => {
         return ({ count: isFollowing ? count - 1 : count + 1 })
       },
-      { revalidate: false });
+      {
+        revalidate: false
+      });
 
     mutate([`/api/follow2/followers`, profileAddress],
       async ({ followers }) => {
         return ({ followers: isFollowing ? (followers || []).filter(a => a !== address) : [address, ...(followers || [])] })
       },
-      { revalidate: false });
+      {
+        revalidate: false
+      });
 
     mutateIsFollowing(old => !old, { revalidate: false });
 

@@ -61,16 +61,16 @@ export const useCommentCount = (
     object: "token" | "comment",
     prefetched = null,
 ) => {
-    const { data, mutate } = useSWR(
-        id ? [`/api/comments/token/count`, object, id] : null,
+    const swr = useSWR(
+         [`/api/comments/token/count`, object, id],
         fetchWithObjectAndId,
         {
             fallbackData: prefetched,
-            revalidateOnMount: true
+            revalidateOnMount: true,
         }
     );
 
-    return [data, mutate]
+    return swr
 }
 
 export const useComments = (
@@ -81,7 +81,7 @@ export const useComments = (
     load = true
 ) => {
     const getKey = (index, _previous) => {
-        return [`/api/comments/${object}`, id, index * limit, limit];
+        return id ? [`/api/comments/${object}`, id, index * limit, limit] : null;
     }
 
     const swr = useSWRInfinite(
@@ -91,8 +91,8 @@ export const useComments = (
             fallbackData: prefetched,
             revalidateOnMount: true,
             revalidateFirstPage: true,
-            dedupingInterval: 10000,
-            focusThrottleInterval: 10000,
+            // dedupingInterval: 10000,
+            // focusThrottleInterval: 10000,
         }
     );
 

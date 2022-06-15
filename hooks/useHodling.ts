@@ -7,7 +7,10 @@ export const useHodling = (address, limit = 10, prefetchedHodlingCount = null, p
     const { data: hodlingCount } = useSWR(
         address ? [`/api/profile/hodlingCount`, address] : null,
         fetchWithAddress,
-        { fallbackData: prefetchedHodlingCount }
+        { 
+            fallbackData: prefetchedHodlingCount,
+            revalidateOnMount: true
+        }
     )
 
     const getKey = (index, _previous) => {
@@ -17,7 +20,10 @@ export const useHodling = (address, limit = 10, prefetchedHodlingCount = null, p
     const swr = useSWRInfinite(
         getKey, 
         fetchWithAddressOffsetLimit, 
-        { fallbackData: prefetchedHodling });
+        { 
+            fallbackData: prefetchedHodling,
+            revalidateOnMount: true
+        });
 
 
     return [hodlingCount?.count, swr];

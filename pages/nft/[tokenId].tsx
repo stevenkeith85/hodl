@@ -34,11 +34,12 @@ import { getCommentCount } from "../api/comments/token/count";
 import { useState } from "react";
 import { Forum, Info, Insights } from "@mui/icons-material";
 import { getLikeCount } from "../api/like/likeCount";
+import { useRouter } from "next/router";
 
 
 export async function getServerSideProps({ params }) {
   const nft = await fetchNFT(params.tokenId);
-  const limit = 6;
+  const limit = 10;
 
   if (!nft) {
     return { notFound: true }
@@ -76,6 +77,9 @@ const NftDetail = ({
   prefetchedLikeCount 
 }) => {
   const [value, setValue] = useState(0);
+
+  const { query } = useRouter();
+  const comment = Array.isArray(query?.comment) ? query.comment[0] : query?.comment;
 
   return (
     <>
@@ -136,7 +140,8 @@ const NftDetail = ({
             <Stack spacing={2}>
               <DescriptionCard nft={nft} />
               <HodlCommentsBox 
-                nft={nft} 
+                object={comment ? "comment" : "token"}
+                objectId={comment ? comment : nft.tokenId} 
                 prefetchedComments={prefetchedComments} 
                 prefetchedCommentCount={prefetchedCommentCount} 
                 limit={limit} 
