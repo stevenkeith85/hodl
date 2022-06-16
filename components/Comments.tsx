@@ -45,6 +45,7 @@ export const Comments: FC<CommentsProps> = ({
         <>
             <HodlModal open={open} setOpen={setOpen} sx={{ padding: 0, width: { xs: '90vw', md: '60vw' } }} >
                 <HodlCommentsBox 
+                    tokenId={nft.tokenId}
                     setTopLevel={setTopLevel}
                     clearTopLevel={clearTopLevel}
                     objectId={topLevel.objectId} 

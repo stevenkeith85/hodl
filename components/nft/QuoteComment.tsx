@@ -6,7 +6,7 @@ import { fetchWithId } from "../../lib/swrFetchers";
 import { truncateText } from "../../lib/utils";
 
 
-export const QuoteComment = ({ reset, id }) => {
+export const QuoteComment = ({ reset, id, color }) => {
     const { data: comment } = useSWR(
         id ? [`/api/comment`, id] : null,
         fetchWithId,
@@ -27,15 +27,16 @@ export const QuoteComment = ({ reset, id }) => {
         <Box
             position="relative"
             sx={{
-                background: '#f0f0f0',
+                background: '#fafafa',
                 padding: 1,
                 borderRadius: 0.5,
-                borderLeft: "5px solid #999"
+                borderLeft: "3px solid #999",
+                borderColor: theme => theme.palette[color].main
             }}
         >
             <Box>
-                <Typography sx={{ fontWeight: 'bold' }}>{commenter}</Typography>
-                <Typography sx={{ color: '#666' }}>{truncateText(comment?.comment || '...')}</Typography>
+                <Typography sx={{ color: theme => theme.palette[color].main }}>{commenter}</Typography>
+                <Typography sx={{ color: '#666' }}>{truncateText(comment?.comment || '...', 70)}</Typography>
             </Box>
             <HighlightOffOutlined
                 sx={{ cursor: 'pointer', position: 'absolute', right: 8, top: 8, color: '#999' }}

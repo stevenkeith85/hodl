@@ -27,10 +27,10 @@ import { getPriceHistory } from "../api/token-bought/[tokenId]";
 import { getTagsForToken } from "../api/tags";
 import { HodlerPrivilege } from "../../components/nft/HodlerPrivilege";
 import { HodlTagCloud } from "../../components/nft/HodlTagCloud";
-import { getCommentsForToken } from "../api/comments/token";
+import { getCommentsForToken } from "../api/comments";
 import { HodlCommentsBox } from "../../components/nft/HodlCommentsBox";
 import { Comments } from "../../components/Comments";
-import { getCommentCount } from "../api/comments/token/count";
+import { getCommentCount } from "../api/comments/count";
 import { useState } from "react";
 import { Forum, Info, Insights } from "@mui/icons-material";
 import { getLikeCount } from "../api/like/likeCount";
@@ -39,6 +39,7 @@ import { useRouter } from "next/router";
 
 export async function getServerSideProps({ params }) {
   const nft = await fetchNFT(params.tokenId);
+  const comment = params.comment;
   const limit = 10;
 
   if (!nft) {
@@ -47,8 +48,8 @@ export async function getServerSideProps({ params }) {
 
   const prefetchedTags = await getTagsForToken(params.tokenId);
 
-  const prefetchedComments = await getCommentsForToken(params.tokenId, 0, limit);
-  const prefetchedCommentCount = await getCommentCount(params.tokenId);
+  const prefetchedComments = await getCommentsForToken(comment ? "comment" : "token", comment ? comment : params.tokenId, 0, limit);
+  const prefetchedCommentCount = await getCommentCount(comment ? "comment" : "token", comment ? comment : params.tokenId);
   
   const priceHistory = await getPriceHistory(params.tokenId);
 
@@ -140,6 +141,7 @@ const NftDetail = ({
             <Stack spacing={2}>
               <DescriptionCard nft={nft} />
               <HodlCommentsBox 
+                tokenId={nft.tokenId}
                 object={comment ? "comment" : "token"}
                 objectId={comment ? comment : nft.tokenId} 
                 prefetchedComments={prefetchedComments} 

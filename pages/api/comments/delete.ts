@@ -2,15 +2,15 @@ import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
 
-import { getProvider } from "../../../../lib/server/connections";
+import { getProvider } from "../../../lib/server/connections";
 import { ethers } from "ethers";
-import { nftaddress } from "../../../../config";
-import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
+import { nftaddress } from "../../../config";
+import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 
 const client = Redis.fromEnv()
-import apiRoute from "../../handler";
+import apiRoute from "../handler";
 import { getCommentCount } from "./count";
-import { DeleteCommentValidationSchema } from "../../../../validationSchema/comments/deleteComment";
+import { DeleteCommentValidationSchema } from "../../../validationSchema/comments/deleteComment";
 
 
 dotenv.config({ path: '../.env' })

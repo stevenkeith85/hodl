@@ -1,4 +1,4 @@
-import { Card, CardContent, Typography, Box, Badge } from "@mui/material";
+import { Card, CardContent, Typography, Box, Badge, Tooltip } from "@mui/material";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { useCommentCount, useComments } from "../../hooks/useComments";
@@ -8,10 +8,11 @@ import { InfiniteScrollComments } from "../profile/InfiniteScrollComments";
 import { HodlCommentBox } from "../HodlCommentBox";
 import { fetchWithId } from "../../lib/swrFetchers";
 import useSWR from "swr";
-import { HighlightOffOutlined } from "@mui/icons-material";
+import { Forum } from "@mui/icons-material";
 
 
 interface HodlCommentsBoxProps {
+    tokenId: number, // the nft these comments are about. Each comment will store a reference to this to allow us to check who can delete comments. (i.e. the user or token owner)
     objectId: number, // the base object the main comment thread is about
     object: "token" | "comment", // the base object type the main comment thread is about
     prefetchedComments: any,
@@ -23,6 +24,7 @@ interface HodlCommentsBoxProps {
 }
 
 export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
+    tokenId,
     objectId,
     object = "token",
     prefetchedComments, // TODO - NEEDS UPDATED
@@ -53,13 +55,15 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
         objectId: number,
         mutateList: Function,
         mutateCount: Function,
-        setShowThread: Function
+        setShowThread: Function,
+        color: "primary" | "secondary"
     }>({
         object,
         objectId,
         mutateList: swr.mutate,
         mutateCount: countSWR.mutate,
-        setShowThread: () => null
+        setShowThread: () => null,
+        color: "primary"
     });
 
     useEffect(() => {
@@ -68,18 +72,14 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
             objectId: Number(objectId),
             mutateList: swr.mutate,
             mutateCount: countSWR.mutate,
-            setShowThread: () => null
+            setShowThread: () => null,
+            color: "primary"
         })
-        setTimeout(() => {
-            // @ts-ignore
-            newTagRef?.current?.focus();
-        });
     }, [object, objectId]);
 
     return (
         <>
             <Card variant="outlined">
-
                 <CardContent>
                     <Box
                         display="flex"
@@ -98,22 +98,24 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
                             >
                                 Single Comment Thread
                             </Typography>
-                                <HighlightOffOutlined
-                                    sx={{ cursor: 'pointer', color: '#999' }}
-                                    fontSize="inherit"
-                                    onClick={() => {
-                                        // TODO:
-                                        // router.push({
-                                        //     pathname: router.pathname,
-                                        //     query: { tokenId: comment.tokenId }
-                                        // });   
-                                        if (clearTopLevel) {
-                                            clearTopLevel();
-                                        } else {
-                                            router.push(window.location.pathname);
-                                        }
+                                <Tooltip title="View All Comments">
+                                    <Forum
+                                        sx={{ cursor: 'pointer', color: '#999' }}
+                                        fontSize="inherit"
+                                        onClick={() => {
+                                            // TODO:
+                                            // router.push({
+                                            //     pathname: router.pathname,
+                                            //     query: { tokenId: comment.tokenId }
+                                            // });   
+                                            if (clearTopLevel) {
+                                                clearTopLevel();
+                                            } else {
+                                                router.push(window.location.pathname);
+                                            }
 
-                                    }} />
+                                        }} />
+                                </Tooltip>
                             </>)
                         }
                     </Box>
@@ -149,6 +151,7 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
                                     setTopLevel={setTopLevel}
                                 /> </Box> :
                             comment && <HodlCommentBox
+                                color="primary"
                                 shouldShowThread={true}
                                 comment={comment}
                                 setCommentingOn={setCommentingOn}
@@ -162,6 +165,7 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
                         }
                     </Box>
                     <AddComment
+                        tokenId={tokenId}
                         object={object}
                         objectId={objectId}
                         commentingOn={commentingOn}

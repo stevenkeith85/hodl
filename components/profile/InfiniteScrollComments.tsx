@@ -41,14 +41,14 @@ export const InfiniteScrollComments: React.FC<InfiniteScrollCommentsProps> = ({
       }
     >
       {
-        ({ items, next, total }) => <Box key={next} display="flex" flexDirection="column" gap={1}>
+        ({ items, next, total }) => <Box key={next} display="flex" flexDirection="column" gap={1.5}>
           {
             (items || []).map(
               (comment: HodlComment, i: number) => 
                 <HodlCommentBox
                   key={`hodl-comments-${comment.id}`}
                   comment={comment}
-                  color={i % 2 ? 'primary' : 'secondary'}
+                  color={i % 2 ? 'secondary': 'primary'}
                   setCommentingOn={setCommentingOn}
                   addCommentInput={addCommentInput}
                   parentMutateList={swr.mutate}

@@ -7,11 +7,9 @@ import Footer from '../components/Footer';
 import { SnackbarProvider } from 'notistack';
 import { SWRConfig } from 'swr';
 import createEmotionCache from '../createEmotionCache';
-import { CacheProvider } from '@emotion/react';
 import { WalletContext } from '../contexts/WalletContext';
+import { CacheProvider } from '@emotion/react';
 import '../styles/globals.css'
-
-import { useConnect } from '../hooks/useConnect';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -24,8 +22,7 @@ function MyApp(props) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
 
   return (
-    // <CacheProvider value={emotionCache}>
-    <>
+    <CacheProvider value={emotionCache}>
       <Head>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
@@ -81,8 +78,7 @@ function MyApp(props) {
           </ThemeProvider>
         </WalletContext.Provider>
       </SWRConfig>
-      </>
-    // </CacheProvider>
+    </CacheProvider>
   )
 }
 

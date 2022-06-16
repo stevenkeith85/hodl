@@ -10,6 +10,7 @@ import { QuoteComment } from "./QuoteComment";
 
 
 interface AddCommentProps {
+    tokenId?: number, // we always store the tokenId this comment was made against to allow us to link to it; give the token owner permission to delete, etc
     objectId: number, // the base object we will be commenting on
     object: "token" | "comment", // the base object type we will be commenting on
     commentingOn: any, // this will be a sub comment, or the base object
@@ -21,6 +22,7 @@ interface AddCommentProps {
 }
 
 export const AddComment: FC<AddCommentProps> = ({
+    tokenId,
     objectId,
     object,
     commentingOn,
@@ -39,7 +41,8 @@ export const AddComment: FC<AddCommentProps> = ({
             objectId: Number(objectId),
             mutateList,
             mutateCount,
-            setShowThread: () => null
+            setShowThread: () => null,
+            color: "primary"
         });
         setTimeout(() => {
             // @ts-ignore
@@ -61,6 +64,7 @@ export const AddComment: FC<AddCommentProps> = ({
             validationSchema={AddCommentValidationSchema}
             onSubmit={async (values) => {
                 const comment: HodlComment = {
+                    // tokenId: tokenId, // TODO: Finish this off
                     object: commentingOn.object,
                     objectId: commentingOn.objectId,
                     subject: address,
@@ -91,17 +95,17 @@ export const AddComment: FC<AddCommentProps> = ({
                                     <Box
                                         display="flex"
                                         flexDirection="column"
-                                        gap={0.5}
+                                        gap={1}
                                         sx={{
 
-                                            border: errors.comment ? theme => `1px solid ${theme.palette.error.main}` : `1px solid #ccc`,
+                                            border: values.comment && errors.comment ? theme => `1px solid ${theme.palette.error.main}` : `1px solid #ccc`,
                                             borderRadius: 1,
                                             padding: 1,
                                         }}
                                     >
                                         {
                                             commentingOn.object === "comment" &&
-                                            <QuoteComment id={commentingOn.objectId} reset={reset} />
+                                            <QuoteComment id={commentingOn.objectId} color={commentingOn.color} reset={reset} />
                                         }
                                         <Field
                                             validateOnChange
@@ -110,8 +114,11 @@ export const AddComment: FC<AddCommentProps> = ({
                                             component={InputBase}
                                             sx={{
                                                 flexGrow: 1,
+                                                paddingX: 0.5
                                             }}
-                                            placeholder="Message"
+                                            placeholder={
+                                                commentingOn.object === "comment" ? "Add Reply" : "Add Comment"
+                                            }
                                             name="comment"
                                             id="hodl-comments-add"
                                             type="text"

@@ -3,28 +3,28 @@ import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
 import axios from 'axios';
 
-import apiRoute from "../../handler";
-import { GetCommentsValidationSchema } from "../../../../validationSchema/comments/getComments";
+import apiRoute from "../handler";
+import { GetCommentsValidationSchema } from "../../../validationSchema/comments/getComments";
 import { ethers } from "ethers";
-import { nftaddress } from "../../../../config";
-import { getProvider } from "../../../../lib/server/connections";
-import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
+import { nftaddress } from "../../../config";
+import { getProvider } from "../../../lib/server/connections";
+import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 
 dotenv.config({ path: '../.env' })
 
 const client = Redis.fromEnv()
 const route = apiRoute();
 
-export const getCommentsForToken = async (token: number, offset: number, limit: number) => {
+export const getCommentsForToken = async (object: "token" | "comment", objectId: number, offset: number, limit: number) => {
 
   try {
-    const total = await client.zcard(`comments:token:${token}`);
+    const total = await client.zcard(`comments:${object}:${objectId}`);
 
     if (offset >= total) {
       return { items: [], next: Number(total), total: Number(total) };
     }
 
-    const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/comments:token:${token}/${offset}/${offset + limit - 1}/rev`, {
+    const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/comments:${object}:${objectId}/${offset}/${offset + limit - 1}/rev`, {
       headers: {
         Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
       }
@@ -43,7 +43,8 @@ export const getCommentsForToken = async (token: number, offset: number, limit: 
 }
 
 route.get(async (req, res: NextApiResponse) => {
-  const token = Array.isArray(req.query.id) ? req.query.token[0] : req.query.id;
+  const object = Array.isArray(req.query.object) ? req.query.object[0] : req.query.object;
+  const objectId = Array.isArray(req.query.objectId) ? req.query.objectId[0] : req.query.objectId;
   const offset = Array.isArray(req.query.offset) ? req.query.offset[0] : req.query.offset;
   const limit = Array.isArray(req.query.limit) ? req.query.limit[0] : req.query.limit;
 
@@ -52,15 +53,17 @@ route.get(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
-  const provider = await getProvider();
-  const contract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
-  const tokenExists = await contract.exists(token);
+  if (object === "token") {
+    const provider = await getProvider();
+    const contract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
+    const tokenExists = await contract.exists(objectId);
 
-  if (!tokenExists) {
-    return res.status(400).json({ message: 'Bad Request' });
+    if (!tokenExists) {
+      return res.status(400).json({ message: 'Bad Request' });
+    }
   }
 
-  const comments = await getCommentsForToken(Number(token), Number(offset), Number(limit));
+  const comments = await getCommentsForToken(object as "comment" | "token", Number(objectId), Number(offset), Number(limit));
   res.status(200).json(comments);
 });
 

@@ -3,18 +3,17 @@ import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
 
 const client = Redis.fromEnv()
-import apiRoute from "../../handler";
+import apiRoute from "../handler";
 
-import { HodlNotification, NftAction } from "../../../../models/HodlNotifications";
-import { addNotification } from "../../notifications/add";
+import { HodlNotification, NftAction } from "../../../models/HodlNotifications";
+import { addNotification } from "../notifications/add";
 import { getCommentCount } from "./count";
-import { AddCommentValidationSchema } from "../../../../validationSchema/comments/addComments";
+import { AddCommentValidationSchema } from "../../../validationSchema/comments/addComments";
 import { ethers } from "ethers";
-import { nftaddress } from "../../../../config";
-import { getProvider } from "../../../../lib/server/connections";
-import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
-import { HodlComment } from "../../../../models/HodlComment";
-import axios from 'axios';
+import { nftaddress } from "../../../config";
+import { getProvider } from "../../../lib/server/connections";
+import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
+import { HodlComment } from "../../../models/HodlComment";
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();

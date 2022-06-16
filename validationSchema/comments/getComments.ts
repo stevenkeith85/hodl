@@ -8,7 +8,11 @@ export const GetCommentsValidationSchema = yup.object({
     .number()
     .max(100)
     .required(),
-  id: yup
+    object: yup
+    .string()
+    .required()
+    .test('isValidObjectType', 'Unexpected object type', async value => value === "token" || value === "comment"),
+  objectId: yup
     .number()
     .required()
     .positive()
