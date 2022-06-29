@@ -9,7 +9,7 @@ export const AddCommentValidationSchema = yup.object({
     .min(3)
     .max(150)
     .strict(),
-  id: yup
+  objectId: yup
     .number()
     .required()
     .positive()
@@ -17,5 +17,10 @@ export const AddCommentValidationSchema = yup.object({
   object: yup
     .string()
     .required()
-    .test('isValidObjectType', 'Unexpected object type', async value => value === "token" || value === "comment")
+    .test('isValidObjectType', 'Unexpected object type', async value => value === "token" || value === "comment"),
+  tokenId: yup
+    .number()
+    .required()
+    .positive()
+    .integer(),
 });

@@ -40,11 +40,15 @@ export const addComment = async (comment: HodlComment) => {
   const commentId = await client.incr("commentId")
   comment.id = commentId;
 
+  // Store the comment
   const commentAdded = client.hset("comment", { [commentId]: JSON.stringify(comment) });
 
+  // Store references to the comment for user, the token
   const userRecordAdded = await client.zadd(`commented:${comment.subject}`, { score: comment.timestamp, member: commentId });
-
   const tokenRecordAdded = await client.zadd(`comments:${comment.object}:${comment.objectId}`, { score: comment.timestamp, member: commentId });
+
+  // update the comment count (comments on the nft and all the replies) for the token
+  const commentCountUpdated = await client.zincrby("commentCount", 1, comment.tokenId);
 
   let notificationAdded = 0;
   if (tokenRecordAdded) {
@@ -58,9 +62,9 @@ export const addComment = async (comment: HodlComment) => {
     notificationAdded = await addNotification(notification);
   }
 
-  getCommentCount.delete(comment.objectId);
+  // getCommentCount.delete(comment.objectId);
 
-  return [commentAdded, userRecordAdded, tokenRecordAdded, notificationAdded]
+  return [commentAdded, userRecordAdded, tokenRecordAdded, commentCountUpdated, notificationAdded]
 }
 
 
@@ -69,7 +73,7 @@ route.post(async (req, res: NextApiResponse) => {
     return res.status(403).json({ message: "Not Authenticated" });
   }
 
-  const { comment, id, object } = req.body;
+  const { comment, objectId, object, tokenId } = req.body;
 
   const isValid = await AddCommentValidationSchema.isValid(req.body)
   if (!isValid) {
@@ -79,7 +83,7 @@ route.post(async (req, res: NextApiResponse) => {
   if (object === "token") {
     const provider = await getProvider();
     const contract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
-    const tokenExists = await contract.exists(id);
+    const tokenExists = await contract.exists(objectId);
 
     if (!tokenExists) {
       return res.status(400).json({ message: 'Bad Request' });
@@ -90,13 +94,14 @@ route.post(async (req, res: NextApiResponse) => {
     subject: req.address,
     comment,
     object,
-    objectId: id
+    objectId,
+    tokenId,
   };
 
   const success = await addComment(hodlComment);
 
   if (success) {
-    getCommentCount.delete(object, id);
+    // getCommentCount.delete(object, objectId);
     return res.status(200).json({ message: 'success' });
   } else {
     res.status(500).json({ message: 'comment not added' });

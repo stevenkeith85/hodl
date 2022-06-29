@@ -14,9 +14,8 @@ const client = Redis.fromEnv()
 const route = apiRoute();
 
 export const getTagsForToken = memoize(async token => {
-  console.log('getting tags for token from redis')
   const tags = await client.zrange(`tags:${token}`, 0, -1);
-  return tags
+  return tags;
 }, { 
   async: true,
   primitive: true,

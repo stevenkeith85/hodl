@@ -149,6 +149,7 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
                                     addCommentInput={newTagRef?.current}
                                     parentMutateCount={countSWR.mutate}
                                     setTopLevel={setTopLevel}
+                                    mutateCount={countSWR.mutate}
                                 /> </Box> :
                             comment && <HodlCommentBox
                                 color="primary"
@@ -161,6 +162,7 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
                                 replySWR={swr}
                                 replyCountSWR={countSWR}
                                 setTopLevel={setTopLevel}
+                                mutateCount={countSWR.mutate}
                             />
                         }
                     </Box>

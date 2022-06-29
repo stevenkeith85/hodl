@@ -58,13 +58,14 @@ export const AddComment: FC<AddCommentProps> = ({
         <Formik
             initialValues={{
                 comment: '',
-                id: commentingOn.objectId,
+                objectId: commentingOn.objectId,
                 object: commentingOn.object,
+                tokenId
             }}
             validationSchema={AddCommentValidationSchema}
             onSubmit={async (values) => {
                 const comment: HodlComment = {
-                    // tokenId: tokenId, // TODO: Finish this off
+                    tokenId: tokenId,
                     object: commentingOn.object,
                     objectId: commentingOn.objectId,
                     subject: address,
@@ -77,6 +78,9 @@ export const AddComment: FC<AddCommentProps> = ({
                 commentingOn.setShowThread(true);
                 commentingOn.mutateList();
                 commentingOn.mutateCount();
+
+                mutateCount();
+                // TODO: NEED TO MUTATE THE TOP LEVEL COUNT
 
                 values.comment = '';
                 reset();

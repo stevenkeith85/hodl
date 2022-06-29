@@ -11,7 +11,8 @@ interface InfiniteScrollCommentsProps {
   setCommentingOn: Function,
   addCommentInput: any,
   parentMutateCount: Function,
-  setTopLevel?: any | null
+  setTopLevel?: any | null,
+  mutateCount?: any | null,
 }
 
 export const InfiniteScrollComments: React.FC<InfiniteScrollCommentsProps> = ({
@@ -20,7 +21,8 @@ export const InfiniteScrollComments: React.FC<InfiniteScrollCommentsProps> = ({
   setCommentingOn,
   addCommentInput,
   parentMutateCount,
-  setTopLevel = null }) => {
+  setTopLevel = null,
+  mutateCount = null }) => {
 
   if (swr.error) {
     return null;
@@ -44,16 +46,17 @@ export const InfiniteScrollComments: React.FC<InfiniteScrollCommentsProps> = ({
         ({ items, next, total }) => <Box key={next} display="flex" flexDirection="column" gap={1.5}>
           {
             (items || []).map(
-              (comment: HodlComment, i: number) => 
+              (comment: HodlComment, i: number) =>
                 <HodlCommentBox
                   key={`hodl-comments-${comment.id}`}
                   comment={comment}
-                  color={i % 2 ? 'secondary': 'primary'}
+                  color={i % 2 ? 'secondary' : 'primary'}
                   setCommentingOn={setCommentingOn}
                   addCommentInput={addCommentInput}
                   parentMutateList={swr.mutate}
                   parentMutateCount={parentMutateCount}
                   setTopLevel={setTopLevel}
+                  mutateCount={mutateCount}
                 />
             )
           }

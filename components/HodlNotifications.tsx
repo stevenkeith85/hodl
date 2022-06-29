@@ -74,7 +74,10 @@ export const HodlNotifications = ({ setHoverMenuOpen, showNotifications, setShow
     const xs = useMediaQuery(theme.breakpoints.only('xs'));
 
 
-    const { data: notifications } = useSWR(address ? `/api/notifications/get` : null, fetchWithAuth)
+    const { data: notifications } = useSWR(
+        address ? `/api/notifications/get` : null, 
+        fetchWithAuth,
+        { revalidateOnMount: true })
 
     const toggleNotifications = async () => {
         setShowNotifications(prev => !prev);

@@ -11,19 +11,31 @@ const client = Redis.fromEnv()
 import apiRoute from "../handler";
 import { getCommentCount } from "./count";
 import { DeleteCommentValidationSchema } from "../../../validationSchema/comments/deleteComment";
+import { HodlComment } from "../../../models/HodlComment";
 
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
 
-const removeComment = async (address, object, objectId, id) => {
-  const commentDeleted = await client.hdel(`comment`, id);
-  const userRecordDeleted = await client.zrem(`commented:${address}`, id);
-  const tokenRecordDeleted = await client.zrem(`comments:${object}:${objectId}`, id);
+const removeComment = async (address, object, objectId, id, tokenId) => {
+  const replies = await client.zcard(`comments:${object}:${id}`);
 
-  getCommentCount.delete(objectId);
+  if (!replies) {
+    const commentDeleted = await client.hdel(`comment`, id);
+    const userRecordDeleted = await client.zrem(`commented:${address}`, id);
+    const tokenRecordDeleted = await client.zrem(`comments:${object}:${objectId}`, id);
 
-  return commentDeleted + userRecordDeleted + tokenRecordDeleted;
+    const commentCountUpdated = await client.zincrby("commentCount", -1, tokenId);
+
+    // these may be the same
+    // getCommentCount.delete(objectId);
+    // getCommentCount.delete(tokenId);
+
+    return commentDeleted + userRecordDeleted + tokenRecordDeleted;
+  }
+
+  return 0;
+
 }
 
 // user can remove their own comment. 
@@ -33,12 +45,20 @@ route.delete(async (req, res: NextApiResponse) => {
     return res.status(403).json({ message: "Not Authenticated" });
   }
 
-  const { id, object, objectId, subject } = req.body; // We should look up the comment, as the user could just pass any 'subject' here
+  const { id } = req.body;
 
   const isValid = await DeleteCommentValidationSchema.isValid(req.body)
   if (!isValid) {
-    return res.status(400).json({ message: 'Bad Request - yup' });
+    return res.status(400).json({ message: 'Bad Request' });
   }
+
+  const comment = await client.hget('comment', id);
+
+  if (!comment) {
+    return res.status(400).json({ message: 'Bad Request' });
+  }
+
+  const { object, objectId, subject, tokenId } = comment as HodlComment;
 
   if (object === "token") {
     const provider = await getProvider();
@@ -65,7 +85,7 @@ route.delete(async (req, res: NextApiResponse) => {
     }
   }
 
-  const success = await removeComment(subject, object, objectId, id);
+  const success = await removeComment(subject, object, objectId, id, tokenId);
 
   if (success) {
     return res.status(200).json({ message: 'success' });

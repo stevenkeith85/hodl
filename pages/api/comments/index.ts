@@ -31,6 +31,8 @@ export const getCommentsForToken = async (object: "token" | "comment", objectId:
     })
     const commentIds = r.data.result.map(item => JSON.parse(item));
 
+    console.log('commentIds', commentIds)
+
     const comments = [];
     for (const id of commentIds) {
       comments.push(await client.hget(`comment`, id));

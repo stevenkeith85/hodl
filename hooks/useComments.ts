@@ -11,8 +11,9 @@ export const useAddComment = (): [(comment: HodlComment) => Promise<void>] => {
                 `/api/comments/add`,
                 {
                     comment: comment.comment, // the text string
-                    id: comment.objectId, // the id of what we are commenting on. TODO: Rename to objectId
-                    object: comment.object // the type of object we are commenting on
+                    objectId: comment.objectId, // the id of what we are commenting on.
+                    object: comment.object, // the type of object we are commenting on (a token (top level) or a comment (reply))
+                    tokenId: comment.tokenId // the token this comment was made under
                 },
                 {
                     headers: {
@@ -27,29 +28,21 @@ export const useAddComment = (): [(comment: HodlComment) => Promise<void>] => {
     return [addComment]
 }
 
-export const useDeleteComment = (): [(comment: HodlComment, mutateList: Function, mutateCount: Function) => Promise<void>] => {
-    const deleteComment = async (comment: HodlComment, mutateList: Function, mutateCount: Function) => {
+export const useDeleteComment = (): [(comment: HodlComment) => Promise<void>] => {
+    const deleteComment = async (comment: HodlComment) => {
         try {
             const r = await axios.delete(
-                `/api/comments/delete`, // We are just using the token delete endpoint for all
+                `/api/comments/delete`,
                 {
                     headers: {
                         'Accept': 'application/json',
                         'Authorization': localStorage.getItem('jwt')
                     },
                     data: {
-                        id: comment.id,
-                        subject: comment.subject,
-                        object: comment.object,
-                        objectId: comment.objectId
+                        id: comment.id
                     },
-
                 });
-            mutateList();
-            mutateCount();
         } catch (error) {
-            mutateList();
-            mutateCount();
         }
     }
 
@@ -89,10 +82,10 @@ export const useComments = (
         load ? getKey : null,
         fetchWithObjectObjectIdOffsetLimit,
         {
-            fallbackData: prefetched,
+            // fallbackData: prefetched,
             revalidateOnMount: true,
-            revalidateOnFocus: true,
-            revalidateFirstPage: true,
+            // revalidateOnFocus: true,
+            // revalidateFirstPage: true,
         }
     );
 

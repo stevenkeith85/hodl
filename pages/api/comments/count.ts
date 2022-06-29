@@ -13,14 +13,15 @@ dotenv.config({ path: '../.env' })
 const client = Redis.fromEnv()
 const route = apiRoute();
 
-export const getCommentCount = memoize(async (object, id) => {
-  const count = await client.zcard(`comments:${object}:${id}`);
-  return count;
-}, {
-  primitive: true,
-  max: 10000, // 10000 tokens 
-});
-
+export const getCommentCount = async (object, id) => {
+  if (object === "comment") {
+    const count = await client.zcard(`comments:${object}:${id}`);
+    return count;
+  } else {
+    const count = await client.zscore("commentCount", id);
+    return count || 0;
+  }  
+};
 
 route.get(async (req, res) => {
   const object = Array.isArray(req.query.object) ? req.query.object[0] : req.query.object;

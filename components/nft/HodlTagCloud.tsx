@@ -17,7 +17,10 @@ export const HodlTagCloud = ({ nft, prefetchedTags }) => {
 
     const { data: tags, mutate: mutateTags } = useSWR(nft.tokenId ? [`/api/tags`, nft.tokenId] : null,
         fetchWithToken,
-        { fallbackData: prefetchedTags }
+        {
+            revalidateOnMount: true,
+            fallbackData: prefetchedTags
+        }
     );
 
     const isOwner = () => Boolean(nft?.owner?.toLowerCase() === address?.toLowerCase());
@@ -43,7 +46,11 @@ export const HodlTagCloud = ({ nft, prefetchedTags }) => {
                             }}
                             onDelete={async () => {
                                 try {
-                                    mutateTags(old => old.filter(t => t !== tag), { revalidate: false });
+                                    mutateTags(old => {
+                                        console.log('old', old);
+                                        return old.filter(t => t !== tag)
+                                    },
+                                        { revalidate: false });
                                     const r = await axios.delete(
                                         '/api/tags/delete',
                                         {
@@ -75,7 +82,10 @@ export const HodlTagCloud = ({ nft, prefetchedTags }) => {
                             validationSchema={AddTagValidationSchema}
                             onSubmit={async (values) => {
                                 try {
-                                    mutateTags(old => [...old, values.tag], { revalidate: false });
+                                    mutateTags(old => {
+                                        console.log('old', old);
+                                        return [...old, values.tag];
+                                    }, { revalidate: false });
                                     const r = await axios.post(
                                         '/api/tags/add',
                                         {
@@ -88,7 +98,7 @@ export const HodlTagCloud = ({ nft, prefetchedTags }) => {
                                                 'Authorization': localStorage.getItem('jwt')
                                             }
                                         });
-                                    
+
                                     setTimeout(() => {
                                         values.tag = '';
                                         // @ts-ignore
@@ -102,29 +112,29 @@ export const HodlTagCloud = ({ nft, prefetchedTags }) => {
                                         // @ts-ignore
                                         newTagRef?.current?.focus();
                                     })
-                                    
+
                                 }
                             }}
                         >
                             {({ setFieldValue, errors }) => (<>
                                 <Form>
                                     <Tooltip title={errors?.tag || ''}>
-                                    <Field
-                                        inputRef={newTagRef}
-                                        component={InputBase}
-                                        sx={{ width: '120px', border: errors.tag ? theme => `1px solid ${theme.palette.error.main}` : '1px solid #999', borderRadius: 2, paddingX: 2 }}
-                                        placeholder="add new tag"
-                                        name="tag"
-                                        type="text"
-                                        autoComplete='off'
-                                        onChange={e => {
-                                            const value = e.target.value || "";
-                                            setFieldValue('tag', value.toLowerCase());
-                                        }}
-                                    />
+                                        <Field
+                                            inputRef={newTagRef}
+                                            component={InputBase}
+                                            sx={{ width: '120px', border: errors.tag ? theme => `1px solid ${theme.palette.error.main}` : '1px solid #999', borderRadius: 2, paddingX: 2 }}
+                                            placeholder="add new tag"
+                                            name="tag"
+                                            type="text"
+                                            autoComplete='off'
+                                            onChange={e => {
+                                                const value = e.target.value || "";
+                                                setFieldValue('tag', value.toLowerCase());
+                                            }}
+                                        />
                                     </Tooltip>
                                 </Form>
-                                </>
+                            </>
                             )}
                         </Formik>
                     }
