@@ -9,7 +9,7 @@ import { getLikeCount } from './count';
 const client = Redis.fromEnv()
 import apiRoute from "../../handler";
 import { addNotification } from "../../notifications/add";
-import { HodlNotification, NftAction } from "../../../../models/HodlNotifications";
+import { HodlNotification, NotificationTypes } from "../../../../models/HodlNotifications";
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
@@ -28,7 +28,8 @@ route.post(async (req, res: NextApiResponse) => {
 
   let liked = false;
 
-  const exists = await client.zscore(`liked:${req.address}`, token);
+  const exists = await client.zscore(`liked:tokens:${req.address}`, token);
+  console.log('exists', exists)
 
   if (exists) {
     await client.zrem(`liked:tokens:${req.address}`, token);
@@ -55,8 +56,9 @@ route.post(async (req, res: NextApiResponse) => {
   if (liked) {
     const notification: HodlNotification = {
       subject: req.address,
-      action: NftAction.Liked,
-      token
+      action: NotificationTypes.Liked,
+      object: "token",
+      objectId: token
     };
 
     const success = addNotification(notification);

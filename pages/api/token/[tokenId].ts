@@ -3,6 +3,10 @@ import { NextApiRequest, NextApiResponse } from "next";
 import dotenv from 'dotenv'
 import memoize from 'memoizee';
 import apiRoute from '../handler';
+//
+// This is used for getting a 'minimal' NFT. i.e. only what we've stored in Redis (NOT the data from the blockchain).
+// We use this for operations that don't need blockchain data
+//
 
 import { Redis } from '@upstash/redis';
 
@@ -12,7 +16,6 @@ const client = Redis.fromEnv()
 const route = apiRoute();
 
 export const getToken = memoize(async (tokenId) => {
-  // console.log('CALLING REDIS TO GET TOKEN INFORMATION FOR', tokenId);
   const token = await client.get('token:' + tokenId);
   return token;
 }, { 

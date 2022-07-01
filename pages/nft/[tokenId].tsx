@@ -17,7 +17,7 @@ import {
   NftActionButtons
 } from '../../components';
 
-import { fetchNFT } from "../../lib/server/nft";
+import { fetchNFT } from "../api/nft/[tokenId]";
 import { PriceHistory } from "../../components/nft/PriceHistory";
 import { truncateText } from "../../lib/utils";
 import { ProfileAvatar } from "../../components/ProfileAvatar";

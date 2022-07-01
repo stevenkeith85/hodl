@@ -56,6 +56,15 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
         { revalidateOnMount: true }
     )
 
+    // TODO: 
+    // We could pass this down the component tree, or use a context here. SWR will dedup the calls though, so we should only do the API call once, even if there's lots of comments
+    // Probably worth using a context soon anyways, as there's a lot of prop drilling going on
+    const { data: nft } = useSWR(
+        comment.subject ? [`/api/nft`, comment.tokenId] : null,
+        (url, tokenId) => axios.get(`${url}/${tokenId}`).then(r => r.data.token),
+        { revalidateOnMount: true }
+    )
+
     // Comment Metadata
     const [likesCount] = useLike(comment.id, false);
 
@@ -80,7 +89,19 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
     // This will make it easier to link to it in notifications, 
     // and we can check whether the token owner wants to delete things on their token.
     // iterating up the comment tree will be too slow
-    const canDeleteComment = () => true;
+    const canDeleteComment = (comment: HodlComment) => {
+        const { subject, tokenId } = comment;
+
+        if (subject === address) {
+            return true;
+        }
+
+        if (nft?.owner === address) {
+            return true;
+        }
+
+        return false;
+    }
 
     return (
         <Box display="flex" flexDirection="column" gap={1}>
@@ -108,7 +129,6 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                         flexGrow={1}
                     >
                         <ProfileAvatar profileAddress={comment.subject} size="small" showNickname={false} />
-
                         <Box
                             display="flex"
                             flexDirection="column"
@@ -140,7 +160,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                             </Box>
                         </Box>
                     </Box>
-                    
+
                     {address &&
                         <Likes
                             color="inherit"
@@ -207,7 +227,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                         />
                     </Tooltip>
                     {
-                        address && canDeleteComment() &&
+                        address && canDeleteComment(comment) &&
                         <Tooltip title="Delete this Comment">
                             <HighlightOffOutlined
                                 sx={{

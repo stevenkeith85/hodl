@@ -4,19 +4,21 @@ import dotenv from 'dotenv'
 
 import { getProvider } from "../../../lib/server/connections";
 import { ethers } from "ethers";
-import { nftaddress } from "../../../config";
-import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 
-const client = Redis.fromEnv()
+import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
+import HodlMarket from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 import apiRoute from "../handler";
-import { getCommentCount } from "./count";
+
 import { DeleteCommentValidationSchema } from "../../../validationSchema/comments/deleteComment";
 import { HodlComment } from "../../../models/HodlComment";
+import { nftaddress, nftmarketaddress } from "../../../config";
 
+const client = Redis.fromEnv()
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
 
+// if a token has replies, we just change the text to "[deleted]", so that the replies still have an anchor
 const removeComment = async (address, object, objectId, id, tokenId) => {
   const replies = await client.zcard(`comments:${object}:${id}`);
 
@@ -27,15 +29,14 @@ const removeComment = async (address, object, objectId, id, tokenId) => {
 
     const commentCountUpdated = await client.zincrby("commentCount", -1, tokenId);
 
-    // these may be the same
-    // getCommentCount.delete(objectId);
-    // getCommentCount.delete(tokenId);
-
     return commentDeleted + userRecordDeleted + tokenRecordDeleted;
+  } else {
+    const comment: HodlComment = await client.hget('comment', id);
+    comment.comment = "[deleted]";
+
+    const commentUpdated = await client.hset("comment", { [id]: JSON.stringify(comment) });
+    return commentUpdated;
   }
-
-  return 0;
-
 }
 
 // user can remove their own comment. 
@@ -60,29 +61,30 @@ route.delete(async (req, res: NextApiResponse) => {
 
   const { object, objectId, subject, tokenId } = comment as HodlComment;
 
-  if (object === "token") {
-    const provider = await getProvider();
-    const contract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
-    const tokenExists = await contract.exists(objectId);
+  const provider = await getProvider();
+  const contract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
+  const tokenExists = await contract.exists(tokenId);
 
-    if (!tokenExists) {
-      return res.status(400).json({ message: 'Bad Request - blockchain' });
-    }
+  if (!tokenExists) {
+    return res.status(400).json({ message: 'Bad Request - blockchain' });
+  }
 
-    const owner = await contract.ownerOf(objectId);
+  const owner = await contract.ownerOf(tokenId);
 
-    const notTokenOwner = req.address !== owner;
-    const notMyComment = req.address !== subject;
+  const marketContract = new ethers.Contract(nftmarketaddress, HodlMarket.abi, provider);
+  const marketItem = await marketContract.getListing(tokenId);
+  const seller = marketItem.seller;
 
-    if (notMyComment && notTokenOwner) {
-      return res.status(400).json({ message: 'Bad Request - You cannot delete this comment' });
-    }
-  } else if (object === "comment") {
-    const notMyComment = req.address !== subject;
+  const notTokenOwner = req.address !== owner && req.address !== seller;
+  const notMyComment = req.address !== subject;
 
-    if (notMyComment) {
-      return res.status(400).json({ message: 'Bad Request - You cannot delete this comment' });
-    }
+  console.log('req.address', req.address);
+  console.log('owner', owner);
+  console.log('seller', seller);
+  console.log('notTokenOwner', notTokenOwner);
+
+  if (notMyComment && notTokenOwner) {
+    return res.status(400).json({ message: 'Bad Request - You cannot delete this comment' });
   }
 
   const success = await removeComment(subject, object, objectId, id, tokenId);

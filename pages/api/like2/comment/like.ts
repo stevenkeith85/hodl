@@ -8,7 +8,7 @@ import { getCommentLikeCount } from './count';
 const client = Redis.fromEnv()
 import apiRoute from "../../handler";
 import { addNotification } from "../../notifications/add";
-import { HodlNotification, NftAction } from "../../../../models/HodlNotifications";
+import { HodlNotification, NotificationTypes } from "../../../../models/HodlNotifications";
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
@@ -54,8 +54,9 @@ route.post(async (req, res: NextApiResponse) => {
   if (liked) {
     const notification: HodlNotification = {
       subject: req.address,
-      action: NftAction.Liked,
-      comment,
+      action: NotificationTypes.Liked,
+      object: "comment",
+      objectId: comment,
     };
 
     const success = addNotification(notification);

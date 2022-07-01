@@ -88,7 +88,7 @@ async function createNFTs(dirpath) {
 
       console.log('created token', tokenId);
 
-      client.set("token:" + tokenId, JSON.stringify({
+      await client.set("token:" + tokenId, JSON.stringify({
         tokenId,
         name: token.name,
         description: token.description,

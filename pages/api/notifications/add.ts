@@ -8,40 +8,33 @@ import { getProvider } from "../../../lib/server/connections";
 import { ethers } from "ethers";
 import { nftaddress } from "../../../config";
 import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
-import { AddressAction, HodlNotification, NftAction } from '../../../models/HodlNotifications';
+import { NotificationTypes, HodlNotification } from '../../../models/HodlNotifications';
 import { getPriceHistory } from "../token-bought/[tokenId]";
-import { likesToken } from "../like/likes";
+import { likesToken } from "../like2/token/likes";
 import { getTokensListed } from "../token-listed/[tokenId]";
 import { getFollowers } from "../follow2/followers";
 import { isFollowing } from "../follow2/follows";
 import { likesComment } from "../like2/comment/likes";
+import { getOwnerOrSellerAddress } from "../nft/[tokenId]";
+import { HodlComment } from "../../../models/HodlComment";
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
 
 // we overwrite the timestamp, as we don't trust users
 export const addNotification = async (notification: HodlNotification) => {
-  // if there's a timestamp and it's on a comment, then we keep it 
-  // as we'd like the comment timestamp to match the notification timestamp. (to allow us to highlight it in the UI easily)
-  // NB: We do not allow users to create CommentedOn notifications via the API directly
+  console.log('notification', notification)
+  notification.timestamp = Date.now();
 
-  // TODO: We've got id's for comments now, so this can be refactored/simplified
-  // if (notification?.action !== NftAction.CommentedOn && notification?.action !== NftAction.Liked) {
-    notification.timestamp = Date.now();
-  // }
+  if (notification.action === NotificationTypes.Liked) { // tell the token owner you liked it
+    if (notification.object === "token") {
 
-  if (notification.action === NftAction.Liked) { // tell the token owner you liked it
-
-    if (notification.token) {
-      const provider = await getProvider();
-      const tokenContract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
-      const owner = await tokenContract.ownerOf(notification.token);
-
-      const likes = await likesToken(notification.subject, notification.token);
-
-      if (!likes || owner === notification.subject) { // don't notify yourself that you liked your own NFT
+      const likes = await likesToken(notification.subject, notification.objectId);
+      if (!likes) {
         return;
       }
+
+      const owner = await getOwnerOrSellerAddress(notification.objectId);
 
       return await client.zadd(
         `notifications:${owner}`,
@@ -50,18 +43,16 @@ export const addNotification = async (notification: HodlNotification) => {
           member: JSON.stringify(notification)
         }
       );
-    } else if (notification.comment) {
-      const likes = await likesComment(notification.subject, notification.comment);
+    } else if (notification.object === "comment") {
 
-      const comment = await client.hget(`comment`, `${notification.comment}`);
-
-      // @ts-ignore
-      if (!likes || comment.subject === notification.subject) { // don't notify yourself that you liked your own NFT
+      const likes = await likesComment(notification.subject, notification.objectId);
+      if (!likes) {
         return;
       }
 
+      const comment: HodlComment = await client.hget('comment', `${notification.objectId}`);
+
       return await client.zadd(
-        // @ts-ignore
         `notifications:${comment.subject}`,
         {
           score: notification.timestamp,
@@ -69,29 +60,25 @@ export const addNotification = async (notification: HodlNotification) => {
         }
       );
     }
-
   }
 
-  // if (notification.action === NftAction.CommentedOn) { // tell the token owner someone commented on their token
-  //   const provider = await getProvider();
-  //   const tokenContract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
-  //   const owner = await tokenContract.ownerOf(notification.token);
+  if (notification.action === NotificationTypes.CommentedOn) {
+    const comment: HodlComment = await client.hget('comment', `${notification.objectId}`);
 
-  //   if (owner === notification.subject) {
-  //     return; // We don't need to notify ourselves that we commented on something
-  //   }
-
-  //   return await client.zadd(
-  //     `notifications:${owner}`,
-  //     {
-  //       score: notification.timestamp,
-  //       member: JSON.stringify(notification)
-  //     }
-  //   );
-  // }
+    // if (notification.object === "token") {  
+      const owner = await getOwnerOrSellerAddress(comment.tokenId);
+      return await client.zadd(
+        `notifications:${owner}`,
+        {
+          score: notification.timestamp,
+          member: JSON.stringify(notification)
+        }
+      );
+    // }
+  }
 
 
-  if (notification.action === AddressAction.Followed) { // tell the account someone followed it
+  if (notification.action === NotificationTypes.Followed) { // tell the account someone followed it
     const follows = await isFollowing(notification.subject, notification.object);
 
     if (!follows) {
@@ -107,8 +94,8 @@ export const addNotification = async (notification: HodlNotification) => {
     );
   }
 
-  if (notification.action === NftAction.Bought) { // tell the buyer and seller the sale happened
-    const history = await getPriceHistory(notification.token);
+  if (notification.action === NotificationTypes.Bought) { // tell the buyer and seller the sale happened
+    const history = await getPriceHistory(notification.objectId);
     const buyer = history[0].buyerAddress;
     const seller = history[0].sellerAddress;
 
@@ -139,8 +126,8 @@ export const addNotification = async (notification: HodlNotification) => {
     return first + second;
   }
 
-  if (notification.action === NftAction.Listed) { // tell the seller's followers there's a new token for sale
-    const history = await getTokensListed(notification.token);
+  if (notification.action === NotificationTypes.Listed) { // tell the seller's followers there's a new token for sale
+    const history = await getTokensListed(notification.objectId);
     const seller = history[0].sellerAddress;
 
     if (seller !== notification.subject) {
@@ -181,14 +168,14 @@ route.post(async (req, res: NextApiResponse) => {
 
   // block some actions in the API, as we don't need these to be directly called from the FE- 
   // i.e. adding a comment will already trigger the creation of a notification when that endpoint calls 'addNotification'
-  if (action === NftAction.CommentedOn) {
+  if (action === NotificationTypes.CommentedOn) {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
   const notification: HodlNotification = {
     subject: req.address,
     action,
-    token
+    objectId: token
   };
 
   const success = await addNotification(notification);

@@ -6,59 +6,121 @@ import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Link from "next/link";
 import { ProfileAvatar } from "./ProfileAvatar";
-import { useContext, useEffect } from "react";
+import { FC, useContext, useEffect } from "react";
 import axios from 'axios';
 import { WalletContext } from "../contexts/WalletContext";
 import formatDistance from 'date-fns/formatDistance';
-import { NftAction } from "../models/HodlNotifications";
+import { HodlNotification, NotificationTypes } from "../models/HodlNotifications";
 import { HodlImage } from "./HodlImage";
 import { useRouter } from "next/router";
+import { truncateText } from "../lib/utils";
 
+interface HodlNotificationBoxProps {
+    item: HodlNotification;
+    setShowNotifications: Function;
+}
 
-const HodlNotification = ({ item, setShowNotifications }) => {
+const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setShowNotifications }) => {
     const { address } = useContext(WalletContext);
 
-    const { data: token } = useSWR(item.token ? [`/api/token`, item.token] : null,
-        (url, query) => axios.get(`${url}/${query}`).then(r => r.data.token));
 
-    const { data: comment } = useSWR(item.comment ? [`/api/comment`, item.comment] : null, fetchWithId);
+    const { data: comment } = useSWR(item.object === "comment" ? [`/api/comment`, item.objectId] : null,
+        fetchWithId,
+        {
+            revalidateOnMount: true
+        });
+
+    const { data: token } = useSWR(item.object === "token" ? [`/api/token`, item.objectId] : comment ? [`/api/token`, comment.tokenId] : null,
+        (url, query) => axios.get(`${url}/${query}`).then(r => r.data.token),
+        {
+            revalidateOnMount: true
+        });
+
 
     const lastRead = (localStorage.getItem(`notifications-${address}-last-read`) || 0);
 
     return (
         <Box sx={{ opacity: lastRead > (item?.timestamp || 0) ? 0.8 : 1 }} >
-            <Box display="flex" alignItems="center" gap={2}>
-                <Stack direction="row" spacing={0.5} display="flex" alignItems="center" onClick={() => setShowNotifications(false)} flexGrow={1}>
-                    <ProfileAvatar profileAddress={item.subject} size="small" />
-                    <Box>{item.action}</Box>
-                    {
-                        item.token && (item.action === NftAction.Listed || item.action === NftAction.Bought) &&
-                        <Link href={`/nft/${item.token}`}>
-                            <Typography component="a" sx={{ cursor: "pointer" }}>
-                                an NFT
-                            </Typography>
-                        </Link>
-                    }
-                    {
-                        item.token && comment && item.action === NftAction.CommentedOn &&
-                        <Link href={`/nft/${item.token}?comment=${comment.id}`}>
-                            <Typography component="a" sx={{ cursor: "pointer" }}>
-                                an NFT
-                            </Typography>
-                        </Link>
-                    }
-                    {
-                        item?.comment && comment && item.action === NftAction.Liked &&
-                        <Link href={item.action === NftAction.Liked ? `/nft/${comment.token}?comment=${comment.id}` : `/nft/${comment.token}`} passHref>
-                            <Typography component="a" sx={{ textDecoration: 'none', color: '#333'}}>your comment</Typography>
-                        </Link>
-                    }
-                    {item.object === address && <Typography>you</Typography>}
-                    <Typography sx={{ fontSize: 10, color: "#999" }}>{item.timestamp && formatDistance(new Date(item.timestamp), new Date(), { addSuffix: false })}</Typography>
-                </Stack>
+            <Box display="flex" alignItems="center" gap={1} >
+                <Box display="flex" alignItems="center" onClick={() => setShowNotifications(false)} gap={0.5} flexGrow={1}>
+                <ProfileAvatar profileAddress={item.subject} size="small" showNickname={true} />
+                    <Box display="flex" alignItems="center" gap={0.5}>
+                    
+                        <Box display="flex" sx={{ cursor: 'pointer', textDecoration: 'none' }}>
+                        {/* {JSON.stringify(item)} */}
+                        {/* Liked */}
+                        {item.action === NotificationTypes.Liked && item.object === "token" && token && <>
+                            <Link href={`/nft/${item.objectId}`} passHref>
+                                <Typography component="a" sx={{ textDecoration: 'none', color: '#333' }}>
+                                    liked your token.
+                                </Typography>
+                            </Link>
+                        </>
+
+                        }
+                        {item.action === NotificationTypes.Liked && item.object === "comment" && comment && <>
+
+                            <Link href={`/nft/${comment.tokenId}?comment=${comment.id}`}>
+                                <Typography component="a" sx={{ textDecoration: 'none', color: '#333' }}>
+                                    liked your comment: {truncateText(comment.comment, 20)}.
+                                </Typography>
+                            </Link>
+                        </>
+                        }
+
+                        {/* Commented / Replied */}
+                        {item.action === NotificationTypes.CommentedOn && item.object === "comment" && comment && <>
+                            {comment.object === "token" && <>
+                                <Link href={`/nft/${comment.tokenId}?comment=${comment.id}`}>
+                                    <Typography component="a" sx={{ textDecoration: 'none', color: '#333' }}>
+                                        commented: {truncateText(comment.comment, 20)}.
+                                    </Typography>
+                                </Link>
+                            </>}
+                            {comment.object === "comment" && <>
+                                <Link href={`/nft/${comment.tokenId}?comment=${comment.objectId}`}>
+                                    <Typography component="a" sx={{ textDecoration: 'none', color: '#333' }}>
+                                        replied: {truncateText(comment.comment, 20)}.
+                                    </Typography>
+                                </Link>
+                            </>}
+                        </>
+                        }
+
+                        {/* Listed */}
+                        {
+                            item.action === NotificationTypes.Listed &&
+                            <Link href={`/nft/${item.objectId}`}>
+                                <Typography component="a" sx={{ textDecoration: 'none', color: '#333' }}>
+                                    listed a token
+                                </Typography>
+                            </Link>
+                        }
+
+                        {/* Bought */}
+                        {
+                            item.action === NotificationTypes.Bought &&
+                            <Link href={`/nft/${item.objectId}`}>
+                                <Typography component="a" sx={{ cursor: "pointer" }}>
+                                    bought a token
+                                </Typography>
+                            </Link>
+                        }
+
+                        {/* Followed */}
+                        {
+                            item.action === NotificationTypes.Followed &&
+                                <Typography >
+                                    followed you.
+                                </Typography>
+                        }
+                        </Box>
+                        <Typography sx={{ fontSize: 10, color: "#999" }}>{item.timestamp && formatDistance(new Date(item.timestamp), new Date(), { addSuffix: false })}</Typography>
+                    </Box>
+                </Box>
                 {
-                    item?.token && token?.image &&
-                    <Link href={`/nft/${item.token}`}>
+                    token && token?.image &&
+                    <Link href={comment ? `/nft/${comment.tokenId}` : `/nft/${item.objectId}`}>
                         <a><HodlImage cid={token.image.split('//')[1]} effect={token.filter} height={'40px'} width={'40px'} /></a>
                     </Link>
                 }
@@ -73,9 +135,8 @@ export const HodlNotifications = ({ setHoverMenuOpen, showNotifications, setShow
     const { address } = useContext(WalletContext);
     const xs = useMediaQuery(theme.breakpoints.only('xs'));
 
-
     const { data: notifications } = useSWR(
-        address ? `/api/notifications/get` : null, 
+        address ? [`/api/notifications/get`, address] : null,
         fetchWithAuth,
         { revalidateOnMount: true })
 
@@ -115,11 +176,11 @@ export const HodlNotifications = ({ setHoverMenuOpen, showNotifications, setShow
             color: 'black',
             top: 56,
             right: 0,
-            minWidth: { xs: 'none', sm: 'max-content' },
+            // minWidth: '400px',
             maxHeight: '50vh',
             height: { xs: 'calc(100vh - 56px)', sm: 'auto' },
-            width: { xs: '100%', sm: 'auto' },
-            overflow: 'auto',
+            width: { xs: '100%', sm: '600px' },
+            overflowY: 'auto',
             border: `1px solid #ddd`,
             margin: 0,
             padding: 2,
@@ -131,7 +192,7 @@ export const HodlNotifications = ({ setHoverMenuOpen, showNotifications, setShow
         gap={2}
     >
         {notifications && notifications.length === 0 && 'You are up to date'}
-        {(notifications || []).map((item, i) => <HodlNotification key={i} item={item} setShowNotifications={setShowNotifications} />)}
+        {(notifications || []).map((item, i) => <HodlNotificationBox key={i} item={item} setShowNotifications={setShowNotifications} />)}
     </Box>
 
     return (

@@ -67,13 +67,14 @@ route.post(async (req, res) => {
   getFollowersCount.delete(address);
 
   if (followed) {
-    const notification: HodlNotification = {
-      subject: req.address,
-      object: address,
-      action: AddressAction.Followed,
-    };
+    // TODO: Object is now being used in a similar manner to the comments. We might need to capture additional data for this notification
+    // const notification: HodlNotification = {
+    //   subject: req.address,
+    //   object: "address",
+    //   action: AddressAction.Followed,
+    // };
 
-    const success = addNotification(notification);
+    // const success = addNotification(notification);
   }
 
   res.status(200).json({ followed });

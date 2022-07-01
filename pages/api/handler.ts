@@ -42,12 +42,12 @@ const isRateLimited = async (ip, routeKey, limit) => {
 
   const set = await client.setnx(key, limit)
   if (set) {
-    client.expire(key, secondsBeforeExpires)
+    await client.expire(key, secondsBeforeExpires)
   }
 
   const requestsLeft = await client.get(key);
   if (requestsLeft && Number(requestsLeft) > 0) {
-    client.decrby(key, 1)
+    await client.decrby(key, 1)
     return false;
   }
 
