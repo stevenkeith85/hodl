@@ -14,6 +14,7 @@ import { HodlNotification, NotificationTypes } from "../models/HodlNotifications
 import { HodlImage } from "./HodlImage";
 import { useRouter } from "next/router";
 import { truncateText } from "../lib/utils";
+import { ProfileNameOrAddress } from "./ProfileNameOrAddress";
 
 interface HodlNotificationBoxProps {
     item: HodlNotification;
@@ -36,6 +37,7 @@ const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setShowNotifi
             revalidateOnMount: true
         });
 
+    
 
     const lastRead = (localStorage.getItem(`notifications-${address}-last-read`) || 0);
 
@@ -43,77 +45,78 @@ const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setShowNotifi
         <Box sx={{ opacity: lastRead > (item?.timestamp || 0) ? 0.8 : 1 }} >
             <Box display="flex" alignItems="center" gap={1} >
                 <Box display="flex" alignItems="center" onClick={() => setShowNotifications(false)} gap={0.5} flexGrow={1}>
-                <ProfileAvatar profileAddress={item.subject} size="small" showNickname={true} />
+                    <ProfileAvatar profileAddress={item.subject} size="small" showNickname={false} />
                     <Box display="flex" alignItems="center" gap={0.5}>
-                    
+
                         <Box display="flex" sx={{ cursor: 'pointer', textDecoration: 'none' }}>
-                        {/* {JSON.stringify(item)} */}
-                        {/* Liked */}
-                        {item.action === NotificationTypes.Liked && item.object === "token" && token && <>
-                            <Link href={`/nft/${item.objectId}`} passHref>
-                                <Typography component="a" sx={{ textDecoration: 'none', color: '#333' }}>
-                                    liked your token.
-                                </Typography>
-                            </Link>
-                        </>
+                            {/* {item?.subject && <ProfileNameOrAddress color={"primary"} profileAddress={item.subject} size={"small"} />} */}
+                            {/* {JSON.stringify(item)} */}
+                            {/* Liked */}
+                            {item.action === NotificationTypes.Liked && item.object === "token" && token && <>
+                                <Link href={`/nft/${item.objectId}`} passHref>
+                                    <Typography component="a" sx={{ textDecoration: 'none', color: '#333' }}>
+                                        liked your token.
+                                    </Typography>
+                                </Link>
+                            </>
 
-                        }
-                        {item.action === NotificationTypes.Liked && item.object === "comment" && comment && <>
+                            }
+                            {item.action === NotificationTypes.Liked && item.object === "comment" && comment && <>
 
-                            <Link href={`/nft/${comment.tokenId}?comment=${comment.id}`}>
-                                <Typography component="a" sx={{ textDecoration: 'none', color: '#333' }}>
-                                    liked your comment: {truncateText(comment.comment, 20)}.
-                                </Typography>
-                            </Link>
-                        </>
-                        }
-
-                        {/* Commented / Replied */}
-                        {item.action === NotificationTypes.CommentedOn && item.object === "comment" && comment && <>
-                            {comment.object === "token" && <>
                                 <Link href={`/nft/${comment.tokenId}?comment=${comment.id}`}>
                                     <Typography component="a" sx={{ textDecoration: 'none', color: '#333' }}>
-                                        commented: {truncateText(comment.comment, 20)}.
+                                        liked your comment: {truncateText(comment.comment, 20)}.
                                     </Typography>
                                 </Link>
-                            </>}
-                            {comment.object === "comment" && <>
-                                <Link href={`/nft/${comment.tokenId}?comment=${comment.objectId}`}>
+                            </>
+                            }
+
+                            {/* Commented / Replied */}
+                            {item.action === NotificationTypes.CommentedOn && item.object === "comment" && comment && <>
+                                {comment.object === "token" && <>
+                                    <Link href={`/nft/${comment.tokenId}?comment=${comment.id}`}>
+                                        <Typography component="a" sx={{ textDecoration: 'none', color: '#333' }}>
+                                            commented: {truncateText(comment.comment, 20)}.
+                                        </Typography>
+                                    </Link>
+                                </>}
+                                {comment.object === "comment" && <>
+                                    <Link href={`/nft/${comment.tokenId}?comment=${comment.objectId}`}>
+                                        <Typography component="a" sx={{ textDecoration: 'none', color: '#333' }}>
+                                            replied: {truncateText(comment.comment, 20)}.
+                                        </Typography>
+                                    </Link>
+                                </>}
+                            </>
+                            }
+
+                            {/* Listed */}
+                            {
+                                item.action === NotificationTypes.Listed &&
+                                <Link href={`/nft/${item.objectId}`}>
                                     <Typography component="a" sx={{ textDecoration: 'none', color: '#333' }}>
-                                        replied: {truncateText(comment.comment, 20)}.
+                                        listed a token
                                     </Typography>
                                 </Link>
-                            </>}
-                        </>
-                        }
+                            }
 
-                        {/* Listed */}
-                        {
-                            item.action === NotificationTypes.Listed &&
-                            <Link href={`/nft/${item.objectId}`}>
-                                <Typography component="a" sx={{ textDecoration: 'none', color: '#333' }}>
-                                    listed a token
-                                </Typography>
-                            </Link>
-                        }
+                            {/* Bought */}
+                            {
+                                item.action === NotificationTypes.Bought &&
+                                <Link href={`/nft/${item.objectId}`}>
+                                    <Typography component="a" sx={{ cursor: "pointer" }}>
+                                        bought a token
+                                    </Typography>
+                                </Link>
+                            }
 
-                        {/* Bought */}
-                        {
-                            item.action === NotificationTypes.Bought &&
-                            <Link href={`/nft/${item.objectId}`}>
-                                <Typography component="a" sx={{ cursor: "pointer" }}>
-                                    bought a token
-                                </Typography>
-                            </Link>
-                        }
-
-                        {/* Followed */}
-                        {
-                            item.action === NotificationTypes.Followed &&
+                            {/* Followed */}
+                            {
+                                item.action === NotificationTypes.Followed &&
                                 <Typography >
                                     followed you.
                                 </Typography>
-                        }
+                            }
                         </Box>
                         <Typography sx={{ fontSize: 10, color: "#999" }}>{item.timestamp && formatDistance(new Date(item.timestamp), new Date(), { addSuffix: false })}</Typography>
                     </Box>
@@ -179,7 +182,7 @@ export const HodlNotifications = ({ setHoverMenuOpen, showNotifications, setShow
             // minWidth: '400px',
             maxHeight: '50vh',
             height: { xs: 'calc(100vh - 56px)', sm: 'auto' },
-            width: { xs: '100%', sm: '600px' },
+            width: { xs: '100%', sm: notifications?.length ? '500px' : 'auto' },
             overflowY: 'auto',
             border: `1px solid #ddd`,
             margin: 0,
@@ -203,7 +206,7 @@ export const HodlNotifications = ({ setHoverMenuOpen, showNotifications, setShow
                         sx={{
                             cursor: 'pointer',
                             animation: `shake 0.5s`,
-                            animationDelay: '2s',
+                            animationDelay: '1s',
                             animationTimingFunction: 'ease-in'
                         }}
                         onClick={e => {

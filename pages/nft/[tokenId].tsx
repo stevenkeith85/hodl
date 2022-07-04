@@ -102,10 +102,10 @@ const NftDetail = ({
             <ProfileAvatar reverse={true} profileAddress={nft?.owner} />
           </Stack>
         </Grid>
-        <Grid item xs={12} md={6} marginBottom={2} paddingRight={{ md: 1 }}>
+        <Grid item xs={12} md={5} marginBottom={2} paddingRight={{ md: 1 }}>
           <Stack spacing={2}>
             <DetailPageImage token={nft} />
-            <Box gap={2} display='flex' alignItems='center'>
+            <Box gap={1} display='flex' alignItems='center'>
               <Likes 
                 sx={{ color: theme => theme.palette.secondary.main, '.MuiTypography-body1': { color: '#666' } }} 
                 id={nft.tokenId} 
@@ -121,7 +121,7 @@ const NftDetail = ({
             </Box>
           </Stack>
         </Grid>
-        <Grid item xs={12} md={6} marginBottom={2} paddingLeft={{ md: 1 }}>
+        <Grid item xs={12} md={7} marginBottom={2} paddingLeft={{ md: 1 }}>
           <Box display="flex" justifyContent="start" sx={{
             marginBottom: 2
           }}>
@@ -139,7 +139,12 @@ const NftDetail = ({
           </Box>
           <div hidden={value !== 0}>
             <Stack spacing={2}>
+              
               <DescriptionCard nft={nft} />
+              <HodlTagCloud 
+                nft={nft} 
+                prefetchedTags={prefetchedTags} 
+              />
               <HodlCommentsBox 
                 tokenId={nft.tokenId}
                 object={comment ? "comment" : "token"}
@@ -148,18 +153,15 @@ const NftDetail = ({
                 prefetchedCommentCount={prefetchedCommentCount} 
                 limit={limit} 
               />
-              <HodlTagCloud 
-                nft={nft} 
-                prefetchedTags={prefetchedTags} 
-              />
+              
             </Stack>
           </div>
           <div hidden={value !== 1}>
             <Stack spacing={2}>
               {Boolean(nft?.forSale) && <PriceCard nft={nft} />}
+              <PriceHistory priceHistory={priceHistory} />
               <HodlerPrivilege nft={nft} />
               <IpfsCard nft={nft} />
-              {Boolean(priceHistory.length) && <PriceHistory priceHistory={priceHistory} />}
               <NftActionButtons nft={nft} />
             </Stack>
           </div>

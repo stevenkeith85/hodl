@@ -148,7 +148,7 @@ const Profile = ({
         <FollowButton profileAddress={profileAddress} />
       </Box>
         
-      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: 3, marginBottom: 3 }}>
         <Tabs
           value={value}
           onChange={(e, v) => {
@@ -171,7 +171,7 @@ const Profile = ({
           textColor="secondary"
           indicatorColor="secondary"
         >
-          <Tab key={0} value={0} label="Hodling" icon={<Badge sx={{ p: '6px 3px' }} showZero badgeContent={hodlingCount}></Badge>} iconPosition="end" />
+          <Tab key={0} value={0} label="Hodling" icon={<Badge sx={{ p: '6px 3px', color: 'black', fontSize: '14px' }} showZero badgeContent={hodlingCount}></Badge>} iconPosition="end" />
           <Tab key={1} value={1} label="Listed" icon={<Badge sx={{ p: '6px 3px' }} showZero badgeContent={listedCount}></Badge>} iconPosition="end" />
           <Tab key={2} value={2} label="Following" icon={<Badge sx={{ p: '6px 3px' }} showZero badgeContent={followingCount}></Badge>} iconPosition="end" />
           <Tab key={3} value={3} label="Followers" icon={<Badge sx={{ p: '6px 3px' }} showZero badgeContent={followersCount} ></Badge>} iconPosition="end" />

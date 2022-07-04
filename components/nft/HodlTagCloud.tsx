@@ -47,7 +47,6 @@ export const HodlTagCloud = ({ nft, prefetchedTags }) => {
                             onDelete={async () => {
                                 try {
                                     mutateTags(old => {
-                                        console.log('old', old);
                                         return old.filter(t => t !== tag)
                                     },
                                         { revalidate: false });

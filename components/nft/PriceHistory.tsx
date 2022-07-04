@@ -15,7 +15,8 @@ export const PriceHistory = ({ priceHistory }) => {
         <Card variant="outlined">
             <CardContent sx={{ whiteSpace: 'pre-line', maxHeight: 500, overflowY: 'auto' }}>
                 <Typography variant="h3" sx={{ marginBottom: 2 }}>Price History</Typography>
-                <TableContainer>
+                {priceHistory.length === 0 && 'This NFT has not been traded before'}
+                {priceHistory.length !== 0 && <TableContainer>
                     <Table sx={{ marginX: '-10px' }}>
                         <TableHead>
                             <TableRow>
@@ -52,6 +53,7 @@ export const PriceHistory = ({ priceHistory }) => {
                         </TableBody>
                     </Table>
                 </TableContainer>
+                }
             </CardContent>
         </Card>
     )

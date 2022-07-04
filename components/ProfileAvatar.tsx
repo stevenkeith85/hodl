@@ -1,58 +1,16 @@
 import Link from "next/link";
-import PersonIcon from '@mui/icons-material/Person';
 import {
-    Avatar, Stack, Tooltip, Typography
-} from "@mui/material";
-import { getShortAddress, truncateText } from "../lib/utils";
+    Avatar, Stack} from "@mui/material";
 import useSWR from "swr";
 import { HodlImage } from "./HodlImage";
 import { HodlVideo } from "./HodlVideo";
 import { memo } from "react";
-import theme from "../theme";
 import axios from 'axios';
+import { ProfileNameOrAddress } from "./profileNameOrAddress";
+import { DefaultAvatar } from "./DefaultAvatar";
+import { DefaultAvatarWithLink } from "./DefaultAvatarWithLink";
 
-export const DefaultAvatar = ({ size, color }) => {
 
-    const getColor = theme => {
-        const mappings = {
-            primary: theme.palette.primary.light,
-            secondary: theme.palette.secondary.main,
-            greyscale: 'rgba(0,0,0,0.3)'
-        }
-
-        return mappings[color]
-    }
-
-    return (
-        <Avatar
-            className="avatar"
-            sx={{
-                height: size,
-                width: size,
-                bgcolor: (theme) => getColor(theme),
-                border: size === 'small' ? `1.5px solid` : `2px solid`,
-                '&:hover': {
-                    cursor: 'pointer',
-                    bgcolor: 'white',
-                    borderColor: theme => getColor(theme),
-                    '.icon': {
-                        color: theme => getColor(theme),
-                        bgcolor: 'white'
-                    }
-                }
-            }}>
-
-            <PersonIcon
-                className="icon"
-                sx={{
-                    color: 'rgba(255,255,255,0.85)',
-                    fontSize: size - 10,
-                }}
-
-            />
-        </Avatar>
-    )
-}
 
 export const NftAvatarWithLink = ({ token, size, highlight = false }: any) => (
     <Link href={`/nft/${token.tokenId}`} passHref>
@@ -77,12 +35,6 @@ export const NftAvatar = ({ token, size, highlight = false }: any) => {
                 borderColor: highlight ? theme => theme.palette.secondary.main : 'none',
                 height: size,
                 width: size,
-                transition: theme.transitions.create(['background-color', 'transform'], {
-                    duration: theme.transitions.duration.standard,
-                }),
-                '&:hover': {
-                    transform: 'scale(1.2)',
-                }
             }}>
             {((isImage(token.mimeType) && !isGif(token.mimeType)) || isUnknown(token.mimeType)) &&
                 <HodlImage
@@ -115,34 +67,23 @@ export const NftAvatar = ({ token, size, highlight = false }: any) => {
 }
 export const NftAvatarMemo = memo(NftAvatar, (prev: any, next: any) => prev.size === next.size && prev.token.tokenId === next.token.tokenId);
 
-const AvatarText: React.FC<{ size: string, href?: string, children?: any, color: string }> = ({ size, href, children, color }) => {
-    const mappings = {
-        small: 14,
-        medium: 14,
-        large: 18
-    }
-
-    return (
-        <Typography
-            component="a"
-            href={href}
-            className="address"
-            sx={{
-                fontSize: mappings[size],
-                textDecoration: 'none',
-                color: color === 'greyscale' ? 'white' : '#000'
-            }}>
-            {children}
-        </Typography>
-    )
+interface ProfileAvatarProps {
+    profileAddress: string;
+    reverse?: boolean;
+    size?: "small" | "medium" | "large";
+    color?: "primary" | "secondary" | "greyscale";
+    showNickname?: boolean;
+    withLink?: boolean;
 }
 
-export const ProfileAvatar = ({ profileAddress, reverse = false, size = "medium", color = "secondary", showNickname = true, withLink = true }) => {
-    const { data: profileNickname } = useSWR(profileAddress ? [`/api/profile/nickname`, profileAddress] : null,
-        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.nickname),
-        { revalidateOnMount: true }
-        )
-
+export const ProfileAvatar : React.FC<ProfileAvatarProps>= ({ 
+    profileAddress, 
+    reverse = false, 
+    size = "medium", 
+    color = "secondary", 
+    showNickname = true, 
+    withLink = true 
+}) => {
     const { data: tokenId } = useSWR(
         profileAddress ? [`/api/profile/picture`, profileAddress] : null,
         (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.token),
@@ -160,7 +101,7 @@ export const ProfileAvatar = ({ profileAddress, reverse = false, size = "medium"
         const mappings = {
             small: 36,
             medium: 54,
-            large: 90
+            large: 100
         }
 
         return mappings[size];
@@ -174,46 +115,14 @@ export const ProfileAvatar = ({ profileAddress, reverse = false, size = "medium"
             spacing={size === 'small' ? 1 : 2}
             direction={reverse ? 'row-reverse' : 'row'}
         >
-            {
-                token && withLink &&
-                <NftAvatarWithLinkMemo token={token} size={getSize()} />
-            }
-            {
-                token && !withLink &&
-                <NftAvatarMemo token={token} size={getSize()} />
-            }
-            {
-                !token && withLink &&
-                <Link href={profileAddress ? `/profile/${profileNickname || profileAddress}` : ''} passHref>
-                    <a>
-                        <DefaultAvatar size={getSize()} color={color} />
-                    </a>
-
-                </Link >
-            }
-            {
-                !token && !withLink &&
-                <DefaultAvatar size={getSize()} color={color} />
-            }
-
-            {
-                showNickname &&
-                <Link href={`/profile/${profileNickname || profileAddress}`} passHref>
-                    {
-                        profileNickname ?
-                            <Tooltip title={profileNickname}>
-                                <div>
-                                    <AvatarText size={size} color={color}>{truncateText(profileNickname, 20)}</AvatarText>
-                                </div>
-                            </Tooltip> :
-                            <Tooltip title={profileAddress}>
-                                <div>
-                                    <AvatarText size={size} color={color}>{getShortAddress(profileAddress)?.toLowerCase()}</AvatarText>
-                                </div>
-                            </Tooltip>
-                    }
-                </Link>
-            }
+            { token && withLink && <NftAvatarWithLinkMemo token={token} size={getSize()} /> }
+            { token && !withLink && <NftAvatarMemo token={token} size={getSize()} /> }
+            
+            { !token && withLink && <DefaultAvatarWithLink size={getSize()} color={color} profileAddress={profileAddress} /> }
+            { !token && !withLink && <DefaultAvatar size={getSize()} color={color} /> }
+            {/* {
+                showNickname && <ProfileNameOrAddress color={color} profileAddress={profileAddress} size={size} />
+            } */}
         </Stack>
     )
 }

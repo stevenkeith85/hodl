@@ -38,35 +38,52 @@ const NftList = ({
             }}
         >
             {(nfts || []).filter(nft => nft).map((nft, i) => (
-                <ImageListItem key={i}>
-                    {assetType(nft) === 'gif' &&
-                        <HodlVideo
-                            cid={nft?.image}
-                            transformations={nft?.filter}
-                            gif={true}
-                            height={matches ? '400px' : '500px'}
-                        />}
-                    {(assetType(nft) === 'video' || assetType(nft) === 'audio') &&
-                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
-                            {assetType(nft) === 'video' && <Videocam fontSize="large" sx={{ position: 'absolute' }} />}
-                            <HodlVideo
-                                cid={nft?.image}
-                                controls={false}
-                                onlyPoster={true}
-                                preload="none"
-                                audio={assetType(nft) === 'audio'}
-                                // transformations='l_text:Arial_100_bold:Video,co_rgb:FFFFFF'
-                                height={matches ? '400px' : '500px'}
-                            />
+
+                <ImageListItem key={i} sx={{
+                    borderRadius: 1,
+                    overflow: 'hidden',
+                    '.itemImage': {
+                        transition: theme.transitions.create(['transform'], {
+                            duration: theme.transitions.duration.standard,
+                        }),
+                        '&:hover': {
+                            transform: 'scale(1.05)',
+                        }
+                    },
+
+                }}>
+                    <Link href={`/nft/${nft?.tokenId}`}>
+                        <Box className="itemImage" sx={{ cursor: 'pointer' }}>
+                            {assetType(nft) === 'gif' &&
+                                <HodlVideo
+                                    cid={nft?.image}
+                                    transformations={nft?.filter}
+                                    gif={true}
+                                    height={matches ? '400px' : '500px'}
+                                />}
+                            {(assetType(nft) === 'video' || assetType(nft) === 'audio') &&
+                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+                                    {assetType(nft) === 'video' && <Videocam fontSize="large" sx={{ position: 'absolute' }} />}
+                                    <HodlVideo
+                                        cid={nft?.image}
+                                        controls={false}
+                                        onlyPoster={true}
+                                        preload="none"
+                                        audio={assetType(nft) === 'audio'}
+                                        // transformations='l_text:Arial_100_bold:Video,co_rgb:FFFFFF'
+                                        height={matches ? '400px' : '500px'}
+                                    />
+                                </Box>
+                            }
+                            {assetType(nft) === 'image' &&
+                                <HodlImage
+                                    cid={nft?.image}
+                                    effect={nft?.filter}
+                                    height={matches ? '400px' : '500px'}
+                                />
+                            }
                         </Box>
-                    }
-                    {assetType(nft) === 'image' &&
-                        <HodlImage
-                            cid={nft?.image}
-                            effect={nft?.filter}
-                            height={matches ? '400px' : '500px'}
-                        />
-                    }
+                    </Link>
                     <ImageListItemBar
                         sx={{
                             display: () => showTop ? 'flex' : 'none',
@@ -90,10 +107,20 @@ const NftList = ({
                                     >
                                         {truncateText(nft.name, 20)}
                                     </Typography>}
-                                {nft?.price &&
-                                    <Typography>
-                                        {`${nft.price} Matic`}
-                                    </Typography>
+                                {nft?.price && <Box
+                                    display="flex"
+                                    alignItems="center"
+                                    gap={0.5}
+                                    sx={{
+                                        'img': {
+                                            filter: 'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(242deg) brightness(115%) contrast(101%)'
+                                        }
+                                    }}
+                                >
+                                    <img src="/matic.svg" width={16} height={16} />
+                                    <Typography sx={{ lineHeight: 1}}>{nft.price}</Typography>
+                                </Box>
+
                                 }
                             </Box>
                         }
@@ -103,37 +130,15 @@ const NftList = ({
                             display: () => showBottom ? 'flex' : 'none',
                         }}
                         title={
-                            <Box sx={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: "center",
-                            }}>
-                                <Stack spacing={2} direction="row" sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <Likes
-                                        id={nft?.tokenId}
-                                        token={true}
-                                        color='inherit'
-                                    />
-                                    <Comments nft={nft} color='inherit'/>
-                                </Stack>
-
-                                <Link href={`/nft/${nft?.tokenId}`}>
-                                    <Button
-                                        sx={{
-                                            borderColor: 'rgba(255, 255, 255, 0.9)',
-                                            color: 'rgba(255, 255, 255, 0.9)',
-                                            paddingY: 0.5,
-                                            '&:hover': {
-                                                borderColor: 'white',
-                                                color: 'white',
-                                                background: 'rgba(255, 255, 255, 0.35)',
-                                            }
-                                        }}
-                                    >
-                                        View
-                                    </Button>
-                                </Link>
+                            <Box display="flex" alignItems="center" gap={1} paddingY={1}>
+                                <Likes
+                                    id={nft?.tokenId}
+                                    token={true}
+                                    color='inherit'
+                                />
+                                <Comments nft={nft} color='inherit' />
                             </Box>
+
                         }
                     />
                 </ImageListItem>

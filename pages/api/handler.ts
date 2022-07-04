@@ -26,8 +26,8 @@ const rateLimits = {
   'POST:/api/tags/add': 6,
   'DELETE:/api/tags/delete': 6,
   
-  'GET:/api/comments': 30,
-  'GET:/api/comments/count': 30,
+  'GET:/api/comments': 60,
+  'GET:/api/comments/count': 60,
   'POST:/api/comments/add': 6,
   'DELETE:/api/comments/delete': 6,
   

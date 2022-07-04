@@ -103,10 +103,6 @@ export const HodlImage = ({
                     width={width}
                     height={height}       
                 />
-                {/* { !loaded && <Skeleton   
-                    variant="rectangular"
-                    width="100%"
-                    height={height} /> } */}
             </Box>
 
         </>

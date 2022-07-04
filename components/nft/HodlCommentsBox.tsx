@@ -30,7 +30,7 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
     prefetchedComments, // TODO - NEEDS UPDATED
     prefetchedCommentCount, // TODO - NEEDS UPDATED
     limit,
-    maxHeight = '350px',
+    maxHeight = '500px',
     setTopLevel = null,
     clearTopLevel = null,
 }) => {

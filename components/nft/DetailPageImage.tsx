@@ -40,6 +40,7 @@ export const DetailPageImage = ({ token }) => {
                         }
                     {assetType(token) === 'image' && <HodlImage
                         loading="eager"
+                        sizes = "(max-width:599px) 600px, (max-width:899px) 900px, 500px"
                         sx={{
                             pointerEvents: 'none',
                             justifyContent: 'center',
@@ -67,7 +68,7 @@ export const DetailPageImage = ({ token }) => {
                             cid={token?.image} 
                             effect={token?.filter} 
                             // fit="scale-down" 
-                            sizes = "(max-width:599px) 600px, (max-width:899px) 900px, 600px"
+                            sizes = "(max-width:599px) 600px, (max-width:899px) 900px, 500px"
                         />}
                 </Box>
                 <Box>

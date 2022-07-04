@@ -43,7 +43,7 @@ export const InfiniteScrollComments: React.FC<InfiniteScrollCommentsProps> = ({
       }
     >
       {
-        ({ items, next, total }) => <Box key={next} display="flex" flexDirection="column" gap={1.5}>
+        ({ items, next, total }) => <Box key={next} display="flex" flexDirection="column" gap={1.5} sx={{ margin: `0 0 12px 0`}}>
           {
             (items || []).map(
               (comment: HodlComment, i: number) =>

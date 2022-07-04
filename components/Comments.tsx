@@ -66,7 +66,9 @@ export const Comments: FC<CommentsProps> = ({
                     paddingRight: 1.5,
                     ...sx
                 }}
-                onClick={() => {
+                onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
                     if (popUp) {
                         setOpen(true)
                     } else {

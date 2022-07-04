@@ -46,7 +46,7 @@ export const createCloudinaryUrl = (assetType = "image", deliveryType = "upload"
   return `https://res.cloudinary.com/${cloudName}/${assetType}/${deliveryType}/${transformations ? transformations + '/' : ''}${environment}/${folder}/${cid}${ext ? '.' + ext : ''}`;
 }
 
-export const imageSizes = [600, 800, 1000, 1200, 1400];
+export const imageSizes = [500, 600, 800, 1000, 1200, 1400];
 
 export const getShortAddress = address => {
   return address?.slice(0, 2) + '..' + address?.slice(-4);

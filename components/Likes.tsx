@@ -36,7 +36,7 @@ export const Likes: FC<LikesProps> = ({
                 gap={0.5}
                 sx={{
                     color: color,
-                    // alignItems: "center",
+                    alignItems: "center",
                     cursor: 'pointer',
                     position: 'relative',
                     ...sx
@@ -44,11 +44,25 @@ export const Likes: FC<LikesProps> = ({
                 {
                     !userLikesThisToken ?
                         <Tooltip title={likeTooltip}>
-                            <FavoriteBorderIcon onClick={toggleLike} color={color} fontSize={fontSize} />
+                            <FavoriteBorderIcon
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    toggleLike();
+                                }}
+                                color={color}
+                                fontSize={fontSize}
+                            />
                         </Tooltip>
                         :
                         <Tooltip title={unlikeTooltip}>
-                            <FavoriteIcon onClick={toggleLike} color={color} fontSize={fontSize} />
+                            <FavoriteIcon 
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    toggleLike();
+                                }} 
+                                color={color} 
+                                fontSize={fontSize} 
+                        />
                         </Tooltip>
                 }
                 {showCount && (tokenLikesCount < 1000 ?

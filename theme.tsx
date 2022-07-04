@@ -69,7 +69,21 @@ let theme = createTheme({
       },
       styleOverrides: {
         root: {
-          textTransform: 'none'
+          textTransform: 'none',
+          padding: '5px 10px',
+          // borderRadius: '4px',
+          boxShadow: 'none',
+          '&:hover': {
+            boxShadow: 'none',
+          }
+        }
+      }
+    },
+    MuiBadge: {
+      styleOverrides: {
+        badge: {
+          // fontWeight: 600,
+          // fontSize: '14px'
         }
       }
     },
@@ -89,22 +103,29 @@ let theme = createTheme({
         }
       }
     },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          border: `1px solid rgba(0,0,0,0.1)`
+        }
+      }
+    },
     MuiCardContent: {
       styleOverrides: {
         root: {
           padding: '12px',
           '&:last-child': {
             paddingBottom: '12px'
-          }
-          
+          }    
         }
       }
     },
     MuiImageListItemBar: {
       styleOverrides: {
         root: ({ ownerState, theme }) => ({
-          backgroundColor: 'rgba(0, 0, 0, 0.4)',
+          backgroundColor: 'rgba(0, 0, 0, 0.3)',
           ...(ownerState?.position === 'top' && {
+            // background: 'none',
             borderTopLeftRadius: 8,
             borderTopRightRadius: 8
           }),
