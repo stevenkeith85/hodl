@@ -242,10 +242,10 @@ const ResponsiveAppBar = () => {
                                 >
                                     {
                                         desktopMenuOpen ?
-                                            <Box width={36} display="flex" alignItems="center" justifyContent="center"><CloseIcon /></Box> :
+                                            <Box width={44} display="flex" alignItems="center" justifyContent="center"><CloseIcon /></Box> :
                                             address ?
                                                 <ProfileAvatar profileAddress={address} size="small" showNickname={false} withLink={false} /> :
-                                                <Box width={36} display="flex" alignItems="center" justifyContent="center"><AccountBalanceWallet /></Box>
+                                                <Box width={44} display="flex" alignItems="center" justifyContent="center"><AccountBalanceWallet /></Box>
                                     }
                                 </IconButton>
                             </Stack>

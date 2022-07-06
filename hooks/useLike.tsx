@@ -33,7 +33,6 @@ export const useLike = (id, token = true, prefetchedLikeCount = null) => {
 
     mutateLikesCount(old => userLikesThisToken ? old - 1 : old + 1, { revalidate: false });
     mutateUserLikesThisToken(old => !old, { revalidate: false })
-    mutate([`/api/notifications/get`, address]); // mutate your own notificatons - TODO: SHOULD MUTATE THE OWNER OF THE LIKED OBJECTS NOTIFICATIONS
 
     try {
       const r = await axios.post(
@@ -49,7 +48,6 @@ export const useLike = (id, token = true, prefetchedLikeCount = null) => {
     } catch (error) {
       mutateLikesCount();
       mutateUserLikesThisToken();
-      mutate([`/api/notifications/get`, address]); // mutate your own notificatons - TODO: SHOULD MUTATE THE OWNER OF THE LIKED OBJECTS NOTIFICATIONS
 
       return { success: false, fileName: null, mimeType: null };
     }

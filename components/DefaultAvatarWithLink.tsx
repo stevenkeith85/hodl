@@ -1,9 +1,8 @@
-import {
-    Link
-} from "@mui/material";
+
 import axios from 'axios';
 import useSWR from 'swr';
 import { DefaultAvatar } from './DefaultAvatar';
+import Link from 'next/link';
 import { NoSsr } from "@mui/material";
 
 interface DefaultAvatarWithLinkProps {
@@ -19,18 +18,21 @@ export const DefaultAvatarWithLink: React.FC<DefaultAvatarWithLinkProps> = ({ pr
         { revalidateOnMount: true }
     )
 
-    return (
-        <NoSsr>
-        {/* {
+    return (<>
+        {
             profileNickname ?
-                <Link href ={`/profile/${profileNickname}`}>
-                    <DefaultAvatar size={size} color={color} />
+                <Link href ={`/profile/${profileNickname}`} passHref>
+                    <a>
+                        <DefaultAvatar size={size} color={color} />
+                    </a>
+                    
                 </Link>
             :
-            <Link href={`/profile/${profileAddress}`}>
+            <Link href={`/profile/${profileAddress}`} passHref>
+                <a>
                 <DefaultAvatar size={size} color={color} />
+                </a>
             </Link>
-        } */}
-        </NoSsr>
-    )
+        }
+    </>)
 }

@@ -23,7 +23,6 @@ export const NftActionButtons = ({ nft }) => {
     const isOwner = () => Boolean(nft?.owner?.toLowerCase() === address?.toLowerCase());
 
     const smartContractError = e => {
-        console.log(e);
         const re = /reverted with reason string '(.+)'/gi;
         const matches = re.exec(e?.data?.message)
     

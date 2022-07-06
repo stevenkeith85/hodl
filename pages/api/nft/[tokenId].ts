@@ -2,6 +2,7 @@
 // This is used for getting a 'complete' NFT. i.e. what we've stored in Redis and the data from the blockchain.
 // We use this for operations around ownership
 //
+// See also api/token, which is used to just get token data from our redis database
 
 import NFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json'
 import Market from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
@@ -16,6 +17,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import dotenv from 'dotenv'
 import apiRoute from '../handler';
 import { getToken } from '../token/[tokenId]';
+import { Nft } from '../../../models/Nft';
 
 dotenv.config({ path: '../.env' })
 
@@ -75,8 +77,7 @@ const isTokenForSale = ({ price, seller, tokenId }) => {
     tokenId !== ethers.constants.Zero;
 }
 
-
-export const fetchNFT = async tokenId => {
+export const fetchNFT = async (tokenId: number): Promise<Nft> => {
   const provider = await getProvider();
 
   const marketContract = new ethers.Contract(nftmarketaddress, Market.abi, provider);
@@ -84,7 +85,7 @@ export const fetchNFT = async tokenId => {
   const tokenExists = await tokenContract.exists(tokenId);
 
   if (!tokenExists) {
-    return false;
+    throw new Error('token does not exist');
   }
 
   const marketItem = await marketContract.getListing(tokenId);
@@ -94,12 +95,12 @@ export const fetchNFT = async tokenId => {
   const token = await getToken(tokenId);
 
   if (!token) {
-    return false;
+    throw new Error('could not get token');
   }
 
   const price = ethers.utils.formatUnits(marketItem.price.toString(), 'ether');
 
-  return {
+  const result: Nft = {
     name: token.name,
     description: token.description,
     privilege: token.privilege || null,
@@ -115,6 +116,8 @@ export const fetchNFT = async tokenId => {
     mimeType: token.mimeType || '',
     filter: token.filter || null
   }
+
+  return result;
 }
 
 export const getTokenUriAndOwner = async (tokenId) => {
@@ -137,8 +140,12 @@ route.get(async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
-  const token = await fetchNFT(tokenId);
-  res.status(200).json({ token })
+  try {
+    const token = await fetchNFT(+tokenId);
+    return res.status(200).json({ token })
+  } catch (e) {
+    return res.status(400).json({ message: 'Bad Request' });
+  }
 });
 
 export default route;

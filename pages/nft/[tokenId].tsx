@@ -33,49 +33,51 @@ import { Comments } from "../../components/Comments";
 import { getCommentCount } from "../api/comments/count";
 import { useState } from "react";
 import { Forum, Info, Insights } from "@mui/icons-material";
-import { getLikeCount } from "../api/like/likeCount";
+
 import { useRouter } from "next/router";
+import { getLikeCount } from "../api/like2/token/count";
 
 
 export async function getServerSideProps({ params }) {
-  const nft = await fetchNFT(params.tokenId);
-  const comment = params.comment;
-  const limit = 10;
+  try {
+    const nft = await fetchNFT(params.tokenId);
 
-  if (!nft) {
+    const comment = params.comment;
+    const limit = 10;
+
+    const prefetchedTags = await getTagsForToken(params.tokenId);
+
+    const prefetchedComments = await getCommentsForToken(comment ? "comment" : "token", comment ? comment : params.tokenId, 0, limit);
+    const prefetchedCommentCount = await getCommentCount(comment ? "comment" : "token", comment ? comment : params.tokenId);
+
+    const priceHistory = await getPriceHistory(params.tokenId);
+
+    const prefetchedLikeCount = await getLikeCount(params.tokenId);
+
+    return {
+      props: {
+        nft,
+        prefetchedTags,
+        prefetchedComments: [prefetchedComments],
+        limit,
+        prefetchedCommentCount,
+        priceHistory,
+        prefetchedLikeCount
+      },
+    }
+  } catch (e) {
     return { notFound: true }
-  }
-
-  const prefetchedTags = await getTagsForToken(params.tokenId);
-
-  const prefetchedComments = await getCommentsForToken(comment ? "comment" : "token", comment ? comment : params.tokenId, 0, limit);
-  const prefetchedCommentCount = await getCommentCount(comment ? "comment" : "token", comment ? comment : params.tokenId);
-  
-  const priceHistory = await getPriceHistory(params.tokenId);
-
-  const prefetchedLikeCount = await getLikeCount(params.tokenId);
-
-  return {
-    props: {
-      nft,
-      prefetchedTags,
-      prefetchedComments: [prefetchedComments],
-      limit,
-      prefetchedCommentCount,
-      priceHistory,
-      prefetchedLikeCount
-    },
   }
 }
 
-const NftDetail = ({ 
-  nft, 
-  prefetchedTags, 
-  prefetchedComments, 
-  limit, 
-  prefetchedCommentCount, 
-  priceHistory, 
-  prefetchedLikeCount 
+const NftDetail = ({
+  nft,
+  prefetchedTags,
+  prefetchedComments,
+  limit,
+  prefetchedCommentCount,
+  priceHistory,
+  prefetchedLikeCount
 }) => {
   const [value, setValue] = useState(0);
 
@@ -106,17 +108,17 @@ const NftDetail = ({
           <Stack spacing={2}>
             <DetailPageImage token={nft} />
             <Box gap={1} display='flex' alignItems='center'>
-              <Likes 
-                sx={{ color: theme => theme.palette.secondary.main, '.MuiTypography-body1': { color: '#666' } }} 
-                id={nft.tokenId} 
-                token={true} 
+              <Likes
+                sx={{ color: theme => theme.palette.secondary.main, '.MuiTypography-body1': { color: '#666' } }}
+                id={nft.tokenId}
+                token={true}
                 prefetchedLikeCount={prefetchedLikeCount}
-                />
-              <Comments 
-                nft={nft} 
-                popUp={false} 
+              />
+              <Comments
+                nft={nft}
+                popUp={false}
                 prefetchedCommentCount={prefetchedCommentCount}
-                sx={{ color: '#333' }} 
+                sx={{ color: '#333' }}
               />
             </Box>
           </Stack>
@@ -139,21 +141,19 @@ const NftDetail = ({
           </Box>
           <div hidden={value !== 0}>
             <Stack spacing={2}>
-              
               <DescriptionCard nft={nft} />
-              <HodlTagCloud 
-                nft={nft} 
-                prefetchedTags={prefetchedTags} 
+              <HodlTagCloud
+                nft={nft}
+                prefetchedTags={prefetchedTags}
               />
-              <HodlCommentsBox 
+              <HodlCommentsBox
                 tokenId={nft.tokenId}
                 object={comment ? "comment" : "token"}
-                objectId={comment ? comment : nft.tokenId} 
-                prefetchedComments={prefetchedComments} 
-                prefetchedCommentCount={prefetchedCommentCount} 
-                limit={limit} 
+                objectId={comment ? comment : nft.tokenId}
+                prefetchedComments={prefetchedComments}
+                prefetchedCommentCount={prefetchedCommentCount}
+                limit={limit}
               />
-              
             </Stack>
           </div>
           <div hidden={value !== 1}>

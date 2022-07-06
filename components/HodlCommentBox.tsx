@@ -13,6 +13,7 @@ import { useComments, useCommentCount, useDeleteComment } from "../hooks/useComm
 import { FC, useContext, useState } from "react";
 import { HodlComment } from "../models/HodlComment";
 import { WalletContext } from "../contexts/WalletContext";
+import { formatDistanceStrict } from "date-fns";
 
 interface HodlCommentBoxProps {
     comment: HodlComment;
@@ -85,10 +86,6 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
     const internalCountSWR = useCommentCount(comment.id, "comment", null);
     const countSWR = replyCountSWR || internalCountSWR;
 
-    // TODO: We should probably store the nft id the comment was on. 
-    // This will make it easier to link to it in notifications, 
-    // and we can check whether the token owner wants to delete things on their token.
-    // iterating up the comment tree will be too slow
     const canDeleteComment = (comment: HodlComment) => {
         const { subject, tokenId } = comment;
 
@@ -158,6 +155,13 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                 </Typography>
 
                             </Box>
+                            <Box display="flex" gap={0.5}>
+                    <Typography sx={{ fontSize: 10, color: "#999" }}>{likesCount} likes</Typography>
+                    <Typography sx={{ fontSize: 10, color: "#999" }}>|</Typography>
+                    <Typography sx={{ fontSize: 10, color: "#999" }}>{countSWR.data} replies</Typography>
+                    <Typography sx={{ fontSize: 10, color: "#999" }}>|</Typography>
+                    <Typography sx={{ fontSize: 10, color: "#999" }}>{comment.timestamp && formatDistanceStrict(new Date(comment.timestamp), new Date(), { addSuffix: true })}</Typography>
+                </Box>
                         </Box>
                     </Box>
 
@@ -248,14 +252,9 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                             />
                         </Tooltip>
                     }
+                    
                 </Box>
-                <Box display="flex" gap={0.5} paddingLeft="45px">
-                    <Typography sx={{ fontSize: 10, color: "#999" }}>{likesCount} likes</Typography>
-                    <Typography sx={{ fontSize: 10, color: "#999" }}>|</Typography>
-                    <Typography sx={{ fontSize: 10, color: "#999" }}>{countSWR.data} replies</Typography>
-                    <Typography sx={{ fontSize: 10, color: "#999" }}>|</Typography>
-                    <Typography sx={{ fontSize: 10, color: "#999" }}>{comment.timestamp && formatDistance(new Date(comment.timestamp), new Date(), { addSuffix: true })}</Typography>
-                </Box>
+                
             </Box>
 
             {

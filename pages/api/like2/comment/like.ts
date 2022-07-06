@@ -56,7 +56,7 @@ route.post(async (req, res: NextApiResponse) => {
       subject: req.address,
       action: NotificationTypes.Liked,
       object: "comment",
-      objectId: comment,
+      id: comment,
     };
 
     const success = addNotification(notification);

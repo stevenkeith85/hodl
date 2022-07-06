@@ -20,13 +20,20 @@ const route = apiRoute();
 
 // Data Structures:
 //
+// The hash containing every comment made on HodlMyMoon
 // "comment" -> {
 //   1: "{ subject, comment, token, timestamp }", 
 //   2: "{ subject, comment, token, timestamp }"
 // }
 //
-// "commented:0x1234" -> (1, 2, 3)
-// "comments:token:1" -> (0x1234, 0x5678)
+// The sorted set of comments the user has made (on tokens or comments):
+// "commented:0x1234" -> (<id>/<time>, <id>/<time>, <id>/<time>)
+//
+// The sorted set of comments made on a token:
+// "comments:token:1" -> (<id>/<time>, <id>/<time>, <id>/<time>)
+//
+// The sorted set of comments made on a comment (i.e. replies)
+// "comments:comment:1" -> (<id>/<time>, <id>/<time>, <id>/<time>)
 
 
 export const addComment = async (comment: HodlComment) => {
@@ -56,7 +63,7 @@ export const addComment = async (comment: HodlComment) => {
       subject: comment.subject,
       action: NotificationTypes.CommentedOn,
       object: "comment",
-      objectId: comment.id
+      id: comment.id
     };
 
     notificationAdded = await addNotification(notification);

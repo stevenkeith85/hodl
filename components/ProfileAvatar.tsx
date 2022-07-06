@@ -1,12 +1,11 @@
 import Link from "next/link";
-import {
-    Avatar, Stack} from "@mui/material";
+import {Avatar, Stack} from "@mui/material";
 import useSWR from "swr";
 import { HodlImage } from "./HodlImage";
 import { HodlVideo } from "./HodlVideo";
 import { memo } from "react";
 import axios from 'axios';
-import { ProfileNameOrAddress } from "./profileNameOrAddress";
+import { ProfileNameOrAddress } from "./ProfileNameOrAddress";
 import { DefaultAvatar } from "./DefaultAvatar";
 import { DefaultAvatarWithLink } from "./DefaultAvatarWithLink";
 
@@ -70,24 +69,24 @@ export const NftAvatarMemo = memo(NftAvatar, (prev: any, next: any) => prev.size
 interface ProfileAvatarProps {
     profileAddress: string;
     reverse?: boolean;
-    size?: "small" | "medium" | "large";
+    size?: "xsmall" | "small" | "medium" | "large";
     color?: "primary" | "secondary" | "greyscale";
     showNickname?: boolean;
     withLink?: boolean;
 }
 
-export const ProfileAvatar : React.FC<ProfileAvatarProps>= ({ 
-    profileAddress, 
-    reverse = false, 
-    size = "medium", 
-    color = "secondary", 
-    showNickname = true, 
-    withLink = true 
+export const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
+    profileAddress,
+    reverse = false,
+    size = "medium",
+    color = "secondary",
+    showNickname = true,
+    withLink = true
 }) => {
     const { data: tokenId } = useSWR(
         profileAddress ? [`/api/profile/picture`, profileAddress] : null,
         (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.token),
-        { revalidateOnMount: true }    
+        { revalidateOnMount: true }
     )
 
     const { data: token } = useSWR(
@@ -99,7 +98,8 @@ export const ProfileAvatar : React.FC<ProfileAvatarProps>= ({
 
     const getSize = () => {
         const mappings = {
-            small: 36,
+            xsmall: 36,
+            small: 44,
             medium: 54,
             large: 100
         }
@@ -120,9 +120,9 @@ export const ProfileAvatar : React.FC<ProfileAvatarProps>= ({
             
             { !token && withLink && <DefaultAvatarWithLink size={getSize()} color={color} profileAddress={profileAddress} /> }
             { !token && !withLink && <DefaultAvatar size={getSize()} color={color} /> }
-            {/* {
-                showNickname && <ProfileNameOrAddress color={color} profileAddress={profileAddress} size={size} />
-            } */}
+            {showNickname && <ProfileNameOrAddress color={color} profileAddress={profileAddress} size={size} />}
+
+
         </Stack>
     )
 }

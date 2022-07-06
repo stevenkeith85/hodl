@@ -7,7 +7,7 @@ import apiRoute from "../handler";
 import { isValidAddress } from '../../../lib/profile';
 import { getFollowingCount } from './followingCount';
 import { getFollowersCount } from './followersCount';
-import { AddressAction, HodlNotification } from '../../../models/HodlNotifications';
+import { HodlNotification, NotificationTypes } from '../../../models/HodlNotifications';
 import { addNotification } from '../notifications/add';
 
 dotenv.config({ path: '../.env' })
@@ -67,14 +67,14 @@ route.post(async (req, res) => {
   getFollowersCount.delete(address);
 
   if (followed) {
-    // TODO: Object is now being used in a similar manner to the comments. We might need to capture additional data for this notification
-    // const notification: HodlNotification = {
-    //   subject: req.address,
-    //   object: "address",
-    //   action: AddressAction.Followed,
-    // };
+    const notification: HodlNotification = {
+      subject: req.address,
+      action: NotificationTypes.Followed,
+      object: "address",
+      id: address
+    };
 
-    // const success = addNotification(notification);
+    const success = addNotification(notification);
   }
 
   res.status(200).json({ followed });
