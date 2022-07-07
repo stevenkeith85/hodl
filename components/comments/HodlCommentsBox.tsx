@@ -3,9 +3,9 @@ import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { useCommentCount, useComments } from "../../hooks/useComments";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
-import { AddComment } from "./AddComment";
+import { AddComment } from "../nft/AddComment";
 import { InfiniteScrollComments } from "../profile/InfiniteScrollComments";
-import { HodlCommentBox } from "../HodlCommentBox";
+import { HodlCommentBox } from "./HodlCommentBox";
 import { fetchWithId } from "../../lib/swrFetchers";
 import useSWR from "swr";
 import { Forum } from "@mui/icons-material";
@@ -122,7 +122,7 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
                     <Box
                         sx={{
                             maxHeight,
-                            minHeight: maxHeight,
+                            minHeight: '200px',
                             overflow: 'auto',
                             position: 'relative',
                         }}

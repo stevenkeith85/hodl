@@ -7,13 +7,16 @@ import apiRoute from "../handler";
 import { NotificationTypes, HodlNotification } from '../../../models/HodlNotifications';
 import { getPriceHistory } from "../token-bought/[tokenId]";
 import { likesToken } from "../like2/token/likes";
-import { getTokensListed } from "../token-listed/[tokenId]";
 import { getFollowers } from "../follow2/followers";
 import { isFollowing } from "../follow2/follows";
 import { likesComment } from "../like2/comment/likes";
 import { fetchNFT, getOwnerOrSellerAddress } from "../nft/[tokenId]";
 import { HodlComment } from "../../../models/HodlComment";
-import { request } from "http";
+import { ethers } from "ethers";
+import { nftaddress } from "../../../config";
+import { getProvider } from "../../../lib/server/connections";
+import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
+
 import { Nft } from "../../../models/Nft";
 
 dotenv.config({ path: '../.env' })
@@ -45,6 +48,15 @@ export const addNotification = async (notification: HodlNotification) => {
 
       const owner = await getOwnerOrSellerAddress(notification.id);
 
+      // THIS IS TEMP. MAKES IT EASIER TO DEBUG
+      const selfNotified = await client.zadd(
+        `notifications:${notification.subject}`,
+        {
+          score: notification.timestamp,
+          member: JSON.stringify(notification)
+        }
+      );
+
       return await client.zadd(
         `notifications:${owner}`,
         {
@@ -61,6 +73,15 @@ export const addNotification = async (notification: HodlNotification) => {
 
       const comment: HodlComment = await client.hget('comment', `${notification.id}`);
 
+      // THIS IS TEMP. MAKES IT EASIER TO DEBUG
+      const selfNotified = await client.zadd(
+        `notifications:${notification.subject}`,
+        {
+          score: notification.timestamp,
+          member: JSON.stringify(notification)
+        }
+      );
+
       return await client.zadd(
         `notifications:${comment.subject}`,
         {
@@ -71,17 +92,32 @@ export const addNotification = async (notification: HodlNotification) => {
     }
   }
 
+  // Who: 
+  // if a reply, tell the comment author. 
+  // if a token, tell the token owner.
   if (notification.action === NotificationTypes.CommentedOn) {
     const comment: HodlComment = await client.hget('comment', `${notification.id}`);
 
     const owner = await getOwnerOrSellerAddress(comment.tokenId);
-    return await client.zadd(
+
+    // THIS IS TEMP. MAKES IT EASIER TO DEBUG
+    const selfNotified = await client.zadd(
+      `notifications:${notification.subject}`,
+      {
+        score: notification.timestamp,
+        member: JSON.stringify(notification)
+      }
+    );
+
+    const ownerNotified = await client.zadd(
       `notifications:${owner}`,
       {
         score: notification.timestamp,
         member: JSON.stringify(notification)
       }
     );
+
+    return ownerNotified;
   }
 
   if (notification.action === NotificationTypes.Followed) { // tell the account someone followed it
@@ -111,10 +147,8 @@ export const addNotification = async (notification: HodlNotification) => {
     return followedNotified;
   }
 
-  // TODO: Probably need to bullet-proof the token notifications. just some ideas...
-  // if a token is listed, we could get the listing and check the seller is the notification subject
-  // possibly quicker than reading the blockchain events
-  if (notification.action === NotificationTypes.Listed) { // tell the seller's followers there's a new token for sale
+  // Who: Tell the seller's followers there's a new token for sale
+  if (notification.action === NotificationTypes.Listed) {
     try {
       const token: Nft = await fetchNFT(+notification.id);
 
@@ -154,18 +188,57 @@ export const addNotification = async (notification: HodlNotification) => {
     }
   }
 
-  if (notification.action === NotificationTypes.Bought) { // tell the buyer and seller the sale happened
+  if (notification.action === NotificationTypes.Added) { // tell the seller's followers there's a new token for sale
+    try {
+      const token: Nft = await fetchNFT(+notification.id);
+
+      if (token.owner !== notification.subject) {
+        return;
+      }
+
+      const followers = await getFollowers(notification.subject);
+
+      // THIS IS TEMP. MAKES IT EASIER TO DEBUG
+      const selfNotified = await client.zadd(
+        `notifications:${notification.subject}`,
+        {
+          score: notification.timestamp,
+          member: JSON.stringify(notification)
+        }
+      );
+
+
+      for (let address of followers) {
+        await client.zadd(
+          `notifications:${address}`,
+          {
+            score: notification.timestamp,
+            member: JSON.stringify(notification)
+          }
+        );
+      }
+
+      return 1; // TODO: this SHOULD be the actual number of notifications added. Just set it to 1 for the moment to say 'success'
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  // Who: Tell the buyer and seller the sale happened
+  if (notification.action === NotificationTypes.Bought) {
+
     const history = await getPriceHistory(notification.id);
+
+    if (history.length === 0) {
+      return 0;
+    }
+
     const buyer = history[0].buyerAddress;
     const seller = history[0].sellerAddress;
 
     if (buyer !== notification.subject) {
       return;
     }
-
-    console.log('buyer', buyer)
-    console.log('seller', seller)
-    console.log('notification', JSON.stringify(notification))
 
     const first = await client.zadd(
       `notifications:${buyer}`,
@@ -186,13 +259,11 @@ export const addNotification = async (notification: HodlNotification) => {
     return first + second;
   }
 
-
-
   return 0;
 }
 
-// TODO: We might prevent this being called client side.
-// We'd have to have a way of adding the listed, delisted, and bought notififications though.
+// TODO: We may need to revisit how these notifications get added. 
+// Perhaps a standalone service that monitors blockchain events; rather than the user's browser informing us.
 route.post(async (req, res: NextApiResponse) => {
   if (!req.address) {
     return res.status(403).json({ message: "Not Authenticated" });
@@ -204,10 +275,10 @@ route.post(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
-  // block most actions in the API, as we don't need these to be directly called via the API. (reduces likelihood of bots posting misleading notifications / lies)
-  if (action !== NotificationTypes.Delisted && // Perhaps we can query the blockchain via a scheduled task or something for these
-    action !== NotificationTypes.Listed &&
-    action !== NotificationTypes.Bought) {
+  // Block most actions in the API, as we don't need these to be directly called client-side.
+  // This reduces likelihood of bots posting misleading notifications / lies).
+  // We do check the validity of a notification though before adding it...
+  if (action !== NotificationTypes.Listed && action !== NotificationTypes.Bought) {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
@@ -215,8 +286,17 @@ route.post(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
+  // Ensure the token actually exists
+  const provider = await getProvider();
+  const contract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
+  const tokenExists = await contract.exists(id);
+
+  if (!tokenExists) {
+    return res.status(400).json({ message: 'Bad Request' });
+  }
+
   const notification: HodlNotification = {
-    subject: req.address, // user is telling us they did something. we'll check this against the blockchain before adding the notification
+    subject: req.address,
     action,
     id,
     object

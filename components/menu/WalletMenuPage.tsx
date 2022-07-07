@@ -5,9 +5,9 @@ import { useContext, useEffect, useState } from "react";
 import { useNickname } from "../../hooks/useNickname";
 import { WalletContext } from '../../contexts/WalletContext';
 import { NicknameModal } from "../modals/NicknameModal";
-import { ProfilePictureModal } from "../ProfilePictureModal";
+import { ProfilePictureModal } from "../modals/ProfilePictureModal";
 import { LoginLogoutButton } from "./LoginLogoutButton";
-import { ProfileAvatar } from "../ProfileAvatar";
+import { ProfileAvatar } from "../avatar/ProfileAvatar";
 
 export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, menuPage }) => {
     const router = useRouter();

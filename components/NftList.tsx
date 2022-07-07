@@ -1,14 +1,15 @@
 import { Box, imageListItemClasses, ImageListItem, ImageListItemBar, Typography, Button, Skeleton, Stack } from '@mui/material'
 import Link from 'next/link';
 import { assetType, truncateText } from '../lib/utils';
-import { ProfileAvatar } from './ProfileAvatar';
+import { ProfileAvatar } from './avatar/ProfileAvatar';
 import { HodlVideo } from './HodlVideo';
 import { Likes } from './Likes';
 import { HodlImage } from './HodlImage';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { Comments } from './Comments';
+import { Comments } from './comments/Comments';
 import { Videocam } from '@mui/icons-material'
+import { AssetTypes } from '../models/AssetType';
 
 const NftList = ({
     nfts,
@@ -54,28 +55,27 @@ const NftList = ({
                 }}>
                     <Link href={`/nft/${nft?.tokenId}`}>
                         <Box className="itemImage" sx={{ cursor: 'pointer' }}>
-                            {assetType(nft) === 'gif' &&
+                            {assetType(nft) === AssetTypes.Gif &&
                                 <HodlVideo
                                     cid={nft?.image}
                                     transformations={nft?.filter}
                                     gif={true}
                                     height={matches ? '400px' : '500px'}
                                 />}
-                            {(assetType(nft) === 'video' || assetType(nft) === 'audio') &&
+                            {(assetType(nft) === AssetTypes.Video || assetType(nft) === AssetTypes.Audio) &&
                                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
-                                    {assetType(nft) === 'video' && <Videocam fontSize="large" sx={{ position: 'absolute' }} />}
+                                    {assetType(nft) === AssetTypes.Video && <Videocam fontSize="large" sx={{ position: 'absolute' }} />}
                                     <HodlVideo
                                         cid={nft?.image}
                                         controls={false}
                                         onlyPoster={true}
                                         preload="none"
-                                        audio={assetType(nft) === 'audio'}
-                                        // transformations='l_text:Arial_100_bold:Video,co_rgb:FFFFFF'
+                                        audio={assetType(nft) === AssetTypes.Audio}
                                         height={matches ? '400px' : '500px'}
                                     />
                                 </Box>
                             }
-                            {assetType(nft) === 'image' &&
+                            {assetType(nft) === AssetTypes.Image &&
                                 <HodlImage
                                     cid={nft?.image}
                                     effect={nft?.filter}

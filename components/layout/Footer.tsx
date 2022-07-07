@@ -2,10 +2,10 @@ import { Stack, Box, Container, Typography } from "@mui/material";
 import { grey } from '@mui/material/colors';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import { Logo } from "./Logo";
-import { HodlLink } from "./HodlLink";
+import { Logo } from "../Logo";
+import { HodlLink } from "../HodlLink";
 import { useContext } from "react";
-import { WalletContext } from '../contexts/WalletContext';
+import { WalletContext } from '../../contexts/WalletContext';
 
 
 const Footer = () => {

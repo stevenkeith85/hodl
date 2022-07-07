@@ -13,6 +13,7 @@ interface HodlVideoProps {
     gif?: boolean;
     audio?: boolean;
     height?: string;
+    width?: string;
     preload?: string,
     onLoad?: Function;
 }
@@ -28,7 +29,8 @@ export const HodlVideo = ({
     gif = false,
     audio = false,
     height = 'auto',
-    preload="auto",
+    width = '100%',
+    preload = "auto",
     onLoad = null,
 }: HodlVideoProps) => {
     const asset = `${createCloudinaryUrl(gif ? 'image' : 'video', 'upload', transformations, folder, cid)}`
@@ -56,52 +58,53 @@ export const HodlVideo = ({
         if (gif) {
             return null;
         }
-        
+
         if (audio) {
             return '/hodlmymoonmusic.png'
         }
-        
+
         return `${asset}.jpg`;
     }
 
     return (
         <>
-        <Box sx={{
-            display: 'flex',
-            height: height,
-            video: {
-                objectFit: audio ? 'scale-down': 'cover',
-                objectPosition: 'center',
-                borderRadius: 1,
-                background: '#fafafa'
-            },
-            ...sx
-        }}>
-            {/* <Skeleton variant="rectangular" width="100%" height={height}></Skeleton> */}
-            <video
-                onLoadedData={() => {
-                    if (onLoad) {
-                        onLoad()
+            <Box sx={{
+                display: 'flex',
+                height: height,
+                width: width,
+                video: {
+                    objectFit: audio ? 'scale-down' : 'cover',
+                    objectPosition: 'center',
+                    borderRadius: 1,
+                    background: '#fafafa',
+                },
+                ...sx
+            }}>
+                {/* <Skeleton variant="rectangular" width="100%" height={height}></Skeleton> */}
+                <video
+                    onLoadedData={() => {
+                        if (onLoad) {
+                            onLoad()
+                        }
                     }
-                }
-                }
-                preload={preload}
-                width="100%"
-                ref={video}
-                autoPlay={gif}
-                loop={gif}
-                muted={gif}
-                controls={!gif && controls}
-                controlsList="nodownload"
-                poster={getPoster()}>
-                {!onlyPoster && (<>
-                    <source type="video/mp4" src={`${asset}.mp4`} />
-                    <source type="video/webm" src={`${asset}.webm`} />
-                    Your browser does not support HTML5 video tag.
-                    {gif && <a href={`${asset}.gif`} >Click here to view original GIF</a>}
-                </>)}
-            </video>
-        </Box>
+                    }
+                    preload={preload}
+                    width={width}
+                    ref={video}
+                    autoPlay={gif}
+                    loop={gif}
+                    muted={gif}
+                    controls={!gif && controls}
+                    controlsList="nodownload"
+                    poster={getPoster()}>
+                    {!onlyPoster && (<>
+                        <source type="video/mp4" src={`${asset}.mp4`} />
+                        <source type="video/webm" src={`${asset}.webm`} />
+                        Your browser does not support HTML5 video tag.
+                        {gif && <a href={`${asset}.gif`} >Click here to view original GIF</a>}
+                    </>)}
+                </video>
+            </Box>
         </>
     )
 }

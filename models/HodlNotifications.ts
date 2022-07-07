@@ -1,12 +1,10 @@
 export enum NotificationTypes {
-    // Minted = 'minted', We will probably just handle this in the store endpoint
-    Listed = 'listed',
-    Delisted = 'delisted',
-    Bought = 'bought',
-    Liked = 'liked',
-    CommentedOn = 'commented on', // done
-    Followed = 'followed', // done
-    // Unfollowed = 'unfollowed', // We probably wont tell users someone has unfollowed them
+    Added = 'added', // token added to hodlmymoon
+    Listed = 'listed', // token listed on the market
+    Bought = 'bought', // token bought from market
+    Liked = 'liked', // token or comment liked
+    CommentedOn = 'commented on', // token or comment commented on
+    Followed = 'followed', // address has been followed
 }
 
 // e.g.

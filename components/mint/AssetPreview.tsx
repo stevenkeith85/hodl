@@ -1,5 +1,7 @@
 import { Skeleton, Stack, Typography } from "@mui/material";
 import { FC } from "react";
+import { assetType } from "../../lib/utils";
+import { AssetTypes } from "../../models/AssetType";
 import { HodlVideo } from "../HodlVideo";
 import { FilteredImageMemo } from "./FilteredImage";
 import { FilteredVideoMemo } from "./FilteredVideo";
@@ -49,6 +51,23 @@ export const AssetPreview: FC<MintProps> = ({
             cid={fileName.split('/')[2]} 
             folder="uploads" 
             onLoad={setLoading}
+            height={'400px'}
+            audio = {assetType({
+              mimeType: formData.mimeType,
+              tokenId: 0,
+              owner: "",
+              name: "",
+              description: "",
+              image: "",
+              filter: "",
+              privilege: "",
+              ipfsMetadata: "",
+              ipfsMetadataGateway: "",
+              ipfsImage: "",
+              ipfsImageGateway: "",
+              forSale: false,
+              price: ""
+            }) === AssetTypes.Audio}
           />
         }
       </Stack>

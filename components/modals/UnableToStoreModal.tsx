@@ -1,7 +1,7 @@
 import { Alert, Button, Stack, Typography } from "@mui/material";
 import Link from "next/link";
 import { HodlModal } from "./HodlModal";
-import { RocketTitle } from "./RocketTitle";
+import { RocketTitle } from "../RocketTitle";
 
 export const UnableToStoreModal = ({ unableToSaveModalOpen, setUnableToSaveModalOpen, tokenId, retry}) => (
     <HodlModal

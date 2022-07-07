@@ -1,13 +1,13 @@
 import { Button, Stack } from "@mui/material";
 import { useContext, useState } from "react";
-import { WalletContext } from '../contexts/WalletContext';
+import { WalletContext } from '../../contexts/WalletContext';
 import { HodlModal } from "./HodlModal";
-import { RocketTitle } from "./RocketTitle";
+import { RocketTitle } from "../RocketTitle";
 import axios from 'axios'
 import useSWRInfinite from 'swr/infinite'
 import InfiniteScroll from 'react-swr-infinite-scroll'
-import { HodlLoadingSpinner } from "./HodlLoadingSpinner";
-import SelectProfileNFT from "./SelectProfileNFT";
+import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
+import SelectProfileNFT from "../SelectProfileNFT";
 import { mutate } from "swr";
 
 

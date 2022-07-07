@@ -1,8 +1,8 @@
 import Link from "next/link";
 import {Avatar, Stack} from "@mui/material";
 import useSWR from "swr";
-import { HodlImage } from "./HodlImage";
-import { HodlVideo } from "./HodlVideo";
+import { HodlImage } from "../HodlImage";
+import { HodlVideo } from "../HodlVideo";
 import { memo } from "react";
 import axios from 'axios';
 import { ProfileNameOrAddress } from "./ProfileNameOrAddress";

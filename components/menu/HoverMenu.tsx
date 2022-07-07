@@ -1,8 +1,8 @@
 import { useTheme } from '@mui/material/styles';
 import { Box, Fade, Slide, useMediaQuery } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-import { MainMenuPage } from './menu/MainMenuPage';
-import { WalletMenuPage } from './menu/WalletMenuPage';
+import { MainMenuPage } from './MainMenuPage';
+import { WalletMenuPage } from './WalletMenuPage';
 
 export const HoverMenu = ({ pages, hoverMenuOpen, setHoverMenuOpen, page = null }) => {
     const [menuPage, setMenuPage] = useState(page);

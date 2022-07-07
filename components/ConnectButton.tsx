@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import { getShortAddress, truncateText} from "../lib/utils";
 import { useConnect } from "../hooks/useConnect";
 import { NicknameModal } from "./modals/NicknameModal";
-import { ProfilePictureModal } from "./ProfilePictureModal";
+import { ProfilePictureModal } from "./modals/ProfilePictureModal";
 import { useNickname } from "../hooks/useNickname";
 
 

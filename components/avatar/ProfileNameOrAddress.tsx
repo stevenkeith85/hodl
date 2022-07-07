@@ -2,7 +2,7 @@ import { Box } from '@mui/material';
 import axios from 'axios';
 import { FC } from 'react';
 import useSWR from 'swr';
-import { getShortAddress, truncateText } from '../lib/utils';
+import { getShortAddress, truncateText } from '../../lib/utils';
 import Link from 'next/link';
 
 interface ProfileNameOrAddressProps {

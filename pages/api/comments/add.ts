@@ -7,7 +7,6 @@ import apiRoute from "../handler";
 
 import { HodlNotification, NotificationTypes } from "../../../models/HodlNotifications";
 import { addNotification } from "../notifications/add";
-import { getCommentCount } from "./count";
 import { AddCommentValidationSchema } from "../../../validationSchema/comments/addComments";
 import { ethers } from "ethers";
 import { nftaddress } from "../../../config";

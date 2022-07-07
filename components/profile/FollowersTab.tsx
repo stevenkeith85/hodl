@@ -1,5 +1,5 @@
 import { Stack, Typography } from "@mui/material";
-import { ProfileAvatar } from "../ProfileAvatar";
+import { ProfileAvatar } from "../avatar/ProfileAvatar";
 
 interface FollowersTabProps {
   address: string, // current user

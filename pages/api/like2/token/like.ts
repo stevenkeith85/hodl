@@ -29,7 +29,6 @@ route.post(async (req, res: NextApiResponse) => {
   let liked = false;
 
   const exists = await client.zscore(`liked:tokens:${req.address}`, token);
-  console.log('exists', exists)
 
   if (exists) {
     await client.zrem(`liked:tokens:${req.address}`, token);

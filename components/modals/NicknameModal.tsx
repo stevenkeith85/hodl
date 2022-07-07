@@ -1,5 +1,5 @@
 import { Stack, Typography } from "@mui/material";
-import { HodlModal } from "../HodlModal";
+import { HodlModal } from "./HodlModal";
 import { RocketTitle } from "../RocketTitle";
 import { NicknameForm } from "../forms/NicknameForm";
 

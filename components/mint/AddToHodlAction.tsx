@@ -4,7 +4,7 @@ import { Rocket } from '@mui/icons-material';
 import { FC, useState } from 'react';
 import { useSnackbar } from 'notistack';
 
-import { UnableToStoreModal } from '../UnableToStoreModal';
+import { UnableToStoreModal } from '../modals/UnableToStoreModal';
 import { useStoreToken } from '../../hooks/useStoreToken';
 import { MintProps } from './models';
 

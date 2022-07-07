@@ -1,8 +1,5 @@
-import { NextApiRequest, NextApiResponse } from "next";
 import { ethers, BigNumber } from 'ethers'
 import dotenv from 'dotenv'
-import memoize from 'memoizee';
-import apiRoute from '../handler';
 import { getNickname } from "../profile/nickname";
 import { nftmarketaddress } from "../../../config";
 import { getProvider } from "../../../lib/server/connections";

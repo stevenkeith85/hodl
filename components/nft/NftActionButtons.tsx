@@ -25,7 +25,7 @@ export const NftActionButtons = ({ nft }) => {
     const smartContractError = e => {
         const re = /reverted with reason string '(.+)'/gi;
         const matches = re.exec(e?.data?.message)
-    
+
         if (matches) {
             enqueueSnackbar(matches[1], { variant: "error" });
         }
@@ -47,32 +47,34 @@ export const NftActionButtons = ({ nft }) => {
                 setOpen={setListModalOpen}
             >
                 <Stack spacing={2}>
-                    <RocketTitle 
-                        title="List this token on the market" 
+                    <RocketTitle
+                        title="List this token on the market"
                     />
                     <TextField
                         label="Price (Matic)"
                         value={price}
                         onChange={(e) => setPrice(e.target.value)}
                     />
-                    <Button
-                        onClick={async () => {
-                            try {
-                                enqueueSnackbar('Please Approve Transaction in Wallet', { variant: "info" });
-                                await listNftOnMarket(router.query.tokenId, price);
-                                enqueueSnackbar('Token listed on market', { variant: "success" });
-                                setListModalOpen(false);
-                                setListedModalOpen(true);
-                            } catch (e) {
-                                if (e.code === -32603) {
-                                    smartContractError(e);
+                    <div>
+                        <Button
+                            onClick={async () => {
+                                try {
+                                    enqueueSnackbar('Please Approve Transaction in Wallet', { variant: "info" });
+                                    await listNftOnMarket(router.query.tokenId, price);
+                                    enqueueSnackbar('Token listed on market', { variant: "success" });
+                                    setListModalOpen(false);
+                                    setListedModalOpen(true);
+                                } catch (e) {
+                                    if (e.code === -32603) {
+                                        smartContractError(e);
+                                    }
                                 }
-                            }
-                        }}
-                        disabled={!price}
-                    >
-                        Add
-                    </Button>
+                            }}
+                            disabled={!price}
+                        >
+                            Add
+                        </Button>
+                    </div>
                 </Stack>
             </HodlModal>
 
@@ -114,7 +116,7 @@ export const NftActionButtons = ({ nft }) => {
                                 } catch (e) {
                                     if (e.code === -32603) {
                                         smartContractError(e);
-                                    }    
+                                    }
                                 }
                             }}>
                             Buy NFT

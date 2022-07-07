@@ -9,20 +9,20 @@ import CloseIcon from '@mui/icons-material/Close';
 import Container from '@mui/material/Container';
 import { useState, useContext, useEffect } from 'react';
 import Link from 'next/link';
-import { Logo } from './Logo';
+import { Logo } from '../Logo';
 
 import { Stack, useMediaQuery, useTheme } from '@mui/material';
 import { useRouter } from 'next/router';
-import { HoverMenu } from './HoverMenu';
-import { AccountBalanceWallet, Spa, Storefront } from '@mui/icons-material';
-import { useConnect } from '../hooks/useConnect';
-import { WalletContext } from '../contexts/WalletContext';
-import { useNickname } from '../hooks/useNickname';
-import { HodlNotifications } from './HodlNotifications';
+import { HoverMenu } from '../menu/HoverMenu';
+import { AccountBalanceWallet, Newspaper, Spa, Storefront } from '@mui/icons-material';
+import { useConnect } from '../../hooks/useConnect';
+import { WalletContext } from '../../contexts/WalletContext';
+import { useNickname } from '../../hooks/useNickname';
+import { HodlNotifications } from '../notifications/HodlNotifications';
 import axios from 'axios'
 import { useSnackbar } from 'notistack';
-import { SearchBox } from './Search';
-import { ProfileAvatar } from './ProfileAvatar';
+import { SearchBox } from '../Search';
+import { ProfileAvatar } from '../avatar/ProfileAvatar';
 
 const ResponsiveAppBar = () => {
     const { address, setAddress, setSigner } = useContext(WalletContext);
@@ -41,8 +41,14 @@ const ResponsiveAppBar = () => {
 
     const [pages] = useState([
         {
-            label: 'Market',
+            label: 'Home',
             url: '/',
+            icon: <Newspaper />,
+            publicPage: true
+        },
+        {
+            label: 'Market',
+            url: '/market',
             icon: <Storefront />,
             publicPage: true
         },

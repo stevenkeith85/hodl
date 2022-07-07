@@ -4,9 +4,9 @@ import { useContext } from "react"
 import { 
     HodlModal,
     RocketTitle } 
-from "./index"
+from "../index"
 
-import { WalletContext } from '../contexts/WalletContext';
+import { WalletContext } from '../../contexts/WalletContext';
 
 export const SuccessModal = ({modalOpen, setModalOpen, message, tab=1}) => {
     const { nickname, address } = useContext(WalletContext);

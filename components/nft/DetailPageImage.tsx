@@ -3,6 +3,7 @@ import { HodlVideo } from "../HodlVideo";
 import { assetType } from "../../lib/utils";
 import { HodlImage } from "../HodlImage";
 import { useState } from "react";
+import { AssetTypes } from "../../models/AssetType";
 
 
 export const DetailPageImage = ({ token }) => {
@@ -12,7 +13,7 @@ export const DetailPageImage = ({ token }) => {
         <>
             <Modal open={assetModalOpen} onClose={() => { setAssetModalOpen(false) }}>
                 <>
-                    {assetType(token) === 'gif' && <HodlVideo
+                    {assetType(token) === AssetTypes.Gif && <HodlVideo
                         sx={{
                             pointerEvents: 'none',
                             justifyContent: 'center',
@@ -24,7 +25,7 @@ export const DetailPageImage = ({ token }) => {
                             }
                         }}
                         cid={token?.image} transformations={token?.filter} gif={true} />}
-                    {(assetType(token) === 'video' || assetType(token) === 'audio') && <HodlVideo
+                    {(assetType(token) === AssetTypes.Video || assetType(token) === AssetTypes.Audio) && <HodlVideo
                         sx={{
                             pointerEvents: 'none',
                             justifyContent: 'center',
@@ -38,7 +39,7 @@ export const DetailPageImage = ({ token }) => {
                         cid={token?.image} folder={'video/upload/nfts/'} />
                         
                         }
-                    {assetType(token) === 'image' && <HodlImage
+                    {assetType(token) === AssetTypes.Image && <HodlImage
                         loading="eager"
                         sizes = "(max-width:599px) 600px, (max-width:899px) 900px, 500px"
                         sx={{
@@ -57,30 +58,28 @@ export const DetailPageImage = ({ token }) => {
             <Box sx={{ cursor: 'pointer'}}>
                 <Box onClick={() => setAssetModalOpen(true)}>
                     {
-                        assetType(token) === 'gif' && 
+                        assetType(token) === AssetTypes.Gif && 
                         <HodlVideo cid={token?.image} transformations={token?.filter} gif={true} />
                     }
                 </Box>
                 <Box onClick={() => setAssetModalOpen(true)}>
                     {
-                        assetType(token) === 'image' && 
+                        assetType(token) === AssetTypes.Image && 
                         <HodlImage 
                             cid={token?.image} 
                             effect={token?.filter} 
-                            // fit="scale-down" 
                             sizes = "(max-width:599px) 600px, (max-width:899px) 900px, 500px"
                         />}
                 </Box>
                 <Box>
-                {(assetType(token) === 'video' || assetType(token) === 'audio') && <HodlVideo
+                {(assetType(token) === AssetTypes.Video || assetType(token) === AssetTypes.Audio) && <HodlVideo
                     cid={token?.image} 
-                    audio={assetType(token) === 'audio'}
-                    height={assetType(token) === 'audio' ? '400px': 'auto'}
+                    audio={assetType(token) === AssetTypes.Audio}
+                    height={assetType(token) === AssetTypes.Audio ? '400px': 'auto'}
                     transformations={token?.filter} 
                     />}
                 </Box>
             </Box>
-
         </>
     )
 }

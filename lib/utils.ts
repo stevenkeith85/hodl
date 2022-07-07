@@ -1,3 +1,5 @@
+import { AssetTypes } from "../models/AssetType";
+import { Nft } from "../models/Nft";
 import { commercial, nonCommercial, token } from "./copyright";
 
 export const MAX_TAGS_PER_TOKEN = 6;
@@ -39,6 +41,7 @@ export const validPrivilegeValue = (value) => {
   return values.indexOf(value) !== -1;
 }
 
+// TODO: Add a type for CloudinaryAssetType ('image' | 'video')
 export const createCloudinaryUrl = (assetType = "image", deliveryType = "upload", transformations = null, folder, cid, ext = null) => {
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_NAME;
   const environment = process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER; // dev, staging, or prod
@@ -94,25 +97,25 @@ export const trim = str => {
   return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 }
 
-export const assetType = nft => {
+export const assetType = (nft: Nft) : AssetTypes => {
   if (!nft.mimeType) {
-    return 'image';
+    return AssetTypes.Image;
   }
 
   if (nft.mimeType === 'image/gif') {
-    return 'gif'
+    return AssetTypes.Gif;
   }
 
   if (nft.mimeType.indexOf('video') !== -1) {
-    return 'video'
+    return AssetTypes.Video;
   }
 
   if (nft.mimeType.indexOf('image') !== -1) {
-    return 'image'
+    return AssetTypes.Image;
   }
 
   if (nft.mimeType.indexOf('audio') !== -1) {
-    return 'audio'
+    return AssetTypes.Audio;
   }
 }
 

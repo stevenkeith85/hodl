@@ -1,16 +1,18 @@
 import { Box, Typography } from "@mui/material";
 import useSWR from "swr";
-import { fetchWithId } from "../lib/swrFetchers";
+import { fetchWithId } from "../../lib/swrFetchers";
 import Link from "next/link";
-import { ProfileAvatar } from "./ProfileAvatar";
+import { ProfileAvatar } from "../avatar/ProfileAvatar";
 import { FC, useContext } from "react";
 import axios from 'axios';
-import { WalletContext } from "../contexts/WalletContext";
-import { HodlNotification, NotificationTypes } from "../models/HodlNotifications";
-import { HodlImage } from "./HodlImage";
-import { truncateText } from "../lib/utils";
-import { ProfileNameOrAddress } from './ProfileNameOrAddress';
+import { WalletContext } from "../../contexts/WalletContext";
+import { HodlNotification, NotificationTypes } from "../../models/HodlNotifications";
+import { HodlImage } from "../HodlImage";
+import { assetType, truncateText } from "../../lib/utils";
+import { ProfileNameOrAddress } from '../avatar/ProfileNameOrAddress';
 import { formatDistanceStrict } from "date-fns";
+import { AssetTypes } from "../../models/AssetType";
+import { HodlVideo } from "../HodlVideo";
 
 interface HodlNotificationBoxProps {
     item: HodlNotification;
@@ -27,7 +29,11 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
             revalidateOnMount: true
         });
 
-    const { data: token } = useSWR(item.object === "token" ? [`/api/token`, item.id] : comment ? [`/api/token`, comment.tokenId] : null,
+    const { data: token } = useSWR(item.object === "token" ?
+        [`/api/token`, item.id] :
+        comment ?
+            [`/api/token`, comment.tokenId] :
+            null,
         (url, query) => axios.get(`${url}/${query}`).then(r => r.data.token),
         {
             revalidateOnMount: true
@@ -45,30 +51,32 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
                     <Box component="span" sx={{ cursor: 'pointer', textDecoration: 'none' }}>
                         {/* {JSON.stringify(item, null, 2)} */}
 
-                        {item?.subject &&
+                        {item?.subject && item?.subject !== address &&
                             <ProfileNameOrAddress
                                 color={"primary"}
                                 profileAddress={item.subject}
                                 size={"small"}
                                 sx={{ fontWeight: 600 }}
                             />}
+                        {item?.subject && item?.subject === address &&
+                            <Typography component="span" sx={{ fontWeight: 600 }}>You</Typography>
+                        }
                         {' '}
 
                         {/* Liked */}
                         {item.action === NotificationTypes.Liked && item.object === "token" && token && <>
                             <Link href={`/nft/${item.id}`} passHref>
                                 <Typography component="a" sx={{ textDecoration: 'none', color: '#333' }}>
-                                    liked your token.
+                                    liked a token.
                                 </Typography>
                             </Link>
                         </>
 
                         }
                         {item.action === NotificationTypes.Liked && item.object === "comment" && comment && <>
-
                             <Link href={`/nft/${comment.tokenId}?comment=${comment.id}`}>
                                 <Typography component="a" sx={{ textDecoration: 'none', color: '#333' }}>
-                                    liked your comment: {truncateText(comment.comment, 80)}.
+                                    liked a comment: {truncateText(comment.comment, 80)}.
                                 </Typography>
                             </Link>
                         </>
@@ -93,12 +101,22 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
                         </>
                         }
 
+                        {/* Added */}
+                        {
+                            item.action === NotificationTypes.Added &&
+                            <Link href={`/nft/${item.id}`}>
+                                <Typography component="a" sx={{ textDecoration: 'none', color: '#333' }}>
+                                    added a new token.
+                                </Typography>
+                            </Link>
+                        }
+
                         {/* Listed */}
                         {
                             item.action === NotificationTypes.Listed &&
                             <Link href={`/nft/${item.id}`}>
                                 <Typography component="a" sx={{ textDecoration: 'none', color: '#333' }}>
-                                    listed a token
+                                    listed a token.
                                 </Typography>
                             </Link>
                         }
@@ -108,7 +126,7 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
                             item.action === NotificationTypes.Bought &&
                             <Link href={`/nft/${item.id}`}>
                                 <Typography component="a" sx={{ cursor: "pointer" }}>
-                                    bought a token
+                                    bought a token.
                                 </Typography>
                             </Link>
                         }
@@ -127,7 +145,57 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
                 {
                     token && token?.image &&
                     <Link href={comment ? `/nft/${comment.tokenId}` : `/nft/${item.id}`}>
-                        <a><HodlImage cid={token.image.split('//')[1]} effect={token.filter} height={'44px'} width={'44px'} sx={{ img: { borderRadius: 0 } }} /></a>
+                        <Box sx={{ cursor: 'pointer'}}>
+                            {assetType(token) === AssetTypes.Image &&
+                                <a>
+                                    <HodlImage 
+                                        cid={token.image.split('//')[1]} 
+                                        effect={token.filter} 
+                                        height={'44px'} 
+                                        width={'44px'} 
+                                        sx={{ img: { borderRadius: 0 } }} 
+                                    />
+                                </a>
+                            }
+                            {assetType(token) === AssetTypes.Video &&
+                                <a>
+                                    <HodlVideo
+                                        cid={token.image.split('//')[1]}
+                                        controls={false}
+                                        onlyPoster={true}
+                                        preload="none"
+                                        audio={false}
+                                        height='44px'
+                                        width='44px'
+                                        sx={{ video: { 
+                                            objectFit: 'cover',
+                                            objectPosition: 'center',
+                                            borderRadius: 0,
+                                            background: '#fafafa',
+                                        } }} 
+                                    />
+                                </a>
+                            }
+                            {assetType(token) === AssetTypes.Audio &&
+                                <a>
+                                    <HodlVideo
+                                        cid={token.image.split('//')[1]}
+                                        controls={false}
+                                        onlyPoster={true}
+                                        preload="none"
+                                        audio={true}
+                                        height='44px'
+                                        width='44px'
+                                        sx={{ video: { 
+                                            objectFit: 'contain',
+                                            objectPosition: 'center',
+                                            borderRadius: 0,
+                                            background: '#fafafa',
+                                        } }} 
+                                    />
+                                </a>
+                            }
+                        </Box>
                     </Link>
                 }
             </Box>

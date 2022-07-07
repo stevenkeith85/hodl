@@ -3,13 +3,18 @@ import CloseIcon from '@mui/icons-material/Close';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { useContext, useEffect } from "react";
-import { WalletContext } from "../contexts/WalletContext";
+import { WalletContext } from "../../contexts/WalletContext";
 import { useRouter } from "next/router";
-import { HodlLoadingSpinner } from "./HodlLoadingSpinner";
-import { useNotifications } from "../hooks/useNotifications";
+import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
+import { useNotifications } from "../../hooks/useNotifications";
 import { HodlNotificationBox } from "./HodlNotificationBox";
+import { NotificationTypes } from "../../models/HodlNotifications";
 
-export const HodlNotifications = ({ setHoverMenuOpen, showNotifications, setShowNotifications }) => {
+export const HodlNotifications = ({
+    setHoverMenuOpen,
+    showNotifications,
+    setShowNotifications
+}) => {
     const router = useRouter();
     const theme = useTheme();
     const { address } = useContext(WalletContext);
@@ -70,7 +75,14 @@ export const HodlNotifications = ({ setHoverMenuOpen, showNotifications, setShow
     >
         {isLoading && <HodlLoadingSpinner />}
         {notifications && notifications.length === 0 && 'No recent notifications'}
-        {(notifications || []).map((item, i) => <HodlNotificationBox key={i} item={item} setShowNotifications={setShowNotifications} />)}
+
+        {(
+            notifications &&
+            notifications.filter(x =>
+                x.action !== NotificationTypes.Added && 
+                x.action !== NotificationTypes.Listed
+            ) || []
+        ).map((item, i) => <HodlNotificationBox key={i} item={item} setShowNotifications={setShowNotifications} />)}
     </Box>
 
     return (

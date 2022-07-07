@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { Box, Container, CssBaseline, ThemeProvider } from '@mui/material';
-import ResponsiveAppBar from '../components/AppBar';
+import ResponsiveAppBar from '../components/layout/AppBar';
 import theme from '../theme';
-import Footer from '../components/Footer';
+import Footer from '../components/layout/Footer';
 import { SnackbarProvider } from 'notistack';
 import { SWRConfig } from 'swr';
 import createEmotionCache from '../createEmotionCache';

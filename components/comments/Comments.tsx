@@ -1,9 +1,9 @@
 import { CommentOutlined } from "@mui/icons-material";
 import { Box, Typography } from "@mui/material";
-import { HodlModal } from "./HodlModal";
-import { HodlCommentsBox } from "./nft/HodlCommentsBox";
+import { HodlModal } from "../modals/HodlModal";
+import { HodlCommentsBox } from "./HodlCommentsBox";
 import { FC, useState } from "react";
-import { useCommentCount } from "../hooks/useComments";
+import { useCommentCount } from "../../hooks/useComments";
 
 export interface CommentsProps {
     nft: any,
@@ -43,7 +43,7 @@ export const Comments: FC<CommentsProps> = ({
 
     return (
         <>
-            <HodlModal open={open} setOpen={setOpen} sx={{ padding: 0, width: { xs: '90vw', md: '60vw' } }} >
+            <HodlModal open={open} setOpen={setOpen} sx={{ padding: 0, width: { xs: '90vw', md: '80vw', lg: '70vw', xl: '50vw' } }} >
                 <HodlCommentsBox 
                     tokenId={nft.tokenId}
                     setTopLevel={setTopLevel}

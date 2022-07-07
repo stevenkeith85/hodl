@@ -1,18 +1,18 @@
 import { Typography, Box, Stack, Tooltip } from "@mui/material";
 import { useRouter } from "next/router";
-import { ProfileAvatar } from "./ProfileAvatar";
+import { ProfileAvatar } from "../avatar/ProfileAvatar";
 import formatDistance from 'date-fns/formatDistance';
 import Link from 'next/link';
 import axios from 'axios'
 import useSWR from "swr";
-import { getShortAddress, truncateText } from "../lib/utils";
-import { Likes } from "./Likes";
+import { getShortAddress, truncateText } from "../../lib/utils";
+import { Likes } from "../Likes";
 import { HighlightOffOutlined, Message, Notes, Reply } from "@mui/icons-material";
-import { useLike } from "../hooks/useLike";
-import { useComments, useCommentCount, useDeleteComment } from "../hooks/useComments";
+import { useLike } from "../../hooks/useLike";
+import { useComments, useCommentCount, useDeleteComment } from "../../hooks/useComments";
 import { FC, useContext, useState } from "react";
-import { HodlComment } from "../models/HodlComment";
-import { WalletContext } from "../contexts/WalletContext";
+import { HodlComment } from "../../models/HodlComment";
+import { WalletContext } from "../../contexts/WalletContext";
 import { formatDistanceStrict } from "date-fns";
 
 interface HodlCommentBoxProps {

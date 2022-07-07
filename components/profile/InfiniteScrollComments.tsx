@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import InfiniteScroll from 'react-swr-infinite-scroll'
 import { HodlComment } from "../../models/HodlComment";
-import { HodlCommentBox } from "../HodlCommentBox";
+import { HodlCommentBox } from "../comments/HodlCommentBox";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 
 
