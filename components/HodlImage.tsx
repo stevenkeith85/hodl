@@ -1,4 +1,4 @@
-import { Box, Skeleton } from "@mui/material";
+import { Box, Skeleton, useTheme } from "@mui/material";
 import Head from "next/head";
 import { useState } from "react";
 import { createCloudinaryUrl, imageSizes } from "../lib/utils";
@@ -37,6 +37,8 @@ export const HodlImage = ({
     srcSetSizes = imageSizes,
     onLoad = null
 }: HodlImageProps) => {
+    const theme = useTheme();
+    
     const sources = () => srcSetSizes.map(
         size => `${createCloudinaryUrl(
             'image',
@@ -75,7 +77,7 @@ export const HodlImage = ({
                     imageSrcSet={sources()}
                     // @ts-ignore
                     imagesizes={sizes}
-                    
+
                 />}
             </Head>
             <Box sx={{
@@ -85,6 +87,7 @@ export const HodlImage = ({
                     objectFit: fit,
                     objectPosition: "top",
                     borderRadius: 1,
+                  
                 },
                 ...sx
             }}>
@@ -101,7 +104,7 @@ export const HodlImage = ({
                     srcSet={sources()}
                     sizes={sizes}
                     width={width}
-                    height={height}       
+                    height={height}
                 />
             </Box>
 

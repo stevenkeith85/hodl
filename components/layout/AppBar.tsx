@@ -40,12 +40,12 @@ const ResponsiveAppBar = () => {
     const [error, setError] = useState('');
 
     const [pages] = useState([
-        {
-            label: 'Home',
-            url: '/',
-            icon: <Newspaper />,
-            publicPage: true
-        },
+        // {
+        //     label: 'Home',
+        //     url: '/',
+        //     icon: <Newspaper />,
+        //     publicPage: true
+        // },
         {
             label: 'Market',
             url: '/market',

@@ -4,7 +4,7 @@ import dotenv from 'dotenv'
 
 const client = Redis.fromEnv()
 import apiRoute from "../handler";
-import { NotificationTypes, HodlNotification } from '../../../models/HodlNotifications';
+import { ActionTypes, HodlAction } from '../../../models/HodlAction';
 import { getPriceHistory } from "../token-bought/[tokenId]";
 import { likesToken } from "../like2/token/likes";
 import { getFollowers } from "../follow2/followers";
@@ -25,209 +25,266 @@ const route = apiRoute();
 // Data Structures (TODO):
 //
 // The hash containing every notification made on HodlMyMoon
-// "notification" -> {
-//   1: "{ subject, object, objectId, timestamp }", 
-//   2: "{ subject, object, objectId, timestamp }", 
+// "action" -> {
+//   1: "{ id, subject, object, objectId, timestamp }", 
+//   2: "{ id, subject, object, objectId, timestamp }", 
 // }
 //
 // The sorted set of notifications for the user:
-// "notifications:0x1234" -> (<id>/<time>, <id>/<time>, <id>/<time>)
+// "notifications:0x1234" -> (<action_id>/<timestamp>, <action_id>/<timestamp>, <action_id>/<timestamp>)
+
+
+// Add <action> to <address>s notifications
+const addNotification = async (address: string, action: HodlAction) : Promise<number> => {
+  const added = await client.zadd(
+    `notifications:${address}`,
+    {
+      score: action.timestamp,
+      member: JSON.stringify(action)
+    }
+  );
+
+  return added;
+}
+
+// TODO: Add <action> to <address>s feed
+const addToFeed = async (address: string, action: HodlAction) : Promise<number> => {
+  const added = await client.zadd(
+    `feed:${address}`,
+    {
+      score: action.timestamp,
+      member: JSON.stringify(action)
+    }
+  );
+
+  return added;
+}
+
+// TODO: Add <action> to <address>s record.
+// 
+// We need this, for scenarios like:
+// When A follows B, we'd like to add B's last action to A's feed (if it's not already there)
+//
+// We could also provide a general activity log at some point for the user/address.
+const recordAction = async (address: string, action: HodlAction) : Promise<number> => {
+  const added = await client.zadd(
+    `actions:${address}`,
+    {
+      score: action.timestamp,
+      member: JSON.stringify(action)
+    }
+  );
+
+  return added;
+}
 
 // we overwrite the timestamp, as we don't trust users
-export const addNotification = async (notification: HodlNotification) => {
-  console.log('notification', notification)
-  notification.timestamp = Date.now();
+export const addAction = async (action: HodlAction) => {
+  console.log('action', action)
 
-  if (notification.action === NotificationTypes.Liked) { // tell the token owner you liked it
-    if (notification.object === "token") {
+  action.timestamp = Date.now();
 
-      const likes = await likesToken(notification.subject, notification.id);
+  if (action.action === ActionTypes.Liked) { // tell the token owner you liked it
+    if (action.object === "token") {
+
+      const likes = await likesToken(action.subject, action.id);
       if (!likes) {
         return;
       }
 
-      const owner = await getOwnerOrSellerAddress(notification.id);
+      const owner = await getOwnerOrSellerAddress(action.id);
 
       // THIS IS TEMP. MAKES IT EASIER TO DEBUG
-      const selfNotified = await client.zadd(
-        `notifications:${notification.subject}`,
-        {
-          score: notification.timestamp,
-          member: JSON.stringify(notification)
-        }
-      );
+      // const selfNotified = await client.zadd(
+      //   `notifications:${notification.subject}`,
+      //   {
+      //     score: notification.timestamp,
+      //     member: JSON.stringify(notification)
+      //   }
+      // );
 
-      return await client.zadd(
-        `notifications:${owner}`,
-        {
-          score: notification.timestamp,
-          member: JSON.stringify(notification)
-        }
-      );
-    } else if (notification.object === "comment") {
+      // return await client.zadd(
+      //   `notifications:${owner}`,
+      //   {
+      //     score: action.timestamp,
+      //     member: JSON.stringify(action)
+      //   }
+      // );
 
-      const likes = await likesComment(notification.subject, notification.id);
+      return await addNotification(owner, action);
+
+    } else if (action.object === "comment") {
+
+      const likes = await likesComment(action.subject, action.id);
       if (!likes) {
         return;
       }
 
-      const comment: HodlComment = await client.hget('comment', `${notification.id}`);
+      const comment: HodlComment = await client.hget('comment', `${action.id}`);
 
       // THIS IS TEMP. MAKES IT EASIER TO DEBUG
-      const selfNotified = await client.zadd(
-        `notifications:${notification.subject}`,
-        {
-          score: notification.timestamp,
-          member: JSON.stringify(notification)
-        }
-      );
+      // const selfNotified = await client.zadd(
+      //   `notifications:${notification.subject}`,
+      //   {
+      //     score: notification.timestamp,
+      //     member: JSON.stringify(notification)
+      //   }
+      // );
 
-      return await client.zadd(
-        `notifications:${comment.subject}`,
-        {
-          score: notification.timestamp,
-          member: JSON.stringify(notification)
-        }
-      );
+      // return await client.zadd(
+      //   `notifications:${comment.subject}`,
+      //   {
+      //     score: action.timestamp,
+      //     member: JSON.stringify(action)
+      //   }
+      // );
+
+      return await addNotification(comment.subject, action);
     }
   }
 
   // Who: 
   // if a reply, tell the comment author. 
   // if a token, tell the token owner.
-  if (notification.action === NotificationTypes.CommentedOn) {
-    const comment: HodlComment = await client.hget('comment', `${notification.id}`);
+  if (action.action === ActionTypes.CommentedOn) {
+    const comment: HodlComment = await client.hget('comment', `${action.id}`);
 
     const owner = await getOwnerOrSellerAddress(comment.tokenId);
 
     // THIS IS TEMP. MAKES IT EASIER TO DEBUG
-    const selfNotified = await client.zadd(
-      `notifications:${notification.subject}`,
-      {
-        score: notification.timestamp,
-        member: JSON.stringify(notification)
-      }
-    );
+    // const selfNotified = await client.zadd(
+    //   `notifications:${notification.subject}`,
+    //   {
+    //     score: notification.timestamp,
+    //     member: JSON.stringify(notification)
+    //   }
+    // );
 
-    const ownerNotified = await client.zadd(
-      `notifications:${owner}`,
-      {
-        score: notification.timestamp,
-        member: JSON.stringify(notification)
-      }
-    );
+    // const ownerNotified = await client.zadd(
+    //   `notifications:${owner}`,
+    //   {
+    //     score: action.timestamp,
+    //     member: JSON.stringify(action)
+    //   }
+    // );
 
-    return ownerNotified;
+    // return ownerNotified;
+
+    return await addNotification(owner, action);
   }
 
-  if (notification.action === NotificationTypes.Followed) { // tell the account someone followed it
-    const follows = await isFollowing(notification.subject, notification.id);
+  if (action.action === ActionTypes.Followed) { // tell the account someone followed it
+    const follows = await isFollowing(action.subject, action.id);
 
     if (!follows) {
       return;
     }
 
     // THIS IS TEMP. MAKES IT EASIER TO DEBUG
-    const selfNotified = await client.zadd(
-      `notifications:${notification.subject}`,
-      {
-        score: notification.timestamp,
-        member: JSON.stringify(notification)
-      }
-    );
+    // const selfNotified = await client.zadd(
+    //   `notifications:${notification.subject}`,
+    //   {
+    //     score: notification.timestamp,
+    //     member: JSON.stringify(notification)
+    //   }
+    // );
 
-    const followedNotified = await client.zadd(
-      `notifications:${notification.id}`,
-      {
-        score: notification.timestamp,
-        member: JSON.stringify(notification)
-      }
-    );
+    // const followedNotified = await client.zadd(
+    //   `notifications:${action.id}`,
+    //   {
+    //     score: action.timestamp,
+    //     member: JSON.stringify(action)
+    //   }
+    // );
 
-    return followedNotified;
+    // return followedNotified;
+
+    return await addNotification(`${action.id}`, action);
   }
 
   // Who: Tell the seller's followers there's a new token for sale
-  if (notification.action === NotificationTypes.Listed) {
+  if (action.action === ActionTypes.Listed) {
     try {
-      const token: Nft = await fetchNFT(+notification.id);
+      const token: Nft = await fetchNFT(+action.id);
 
       if (!token.forSale) {
         return;
       }
 
-      if (token.owner !== notification.subject) {
+      if (token.owner !== action.subject) {
         return;
       }
 
-      const followers = await getFollowers(notification.subject);
+      const followers = await getFollowers(action.subject);
 
       // THIS IS TEMP. MAKES IT EASIER TO DEBUG
-      const selfNotified = await client.zadd(
-        `notifications:${notification.subject}`,
-        {
-          score: notification.timestamp,
-          member: JSON.stringify(notification)
-        }
-      );
+      // const selfNotified = await client.zadd(
+      //   `notifications:${action.subject}`,
+      //   {
+      //     score: action.timestamp,
+      //     member: JSON.stringify(action)
+      //   }
+      // );
 
-
+      let count = 0;
       for (let address of followers) {
-        await client.zadd(
-          `notifications:${address}`,
-          {
-            score: notification.timestamp,
-            member: JSON.stringify(notification)
-          }
-        );
+        // await client.zadd(
+        //   `notifications:${address}`,
+        //   {
+        //     score: action.timestamp,
+        //     member: JSON.stringify(action)
+        //   }
+        // );
+        count += await addNotification(`${address}`, action);
       }
 
-      return 1; // TODO: this SHOULD be the actual number of notifications added. Just set it to 1 for the moment to say 'success'
+      return count;
     } catch (e) {
       return 0;
     }
   }
 
-  if (notification.action === NotificationTypes.Added) { // tell the seller's followers there's a new token for sale
+  if (action.action === ActionTypes.Added) { // tell the seller's followers there's a new token for sale
     try {
-      const token: Nft = await fetchNFT(+notification.id);
+      const token: Nft = await fetchNFT(+action.id);
 
-      if (token.owner !== notification.subject) {
+      if (token.owner !== action.subject) {
         return;
       }
 
-      const followers = await getFollowers(notification.subject);
+      const followers = await getFollowers(action.subject);
 
       // THIS IS TEMP. MAKES IT EASIER TO DEBUG
-      const selfNotified = await client.zadd(
-        `notifications:${notification.subject}`,
-        {
-          score: notification.timestamp,
-          member: JSON.stringify(notification)
-        }
-      );
+      // const selfNotified = await client.zadd(
+      //   `notifications:${notification.subject}`,
+      //   {
+      //     score: notification.timestamp,
+      //     member: JSON.stringify(notification)
+      //   }
+      // );
 
-
+      let count = 0;
       for (let address of followers) {
-        await client.zadd(
-          `notifications:${address}`,
-          {
-            score: notification.timestamp,
-            member: JSON.stringify(notification)
-          }
-        );
+        // await client.zadd(
+        //   `notifications:${address}`,
+        //   {
+        //     score: action.timestamp,
+        //     member: JSON.stringify(action)
+        //   }
+        // );
+        count += await addNotification(`${address}`, action);
       }
 
-      return 1; // TODO: this SHOULD be the actual number of notifications added. Just set it to 1 for the moment to say 'success'
+      return count;
     } catch (e) {
       return 0;
     }
   }
 
   // Who: Tell the buyer and seller the sale happened
-  if (notification.action === NotificationTypes.Bought) {
+  if (action.action === ActionTypes.Bought) {
 
-    const history = await getPriceHistory(notification.id);
+    const history = await getPriceHistory(action.id);
 
     if (history.length === 0) {
       return 0;
@@ -236,25 +293,28 @@ export const addNotification = async (notification: HodlNotification) => {
     const buyer = history[0].buyerAddress;
     const seller = history[0].sellerAddress;
 
-    if (buyer !== notification.subject) {
+    if (buyer !== action.subject) {
       return;
     }
 
-    const first = await client.zadd(
-      `notifications:${buyer}`,
-      {
-        score: notification.timestamp,
-        member: JSON.stringify(notification)
-      }
-    );
+    // const first = await client.zadd(
+    //   `notifications:${buyer}`,
+    //   {
+    //     score: action.timestamp,
+    //     member: JSON.stringify(action)
+    //   }
+    // );
 
-    const second = await client.zadd(
-      `notifications:${seller}`,
-      {
-        score: notification.timestamp,
-        member: JSON.stringify(notification)
-      }
-    );
+    const first = await addNotification(`${buyer}`, action);
+    const second = await addNotification(`${seller}`, action);
+
+    // const second = await client.zadd(
+    //   `notifications:${seller}`,
+    //   {
+    //     score: action.timestamp,
+    //     member: JSON.stringify(action)
+    //   }
+    // );
 
     return first + second;
   }
@@ -278,7 +338,7 @@ route.post(async (req, res: NextApiResponse) => {
   // Block most actions in the API, as we don't need these to be directly called client-side.
   // This reduces likelihood of bots posting misleading notifications / lies).
   // We do check the validity of a notification though before adding it...
-  if (action !== NotificationTypes.Listed && action !== NotificationTypes.Bought) {
+  if (action !== ActionTypes.Listed && action !== ActionTypes.Bought) {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
@@ -295,14 +355,14 @@ route.post(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
-  const notification: HodlNotification = {
+  const notification: HodlAction = {
     subject: req.address,
     action,
     id,
     object
   };
 
-  const success = await addNotification(notification);
+  const success = await addAction(notification);
 
   if (success) {
     return res.status(200).json({ message: 'success' });

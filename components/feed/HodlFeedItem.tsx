@@ -6,7 +6,7 @@ import { ProfileAvatar } from "../avatar/ProfileAvatar";
 import { FC, useContext } from "react";
 import axios from 'axios';
 import { WalletContext } from "../../contexts/WalletContext";
-import { HodlNotification, NotificationTypes } from "../../models/HodlNotifications";
+import { HodlAction, ActionTypes } from "../../models/HodlAction";
 import { HodlImage } from "../HodlImage";
 import { assetType, truncateText } from "../../lib/utils";
 import { ProfileNameOrAddress } from '../avatar/ProfileNameOrAddress';
@@ -15,10 +15,10 @@ import { AssetTypes } from "../../models/AssetType";
 import { HodlVideo } from "../HodlVideo";
 import { Likes } from "../Likes";
 import { Comments } from "../comments/Comments";
-import { HodlCommentsBox } from "../comments/HodlCommentsBox";
+
 
 interface HodlFeedItemProps {
-    item: HodlNotification;
+    item: HodlAction;
 }
 
 export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
@@ -50,7 +50,11 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                 border: '1px solid #ddd',
                 borderRadius: 1,
                 padding: 2,
-                width: {xs: '100%', sm:'80%', md: '50%'}
+                boxShadow: '0 0 2px 1px #eee',
+                // width: {xs: '100%', sm:'80%', md: '70%' }
+                // maxWidth: '600px'
+                width: `100%`,
+                overflow: 'hidden'
             }
             }
         >
@@ -94,21 +98,23 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                     {item.timestamp && formatDistanceStrict(new Date(item.timestamp), new Date(), { addSuffix: true })}
                                 </Typography>
                             </Box>
-                            {/* {item.action === NotificationTypes.Added && <Box component="span"><Chip label="New" color="success" /></Box>} */}
-                            {item.action === NotificationTypes.Listed && <Box component="span"><Chip label="Listed" color="secondary" /></Box>}
+                            {item.action === ActionTypes.Added && <Box component="span"><Chip label="New" color="success" /></Box>}
+                            {item.action === ActionTypes.Listed && <Box component="span"><Chip label="Listed" color="secondary" /></Box>}
                         </Box>
                     </Box>
                 </Box>
                 {
                     token && token?.image &&
                     <Link href={comment ? `/nft/${comment.tokenId}` : `/nft/${item.id}`}>
-                        <Box sx={{ cursor: 'pointer' }}>
+                        <Box sx={{ cursor: 'pointer', marginX: -2 }}>
                             {assetType(token) === AssetTypes.Image &&
                                 <a>
                                     <HodlImage
                                         cid={token.image.split('//')[1]}
                                         effect={token.filter}
                                         sx={{ img: { borderRadius: 0 } }}
+                                        loading="eager"
+                                        sizes="(max-width:599px) 600px, (max-width:899px) 900px, 700px"
                                     />
                                 </a>
                             }
@@ -120,6 +126,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                         onlyPoster={false}
                                         preload="none"
                                         audio={false}
+                                        sx={{ video: { borderRadius: 0 } }}
                                     />
                                 </a>
                             }
@@ -134,7 +141,8 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                         audio={true}
                                         sx={{
                                             video: {
-                                                objectPosition: 'top'
+                                                objectPosition: 'top',
+                                                borderRadius: 0
                                             }
                                         }}
                                     />
@@ -144,6 +152,12 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
 
                     </Link>
                 }
+            </Box>
+            <Box>
+                <Typography component="h2" sx={{ fontWeight: 600 }}>{token?.name}</Typography>
+            </Box>
+            <Box>
+                {token?.description}
             </Box>
             <Box
                 display="flex"

@@ -14,7 +14,7 @@ export const useHodling = (address, limit = 10, prefetchedHodlingCount = null, p
     )
 
     const getKey = (index, _previous) => {
-        return [`/api/profile/hodling`, address, index * limit, limit];
+        return limit ? [`/api/profile/hodling`, address, index * limit, limit] : null;
     }
 
     const swr = useSWRInfinite(

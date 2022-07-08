@@ -8,8 +8,8 @@ import { getLikeCount } from './count';
 
 const client = Redis.fromEnv()
 import apiRoute from "../../handler";
-import { addNotification } from "../../notifications/add";
-import { HodlNotification, NotificationTypes } from "../../../../models/HodlNotifications";
+import { addAction } from "../../notifications/add";
+import { HodlAction, ActionTypes } from "../../../../models/HodlAction";
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
@@ -53,14 +53,14 @@ route.post(async (req, res: NextApiResponse) => {
   getLikeCount.delete(token);
 
   if (liked) {
-    const notification: HodlNotification = {
+    const notification: HodlAction = {
       subject: req.address,
-      action: NotificationTypes.Liked,
+      action: ActionTypes.Liked,
       object: "token",
       id: token
     };
 
-    const success = addNotification(notification);
+    const success = addAction(notification);
   }
 
   res.status(200).json({ liked });

@@ -5,8 +5,8 @@ import dotenv from 'dotenv'
 const client = Redis.fromEnv()
 import apiRoute from "../handler";
 
-import { HodlNotification, NotificationTypes } from "../../../models/HodlNotifications";
-import { addNotification } from "../notifications/add";
+import { HodlAction, ActionTypes } from "../../../models/HodlAction";
+import { addAction } from "../notifications/add";
 import { AddCommentValidationSchema } from "../../../validationSchema/comments/addComments";
 import { ethers } from "ethers";
 import { nftaddress } from "../../../config";
@@ -58,14 +58,14 @@ export const addComment = async (comment: HodlComment) => {
 
   let notificationAdded = 0;
   if (tokenRecordAdded) {
-    const notification: HodlNotification = {
+    const notification: HodlAction = {
       subject: comment.subject,
-      action: NotificationTypes.CommentedOn,
+      action: ActionTypes.CommentedOn,
       object: "comment",
       id: comment.id
     };
 
-    notificationAdded = await addNotification(notification);
+    notificationAdded = await addAction(notification);
   }
 
   // getCommentCount.delete(comment.objectId);

@@ -21,7 +21,7 @@ export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({ profileAdd
 
     const mappings = {
         small: 14,
-        medium: 14,
+        medium: 18,
         large: 20
     }
 
@@ -29,7 +29,7 @@ export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({ profileAdd
         component="span"
         sx={{
             a: {
-                fontSize: mappings[size],
+                fontSize: `${mappings[size]}px`,
                 textDecoration: 'none',
                 color: color === 'greyscale' ? 'white' : '#000'
             },

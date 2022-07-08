@@ -1,4 +1,4 @@
-export enum NotificationTypes {
+export enum ActionTypes {
     Added = 'added', // token added to hodlmymoon
     Listed = 'listed', // token listed on the market
     Bought = 'bought', // token bought from market
@@ -14,8 +14,8 @@ export enum NotificationTypes {
 //
 // <id>
 // steven <followed> an <address> with the address of <id>
-export interface HodlNotification {    
-    action: NotificationTypes;
+export interface HodlAction {    
+    action: ActionTypes;
 
     subject: string; // the wallet address that took the action. (i.e. the user)
 

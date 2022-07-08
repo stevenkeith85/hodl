@@ -13,7 +13,7 @@ export const Logo = ({ sx = {} }) => (
                 ...sx
             }}
         >
-            <RocketLaunchIcon />
+            {/* <RocketLaunchIcon /> */}
             <Typography
                 sx={{
                     fontFamily: theme => theme.logo.fontFamily,

@@ -18,6 +18,7 @@ interface HodlCommentsBoxProps {
     prefetchedComments: any,
     prefetchedCommentCount: number,
     limit: number,
+    minHeight?: string,
     maxHeight?: string,
     setTopLevel?: any | null,
     clearTopLevel?: any | null
@@ -30,6 +31,7 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
     prefetchedComments, // TODO - NEEDS UPDATED
     prefetchedCommentCount, // TODO - NEEDS UPDATED
     limit,
+    minHeight = '200px',
     maxHeight = '500px',
     setTopLevel = null,
     clearTopLevel = null,
@@ -122,7 +124,7 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
                     <Box
                         sx={{
                             maxHeight,
-                            minHeight: '200px',
+                            minHeight,
                             overflow: 'auto',
                             position: 'relative',
                         }}

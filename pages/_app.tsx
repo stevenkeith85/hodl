@@ -10,11 +10,14 @@ import createEmotionCache from '../createEmotionCache';
 import { WalletContext } from '../contexts/WalletContext';
 import { CacheProvider } from '@emotion/react';
 import '../styles/globals.css'
+import { useRouter } from 'next/router';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
 function MyApp(props) {
+  const router = useRouter();
+
   const [signer, setSigner] = useState('');
   const [address, setAddress] = useState('');
   const [nickname, setNickname] = useState(''); // This will be getting removed
@@ -71,7 +74,7 @@ function MyApp(props) {
                   </Container>
                 </main>
                 <footer>
-                  <Footer />
+                  <Footer showFooter={router.asPath !== '/'} />
                 </footer>
               </Box>
             </SnackbarProvider>

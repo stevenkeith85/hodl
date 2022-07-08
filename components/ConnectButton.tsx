@@ -1,16 +1,16 @@
-import { Button, Menu, MenuItem, Stack, Tooltip, Typography } from "@mui/material";
+import { Box, Button, Menu, MenuItem, Stack, Tooltip, Typography } from "@mui/material";
 import { useContext, useEffect, useRef, useState } from "react";
 import { WalletContext } from '../contexts/WalletContext';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { useRouter } from "next/router";
-import { getShortAddress, truncateText} from "../lib/utils";
+import { getShortAddress, truncateText } from "../lib/utils";
 import { useConnect } from "../hooks/useConnect";
 import { NicknameModal } from "./modals/NicknameModal";
 import { ProfilePictureModal } from "./modals/ProfilePictureModal";
 import { useNickname } from "../hooks/useNickname";
 
 
-export const ConnectButton = () => {
+export const ConnectButton = ({ fontSize='14px', sx = null }) => {
     const { signer, address } = useContext(WalletContext);
     const router = useRouter()
 
@@ -24,7 +24,7 @@ export const ConnectButton = () => {
 
     const [nicknameModalOpen, setNicknameModalOpen] = useState(false);
     const [profilePictureModalOpen, setProfilePictureModalOpen] = useState(false);
-    
+
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
     const handleOpenUserMenu = (event) => setAnchorElUser(event.currentTarget);
     const handleCloseUserMenu = () => setAnchorElUser(null);
@@ -34,9 +34,9 @@ export const ConnectButton = () => {
     // TODO - EXTRACT
     const buttonText = () => {
         if (nickname) {
-            return <Tooltip title={nickname}><Typography>{ truncateText(nickname, 20) }</Typography></Tooltip>
+            return <Tooltip title={nickname}><Typography>{truncateText(nickname, 20)}</Typography></Tooltip>
         } else if (address) {
-            return <Tooltip title={address}><Typography>{ getShortAddress(address).toLowerCase() }</Typography></Tooltip>
+            return <Tooltip title={address}><Typography>{getShortAddress(address).toLowerCase()}</Typography></Tooltip>
         } else {
             return 'Connect';
         }
@@ -69,6 +69,10 @@ export const ConnectButton = () => {
             <Button
                 color="secondary"
                 variant="contained"
+                sx={{
+                    fontSize: fontSize,
+                    ...sx
+                }}
                 onClick={e => {
                     if (signer) {
                         handleOpenUserMenu(e);
@@ -79,14 +83,13 @@ export const ConnectButton = () => {
                         connect(false);
                     }
                 }
+
                 }
             >
-                {
-                    <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-                        <AccountBalanceWalletIcon />
-                        {buttonText()}
-                    </Stack>
-                }
+                <Box display="flex" gap={1} alignItems="center">
+                <AccountBalanceWalletIcon sx={{ fontSize: fontSize }} />
+                {buttonText()}
+                </Box>
             </Button>
             <Menu
                 sx={{

@@ -43,7 +43,18 @@ export const Comments: FC<CommentsProps> = ({
 
     return (
         <>
-            <HodlModal open={open} setOpen={setOpen} sx={{ padding: 0, width: { xs: '90vw', md: '80vw', lg: '70vw', xl: '50vw' } }} >
+            <HodlModal 
+                open={open} 
+                setOpen={setOpen} 
+                sx={{ 
+                    padding: 0, 
+                    width: { 
+                        xs: '90vw', 
+                        md: '80vw', 
+                        lg: '60vw', 
+                        xl: '40vw' 
+                    }
+                 }} >
                 <HodlCommentsBox 
                     tokenId={nft.tokenId}
                     setTopLevel={setTopLevel}
@@ -54,6 +65,7 @@ export const Comments: FC<CommentsProps> = ({
                     prefetchedCommentCount={prefetchedCommentCount} 
                     limit={10} 
                     maxHeight="50vh" 
+                    minHeight="25vh"
                 />
             </HodlModal>
             <Box

@@ -1,3 +1,4 @@
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import { Stack, Box, Container, Typography } from "@mui/material";
 import { grey } from '@mui/material/colors';
 import TwitterIcon from '@mui/icons-material/Twitter';
@@ -8,12 +9,16 @@ import { useContext } from "react";
 import { WalletContext } from '../../contexts/WalletContext';
 
 
-const Footer = () => {
+const Footer = ({showFooter=true}) => {
     const { address } = useContext(WalletContext);
+
+    // if (!showFooter) {
+    //     return null;
+    // }
 
     return (
     <Box>
-        <Box sx={{ backgroundColor: grey[300] }}>
+        {showFooter && <Box sx={{ backgroundColor: grey[300] }}>
             <Container maxWidth="xl" sx={{
                 paddingTop: {
                     xs: 4,
@@ -64,17 +69,18 @@ const Footer = () => {
                             { address && <HodlLink href="/create">Create</HodlLink> }
                         </Stack>
                     </Stack>
-                    <Stack>
-                            <Logo sx={{ 
+                    <Box>
+                        . . . <RocketLaunchIcon />
+                            {/* <Logo sx={{ 
                                 justifyContent: { xs: "center", md: "right" }
-                            }} />
-                            <Typography sx={{ fontSize: 18, fontWeight: 500, textAlign: 'center' }}>
-                                Create, Showcase, and Trade NFTs
-                            </Typography>                        
-                    </Stack>
+                            }} /> */}
+                            {/* <Typography sx={{ fontSize: 18, fontWeight: 500, textAlign: 'center' }}>
+                                Create, Trade, or Hodl NFTs
+                            </Typography>                         */}
+                    </Box>
                 </Stack>
             </Container>
-        </Box>
+        </Box> }
         <Box sx={{ backgroundColor: grey[200] }}>
             <Container
                 maxWidth="xl"

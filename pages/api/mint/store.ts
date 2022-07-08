@@ -7,8 +7,8 @@ import apiRoute from "../handler";
 import { getTokenUriAndOwner } from "../nft/[tokenId]";
 import { getToken } from "../token/[tokenId]";
 import axios from 'axios'
-import { HodlNotification, NotificationTypes } from "../../../models/HodlNotifications";
-import { addNotification } from "../notifications/add";
+import { HodlAction, ActionTypes } from "../../../models/HodlAction";
+import { addAction } from "../notifications/add";
 
 dotenv.config({ path: '../.env' })
 
@@ -43,14 +43,14 @@ route.post(async (req, res: NextApiResponse) => {
   getToken.delete(tokenId);
 
   // TODO
-  const notification: HodlNotification = {
+  const notification: HodlAction = {
     subject: req.address,
-    action: NotificationTypes.Added,
+    action: ActionTypes.Added,
     object: "token",
     id: tokenId
   };
 
-  const success = addNotification(notification);
+  const success = addAction(notification);
 
   res.status(200).json({ tokenId, name, description, privilege, image });
 });

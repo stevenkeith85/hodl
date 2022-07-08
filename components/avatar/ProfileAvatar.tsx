@@ -101,7 +101,8 @@ export const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
             xsmall: 36,
             small: 44,
             medium: 54,
-            large: 100
+            large: 70,
+            xlarge: 100
         }
 
         return mappings[size];

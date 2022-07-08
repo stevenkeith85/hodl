@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 import { useNotifications } from "../../hooks/useNotifications";
 import { HodlNotificationBox } from "./HodlNotificationBox";
-import { NotificationTypes } from "../../models/HodlNotifications";
+import { ActionTypes } from "../../models/HodlAction";
 
 export const HodlNotifications = ({
     setHoverMenuOpen,
@@ -79,8 +79,8 @@ export const HodlNotifications = ({
         {(
             notifications &&
             notifications.filter(x =>
-                x.action !== NotificationTypes.Added && 
-                x.action !== NotificationTypes.Listed
+                x.action !== ActionTypes.Added && 
+                x.action !== ActionTypes.Listed
             ) || []
         ).map((item, i) => <HodlNotificationBox key={i} item={item} setShowNotifications={setShowNotifications} />)}
     </Box>
