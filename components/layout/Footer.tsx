@@ -12,13 +12,13 @@ import { WalletContext } from '../../contexts/WalletContext';
 const Footer = ({showFooter=true}) => {
     const { address } = useContext(WalletContext);
 
-    // if (!showFooter) {
-    //     return null;
-    // }
+    if (!showFooter) {
+        return null;
+    }
 
     return (
     <Box>
-        {showFooter && <Box sx={{ backgroundColor: grey[300] }}>
+        <Box sx={{ backgroundColor: grey[200] }}>
             <Container maxWidth="xl" sx={{
                 paddingTop: {
                     xs: 4,
@@ -80,8 +80,8 @@ const Footer = ({showFooter=true}) => {
                     </Box>
                 </Stack>
             </Container>
-        </Box> }
-        <Box sx={{ backgroundColor: grey[200] }}>
+        </Box>
+        <Box sx={{ backgroundColor: grey[300] }}>
             <Container
                 maxWidth="xl"
                 sx={{
@@ -91,7 +91,7 @@ const Footer = ({showFooter=true}) => {
                     paddingBottom: {
                         xs: 2,
                     },
-                    color: grey[800]
+                    // color: grey[800]
                 }}
             >
                 <Stack

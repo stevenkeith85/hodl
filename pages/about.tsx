@@ -1,7 +1,6 @@
 import { RocketSharp } from "@mui/icons-material";
 import { Alert, Box, Stack, Typography } from "@mui/material";
 import Link from "next/link";
-import { HodlNotifications } from "../components/notifications/HodlNotifications";
 
 export default function About() {
     return (
@@ -15,10 +14,13 @@ export default function About() {
                 </Stack>
                 <Box>
                     <Typography mb={1}>
-                        Hodl My Moon is an <Link href="/">NFT platform</Link>
+                        Hodl My Moon is a Social NFT Platform
                     </Typography>
-                    <Typography mb={1}>
-                        Here, you can <Link href="/mint">mint a token</Link>, showcase it in your profile, and (when the time is right) trade it with others.
+                </Box>
+                <Box>
+                    <Typography mb={1} variant="h2" color="primary">Decentralized Storage</Typography>
+                    <Typography mb={0}>
+                        We upload and pin your assets to the Interplanatary File System. This ensure's the longterm survival of your assets.
                     </Typography>
                 </Box>
                 <Box>
@@ -48,7 +50,7 @@ export default function About() {
                 <Box>
                     <Typography mb={1} variant="h2" color="primary">Trust</Typography>
                     <Typography mb={2}>
-                        We deplore any attempt to conterfeit other&apos;s work. We will do everything we can to prevent this type of activity occurring on our platform.
+                        We don't tolerate plageurism.
                     </Typography>
                     <Alert sx={{
                         ol: {
@@ -58,7 +60,7 @@ export default function About() {
                             ml: 2
                         }
                     }}>
-                        We also encourage users to DYOR (Do Your Own Research) before buying an NFT.
+                        We do encourage users to DYOR before buying an NFT.
                         <ol>
                             <li>Check the IPFS Image and Metadata </li>
                             <li>Check the selling history (if any) of the token</li>
@@ -67,6 +69,9 @@ export default function About() {
                             <li>Check what you are getting (<Link href="#copyright">See Hodler Privilege section</Link>)</li>
                         </ol>
                     </Alert>
+                    <Typography mt={2} mb={2}>
+                        If something looks too good to be true, it probably is.
+                    </Typography>
                 </Box>
                 <Box>
                     <Typography id="copyright" mb={2} variant="h2" color="primary">Hodler Privilege</Typography>
@@ -87,17 +92,7 @@ export default function About() {
 
                     </Alert>
                     <Typography mt={2} sx={{ span: { fontWeight: 600 } }}>
-                        * this could be used in creative ways such as identifying a character in a computer game
-                    </Typography>
-                    <Typography mt={2} sx={{ span: { fontWeight: 600 } }}>
-                        In addition to the above, by using this website token authors agree for the display and fair use of their token on Hodl My Moon (in general).
-                        i.e. If we can&apos;t show other users your token, then how can they buy it?
-                    </Typography>
-                </Box>
-                <Box>
-                    <Typography mb={1} variant="h2" color="primary">Disclaimer</Typography>
-                    <Typography mb={1} sx={{ span: { fontWeight: 600 } }}>
-                       Being a platform, we will do our best to help out with any disputes, but ultimately accept no legal responsibility for the actions of our users&apos;.
+                        * this could be used in creative ways such as identifying a character in a computer game, or permitting entry to a rock concert
                     </Typography>
                 </Box>
             </Stack>

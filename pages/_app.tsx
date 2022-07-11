@@ -65,16 +65,21 @@ function MyApp(props) {
                   }
                 }}>
                 <header>
-                  <ResponsiveAppBar />
+                  <ResponsiveAppBar 
+                    // showAppBar={router.asPath !== '/'}
+                    />
                 </header>
                 <main>
-                  <Container
-                    maxWidth="xl">
+                  { (router.asPath !== '/' || (router.asPath === '/' && address) )&& <Container maxWidth="xl">
                     <Component {...pageProps} />
                   </Container>
+                  }
+                  { router.asPath === '/' && !address && <Component {...pageProps} />}
                 </main>
                 <footer>
-                  <Footer showFooter={router.asPath !== '/'} />
+                  <Footer 
+                    // showFooter={router.asPath !== '/'} 
+                  />
                 </footer>
               </Box>
             </SnackbarProvider>

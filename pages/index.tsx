@@ -18,6 +18,7 @@ import { Logo } from '../components/Logo';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import { ConnectButton } from '../components/ConnectButton';
 import { indigo } from '@mui/material/colors';
+import { PublicHomePage } from '../components/layout/PublicHomePage';
 // TODO
 // export async function getServerSideProps() {
 
@@ -41,66 +42,7 @@ export default function Home({ limit, prefetchedListed }) {
       </Head>
 
       {!address &&
-        <Box
-          sx={{
-            // background: "lightpink" ,
-
-          }}
-          height="calc(100vh - 300px)"
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          justifyContent="center"
-          textAlign="center"
-        // padding="50px"
-        // spacing={8}
-        >
-          <Box
-          display="flex"
-          flexDirection="column"
-            
-            gap={4}
-            >
-          <Box 
-            component="span" 
-            sx={{
-            fontSize: '64px',
-            fontWeight: 600,
-              //background: 'linear-gradient(to right, indigo, lightpink)',
-              background: `linear-gradient(to right, ${indigo[500]}, #ec4899)`,
-              backgroundClip: 'text',
-              textFillColor: 'transparent'
-            
-            
-          }}>
-            HodlMyMoon 
-          </Box>
-          <Typography
-            sx={{
-              fontFamily: theme => theme.logo.fontFamily,
-              fontSize: '40px'
-            }}>
-            is an NFT based social platform.
-          </Typography>
-          <Typography
-            sx={{
-              fontFamily: theme => theme.logo.fontFamily,
-              fontSize: '30px'
-            }}>
-            Create, Trade, or Hodl your NFTs.
-          </Typography>
-          <Typography
-            sx={{
-              fontFamily: theme => theme.logo.fontFamily,
-              fontSize: '30px'
-            }}>
-            Web3 is now.
-          </Typography>
-          <Box>
-          <ConnectButton fontSize='20px' sx={{ paddingY: 1.5, paddingX: 4}}/>
-          </Box>
-          </Box>
-        </Box>
+        <PublicHomePage />
       }
       {address &&
         <Grid

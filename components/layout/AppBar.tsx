@@ -24,7 +24,7 @@ import { useSnackbar } from 'notistack';
 import { SearchBox } from '../Search';
 import { ProfileAvatar } from '../avatar/ProfileAvatar';
 
-const ResponsiveAppBar = () => {
+const ResponsiveAppBar = ({ showAppBar=true}) => {
     const { address, setAddress, setSigner } = useContext(WalletContext);
 
     const router = useRouter();
@@ -113,6 +113,10 @@ const ResponsiveAppBar = () => {
         });
     }, []);
 
+    if (!showAppBar) {
+        return null;
+    }
+    
     return (
         <>
             <AppBar position="fixed" sx={{ maxWidth: `100vw`, left: 0 }}>
