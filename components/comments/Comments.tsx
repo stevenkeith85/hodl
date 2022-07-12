@@ -4,6 +4,7 @@ import { HodlModal } from "../modals/HodlModal";
 import { HodlCommentsBox } from "./HodlCommentsBox";
 import { FC, useState } from "react";
 import { useCommentCount } from "../../hooks/useComments";
+import humanize from "humanize-plus";
 
 export interface CommentsProps {
     nft: any,
@@ -49,12 +50,12 @@ export const Comments: FC<CommentsProps> = ({
                 sx={{ 
                     padding: 0, 
                     width: { 
-                        xs: '90vw', 
-                        md: '80vw', 
-                        lg: '60vw', 
-                        xl: '40vw' 
-                    }
-                 }} >
+                        xs: '90vw',
+                    },
+                    maxWidth: "900px"
+                    
+                 }} 
+                 >
                 <HodlCommentsBox 
                     tokenId={nft.tokenId}
                     setTopLevel={setTopLevel}
@@ -64,8 +65,8 @@ export const Comments: FC<CommentsProps> = ({
                     prefetchedComments={null} 
                     prefetchedCommentCount={prefetchedCommentCount} 
                     limit={10} 
-                    maxHeight="50vh" 
-                    minHeight="25vh"
+                    maxHeight="60vh" 
+                    minHeight="30vh"
                 />
             </HodlModal>
             <Box
@@ -90,10 +91,7 @@ export const Comments: FC<CommentsProps> = ({
                 }}
             >
                 <CommentOutlined color={color} fontSize={fontSize} />
-                {count < 1000 ?
-                    <Typography>{count}</Typography> :
-                    <Typography sx={{span: {position: 'relative', top: '-6px', fontSize: '12px'} }}>1k<span>+</span></Typography>
-                }
+                {<Typography>{humanize.compactInteger(count, 1)}</Typography>}
             </Box>
 
         </>

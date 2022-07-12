@@ -1,5 +1,3 @@
-import { hasExpired } from '../lib/utils';
-import { useConnect } from './useConnect';
 import axios from 'axios'
 import { useState } from 'react';
 
@@ -10,16 +8,11 @@ export const useIpfsUpload = (): [
   string,
   Function
 ] => {
-  const [connect] = useConnect();
   const [error, setError] = useState('');
   const [progress, setProgress] = useState(0);
 
   const uploadToIpfs = async (name: string, description: string, privilege: string, fileName: string, mimeType: string, filter: string) => {
     setProgress(0);
-
-    // if (hasExpired(localStorage.getItem('jwt'))) {
-    //   await connect(true, true);
-    // }
 
     try {
       const r = await axios.post(

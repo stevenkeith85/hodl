@@ -1,6 +1,6 @@
 import { Box, Grid, Typography } from "@mui/material"
 
-export const FeedPreview = ({ }) => {
+export const FollowPreview = ({ }) => {
     return (
         <Grid
             container

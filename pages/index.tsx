@@ -1,9 +1,5 @@
 import Head from 'next/head';
-import { getListed } from './api/market/listed';
-import { useMarket } from '../hooks/useMarket';
-import { InfiniteScrollTab } from '../components/profile/InfiniteScrollTab';
 import { Box, Grid, Typography } from '@mui/material';
-import { HodlNotifications } from '../components/notifications/HodlNotifications';
 import { HodlFeed } from '../components/feed/HodlFeed';
 import { ProfileAvatar } from '../components';
 import { useContext } from 'react';
@@ -13,12 +9,11 @@ import { useFollowers } from '../hooks/useFollowers';
 import { useFollowing } from '../hooks/useFollowing';
 import { useHodling } from '../hooks/useHodling';
 import { useListed } from '../hooks/useListed';
-import { HodlImpactAlert } from '../components/HodlImpactAlert';
-import { Logo } from '../components/Logo';
-import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
-import { ConnectButton } from '../components/ConnectButton';
-import { indigo } from '@mui/material/colors';
+import humanize from "humanize-plus";
+
 import { PublicHomePage } from '../components/layout/PublicHomePage';
+
+
 // TODO
 // export async function getServerSideProps() {
 
@@ -47,15 +42,10 @@ export default function Home({ limit, prefetchedListed }) {
       {address &&
         <Grid
           container
-        // spacing={8}
         >
           <Grid
             item xs={12}
             md={7}
-            // marginY={0}
-            sx={{
-              // background: "lightyellow" 
-            }}
           >
             <HodlFeed />
           </Grid>
@@ -63,41 +53,62 @@ export default function Home({ limit, prefetchedListed }) {
             item
             xs={12}
             md={5}
-            // marginY={2}
-            // paddingY={2}
-            sx={{
-              // background: "lightblue" 
-            }}
           >
-            <Box display="flex" padding={2}>
+            <Box display="flex" paddingX={4} paddingY={4}>
               <Box
                 sx={{
-                  // background: "lightpink",
                   border: '1px solid #ddd',
                   boxShadow: '0 0 2px 1px #eee',
+                // background: 'yellow'
                 }}
                 alignItems="center"
-                justifyContent="center"
+                // justifyContent="center"
                 display="flex"
+                flexDirection="row"
                 borderRadius={1}
-                // flexGrow={1}
-                // position="fixed"
-                // alignItems="center"
-                padding={2}
+                // paddingX={4}
+                // paddingY={4}
                 width="100%"
-                gap={3}
+                height="120px"
+                gap={0}
               >
-                <ProfileAvatar profileAddress={address} size="large" showNickname={false} />
-                <Box display="flex" flexDirection="column" gap={0.5}>
-                  {address && <ProfileNameOrAddress color={"primary"} profileAddress={address} size={"medium"} sx={{ fontWeight: 600 }} />}
+                <Box flexGrow={1} display="flex" justifyContent="center">
+                  <ProfileAvatar profileAddress={address} size="large" showNickname={false} />
+                </Box>
+                
+                <Box 
+                  flexGrow={2}
+                  display="flex" 
+                  // alignItems="center"
+                  alignContent="center"
+                  
+                  flexDirection="column" 
+                  gap={1}
+                  padding={0}
+                >
+                  { address && 
+                    <ProfileNameOrAddress color={"primary"} profileAddress={address} size={"medium"} sx={{ fontWeight: 600 }} 
+                  />}
 
-                  <Box display="flex" gap={1} flexWrap="wrap">
-                    <Typography display="flex" flexDirection="column" sx={{ span: { fontWeight: 600 } }}><span>{new Intl.NumberFormat().format(hodlingCount)}</span> Hodling</Typography>
-                    <Typography display="flex" flexDirection="column" sx={{ span: { fontWeight: 600 } }}><span>{new Intl.NumberFormat().format(listedCount)}</span> Listed</Typography>
-                    <Typography display="flex" flexDirection="column" sx={{ span: { fontWeight: 600 } }}><span>{new Intl.NumberFormat().format(followersCount)}</span> Followers</Typography>
-                    <Typography display="flex" flexDirection="column" sx={{ span: { fontWeight: 600 } }}><span>{new Intl.NumberFormat().format(followingCount)}</span> Following</Typography>
+                  <Box
+                    display="grid"
+                    gap={1}
+                    gridTemplateColumns="1fr 1fr"
+                    gridTemplateRows="1fr 1fr"
+                    >
+                    {!isNaN(hodlingCount) &&
+                      <Typography sx={{ span: { fontWeight: 600 } }}><span>{humanize.compactInteger(hodlingCount, 1)}</span> Hodling</Typography>
+                    }
+                    {!isNaN(listedCount) &&
+                      <Typography sx={{ span: { fontWeight: 600 } }}><span>{humanize.compactInteger(listedCount, 1)}</span> Listed</Typography>
+                    }
+                    {!isNaN(followersCount) &&
+                      <Typography sx={{ span: { fontWeight: 600 } }}><span>{humanize.compactInteger(followersCount, 1)}</span> Followers</Typography>
+                    }
+                    {!isNaN(followingCount) &&
+                      <Typography sx={{ span: { fontWeight: 600 } }}><span>{humanize.compactInteger(followingCount, 1)}</span> Following</Typography>
+                    }
                   </Box>
-
                 </Box>
               </Box>
             </Box>

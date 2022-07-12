@@ -1,5 +1,5 @@
 import { useState, useContext } from 'react';
-import useSWR, { mutate } from 'swr';
+import useSWR from 'swr';
 import { WalletContext } from '../contexts/WalletContext';
 import axios from 'axios'
 

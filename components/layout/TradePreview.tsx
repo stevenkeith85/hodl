@@ -4,7 +4,6 @@ export const TradePreview = ({ }) => {
     return (
         <Grid
             container
-            // spacing={4}
             sx={{ color: 'white'}}
             maxWidth="1200px"
             minHeight="400px"
@@ -68,7 +67,7 @@ export const TradePreview = ({ }) => {
                             fontSize: '20px',
                             flexGrow: 1,
                         }}>
-                        to gain any privileges they bestow
+                        to acquire any privileges they bestow
                     </Typography>
                     <Typography
                         sx={{

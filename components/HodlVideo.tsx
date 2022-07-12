@@ -16,6 +16,7 @@ interface HodlVideoProps {
     width?: string;
     preload?: string,
     onLoad?: Function;
+    autoPlay?: boolean;
 }
 
 export const HodlVideo = ({
@@ -32,25 +33,39 @@ export const HodlVideo = ({
     width = '100%',
     preload = "auto",
     onLoad = null,
+    autoPlay = false
 }: HodlVideoProps) => {
     const asset = `${createCloudinaryUrl(gif ? 'image' : 'video', 'upload', transformations, folder, cid)}`
     const video = useRef(null);
 
+    // If the video is brought onscreen, play it (if the user hasn't already watched it).
+    // If it goes offscreen pause it.
+    const pauseVideoOffscreen = () => {
+        let observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.intersectionRatio !== 1) {
+                    video?.current?.pause();
+                } else if (!video?.current?.ended) {
+                    ((video.current) as HTMLMediaElement).muted = JSON.parse(localStorage.getItem('muted'));
+                    video?.current?.play();
+                }
+            });
+        }, { threshold: 1 });
+
+        observer.observe(video.current);
+    }
+
+    const listenToPausePlayEvents = () => {
+        video?.current?.addEventListener('volumechange', (event) => {
+            localStorage.setItem('muted', video?.current?.muted);
+        });
+    }
+
     useEffect(() => {
-        if (pauseWhenOffScreen && !gif) {
-            try {
-                let observer = new IntersectionObserver((entries, observer) => {
-                    entries.forEach(entry => {
-                        if (entry.intersectionRatio !== 1) {
-                            video?.current?.pause();
-                        }
-                    });
-                }, { threshold: 1 });
-
-                observer.observe(video.current);
-            } catch (e) {
-
-            }
+        try {
+            pauseVideoOffscreen();
+            listenToPausePlayEvents()
+        } catch (e) {
         }
     }, [video?.current])
 
@@ -70,8 +85,8 @@ export const HodlVideo = ({
         <>
             <Box sx={{
                 display: 'flex',
-                height: height,
-                width: width,
+                height,
+                width,
                 video: {
                     objectFit: audio ? 'scale-down' : 'cover',
                     objectPosition: 'center',
@@ -88,12 +103,11 @@ export const HodlVideo = ({
                         }
                     }
                     }
-                    preload={preload}
                     width={width}
                     ref={video}
-                    autoPlay={gif}
+                    autoPlay={true}
                     loop={gif}
-                    muted={gif}
+                    // muted={JSON.parse(localStorage.getItem('muted'))}
                     controls={!gif && controls}
                     controlsList="nodownload"
                     poster={getPoster()}>

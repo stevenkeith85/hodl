@@ -27,7 +27,7 @@ const rateLimits = {
   'DELETE:/api/tags/delete': 6,
   
   'GET:/api/comments': 60,
-  'GET:/api/comments/count': 60,
+  'GET:/api/comments/count': 90,
   'POST:/api/comments/add': 6,
   'DELETE:/api/comments/delete': 6,
   
@@ -76,7 +76,7 @@ const handler = () => nc<HodlApiRequest, NextApiResponse>({
       const limited = await isRateLimited(ip, routeKey, limit);
 
       if (limited) {
-        return res.status(429).json({ message: 'Slow down a little' })
+        return res.status(429).json({ message: `Slow down a little - ${routeKey}` })
       }
     } else {
       console.log('no limit', routeKey)

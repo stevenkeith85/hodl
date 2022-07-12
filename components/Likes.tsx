@@ -3,6 +3,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useLike } from "../hooks/useLike";
 import { FC } from "react";
+import humanize from "humanize-plus";
 
 export interface LikesProps {
     id: number;
@@ -55,20 +56,17 @@ export const Likes: FC<LikesProps> = ({
                         </Tooltip>
                         :
                         <Tooltip title={unlikeTooltip}>
-                            <FavoriteIcon 
+                            <FavoriteIcon
                                 onClick={e => {
                                     e.stopPropagation();
                                     toggleLike();
-                                }} 
-                                color={color} 
-                                fontSize={fontSize} 
-                        />
+                                }}
+                                color={color}
+                                fontSize={fontSize}
+                            />
                         </Tooltip>
                 }
-                {showCount && (tokenLikesCount < 1000 ?
-                    <Typography>{tokenLikesCount}</Typography> :
-                    <Typography sx={{ span: { position: 'relative', top: '-6px', fontSize: '12px' } }}>1k<span>+</span></Typography>)
-                }
+                {showCount && !isNaN(tokenLikesCount) && <Typography>{humanize.compactInteger(tokenLikesCount, 1)}</Typography>}
             </Box>
         </>
     )

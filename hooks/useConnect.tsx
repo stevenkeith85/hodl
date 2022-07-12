@@ -47,7 +47,6 @@ export const useConnect = () => {
       setAddress(_address);
       return true;
     } catch (e) {
-      console.log(e)
       return false;
     }
   }

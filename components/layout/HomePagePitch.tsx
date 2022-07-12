@@ -1,11 +1,10 @@
 import { Box, Grid, Typography } from "@mui/material"
-import { ConnectButton } from "../ConnectButton"
+import { LoginLogoutButton } from "../menu/LoginLogoutButton"
 
 export const HomePagePitch = ({ }) => {
     return (
         <Grid
             container
-            // spacing={4}
             padding={4}
             maxWidth="1200px"
             minHeight="400px"
@@ -38,21 +37,22 @@ export const HomePagePitch = ({ }) => {
                             color: theme => theme.palette.primary.main
                         }}>
                         Hodl My Moon
+
                     </Box>
                     <Typography
                         sx={{
                             fontFamily: theme => theme.logo.fontFamily,
                             fontSize: '25px'
                         }}>
-                        is an NFT based social platform
+                        is an NFT Social Platform
                     </Typography>
-                    <Typography
+                    {/* <Typography
                         sx={{
                             fontFamily: theme => theme.logo.fontFamily,
                             fontSize: '20px'
                         }}>
-                        Create, Hodl, or Trade your NFTs
-                    </Typography>
+                            Create, Hodl, and Trade NFTs
+                    </Typography> */}
                 </Box>
             </Grid>
             <Grid
@@ -74,7 +74,8 @@ export const HomePagePitch = ({ }) => {
                     }}
                 >
                     <Box>
-                        <ConnectButton
+                        <LoginLogoutButton
+                            variant="contained"
                             fontSize='20px'
                             sx={{ paddingY: 1.5, paddingX: 4 }}
                         />

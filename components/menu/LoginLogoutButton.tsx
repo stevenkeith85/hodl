@@ -6,7 +6,14 @@ import { useConnect } from "../../hooks/useConnect";
 import { WalletContext } from '../../contexts/WalletContext';
 
 
-export const LoginLogoutButton = ({ }) => {
+interface LoginLogoutButtonProps {
+    color?: "secondary" | "inherit" | "primary" | "success" | "error" | "info" | "warning";
+    variant?: 'text' | 'outlined' | 'contained';
+    fontSize?: string;
+    sx?: object;
+}
+
+export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({ color="secondary", variant="outlined", fontSize='14px', sx = null }) => {
     const [connect, disconnect] = useConnect();
     const { address } = useContext(WalletContext);
     const router = useRouter();
@@ -23,24 +30,35 @@ export const LoginLogoutButton = ({ }) => {
         <>
             {!address &&
                 <Button
-                    color="secondary"
-                    onClick={(e) => {
+                    color={color}
+                    variant={variant}
+                    sx={{
+                        fontSize,
+                        ...sx
+                    }}
+                    onClick={async e => {
                         e.stopPropagation();
 
                         if (isMobileDevice()) {
                             connectMobile();
                         } else {
-                            connect(false);
+                            await connect(false);
+                            router.push('/')
                         }
                     }}
                     startIcon={<AccountBalanceWallet />}
                 >Connect</Button>}
             {address &&
                 <Button
-                    color="secondary"
-                    onClick={e => {
+                    color={color}
+                    variant={variant}
+                    sx={{
+                        fontSize,
+                        ...sx
+                    }}
+                    onClick={async e => {
                         e.stopPropagation();
-                        disconnect();
+                        await disconnect();
                     }}
                     startIcon={<CloudOff />}
                 >

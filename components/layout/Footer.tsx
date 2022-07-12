@@ -3,7 +3,6 @@ import { Stack, Box, Container, Typography } from "@mui/material";
 import { grey } from '@mui/material/colors';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import { Logo } from "../Logo";
 import { HodlLink } from "../HodlLink";
 import { useContext } from "react";
 import { WalletContext } from '../../contexts/WalletContext';
@@ -59,24 +58,18 @@ const Footer = ({showFooter=true}) => {
                         }}
                     >
                         <Stack spacing={0.5}>
-                            <Typography sx={{ fontWeight: 800, marginBottom: 0.5 }}>Hodl My Moon</Typography>
+                            <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>Hodl My Moon</Typography>
                             <HodlLink href="/about">About</HodlLink>
                             <HodlLink href="/contact">Contact</HodlLink>
                         </Stack>
-                        <Stack spacing={0.5}>
-                            <Typography sx={{ fontWeight: 800, marginBottom: 0.5 }}>Non Fungible Tokens</Typography>
+                        { address && <Stack spacing={0.5}>
+                            <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>Non Fungible Tokens</Typography>
                             <HodlLink href="/">Market</HodlLink>
-                            { address && <HodlLink href="/create">Create</HodlLink> }
-                        </Stack>
+                            <HodlLink href="/create">Create</HodlLink>
+                        </Stack>}
                     </Stack>
                     <Box>
                         . . . <RocketLaunchIcon />
-                            {/* <Logo sx={{ 
-                                justifyContent: { xs: "center", md: "right" }
-                            }} /> */}
-                            {/* <Typography sx={{ fontSize: 18, fontWeight: 500, textAlign: 'center' }}>
-                                Create, Trade, or Hodl NFTs
-                            </Typography>                         */}
                     </Box>
                 </Stack>
             </Container>
@@ -91,7 +84,6 @@ const Footer = ({showFooter=true}) => {
                     paddingBottom: {
                         xs: 2,
                     },
-                    // color: grey[800]
                 }}
             >
                 <Stack

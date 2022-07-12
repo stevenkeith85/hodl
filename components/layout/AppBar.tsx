@@ -11,10 +11,10 @@ import { useState, useContext, useEffect } from 'react';
 import Link from 'next/link';
 import { Logo } from '../Logo';
 
-import { Stack, useMediaQuery, useTheme } from '@mui/material';
+import { Stack } from '@mui/material';
 import { useRouter } from 'next/router';
 import { HoverMenu } from '../menu/HoverMenu';
-import { AccountBalanceWallet, Newspaper, Spa, Storefront } from '@mui/icons-material';
+import { AccountBalanceWallet, Spa, Storefront } from '@mui/icons-material';
 import { useConnect } from '../../hooks/useConnect';
 import { WalletContext } from '../../contexts/WalletContext';
 import { useNickname } from '../../hooks/useNickname';
@@ -40,17 +40,11 @@ const ResponsiveAppBar = ({ showAppBar=true}) => {
     const [error, setError] = useState('');
 
     const [pages] = useState([
-        // {
-        //     label: 'Home',
-        //     url: '/',
-        //     icon: <Newspaper />,
-        //     publicPage: true
-        // },
         {
             label: 'Market',
             url: '/market',
             icon: <Storefront />,
-            publicPage: true
+            publicPage: false
         },
         {
             label: 'Create',
@@ -65,7 +59,7 @@ const ResponsiveAppBar = ({ showAppBar=true}) => {
     useEffect(() => {
         const load = async () => {
             if (localStorage.getItem('jwt')) {
-                connect();
+                await connect();
             }
         };
 
@@ -73,7 +67,6 @@ const ResponsiveAppBar = ({ showAppBar=true}) => {
     }, [])
 
     useEffect(() => {
-        console.log('error is',)
         if (error !== '') {
             enqueueSnackbar(error, { variant: "error" });
             // @ts-ignore
@@ -116,7 +109,7 @@ const ResponsiveAppBar = ({ showAppBar=true}) => {
     if (!showAppBar) {
         return null;
     }
-    
+
     return (
         <>
             <AppBar position="fixed" sx={{ maxWidth: `100vw`, left: 0 }}>

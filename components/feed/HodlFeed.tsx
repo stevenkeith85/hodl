@@ -5,7 +5,6 @@ import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 import { useNotifications } from "../../hooks/useNotifications";
 import { HodlFeedItem } from "./HodlFeedItem";
 import { ActionTypes } from "../../models/HodlAction";
-import { RocketTitle } from "../RocketTitle";
 import { HodlImpactAlert } from "../HodlImpactAlert";
 
 
@@ -20,12 +19,9 @@ export const HodlFeed = ({ }) => {
 
     const menu = <Box
         sx={{
-            // background: 'white',
-            // border: `1px solid #ddd`,
-            padding: 2,
+            padding: 4,
             alignItems: {
                 xs: 'center',
-                // md: 'start'
             }
         }}
         display="flex"

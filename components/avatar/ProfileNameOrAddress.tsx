@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 interface ProfileNameOrAddressProps {
     profileAddress: string;
-    size: "small" | "medium" | "large";
+    size: "xsmall" | "small" | "medium" | "large";
     color: string;
     sx?: object | null;
 }
@@ -20,6 +20,7 @@ export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({ profileAdd
     )
 
     const mappings = {
+        xsmall: 14,
         small: 14,
         medium: 18,
         large: 20

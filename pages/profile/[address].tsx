@@ -23,6 +23,7 @@ import { useFollowing } from '../../hooks/useFollowing';
 import { useFollowers } from '../../hooks/useFollowers';
 import { useListed } from '../../hooks/useListed';
 import { useHodling } from '../../hooks/useHodling';
+import humanize from "humanize-plus";
 
 const InfiniteScrollTab = dynamic(
   // @ts-ignore
@@ -137,7 +138,7 @@ const Profile = ({
     }
   }, [router.asPath, router?.query?.tab]);
 
-  
+
   return (
     <>
       <Head>
@@ -147,7 +148,7 @@ const Profile = ({
         <ProfileAvatar size="large" profileAddress={profileAddress} />
         <FollowButton profileAddress={profileAddress} />
       </Box>
-        
+
       <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: 3, marginBottom: 3 }}>
         <Tabs
           value={value}
@@ -171,20 +172,44 @@ const Profile = ({
           textColor="secondary"
           indicatorColor="secondary"
         >
-          <Tab key={0} value={0} label="Hodling" icon={<Badge sx={{ p: '6px 3px', color: 'black', fontSize: '14px' }} showZero badgeContent={hodlingCount}></Badge>} iconPosition="end" />
-          <Tab key={1} value={1} label="Listed" icon={<Badge sx={{ p: '6px 3px' }} showZero badgeContent={listedCount}></Badge>} iconPosition="end" />
-          <Tab key={2} value={2} label="Following" icon={<Badge sx={{ p: '6px 3px' }} showZero badgeContent={followingCount}></Badge>} iconPosition="end" />
-          <Tab key={3} value={3} label="Followers" icon={<Badge sx={{ p: '6px 3px' }} showZero badgeContent={followersCount} ></Badge>} iconPosition="end" />
+          <Tab
+            key={0}
+            value={0}
+            label="Hodling"
+            icon={<Badge sx={{ p: '6px 3px' }} showZero badgeContent={!isNaN(hodlingCount) && humanize.compactInteger(hodlingCount, 1)}></Badge>}
+            iconPosition="end"
+          />
+          <Tab
+            key={1}
+            value={1}
+            label="Listed"
+            icon={<Badge sx={{ p: '6px 3px' }} showZero badgeContent={!isNaN(listedCount) && humanize.compactInteger(listedCount, 1)}></Badge>}
+            iconPosition="end"
+          />
+          <Tab
+            key={2}
+            value={2}
+            label="Following"
+            icon={<Badge sx={{ p: '6px 3px' }} showZero badgeContent={!isNaN(followingCount) && humanize.compactInteger(followingCount, 1)}></Badge>}
+            iconPosition="end"
+          />
+          <Tab
+            key={3}
+            value={3}
+            label="Followers"
+            icon={<Badge sx={{ p: '6px 3px' }} showZero badgeContent={!isNaN(followersCount) && humanize.compactInteger(followersCount, 1)}></Badge>}
+            iconPosition="end"
+          />
         </Tabs>
       </Box>
       <div hidden={value !== 0}>
         <InfiniteScrollTab swr={hodlingSWR} limit={limit} showAvatar={false} showName={true} />
       </div>
       <div hidden={value !== 1}>
-        <InfiniteScrollTab swr={listedSWR} limit={limit} showAvatar={false} showName={true}/>
+        <InfiniteScrollTab swr={listedSWR} limit={limit} showAvatar={false} showName={true} />
       </div>
       <div hidden={value !== 2}>
-        <FollowingTab address={address} following={following} profileAddress={profileAddress}/>
+        <FollowingTab address={address} following={following} profileAddress={profileAddress} />
       </div>
       <div hidden={value !== 3}>
         <FollowersTab address={address} followers={followers} profileAddress={profileAddress} />

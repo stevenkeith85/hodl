@@ -126,7 +126,17 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                         onlyPoster={false}
                                         preload="none"
                                         audio={false}
-                                        sx={{ video: { borderRadius: 0 } }}
+                                        autoPlay={true}
+                                        sx={{ video: { borderRadius: 0, maxHeight: '50vh' } }}
+                                    />
+                                </a>
+                            }
+                            {assetType(token) === AssetTypes.Gif &&
+                                <a>
+                                    <HodlVideo
+                                        cid={token.image.split('//')[1]}
+                                        gif={true}
+                                        sx={{ video: { borderRadius: 0, maxHeight: '50vh' } }}
                                     />
                                 </a>
                             }
@@ -153,19 +163,15 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                     </Link>
                 }
             </Box>
-            <Box>
-                <Typography component="h2" sx={{ fontWeight: 600 }}>{token?.name}</Typography>
-            </Box>
-            <Box>
-                {token?.description}
-            </Box>
+
+
             <Box
                 display="flex"
-                gap={2}
-                paddingY={1}
+                gap={1}
+                // paddingY={1}
                 flexDirection="column"
             >
-                {token && <Box display="flex" gap={1} justifyContent="right">
+                {token && <Box display="flex" gap={1}>
                     <Likes
                         id={token?.tokenId}
                         token={true}
@@ -174,6 +180,12 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                         nft={token}
                     />
                 </Box>}
+            </Box>
+            <Box>
+                <Typography component="h2" sx={{ fontWeight: 600 }}>{token?.name}</Typography>
+                {/* </Box>
+            <Box> */}
+                {token?.description}
             </Box>
         </Box>
     )

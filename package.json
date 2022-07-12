@@ -36,6 +36,7 @@
     "formik-mui": "^4.0.0-alpha.3",
     "formik-mui-lab": "^1.0.0-alpha.3",
     "hardhat": "^2.8.3",
+    "humanize-plus": "^1.8.2",
     "ipfs-http-client": "50.1.2",
     "ipfs-unixfs": "^6.0.6",
     "jsonwebtoken": "^8.5.1",
