@@ -8,21 +8,19 @@ import { useRouter } from "next/router";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 import { useActions } from "../../hooks/useActions";
 import { HodlNotificationBox } from "./HodlNotificationBox";
-import { ActionSet, HodlAction } from "../../models/HodlAction";
-import InfiniteScroll from "react-swr-infinite-scroll";
 
-export const HodlNotifications = ({
-    setHoverMenuOpen,
-    showNotifications,
-    setShowNotifications,
-    limit = 4
+
+export const HodlNotifications = ({ 
+    setHoverMenuOpen, 
+    showNotifications, 
+    setShowNotifications 
 }) => {
     const router = useRouter();
     const theme = useTheme();
     const { address } = useContext(WalletContext);
     const xs = useMediaQuery(theme.breakpoints.only('xs'));
 
-    const { actions: notifications } = useActions(showNotifications, ActionSet.Notifications, limit);
+    const { actions: notifications, isLoading, isError } = useActions(showNotifications);
 
     const toggleNotifications = async () => {
         setShowNotifications(prev => !prev);
@@ -62,7 +60,7 @@ export const HodlNotifications = ({
             right: 0,
             minWidth: '500px',
             maxHeight: '50vh',
-            height: { xs: 'calc(100vh - 56px)', sm: '300px' },
+            height: { xs: 'calc(100vh - 56px)', sm: 'auto' },
             width: { xs: '100%', sm: 'auto' },
             overflowY: 'auto',
             border: `1px solid #ddd`,
@@ -75,22 +73,9 @@ export const HodlNotifications = ({
         flexDirection="column"
         gap={2}
     >
-        { notifications.data && <InfiniteScroll
-            swr={notifications}
-            loadingIndicator={<HodlLoadingSpinner />}
-            isReachingEnd={notifications => 
-                !notifications.data[0].items.length || 
-                notifications.data[notifications.data.length - 1]?.items.length < limit
-            }
-        >
-            {
-                ({ items }) => {
-                    return (items || []).map((item: HodlAction) =>
-                        <HodlNotificationBox key={item.id} item={item} setShowNotifications={setShowNotifications} />
-                    )
-                }
-            }
-        </InfiniteScroll>}
+        {isLoading && <HodlLoadingSpinner />}
+        {notifications && notifications.length === 0 && 'No recent notifications'}
+        {(notifications || []).map((item, i) => <HodlNotificationBox key={i} item={item} setShowNotifications={setShowNotifications} />)}
     </Box>
 
     return (

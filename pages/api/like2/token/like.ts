@@ -8,7 +8,7 @@ import { getLikeCount } from './count';
 
 const client = Redis.fromEnv()
 import apiRoute from "../../handler";
-import { addAction } from "../../notifications/add";
+import { addAction } from "../../actions/add";
 import { HodlAction, ActionTypes } from "../../../../models/HodlAction";
 
 dotenv.config({ path: '../.env' })
@@ -57,7 +57,7 @@ route.post(async (req, res: NextApiResponse) => {
       subject: req.address,
       action: ActionTypes.Liked,
       object: "token",
-      id: token
+      objectId: token
     };
 
     const success = addAction(notification);

@@ -22,9 +22,10 @@ import { Nft } from "../../../models/Nft";
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
 
-// Data Structures (TODO):
+// Data Structures:
 //
-// The hash containing every notification made on HodlMyMoon
+// The hash containing every action made on HodlMyMoon (we only record what is necessary; i.e. we aren't a data farm)
+//
 // "action" -> {
 //   1: "{ id, subject, object, objectId, timestamp }", 
 //   2: "{ id, subject, object, objectId, timestamp }", 
@@ -32,112 +33,118 @@ const route = apiRoute();
 //
 // The sorted set of notifications for the user:
 // "notifications:0x1234" -> (<action_id>/<timestamp>, <action_id>/<timestamp>, <action_id>/<timestamp>)
+//
+// The sorted set of feed items for the user:
+// "feed:0x1234" -> (<action_id>/<timestamp>, <action_id>/<timestamp>, <action_id>/<timestamp>)
+//
+// The sorted set of actions/activity for the user:
+// "actions:0x1234" -> (<action_id>/<timestamp>, <action_id>/<timestamp>, <action_id>/<timestamp>)
 
 
-// Add <action> to <address>s notifications
+// Add the action id to <address>s notifications
 const addNotification = async (address: string, action: HodlAction) : Promise<number> => {
   const added = await client.zadd(
     `notifications:${address}`,
     {
       score: action.timestamp,
-      member: JSON.stringify(action)
+      // member: JSON.stringify(action)
+      member: action.id
     }
   );
 
   return added;
 }
 
-// TODO: Add <action> to <address>s feed
+// Add the action id to <address>s feed. We'll set the feed entry's timestamp to use the action's timestamp (for now)
+// as we'd probably not want to show something at the top of a chronological feed, if it was actually listed a while ago
 const addToFeed = async (address: string, action: HodlAction) : Promise<number> => {
   const added = await client.zadd(
     `feed:${address}`,
     {
       score: action.timestamp,
-      member: JSON.stringify(action)
+      // member: JSON.stringify(action)
+      member: action.id
     }
   );
 
   return added;
 }
 
-// TODO: Add <action> to <address>s record.
+// Add the action's id to <address>s set.
 // 
 // We need this, for scenarios like:
 // When A follows B, we'd like to add B's last action to A's feed (if it's not already there)
 //
 // We could also provide a general activity log at some point for the user/address.
-const recordAction = async (address: string, action: HodlAction) : Promise<number> => {
+const recordAddressActivity = async (action: HodlAction) : Promise<number> => {
   const added = await client.zadd(
-    `actions:${address}`,
+    `actions:${action.subject}`,
     {
       score: action.timestamp,
-      member: JSON.stringify(action)
+      member: action.id
     }
   );
 
   return added;
 }
 
-// we overwrite the timestamp, as we don't trust users
+
+// actions could be referenced (by id) from several places.
+const storeAction = async (action: HodlAction) : Promise<number> => {
+  const added = client.hset(
+    "action", 
+    { 
+      [action.id]: JSON.stringify(action) 
+    }
+  );
+
+  return added;
+}
+
+
+// This is the entry point ot the actions system, that will also add the appropriate feed item or notification
+//
+// TODO: Handle 'near duplicates' better.
+// i.e user toggles the like button a few times === steven liked token 2 (2 mins ago). steven liked token 2 (1 min ago)
 export const addAction = async (action: HodlAction) => {
   console.log('action', action)
 
   action.timestamp = Date.now();
 
+  // This should be in a transaction (multi/exec) but the rest api/upstash client doesn't support them
+  // We are using the rest api as it handles concurrent connections better
+  // https://docs.upstash.com/redis/features/restapi
+
+  // It will not lead to data corruption, but there's always a chance we store an action, but don't add it to the user's activity, notifications or the feed 
+  const actionId = await client.incr("actionId")
+  action.id = actionId;
+
+  await storeAction(action);
+  await recordAddressActivity(action);
+  
   if (action.action === ActionTypes.Liked) { // tell the token owner you liked it
     if (action.object === "token") {
 
-      const likes = await likesToken(action.subject, action.id);
+      const likes = await likesToken(action.subject, action.objectId);
       if (!likes) {
         return;
       }
 
-      const owner = await getOwnerOrSellerAddress(action.id);
+      const owner = await getOwnerOrSellerAddress(action.objectId);
 
       // THIS IS TEMP. MAKES IT EASIER TO DEBUG
-      // const selfNotified = await client.zadd(
-      //   `notifications:${notification.subject}`,
-      //   {
-      //     score: notification.timestamp,
-      //     member: JSON.stringify(notification)
-      //   }
-      // );
-
-      // return await client.zadd(
-      //   `notifications:${owner}`,
-      //   {
-      //     score: action.timestamp,
-      //     member: JSON.stringify(action)
-      //   }
-      // );
+      await addNotification(action.subject, action);
 
       return await addNotification(owner, action);
 
     } else if (action.object === "comment") {
 
-      const likes = await likesComment(action.subject, action.id);
+      const likes = await likesComment(action.subject, action.objectId);
       if (!likes) {
         return;
       }
 
-      const comment: HodlComment = await client.hget('comment', `${action.id}`);
-
-      // THIS IS TEMP. MAKES IT EASIER TO DEBUG
-      // const selfNotified = await client.zadd(
-      //   `notifications:${notification.subject}`,
-      //   {
-      //     score: notification.timestamp,
-      //     member: JSON.stringify(notification)
-      //   }
-      // );
-
-      // return await client.zadd(
-      //   `notifications:${comment.subject}`,
-      //   {
-      //     score: action.timestamp,
-      //     member: JSON.stringify(action)
-      //   }
-      // );
+      const comment: HodlComment = await client.hget('comment', `${action.objectId}`);
 
       return await addNotification(comment.subject, action);
     }
@@ -147,65 +154,27 @@ export const addAction = async (action: HodlAction) => {
   // if a reply, tell the comment author. 
   // if a token, tell the token owner.
   if (action.action === ActionTypes.CommentedOn) {
-    const comment: HodlComment = await client.hget('comment', `${action.id}`);
+    const comment: HodlComment = await client.hget('comment', `${action.objectId}`);
 
     const owner = await getOwnerOrSellerAddress(comment.tokenId);
-
-    // THIS IS TEMP. MAKES IT EASIER TO DEBUG
-    // const selfNotified = await client.zadd(
-    //   `notifications:${notification.subject}`,
-    //   {
-    //     score: notification.timestamp,
-    //     member: JSON.stringify(notification)
-    //   }
-    // );
-
-    // const ownerNotified = await client.zadd(
-    //   `notifications:${owner}`,
-    //   {
-    //     score: action.timestamp,
-    //     member: JSON.stringify(action)
-    //   }
-    // );
-
-    // return ownerNotified;
 
     return await addNotification(owner, action);
   }
 
   if (action.action === ActionTypes.Followed) { // tell the account someone followed it
-    const follows = await isFollowing(action.subject, action.id);
+    const follows = await isFollowing(action.subject, action.objectId);
 
     if (!follows) {
       return;
     }
 
-    // THIS IS TEMP. MAKES IT EASIER TO DEBUG
-    // const selfNotified = await client.zadd(
-    //   `notifications:${notification.subject}`,
-    //   {
-    //     score: notification.timestamp,
-    //     member: JSON.stringify(notification)
-    //   }
-    // );
-
-    // const followedNotified = await client.zadd(
-    //   `notifications:${action.id}`,
-    //   {
-    //     score: action.timestamp,
-    //     member: JSON.stringify(action)
-    //   }
-    // );
-
-    // return followedNotified;
-
-    return await addNotification(`${action.id}`, action);
+    return await addNotification(`${action.objectId}`, action);
   }
 
-  // Who: Tell the seller's followers there's a new token for sale
+  // Who: Tell the seller's followers (via their feed) there's a new token for sale
   if (action.action === ActionTypes.Listed) {
     try {
-      const token: Nft = await fetchNFT(+action.id);
+      const token: Nft = await fetchNFT(+action.objectId);
 
       if (!token.forSale) {
         return;
@@ -217,25 +186,10 @@ export const addAction = async (action: HodlAction) => {
 
       const followers = await getFollowers(action.subject);
 
-      // THIS IS TEMP. MAKES IT EASIER TO DEBUG
-      // const selfNotified = await client.zadd(
-      //   `notifications:${action.subject}`,
-      //   {
-      //     score: action.timestamp,
-      //     member: JSON.stringify(action)
-      //   }
-      // );
-
       let count = 0;
       for (let address of followers) {
-        // await client.zadd(
-        //   `notifications:${address}`,
-        //   {
-        //     score: action.timestamp,
-        //     member: JSON.stringify(action)
-        //   }
-        // );
-        count += await addNotification(`${address}`, action);
+        // count += await addNotification(`${address}`, action);
+        count += await addToFeed(`${address}`, action);
       }
 
       return count;
@@ -246,7 +200,7 @@ export const addAction = async (action: HodlAction) => {
 
   if (action.action === ActionTypes.Added) { // tell the seller's followers there's a new token for sale
     try {
-      const token: Nft = await fetchNFT(+action.id);
+      const token: Nft = await fetchNFT(+action.objectId);
 
       if (token.owner !== action.subject) {
         return;
@@ -254,25 +208,10 @@ export const addAction = async (action: HodlAction) => {
 
       const followers = await getFollowers(action.subject);
 
-      // THIS IS TEMP. MAKES IT EASIER TO DEBUG
-      // const selfNotified = await client.zadd(
-      //   `notifications:${notification.subject}`,
-      //   {
-      //     score: notification.timestamp,
-      //     member: JSON.stringify(notification)
-      //   }
-      // );
-
       let count = 0;
       for (let address of followers) {
-        // await client.zadd(
-        //   `notifications:${address}`,
-        //   {
-        //     score: action.timestamp,
-        //     member: JSON.stringify(action)
-        //   }
-        // );
-        count += await addNotification(`${address}`, action);
+        // count += await addNotification(`${address}`, action);
+        count += await addToFeed(`${address}`, action);
       }
 
       return count;
@@ -284,7 +223,7 @@ export const addAction = async (action: HodlAction) => {
   // Who: Tell the buyer and seller the sale happened
   if (action.action === ActionTypes.Bought) {
 
-    const history = await getPriceHistory(action.id);
+    const history = await getPriceHistory(action.objectId);
 
     if (history.length === 0) {
       return 0;
@@ -297,24 +236,8 @@ export const addAction = async (action: HodlAction) => {
       return;
     }
 
-    // const first = await client.zadd(
-    //   `notifications:${buyer}`,
-    //   {
-    //     score: action.timestamp,
-    //     member: JSON.stringify(action)
-    //   }
-    // );
-
     const first = await addNotification(`${buyer}`, action);
     const second = await addNotification(`${seller}`, action);
-
-    // const second = await client.zadd(
-    //   `notifications:${seller}`,
-    //   {
-    //     score: action.timestamp,
-    //     member: JSON.stringify(action)
-    //   }
-    // );
 
     return first + second;
   }
@@ -358,7 +281,7 @@ route.post(async (req, res: NextApiResponse) => {
   const notification: HodlAction = {
     subject: req.address,
     action,
-    id,
+    objectId: id,
     object
   };
 

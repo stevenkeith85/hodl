@@ -8,7 +8,7 @@ import { isValidAddress } from '../../../lib/profile';
 import { getFollowingCount } from './followingCount';
 import { getFollowersCount } from './followersCount';
 import { HodlAction, ActionTypes } from '../../../models/HodlAction';
-import { addAction } from '../notifications/add';
+import { addAction } from '../actions/add';
 
 dotenv.config({ path: '../.env' })
 const client = Redis.fromEnv()
@@ -71,7 +71,7 @@ route.post(async (req, res) => {
       subject: req.address,
       action: ActionTypes.Followed,
       object: "address",
-      id: address
+      objectId: address
     };
 
     const success = addAction(notification);

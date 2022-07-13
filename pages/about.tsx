@@ -20,7 +20,7 @@ export default function About() {
                 <Box>
                     <Typography mb={1} variant="h2" color="primary">Decentralized Storage</Typography>
                     <Typography mb={0}>
-                        We upload and pin your assets to the Interplanatary File System. This ensure's the longterm survival of your assets.
+                        We upload and pin your assets to the Interplanatary File System. This ensures the longterm survival of your assets.
                     </Typography>
                 </Box>
                 <Box>
@@ -50,7 +50,7 @@ export default function About() {
                 <Box>
                     <Typography mb={1} variant="h2" color="primary">Trust</Typography>
                     <Typography mb={2}>
-                        We don't tolerate plageurism.
+                        We don&apos;t tolerate plageurism.
                     </Typography>
                     <Alert sx={{
                         ol: {

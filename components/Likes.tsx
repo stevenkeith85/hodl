@@ -66,7 +66,7 @@ export const Likes: FC<LikesProps> = ({
                             />
                         </Tooltip>
                 }
-                {showCount && !isNaN(tokenLikesCount) && <Typography>{humanize.compactInteger(tokenLikesCount, 1)}</Typography>}
+                {showCount && tokenLikesCount && <Typography>{humanize.compactInteger(tokenLikesCount, 1)}</Typography>}
             </Box>
         </>
     )

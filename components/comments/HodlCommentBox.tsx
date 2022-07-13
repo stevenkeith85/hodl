@@ -107,22 +107,19 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                 flexDirection="column"
                 gap={0.5}
                 sx={{
-                    background: '#fafafa',
-                    padding: 1.5,
-                    borderRadius: 1,
-                    border: '1px solid #f0f0f0'
+                    paddingY: 1,
                 }}
             >
                 <Box
                     display="flex"
                     alignItems="start"
-                    gap={1.5}
+                    gap={2}
                     flexGrow={1}
                     id={`hodl-comments-${comment.id}`}>
                     <Box
                         display="flex"
                         alignItems="start"
-                        gap={1}
+                        gap={1.5}
                         flexGrow={1}
                     >
                         <ProfileAvatar profileAddress={comment.subject} size="small" showNickname={false} />
@@ -156,36 +153,60 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
 
                             </Box>
                             <Box display="flex" gap={0.5}>
-                    <Typography sx={{ fontSize: 10, color: "#999" }}>{likesCount} likes</Typography>
-                    <Typography sx={{ fontSize: 10, color: "#999" }}>|</Typography>
-                    <Typography sx={{ fontSize: 10, color: "#999" }}>{countSWR.data} replies</Typography>
-                    <Typography sx={{ fontSize: 10, color: "#999" }}>|</Typography>
-                    <Typography sx={{ fontSize: 10, color: "#999" }}>{comment.timestamp && formatDistanceStrict(new Date(comment.timestamp), new Date(), { addSuffix: true })}</Typography>
-                </Box>
+                                <Typography sx={{ fontSize: 10, color: "#999" }}>{likesCount} likes</Typography>
+                                {/* <Typography sx={{ fontSize: 10, color: "#999" }}>|</Typography> */}
+                                <Typography sx={{ fontSize: 10, color: "#999" }}>{countSWR.data} replies</Typography>
+                                {/* <Typography sx={{ fontSize: 10, color: "#999" }}>|</Typography> */}
+                                <Typography sx={{ fontSize: 10, color: "#999" }}>{comment.timestamp && formatDistanceStrict(new Date(comment.timestamp), new Date(), { addSuffix: false })}</Typography>
+                            </Box>
                         </Box>
                     </Box>
-
-                    {address &&
-                        <Likes
-                            color="inherit"
-                            sx={{
-                                cursor: 'pointer',
-                                color: '#999',
-                                '&:hover': {
-                                    color: '#333',
-                                }
-                            }}
-                            id={comment.id}
-                            token={false}
-                            fontSize="inherit"
-                            showCount={false}
-                            likeTooltip={'Like this Comment'}
-                            unlikeTooltip={'Stop liking this Comment'}
-                        />
-                    }
-                    {address &&
-                        <Tooltip title="Reply to this Comment">
-                            <Reply
+                    <Box display="flex" gap={1}>
+                        {address &&
+                            <Likes
+                                color="inherit"
+                                sx={{
+                                    cursor: 'pointer',
+                                    color: '#999',
+                                    '&:hover': {
+                                        color: '#333',
+                                    }
+                                }}
+                                id={comment.id}
+                                token={false}
+                                fontSize="inherit"
+                                showCount={false}
+                                likeTooltip={'Like this Comment'}
+                                unlikeTooltip={'Stop liking this Comment'}
+                            />
+                        }
+                        {address &&
+                            <Tooltip title="Reply to this Comment">
+                                <Reply
+                                    sx={{
+                                        cursor: 'pointer',
+                                        color: '#999',
+                                        '&:hover': {
+                                            color: '#333',
+                                        }
+                                    }}
+                                    fontSize="inherit"
+                                    onClick={() => {
+                                        setCommentingOn({
+                                            object: "comment",
+                                            objectId: comment.id,
+                                            mutateList: swr.mutate,
+                                            mutateCount: countSWR.mutate,
+                                            setShowThread,
+                                            color
+                                        })
+                                        addCommentInput?.focus();
+                                    }
+                                    } />
+                            </Tooltip>
+                        }
+                        <Tooltip title="View Single Comment Thread">
+                            <Message
                                 sx={{
                                     cursor: 'pointer',
                                     color: '#999',
@@ -195,66 +216,42 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                 }}
                                 fontSize="inherit"
                                 onClick={() => {
-                                    setCommentingOn({
-                                        object: "comment",
-                                        objectId: comment.id,
-                                        mutateList: swr.mutate,
-                                        mutateCount: countSWR.mutate,
-                                        setShowThread,
-                                        color
-                                    })
-                                    addCommentInput?.focus();
-                                }
-                                } />
-                        </Tooltip>
-                    }
-                    <Tooltip title="View Single Comment Thread">
-                        <Message
-                            sx={{
-                                cursor: 'pointer',
-                                color: '#999',
-                                '&:hover': {
-                                    color: '#333',
-                                }
-                            }}
-                            fontSize="inherit"
-                            onClick={() => {
-                                if (setTopLevel !== null) {
-                                    setTopLevel({ objectId: comment.id, object: "comment" });
-                                } else {
-                                    router.push({
-                                        pathname: window.location.pathname,
-                                        query: { comment: comment.id }
-                                    });
-                                }
-                            }}
-                        />
-                    </Tooltip>
-                    {
-                        address && canDeleteComment(comment) &&
-                        <Tooltip title="Delete this Comment">
-                            <HighlightOffOutlined
-                                sx={{
-                                    cursor: 'pointer',
-                                    color: '#999',
-                                    '&:hover': {
-                                        color: '#333',
+                                    if (setTopLevel !== null) {
+                                        setTopLevel({ objectId: comment.id, object: "comment" });
+                                    } else {
+                                        router.push({
+                                            pathname: window.location.pathname,
+                                            query: { comment: comment.id }
+                                        });
                                     }
                                 }}
-                                fontSize="inherit"
-                                onClick={async () => {
-                                    await deleteComment(comment);
-                                    parentMutateList();
-                                    parentMutateCount();
-                                    mutateCount();
-                                }
-                                }
                             />
                         </Tooltip>
-                    }
-                    
+                        {
+                            address && canDeleteComment(comment) &&
+                            <Tooltip title="Delete this Comment">
+                                <HighlightOffOutlined
+                                    sx={{
+                                        cursor: 'pointer',
+                                        color: '#999',
+                                        '&:hover': {
+                                            color: '#333',
+                                        }
+                                    }}
+                                    fontSize="inherit"
+                                    onClick={async () => {
+                                        await deleteComment(comment);
+                                        parentMutateList();
+                                        parentMutateCount();
+                                        mutateCount();
+                                    }
+                                    }
+                                />
+                            </Tooltip>
+                        }
+                    </Box>
                 </Box>
-                
+
             </Box>
 
             {
@@ -263,7 +260,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                     display="flex"
                     flexDirection="column"
                     gap={1}
-                    marginLeft={'20px'}
+                    marginLeft={'55px'}
                 >
 
                     {showThread && !swr.error && !swr.data ?

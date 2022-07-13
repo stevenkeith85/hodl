@@ -41,6 +41,10 @@ export const HodlVideo = ({
     // If the video is brought onscreen, play it (if the user hasn't already watched it).
     // If it goes offscreen pause it.
     const pauseVideoOffscreen = () => {
+        if (gif) {
+            return;
+        }
+        
         let observer = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.intersectionRatio !== 1) {

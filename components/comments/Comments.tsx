@@ -91,7 +91,7 @@ export const Comments: FC<CommentsProps> = ({
                 }}
             >
                 <CommentOutlined color={color} fontSize={fontSize} />
-                {<Typography>{humanize.compactInteger(count, 1)}</Typography>}
+                {count && <Typography>{humanize.compactInteger(count, 1)}</Typography>}
             </Box>
 
         </>

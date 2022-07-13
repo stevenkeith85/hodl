@@ -1,3 +1,10 @@
+// These match the Redis collection names
+export enum ActionSet {
+    Actions = 'actions', // user's actions
+    Feed = 'feed', // user's feed
+    Notifications = 'notifications', // user's notifications
+}
+
 export enum ActionTypes {
     Added = 'added', // token added to hodlmymoon
     Listed = 'listed', // token listed on the market
@@ -15,12 +22,14 @@ export enum ActionTypes {
 // <id>
 // steven <followed> an <address> with the address of <id>
 export interface HodlAction {    
+    id?: number; // the id that the action will be stored against
+    timestamp?: number; // when the action was created
+
     action: ActionTypes;
 
     subject: string; // the wallet address that took the action. (i.e. the user)
 
+    // This is basically a pointer to what the action was on
     object: "token" | "comment" | "address"; // the type that was interacted with
-    id?: number | string; // if object is (token | comment) then it will a numeric id (e.g. liked a token); otherwise it will be a wallet address (e.g. followed an address)
-    
-    timestamp?: number; // when the notification was created
+    objectId?: number | string; // if object is (token | comment) then it will a numeric id (e.g. liked a token); otherwise it will be a wallet address (e.g. followed an address)
 }

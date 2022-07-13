@@ -1,5 +1,5 @@
-import { AccountCircle, ChevronLeftOutlined, DisplaySettingsOutlined, CameraAltOutlined } from "@mui/icons-material";
-import { Typography, Box, Stack, Link, ClickAwayListener, useMediaQuery, useTheme } from "@mui/material";
+import { AccountCircle, ChevronLeftOutlined, DisplaySettingsOutlined, CameraAltOutlined, PersonOffOutlined, Person, PersonOutlined } from "@mui/icons-material";
+import { Typography, Box, Stack, Link, ClickAwayListener, useMediaQuery, useTheme, Button } from "@mui/material";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { useNickname } from "../../hooks/useNickname";
@@ -8,6 +8,7 @@ import { NicknameModal } from "../modals/NicknameModal";
 import { ProfilePictureModal } from "../modals/ProfilePictureModal";
 import { LoginLogoutButton } from "./LoginLogoutButton";
 import { ProfileAvatar } from "../avatar/ProfileAvatar";
+import { ProfileNameOrAddress } from "../avatar/ProfileNameOrAddress";
 
 export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, menuPage }) => {
     const router = useRouter();
@@ -21,8 +22,8 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
     const matches = useMediaQuery(theme.breakpoints.down('md'));
 
     const [walletPages] = useState([
-        { label: 'Nickname', action: () => setNicknameModalOpen(true), icon: <DisplaySettingsOutlined /> },
-        { label: 'Avatar', action: () => setProfilePictureModalOpen(true), icon: <CameraAltOutlined /> },
+        { label: 'nickname', action: () => setNicknameModalOpen(true), icon: <DisplaySettingsOutlined /> },
+        { label: 'avatar', action: () => setProfilePictureModalOpen(true), icon: <CameraAltOutlined /> },
     ]);
 
     const handleRouteChange = () => {
@@ -106,56 +107,48 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
                                 sx={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    '&:hover': {
-                                        cursor: 'pointer',
-                                        color: theme => theme.palette.secondary.main,
-                                    },
-                                    borderBottom: '1px solid #f0f0f0',
-                                    paddingBottom: 2,
-                                    marginBottom: 2
-
                                 }}
                                 onClick={e => {
                                     e.stopPropagation();
                                     router.push(`/profile/${nickname || address}`)
                                 }}
                             >
-                                <ProfileAvatar profileAddress={address} size="small" showNickname={true} withLink={false} />
+                                <Button startIcon={<PersonOutlined />} variant="text" fullWidth={true}
+                                    sx={{
+                                        justifyContent: "flex-start",
+                                        paddingY: 1
+                                    }}>
+                                    <ProfileNameOrAddress
+                                        color={"primary"}
+                                        profileAddress={address}
+                                        size={"small"}
+                                        sx={{ fontWeight: 600 }}
+                                    />
+                                </Button>
                             </Stack>
                             {walletPages.map((page, i) => (
-                                <Stack
+                                <Box
                                     key={i}
-                                    direction="row"
-                                    sx={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        '&:hover': {
-                                            cursor: 'pointer',
-                                            color: theme => theme.palette.secondary.main,
-                                        },
+                                    display="flex"
+                                    flexDirection="column"
 
-                                        borderBottom: '1px solid #f0f0f0',
-                                        paddingBottom: 2,
-                                        marginBottom: 2
-
-                                    }}
                                     onClick={e => {
                                         e.stopPropagation();
                                         page.action();
                                     }}
                                 >
-                                    {page.icon}
-                                    <Typography
-                                        component="a"
+                                    <Button
+                                        fullWidth={true}
+                                        variant="text"
+                                        startIcon={page.icon}
                                         sx={{
-                                            textDecoration: 'none',
-                                            marginLeft: 2,
-
-                                        }} >
+                                            justifyContent: "flex-start",
+                                            paddingY: 1
+                                        }}
+                                    >
                                         {page.label}
-                                    </Typography>
-
-                                </Stack>
+                                    </Button>
+                                </Box>
                             ))}
                         </Stack>
                     }
@@ -168,7 +161,16 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
                         </Box>
                     }
                 </Box>
-                <LoginLogoutButton />
+                <Box>
+                    <LoginLogoutButton 
+                        variant="text" 
+                        sx={{ 
+                            justifyContent: "flex-start", 
+                            width: `100%`, 
+                            paddingY: 1,
+                            textTransform: 'lowercase'
+                            }} />
+                </Box>
             </Box>
         </ClickAwayListener>
     )

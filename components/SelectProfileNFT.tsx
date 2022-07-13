@@ -1,5 +1,5 @@
 import { Box, imageListItemClasses, ImageListItem, Typography } from '@mui/material'
-import { NftAvatar } from './avatar/ProfileAvatar';
+import { NftAvatar } from './avatar/NftAvatar';
 
 interface SelectProfileNFTProps {
     nfts: any[];

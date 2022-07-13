@@ -82,10 +82,7 @@ export const useComments = (
         load ? getKey : null,
         fetchWithObjectObjectIdOffsetLimit,
         {
-            // fallbackData: prefetched,
             revalidateOnMount: true,
-            // revalidateOnFocus: true,
-            // revalidateFirstPage: true,
         }
     );
 

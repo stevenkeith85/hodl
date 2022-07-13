@@ -8,6 +8,7 @@ export interface HodlComment {
     subject: string; // the address that made the comment
     comment?: string; // the comment string
 
+    // This is basically a pointer to the parent
     object: "token" | "comment"; // what was this comment about
     objectId?: number; // the object's Id
 

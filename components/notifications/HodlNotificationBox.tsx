@@ -23,14 +23,14 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
     const { address } = useContext(WalletContext);
 
 
-    const { data: comment } = useSWR(item.object === "comment" ? [`/api/comment`, item.id] : null,
+    const { data: comment } = useSWR(item.object === "comment" ? [`/api/comment`, item.objectId] : null,
         fetchWithId,
         {
             revalidateOnMount: true
         });
 
     const { data: token } = useSWR(item.object === "token" ?
-        [`/api/token`, item.id] :
+        [`/api/token`, item.objectId] :
         comment ?
             [`/api/token`, comment.tokenId] :
             null,
@@ -65,7 +65,7 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
 
                         {/* Liked */}
                         {item.action === ActionTypes.Liked && item.object === "token" && token && <>
-                            <Link href={`/nft/${item.id}`} passHref>
+                            <Link href={`/nft/${item.objectId}`} passHref>
                                 <Typography component="a" sx={{ textDecoration: 'none', color: '#333' }}>
                                     liked a token.
                                 </Typography>
@@ -104,7 +104,7 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
                         {/* Added */}
                         {
                             item.action === ActionTypes.Added &&
-                            <Link href={`/nft/${item.id}`}>
+                            <Link href={`/nft/${item.objectId}`}>
                                 <Typography component="a" sx={{ textDecoration: 'none', color: '#333' }}>
                                     added a new token.
                                 </Typography>
@@ -114,7 +114,7 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
                         {/* Listed */}
                         {
                             item.action === ActionTypes.Listed &&
-                            <Link href={`/nft/${item.id}`}>
+                            <Link href={`/nft/${item.objectId}`}>
                                 <Typography component="a" sx={{ textDecoration: 'none', color: '#333' }}>
                                     listed a token.
                                 </Typography>
@@ -124,7 +124,7 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
                         {/* Bought */}
                         {
                             item.action === ActionTypes.Bought &&
-                            <Link href={`/nft/${item.id}`}>
+                            <Link href={`/nft/${item.objectId}`}>
                                 <Typography component="a" sx={{ cursor: "pointer" }}>
                                     bought a token.
                                 </Typography>
@@ -144,16 +144,16 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
                 </Box>
                 {
                     token && token?.image &&
-                    <Link href={comment ? `/nft/${comment.tokenId}` : `/nft/${item.id}`}>
-                        <Box sx={{ cursor: 'pointer'}}>
+                    <Link href={comment ? `/nft/${comment.tokenId}` : `/nft/${item.objectId}`}>
+                        <Box sx={{ cursor: 'pointer' }}>
                             {assetType(token) === AssetTypes.Image &&
                                 <a>
-                                    <HodlImage 
-                                        cid={token.image.split('//')[1]} 
-                                        effect={token.filter} 
-                                        height={'44px'} 
-                                        width={'44px'} 
-                                        sx={{ img: { borderRadius: 0 } }} 
+                                    <HodlImage
+                                        cid={token.image.split('//')[1]}
+                                        effect={token.filter}
+                                        height={'44px'}
+                                        width={'44px'}
+                                        sx={{ img: { borderRadius: 0 } }}
                                     />
                                 </a>
                             }
@@ -167,12 +167,32 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
                                         audio={false}
                                         height='44px'
                                         width='44px'
-                                        sx={{ video: { 
-                                            objectFit: 'cover',
-                                            objectPosition: 'center',
-                                            borderRadius: 0,
-                                            background: '#fafafa',
-                                        } }} 
+                                        sx={{
+                                            video: {
+                                                objectFit: 'cover',
+                                                objectPosition: 'center',
+                                                borderRadius: 0,
+                                                background: '#fafafa',
+                                            }
+                                        }}
+                                    />
+                                </a>
+                            }
+                            {assetType(token) === AssetTypes.Gif &&
+                                <a>
+                                    <HodlVideo
+                                        cid={token.image.split('//')[1]}
+                                        gif={true}
+                                        height='44px'
+                                        width='44px'
+                                        sx={{
+                                            video: {
+                                                objectFit: 'cover',
+                                                objectPosition: 'center',
+                                                borderRadius: 0,
+                                                background: '#fafafa',
+                                            }
+                                        }}
                                     />
                                 </a>
                             }
@@ -186,12 +206,14 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
                                         audio={true}
                                         height='44px'
                                         width='44px'
-                                        sx={{ video: { 
-                                            objectFit: 'contain',
-                                            objectPosition: 'center',
-                                            borderRadius: 0,
-                                            background: '#fafafa',
-                                        } }} 
+                                        sx={{
+                                            video: {
+                                                objectFit: 'contain',
+                                                objectPosition: 'center',
+                                                borderRadius: 0,
+                                                background: '#fafafa',
+                                            }
+                                        }}
                                     />
                                 </a>
                             }

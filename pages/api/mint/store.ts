@@ -8,7 +8,7 @@ import { getTokenUriAndOwner } from "../nft/[tokenId]";
 import { getToken } from "../token/[tokenId]";
 import axios from 'axios'
 import { HodlAction, ActionTypes } from "../../../models/HodlAction";
-import { addAction } from "../notifications/add";
+import { addAction } from "../actions/add";
 
 dotenv.config({ path: '../.env' })
 
@@ -47,7 +47,7 @@ route.post(async (req, res: NextApiResponse) => {
     subject: req.address,
     action: ActionTypes.Added,
     object: "token",
-    id: tokenId
+    objectId: tokenId
   };
 
   const success = addAction(notification);

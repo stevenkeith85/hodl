@@ -2,16 +2,18 @@ import { Box, Typography } from "@mui/material";
 import { useContext } from "react";
 import { WalletContext } from "../../contexts/WalletContext";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
-import { useNotifications } from "../../hooks/useNotifications";
+import { useActions } from "../../hooks/useActions";
 import { HodlFeedItem } from "./HodlFeedItem";
-import { ActionTypes } from "../../models/HodlAction";
-import { HodlImpactAlert } from "../HodlImpactAlert";
+import { ActionSet, HodlAction } from "../../models/HodlAction";
+import InfiniteScroll from "react-swr-infinite-scroll";
 
 
-export const HodlFeed = ({ }) => {
+export const HodlFeed = ({ 
+    limit = 4
+}) => {
     const { address } = useContext(WalletContext);
 
-    const { notifications, isLoading, isError } = useNotifications(true);
+    const { actions: feed } = useActions(true, ActionSet.Feed, limit);
 
     if (!address) {
         return null;
@@ -28,17 +30,22 @@ export const HodlFeed = ({ }) => {
         flexDirection="column"
         gap={4}
     >
-        {isLoading && <HodlLoadingSpinner />}
-        {notifications && notifications.length === 0 && <HodlImpactAlert
-            title="It's quiet around here"
-            message="Follow some accounts to see their content"
-        />}
-        {(
-            notifications &&
-            notifications.filter(x => x.action === ActionTypes.Added || x.action === ActionTypes.Listed) || []
-        ).map((item, i) =>
-            <HodlFeedItem key={i} item={item} />
-        )}
+        { feed.data && <InfiniteScroll
+            swr={feed}
+            loadingIndicator={<HodlLoadingSpinner />}
+            isReachingEnd={feed => 
+                !feed.data[0].items.length || 
+                feed.data[feed.data.length - 1]?.items.length < limit
+            }
+        >
+            {
+                ({ items }) => {
+                    return (items || []).map((item: HodlAction) =>
+                    <HodlFeedItem key={item.id} item={item} />
+                    )
+                }
+            }
+        </InfiniteScroll>}
     </Box>
 
     return (

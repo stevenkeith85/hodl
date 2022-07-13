@@ -1,4 +1,4 @@
-import { Badge, Box, Chip, Typography } from "@mui/material";
+import { Badge, Box, Chip, Skeleton, Typography } from "@mui/material";
 import useSWR from "swr";
 import { fetchWithId } from "../../lib/swrFetchers";
 import Link from "next/link";
@@ -25,14 +25,14 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
     const { address } = useContext(WalletContext);
 
 
-    const { data: comment } = useSWR(item.object === "comment" ? [`/api/comment`, item.id] : null,
+    const { data: comment } = useSWR(item.object === "comment" ? [`/api/comment`, item.objectId] : null,
         fetchWithId,
         {
             revalidateOnMount: true
         });
 
     const { data: token } = useSWR(item.object === "token" ?
-        [`/api/token`, item.id] :
+        [`/api/token`, item.objectId] :
         comment ?
             [`/api/token`, comment.tokenId] :
             null,
@@ -42,151 +42,186 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
         });
 
     return (
-        <Box
-            display="flex"
-            flexDirection="column"
-            gap={2}
-            sx={{
-                border: '1px solid #ddd',
-                borderRadius: 1,
-                padding: 2,
-                boxShadow: '0 0 2px 1px #eee',
-                // width: {xs: '100%', sm:'80%', md: '70%' }
-                // maxWidth: '600px'
-                width: `100%`,
-                overflow: 'hidden'
-            }
-            }
-        >
-            <Box
+        <>{
+            !token && <Box
                 display="flex"
                 flexDirection="column"
                 gap={2}
-                sx={{ width: '100%' }}
+                sx={{
+                    border: '1px solid #ddd',
+                    borderRadius: 1,
+                    padding: 2,
+                    boxShadow: '0 0 2px 1px #eee',
+                    width: `100%`,
+                    overflow: 'hidden'
+                }
+                }
             >
                 <Box
                     display="flex"
-                    alignItems="center"
+                    flexDirection="column"
                     gap={2}
+                    sx={{ width: '100%' }}
                 >
-                    <ProfileAvatar
-                        profileAddress={item.subject}
-                        size="small"
-                        showNickname={false}
-                    />
                     <Box
-                        flexGrow={1}
-                        sx={{
-                            cursor: 'pointer',
-                            textDecoration: 'none'
-                        }}>
-                        {/* {JSON.stringify(item, null, 2)} */}
-
-                        <Box display="flex" justifyContent="space-between" width="100%">
-                            <Box display="flex" flexDirection="column" component="span">
-                                {item?.subject && item?.subject !== address &&
-                                    <ProfileNameOrAddress
-                                        color={"primary"}
-                                        profileAddress={item.subject}
-                                        size={"small"}
-                                        sx={{ fontWeight: 600 }}
-                                    />}
-                                {item?.subject && item?.subject === address &&
-                                    <Typography component="span" sx={{ fontWeight: 600 }}>You</Typography>
-                                }
-                                <Typography component="span" sx={{ fontSize: 10, color: "#999" }}>
-                                    {item.timestamp && formatDistanceStrict(new Date(item.timestamp), new Date(), { addSuffix: true })}
-                                </Typography>
-                            </Box>
-                            {item.action === ActionTypes.Added && <Box component="span"><Chip label="New" color="success" /></Box>}
-                            {item.action === ActionTypes.Listed && <Box component="span"><Chip label="Listed" color="secondary" /></Box>}
-                        </Box>
+                        display="flex"
+                        alignItems="center"
+                        gap={2}
+                    >
+                        <Skeleton variant="circular" width={44} height={44} />
+                        <Skeleton variant="text" width={100} />
+                    </Box>
+                    <Box marginX={-2}>
+                    <Skeleton variant="rectangular" height={300} />
                     </Box>
                 </Box>
-                {
-                    token && token?.image &&
-                    <Link href={comment ? `/nft/${comment.tokenId}` : `/nft/${item.id}`}>
-                        <Box sx={{ cursor: 'pointer', marginX: -2 }}>
-                            {assetType(token) === AssetTypes.Image &&
-                                <a>
-                                    <HodlImage
-                                        cid={token.image.split('//')[1]}
-                                        effect={token.filter}
-                                        sx={{ img: { borderRadius: 0 } }}
-                                        loading="eager"
-                                        sizes="(max-width:599px) 600px, (max-width:899px) 900px, 700px"
-                                    />
-                                </a>
-                            }
-                            {assetType(token) === AssetTypes.Video &&
-                                <a>
-                                    <HodlVideo
-                                        cid={token.image.split('//')[1]}
-                                        controls={true}
-                                        onlyPoster={false}
-                                        preload="none"
-                                        audio={false}
-                                        autoPlay={true}
-                                        sx={{ video: { borderRadius: 0, maxHeight: '50vh' } }}
-                                    />
-                                </a>
-                            }
-                            {assetType(token) === AssetTypes.Gif &&
-                                <a>
-                                    <HodlVideo
-                                        cid={token.image.split('//')[1]}
-                                        gif={true}
-                                        sx={{ video: { borderRadius: 0, maxHeight: '50vh' } }}
-                                    />
-                                </a>
-                            }
-                            {assetType(token) === AssetTypes.Audio &&
-                                <a>
-                                    <HodlVideo
-                                        cid={token.image.split('//')[1]}
-                                        controls={true}
-                                        onlyPoster={false}
-                                        height="280px"
-                                        preload="true"
-                                        audio={true}
-                                        sx={{
-                                            video: {
-                                                objectPosition: 'top',
-                                                borderRadius: 0
-                                            }
-                                        }}
-                                    />
-                                </a>
-                            }
-                        </Box>
-
-                    </Link>
-                }
+                <Box display="flex" flexDirection="column" gap={1}>
+                    <Skeleton variant="text" />
+                    <Skeleton variant="text" />
+                    <Skeleton variant="text" />
+                </Box>
             </Box>
-
-
-            <Box
+        }
+            {token && <Box
                 display="flex"
-                gap={1}
-                // paddingY={1}
                 flexDirection="column"
+                gap={2}
+                sx={{
+                    border: '1px solid #ddd',
+                    borderRadius: 1,
+                    padding: 2,
+                    boxShadow: '0 0 2px 1px #eee',
+                    width: `100%`,
+                    overflow: 'hidden'
+                }
+                }
             >
-                {token && <Box display="flex" gap={1}>
-                    <Likes
-                        id={token?.tokenId}
-                        token={true}
-                    />
-                    <Comments
-                        nft={token}
-                    />
-                </Box>}
-            </Box>
-            <Box>
-                <Typography component="h2" sx={{ fontWeight: 600 }}>{token?.name}</Typography>
-                {/* </Box>
-            <Box> */}
-                {token?.description}
-            </Box>
-        </Box>
+                <Box
+                    display="flex"
+                    flexDirection="column"
+                    gap={2}
+                    sx={{ width: '100%' }}
+                >
+                    <Box
+                        display="flex"
+                        alignItems="center"
+                        gap={2}
+                    >
+                        <ProfileAvatar
+                            profileAddress={item.subject}
+                            size="small"
+                            showNickname={false}
+                        />
+                        <Box
+                            flexGrow={1}
+                            sx={{
+                                cursor: 'pointer',
+                                textDecoration: 'none'
+                            }}>
+
+                            <Box display="flex" justifyContent="space-between" width="100%">
+                                <Box display="flex" flexDirection="column" component="span">
+                                    {item?.subject && item?.subject !== address &&
+                                        <ProfileNameOrAddress
+                                            color={"primary"}
+                                            profileAddress={item.subject}
+                                            size={"small"}
+                                            sx={{ fontWeight: 600 }}
+                                        />}
+                                    {item?.subject && item?.subject === address &&
+                                        <Typography component="span" sx={{ fontWeight: 600 }}>You</Typography>
+                                    }
+                                    <Typography component="span" sx={{ fontSize: 10, color: "#999" }}>
+                                        {item.timestamp && formatDistanceStrict(new Date(item.timestamp), new Date(), { addSuffix: true })}
+                                    </Typography>
+                                </Box>
+                                {item.action === ActionTypes.Added && <Box component="span"><Chip label="New" color="success" /></Box>}
+                                {item.action === ActionTypes.Listed && <Box component="span"><Chip label="Listed" color="secondary" /></Box>}
+                            </Box>
+                        </Box>
+                    </Box>
+                    {
+                        token && token?.image &&
+                        <Link href={comment ? `/nft/${comment.tokenId}` : `/nft/${item.objectId}`}>
+                            <Box sx={{ cursor: 'pointer', marginX: -2 }}>
+                                {assetType(token) === AssetTypes.Image &&
+                                    <a>
+                                        <HodlImage
+                                            cid={token.image.split('//')[1]}
+                                            effect={token.filter}
+                                            sx={{ img: { borderRadius: 0 } }}
+                                            loading="eager"
+                                            sizes="(max-width:599px) 600px, (max-width:899px) 900px, 700px"
+                                        />
+                                    </a>
+                                }
+                                {assetType(token) === AssetTypes.Video &&
+                                    <a>
+                                        <HodlVideo
+                                            cid={token.image.split('//')[1]}
+                                            controls={true}
+                                            onlyPoster={false}
+                                            preload="none"
+                                            audio={false}
+                                            autoPlay={true}
+                                            sx={{ video: { borderRadius: 0, maxHeight: '50vh' } }}
+                                        />
+                                    </a>
+                                }
+                                {assetType(token) === AssetTypes.Gif &&
+                                    <a>
+                                        <HodlVideo
+                                            cid={token.image.split('//')[1]}
+                                            gif={true}
+                                            sx={{ video: { borderRadius: 0, maxHeight: '50vh' } }}
+                                        />
+                                    </a>
+                                }
+                                {assetType(token) === AssetTypes.Audio &&
+                                    <a>
+                                        <HodlVideo
+                                            cid={token.image.split('//')[1]}
+                                            controls={true}
+                                            onlyPoster={false}
+                                            height="280px"
+                                            preload="true"
+                                            audio={true}
+                                            sx={{
+                                                video: {
+                                                    objectPosition: 'top',
+                                                    borderRadius: 0
+                                                }
+                                            }}
+                                        />
+                                    </a>
+                                }
+                            </Box>
+
+                        </Link>
+                    }
+                </Box>
+
+
+                <Box
+                    display="flex"
+                    gap={1}
+                    flexDirection="column"
+                >
+                    {token && <Box display="flex" gap={1}>
+                        <Likes
+                            id={token?.tokenId}
+                            token={true}
+                        />
+                        <Comments
+                            nft={token}
+                        />
+                    </Box>}
+                </Box>
+                <Box>
+                    <Typography component="h2" sx={{ fontWeight: 600 }}>{token?.name}</Typography>
+                    {token?.description}
+                </Box>
+            </Box>}
+        </>
     )
 }

@@ -6,7 +6,7 @@ const client = Redis.fromEnv()
 import apiRoute from "../handler";
 
 import { HodlAction, ActionTypes } from "../../../models/HodlAction";
-import { addAction } from "../notifications/add";
+import { addAction } from "../actions/add";
 import { AddCommentValidationSchema } from "../../../validationSchema/comments/addComments";
 import { ethers } from "ethers";
 import { nftaddress } from "../../../config";
@@ -62,7 +62,7 @@ export const addComment = async (comment: HodlComment) => {
       subject: comment.subject,
       action: ActionTypes.CommentedOn,
       object: "comment",
-      id: comment.id
+      objectId: comment.id
     };
 
     notificationAdded = await addAction(notification);

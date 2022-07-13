@@ -23,7 +23,8 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
         .then(r => r.data)
 
     const swr = useSWRInfinite(getKey, fetcher, {
-        revalidateOnMount: true
+        revalidateOnMount: true,
+        dedupingInterval: 2000
     });
 
     if (!swr.data) {
