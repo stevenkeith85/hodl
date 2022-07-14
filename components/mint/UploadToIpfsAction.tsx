@@ -92,16 +92,16 @@ export const UploadToIpfsAction: FC<MintProps> = ({
                   type="text"
                   label="Description"
                   multiline
-                  minRows={8}
+                  minRows={6}
                   disabled={stepComplete === 1}
                 />
-                <HodlFormikTextField
+                {/* <HodlFormikTextField
                   name="privilege"
                   type="text"
                   label="Hodler privilege"
                   InputLabelProps={{ shrink: true }}
                   disabled
-                />
+                /> */}
                 <Stack spacing={2} direction="row">
                   <Tooltip title={token}>
                     <Button
@@ -132,7 +132,7 @@ export const UploadToIpfsAction: FC<MintProps> = ({
             </Form>
           </>)}
       </Formik>
-      <LinearProgress variant="determinate" value={progress} />
+      {/* <LinearProgress variant="determinate" value={progress} /> */}
     </Stack>
   )
 }

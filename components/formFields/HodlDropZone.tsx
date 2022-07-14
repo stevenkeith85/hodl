@@ -1,3 +1,4 @@
+import { AudiotrackOutlined, Photo, PhotoOutlined, Videocam, VideocamOffOutlined, VideocamOutlined } from '@mui/icons-material'
 import { Box, Button, LinearProgress, Stack, Tooltip, Typography } from '@mui/material'
 import React from 'react'
 import { useDropzone } from 'react-dropzone'
@@ -32,32 +33,38 @@ export const HodlDropzone = ({ onDrop, progress }) => {
             borderRadius: 1,
             display: 'flex',
             flexDirection: 'column',
-            justifyItems: 'space-between',
+            alignItems: 'center',
+            justifyContent: 'center',
             overflow: 'hidden',
             padding: 0,
             margin: 0,
-            cursor: 'pointer'
+            cursor: 'pointer',
+            height:'400px'
         }}
         >
             <Box
                 {...getRootProps()}
-                sx={{
-                    padding: 8,
-                    flexGrow: 1
-                }}>
+                
+                >
                 <input {...getInputProps()} />
-                <Stack spacing={2} sx={{ textAlign: 'center' }}>
-                    <Typography>Image, Video, or Audio</Typography>
-                    <div><Button>Browse Files</Button></div>
-                </Stack>
+                <Box 
+                    display="flex" 
+                    flexDirection="column" 
+                    alignItems="center" 
+                    justifyContent="center"
+                    textAlign="center"
+                    gap={4} 
+                >
+                    <Box display="flex" gap={2}>
+                        <PhotoOutlined color="secondary" sx={{ fontSize: '50px' }} />
+                        <VideocamOutlined color="secondary" sx={{ fontSize: '50px' }} />
+                        <AudiotrackOutlined color="secondary" sx={{ fontSize: '50px' }} />
+                    </Box>
+                    <Typography sx={{ fontSize: '20px'}}>Drag a photo, video, or audio clip here</Typography>
+                    <div><Button color="primary">Select From Computer</Button></div>
+                </Box>
             </Box>
-            <Box
-                sx={{
-                    flexGrow: 0,
-                    zIndex: 0,
-                }}>
-                <LinearProgress variant="determinate" value={progress} />
-            </Box>
+            
         </Box>
     )
 }

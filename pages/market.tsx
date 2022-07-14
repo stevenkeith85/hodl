@@ -3,6 +3,7 @@ import { getListed } from './api/market/listed';
 import { useMarket } from '../hooks/useMarket';
 import { InfiniteScrollTab } from '../components/profile/InfiniteScrollTab';
 import { Typography } from '@mui/material';
+import { HodlImpactAlert } from '../components/HodlImpactAlert';
 
 export async function getServerSideProps() {
   const limit = 12;
@@ -26,7 +27,9 @@ export default function Home({ limit, prefetchedListed }) {
         <meta name="description" content="Mint, Showcase, and Trade NFTs at HodlMyMoon"></meta>
       </Head>
       { swr?.data[0]?.total === 0 && 
-        <Typography marginY={2}>We cannot find any NFTs listed on the market at the moment</Typography>
+        <HodlImpactAlert 
+          message={'We cannot find any NFTs listed on the market at the moment'} title={'Nothing to See Here'} 
+          />
       }
       <InfiniteScrollTab swr={swr} limit={limit} />
     </>

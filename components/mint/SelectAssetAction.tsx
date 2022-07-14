@@ -1,4 +1,4 @@
-import { Stack } from "@mui/material";
+import { LinearProgress, Stack } from "@mui/material";
 import { FC, useCallback, useEffect } from "react";
 import { FilterButtons } from "./FilterButtons";
 import { useSnackbar } from 'notistack';
@@ -15,15 +15,6 @@ export const SelectAssetAction: FC<MintProps> = ({
 }: MintProps) => {
   const { enqueueSnackbar } = useSnackbar();
   const [uploadToCloudinary, progress, error, setError] = useCloudinaryUpload();
-
-//   useEffect(() => {
-//     if (error !== '') {
-//         enqueueSnackbar(error, { variant: "error" });
-//         // @ts-ignore
-//         setError('');
-//     }
-//     // @ts-ignore
-// }, [error])
 
   const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
     if (rejectedFiles.length === 1) {
@@ -49,7 +40,6 @@ export const SelectAssetAction: FC<MintProps> = ({
         mimeType
       }))
 
-      enqueueSnackbar('Asset ready for departure', { variant: "success" });
       setStepComplete(0);
     } else {
       setLoading(false);
@@ -65,12 +55,7 @@ export const SelectAssetAction: FC<MintProps> = ({
     >
       {() => (
         <Form>
-          <Stack spacing={4}>
             <HodlDropzone onDrop={onDrop} progress={progress}/>
-            <div>
-              <FilterButtons formData={formData} setFormData={setFormData} />
-            </div>
-          </Stack>
         </Form>
       )}
     </Formik>

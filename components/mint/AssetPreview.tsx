@@ -1,4 +1,4 @@
-import { Skeleton, Stack, Typography } from "@mui/material";
+import { Box, Skeleton, Stack, Typography } from "@mui/material";
 import { FC } from "react";
 import { assetType } from "../../lib/utils";
 import { AssetTypes } from "../../models/AssetType";
@@ -20,20 +20,16 @@ export const AssetPreview: FC<MintProps> = ({
   const isAudio = () => mimeType && mimeType.indexOf('audio') !== -1;
   
   return (
-    <Stack spacing={2} sx={{ flexBasis: `50%`, justifyContent: 'center' }}>
-      <Stack
+      <Box
+        display="flex"
         sx={{
-          border: !fileName ? `1px solid #d0d0d0` : 'none',
-          flexGrow: 1,
-          minHeight: fileName ? 'auto' : 400,
+          height: `400px`,
+          overflow: 'hidden',
           borderRadius: 1,
           alignItems: 'center',
           justifyContent: 'center',
         }}>
-        { !fileName && <Skeleton   
-                    variant="rectangular"
-                    width="100%"
-                    height={400} /> }
+        { !fileName && <Typography>Preview Will Appear Here</Typography> }
         {fileName && isImage() && 
           <FilteredImageMemo 
             filter={filter} 
@@ -41,12 +37,6 @@ export const AssetPreview: FC<MintProps> = ({
             onLoad={setLoading} 
           />}
         {fileName && (isVideo() || isAudio()) && 
-          // Video transformations are too expensive on cloudinary
-          // <FilteredVideoMemo 
-          //   filter={filter} 
-          //   fileName={fileName} 
-          //   onLoad={setLoading} 
-          // />
           <HodlVideo 
             cid={fileName.split('/')[2]} 
             folder="uploads" 
@@ -70,7 +60,6 @@ export const AssetPreview: FC<MintProps> = ({
             }) === AssetTypes.Audio}
           />
         }
-      </Stack>
-    </Stack>
+      </Box>
   )
 }

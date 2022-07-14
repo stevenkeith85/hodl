@@ -1,4 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import next, { NextApiRequest, NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import nc from 'next-connect'
@@ -114,8 +113,15 @@ const handler = () => nc<HodlApiRequest, NextApiResponse>({
         } catch (e) {
           return res.status(401).json({ refreshed: false }); // refresh token has expired. user will need to re-login
         }
-
       }
+
+      // This is unlikely to happen in the wild; but if it does; just log the user out
+      // WE usually see it when switching from dev to prod mode (as we have a different jwt secret for both); 
+      if (e instanceof jwt.JsonWebTokenError) {
+        return res.status(401).json({ refreshed: false }); // refresh token has expired. user will need to re-login
+      }
+
+      
 
       throw e; // we don't handle other jwt issues. likely a malicious user
     }

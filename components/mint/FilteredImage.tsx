@@ -16,13 +16,17 @@ export const FilteredImage = ({
           sx={{
             display: filter === code ? 'flex' : 'none',
           }}
+          height="100%"
+          padding={0}
         >
           <HodlImage
             cid={fileName.split('/')[2]}
             folder="uploads"
             effect={code}
-            onLoad={() => onLoad(false)}
             sizes = "(max-width:899px) 100vw, (max-width:1199px) 50vw"
+            fit="scale-down"
+            onLoad={() => onLoad(false)}
+            height="100%"
           />
         </Box>
       ))}

@@ -1,4 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { NextApiRequest, NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
@@ -10,13 +9,17 @@ dotenv.config({ path: '../.env' })
 const client = Redis.fromEnv()
 const route = apiRoute();
 
+export const clearSession = async (address) => {
+  console.log('clearing session')
+  await client.hdel(`user:${address}`, 'sessionId');
+}
+
 route.post(async (req, res: NextApiResponse) => {  
   if (!req.address) {
     return res.status(403).json({ message: "Not authenticated" });
   }
 
-  // delete the session 
-  await client.hdel(`user:${req.address}`, 'sessionId');
+  await clearSession(req.address);
 
   // clear the cookie
   res.setHeader('Set-Cookie', cookie.serialize('refreshToken', "", { httpOnly: true, path: '/', maxAge: -1}))

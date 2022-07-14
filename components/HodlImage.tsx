@@ -81,13 +81,12 @@ export const HodlImage = ({
                 />}
             </Head>
             <Box sx={{
-                display: 'flex',
-                height: `100%`,
+                height,
+                maxHeight: `100%`,
                 img: {
                     objectFit: fit,
                     objectPosition: "top",
                     borderRadius: 1,
-                  
                 },
                 ...sx
             }}>
@@ -104,7 +103,7 @@ export const HodlImage = ({
                     srcSet={sources()}
                     sizes={sizes}
                     width={width}
-                    height={height}
+                    height={`100%`}
                 />
             </Box>
 

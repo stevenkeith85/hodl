@@ -22,8 +22,8 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
     const matches = useMediaQuery(theme.breakpoints.down('md'));
 
     const [walletPages] = useState([
-        { label: 'nickname', action: () => setNicknameModalOpen(true), icon: <DisplaySettingsOutlined /> },
-        { label: 'avatar', action: () => setProfilePictureModalOpen(true), icon: <CameraAltOutlined /> },
+        { label: 'Nickname', action: () => setNicknameModalOpen(true), icon: <DisplaySettingsOutlined /> },
+        { label: 'Avatar', action: () => setProfilePictureModalOpen(true), icon: <CameraAltOutlined /> },
     ]);
 
     const handleRouteChange = () => {
@@ -154,9 +154,9 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
                     }
                     {
                         !address &&
-                        <Box mb={4}>
-                            <Typography mb={2} variant="h1">Sign In</Typography>
-                            <Typography mb={2} >Connect your wallet to access your account.</Typography>
+                        <Box mb={2}>
+                            <Typography mb={2} variant="h1">Log In</Typography>
+                            <Typography mb={2} >Connect your wallet to get started.</Typography>
                             <Typography>We officially support <Link href="https://metamask.io/download/">MetaMask</Link></Typography>
                         </Box>
                     }
@@ -166,9 +166,6 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
                         variant="text" 
                         sx={{ 
                             justifyContent: "flex-start", 
-                            width: `100%`, 
-                            paddingY: 1,
-                            textTransform: 'lowercase'
                             }} />
                 </Box>
             </Box>

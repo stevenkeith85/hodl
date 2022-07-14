@@ -2,7 +2,6 @@ import { memo } from 'react';
 import { Typography, Step, StepLabel, Stepper } from '@mui/material';
 
 
-
 export const MintStepper = ({ activeStep, stepLabels }) => (
   <Stepper
     activeStep={activeStep}
