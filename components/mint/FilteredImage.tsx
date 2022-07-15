@@ -27,6 +27,7 @@ export const FilteredImage = ({
             fit="scale-down"
             onLoad={() => onLoad(false)}
             height="100%"
+            sx={{ img:{borderRadius: 0}}}
           />
         </Box>
       ))}

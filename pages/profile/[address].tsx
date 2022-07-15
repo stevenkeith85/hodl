@@ -145,7 +145,7 @@ const Profile = ({
         <title>{nickname || profileAddress} | NFT Market | HodlMyMoon</title>
       </Head>
       <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 2 }}>
-        <ProfileAvatar size="large" profileAddress={profileAddress} />
+        <ProfileAvatar size="xlarge" profileAddress={profileAddress} />
         <FollowButton profileAddress={profileAddress} />
       </Box>
 

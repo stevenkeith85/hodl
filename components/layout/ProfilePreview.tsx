@@ -7,7 +7,7 @@ export const ProfilePreview = ({ }) => {
             // spacing={4}
             maxWidth="1200px"
             margin="0 auto"
-            minHeight={400}
+            // minHeight={400}
         >
             <Grid
                 item

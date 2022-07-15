@@ -13,14 +13,16 @@ export const Logo = ({ sx = {} }) => (
                 ...sx
             }}
         >
-            {/* <RocketLaunchIcon /> */}
-            <Typography
+            <RocketLaunchIcon 
+                // sx={{ fontSize: '35px'}} 
+            />
+            {/* <Typography
                 sx={{
                     fontFamily: theme => theme.logo.fontFamily,
                     fontSize: theme => theme.logo.fontSize
                 }}>
                 Hodl My Moon
-            </Typography>
+            </Typography> */}
         </Stack>
     </Link>
 )

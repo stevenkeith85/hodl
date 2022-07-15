@@ -52,7 +52,7 @@ export const createCloudinaryUrl = (assetType = "image", deliveryType = "upload"
 export const imageSizes = [500, 600, 700, 800, 900, 1000, 1100, 1200, 1400, 1500];
 
 export const getShortAddress = address => {
-  return address?.slice(0, 2) + '..' + address?.slice(-4);
+  return address?.slice(0, 5) + '...' + address?.slice(-4);
 }
 
 export const truncateText = (text, length = 30) => {

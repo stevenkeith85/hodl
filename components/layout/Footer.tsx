@@ -58,18 +58,32 @@ const Footer = ({showFooter=true}) => {
                         }}
                     >
                         <Stack spacing={0.5}>
-                            <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>Hodl My Moon</Typography>
+                            <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>Hodl</Typography>
                             <HodlLink href="/about">About</HodlLink>
                             <HodlLink href="/contact">Contact</HodlLink>
                         </Stack>
                         { address && <Stack spacing={0.5}>
-                            <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>Non Fungible Tokens</Typography>
+                            <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>NFTs</Typography>
                             <HodlLink href="/">Market</HodlLink>
                             <HodlLink href="/create">Create</HodlLink>
                         </Stack>}
                     </Stack>
-                    <Box>
-                        . . . <RocketLaunchIcon />
+                    <Box textAlign={"center"}>
+                        {/* . . . <RocketLaunchIcon /> */}
+                        <Typography
+                sx={{
+                    fontFamily: theme => theme.logo.fontFamily,
+                    fontSize: theme => theme.logo.fontSize
+                }}>
+                Hodl My Moon
+            </Typography>
+            <Typography
+                sx={{
+                    fontFamily: theme => theme.logo.fontFamily,
+                    fontSize: '14px'
+                }}>
+                An NFT Social Platform
+            </Typography>
                     </Box>
                 </Stack>
             </Container>
@@ -104,15 +118,7 @@ const Footer = ({showFooter=true}) => {
                             xs: 'center',
                         },
                     }}>
-                    <Typography sx={{ fontSize: 13 }}>Copyright © 2022 Pony Powered Limited.</Typography>
-                    <Stack
-                        direction="row"
-                        spacing={2}
-                    >
-                        <LinkedInIcon/>
-                        <TwitterIcon/>
-                    </Stack>
-
+                    <Typography sx={{ fontSize: `12px` }}>Copyright © 2022 Pony Powered Limited.</Typography>
                 </Stack>
             </Container>
         </Box>

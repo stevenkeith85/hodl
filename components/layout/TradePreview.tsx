@@ -6,7 +6,7 @@ export const TradePreview = ({ }) => {
             container
             sx={{ color: 'white'}}
             maxWidth="1200px"
-            minHeight="400px"
+            // minHeight="400px"
             margin="0 auto"
         >
             <Grid

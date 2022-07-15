@@ -49,10 +49,10 @@ const Mint = () => {
   const theme = useTheme();
   const xs = useMediaQuery(theme.breakpoints.only('xs'));
   const stepLabels = [
-    'Select Asset',
-    'Apply Filter',
-    'IPFS Upload',
-    'Mint NFT',
+    'Select',
+    'Filter',
+    'Upload',
+    'Mint',
     'Hodl'
   ];
 
@@ -61,12 +61,29 @@ const Mint = () => {
       <Head>
         <title>Create NFTs | HodlMyMoon</title>
       </Head>
-      <Stack spacing={2} marginY={4}>
+      <Box
+        display={"flex"}
+        flexDirection="column"
+        sx={{
+          marginY: {
+            xs: 4,
+            sm: 5,
+            md: 7,
+          },
+          gap: {
+            xs: 4,
+            sm: 5,
+            md: 7,
+          }
+        }}
+      >
         {xs ?
           <MintMobileStepper activeStep={activeStep} setActiveStep={setActiveStep} stepComplete={stepComplete} stepLabels={stepLabels} /> :
           <MintStepperMemo activeStep={activeStep} stepLabels={stepLabels} />
         }
-        <Grid container>
+        <Grid
+          container
+        >
           <Grid item xs={12} md={6}
             sx={{
               height: `100%`,
@@ -82,60 +99,60 @@ const Mint = () => {
               }
             }}>
             {activeStep === 0 &&
-                <SelectAssetAction 
-                  formData={formData}
-                  setFormData={setFormData}
-                  loading={loading} 
-                  setLoading={setLoading} 
-                  setStepComplete={setStepComplete} 
-                />
+              <SelectAssetAction
+                formData={formData}
+                setFormData={setFormData}
+                loading={loading}
+                setLoading={setLoading}
+                setStepComplete={setStepComplete}
+              />
             }
             {activeStep === 1 &&
-                <ApplyFilterAction 
-                  formData={formData}
-                  setFormData={setFormData}
-                  loading={loading} 
-                  setLoading={setLoading} 
-                  setStepComplete={setStepComplete} 
-                />
+              <ApplyFilterAction
+                formData={formData}
+                setFormData={setFormData}
+                loading={loading}
+                setLoading={setLoading}
+                setStepComplete={setStepComplete}
+              />
             }
             {activeStep === 2 &&
-                <UploadToIpfsAction
-                  formData={formData}
-                  setFormData={setFormData}
-                  loading={loading}
-                  stepComplete={stepComplete}
-                  setLoading={setLoading}
-                  setStepComplete={setStepComplete} />
+              <UploadToIpfsAction
+                formData={formData}
+                setFormData={setFormData}
+                loading={loading}
+                stepComplete={stepComplete}
+                setLoading={setLoading}
+                setStepComplete={setStepComplete} />
             }
             {activeStep === 3 &&
-                <MintTokenAction
-                  formData={formData}
-                  setFormData={setFormData}
-                  loading={loading}
-                  stepComplete={stepComplete}
-                  setLoading={setLoading}
-                  setStepComplete={setStepComplete} />
+              <MintTokenAction
+                formData={formData}
+                setFormData={setFormData}
+                loading={loading}
+                stepComplete={stepComplete}
+                setLoading={setLoading}
+                setStepComplete={setStepComplete} />
             }
             {activeStep === 4 &&
-                <AddToHodlAction
-                  formData={formData}
-                  setFormData={setFormData}
-                  loading={loading}
-                  setLoading={setLoading}
-                  stepComplete={stepComplete}
-                  setStepComplete={setStepComplete} />
+              <AddToHodlAction
+                formData={formData}
+                setFormData={setFormData}
+                loading={loading}
+                setLoading={setLoading}
+                stepComplete={stepComplete}
+                setStepComplete={setStepComplete} />
             }
-            
+
           </Grid>
-          <Grid 
-            item 
-            marginTop={1} 
-            xs={12} 
-            md={6} 
-            sx={{ 
+          <Grid
+            item
+            marginTop={1}
+            xs={12}
+            md={6}
+            sx={{
               height: `100%`,
-              paddingLeft: { md: 1 } 
+              paddingLeft: { md: 1 }
             }}>
             <AssetPreview
               loading={loading}
@@ -155,17 +172,17 @@ const Mint = () => {
           }}
         />
         {
-            !xs && activeStep < 4 && 
-            <Box >
-              <MintProgressButtonsMemo
-                  loading={loading}
-                  activeStep={activeStep}
-                  setActiveStep={setActiveStep}
-                  stepComplete={stepComplete}
-              />
-              </Box>
-            }
-      </Stack>
+          !xs && activeStep < 4 &&
+          <Box >
+            <MintProgressButtonsMemo
+              loading={loading}
+              activeStep={activeStep}
+              setActiveStep={setActiveStep}
+              stepComplete={stepComplete}
+            />
+          </Box>
+        }
+      </Box>
     </>
   )
 }

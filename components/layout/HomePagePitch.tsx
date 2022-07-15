@@ -5,10 +5,15 @@ export const HomePagePitch = ({ }) => {
     return (
         <Grid
             container
-            padding={4}
             maxWidth="1200px"
-            minHeight="400px"
             margin="0 auto"
+            sx={{
+                padding: {
+                    'xs': 4,
+                    'sm': 6,
+                    'md': 8,
+                }
+            }}
         >
             <Grid
                 item

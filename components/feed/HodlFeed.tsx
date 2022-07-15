@@ -6,9 +6,10 @@ import { useActions } from "../../hooks/useActions";
 import { HodlFeedItem } from "./HodlFeedItem";
 import { ActionSet, HodlAction } from "../../models/HodlAction";
 import InfiniteScroll from "react-swr-infinite-scroll";
+import { HodlImpactAlert } from "../HodlImpactAlert";
 
 
-export const HodlFeed = ({ 
+export const HodlFeed = ({
     limit = 4
 }) => {
     const { address } = useContext(WalletContext);
@@ -19,6 +20,7 @@ export const HodlFeed = ({
         return null;
     }
 
+    
     const menu = <Box
         sx={{
             padding: 4,
@@ -30,18 +32,23 @@ export const HodlFeed = ({
         flexDirection="column"
         gap={4}
     >
-        { feed.data && <InfiniteScroll
+        {
+            feed.data && !feed.data[0].items.length && <HodlImpactAlert message={"Follow some users to see what they are up to."} title="Your feed is currently empty" />
+        }
+        
+    
+        {feed.data && <InfiniteScroll
             swr={feed}
             loadingIndicator={<HodlLoadingSpinner />}
-            isReachingEnd={feed => 
-                !feed.data[0].items.length || 
+            isReachingEnd={feed =>
+                !feed.data[0].items.length ||
                 feed.data[feed.data.length - 1]?.items.length < limit
             }
         >
             {
                 ({ items }) => {
                     return (items || []).map((item: HodlAction) =>
-                    <HodlFeedItem key={item.id} item={item} />
+                        <HodlFeedItem key={item.id} item={item} />
                     )
                 }
             }

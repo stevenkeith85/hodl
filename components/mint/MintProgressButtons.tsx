@@ -10,9 +10,9 @@ export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, l
     }}
     >
     <Button 
-      color="secondary"
+      color="primary"
       sx={{ paddingX: 3, }}
-      disabled={loading || stepComplete === 2} 
+      disabled={loading || activeStep === 0 || stepComplete >= 2} 
       variant="outlined" 
       onClick={() => setActiveStep(activeStep => activeStep - 1)}> 
       Back

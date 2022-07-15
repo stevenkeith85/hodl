@@ -72,7 +72,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                         <Skeleton variant="text" width={100} />
                     </Box>
                     <Box marginX={-2}>
-                    <Skeleton variant="rectangular" height={300} />
+                        <Skeleton variant="rectangular" height={300} />
                     </Box>
                 </Box>
                 <Box display="flex" flexDirection="column" gap={1}>
@@ -87,7 +87,6 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                 flexDirection="column"
                 gap={2}
                 sx={{
-                    border: '1px solid #ddd',
                     borderRadius: 1,
                     padding: 2,
                     boxShadow: '0 0 2px 1px #eee',
@@ -118,7 +117,6 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                 cursor: 'pointer',
                                 textDecoration: 'none'
                             }}>
-
                             <Box display="flex" justifyContent="space-between" width="100%">
                                 <Box display="flex" flexDirection="column" component="span">
                                     {item?.subject && item?.subject !== address &&
@@ -135,8 +133,8 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                         {item.timestamp && formatDistanceStrict(new Date(item.timestamp), new Date(), { addSuffix: true })}
                                     </Typography>
                                 </Box>
-                                {item.action === ActionTypes.Added && <Box component="span"><Chip label="New" color="success" /></Box>}
-                                {item.action === ActionTypes.Listed && <Box component="span"><Chip label="Listed" color="secondary" /></Box>}
+                                {item.action === ActionTypes.Added && <Box component="span"><Chip label="New" variant="outlined" color="success" /></Box>}
+                                {item.action === ActionTypes.Listed && <Box component="span"><Chip label="Listed" variant="outlined" color="secondary" /></Box>}
                             </Box>
                         </Box>
                     </Box>
@@ -218,8 +216,8 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                     </Box>}
                 </Box>
                 <Box>
-                    <Typography component="h2" sx={{ fontWeight: 600 }}>{token?.name}</Typography>
-                    {token?.description}
+                    <Typography mb={1} component="h2" sx={{ fontWeight: 600 }}>{token?.name}</Typography>
+                    <Typography>{token?.description}</Typography>
                 </Box>
             </Box>}
         </>

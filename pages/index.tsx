@@ -54,48 +54,43 @@ export default function Home({ limit, prefetchedListed }) {
             xs={12}
             md={5}
           >
-            <Box display="flex" paddingX={4} paddingY={4}>
+            <Box display="flex" paddingX={6} paddingY={4}>
               <Box
-                sx={{
-                  border: '1px solid #ddd',
-                  boxShadow: '0 0 2px 1px #eee',
-                // background: 'yellow'
-                }}
                 alignItems="center"
-                // justifyContent="center"
                 display="flex"
                 flexDirection="row"
                 borderRadius={1}
-                // paddingX={4}
-                // paddingY={4}
                 width="100%"
                 height="120px"
-                gap={0}
+                gap={1}
+                sx={{
+                  padding: 1,
+                  border: '1px solid #ddd',
+                  boxShadow: '0 0 2px 1px #eee'
+                }}
               >
                 <Box flexGrow={1} display="flex" justifyContent="center">
                   <ProfileAvatar profileAddress={address} size="large" showNickname={false} />
                 </Box>
-                
-                <Box 
-                  flexGrow={2}
-                  display="flex" 
-                  // alignItems="center"
+
+                <Box
+                  flexGrow={1}
+                  display="flex"
                   alignContent="center"
-                  
-                  flexDirection="column" 
+                  flexDirection="column"
                   gap={1}
                   padding={0}
                 >
-                  { address && 
-                    <ProfileNameOrAddress color={"primary"} profileAddress={address} size={"medium"} sx={{ fontWeight: 600 }} 
-                  />}
+                  {address &&
+                    <ProfileNameOrAddress color={"primary"} profileAddress={address} size={"medium"} sx={{ fontWeight: 600 }}
+                    />}
 
                   <Box
                     display="grid"
                     gap={1}
                     gridTemplateColumns="1fr 1fr"
                     gridTemplateRows="1fr 1fr"
-                    >
+                  >
                     {!isNaN(hodlingCount) &&
                       <Typography sx={{ span: { fontWeight: 600 } }}><span>{humanize.compactInteger(hodlingCount, 1)}</span> Hodling</Typography>
                     }

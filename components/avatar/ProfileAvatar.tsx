@@ -11,7 +11,7 @@ import { NftAvatarWithLinkMemo } from "./NftAvatarWithLink";
 interface ProfileAvatarProps {
     profileAddress: string;
     reverse?: boolean;
-    size?: "xsmall" | "small" | "medium" | "large";
+    size?: "xsmall" | "small" | "medium" | "large" | "xlarge";
     color?: "primary" | "secondary" | "greyscale";
     showNickname?: boolean;
     withLink?: boolean;

@@ -9,9 +9,6 @@ import { ProfilePreview } from "./ProfilePreview"
 export const PublicHomePage = ({ }) => {
     return (
         <Box
-            sx={{
-                // background: theme => theme.palette.secondary.light,
-            }}
             display="flex"
             minHeight={'calc(100vh - 195px)'}
             flexDirection="column"

@@ -1,5 +1,6 @@
 import { Typography } from '@mui/material';
 import Head from 'next/head';
+import { HodlImpactAlert } from '../components/HodlImpactAlert';
 import { InfiniteScrollSearchResults } from '../components/profile/InfiniteScrollSearchResults';
 import { useSearch } from '../hooks/useSearch';
 import { SearchValidationSchema } from '../validationSchema/search';
@@ -38,7 +39,8 @@ export default function Search({ q, limit, prefetchedResults }) {
       </Head>
 
       { swr?.data[0]?.total === 0 && 
-        <Typography marginY={2}>We cannot find any NFTs with that tag</Typography>
+      <HodlImpactAlert message={"We cannot find any NFTs with that tag"} title="Sorry" />
+        
       }
       <InfiniteScrollSearchResults swr={swr} limit={limit} />
     </>

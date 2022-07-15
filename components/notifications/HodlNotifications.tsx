@@ -1,4 +1,4 @@
-import { Box, ClickAwayListener, Fade, useMediaQuery, useTheme } from "@mui/material";
+import { Box, ClickAwayListener, Fade, Typography, useMediaQuery, useTheme } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import NotificationsIcon from '@mui/icons-material/Notifications';
@@ -10,6 +10,7 @@ import { useActions } from "../../hooks/useActions";
 import { HodlNotificationBox } from "./HodlNotificationBox";
 import { ActionSet, HodlAction } from "../../models/HodlAction";
 import InfiniteScroll from "react-swr-infinite-scroll";
+import { HodlImpactAlert } from "../HodlImpactAlert";
 
 export const HodlNotifications = ({
     setHoverMenuOpen,
@@ -61,7 +62,7 @@ export const HodlNotifications = ({
             top: 56,
             right: 0,
             minWidth: '500px',
-            maxHeight: '50vh',
+            // maxHeight: '33vh',
             height: { xs: 'calc(100vh - 56px)', sm: '300px' },
             width: { xs: '100%', sm: 'auto' },
             overflowY: 'auto',
@@ -75,6 +76,10 @@ export const HodlNotifications = ({
         flexDirection="column"
         gap={2}
     >
+         {
+            notifications.data && !notifications.data[0].items.length && 
+                <Typography marginTop={2}>No notifications at the moment</Typography>
+        }
         { notifications.data && <InfiniteScroll
             swr={notifications}
             loadingIndicator={<HodlLoadingSpinner />}

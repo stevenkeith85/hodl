@@ -8,9 +8,6 @@ export const MintStepper = ({ activeStep, stepLabels }) => (
     alternativeLabel
     sx={{
       width: '100%',
-      paddingY: 2,
-      paddingTop: 4,
-      background: '#f9f9f9',
       borderRadius: 1
     }}>
     {stepLabels.map((label, i) => <Step key={i}>

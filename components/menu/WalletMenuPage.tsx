@@ -113,10 +113,15 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
                                     router.push(`/profile/${nickname || address}`)
                                 }}
                             >
-                                <Button startIcon={<PersonOutlined />} variant="text" fullWidth={true}
+                                <Button
+                                    color="inherit"
+                                    startIcon={<PersonOutlined />}
+                                    variant="text"
+                                    fullWidth={true}
                                     sx={{
                                         justifyContent: "flex-start",
-                                        paddingY: 1
+                                        paddingX: 2,
+                                        paddingY: 1.5
                                     }}>
                                     <ProfileNameOrAddress
                                         color={"primary"}
@@ -138,12 +143,14 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
                                     }}
                                 >
                                     <Button
+                                        color="inherit"
                                         fullWidth={true}
                                         variant="text"
                                         startIcon={page.icon}
                                         sx={{
                                             justifyContent: "flex-start",
-                                            paddingY: 1
+                                            paddingX: 2,
+                                            paddingY: 1.5
                                         }}
                                     >
                                         {page.label}
@@ -154,20 +161,32 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
                     }
                     {
                         !address &&
-                        <Box mb={2}>
-                            <Typography mb={2} variant="h1">Log In</Typography>
-                            <Typography mb={2} >Connect your wallet to get started.</Typography>
+                        <Box
+                            display="flex"
+                            flexDirection="column"
+                            gap={2}
+                        >
+                            <Typography variant="h1">Connect</Typography>
+                            <Typography>Your wallet to get started</Typography>
                             <Typography>We officially support <Link href="https://metamask.io/download/">MetaMask</Link></Typography>
+                            <Box>
+                                <LoginLogoutButton
+                                    sx={{
+                                        justifyContent: "flex-start",
+                                        paddingY: 1,
+                                        paddingX: 2
+                                    }} />
+                            </Box>
                         </Box>
                     }
                 </Box>
-                <Box>
-                    <LoginLogoutButton 
-                        variant="text" 
-                        sx={{ 
-                            justifyContent: "flex-start", 
-                            }} />
-                </Box>
+                { address && <LoginLogoutButton
+                    variant="text"
+                    sx={{
+                        paddingX: 2,
+                        paddingY: 1.5,
+                        justifyContent: "flex-start",
+                    }} />}
             </Box>
         </ClickAwayListener>
     )

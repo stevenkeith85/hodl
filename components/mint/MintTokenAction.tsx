@@ -1,9 +1,10 @@
-import { Typography, Stack, Button } from '@mui/material';
-import { Build } from '@mui/icons-material';
+import { Typography, Stack, Button, Box } from '@mui/material';
+import { Build, CloudSyncOutlined, SatelliteAlt } from '@mui/icons-material';
 import { FC } from 'react';
 import { useSnackbar } from 'notistack';
 import { mintToken } from '../../lib/mint';
 import { MintProps } from './models';
+import { grey } from '@mui/material/colors';
 
 
 export const MintTokenAction: FC<MintProps> = ({ 
@@ -36,7 +37,7 @@ export const MintTokenAction: FC<MintProps> = ({
       }));
 
       enqueueSnackbar(`NFT minted on the blockchain with token id ${tokenId}`, { variant: "success" });
-      setStepComplete(2);
+      setStepComplete(3);
     } catch (e) {
       console.log(e)
       enqueueSnackbar('Unable to mint at the moment. Please try again', { variant: "warning" });
@@ -45,18 +46,31 @@ export const MintTokenAction: FC<MintProps> = ({
   }
 
   return (
-    <Stack spacing={4}>
-      <Typography variant="h2">Mint NFT</Typography>
-      <Typography sx={{ span: { fontWeight: 600 } }}>You are now ready to mint your token <span>{formData.name}</span> on the blockchain</Typography>
+    <Box 
+      display="flex"
+      flexDirection={"column"}
+      alignItems="center"
+      justifyContent="center"
+      textAlign="center"
+      height="400px"
+      gap={4}
+    >
+      <CloudSyncOutlined sx={{ fontSize: 82, color: grey[400]}} />
+      <Typography 
+        sx={{ 
+          fontSize: '18px',
+          color: grey[600],
+          span: { fontWeight: 600 } }}>Click the button to mint your NFT <span>{formData.name}</span> on the blockchain</Typography>
       <div>
         <Button
-          disabled={stepComplete === 2 || loading}
+        
+          color="secondary"
+          disabled={stepComplete === 3 || loading}
           onClick={mint}
-          startIcon={<Build fontSize="large" />}
         >
-          Mint Token
+          Mint
         </Button>
       </div>
-    </Stack>
+    </Box>
   );
 }

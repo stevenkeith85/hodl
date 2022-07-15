@@ -11,7 +11,7 @@ export const MintMobileStepper = ({ activeStep, stepLabels, stepComplete, setAct
             sx={{
                 width: '100%',
                 paddingY: 2,
-                background: '#f9f9f9',
+                // background: '#f9f9f9',
                 borderRadius: 1,
                 '&:before': {
                     content: `"${stepLabels[activeStep]}"`,

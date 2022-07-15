@@ -1,12 +1,13 @@
-import { Typography, Stack, Button } from '@mui/material';
+import { Typography, Stack, Button, Box } from '@mui/material';
 import { SuccessModal } from '../index';
-import { Rocket } from '@mui/icons-material';
+import { CloudSyncOutlined, NightsStayOutlined, Rocket } from '@mui/icons-material';
 import { FC, useState } from 'react';
 import { useSnackbar } from 'notistack';
 
 import { UnableToStoreModal } from '../modals/UnableToStoreModal';
 import { useStoreToken } from '../../hooks/useStoreToken';
 import { MintProps } from './models';
+import { grey } from '@mui/material/colors';
 
 
 export const AddToHodlAction: FC<MintProps> = ({ 
@@ -54,19 +55,34 @@ export const AddToHodlAction: FC<MintProps> = ({
         message="You&apos;ve successfully minted your token and added it to HodlMyMoon"
         tab={0}
       />
-      <Stack spacing={4}>
-        <Typography variant="h2">Hodl My Moon</Typography>
-        <Typography sx={{ span: { fontWeight: 600 } }}>You can now add your token <span>{formData.name}</span> to HodlMyMoon</Typography>
-        <div>
-          <Button
-            onClick={hodl}
-            disabled={stepComplete === 3 || loading}
-            startIcon={<Rocket fontSize="large" />}
-          >
-            Add Token
-          </Button>
-        </div>
-      </Stack>
+      
+
+      <Box 
+      display="flex"
+      flexDirection={"column"}
+      alignItems="center"
+      justifyContent="center"
+      textAlign="center"
+      height="400px"
+      gap={4}
+    >
+      <NightsStayOutlined sx={{ fontSize: 82, color: grey[400]}} />
+      <Typography 
+        sx={{ 
+          fontSize: '18px',
+          color: grey[600],
+          span: { fontWeight: 600 } }}>Click the button to add your NFT <span>{formData.name}</span> to Hodl My Moon</Typography>
+      <div>
+        <Button
+        
+          color="secondary"
+          disabled={stepComplete === 4 || loading}
+          onClick={hodl}
+        >
+          Hodl
+        </Button>
+      </div>
+    </Box>
     </>
   );
 }

@@ -159,11 +159,11 @@ const ResponsiveAppBar = ({ showAppBar=true}) => {
                             width: '100%',
                             justifyContent: 'space-between'
                         }}>
-                            <Stack direction="row" spacing={8} sx={{ alignItems: 'center' }}>
+                            <Stack direction="row" spacing={6} sx={{ alignItems: 'center' }}>
                                 <Logo />
                                 <Box sx={{
                                     display: 'grid',
-                                    gap: 4,
+                                    gap: 6,
                                     gridTemplateColumns: `repeat(3, minmax(0, 1fr))`,
 
                                 }}>
@@ -213,7 +213,7 @@ const ResponsiveAppBar = ({ showAppBar=true}) => {
                             </Stack>
                             <Stack
                                 direction="row"
-                                spacing={2}
+                                spacing={3}
                                 sx={{
                                     position: { sm: 'relative' },
                                     display: { xs: 'none', md: 'flex' },
