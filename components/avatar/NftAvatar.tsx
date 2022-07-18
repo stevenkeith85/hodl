@@ -1,9 +1,9 @@
-import {Avatar} from "@mui/material";
+import { Avatar } from "@mui/material";
 import { HodlImage } from "../HodlImage";
 import { HodlVideo } from "../HodlVideo";
 import { memo } from "react";
 
-export const NftAvatar = ({ token, size, highlight = false }: any) => {
+export const NftAvatar = ({ token, size, highlight = false, color = "greyscale" }: any) => {
     const isGif = mimeType => mimeType && mimeType.indexOf('gif') !== -1;
     const isImage = mimeType => mimeType && mimeType.indexOf('image') !== -1;
     const isVideo = mimeType => mimeType && mimeType.indexOf('video') !== -1;
@@ -14,7 +14,9 @@ export const NftAvatar = ({ token, size, highlight = false }: any) => {
             className="avatar"
             sx={{
                 border: highlight ? '2px solid' : 'none',
-                borderColor: highlight ? theme => theme.palette.secondary.main : 'none',
+                borderColor: highlight ? 
+                    color === 'greyscale' ? 'white' : theme => theme.palette[color].main : 
+                    'none',
                 height: size,
                 width: size,
             }}>

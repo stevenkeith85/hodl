@@ -7,6 +7,7 @@ import { HodlFeedItem } from "./HodlFeedItem";
 import { ActionSet, HodlAction } from "../../models/HodlAction";
 import InfiniteScroll from "react-swr-infinite-scroll";
 import { HodlImpactAlert } from "../HodlImpactAlert";
+import { HodlProfileBadge } from "../HodlProfileBadge";
 
 
 export const HodlFeed = ({
@@ -20,7 +21,6 @@ export const HodlFeed = ({
         return null;
     }
 
-    
     const menu = <Box
         sx={{
             padding: 4,
@@ -33,10 +33,18 @@ export const HodlFeed = ({
         gap={4}
     >
         {
-            feed.data && !feed.data[0].items.length && <HodlImpactAlert message={"Follow some users to see what they are up to."} title="Your feed is currently empty" />
+            feed.data && !feed.data[0].items.length &&
+            (
+                <Box display="flex" flexDirection="column">
+                    {/* <Typography variant="h2" mb={2}>Feed</Typography> */}
+                    <HodlImpactAlert message={"Follow some users to see what they are up to."} title="Your feed is currently empty" />
+                    {/* <Typography variant="h2" mb={2}>Popular Users</Typography> */}
+
+                </Box>
+            )
         }
-        
-    
+
+
         {feed.data && <InfiniteScroll
             swr={feed}
             loadingIndicator={<HodlLoadingSpinner />}

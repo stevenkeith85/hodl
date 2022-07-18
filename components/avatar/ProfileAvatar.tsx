@@ -15,6 +15,7 @@ interface ProfileAvatarProps {
     color?: "primary" | "secondary" | "greyscale";
     showNickname?: boolean;
     withLink?: boolean;
+    highlight?: boolean;
 }
 
 export const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
@@ -23,7 +24,8 @@ export const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
     size = "medium",
     color = "secondary",
     showNickname = true,
-    withLink = true
+    withLink = true,
+    highlight=false,
 }) => {
     const { data: tokenId } = useSWR(
         profileAddress ? [`/api/profile/picture`, profileAddress] : null,
@@ -57,8 +59,8 @@ export const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
             spacing={size === 'small' ? 1 : 2}
             direction={reverse ? 'row-reverse' : 'row'}
         >
-            { token && withLink && <NftAvatarWithLinkMemo token={token} size={getSize()} profileAddress={profileAddress}/> }
-            { token && !withLink && <NftAvatarMemo token={token} size={getSize()} /> }            
+            { token && withLink && <NftAvatarWithLinkMemo token={token} size={getSize()} profileAddress={profileAddress} highlight={highlight} color={color}/> }
+            { token && !withLink && <NftAvatarMemo token={token} size={getSize()} highlight={highlight} color={color}/> }            
             { !token && withLink && <DefaultAvatarWithLink size={getSize()} color={color} profileAddress={profileAddress} /> }
             { !token && !withLink && <DefaultAvatar size={getSize()} color={color} /> }
             {showNickname && <ProfileNameOrAddress color={color} profileAddress={profileAddress} size={size} />}

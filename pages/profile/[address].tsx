@@ -24,6 +24,7 @@ import { useFollowers } from '../../hooks/useFollowers';
 import { useListed } from '../../hooks/useListed';
 import { useHodling } from '../../hooks/useHodling';
 import humanize from "humanize-plus";
+import { HodlImpactAlert } from '../../components/HodlImpactAlert';
 
 const InfiniteScrollTab = dynamic(
   // @ts-ignore
@@ -48,7 +49,7 @@ export async function getServerSideProps({ params, query }) {
   let profileAddress = params.address;
   let nickname = null;
 
-  const limit = 8;
+  const limit = 4;
   const tab = Number(query.tab) || 0;
 
   const isValid = await isValidAddress(params.address);
@@ -81,7 +82,6 @@ export async function getServerSideProps({ params, query }) {
   const prefetchedHodling = tab == 0 ? await getHodling(profileAddress, 0, limit) : null;
 
   const prefetchedListedCount = await getListedCount(profileAddress);
-  console.log('prefetchedListedCount', prefetchedListedCount)
   const prefetchedListed = tab == 1 ? await getListed(profileAddress, 0, limit) : null;
 
   const prefetchedFollowingCount = await getFollowingCount(profileAddress);
@@ -144,12 +144,19 @@ const Profile = ({
       <Head>
         <title>{nickname || profileAddress} | NFT Market | HodlMyMoon</title>
       </Head>
-      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 2 }}>
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          flexDirection: 'row', 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          marginTop: 4 
+        }}>
         <ProfileAvatar size="xlarge" profileAddress={profileAddress} />
         <FollowButton profileAddress={profileAddress} />
       </Box>
 
-      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: 3, marginBottom: 3 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: 4, marginBottom: 4 }}>
         <Tabs
           value={value}
           onChange={(e, v) => {
@@ -207,6 +214,8 @@ const Profile = ({
       </div>
       <div hidden={value !== 1}>
         <InfiniteScrollTab swr={listedSWR} limit={limit} showAvatar={false} showName={true} />
+        { listedSWR?.data && listedSWR?.data[0]?.items?.length === 0 &&
+          <HodlImpactAlert title="Nothing Listed" message="This user does not have any NFTs for sale" sx={{ padding: 0 }}/>}
       </div>
       <div hidden={value !== 2}>
         <FollowingTab address={address} following={following} profileAddress={profileAddress} />

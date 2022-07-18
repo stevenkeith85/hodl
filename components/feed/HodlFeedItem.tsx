@@ -42,8 +42,9 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
         });
 
     return (
-        <>{
-            !token && <Box
+        <>        
+        {    
+            item.object === "token" && !token && <Box
                 display="flex"
                 flexDirection="column"
                 gap={2}

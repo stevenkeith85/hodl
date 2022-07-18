@@ -10,62 +10,61 @@ export interface CommentsProps {
     nft: any,
     popUp?: boolean,
     color?: "inherit" | "disabled" | "action" | "secondary" | "primary" | "error" | "info" | "success" | "warning",
-    fontSize?: "small" | "inherit" | "large" | "medium",
+    fontSize?: string,
     prefetchedCommentCount?: null | number,
     sx?: any
 }
 
-export const Comments: FC<CommentsProps> = ({ 
-    nft, 
-    popUp = true, 
-    color = "primary", 
-    fontSize = "small", 
-    prefetchedCommentCount=null, 
-    sx = {} 
+export const Comments: FC<CommentsProps> = ({
+    nft,
+    popUp = true,
+    color = "primary",
+    fontSize = "18px",
+    prefetchedCommentCount = null,
+    sx = {}
 }) => {
-    const {data:count} = useCommentCount(nft.tokenId, "token", prefetchedCommentCount)
+    const { data: count } = useCommentCount(nft.tokenId, "token", prefetchedCommentCount)
 
     const [open, setOpen] = useState(false);
 
     const [topLevel, setTopLevel] = useState<{
-        objectId:number, 
-        object:"token" | "comment"
+        objectId: number,
+        object: "token" | "comment"
     }>({
-        objectId: nft.tokenId, 
+        objectId: nft.tokenId,
         object: "token"
     })
 
     const clearTopLevel = () => {
         setTopLevel({
-            objectId: nft.tokenId, 
+            objectId: nft.tokenId,
             object: "token"
-        })   
+        })
     }
 
     return (
         <>
-            <HodlModal 
-                open={open} 
-                setOpen={setOpen} 
-                sx={{ 
-                    padding: 0, 
-                    width: { 
+            <HodlModal
+                open={open}
+                setOpen={setOpen}
+                sx={{
+                    padding: 0,
+                    width: {
                         xs: '90vw',
                     },
                     maxWidth: "900px"
-                    
-                 }} 
-                 >
-                <HodlCommentsBox 
+                }}
+            >
+                <HodlCommentsBox
                     tokenId={nft.tokenId}
                     setTopLevel={setTopLevel}
                     clearTopLevel={clearTopLevel}
-                    objectId={topLevel.objectId} 
+                    objectId={topLevel.objectId}
                     object={topLevel.object}
-                    prefetchedComments={null} 
-                    prefetchedCommentCount={prefetchedCommentCount} 
-                    limit={10} 
-                    maxHeight="60vh" 
+                    prefetchedComments={null}
+                    prefetchedCommentCount={prefetchedCommentCount}
+                    limit={10}
+                    maxHeight="60vh"
                     minHeight="30vh"
                 />
             </HodlModal>
@@ -81,7 +80,7 @@ export const Comments: FC<CommentsProps> = ({
                 }}
                 onClick={e => {
                     e.stopPropagation();
-                    e.preventDefault();
+                    // e.preventDefault();
                     if (popUp) {
                         setOpen(true)
                     } else {
@@ -90,8 +89,18 @@ export const Comments: FC<CommentsProps> = ({
                     }
                 }}
             >
-                <CommentOutlined color={color} fontSize={fontSize} />
-                {count && <Typography>{humanize.compactInteger(count, 1)}</Typography>}
+                <CommentOutlined
+                    color={color}
+                    sx={{ fontSize }} />
+
+                {(count != undefined) &&
+                    <Typography
+                        sx={{
+                            fontSize: `calc(${fontSize} - 4px)`
+                        }}>
+                        {humanize.compactInteger(count, 1)}
+                    </Typography>
+                }
             </Box>
 
         </>

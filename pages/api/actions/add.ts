@@ -1,10 +1,10 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
-
+import axios from 'axios';
 const client = Redis.fromEnv()
 import apiRoute from "../handler";
-import { ActionTypes, HodlAction } from '../../../models/HodlAction';
+import { ActionSet, ActionSetMembers, ActionTypes, HodlAction } from '../../../models/HodlAction';
 import { getPriceHistory } from "../token-bought/[tokenId]";
 import { likesToken } from "../like2/token/likes";
 import { getFollowers } from "../follow2/followers";
@@ -42,7 +42,7 @@ const route = apiRoute();
 
 
 // Add the action id to <address>s notifications
-const addNotification = async (address: string, action: HodlAction) : Promise<number> => {
+const addNotification = async (address: string, action: HodlAction): Promise<number> => {
   const added = await client.zadd(
     `notifications:${address}`,
     {
@@ -57,7 +57,7 @@ const addNotification = async (address: string, action: HodlAction) : Promise<nu
 
 // Add the action id to <address>s feed. We'll set the feed entry's timestamp to use the action's timestamp (for now)
 // as we'd probably not want to show something at the top of a chronological feed, if it was actually listed a while ago
-const addToFeed = async (address: string, action: HodlAction) : Promise<number> => {
+const addToFeed = async (address: string, action: HodlAction): Promise<number> => {
   const added = await client.zadd(
     `feed:${address}`,
     {
@@ -76,7 +76,8 @@ const addToFeed = async (address: string, action: HodlAction) : Promise<number> 
 // When A follows B, we'd like to add B's last action to A's feed (if it's not already there)
 //
 // We could also provide a general activity log at some point for the user/address.
-const recordAddressActivity = async (action: HodlAction) : Promise<number> => {
+const recordAddressActivity = async (action: HodlAction): Promise<number> => {
+  // actions the user has taken
   const added = await client.zadd(
     `actions:${action.subject}`,
     {
@@ -85,22 +86,52 @@ const recordAddressActivity = async (action: HodlAction) : Promise<number> => {
     }
   );
 
+  // if this is a feed action, record it here.
+  //
+  // we will use this to get some content for
+  // a (different) user's feed if they follow this user in the future
+  if (ActionSetMembers[ActionSet.Feed].indexOf(action.action) !== -1) {
+    await client.zadd(
+      `actions:feed:${action.subject}`,
+      {
+        score: action.timestamp,
+        member: action.id
+      }
+    );
+  }
+
   return added;
 }
 
 
 // actions could be referenced (by id) from several places.
-const storeAction = async (action: HodlAction) : Promise<number> => {
+const storeAction = async (action: HodlAction): Promise<number> => {
   const added = client.hset(
-    "action", 
-    { 
-      [action.id]: JSON.stringify(action) 
+    "action",
+    {
+      [action.id]: JSON.stringify(action)
     }
   );
 
   return added;
 }
 
+// gets the last <x> actions that address took that can be used in a feed
+const getLastXFeedActions = async (address: string, x: number = 5): Promise<HodlAction[]> => {
+  const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/actions:feed:${address}/0/${x}/rev`, {
+    headers: {
+      Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
+    }
+  })
+  const actionIds = r.data.result.map(item => JSON.parse(item));
+
+  const actions: HodlAction[] = [];
+  for (const id of actionIds) {
+    actions.push(await client.hget(`action`, id));
+  }
+
+  return actions;
+}
 
 // This is the entry point ot the actions system, that will also add the appropriate feed item or notification
 //
@@ -121,7 +152,7 @@ export const addAction = async (action: HodlAction) => {
 
   await storeAction(action);
   await recordAddressActivity(action);
-  
+
   if (action.action === ActionTypes.Liked) { // tell the token owner you liked it
     if (action.object === "token") {
 
@@ -162,13 +193,26 @@ export const addAction = async (action: HodlAction) => {
   }
 
   if (action.action === ActionTypes.Followed) { // tell the account someone followed it
-    const follows = await isFollowing(action.subject, action.objectId);
 
+    const user = action.subject;
+    const followed = action.objectId;
+
+    // verify this
+    const follows = await isFollowing(user, followed);
     if (!follows) {
       return;
     }
 
-    return await addNotification(`${action.objectId}`, action);
+    // get the last few actions <followed> took, 
+    // and add it to the <user>s feed
+    const lastActions = await getLastXFeedActions(followed as string)
+
+    for (const a of lastActions) {
+      await addToFeed(`${user}`, a);
+    }
+
+    // tell <followed>, that <user> followed them
+    return await addNotification(`${followed}`, action);
   }
 
   // Who: Tell the seller's followers (via their feed) there's a new token for sale
@@ -188,7 +232,6 @@ export const addAction = async (action: HodlAction) => {
 
       let count = 0;
       for (let address of followers) {
-        // count += await addNotification(`${address}`, action);
         count += await addToFeed(`${address}`, action);
       }
 
@@ -198,7 +241,8 @@ export const addAction = async (action: HodlAction) => {
     }
   }
 
-  if (action.action === ActionTypes.Added) { // tell the seller's followers there's a new token for sale
+  // Who: Tell the seller's followers (via their feed) there's a new token on the site
+  if (action.action === ActionTypes.Added) {
     try {
       const token: Nft = await fetchNFT(+action.objectId);
 
@@ -210,7 +254,6 @@ export const addAction = async (action: HodlAction) => {
 
       let count = 0;
       for (let address of followers) {
-        // count += await addNotification(`${address}`, action);
         count += await addToFeed(`${address}`, action);
       }
 

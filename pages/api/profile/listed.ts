@@ -45,7 +45,7 @@ export const getListed = async (address, offset, limit) => {
                 description: token.description,
                 image: ipfsUriToCloudinaryUrl(token.image),
                 price: listing ? ethers.utils.formatUnits(listing.price, 'ether') : '',
-                seller: listing ? listing.seller : '',
+                owner: listing ? listing.seller : '',
                 mimeType: token.mimeType,
                 filter: token.filter
             };

@@ -174,7 +174,6 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                 }}
                                 id={comment.id}
                                 token={false}
-                                fontSize="inherit"
                                 showCount={false}
                                 likeTooltip={'Like this Comment'}
                                 unlikeTooltip={'Stop liking this Comment'}

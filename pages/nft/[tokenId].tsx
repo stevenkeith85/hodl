@@ -107,7 +107,7 @@ const NftDetail = ({
         <Grid item xs={12} md={5} marginBottom={2} paddingRight={{ md: 1 }}>
           <Stack spacing={2}>
             <DetailPageImage token={nft} />
-            <Box gap={1} display='flex' alignItems='center'>
+            <Box gap={2} display='flex' alignItems='center'>
               <Likes
                 sx={{ color: theme => theme.palette.secondary.main, '.MuiTypography-body1': { color: '#666' } }}
                 id={nft.tokenId}
@@ -162,10 +162,11 @@ const NftDetail = ({
               <PriceHistory priceHistory={priceHistory} />
               <HodlerPrivilege nft={nft} />
               <IpfsCard nft={nft} />
-              <NftActionButtons nft={nft} />
+              
             </Stack>
           </div>
         </Grid>
+        <NftActionButtons nft={nft} />
       </Grid >
     </>
   )

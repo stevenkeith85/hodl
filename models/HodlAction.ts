@@ -1,10 +1,3 @@
-// These match the Redis collection names
-export enum ActionSet {
-    Actions = 'actions', // user's actions
-    Feed = 'feed', // user's feed
-    Notifications = 'notifications', // user's notifications
-}
-
 export enum ActionTypes {
     Added = 'added', // token added to hodlmymoon
     Listed = 'listed', // token listed on the market
@@ -12,6 +5,34 @@ export enum ActionTypes {
     Liked = 'liked', // token or comment liked
     CommentedOn = 'commented on', // token or comment commented on
     Followed = 'followed', // address has been followed
+}
+
+// These map to the Redis collection names
+export enum ActionSet {
+    Actions = 'actions', // user's actions
+    Feed = 'feed', // user's feed
+    Notifications = 'notifications', // user's notifications
+}
+
+export const ActionSetMembers = {
+    [ActionSet.Actions]: [
+        ActionTypes.Added,
+        ActionTypes.Listed,
+        ActionTypes.Bought,
+        ActionTypes.Liked,
+        ActionTypes.CommentedOn,
+        ActionTypes.Followed,
+    ],
+    [ActionSet.Feed]: [
+        ActionTypes.Added, 
+        ActionTypes.Listed
+    ],
+    [ActionSet.Notifications]: [
+        ActionTypes.Bought,
+        ActionTypes.Liked,
+        ActionTypes.CommentedOn,
+        ActionTypes.Followed,
+    ]
 }
 
 // e.g.

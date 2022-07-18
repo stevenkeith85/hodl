@@ -5,7 +5,6 @@ import {
 
 
 interface DefaultAvatarProps {
-    // size: "small" | "medium" | "large";
     size: number;
     color: "primary" | "secondary" | "greyscale";
 }

@@ -3,13 +3,16 @@ import { ethers } from 'ethers';
 import { getProvider } from '../../../lib/server/connections';
 import { nftmarketaddress } from '../../../config';
 import HodlMarket from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
-import { ipfsUriToCloudinaryUrl } from '../../../lib/utils';
+import { ipfsUriToCloudinaryUrl, ipfsUriToGatewayUrl } from '../../../lib/utils';
 import apiRoute from '../handler';
 import { getToken } from '../token/[tokenId]';
 
 dotenv.config({ path: '../.env' })
 
-
+// TODO: We may wish to just return full Nfts here. See fetchNft.
+// We exclude fields that we do not need at the moment.
+// We use the same names/conventions as the <Nft> type where possible.
+// And are returning the same fields as getHolding/getItems
 const getItems = async (data) => {
     const tokenIdToListing = new Map();
     const tokenIds = [];
@@ -27,13 +30,11 @@ const getItems = async (data) => {
         const listing = tokenIdToListing.get(Number(token.tokenId));
 
         return {
-            tokenId: token.tokenId,
-            // name: token.name,
-            // description: token.description,
-            image: ipfsUriToCloudinaryUrl(token.image),
-
             price: listing ? ethers.utils.formatUnits(listing.price.toString(), 'ether') : '',
-            seller: listing ? listing.seller : '',
+            tokenId: token.tokenId,
+            owner: listing ? listing.seller : '',
+            forSale: true,
+            image: ipfsUriToCloudinaryUrl(token.image),
             mimeType: token.mimeType || null,
             filter: token.filter || null
         };

@@ -9,7 +9,7 @@ export interface LikesProps {
     id: number;
     token?: boolean;
     color?: "inherit" | "disabled" | "action" | "secondary" | "primary" | "error" | "info" | "success" | "warning";
-    fontSize?: "small" | "inherit" | "large" | "medium";
+    fontSize?: string;
     showCount?: boolean;
     prefetchedLikeCount?: number | null;
     likeTooltip?: string;
@@ -21,7 +21,7 @@ export const Likes: FC<LikesProps> = ({
     id,
     token = true,
     color = "secondary",
-    fontSize = 'small',
+    fontSize = '18px',
     showCount = true,
     prefetchedLikeCount = null,
     likeTooltip = "Like this",
@@ -41,32 +41,37 @@ export const Likes: FC<LikesProps> = ({
                     cursor: 'pointer',
                     position: 'relative',
                     ...sx
-                }}>
+                }}
+                onClick={e => {
+                    e.stopPropagation();
+                    toggleLike();
+                }}
+            >
                 {
                     !userLikesThisToken ?
                         <Tooltip title={likeTooltip}>
                             <FavoriteBorderIcon
-                                onClick={e => {
-                                    e.stopPropagation();
-                                    toggleLike();
-                                }}
                                 color={color}
-                                fontSize={fontSize}
+                                sx={{
+                                    fontSize
+                                }}
                             />
                         </Tooltip>
                         :
                         <Tooltip title={unlikeTooltip}>
                             <FavoriteIcon
-                                onClick={e => {
-                                    e.stopPropagation();
-                                    toggleLike();
-                                }}
                                 color={color}
-                                fontSize={fontSize}
+                                sx={{
+                                    fontSize
+                                }}
                             />
                         </Tooltip>
                 }
-                {showCount && tokenLikesCount && <Typography>{humanize.compactInteger(tokenLikesCount, 1)}</Typography>}
+                {showCount && (tokenLikesCount != undefined) &&
+                    <Typography sx={{ 
+                        fontSize: `calc(${fontSize} - 4px)`
+                    }}>{humanize.compactInteger(tokenLikesCount, 1)}</Typography>
+                }
             </Box>
         </>
     )

@@ -16,6 +16,10 @@ const addressToTokenIds = async (address, offset, limit) => {
     return result;
 }
 
+// TODO: We may wish to just return full Nfts here. See fetchNft.
+// We exclude fields that we do not need at the moment.
+// We use the same names/conventions as the <Nft> type where possible.
+// And are returning the same fields as getHolding/getItems
 export const getHodling = async (address, offset, limit) => {
     try {
         const [tokenIds, next, total] = await addressToTokenIds(address, offset, limit);
@@ -37,12 +41,13 @@ export const getHodling = async (address, offset, limit) => {
             }
 
             return {
+                price: null,
                 tokenId: token.tokenId,
-                name: token.name,
-                description: token.description,
+                owner: address,
+                forSale: false,
                 image: ipfsUriToCloudinaryUrl(token.image),
                 mimeType: token.mimeType || null,
-                filter: token.filter || null
+                filter: token.filter || null,
             }
         });
 

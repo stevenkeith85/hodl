@@ -9,23 +9,14 @@ import InfiniteScroll from 'react-swr-infinite-scroll'
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 import SelectProfileNFT from "../SelectProfileNFT";
 import { mutate } from "swr";
+import { useHodling } from "../../hooks/useHodling";
 
 
 export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePictureModalOpen, lim = 10 }) => {
     const [token, setToken] = useState(null);
     const { address } = useContext(WalletContext);
 
-    const getKey = (index, previous) => {
-        return address ? [`/api/profile/hodling?address=${address}`, index * lim, lim]: null;
-    }
-
-    const fetcher = async (key, offset, limit) => await axios.get(`/api/profile/hodling?address=${address}&offset=${offset}&limit=${limit}`)
-        .then(r => r.data)
-
-    const swr = useSWRInfinite(getKey, fetcher, {
-        revalidateOnMount: true,
-        dedupingInterval: 2000
-    });
+    const [hodlingCount, swr] = useHodling(address, lim, null, null, profilePictureModalOpen);
 
     if (!swr.data) {
         return null;
