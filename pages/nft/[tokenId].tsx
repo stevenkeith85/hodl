@@ -1,5 +1,7 @@
 import {
   Box,
+  Card,
+  CardContent,
   Grid,
   NoSsr,
   Stack,
@@ -36,6 +38,9 @@ import { Forum, Info, Insights } from "@mui/icons-material";
 
 import { useRouter } from "next/router";
 import { getLikeCount } from "../api/like2/token/count";
+import { MaticPrice } from "../../components/MaticPrice";
+import { indigo } from "@mui/material/colors";
+import { ProfileNameOrAddress } from "../../components/avatar/ProfileNameOrAddress";
 
 
 export async function getServerSideProps({ params }) {
@@ -90,7 +95,7 @@ const NftDetail = ({
         <title>{nft.name} | HodlMyMoon</title>
       </Head>
       <Grid container>
-        <Grid item xs={12} marginY={2}>
+        <Grid item xs={12} marginY={4}>
           <Stack
             spacing={1}
             direction="row"
@@ -98,23 +103,43 @@ const NftDetail = ({
               justifyContent: 'space-between',
               alignItems: 'center'
             }}>
-            <Tooltip title={nft.name}>
-              <Typography variant="h1">{truncateText(nft?.name, 100)}</Typography>
-            </Tooltip>
-            <ProfileAvatar reverse={true} profileAddress={nft?.owner} />
+            <ProfileAvatar reverse={false} profileAddress={nft?.owner} showNickname={true} />
+
+            <Box display="flex" justifyContent="start" sx={{
+              marginBottom: 2
+            }}>
+
+              <Tabs
+                value={value}
+                onChange={(e, v) => {
+                  setValue(v);
+                }}
+                textColor="secondary"
+                indicatorColor="secondary"
+              >
+                <Tab key={0} value={0} icon={<Forum />} />
+                <Tab key={1} value={1} icon={<Insights />} />
+              </Tabs>
+            </Box>
+
           </Stack>
         </Grid>
         <Grid item xs={12} md={5} marginBottom={2} paddingRight={{ md: 1 }}>
-          <Stack spacing={2}>
+          <Stack spacing={1}>
             <DetailPageImage token={nft} />
-            <Box gap={2} display='flex' alignItems='center'>
+            <Box gap={1.5} display='flex' alignItems='center'>
               <Likes
-                sx={{ color: theme => theme.palette.secondary.main, '.MuiTypography-body1': { color: '#666' } }}
+                sx={{
+                  color: theme => theme.palette.secondary.main,
+                  '.MuiTypography-body1': { color: '#666' }
+                }}
                 id={nft.tokenId}
                 token={true}
                 prefetchedLikeCount={prefetchedLikeCount}
+                fontSize="22px"
               />
               <Comments
+                fontSize="22px"
                 nft={nft}
                 popUp={false}
                 prefetchedCommentCount={prefetchedCommentCount}
@@ -123,50 +148,58 @@ const NftDetail = ({
             </Box>
           </Stack>
         </Grid>
-        <Grid item xs={12} md={7} marginBottom={2} paddingLeft={{ md: 1 }}>
-          <Box display="flex" justifyContent="start" sx={{
-            marginBottom: 2
-          }}>
-            <Tabs
-              value={value}
-              onChange={(e, v) => {
-                setValue(v);
-              }}
-              textColor="secondary"
-              indicatorColor="secondary"
-            >
-              <Tab key={0} value={0} icon={<Forum />} />
-              <Tab key={1} value={1} icon={<Insights />} />
-            </Tabs>
-          </Box>
+        <Grid 
+          item 
+          xs={12} 
+          md={7} 
+          marginBottom={2} 
+          paddingLeft={{ md: 1 }}
+        >
           <div hidden={value !== 0}>
             <Stack spacing={2}>
-              <DescriptionCard nft={nft} />
-              <HodlTagCloud
-                nft={nft}
-                prefetchedTags={prefetchedTags}
-              />
-              <HodlCommentsBox
-                tokenId={nft.tokenId}
-                object={comment ? "comment" : "token"}
-                objectId={comment ? comment : nft.tokenId}
-                prefetchedComments={prefetchedComments}
-                prefetchedCommentCount={prefetchedCommentCount}
-                limit={limit}
-              />
+              <Card variant="outlined">
+                <CardContent>
+                  <Box 
+                    paddingBottom={3}
+                    mb={3} 
+                    sx={{ borderBottom: `1px solid #ddd` }}>
+                    <Typography variant="h1" mt={1} mb={3} sx={{ fontWeight: 600}}>{nft.name}</Typography>
+                    <Typography >{nft.description}</Typography>
+                    <HodlTagCloud
+                      nft={nft}
+                      prefetchedTags={prefetchedTags}
+                    />
+                  </Box>
+                  <HodlCommentsBox
+                    tokenId={nft.tokenId}
+                    object={comment ? "comment" : "token"}
+                    objectId={comment ? comment : nft.tokenId}
+                    prefetchedComments={prefetchedComments}
+                    prefetchedCommentCount={prefetchedCommentCount}
+                    limit={limit}
+                  />
+                </CardContent>
+              </Card>
             </Stack>
           </div>
           <div hidden={value !== 1}>
-            <Stack spacing={2}>
-              {Boolean(nft?.forSale) && <PriceCard nft={nft} />}
+            <Box display="grid" gap={2}>
+              <Box display="grid" gap={3} sx={{
+                background: indigo[50],
+                padding: 2,
+                border: `1px solid #ddd`,
+                borderRadius: 1
+              }}>
+                <Typography variant="h2">Price</Typography>
+                <MaticPrice nft={nft} color="black" />
+                <NftActionButtons nft={nft} />
+              </Box>
               <PriceHistory priceHistory={priceHistory} />
               <HodlerPrivilege nft={nft} />
               <IpfsCard nft={nft} />
-              
-            </Stack>
+            </Box>
           </div>
         </Grid>
-        <NftActionButtons nft={nft} />
       </Grid >
     </>
   )

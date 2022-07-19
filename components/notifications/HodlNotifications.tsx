@@ -76,22 +76,23 @@ export const HodlNotifications = ({
         flexDirection="column"
         gap={2}
     >
-         {
-            notifications.data && !notifications.data[0].items.length && 
-                <Typography marginTop={2}>No notifications at the moment</Typography>
+        {
+            notifications.data && !notifications.data[0].items.length &&
+            <Typography marginTop={2}>No notifications at the moment</Typography>
         }
-        { notifications.data && <InfiniteScroll
+        {notifications.data && <InfiniteScroll
             swr={notifications}
             loadingIndicator={<HodlLoadingSpinner />}
-            isReachingEnd={notifications => 
-                !notifications.data[0].items.length || 
+            isReachingEnd={notifications =>
+                !notifications.data[0].items.length ||
                 notifications.data[notifications.data.length - 1]?.items.length < limit
             }
         >
             {
                 ({ items }) => {
-                    return (items || []).map((item: HodlAction) =>
-                        <HodlNotificationBox key={item.id} item={item} setShowNotifications={setShowNotifications} />
+                    return (items || []).map((item: HodlAction) => <>
+                        {item && <HodlNotificationBox key={item.id} item={item} setShowNotifications={setShowNotifications} />}
+                    </>
                     )
                 }
             }

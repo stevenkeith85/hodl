@@ -10,12 +10,6 @@ dotenv.config({ path: '../.env' })
 const client = Redis.fromEnv()
 const route = apiRoute();
 
-const getTimeStampAgo = (days: number): number => {
-  const d = new Date();
-  d.setDate(d.getDate() - days);
-  return +d;
-}
-
 
 export const getActions = async (
   address: string,
@@ -28,12 +22,7 @@ export const getActions = async (
     next: number,
     total: number
   }> => {
-  // const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/${set}:${address}/+inf/${getTimeStampAgo(7)}/rev/byscore`, {
-  //   headers: {
-  //     Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-  //   }
-  // })
-
+    
   const total = await client.zcard(`${set}:${address}`);
 
   if (offset >= total) {
@@ -54,7 +43,7 @@ export const getActions = async (
 
   const actions: HodlAction[] = [];
   for (const id of actionIds) {
-    actions.push(await client.hget(`action`, id));
+    actions.push(await client.get(`action:${id}`));
   }
 
   return {

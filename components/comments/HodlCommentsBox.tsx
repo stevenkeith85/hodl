@@ -9,6 +9,7 @@ import { HodlCommentBox } from "./HodlCommentBox";
 import { fetchWithId } from "../../lib/swrFetchers";
 import useSWR from "swr";
 import { Forum } from "@mui/icons-material";
+import { HodlImpactAlert } from "../HodlImpactAlert";
 
 
 interface HodlCommentsBoxProps {
@@ -79,108 +80,106 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
         })
     }, [object, objectId]);
 
-    return (
-        <>
-            <Card variant="outlined">
-                <CardContent>
-                    <Box
-                        display="flex"
-                        justifyContent="space-between"
-                    >
-                        {object === "token" ?
-                            <Typography
-                                variant="h3"
-                                sx={{ marginBottom: 2 }}
-                            >
-                                Comments <Badge sx={{ p: '6px 3px' }} showZero badgeContent={countSWR.data} max={1000}></Badge>
-                            </Typography> :
-                            (<><Typography
-                                variant="h3"
-                                sx={{ marginBottom: 2 }}
-                            >
-                                Single Comment Thread
-                            </Typography>
-                                <Tooltip title="View All Comments">
-                                    <Forum
-                                        sx={{ cursor: 'pointer', color: '#999' }}
-                                        fontSize="inherit"
-                                        onClick={() => {
-                                            // TODO:
-                                            // router.push({
-                                            //     pathname: router.pathname,
-                                            //     query: { tokenId: comment.tokenId }
-                                            // });   
-                                            if (clearTopLevel) {
-                                                clearTopLevel();
-                                            } else {
-                                                router.push(window.location.pathname);
-                                            }
+    return (<>
+        <Box
+            display="flex"
+            justifyContent="space-between"
+        >
+            {object === "token" ?
+                <Typography
+                    variant="h2"
+                    sx={{ marginBottom: 2 }}
+                >
+                    Comments <Badge sx={{ p: '6px 3px' }} showZero badgeContent={countSWR.data} max={1000}></Badge>
+                </Typography> :
+                (<><Typography
+                    variant="h3"
+                    sx={{ marginBottom: 2 }}
+                >
+                    Single Comment Thread
+                </Typography>
+                    <Tooltip title="View All Comments">
+                        <Forum
+                            sx={{ cursor: 'pointer', color: '#999' }}
+                            fontSize="inherit"
+                            onClick={() => {
+                                // TODO:
+                                // router.push({
+                                //     pathname: router.pathname,
+                                //     query: { tokenId: comment.tokenId }
+                                // });   
+                                if (clearTopLevel) {
+                                    clearTopLevel();
+                                } else {
+                                    router.push(window.location.pathname);
+                                }
 
-                                        }} />
-                                </Tooltip>
-                            </>)
-                        }
-                    </Box>
-                    <Box
-                        sx={{
-                            maxHeight,
-                            minHeight,
-                            overflow: 'auto',
-                            position: 'relative',
-                        }}
-                    >
-                        {
-                            loading &&
-                            <Box sx={{
-                                position: 'absolute',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                width: '100%',
-                                height: '100%',
-                            }}>
-                                <HodlLoadingSpinner />
-                            </Box>
-                        }
-                        {object === "token" ?
-                            <Box marginRight={1}>
-                                <InfiniteScrollComments
-                                    swr={swr}
-                                    limit={limit}
-                                    setCommentingOn={setCommentingOn}
-                                    addCommentInput={newTagRef?.current}
-                                    parentMutateCount={countSWR.mutate}
-                                    setTopLevel={setTopLevel}
-                                    mutateCount={countSWR.mutate}
-                                /> </Box> :
-                            comment && <HodlCommentBox
-                                color="primary"
-                                shouldShowThread={true}
-                                comment={comment}
-                                setCommentingOn={setCommentingOn}
-                                parentMutateList={() => null}
-                                parentMutateCount={() => null}
-                                addCommentInput={newTagRef.current}
-                                replySWR={swr}
-                                replyCountSWR={countSWR}
-                                setTopLevel={setTopLevel}
-                                mutateCount={countSWR.mutate}
-                            />
-                        }
-                    </Box>
-                    <AddComment
-                        tokenId={tokenId}
-                        object={object}
-                        objectId={objectId}
-                        commentingOn={commentingOn}
+                            }} />
+                    </Tooltip>
+                </>)
+            }
+        </Box>
+        <Box
+            sx={{
+                maxHeight,
+                minHeight,
+                overflow: 'auto',
+                position: 'relative',
+            }}
+        >
+            {
+                loading &&
+                <Box sx={{
+                    position: 'absolute',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '100%',
+                }}>
+                    <HodlLoadingSpinner />
+                </Box>
+            }
+            {object === "token" ?
+                <Box marginRight={1}>
+                    <InfiniteScrollComments
+                        swr={swr}
+                        limit={limit}
                         setCommentingOn={setCommentingOn}
-                        mutateList={swr.mutate}
+                        addCommentInput={newTagRef?.current}
+                        parentMutateCount={countSWR.mutate}
+                        setTopLevel={setTopLevel}
                         mutateCount={countSWR.mutate}
-                        setLoading={setLoading}
-                        newTagRef={newTagRef}
                     />
-                </CardContent>
-            </Card>
-        </>
+                    {swr?.data && swr?.data[0]?.items?.length === 0 &&
+                        <HodlImpactAlert title="No Comments Yet" message="Be The First To Comment" sx={{ paddingTop: 10,  paddingBottom: 15 }} />}
+                </Box> :
+                comment && <HodlCommentBox
+                    color="primary"
+                    shouldShowThread={true}
+                    comment={comment}
+                    setCommentingOn={setCommentingOn}
+                    parentMutateList={() => null}
+                    parentMutateCount={() => null}
+                    addCommentInput={newTagRef.current}
+                    replySWR={swr}
+                    replyCountSWR={countSWR}
+                    setTopLevel={setTopLevel}
+                    mutateCount={countSWR.mutate}
+                />
+            }
+        </Box>
+        <AddComment
+            tokenId={tokenId}
+            object={object}
+            objectId={objectId}
+            commentingOn={commentingOn}
+            setCommentingOn={setCommentingOn}
+            mutateList={swr.mutate}
+            mutateCount={countSWR.mutate}
+            setLoading={setLoading}
+            newTagRef={newTagRef}
+        />
+    </>
     )
 }

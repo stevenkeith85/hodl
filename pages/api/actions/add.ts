@@ -62,7 +62,6 @@ const addToFeed = async (address: string, action: HodlAction): Promise<number> =
     `feed:${address}`,
     {
       score: action.timestamp,
-      // member: JSON.stringify(action)
       member: action.id
     }
   );
@@ -105,15 +104,8 @@ const recordAddressActivity = async (action: HodlAction): Promise<number> => {
 
 
 // actions could be referenced (by id) from several places.
-const storeAction = async (action: HodlAction): Promise<number> => {
-  const added = client.hset(
-    "action",
-    {
-      [action.id]: JSON.stringify(action)
-    }
-  );
-
-  return added;
+const storeAction = async (action: HodlAction): Promise<string | null> => {
+  return await client.set(`action:${action.id}`, JSON.stringify(action));
 }
 
 // gets the last <x> actions that address took that can be used in a feed
@@ -125,9 +117,18 @@ const getLastXFeedActions = async (address: string, x: number = 5): Promise<Hodl
   })
   const actionIds = r.data.result.map(item => JSON.parse(item));
 
-  const actions: HodlAction[] = [];
+  console.log('actionIds', actionIds)
+  const actions: HodlAction [] = [];
+
   for (const id of actionIds) {
-    actions.push(await client.hget(`action`, id));
+    const data : HodlAction = await client.get(`action:${id}`);
+
+    // If the set has an id of an action that no longer exists, then we do not want to add it.
+    // Ideally, we'd never be in this situation
+    if (data) { 
+      actions.push(data);
+    }
+    
   }
 
   return actions;
@@ -208,6 +209,7 @@ export const addAction = async (action: HodlAction) => {
     const lastActions = await getLastXFeedActions(followed as string)
 
     for (const a of lastActions) {
+      console.log("a is ", a)
       await addToFeed(`${user}`, a);
     }
 

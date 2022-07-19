@@ -10,14 +10,11 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { Comments } from './comments/Comments';
 import { Videocam } from '@mui/icons-material'
 import { AssetTypes } from '../models/AssetType';
-import { ProfileNameOrAddress } from './avatar/ProfileNameOrAddress';
+import { MaticPrice } from './MaticPrice';
+
 
 const NftList = ({
     nfts,
-    showTop = true,
-    showBottom = true,
-    showAvatar = true,
-    showName = true,
 }) => {
     const theme = useTheme();
     const matches = useMediaQuery(theme.breakpoints.up('sm'));
@@ -45,9 +42,7 @@ const NftList = ({
                     borderRadius: 1,
                     overflow: 'hidden',
                     '&:hover': {
-                        
-                        '.nftItemOverlay': {
-                            // transition: 'opacity 200ms ease-in',
+                        '.nftItemOverlay': {                            
                             opacity: 1
                         },
                     }
@@ -139,19 +134,7 @@ const NftList = ({
                                             fontSize='26px'
                                             sx={{ paddingRight: 0 }}
                                         />
-                                        {nft?.price && <Box
-                                            display="flex"
-                                            alignItems="center"
-                                            gap={0.5}
-                                            sx={{
-                                                'img': {
-                                                    filter: 'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(242deg) brightness(115%) contrast(101%)'
-                                                }
-                                            }}
-                                        >
-                                            <img src="/matic.svg" width={26} height={26} />
-                                            <Typography sx={{ fontSize: '22px' }}>{nft.price}</Typography>
-                                        </Box>}
+                                        {nft?.price && <MaticPrice nft={nft}/>}
                                     </Box>
                                 </Box>
                             </Box>

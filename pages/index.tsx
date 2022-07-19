@@ -7,6 +7,9 @@ import { WalletContext } from '../contexts/WalletContext';
 
 import { PublicHomePage } from '../components/layout/PublicHomePage';
 import { HodlProfileBadge } from '../components/HodlProfileBadge';
+import { useActions } from '../hooks/useActions';
+import { ActionSet } from '../models/HodlAction';
+import { FeedContext } from '../contexts/FeedContext';
 
 
 // TODO
@@ -15,14 +18,13 @@ import { HodlProfileBadge } from '../components/HodlProfileBadge';
 // }
 
 
-export default function Home({ limit, prefetchedListed }) {
+export default function Home({ limit=4, prefetchedListed }) {
   const { address } = useContext(WalletContext);
 
-
-
+  const { actions: feed } = useActions(address, ActionSet.Feed, limit);
 
   return (
-    <>
+    <FeedContext.Provider value={{ feed }}>
       <Head>
         <title>HodlMyMoon</title>
         <meta name="description" content="Mint, Showcase, and Trade NFTs at HodlMyMoon"></meta>
@@ -45,7 +47,6 @@ export default function Home({ limit, prefetchedListed }) {
             item
             xs={12}
             md={5}
-          // sx={{ background: 'yellow' }}
           >
             <Box display="grid" gap={8} paddingY={4} paddingX={8} gridTemplateColumns="1fr">
               <HodlProfileBadge address={address} />
@@ -62,7 +63,7 @@ export default function Home({ limit, prefetchedListed }) {
           </Grid>
         </Grid>
       }
-    </>
+    </FeedContext.Provider>
   )
 }
 

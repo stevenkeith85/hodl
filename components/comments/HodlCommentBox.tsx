@@ -14,6 +14,7 @@ import { FC, useContext, useState } from "react";
 import { HodlComment } from "../../models/HodlComment";
 import { WalletContext } from "../../contexts/WalletContext";
 import { formatDistanceStrict } from "date-fns";
+import { ProfileNameOrAddress } from "../avatar/ProfileNameOrAddress";
 
 interface HodlCommentBoxProps {
     comment: HodlComment;
@@ -119,7 +120,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                     <Box
                         display="flex"
                         alignItems="start"
-                        gap={1.5}
+                        gap={2}
                         flexGrow={1}
                     >
                         <ProfileAvatar profileAddress={comment.subject} size="small" showNickname={false} />
@@ -135,28 +136,14 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                 flexWrap="wrap"
                                 gap={0}
                             >
-                                {
-                                    profileNickname ?
-                                        <Link href={`/profile/${profileNickname}`}>
-                                            <Typography sx={{ color: theme => theme.palette[color].light, cursor: 'pointer' }}>{truncateText(profileNickname, 20)}</Typography>
-                                        </Link>
-                                        :
-                                        <Link href={`/profile/${comment.subject}`}>
-                                            <Tooltip title={comment.subject}>
-                                                <Typography sx={{ color: theme => theme.palette[color].light, cursor: 'pointer' }}>{getShortAddress(comment.subject)?.toLowerCase()}</Typography>
-                                            </Tooltip>
-                                        </Link>
-                                }
+                                <ProfileNameOrAddress profileAddress={comment.subject} />
                                 <Typography>
                                     {comment.comment}
                                 </Typography>
-
                             </Box>
                             <Box display="flex" gap={0.5}>
                                 <Typography sx={{ fontSize: 10, color: "#999" }}>{likesCount} likes</Typography>
-                                {/* <Typography sx={{ fontSize: 10, color: "#999" }}>|</Typography> */}
                                 <Typography sx={{ fontSize: 10, color: "#999" }}>{countSWR.data} replies</Typography>
-                                {/* <Typography sx={{ fontSize: 10, color: "#999" }}>|</Typography> */}
                                 <Typography sx={{ fontSize: 10, color: "#999" }}>{comment.timestamp && formatDistanceStrict(new Date(comment.timestamp), new Date(), { addSuffix: false })}</Typography>
                             </Box>
                         </Box>
@@ -172,6 +159,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                         color: '#333',
                                     }
                                 }}
+                                fontSize="16px"
                                 id={comment.id}
                                 token={false}
                                 showCount={false}
@@ -187,9 +175,10 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                         color: '#999',
                                         '&:hover': {
                                             color: '#333',
-                                        }
+                                        },
+                                        fontSize: "16px"
                                     }}
-                                    fontSize="inherit"
+                                    
                                     onClick={() => {
                                         setCommentingOn({
                                             object: "comment",
@@ -211,7 +200,8 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                     color: '#999',
                                     '&:hover': {
                                         color: '#333',
-                                    }
+                                    },
+                                    fontSize: "16px"
                                 }}
                                 fontSize="inherit"
                                 onClick={() => {
@@ -235,7 +225,8 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                         color: '#999',
                                         '&:hover': {
                                             color: '#333',
-                                        }
+                                        },
+                                        fontSize: "16px"
                                     }}
                                     fontSize="inherit"
                                     onClick={async () => {

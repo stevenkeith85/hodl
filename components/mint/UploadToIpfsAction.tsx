@@ -8,54 +8,11 @@ import { uploadToIPFSValidationSchema } from "../../validationSchema/uploadToIPF
 import { commercial, nonCommercial, token } from "../../lib/copyright";
 import { TextField } from 'formik-mui';
 import { grey } from "@mui/material/colors";
+import { HodlerPrivilegeTooltip } from "../tooltips/HodlerPrivilegeTooltip";
+import { CommercialTooltip } from "../tooltips/CommercialTooltip";
+import { NonCommercialTooltip } from "../tooltips/NonCommercialTooltip";
+import { TokenOnlyTooltip } from "../tooltips/TokenOnlyTooltip";
 
-
-const HodlerPrivilegeTooltip = () => (
-  <Box padding={2}>
-    <Typography mb={2}>
-      A declaration of what the hodler of this NFT receives.
-    </Typography>
-    <Typography sx={{ span: { fontWeight: 600 } }}>
-      It can <span>help</span> resolve any future copyright / licensing disputes with trades.
-    </Typography>
-  </Box>
-)
-
-const TokenOnlyTooltip = () => (
-  <Box padding={2}>
-    <Typography mb={1}>
-      The current hodler will:
-    </Typography>
-    <Typography component="ul" sx={{ paddingY: 1, paddingX: 2 }}>
-      <Typography component="li" mb={2}>only own the token</Typography>
-      <Typography component="li">have no rights for the attached asset</Typography>
-    </Typography>
-  </Box>
-)
-
-const NonCommercialTooltip = () => (
-  <Box padding={2}>
-    <Typography mb={1}>
-      The current hodler will:
-    </Typography>
-    <Typography component="ul" sx={{ paddingY: 1, paddingX: 2 }}>
-      <Typography component="li" mb={2}>own the token</Typography>
-      <Typography component="li">be granted a non-commercial license for the attached asset</Typography>
-    </Typography>
-  </Box>
-)
-
-const CommercialTooltip = () => (
-  <Box padding={2}>
-    <Typography mb={1}>
-      The current hodler will:
-    </Typography>
-    <Typography component="ul" sx={{ paddingY: 1, paddingX: 2 }}>
-      <Typography component="li" mb={2}>own the token</Typography>
-      <Typography component="li">be granted a commercial license for the attached asset</Typography>
-    </Typography>
-  </Box>
-)
 
 const UploadTooltip = () => (
   <Box padding={2}>

@@ -1,24 +1,34 @@
-import { Card, CardContent, Typography, Stack, Tooltip, Chip } from "@mui/material";
+import { Card, CardContent, Typography, Stack, Tooltip, Chip, Link, Box } from "@mui/material";
 import { useRouter } from "next/router";
 import { HodlExternalLink } from "../HodlExternalLink";
+import { IpfsTooltip } from "../tooltips/IpfsTooltip";
 
 export const IpfsCard = ({ nft }) => {
 
-    const router = useRouter();
-
     return (
-        <Card variant="outlined">
-            <CardContent>
-                <Tooltip title="The InterPlanetary File System (IPFS) is a protocol and peer-to-peer network for storing and sharing data in a distributed file system. IPFS uses content-addressing to uniquely identify each file in a global namespace connecting all computing devices">
-                    <Typography variant="h3" sx={{ marginBottom: 2, span: { color: theme => theme.palette.secondary.main } }}>
-                        IPFS
-                    </Typography>
-                </Tooltip>
-                <Stack direction="row" spacing={2}>
-                    <Chip color="primary" variant="outlined" label="Metadata" onClick={() => open(nft?.ipfsMetadataGateway || '#')} />
-                    <Chip color="secondary" variant="outlined" label="Asset" onClick={() => open(nft?.ipfsImageGateway || '#')} />
-                </Stack>
-            </CardContent>
-        </Card>
+        <Box
+            sx={{
+                padding: 2,
+                border: `1px solid #ddd`,
+                borderRadius: 1
+            }}>
+
+            <Typography variant="h2" sx={{ marginBottom: 2 }}>
+                <Tooltip
+                    title={<IpfsTooltip />}
+                    placement="right-start"
+                    arrow>
+                    <span>IPFS</span></Tooltip>
+            </Typography>
+            <Stack direction="row" spacing={2}>
+
+                <Link href={nft?.ipfsMetadataGateway || '#'} target="blank" sx={{ textDecoration: 'none' }}>
+                    Metadata
+                </Link>
+                <Link href={nft?.ipfsImageGateway || '#'} target="blank" sx={{ textDecoration: 'none' }}>
+                    Asset
+                </Link>
+            </Stack>
+        </Box>
     )
 }

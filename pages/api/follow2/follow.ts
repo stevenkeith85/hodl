@@ -67,6 +67,7 @@ route.post(async (req, res) => {
   getFollowersCount.delete(address);
 
   if (followed) {
+    console.log("you just followed someone, will update the feed")
     const notification: HodlAction = {
       subject: req.address,
       action: ActionTypes.Followed,
@@ -74,7 +75,8 @@ route.post(async (req, res) => {
       objectId: address
     };
 
-    const success = addAction(notification);
+    const success = await addAction(notification);
+    console.log('adding notification as user has followed')
   }
 
   res.status(200).json({ followed });

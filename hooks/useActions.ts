@@ -31,7 +31,7 @@ export const useActions = (
     getKey,
     fetcher,
     {
-      dedupingInterval: 10000,
+      dedupingInterval: 5000,
       revalidateOnMount: true,
       revalidateFirstPage: true,
     }

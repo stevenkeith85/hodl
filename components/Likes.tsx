@@ -21,7 +21,7 @@ export const Likes: FC<LikesProps> = ({
     id,
     token = true,
     color = "secondary",
-    fontSize = '18px',
+    fontSize = '20px',
     showCount = true,
     prefetchedLikeCount = null,
     likeTooltip = "Like this",
@@ -34,7 +34,7 @@ export const Likes: FC<LikesProps> = ({
         <>
             <Box
                 display="flex"
-                gap={0.5}
+                gap={0.75}
                 sx={{
                     color: color,
                     alignItems: "center",
@@ -69,7 +69,7 @@ export const Likes: FC<LikesProps> = ({
                 }
                 {showCount && (tokenLikesCount != undefined) &&
                     <Typography sx={{ 
-                        fontSize: `calc(${fontSize} - 4px)`
+                        fontSize: `calc(${fontSize} - 6px)`
                     }}>{humanize.compactInteger(tokenLikesCount, 1)}</Typography>
                 }
             </Box>

@@ -2,9 +2,8 @@ import { useContext } from 'react';
 import useSWR, { mutate } from 'swr';
 import { WalletContext } from '../contexts/WalletContext';
 import axios from 'axios';
-import { ActionTypes } from '../models/HodlAction';
 
-export const useFollow = (profileAddress) => {
+export const useFollow = (profileAddress, feed = null) => {
   const { address } = useContext(WalletContext);
 
   const { data: isFollowing, mutate: mutateIsFollowing } = useSWR(address && address !== profileAddress ? [`/api/follow2/follows`, address, profileAddress] : null,
@@ -46,10 +45,10 @@ export const useFollow = (profileAddress) => {
 
     mutate([`/api/follow2/following`, address],
       async ({ following }) => {
-        return ({ 
-          following: isFollowing ? 
-                      (following || []).filter(a => a !== profileAddress) : 
-                      [profileAddress, ...(following || [])] 
+        return ({
+          following: isFollowing ?
+            (following || []).filter(a => a !== profileAddress) :
+            [profileAddress, ...(following || [])]
         })
       },
       {
@@ -68,9 +67,9 @@ export const useFollow = (profileAddress) => {
         }
       )
 
-      
-
-      mutate([`/api/actions`, 'feed', 0, 4], address);
+      if (feed) {
+          feed.mutate();
+      }
 
       return true;
 
@@ -78,7 +77,7 @@ export const useFollow = (profileAddress) => {
       if (error.response.status === 429) {
         mutate([`/api/follow2/followersCount`, profileAddress]);
         mutate([`/api/follow2/followers`, profileAddress]);
-        
+
         mutateIsFollowing();
 
         mutate([`/api/follow2/followingCount`, address]);

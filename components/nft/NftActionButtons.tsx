@@ -2,7 +2,6 @@ import { Button, Stack, TextField } from "@mui/material";
 import { useContext, useState } from "react";
 import { buyNft, delistNft, listNftOnMarket } from "../../lib/nft";
 import { WalletContext } from '../../contexts/WalletContext';
-import SellIcon from '@mui/icons-material/Sell';
 import { HodlModal, RocketTitle, SuccessModal } from "../index";
 import { useRouter } from "next/router";
 import { useSnackbar } from 'notistack';
@@ -107,7 +106,8 @@ export const NftActionButtons = ({ nft }) => {
                     {
                         Boolean(address) && Boolean(nft?.forSale) && !isOwner() &&
                         <Button
-                            startIcon={<SellIcon fontSize="large" />}
+                            variant="contained"
+                            sx={{ paddingY: 1.5, paddingX: 3}}
                             onClick={async () => {
                                 try {
                                     enqueueSnackbar('Please Approve Transaction in Wallet', { variant: "info" });
@@ -127,7 +127,6 @@ export const NftActionButtons = ({ nft }) => {
                             {
                                 nft?.forSale ? (
                                     <Button
-                                        startIcon={<SellIcon fontSize="large" />}
                                         onClick={async () => {
                                             try {
                                                 enqueueSnackbar('Please Approve Transaction in Wallet', { variant: "info" });
@@ -143,7 +142,6 @@ export const NftActionButtons = ({ nft }) => {
                                     </Button>
                                 ) : (
                                     <Button
-                                        startIcon={<SellIcon fontSize="large" />}
                                         onClick={() => setListModalOpen(true)}>
                                         List NFT
                                     </Button>

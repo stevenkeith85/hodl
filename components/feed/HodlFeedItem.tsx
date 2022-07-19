@@ -203,16 +203,17 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
 
                 <Box
                     display="flex"
-                    gap={1}
-                    flexDirection="column"
+                    
                 >
-                    {token && <Box display="flex" gap={1}>
+                    {token && <Box display="flex" gap={2}>
                         <Likes
                             id={token?.tokenId}
                             token={true}
+                            fontSize='22px'
                         />
                         <Comments
                             nft={token}
+                            fontSize='22px'
                         />
                     </Box>}
                 </Box>

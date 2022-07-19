@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, Tooltip, Typography } from '@mui/material';
 import axios from 'axios';
 import { FC } from 'react';
 import useSWR from 'swr';
@@ -7,12 +7,12 @@ import Link from 'next/link';
 
 interface ProfileNameOrAddressProps {
     profileAddress: string;
-    size: "xsmall" | "small" | "medium" | "large" | "xlarge";
-    color: string;
+    size?: "xsmall" | "small" | "medium" | "large" | "xlarge";
+    color?: string;
     sx?: object | null;
 }
 
-export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({ profileAddress, size, color, sx = null }) => {
+export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({ profileAddress, size="xsmall", color="inherit", sx = null }) => {
 
     const { data: profileNickname } = useSWR(profileAddress ? [`/api/profile/nickname`, profileAddress] : null,
         (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.nickname),
@@ -21,10 +21,10 @@ export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({ profileAdd
 
     const mappings = {
         xsmall: 14,
-        small: 14,
+        small: 16,
         medium: 18,
         large: 20,
-        xlarge: 20
+        xlarge: 22
     }
 
     return (<Box
@@ -39,11 +39,19 @@ export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({ profileAdd
         }}>
         {profileNickname ?
             <Link href={`/profile/${profileNickname}`}>
-                <a>{truncateText(profileNickname, 20)}</a>
-            </Link> :
+                <Tooltip title={profileAddress} arrow placement="right">
+                    <a>
+                        {truncateText(profileNickname, 20)}
+                    </a>
+                </Tooltip>
+            </Link>
+            :
             <Link href={`/profile/${profileAddress}`}>
-                <a>{getShortAddress(profileAddress)}</a>
+                <Tooltip title={profileAddress} arrow placement="right">
+                    <a>{getShortAddress(profileAddress)}</a>
+                </Tooltip>
             </Link >
+
         }
-    </Box>)
+    </Box >)
 }

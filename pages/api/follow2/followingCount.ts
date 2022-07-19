@@ -10,10 +10,8 @@ const client = Redis.fromEnv()
 const route = apiRoute();
 
 export const getFollowingCount = memoize(async (address) => {
-  // console.log("CALLING REDIS TO GET FOLLOWING COUNT", address);
-
   const count = await client.zcard(`following:${address}`);
-  return count;
+  return (count || 0);
 }, { 
   primitive: true,
   max: 10000, // 10000 tokens 

@@ -19,7 +19,7 @@ export const Comments: FC<CommentsProps> = ({
     nft,
     popUp = true,
     color = "primary",
-    fontSize = "18px",
+    fontSize = "20px",
     prefetchedCommentCount = null,
     sx = {}
 }) => {
@@ -48,7 +48,7 @@ export const Comments: FC<CommentsProps> = ({
                 open={open}
                 setOpen={setOpen}
                 sx={{
-                    padding: 0,
+                    padding: 2,
                     width: {
                         xs: '90vw',
                     },
@@ -70,7 +70,7 @@ export const Comments: FC<CommentsProps> = ({
             </HodlModal>
             <Box
                 display="flex"
-                gap={0.5}
+                gap={0.75}
                 sx={{
                     color: color,
                     alignItems: "center",
@@ -96,7 +96,7 @@ export const Comments: FC<CommentsProps> = ({
                 {(count != undefined) &&
                     <Typography
                         sx={{
-                            fontSize: `calc(${fontSize} - 4px)`
+                            fontSize: `calc(${fontSize} - 6px)`
                         }}>
                         {humanize.compactInteger(count, 1)}
                     </Typography>
