@@ -15,7 +15,8 @@ const client = Redis.fromEnv()
 const route = apiRoute();
 
 
-// Requests that user follows OR unfollows address (toggle behaviour)
+
+// <req.address> to follow/unfollow <address>
 route.post(async (req, res) => {
   if (!req.address) {
     return res.status(403).json({ message: "Not Authenticated" });
@@ -39,10 +40,16 @@ route.post(async (req, res) => {
 
   const exists = await client.zscore(`following:${req.address}`, address);
 
-  if (exists) {
+  if (exists) { // Unfollow
+    // TODO: This should be a transaction
     await client.zrem(`following:${req.address}`, address);
     await client.zrem(`followers:${address}`, req.address);
-  } else {
+
+    if (await client.zscore('rankings:address', address) !== 0) { // just in case things get out of sync (we don't want them to though)
+      await client.zincrby('rankings:address', -1, address);
+    }
+    //
+  } else { // Follow
     const timestamp = Date.now();
 
     await client.zadd(`following:${req.address}`,
@@ -50,11 +57,14 @@ route.post(async (req, res) => {
         member: address,
         score: timestamp
       });
-    await client.zadd(`followers:${address}`, 
-    { 
-      member: req.address,
-      score: timestamp
-    });
+
+    await client.zadd(`followers:${address}`,
+      {
+        member: req.address,
+        score: timestamp
+      });
+    await client.zincrby('rankings:address', 1, address);
+
     followed = true;
   }
 
@@ -66,8 +76,8 @@ route.post(async (req, res) => {
   getFollowers.delete(address);
   getFollowersCount.delete(address);
 
+  // Do the notification last
   if (followed) {
-    console.log("you just followed someone, will update the feed")
     const notification: HodlAction = {
       subject: req.address,
       action: ActionTypes.Followed,
@@ -76,7 +86,6 @@ route.post(async (req, res) => {
     };
 
     const success = await addAction(notification);
-    console.log('adding notification as user has followed')
   }
 
   res.status(200).json({ followed });

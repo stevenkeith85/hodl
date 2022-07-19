@@ -7,7 +7,7 @@ export const useLike = (id, token = true, prefetchedLikeCount = null) => {
   const { address } = useContext(WalletContext);
   const [error, setError] = useState('');
 
-  const baseUrl = token ? `/api/like2/token/` : `/api/like2/comment/`;
+  const baseUrl = token ? `/api/like/token/` : `/api/like/comment/`;
 
   const { data: tokenLikesCount, mutate: mutateLikesCount } = useSWR(
     id ? [baseUrl + `count`, id] : null,

@@ -6,10 +6,10 @@ const client = Redis.fromEnv()
 import apiRoute from "../handler";
 import { ActionSet, ActionSetMembers, ActionTypes, HodlAction } from '../../../models/HodlAction';
 import { getPriceHistory } from "../token-bought/[tokenId]";
-import { likesToken } from "../like2/token/likes";
-import { getFollowers } from "../follow2/followers";
-import { isFollowing } from "../follow2/follows";
-import { likesComment } from "../like2/comment/likes";
+import { likesToken } from "../like/token/likes";
+import { getFollowers } from "../follow/followers";
+import { isFollowing } from "../follow/follows";
+import { likesComment } from "../like/comment/likes";
 import { fetchNFT, getOwnerOrSellerAddress } from "../nft/[tokenId]";
 import { HodlComment } from "../../../models/HodlComment";
 import { ethers } from "ethers";

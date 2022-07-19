@@ -1,10 +1,9 @@
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import { useContext } from "react";
 import { WalletContext } from "../../contexts/WalletContext";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
-import { useActions } from "../../hooks/useActions";
 import { HodlFeedItem } from "./HodlFeedItem";
-import { ActionSet, HodlAction } from "../../models/HodlAction";
+import { HodlAction } from "../../models/HodlAction";
 import InfiniteScroll from "react-swr-infinite-scroll";
 import { HodlImpactAlert } from "../HodlImpactAlert";
 import { FeedContext } from "../../contexts/FeedContext";

@@ -19,7 +19,7 @@ const rateLimits = {
   // 'POST:/api/mint/upload': 3,
   // 'POST:/api/mint/ipfs': 1,
   // 'POST:/api/like/like': 2,
-  // 'POST:/api/follow2/follow': 10,
+  // 'POST:/api/follow/follow': 10,
 
   'GET:/api/tags': 30,
   'POST:/api/tags/add': 6,

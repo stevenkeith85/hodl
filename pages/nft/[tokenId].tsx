@@ -37,7 +37,7 @@ import { useState } from "react";
 import { Forum, Info, Insights } from "@mui/icons-material";
 
 import { useRouter } from "next/router";
-import { getLikeCount } from "../api/like2/token/count";
+import { getLikeCount } from "../api/like/token/count";
 import { MaticPrice } from "../../components/MaticPrice";
 import { indigo } from "@mui/material/colors";
 import { ProfileNameOrAddress } from "../../components/avatar/ProfileNameOrAddress";
