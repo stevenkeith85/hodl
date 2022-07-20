@@ -1,25 +1,25 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Head from 'next/head';
-import { Box, Container, CssBaseline, ThemeProvider } from '@mui/material';
-import ResponsiveAppBar from '../components/layout/AppBar';
+import { CssBaseline, ThemeProvider } from '@mui/material';
 import theme from '../theme';
-import Footer from '../components/layout/Footer';
 import { SnackbarProvider } from 'notistack';
 import { SWRConfig } from 'swr';
 import createEmotionCache from '../createEmotionCache';
 import { WalletContext } from '../contexts/WalletContext';
 import { CacheProvider } from '@emotion/react';
 import '../styles/globals.css'
-import { useRouter } from 'next/router';
+
+import Layout from '../components/layout/Layout';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
 function MyApp(props) {
-  const router = useRouter();
-
   const [signer, setSigner] = useState('');
-  const [address, setAddress] = useState('');
+
+  // we set props.pageProps.address in all pages, and add it to the context so that components have easy access. 
+  // some components will require the context value, such as the app bar as it renders outside the page
+  const [address, setAddress] = useState(props.pageProps.address || ''); 
   const [nickname, setNickname] = useState(''); // This will be getting removed
 
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
@@ -43,45 +43,9 @@ function MyApp(props) {
               maxSnack={3}
             >
               <CssBaseline />
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  minHeight: '100vh',
-                  header: {
-                    flexGrow: 0,
-                    flexShrink: 0,
-                    flexBasis: 'auto'
-                  },
-                  footer: {
-                    flexGrow: 0,
-                    flexShrink: 0,
-                    flexBasis: 'auto'
-                  },
-                  main: {
-                    flexGrow: 1,
-                    flexShrink: 0,
-                    flexBasis: 'auto'
-                  }
-                }}>
-                <header>
-                  <ResponsiveAppBar 
-                    // showAppBar={router.asPath !== '/'}
-                    />
-                </header>
-                <main>
-                  { (router.asPath !== '/' || (router.asPath === '/' && address) )&& <Container maxWidth="xl">
-                    <Component {...pageProps} />
-                  </Container>
-                  }
-                  { router.asPath === '/' && !address && <Component {...pageProps} />}
-                </main>
-                <footer>
-                  <Footer 
-                    // showFooter={router.asPath !== '/'} 
-                  />
-                </footer>
-              </Box>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
             </SnackbarProvider>
           </ThemeProvider>
         </WalletContext.Provider>
@@ -89,5 +53,6 @@ function MyApp(props) {
     </CacheProvider>
   )
 }
+
 
 export default MyApp

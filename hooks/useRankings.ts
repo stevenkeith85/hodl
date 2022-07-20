@@ -5,7 +5,8 @@ import axios from 'axios';
 
 export const useRankings = (
   getData: boolean,
-  limit: number
+  limit: number,
+  fallbackData?: any
 ) => {
 
   const fetcher = (
@@ -36,6 +37,7 @@ export const useRankings = (
       dedupingInterval: 5000,
       revalidateOnMount: true,
       revalidateFirstPage: true,
+      fallbackData
     }
   );
 

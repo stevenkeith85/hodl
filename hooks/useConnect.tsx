@@ -10,25 +10,22 @@ export const useConnect = () => {
 
   // we ask which account they want if they aren't a returning user (i.e. they've logged out)
   // we can also connect returningusers to update their jwt
-  const connect = async (returningUser = true, jwtExpired = false): Promise<Boolean> => {
+  const connect = async (returningUser = true): Promise<Boolean> => {
     try {
-      const _signer = await getMetaMaskSigner(returningUser);
-      const _address = await _signer.getAddress();
+      const signer = await getMetaMaskSigner(returningUser);
+      const address = await signer.getAddress();
 
-      if (!returningUser || jwtExpired) {
-        // get nonce
-        const rNonce = await axios.get(`/api/auth/nonce?address=${_address}`);
-        const { nonce } = await rNonce.data;
+      if (!returningUser) {
+        const { nonce } = await axios.get(`/api/auth/nonce?address=${address}`).then(r => r.data);
 
-        // get user to sign message + nonce
-        const signature = await _signer.signMessage(messageToSign + nonce);
+        const signature = await signer.signMessage(messageToSign + nonce);
 
         try {
           const r = await axios.post(
-            '/api/auth/signature',
+            '/api/auth/login',
             {
               signature,
-              address: _address
+              address
             },
             {
               headers: {
@@ -37,14 +34,15 @@ export const useConnect = () => {
             }
           );
 
-          const { token } = await r.data;
-          localStorage.setItem('jwt', token);
+          // deprecated. we are switching over to all cookie solutions
+          // const { token } = await r.data;
+          // localStorage.setItem('jwt', token);
         } catch (error) {
         }
       }
 
-      setSigner(_signer);
-      setAddress(_address);
+      setSigner(signer);
+      setAddress(address);
       return true;
     } catch (e) {
       return false;
@@ -54,6 +52,8 @@ export const useConnect = () => {
   const disconnect = async () => {
     setSigner(null);
     setAddress(null);
+
+    // deprecated. we are switching over to all cookie solutions
     localStorage.removeItem('jwt');
 
     try {
@@ -62,7 +62,7 @@ export const useConnect = () => {
         {
           headers: {
             'Accept': 'application/json',
-            'Authorization': localStorage.getItem('jwt')
+            'Authorization': localStorage.getItem('jwt') // deprecated. we are switching over to all cookie solutions
           },
         }
       )

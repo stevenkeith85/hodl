@@ -25,6 +25,7 @@ import { useListed } from '../../hooks/useListed';
 import { useHodling } from '../../hooks/useHodling';
 import humanize from "humanize-plus";
 import { HodlImpactAlert } from '../../components/HodlImpactAlert';
+import { authenticate } from '../../lib/jwt';
 
 const InfiniteScrollTab = dynamic(
   // @ts-ignore
@@ -45,8 +46,11 @@ const FollowersTab = dynamic(
 );
 
 
-export async function getServerSideProps({ params, query }) {
-  let profileAddress = params.address;
+export async function getServerSideProps({ params, query, req, res }) {
+
+  await authenticate(req, res);
+  
+  let profileAddress = params.address; // TODO: Rename this param as it can be an address OR a nickname
   let nickname = null;
 
   const limit = 4;
@@ -54,7 +58,7 @@ export async function getServerSideProps({ params, query }) {
 
   const isValid = await isValidAddress(params.address);
 
-  if (isValid) {
+  if (isValid) { // params.address is a wallet address her
     const nickname = await getNickname(params.address);
 
     if (nickname !== null) {
@@ -66,7 +70,7 @@ export async function getServerSideProps({ params, query }) {
     }
   }
   else {
-    const address = await getAddress(params.address);
+    const address = await getAddress(params.address); // params.address is a nickname here
 
     if (address === null) {
       return {
@@ -92,6 +96,7 @@ export async function getServerSideProps({ params, query }) {
 
   return {
     props: {
+      address: req.address || null,
       profileAddress,
       nickname,
       prefetchedFollowingCount,
@@ -109,6 +114,7 @@ export async function getServerSideProps({ params, query }) {
 }
 
 const Profile = ({
+  address,
   profileAddress,
   nickname,
   prefetchedFollowingCount,
@@ -123,7 +129,7 @@ const Profile = ({
   limit
 }) => {
   const router = useRouter();
-  const { address } = useContext(WalletContext);
+  // const { address } = useContext(WalletContext);
   const [value, setValue] = useState(Number(tab));
 
   const [hodlingCount, hodlingSWR] = useHodling(profileAddress, limit, prefetchedHodlingCount, prefetchedHodling);

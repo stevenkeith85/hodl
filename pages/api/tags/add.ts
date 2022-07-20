@@ -17,7 +17,7 @@ import { getTagsForToken } from ".";
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
 
-const addTokenToTag = async (tag, token) => {
+export const addTokenToTag = async (tag, token) => {
   const total = await client.zcount(`tags:${token}`, '-inf', '+inf');
 
   if (total >= MAX_TAGS_PER_TOKEN) {

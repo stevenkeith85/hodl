@@ -9,6 +9,7 @@ import { getToken } from "../token/[tokenId]";
 import axios from 'axios'
 import { HodlAction, ActionTypes } from "../../../models/HodlAction";
 import { addAction } from "../actions/add";
+import { addTokenToTag } from "../tags/add";
 
 dotenv.config({ path: '../.env' })
 
@@ -39,6 +40,15 @@ route.post(async (req, res: NextApiResponse) => {
   const { name, description, privilege, image } = await r.data;
 
   await client.set("token:" + tokenId, JSON.stringify({ tokenId, name, description, privilege, image, mimeType, filter }));
+
+  // extract tags
+  const tagPattern = /#([\d\w_]+)/g;
+  const tags = [...description.matchAll(tagPattern)].map(arr => arr[1])
+
+  // Add tags. (NB: only the first 6 will be added)
+  for (const tag of tags) {
+    await addTokenToTag(tag, tokenId);
+  }
 
   getToken.delete(tokenId);
 

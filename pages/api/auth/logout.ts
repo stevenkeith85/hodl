@@ -22,7 +22,11 @@ route.post(async (req, res: NextApiResponse) => {
   await clearSession(req.address);
 
   // clear the cookie
-  res.setHeader('Set-Cookie', cookie.serialize('refreshToken', "", { httpOnly: true, path: '/', maxAge: -1}))
+
+  res.setHeader('Set-Cookie', [
+    cookie.serialize('accessToken', "", { httpOnly: true, path: '/', maxAge: -1}),
+    cookie.serialize('refreshToken', "", { httpOnly: true, path: '/', maxAge: -1})
+  ])
 
   res.status(200).json({message: 'ok'});
 });

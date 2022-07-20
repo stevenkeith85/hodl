@@ -57,16 +57,6 @@ const ResponsiveAppBar = ({ showAppBar=true}) => {
     const [_update, _apiError, _setApiError, nickname] = useNickname()
 
     useEffect(() => {
-        const load = async () => {
-            if (localStorage.getItem('jwt')) {
-                await connect();
-            }
-        };
-
-        load();
-    }, [])
-
-    useEffect(() => {
         if (error !== '') {
             enqueueSnackbar(error, { variant: "error" });
             // @ts-ignore
@@ -78,21 +68,16 @@ const ResponsiveAppBar = ({ showAppBar=true}) => {
     useEffect(() => {
         axios.interceptors.response.use(null, async (error) => {
             if (error.config && error.response && error.response.status === 401 && !error.config.__isRetry) {
-                const { refreshed, accessToken } = error.response.data;
+                const { refreshed } = error.response.data;
 
                 error.config.__isRetry = true;
 
                 if (refreshed) {
-                    localStorage.setItem('jwt', accessToken);
-
-                    error.config.headers.Authorization = accessToken;
                     return axios.request(error.config);
                 } else {
                     setSigner(null);
-                    setAddress(null);
-                    localStorage.removeItem('jwt');
-
                     // TODO: Modal dialog about the session expiring
+                    console.log('Could not refresh accessToken')
                 }
 
             } else if (error.config && error.response && error.response.status === 429) {

@@ -4,12 +4,18 @@ import { useMarket } from '../hooks/useMarket';
 import { InfiniteScrollTab } from '../components/profile/InfiniteScrollTab';
 import { Box, Typography } from '@mui/material';
 import { HodlImpactAlert } from '../components/HodlImpactAlert';
+import { authenticate } from '../lib/jwt';
 
-export async function getServerSideProps() {
+
+export async function getServerSideProps({ req, res }) {
+  await authenticate(req, res);
+
   const limit = 12;
   const prefetchedListed = await getListed(0, limit);
+  
   return {
     props: {
+      address: req.address || null,
       limit,
       prefetchedListed: [prefetchedListed]
     },
@@ -17,7 +23,7 @@ export async function getServerSideProps() {
 }
 
 
-export default function Home({ limit, prefetchedListed }) {
+export default function Market({ limit, prefetchedListed }) {
   const [swr] = useMarket(limit, prefetchedListed);
 
   return (

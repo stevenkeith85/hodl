@@ -51,7 +51,7 @@ export const HodlNotifications = ({
         return null;
     }
 
-    const lastRead = (localStorage.getItem(`notifications-${address}-last-read`) || 0);
+    const lastRead = 0; //(localStorage.getItem(`notifications-${address}-last-read`) || 0);
 
     const menu = <Box
         sx={{

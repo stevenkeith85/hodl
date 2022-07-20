@@ -12,7 +12,6 @@ const route = apiRoute();
 
 // Memo cleared on login
 export const getNonceForAddress = memoize(async (address) => {
-  // console.log("CALLING REDIS TO GET NONCE FOR ADDRESS", address);
   const exists = await client.hexists(`user:${address}`, 'nonce');
 
   let nonce = null;

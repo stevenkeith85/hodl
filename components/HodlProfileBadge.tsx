@@ -155,9 +155,9 @@ export const HodlProfileBadge = ({ address, minimized = false }) => {
                     }
                 </Box>
             }
-            <Box>
+            {/* <Box>
                 <FollowButton profileAddress={address} variant={'text'}/>
-            </Box>
+            </Box> */}
 
         </Box>
     )

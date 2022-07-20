@@ -165,10 +165,10 @@ const NftDetail = ({
                     sx={{ borderBottom: `1px solid #ddd` }}>
                     <Typography variant="h1" mt={1} mb={3} sx={{ fontWeight: 600}}>{nft.name}</Typography>
                     <Typography >{nft.description}</Typography>
-                    <HodlTagCloud
+                    {/* <HodlTagCloud
                       nft={nft}
                       prefetchedTags={prefetchedTags}
-                    />
+                    /> */}
                   </Box>
                   <HodlCommentsBox
                     tokenId={nft.tokenId}

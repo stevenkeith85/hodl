@@ -12,12 +12,7 @@ import { FeedContext } from "../../contexts/FeedContext";
 export const HodlFeed = ({
     limit = 4
 }) => {
-    const { address } = useContext(WalletContext);
     const { feed } = useContext(FeedContext);
-
-    if (!address) {
-        return null;
-    }
 
     const menu = <Box
         sx={{

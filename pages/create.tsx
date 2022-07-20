@@ -8,6 +8,7 @@ import { MintMobileStepper } from '../components/mint/MintMobileStepper'
 
 import dynamic from "next/dynamic";
 import Head from 'next/head'
+import { authenticate } from '../lib/jwt'
 
 const SelectAssetAction = dynamic(
   () => import('../components/mint/SelectAssetAction').then((module) => module.SelectAssetAction),
@@ -30,7 +31,17 @@ const AddToHodlAction = dynamic(
   { loading: () => <HodlLoadingSpinner /> }
 );
 
-const Mint = () => {
+export async function getServerSideProps({ req, res }) {
+  await authenticate(req, res);
+
+  return {
+    props: {
+      address: req.address || null,
+    }
+  }
+}
+
+const Mint = ({address}) => {
   const [formData, setFormData] = useState<any>({
     fileName: null,
     mimeType: null,

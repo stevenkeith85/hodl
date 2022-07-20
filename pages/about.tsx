@@ -3,8 +3,19 @@ import { Alert, Box, Stack, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import Link from "next/link";
 import { LoginLogoutButton } from "../components/menu/LoginLogoutButton";
+import { authenticate } from "../lib/jwt";
 
-export default function About() {
+export async function getServerSideProps({ req, res }) {
+    await authenticate(req, res);
+  
+    return {
+      props: {
+        address: req.address || null,
+      }
+    }
+  }
+
+export default function About({ address }) {
     return (
         <Box marginY={4}>
             <Stack spacing={6}>
