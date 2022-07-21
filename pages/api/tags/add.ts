@@ -18,6 +18,13 @@ dotenv.config({ path: '../.env' })
 const route = apiRoute();
 
 export const addTokenToTag = async (tag, token) => {
+  // Just checking this here, in case we call this from another endpoint that doesn't properly validate input
+  const isValid = await AddTagValidationSchema.isValid({tag, token});
+
+  if (!isValid) {
+    return 0;
+  }
+
   const total = await client.zcount(`tags:${token}`, '-inf', '+inf');
 
   if (total >= MAX_TAGS_PER_TOKEN) {

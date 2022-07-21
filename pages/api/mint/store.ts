@@ -1,7 +1,7 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
-import { ipfsUriToGatewayUrl, sleep } from "../../../lib/utils";
+import { ipfsUriToGatewayUrl, sleep, TAG_PATTERN } from "../../../lib/utils";
 import memoize from 'memoizee';
 import apiRoute from "../handler";
 import { getTokenUriAndOwner } from "../nft/[tokenId]";
@@ -22,6 +22,7 @@ const getInfuraIPFSAuth = memoize(() => {
   return auth;
 });
 
+// TODO: Check for any XSS attacks here
 route.post(async (req, res: NextApiResponse) => {
   if (!req.address) {
     return res.status(403).json({ message: "Not Authenticated" });
@@ -42,8 +43,8 @@ route.post(async (req, res: NextApiResponse) => {
   await client.set("token:" + tokenId, JSON.stringify({ tokenId, name, description, privilege, image, mimeType, filter }));
 
   // extract tags
-  const tagPattern = /#([\d\w_]+)/g;
-  const tags = [...description.matchAll(tagPattern)].map(arr => arr[1])
+  
+  const tags = [...description.matchAll(TAG_PATTERN)].map(arr => arr[1])
 
   // Add tags. (NB: only the first 6 will be added)
   for (const tag of tags) {

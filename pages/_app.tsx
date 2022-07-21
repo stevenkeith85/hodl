@@ -37,8 +37,17 @@ function MyApp(props) {
         revalidateOnFocus: false,
         revalidateOnReconnect: false
       }}>
-        <WalletContext.Provider value={{ signer, setSigner, address, setAddress, nickname, setNickname }}>
-          <ThemeProvider theme={theme}>
+        <WalletContext.Provider value={{ 
+          signer, 
+          setSigner, 
+          address, 
+          setAddress, 
+          nickname, 
+          setNickname 
+        }}>
+          <ThemeProvider 
+            theme={theme}
+          >
             <SnackbarProvider
               maxSnack={3}
             >

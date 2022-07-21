@@ -34,9 +34,6 @@ export const useConnect = () => {
             }
           );
 
-          // deprecated. we are switching over to all cookie solutions
-          // const { token } = await r.data;
-          // localStorage.setItem('jwt', token);
         } catch (error) {
         }
       }
@@ -52,9 +49,6 @@ export const useConnect = () => {
   const disconnect = async () => {
     setSigner(null);
     setAddress(null);
-
-    // deprecated. we are switching over to all cookie solutions
-    localStorage.removeItem('jwt');
 
     try {
       const r = await axios.post(

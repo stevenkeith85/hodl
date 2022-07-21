@@ -1,4 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
 import apiRoute from "../handler";
@@ -9,13 +8,19 @@ dotenv.config({ path: '../.env' })
 const client = Redis.fromEnv()
 const route = apiRoute();
 
-export const getFollowingCount = memoize(async (address) => {
-  const count = await client.zcard(`following:${address}`);
+// export const getFollowingCount = memoize(
+//   async (address) => {
+//   const count = await client.zcard(`user:${address}:following`);
+//   return (count || 0);
+// }, { 
+//   primitive: true,
+//   max: 10000, // 10000 tokens 
+// });
+
+export const getFollowingCount = async (address) => {
+  const count = await client.zcard(`user:${address}:following`);
   return (count || 0);
-}, { 
-  primitive: true,
-  max: 10000, // 10000 tokens 
-});
+}
 
 route.get(async (req, res) => {
   const { address } = req.query;

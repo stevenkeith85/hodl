@@ -1,24 +1,33 @@
-import useSWR from 'swr';
-import { fetchWithAddress } from '../lib/swrFetchers';
+import axios from 'axios';
+import useSWRInfinite from 'swr/infinite'
 
-export const useFollowers = (address, prefetchedFollowersCount=null, prefetchedFollowers=null) => {
-    const { data: followersCount } = useSWR(
-        address ? [`/api/follow/followersCount`, address] : null,
-        fetchWithAddress,
-        { 
-            fallbackData: prefetchedFollowersCount,
-            revalidateOnMount: true
+
+export const useFollowers = (getData, address, limit = 10) => {
+    const fetcher = (url: string, address: string, offset: number, limit: number) => axios.get(
+        url,
+        {
+            params: { address, offset, limit },
+            headers: {
+                'Accept': 'application/json',
+            }
+        }).then(r => r.data);
+
+
+    const getKey = (index, _previous) => {
+        return getData ? [`/api/followers`, address, index * limit, limit] : null;
+    }
+
+    const swr = useSWRInfinite(
+        getKey,
+        fetcher,
+        {
+            dedupingInterval: 5000,
+            revalidateOnMount: true,
+            revalidateFirstPage: true
         }
-    )
+    );
 
-    const { data: followers } = useSWR(
-        address ? [`/api/follow/followers`, address] : null,
-        fetchWithAddress,
-        { 
-            fallbackData: prefetchedFollowers,
-            revalidateOnMount: true
-        }
-    )
-
-    return [followersCount?.count, followers?.followers];
+    return {
+        swr
+    }
 }

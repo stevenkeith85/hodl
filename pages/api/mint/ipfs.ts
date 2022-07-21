@@ -44,6 +44,7 @@ const uploadNFT = async (name, description, privilege, path, filter, isVideo) =>
   return { imageCid: image.cid.toString(), metadataCid: metadata.cid.toString() };
 }
 
+// TODO: Check for any XSS attacks here
 route.post(async (req, res: NextApiResponse) => {
   if (!req.address) {
     return res.status(403).json({ message: "Not authenticated" });

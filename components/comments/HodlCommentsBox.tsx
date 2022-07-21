@@ -151,8 +151,8 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
                         setTopLevel={setTopLevel}
                         mutateCount={countSWR.mutate}
                     />
-                    {swr?.data && swr?.data[0]?.items?.length === 0 &&
-                        <HodlImpactAlert title="No Comments Yet" message="Be The First To Comment" sx={{ paddingTop: 10,  paddingBottom: 15 }} />}
+                    {swr?.data && swr?.data[0]?.items?.length === 0 && <Typography>Be the first to comment</Typography>}
+
                 </Box> :
                 comment && <HodlCommentBox
                     color="primary"

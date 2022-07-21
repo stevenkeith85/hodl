@@ -1,8 +1,20 @@
+import { Typography } from "@mui/material";
+import Link from "next/link";
 import { AssetTypes } from "../models/AssetType";
 import { Nft } from "../models/Nft";
 import { commercial, nonCommercial, token } from "./copyright";
 
+export const TAG_PATTERN = /#([\d\w_]+)/g;
 export const MAX_TAGS_PER_TOKEN = 6;
+
+export const addLinksToTags = text => {
+   return text.replace(TAG_PATTERN, (a, b) => {
+    return `<Link href="/search?q=${b}"><a>${a}</a></Link>`
+  });
+}
+
+
+export const getAsString = param => Array.isArray(param) ? param[0] : param;
 
 export function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));

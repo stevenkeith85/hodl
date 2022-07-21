@@ -3,11 +3,14 @@ import Head from 'next/head';
 import { HodlImpactAlert } from '../components/HodlImpactAlert';
 import { InfiniteScrollSearchResults } from '../components/profile/InfiniteScrollSearchResults';
 import { useSearch } from '../hooks/useSearch';
+import { authenticate } from '../lib/jwt';
 import { SearchValidationSchema } from '../validationSchema/search';
 import { getSearchResults } from './api/search/results';
 
-export async function getServerSideProps({ query }) {
+export async function getServerSideProps({ query, req, res }) {
   const { q = '' } = query;
+
+  await authenticate(req, res);
 
   let prefetchedResults;
 
@@ -20,6 +23,7 @@ export async function getServerSideProps({ query }) {
   }
   return {
     props: {
+      address: req.address || null,
       q,
       limit,
       prefetchedResults: [prefetchedResults]

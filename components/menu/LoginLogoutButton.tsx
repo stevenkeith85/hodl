@@ -43,7 +43,7 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({ color="sec
                             connectMobile();
                         } else {
                             await connect(false);
-                            router.push('/')
+                            router.push(router.asPath);
                         }
                     }}
                     startIcon={<AccountBalanceWallet />}
@@ -59,6 +59,7 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({ color="sec
                     onClick={async e => {
                         e.stopPropagation();
                         await disconnect();
+                        router.push('/');
                     }}
                     startIcon={<CloudOff />}
                 >

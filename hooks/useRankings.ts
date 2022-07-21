@@ -1,5 +1,4 @@
 import useSWRInfinite from 'swr/infinite'
-import { ActionSet } from "../models/HodlAction";
 import axios from 'axios';
 
 
@@ -21,7 +20,7 @@ export const useRankings = (
       },
       headers: { // This endpoint is public at the moment; but we may make it private
         'Accept': 'application/json',
-        'Authorization': localStorage.getItem('jwt')
+        // 'Authorization': localStorage.getItem('jwt')
       }
     }).then(r => r.data);
 

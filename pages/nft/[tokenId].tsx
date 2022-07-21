@@ -3,48 +3,45 @@ import {
   Card,
   CardContent,
   Grid,
-  NoSsr,
   Stack,
   Tab,
   Tabs,
-  Tooltip,
   Typography
 } from "@mui/material";
 
 import {
   DetailPageImage,
   IpfsCard,
-  PriceCard,
-  DescriptionCard,
   NftActionButtons
 } from '../../components';
 
 import { fetchNFT } from "../api/nft/[tokenId]";
 import { PriceHistory } from "../../components/nft/PriceHistory";
-import { truncateText } from "../../lib/utils";
 import { ProfileAvatar } from "../../components/avatar/ProfileAvatar";
 import { Likes } from "../../components/Likes";
 import Head from "next/head";
 import { getPriceHistory } from "../api/token-bought/[tokenId]";
 import { getTagsForToken } from "../api/tags";
 import { HodlerPrivilege } from "../../components/nft/HodlerPrivilege";
-import { HodlTagCloud } from "../../components/nft/HodlTagCloud";
 import { getCommentsForToken } from "../api/comments";
 import { HodlCommentsBox } from "../../components/comments/HodlCommentsBox";
 import { Comments } from "../../components/comments/Comments";
 import { getCommentCount } from "../api/comments/count";
 import { useState } from "react";
-import { Forum, Info, Insights } from "@mui/icons-material";
+import { Forum, Insights } from "@mui/icons-material";
 
 import { useRouter } from "next/router";
 import { getLikeCount } from "../api/like/token/count";
 import { MaticPrice } from "../../components/MaticPrice";
 import { indigo } from "@mui/material/colors";
-import { ProfileNameOrAddress } from "../../components/avatar/ProfileNameOrAddress";
+import { insertTagLinks } from "../../lib/templateUtils";
+import { authenticate } from "../../lib/jwt";
 
 
-export async function getServerSideProps({ params }) {
+export async function getServerSideProps({ params, req, res }) {
   try {
+    await authenticate(req, res);
+    
     const nft = await fetchNFT(params.tokenId);
 
     const comment = params.comment;
@@ -61,6 +58,7 @@ export async function getServerSideProps({ params }) {
 
     return {
       props: {
+        address: req.address || null,
         nft,
         prefetchedTags,
         prefetchedComments: [prefetchedComments],
@@ -76,6 +74,7 @@ export async function getServerSideProps({ params }) {
 }
 
 const NftDetail = ({
+  address,
   nft,
   prefetchedTags,
   prefetchedComments,
@@ -164,11 +163,7 @@ const NftDetail = ({
                     mb={3} 
                     sx={{ borderBottom: `1px solid #ddd` }}>
                     <Typography variant="h1" mt={1} mb={3} sx={{ fontWeight: 600}}>{nft.name}</Typography>
-                    <Typography >{nft.description}</Typography>
-                    {/* <HodlTagCloud
-                      nft={nft}
-                      prefetchedTags={prefetchedTags}
-                    /> */}
+                    <Box sx={{ whiteSpace: 'pre-line'}}>{ insertTagLinks(nft.description) }</Box>
                   </Box>
                   <HodlCommentsBox
                     tokenId={nft.tokenId}

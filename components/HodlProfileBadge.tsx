@@ -9,14 +9,16 @@ import useSWR from 'swr';
 import axios from 'axios'
 import Link from 'next/link';
 import { truncateText, getShortAddress } from '../lib/utils';
-import { FollowButton } from './profile/FollowButton';
 import { grey } from '@mui/material/colors';
+import { useFollowingCount } from '../hooks/useFollowingCount';
+import { useFollowersCount } from '../hooks/useFollowersCount';
 
-export const HodlProfileBadge = ({ address, minimized = false }) => {
+export const HodlProfileBadge = ({ address }) => {
     const [hodlingCount] = useHodling(address, 0, null, null);
     const [listedCount] = useListed(address, 0, null, null);
-    const [followersCount] = useFollowers(address, null, null);
-    const [followingCount, following] = useFollowing(address, null, null);
+    
+    const [followersCount] = useFollowersCount(address);
+    const [followingCount] = useFollowingCount(address);
 
     const { data: profileNickname } = useSWR(address ? [`/api/profile/nickname`, address] : null,
         (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.nickname),
@@ -26,16 +28,16 @@ export const HodlProfileBadge = ({ address, minimized = false }) => {
     return (
         <Box
             display="flex"
-            flexDirection={minimized ? "row" : "column"}
+            flexDirection={"column"}
             justifyContent="space-evenly"
-            alignItems={minimized ? "center" : "start"}
+            alignItems={"start"}
             sx={{
                 gap: 2,
-                paddingX: minimized ? 0 : 2,
-                paddingY: minimized ? 0.5 : 2,
-                border: minimized ? 'none' : '1px solid #ddd',
+                paddingX: 2,
+                paddingY: 2,
+                border: '1px solid #ddd',
                 borderRadius: 1,
-                boxShadow: minimized ? 'none': '0 0 2px 1px #eee'
+                boxShadow: '0 0 2px 1px #eee'
             }}
         >
             <Box
@@ -46,7 +48,7 @@ export const HodlProfileBadge = ({ address, minimized = false }) => {
                 flexGrow={1}
                 gap={2}
             >
-                <ProfileAvatar profileAddress={address} size={minimized ? "small" : "medium"} showNickname={false} />
+                <ProfileAvatar profileAddress={address} size={"medium"} showNickname={false} />
 
                 {profileNickname ?
                     <Link href={`/profile/${profileNickname}`}>
@@ -77,87 +79,83 @@ export const HodlProfileBadge = ({ address, minimized = false }) => {
                 }
 
             </Box>
-            {!minimized &&
-                <Box
-                    display="grid"
-                    gridTemplateColumns="1fr 1fr 1fr 1fr"
-                    sx={{
-                        width: '100%',
-                        paddingX: 1,
-                        gap: 2
-                    }}
-                >
-                    {!isNaN(hodlingCount) &&
-                        <Link href={`/profile/${profileNickname || address}?tab=0`} passHref>
-                            <Typography
-                                component="a"
-                                sx={{
-                                    color: grey[700],
-                                    textDecoration: 'none',
-                                    span: {
-                                        fontWeight: 600,
-                                        display: 'block'
-                                    }
-                                }}>
-                                <span>{humanize.compactInteger(hodlingCount, 1)}</span>
-                                Hodling
-                            </Typography>
 
-                        </Link>
-                    }
-                    {!isNaN(listedCount) &&
-                        <Link href={`/profile/${profileNickname || address}?tab=1`} passHref>
-                            <Typography
-                                component="a"
-                                sx={{
-                                    color: grey[700],
-                                    textDecoration: 'none',
-                                    span: {
-                                        fontWeight: 600,
-                                        display: 'block'
-                                    }
-                                }}>
-                                <span>{humanize.compactInteger(listedCount, 1)}</span> Listed
-                            </Typography>
-                        </Link>
-                    }
-                    {!isNaN(followingCount) &&
-                        <Link href={`/profile/${profileNickname || address}?tab=2`} passHref>
-                            <Typography
-                                component="a"
-                                sx={{
-                                    color: grey[700],
-                                    textDecoration: 'none',
-                                    span: {
-                                        fontWeight: 600,
-                                        display: 'block'
-                                    }
-                                }}>
-                                <span>{humanize.compactInteger(followingCount, 1)}</span> Following
-                            </Typography>
-                        </Link>
-                    }
-                    {!isNaN(followersCount) &&
-                        <Link href={`/profile/${profileNickname || address}?tab=3`} passHref>
-                            <Typography
-                                component="a"
-                                sx={{
-                                    color: grey[700],
-                                    textDecoration: 'none',
-                                    span: {
-                                        fontWeight: 600,
-                                        display: 'block'
-                                    }
-                                }}>
-                                <span>{humanize.compactInteger(followersCount, 1)}</span> Followers
-                            </Typography>
-                        </Link>
-                    }
-                </Box>
-            }
-            {/* <Box>
-                <FollowButton profileAddress={address} variant={'text'}/>
-            </Box> */}
+            <Box
+                display="grid"
+                gridTemplateColumns="1fr 1fr 1fr 1fr"
+                sx={{
+                    width: '100%',
+                    paddingX: 1,
+                    gap: 2
+                }}
+            >
+                {!isNaN(hodlingCount) &&
+                    <Link href={`/profile/${profileNickname || address}?tab=0`} passHref>
+                        <Typography
+                            component="a"
+                            sx={{
+                                color: grey[700],
+                                textDecoration: 'none',
+                                span: {
+                                    fontWeight: 600,
+                                    display: 'block'
+                                }
+                            }}>
+                            <span>{humanize.compactInteger(hodlingCount, 1)}</span>
+                            Hodling
+                        </Typography>
+
+                    </Link>
+                }
+                {!isNaN(listedCount) &&
+                    <Link href={`/profile/${profileNickname || address}?tab=1`} passHref>
+                        <Typography
+                            component="a"
+                            sx={{
+                                color: grey[700],
+                                textDecoration: 'none',
+                                span: {
+                                    fontWeight: 600,
+                                    display: 'block'
+                                }
+                            }}>
+                            <span>{humanize.compactInteger(listedCount, 1)}</span> Listed
+                        </Typography>
+                    </Link>
+                }
+                {!isNaN(followingCount) &&
+                    <Link href={`/profile/${profileNickname || address}?tab=2`} passHref>
+                        <Typography
+                            component="a"
+                            sx={{
+                                color: grey[700],
+                                textDecoration: 'none',
+                                span: {
+                                    fontWeight: 600,
+                                    display: 'block'
+                                }
+                            }}>
+                            <span>{humanize.compactInteger(followingCount, 1)}</span> Following
+                        </Typography>
+                    </Link>
+                }
+                {!isNaN(followersCount) &&
+                    <Link href={`/profile/${profileNickname || address}?tab=3`} passHref>
+                        <Typography
+                            component="a"
+                            sx={{
+                                color: grey[700],
+                                textDecoration: 'none',
+                                span: {
+                                    fontWeight: 600,
+                                    display: 'block'
+                                }
+                            }}>
+                            <span>{humanize.compactInteger(followersCount, 1)}</span> Followers
+                        </Typography>
+                    </Link>
+                }
+            </Box>
 
         </Box>
     )

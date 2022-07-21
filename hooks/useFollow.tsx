@@ -6,27 +6,82 @@ import axios from 'axios';
 export const useFollow = (profileAddress, feed = null) => {
   const { address } = useContext(WalletContext);
 
-  const { data: isFollowing, mutate: mutateIsFollowing } = useSWR(address && address !== profileAddress ? [`/api/follow/follows`, address, profileAddress] : null,
-    (url, address, profileAddress) => axios.get(`${url}?address1=${address}&address2=${profileAddress}`)
-      .then(r => Boolean(r.data.follows)),
-    {
-      revalidateOnMount: true
-    }
-  );
+  const fetcher = (url, address, profileAddress) => axios.get(`${url}?address1=${address}&address2=${profileAddress}`).then(r => Boolean(r.data.follows));
+
+  const {
+    data: isFollowing,
+    mutate: mutateIsFollowing } = useSWR(
+      address && address !== profileAddress ? [`/api/follows`, address, profileAddress] : null,
+      fetcher,
+      {
+        revalidateOnMount: true
+      }
+    );
 
   const follow = async () => {
     // Update person followed values
-    mutate([`/api/follow/followersCount`, profileAddress],
-      async ({ count }) => {
+    mutate([`/api/followers/count`, profileAddress],
+      (data) => {
+
+        if (data === undefined) { // we've not fetched this yet, so no need to mutate. i.e. its not on screen
+          return data
+        }
+
+        const {count} = data;
+
+        console.log('profile address followersCount', count);
         return ({ count: isFollowing ? count - 1 : count + 1 })
       },
       {
         revalidate: false
       });
 
-    mutate([`/api/follow/followers`, profileAddress],
-      async ({ followers }) => {
-        return ({ followers: isFollowing ? (followers || []).filter(a => a !== address) : [address, ...(followers || [])] })
+      // TODO: Now SWR infinite, so needs updated
+    // mutate([`/api/followers`, profileAddress],
+    //   (data) => {
+
+    //     if (data === undefined) { // we've not fetched this yet, so no need to mutate. i.e. its not on screen
+    //       return data;
+    //     }
+
+    //     const { followers } = data;
+
+    //     console.log('profile address followers', followers);
+    //     return ({followers: isFollowing ? followers.filter(follower => follower !== address) :
+    //                          [address, ...followers]})
+    //   },
+    //   {
+    //     revalidate: false
+    //   });
+
+    
+
+    // Update users values
+    mutate([`/api/following/count`, address],
+      (data) => {
+        if (data === undefined) { // we've not fetched this yet, so no need to mutate. i.e. its not on screen
+          return data
+        }
+
+        const {count} = data;
+
+        console.log('user following', count);
+        return ({ count: isFollowing ? count - 1 : count + 1 })
+      },
+      {
+        revalidate: false
+      });
+
+    mutate([`/api/following`, address],
+      (data) => {
+        if (data === undefined) { // we've not fetched this yet, so no need to mutate. i.e. its not on screen
+          return data;
+        }
+
+        const { following } = data;
+
+        return ({ following: isFollowing ? following.filter(f => f !== profileAddress) :
+                                          [profileAddress, ...following]})
       },
       {
         revalidate: false
@@ -34,54 +89,32 @@ export const useFollow = (profileAddress, feed = null) => {
 
     mutateIsFollowing(old => !old, { revalidate: false });
 
-    // Update users values
-    mutate([`/api/follow/followingCount`, address],
-      async ({ count }) => {
-        return ({ count: isFollowing ? count - 1 : count + 1 })
-      },
-      {
-        revalidate: false
-      });
-
-    mutate([`/api/follow/following`, address],
-      async ({ following }) => {
-        return ({
-          following: isFollowing ?
-            (following || []).filter(a => a !== profileAddress) :
-            [profileAddress, ...(following || [])]
-        })
-      },
-      {
-        revalidate: false
-      });
-
     try {
       const r = await axios.post(
-        '/api/follow/follow',
+        '/api/follow',
         { address: profileAddress },
         {
           headers: {
             'Accept': 'application/json',
-            'Authorization': localStorage.getItem('jwt')
           },
         }
       )
 
       if (feed) {
-          feed.mutate();
+        feed.mutate();
       }
 
       return true;
 
     } catch (error) {
       if (error.response.status === 429) {
-        mutate([`/api/follow/followersCount`, profileAddress]);
-        mutate([`/api/follow/followers`, profileAddress]);
+        mutate([`/api/followers/count`, profileAddress]);
+        mutate([`/api/followers`, profileAddress]);
 
         mutateIsFollowing();
 
-        mutate([`/api/follow/followingCount`, address]);
-        mutate([`/api/follow/following`, address]);
+        mutate([`/api/following/count`, address]);
+        mutate([`/api/following`, address]);
 
         return false;
       }

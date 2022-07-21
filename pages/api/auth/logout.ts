@@ -10,8 +10,14 @@ const client = Redis.fromEnv()
 const route = apiRoute();
 
 export const clearSession = async (address) => {
-  console.log('clearing session')
   await client.hdel(`user:${address}`, 'sessionId');
+}
+
+export const clearCookies = (res) => {
+  res.setHeader('Set-Cookie', [
+    cookie.serialize('accessToken', "", { httpOnly: true, path: '/', maxAge: -1}),
+    cookie.serialize('refreshToken', "", { httpOnly: true, path: '/', maxAge: -1})
+  ])
 }
 
 route.post(async (req, res: NextApiResponse) => {  
@@ -20,13 +26,7 @@ route.post(async (req, res: NextApiResponse) => {
   }
 
   await clearSession(req.address);
-
-  // clear the cookie
-
-  res.setHeader('Set-Cookie', [
-    cookie.serialize('accessToken', "", { httpOnly: true, path: '/', maxAge: -1}),
-    cookie.serialize('refreshToken', "", { httpOnly: true, path: '/', maxAge: -1})
-  ])
+  clearCookies(res);
 
   res.status(200).json({message: 'ok'});
 });

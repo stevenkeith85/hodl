@@ -2,6 +2,7 @@ import { Redis } from '@upstash/redis';
 
 import jwt from 'jsonwebtoken'
 import cookie from 'cookie'
+import { clearCookies } from '../pages/api/auth/logout';
 
 export const accessTokenExpiresIn = 60 * 30;
 export const refreshTokenExpiresIn = 60 * 60 * 4;
@@ -15,7 +16,9 @@ export const apiAuthenticate = async (req, res, next) => {
   const { accessToken, refreshToken } = req.cookies;
 
   if (!accessToken || !refreshToken) {
-    return next();
+    // clearCookies(res);
+    req.address = null;
+    return next(); // we check for req.address being present in api endpoints that need the user to be auth'd
   }
 
   try {
@@ -40,28 +43,42 @@ export const apiAuthenticate = async (req, res, next) => {
             cookie.serialize('accessToken', accessToken, { httpOnly: true, path: '/' }),
           ])
 
+          // we've update the cookie; so the browser can retry. 
+          // (we have an axios retry set up if refreshed is true)
           return res.status(401).json({ refreshed: true });
         }
 
         // the sessionId does not match the storedSessionId
-        // the user has been logged out; by themselves - or us
-        // user will need to re-login
-        return res.status(401).json({ refreshed: false });
+        // the user has previously logged out; perhaps on another device
+        
+        // user will need to re-login to re-auth
+        // the next endpoint may not require auth though; so clear req.address and forward the request to it
+        // clearCookies(res);
+        req.address = null;
+        return next();
       } catch (e) {
-        // the verify call has failed, i.e. the refreshToken has expired. 
-        // the user will need to re-login
-        return res.status(401).json({ refreshed: false });
+        // the verify call has failed, i.e. the refreshToken has likely expired. 
+        
+        // the user will need to re-login to re-auth
+        // the next endpoint may not require auth though; so clear req.address and forward the request to it
+        // clearCookies(res);
+        req.address = null;
+        return next();
       }
     }
 
     // This is unlikely to happen in the wild; but if it does; just log the user out
     // WE usually see it when switching from dev to prod mode (as we have a different jwt secret for both); 
     if (e instanceof jwt.JsonWebTokenError) {
-      return res.status(401).json({ refreshed: false });
+      // clearCookies(res);
+      req.address = null;
+      return next();
     }
 
-    // just log them out if there's any issue we aren't handling
-    // return res.status(401).json({ refreshed: false });
+    // just forward the call if there's anything we aren't handling
+    // clearCookies(res);
+    req.address = null;
+    return next();
   }
 
 }

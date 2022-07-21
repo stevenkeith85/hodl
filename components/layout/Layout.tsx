@@ -1,8 +1,12 @@
 import { Box, Container } from '@mui/material'
+import { useRouter } from 'next/router'
 import ResponsiveAppBar from './AppBar'
 import Footer from './Footer'
 
 export default function Layout({ children }) {
+
+    const router = useRouter();
+
     return (
         <>
             <Box
@@ -30,9 +34,14 @@ export default function Layout({ children }) {
                     <ResponsiveAppBar />
                 </header>
                 <main>
-                    <Container maxWidth="xl">
+                    {router.asPath !== '/' && <Container maxWidth="xl">
                         {children}
                     </Container>
+                    }
+                    {router.asPath === '/' && <>
+                        {children}
+                    </>
+                    }
                 </main>
                 <footer>
                     <Footer />

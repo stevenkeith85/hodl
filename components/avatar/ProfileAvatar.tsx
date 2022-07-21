@@ -56,7 +56,7 @@ export const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
             alignItems: "center",
             cursor: 'pointer',
         }}
-            spacing={size === 'small' ? 1 : 2}
+            spacing={2}
             direction={reverse ? 'row-reverse' : 'row'}
         >
             { token && withLink && <NftAvatarWithLinkMemo token={token} size={getSize()} profileAddress={profileAddress} highlight={highlight} color={color}/> }

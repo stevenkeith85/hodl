@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react'
 import { isValidAddress } from '../../lib/profile'
-import { useContext } from 'react'
-import { WalletContext } from '../../contexts/WalletContext';
 import { Badge, Box, Tab, Tabs } from '@mui/material'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
@@ -13,12 +11,12 @@ import { getNickname } from '../api/profile/nickname'
 import { getAddress } from '../api/profile/address'
 import { getHodlingCount } from '../api/profile/hodlingCount'
 import { getListedCount } from '../api/profile/listedCount'
-import { getFollowingCount } from '../api/follow/followingCount'
-import { getFollowersCount } from '../api/follow/followersCount'
+
+import { getFollowersCount } from '../api/followers/count'
 import { getHodling } from '../api/profile/hodling'
 import { getListed } from '../api/profile/listed'
-import { getFollowing } from '../api/follow/following'
-import { getFollowers } from '../api/follow/followers'
+import { getFollowing } from '../api/following'
+import { getFollowers } from '../api/followers'
 import { useFollowing } from '../../hooks/useFollowing';
 import { useFollowers } from '../../hooks/useFollowers';
 import { useListed } from '../../hooks/useListed';
@@ -26,6 +24,11 @@ import { useHodling } from '../../hooks/useHodling';
 import humanize from "humanize-plus";
 import { HodlImpactAlert } from '../../components/HodlImpactAlert';
 import { authenticate } from '../../lib/jwt';
+import { getFollowingCount } from '../api/following/count'
+import { useFollowingCount } from '../../hooks/useFollowingCount'
+import { AvatarLinksList } from '../../components/profile/AvatarLinksList'
+import { useFollowersCount } from '../../hooks/useFollowersCount'
+import { NftLinksList } from '../../components/profile/NftLinksList'
 
 const InfiniteScrollTab = dynamic(
   // @ts-ignore
@@ -49,7 +52,7 @@ const FollowersTab = dynamic(
 export async function getServerSideProps({ params, query, req, res }) {
 
   await authenticate(req, res);
-  
+
   let profileAddress = params.address; // TODO: Rename this param as it can be an address OR a nickname
   let nickname = null;
 
@@ -129,15 +132,18 @@ const Profile = ({
   limit
 }) => {
   const router = useRouter();
-  // const { address } = useContext(WalletContext);
-  const [value, setValue] = useState(Number(tab));
 
-  const [hodlingCount, hodlingSWR] = useHodling(profileAddress, limit, prefetchedHodlingCount, prefetchedHodling);
-  const [listedCount, listedSWR] = useListed(profileAddress, limit, prefetchedListedCount, prefetchedListed);
-  const [followersCount, followers] = useFollowers(profileAddress, prefetchedFollowersCount, prefetchedFollowers);
-  const [followingCount, following] = useFollowing(profileAddress, prefetchedFollowingCount, prefetchedFollowing);
+  const [value, setValue] = useState(Number(tab)); // tab
 
-  console.log('listedCount', listedCount)
+  const [hodlingCount, hodling] = useHodling(profileAddress, limit, prefetchedHodlingCount, prefetchedHodling);
+  const [listedCount, listed] = useListed(profileAddress, limit, prefetchedListedCount, prefetchedListed);
+
+  const [followingCount] = useFollowingCount(profileAddress, prefetchedFollowingCount);
+  const { swr: following } = useFollowing(value === 2, profileAddress, limit);
+
+  const [followersCount] = useFollowersCount(profileAddress, prefetchedFollowersCount);
+  const { swr: followers } = useFollowers(value === 3, profileAddress, limit);
+
   useEffect(() => {
     if (!router?.query?.tab) {
       setValue(0)// redirect to first tab on route change
@@ -150,19 +156,24 @@ const Profile = ({
       <Head>
         <title>{nickname || profileAddress} | NFT Market | HodlMyMoon</title>
       </Head>
-      <Box 
-        sx={{ 
-          display: 'flex', 
-          flexDirection: 'row', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          marginTop: 4 
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginTop: 4
         }}>
         <ProfileAvatar size="xlarge" profileAddress={profileAddress} />
         <FollowButton profileAddress={profileAddress} />
       </Box>
 
-      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: 4, marginBottom: 4 }}>
+      <Box sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        marginTop: 4,
+        marginBottom: 4
+      }}>
         <Tabs
           value={value}
           onChange={(e, v) => {
@@ -216,18 +227,16 @@ const Profile = ({
         </Tabs>
       </Box>
       <div hidden={value !== 0}>
-        <InfiniteScrollTab swr={hodlingSWR} limit={limit} showAvatar={false} showName={true} />
+        <NftLinksList swr={hodling} limit={limit} />
       </div>
       <div hidden={value !== 1}>
-        <InfiniteScrollTab swr={listedSWR} limit={limit} showAvatar={false} showName={true} />
-        { listedSWR?.data && listedSWR?.data[0]?.items?.length === 0 &&
-          <HodlImpactAlert title="Nothing Listed" message="This user does not have any NFTs for sale" sx={{ padding: 0 }}/>}
+        <NftLinksList swr={listed} limit={limit} />
       </div>
       <div hidden={value !== 2}>
-        <FollowingTab address={address} following={following} profileAddress={profileAddress} />
+        <AvatarLinksList swr={following} limit={limit} />
       </div>
       <div hidden={value !== 3}>
-        <FollowersTab address={address} followers={followers} profileAddress={profileAddress} />
+        <AvatarLinksList swr={followers} limit={limit} />
       </div>
     </>
   )

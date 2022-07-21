@@ -37,7 +37,7 @@ export const getMostFollowedUsers = async (
     total: number
   }> => {
 
-  const total = await client.zcard(`rankings:address`);
+  const total = await client.zcard(`rankings:user:followers`);
 
   if (offset >= total) {
     return {
@@ -47,21 +47,13 @@ export const getMostFollowedUsers = async (
     };
   }
 
-  const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/rankings:address/${offset}/${offset + limit - 1}/rev/withscores`, {
+  const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/rankings:user:followers/${offset}/${offset + limit - 1}/rev`, {
     headers: {
       Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
     }
   })
 
-  console.log('r.data.result', r.data.result)
-  const addresses: any [] = [];
-
-  for (let i = 0; i < r.data.result.length; i += 2) {
-    addresses.push({
-      address: r.data.result[i],
-      followers: r.data.result[i+1],
-    })
-  }
+  const addresses: string [] = r.data.result;
   
   return {
     items: addresses,
@@ -72,10 +64,6 @@ export const getMostFollowedUsers = async (
 
 
 route.get(async (req, res: NextApiResponse) => {
-  // if (!req.address) {
-  //   return res.status(403).json({ message: "Not Authenticated" });
-  // }
-
   const offset = Array.isArray(req.query.offset) ? req.query.offset[0] : req.query.offset;
   const limit = Array.isArray(req.query.limit) ? req.query.limit[0] : req.query.limit;
 

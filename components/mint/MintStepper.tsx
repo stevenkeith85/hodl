@@ -11,8 +11,10 @@ export const MintStepper = ({ activeStep, stepLabels }) => (
       borderRadius: 1
     }}>
     {stepLabels.map((label, i) => <Step key={i}>
-      <StepLabel>
-        <Typography sx={{ fontWeight: activeStep == i ? 900 : 400 }}>{stepLabels[i]}</Typography>
+      <StepLabel >
+        <Typography 
+        sx={{ fontWeight: activeStep == i ? 900 : 400,
+          color: activeStep == i ? theme => theme.palette.secondary.main : "#333" }}>{stepLabels[i]}</Typography>
       </StepLabel>
     </Step>
     )}

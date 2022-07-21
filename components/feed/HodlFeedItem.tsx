@@ -15,6 +15,7 @@ import { AssetTypes } from "../../models/AssetType";
 import { HodlVideo } from "../HodlVideo";
 import { Likes } from "../Likes";
 import { Comments } from "../comments/Comments";
+import { insertTagLinks } from "../../lib/templateUtils";
 
 
 interface HodlFeedItemProps {
@@ -219,7 +220,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                 </Box>
                 <Box>
                     <Typography mb={1} component="h2" sx={{ fontWeight: 600 }}>{token?.name}</Typography>
-                    <Typography>{token?.description}</Typography>
+                    <Box sx={{ whiteSpace: 'pre-line'}}>{ insertTagLinks(token?.description) }</Box>
                 </Box>
             </Box>}
         </>
