@@ -15,10 +15,12 @@ const route = apiRoute();
 
 export const getCommentCount = async (object, id) => {
   if (object === "comment") {
-    const count = await client.zcard(`comments:${object}:${id}`);
+    // const count = await client.zcard(`comments:${object}:${id}`);
+    const count = await client.zcard(`comment:${id}:comments`);
     return count;
   } else {
-    const count = await client.zscore("commentCount", id);
+    // const count = await client.zscore("commentCount", id);
+    const count = await client.get(`token:${id}:comments:count`);
     return count || 0;
   }  
 };
@@ -29,7 +31,7 @@ route.get(async (req, res) => {
 
   const isValid = await CommentCountValidationSchema.isValid(req.query)
   if (!isValid) {
-    return res.status(400).json({ message: 'Bad Request - yup' });
+    return res.status(400).json({ message: 'Bad Request' });
   }
 
   if (object === "token") {
@@ -41,7 +43,6 @@ route.get(async (req, res) => {
       return res.status(400).json({ message: 'Bad Request' });
     }
   }
-
 
   const count = await getCommentCount(object, id);
   res.status(200).json(count);

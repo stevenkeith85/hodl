@@ -3,7 +3,7 @@ export enum ActionTypes {
     Listed = 'listed', // token listed on the market
     Bought = 'bought', // token bought from market
     Liked = 'liked', // token or comment liked
-    CommentedOn = 'commented on', // token or comment commented on
+    CommentedOn = 'commented on', // token or comment commented on - maybe should just be 'commented'
     Followed = 'followed', // address has been followed
 }
 

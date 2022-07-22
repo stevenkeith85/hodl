@@ -45,7 +45,7 @@ export const NftActionButtons = ({ nft }) => {
                 open={listModalOpen}
                 setOpen={setListModalOpen}
             >
-                <Stack spacing={2}>
+                <Stack spacing={4}>
                     <RocketTitle
                         title="List this token on the market"
                     />
@@ -107,7 +107,7 @@ export const NftActionButtons = ({ nft }) => {
                         Boolean(address) && Boolean(nft?.forSale) && !isOwner() &&
                         <Button
                             variant="contained"
-                            sx={{ paddingY: 1.5, paddingX: 3}}
+                            sx={{ paddingY: 1.5, paddingX: 3 }}
                             onClick={async () => {
                                 try {
                                     enqueueSnackbar('Please Approve Transaction in Wallet', { variant: "info" });
@@ -127,6 +127,8 @@ export const NftActionButtons = ({ nft }) => {
                             {
                                 nft?.forSale ? (
                                     <Button
+                                        variant="contained"
+                                        sx={{ paddingY: 1.5, paddingX: 3 }}
                                         onClick={async () => {
                                             try {
                                                 enqueueSnackbar('Please Approve Transaction in Wallet', { variant: "info" });
@@ -142,6 +144,8 @@ export const NftActionButtons = ({ nft }) => {
                                     </Button>
                                 ) : (
                                     <Button
+                                        variant="contained"
+                                        sx={{ paddingY: 1.5, paddingX: 3 }}
                                         onClick={() => setListModalOpen(true)}>
                                         List NFT
                                     </Button>

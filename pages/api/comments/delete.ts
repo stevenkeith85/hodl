@@ -20,21 +20,27 @@ const route = apiRoute();
 
 // if a token has replies, we just change the text to "[deleted]", so that the replies still have an anchor
 const removeComment = async (address, object, objectId, id, tokenId) => {
-  const replies = await client.zcard(`comments:${object}:${id}`);
+
+  // const replies = await client.zcard(`comments:${object}:${id}`);
+  const replies = await client.zcard(`${object}:${id}:comments`);
 
   if (!replies) {
-    const commentDeleted = await client.hdel(`comment`, id);
-    const userRecordDeleted = await client.zrem(`commented:${address}`, id);
-    const tokenRecordDeleted = await client.zrem(`comments:${object}:${objectId}`, id);
+    // const commentDeleted = await client.hdel(`comment`, id);
+    // const userRecordDeleted = await client.zrem(`commented:${address}`, id);
+    // const tokenRecordDeleted = await client.zrem(`comments:${object}:${objectId}`, id);
+    // const commentCountUpdated = await client.zincrby("commentCount", -1, tokenId);
 
-    const commentCountUpdated = await client.zincrby("commentCount", -1, tokenId);
+    const commentDeleted = await client.del(`comment:${id}`);
+    const userRecordDeleted = await client.zrem(`user:${address}:comments`, id);
+    const tokenRecordDeleted = await client.zrem(`${object}:${objectId}:comments`, id);
+    const commentCountUpdated = await client.incrby(`token:${id}:comments:count`, -1);
 
     return commentDeleted + userRecordDeleted + tokenRecordDeleted;
   } else {
-    const comment: HodlComment = await client.hget('comment', id);
+    const comment: HodlComment = await client.get(`comment:${id}`);
     comment.comment = "[deleted]";
 
-    const commentUpdated = await client.hset("comment", { [id]: JSON.stringify(comment) });
+    const commentUpdated = await client.set(`comment:${id}`, comment);
     return commentUpdated;
   }
 }
@@ -66,7 +72,7 @@ route.delete(async (req, res: NextApiResponse) => {
   const tokenExists = await contract.exists(tokenId);
 
   if (!tokenExists) {
-    return res.status(400).json({ message: 'Bad Request - blockchain' });
+    return res.status(400).json({ message: 'Bad Request' });
   }
 
   const owner = await contract.ownerOf(tokenId);
@@ -78,13 +84,8 @@ route.delete(async (req, res: NextApiResponse) => {
   const notTokenOwner = req.address !== owner && req.address !== seller;
   const notMyComment = req.address !== subject;
 
-  console.log('req.address', req.address);
-  console.log('owner', owner);
-  console.log('seller', seller);
-  console.log('notTokenOwner', notTokenOwner);
-
   if (notMyComment && notTokenOwner) {
-    return res.status(400).json({ message: 'Bad Request - You cannot delete this comment' });
+    return res.status(400).json({ message: 'Bad Request' });
   }
 
   const success = await removeComment(subject, object, objectId, id, tokenId);

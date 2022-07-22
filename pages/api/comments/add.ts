@@ -19,42 +19,73 @@ const route = apiRoute();
 
 // Data Structures:
 //
-// The hash containing every comment made on HodlMyMoon
-// "comment" -> {
-//   1: "{ subject, comment, token, timestamp }", 
-//   2: "{ subject, comment, token, timestamp }"
+// Site:
+// We have a counter for commentIds called <commentId>
+// Comments made on HodlMM are stored as STRINGs that map to json.
+// "comment:1" -> "{ subject, comment, token, object, objectId, timestamp }"
+// "comment:2" -> "{ subject, comment, token, object, objectId, timestamp }"
+// ...
 // }
 //
-// The sorted set of comments the user has made (on tokens or comments):
-// "commented:0x1234" -> (<id>/<time>, <id>/<time>, <id>/<time>)
+// They are added to the ZSET of total comments made on HodlMM. It maps comment ids to timestamps
+// We don't have a feature that NEEDS this at the moment; but it could be useful to get a site wide picture of growth, etc
+// comments -> { (1, 123456), (2, 223456), ...} 
 //
-// The sorted set of comments made on a token:
-// "comments:token:1" -> (<id>/<time>, <id>/<time>, <id>/<time>)
+// User:
+// The user's comments are stored in a ZSET
+// "user:0x1234:comments" -> (<id>/<time>, <id>/<time>, <id>/<time>) - We aren't storing this at the moment, as it can be calculated (if we need it) by doing a SET UNION
+// "user:0x1234:comments:token" -> (<id>/<time>, <id>/<time>, <id>/<time>)
+// "user:0x1234:comments:comment" -> (<id>/<time>, <id>/<time>, <id>/<time>)
 //
-// The sorted set of comments made on a comment (i.e. replies)
-// "comments:comment:1" -> (<id>/<time>, <id>/<time>, <id>/<time>)
+// Token:
+// The token's comments are stored in a ZSET
+// "token:1:comments" -> (<id>/<time>, <id>/<time>, <id>/<time>)
+//
+// Comment:
+// The comment's comments (i.e replies) are stored in a ZSET
+// "comment:1:comments" -> (<id>/<time>, <id>/<time>, <id>/<time>)
+//
+// Aggregate:
+// We store the the number of entries in the comment tree. i.e number of comments in the token's comment thread
+// "token:1:comments:count" -> <number of comments made on the token's thread)
+//
+// Potentially, 
+// We could update the token's json instead; (or use a HASH for token)
+//
+// ....but we are keeping that immutable at the moment for simplicity. 
+//
+// or store in a ZSET (which we may do later for 'rankings')
 
 
 export const addComment = async (comment: HodlComment) => {
   comment.timestamp = Date.now();
 
-  // This should be in a transaction (multi/exec) but the rest api/upstash client doesn't support them
-  // We are using the rest api as it handles concurrent connections better
-  // https://docs.upstash.com/redis/features/restapi
-
-  // It will not lead to data corruption, but there's always a chance we store a comment, but don't add the reference to the Sets
+  // TODO: REDIS TRANSACTION
   const commentId = await client.incr("commentId")
   comment.id = commentId;
 
   // Store the comment
-  const commentAdded = client.hset("comment", { [commentId]: JSON.stringify(comment) });
+  // const commentAdded = client.hset("comment", { [commentId]: JSON.stringify(comment) });
+  const commentAdded = client.set(`comment:${commentId}`, comment);
 
   // Store references to the comment for user, the token
-  const userRecordAdded = await client.zadd(`commented:${comment.subject}`, { score: comment.timestamp, member: commentId });
-  const tokenRecordAdded = await client.zadd(`comments:${comment.object}:${comment.objectId}`, { score: comment.timestamp, member: commentId });
+  // const userRecordAdded = await client.zadd(`commented:${comment.subject}`, { score: comment.timestamp, member: commentId });
+  const userRecordAdded = await client.zadd(`user:${comment.subject}:comments`, { 
+    member: commentId, 
+    score: comment.timestamp 
+  });
 
+  // const tokenRecordAdded = await client.zadd(`comments:${comment.object}:${comment.objectId}`, { score: comment.timestamp, member: commentId });
+  
+  // add the comment to to token or comment's collection
+  const tokenRecordAdded = await client.zadd(`${comment.object}:${comment.objectId}:comments`, { 
+    member: commentId,
+    score: comment.timestamp
+  });
+  
   // update the comment count (comments on the nft and all the replies) for the token
-  const commentCountUpdated = await client.zincrby("commentCount", 1, comment.tokenId);
+  // const commentCountUpdated = await client.zincrby("commentCount", 1, comment.tokenId);
+  const commentCountUpdated = await client.incrby(`token:${comment.tokenId}:comments:count`, 1);
 
   let notificationAdded = 0;
   if (tokenRecordAdded) {

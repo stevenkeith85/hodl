@@ -1,6 +1,8 @@
 import { Box, Button } from "@mui/material";
 import { useContext } from "react";
 import { FeedContext } from "../../contexts/FeedContext";
+import { FollowersContext } from "../../contexts/FollowersContext";
+import { FollowingContext } from "../../contexts/FollowingContext";
 import { WalletContext } from "../../contexts/WalletContext";
 import { useFollow } from "../../hooks/useFollow";
 
@@ -11,9 +13,12 @@ interface FollowButtonProps {
 
 export const FollowButton : React.FC<FollowButtonProps> = ({ profileAddress, variant ="contained" }) => {
     const { address } = useContext(WalletContext);
-    const { feed } = useContext(FeedContext);
     
-    const [follow, isFollowing] = useFollow(profileAddress, feed);
+    const { feed } = useContext(FeedContext);
+    const { followers } = useContext(FollowersContext);
+    const { following } = useContext(FollowingContext);
+    
+    const [follow, isFollowing] = useFollow(profileAddress, feed, followers, following);
 
     const ownProfile = address === profileAddress;
 

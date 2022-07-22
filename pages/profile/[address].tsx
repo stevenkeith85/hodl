@@ -29,6 +29,9 @@ import { useFollowingCount } from '../../hooks/useFollowingCount'
 import { AvatarLinksList } from '../../components/profile/AvatarLinksList'
 import { useFollowersCount } from '../../hooks/useFollowersCount'
 import { NftLinksList } from '../../components/profile/NftLinksList'
+import { FollowersContext } from '../../contexts/FollowersContext'
+import { FollowingContext } from '../../contexts/FollowingContext'
+
 
 const InfiniteScrollTab = dynamic(
   // @ts-ignore
@@ -56,7 +59,7 @@ export async function getServerSideProps({ params, query, req, res }) {
   let profileAddress = params.address; // TODO: Rename this param as it can be an address OR a nickname
   let nickname = null;
 
-  const limit = 4;
+  const limit = 10;
   const tab = Number(query.tab) || 0;
 
   const isValid = await isValidAddress(params.address);
@@ -139,10 +142,10 @@ const Profile = ({
   const [listedCount, listed] = useListed(profileAddress, limit, prefetchedListedCount, prefetchedListed);
 
   const [followingCount] = useFollowingCount(profileAddress, prefetchedFollowingCount);
-  const { swr: following } = useFollowing(value === 2, profileAddress, limit);
+  const { swr: following } = useFollowing(true, profileAddress, limit);
 
   const [followersCount] = useFollowersCount(profileAddress, prefetchedFollowersCount);
-  const { swr: followers } = useFollowers(value === 3, profileAddress, limit);
+  const { swr: followers } = useFollowers(true, profileAddress, limit);
 
   useEffect(() => {
     if (!router?.query?.tab) {
@@ -152,7 +155,8 @@ const Profile = ({
 
 
   return (
-    <>
+    <FollowersContext.Provider value={{ followers }}>
+      <FollowingContext.Provider value={{ following }}>
       <Head>
         <title>{nickname || profileAddress} | NFT Market | HodlMyMoon</title>
       </Head>
@@ -238,7 +242,8 @@ const Profile = ({
       <div hidden={value !== 3}>
         <AvatarLinksList swr={followers} limit={limit} />
       </div>
-    </>
+      </FollowingContext.Provider>
+    </FollowersContext.Provider>
   )
 }
 

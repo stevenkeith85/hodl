@@ -11,8 +11,13 @@ export const insertTagLinks = (text) => {
     const jsx = [];
 
     let lastPosition = 0;
+
+    if (parsed.length === 0) { // no tags found
+        return [text]
+    }
+
     for (const { index, hash, tag } of parsed) {
-        jsx.push(text.slice(lastPosition, index)); // add string until this point
+        jsx.push(text.slice(lastPosition, index));
         jsx.push(
             <Link href={`/search?q=${tag}`}>
                 <Typography component="a" sx={{ textDecoration: 'none' }}><Chip size="small" sx={{ background: '#f0f0f0', cursor: 'pointer' }} label={tag} /></Typography>

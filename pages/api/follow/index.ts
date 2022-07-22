@@ -9,6 +9,64 @@ dotenv.config({ path: '../.env' })
 const client = Redis.fromEnv()
 const route = apiRoute();
 
+// Data Structures:
+//
+// User:
+// The user's followers are stored in a ZSET
+// "user:0x1234:followers" -> (<address>/<time>, <address>/<time>, <address>/<time>)
+//
+// and the collection of users the follow is stored like:
+// "user:0x1234:following" -> (<address>/<time>, <address>/<time>, <address>/<time>)
+//
+// Tags:
+// We MAY let users follow tags in the future. 
+//
+// Potentially could have:
+// "user:0x1234:following:tags" -> (<tag>/<time>, <tag>/<time>, <tag>/<time>)
+export const toggleFollow = async (userAddress, targetAddress) => {
+  let followed = false;
+
+  const exists = await client.zscore(`user:${userAddress}:following`, targetAddress);
+
+  if (exists) { // Unfollow
+    // TODO: REDIS TRANSACITON
+    await client.zrem(`user:${userAddress}:following`, targetAddress);
+    await client.zrem(`user:${targetAddress}:followers`, userAddress);
+    await client.zincrby('rankings:user:followers', -1, targetAddress);
+    //
+
+  } else { // Follow
+    const timestamp = Date.now();
+
+    // TODO: REDIS TRANSACITON
+    await client.zadd(`user:${userAddress}:following`, { member: targetAddress, score: timestamp});
+    await client.zadd(`user:${targetAddress}:followers`, { member: userAddress, score: timestamp});
+    await client.zincrby('rankings:user:followers', 1, targetAddress);
+    //
+
+    followed = true;
+  }
+
+  // isFollowing.delete(req.address, address);
+  // getFollowing.delete(req.address);
+  // getFollowingCount.delete(req.address);
+  // getFollowers.delete(address);
+  // getFollowersCount.delete(address);
+
+  if (followed) {
+    const notification: HodlAction = {
+      subject: userAddress,
+      action: ActionTypes.Followed,
+      object: "address",
+      objectId: targetAddress
+    };
+
+    const success = await addAction(notification);
+  }
+
+  return followed;
+
+}
 
 // <req.address> to follow/unfollow <address>
 route.post(async (req, res) => {
@@ -30,47 +88,7 @@ route.post(async (req, res) => {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
-  let followed = false;
-
-  const exists = await client.zscore(`user:${req.address}:following`, address);
-
-  if (exists) { // Unfollow
-    // TODO: REDIS TRANSACITON
-    await client.zrem(`user:${req.address}:following`, address);
-    await client.zrem(`user:${address}:followers`, req.address);
-    await client.zincrby('rankings:user:followers', -1, address);
-    //
-
-  } else { // Follow
-    const timestamp = Date.now();
-
-    // TODO: REDIS TRANSACITON
-    await client.zadd(`user:${req.address}:following`, { member: address, score: timestamp});
-    await client.zadd(`user:${address}:followers`, { member: req.address, score: timestamp});
-    await client.zincrby('rankings:user:followers', 1, address);
-    //
-
-    followed = true;
-  }
-
-  // isFollowing.delete(req.address, address);
-
-  // getFollowing.delete(req.address);
-  // getFollowingCount.delete(req.address);
-
-  // getFollowers.delete(address);
-  // getFollowersCount.delete(address);
-
-  if (followed) {
-    const notification: HodlAction = {
-      subject: req.address,
-      action: ActionTypes.Followed,
-      object: "address",
-      objectId: address
-    };
-
-    const success = await addAction(notification);
-  }
+  const followed = await toggleFollow(req.address, address);
 
   res.status(200).json({ followed });
 });

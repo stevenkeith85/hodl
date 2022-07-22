@@ -12,7 +12,7 @@ const client = Redis.fromEnv()
 const route = apiRoute();
 
 export const getComment = memoize(async (id) => {
-  const comment = await client.hget('comment', id);
+  const comment = await client.get(`comment:${id}`);
   return comment;
 }, { 
   async: true,

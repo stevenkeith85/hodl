@@ -139,15 +139,9 @@ const getLastXFeedActions = async (address: string, x: number = 5): Promise<Hodl
 // TODO: Handle 'near duplicates' better.
 // i.e user toggles the like button a few times === steven liked token 2 (2 mins ago). steven liked token 2 (1 min ago)
 export const addAction = async (action: HodlAction) => {
-  console.log('action', action)
-
   action.timestamp = Date.now();
 
-  // This should be in a transaction (multi/exec) but the rest api/upstash client doesn't support them
-  // We are using the rest api as it handles concurrent connections better
-  // https://docs.upstash.com/redis/features/restapi
-
-  // It will not lead to data corruption, but there's always a chance we store an action, but don't add it to the user's activity, notifications or the feed 
+  // TODO: REDIS TRANSACTION
   const actionId = await client.incr("actionId")
   action.id = actionId;
 
@@ -186,15 +180,13 @@ export const addAction = async (action: HodlAction) => {
   // if a reply, tell the comment author. 
   // if a token, tell the token owner.
   if (action.action === ActionTypes.CommentedOn) {
-    const comment: HodlComment = await client.hget('comment', `${action.objectId}`);
-
+    const comment: HodlComment = await client.get(`comment:${action.objectId}`);
     const owner = await getOwnerOrSellerAddress(comment.tokenId);
 
     return await addNotification(owner, action);
   }
 
   if (action.action === ActionTypes.Followed) { // tell the account someone followed it
-
     const user = action.subject;
     const followed = action.objectId;
 
@@ -209,7 +201,6 @@ export const addAction = async (action: HodlAction) => {
     const lastActions = await getLastXFeedActions(followed as string)
 
     for (const a of lastActions) {
-      console.log("a is ", a)
       await addToFeed(`${user}`, a);
     }
 
@@ -230,10 +221,12 @@ export const addAction = async (action: HodlAction) => {
         return;
       }
 
-      const followers = await getFollowers(action.subject);
+      // might need to think about this. user could have millions of followers
+      // just do the most recent 10,000 at the moment
+      const followers = await getFollowers(action.subject, 0, 10000); 
 
       let count = 0;
-      for (let address of followers) {
+      for (let address of followers.items) {
         count += await addToFeed(`${address}`, action);
       }
 
@@ -252,10 +245,12 @@ export const addAction = async (action: HodlAction) => {
         return;
       }
 
-      const followers = await getFollowers(action.subject);
+      // might need to think about this. user could have millions of followers
+      // just do the most recent 10,000 at the moment
+      const followers = await getFollowers(action.subject, 0, 10000); 
 
       let count = 0;
-      for (let address of followers) {
+      for (let address of followers.items) {
         count += await addToFeed(`${address}`, action);
       }
 
@@ -292,6 +287,7 @@ export const addAction = async (action: HodlAction) => {
 
 // TODO: We may need to revisit how these notifications get added. 
 // Perhaps a standalone service that monitors blockchain events; rather than the user's browser informing us.
+// Maybe qStash ?
 route.post(async (req, res: NextApiResponse) => {
   if (!req.address) {
     return res.status(403).json({ message: "Not Authenticated" });

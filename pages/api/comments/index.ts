@@ -18,13 +18,13 @@ const route = apiRoute();
 export const getCommentsForToken = async (object: "token" | "comment", objectId: number, offset: number, limit: number) => {
 
   try {
-    const total = await client.zcard(`comments:${object}:${objectId}`);
+    const total = await client.zcard(`${object}:${objectId}:comments`);
 
     if (offset >= total) {
       return { items: [], next: Number(total), total: Number(total) };
     }
 
-    const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/comments:${object}:${objectId}/${offset}/${offset + limit - 1}/rev`, {
+    const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/${object}:${objectId}:comments/${offset}/${offset + limit - 1}/rev`, {
       headers: {
         Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
       }
@@ -33,7 +33,7 @@ export const getCommentsForToken = async (object: "token" | "comment", objectId:
 
     const comments = [];
     for (const id of commentIds) {
-      comments.push(await client.hget(`comment`, id));
+      comments.push(await client.get(`comment:${id}`));
     }
 
     return { items: comments, next: Number(offset) + Number(comments.length), total: Number(total) };
