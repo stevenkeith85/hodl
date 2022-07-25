@@ -16,14 +16,30 @@ export const HodlFeed = ({
 
     const menu = <Box
         sx={{
-            padding: 4,
+            paddingX: {
+                xs: 4
+            },
+            
+            paddingY: {
+                xs: 4,
+                sm:4
+            },
+
+            paddingBottom: {
+                xs: 0,
+                sm: 4,
+            },
+            
             alignItems: {
                 xs: 'center',
+            },
+            gap: {
+                xs: 4
             }
         }}
         display="flex"
         flexDirection="column"
-        gap={4}
+        
     >
         {
             feed.data && !feed.data[0].items.length &&

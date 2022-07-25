@@ -10,7 +10,12 @@ export const useNickname = () => {
   const { data: nickname } = useSWR(address ? [`/api/profile/nickname`, address] : null,
     (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.nickname),
     {
-      dedupingInterval: 60000 * 30, // don't check this more than once every 30 mins as nicknames rarely change, and we already invalidate the cache if they do
+      dedupingInterval: 5000,
+      focusThrottleInterval: 5000, // default is 5000
+      errorRetryCount: 1,
+      revalidateOnMount: true,
+      revalidateOnFocus: true,
+      revalidateOnReconnect: true
     })
 
 

@@ -1,22 +1,28 @@
-import { Button, Stack } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import { useContext, useState } from "react";
 import { WalletContext } from '../../contexts/WalletContext';
 import { HodlModal } from "./HodlModal";
-import { RocketTitle } from "../RocketTitle";
 import axios from 'axios'
-import useSWRInfinite from 'swr/infinite'
 import InfiniteScroll from 'react-swr-infinite-scroll'
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 import SelectProfileNFT from "../SelectProfileNFT";
-import { mutate } from "swr";
+import useSWR, { mutate } from "swr";
 import { useHodling } from "../../hooks/useHodling";
 
 
 export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePictureModalOpen, lim = 10 }) => {
-    const [token, setToken] = useState(null);
+
     const { address } = useContext(WalletContext);
 
+    const { data: tokenId } = useSWR(
+        address ? [`/api/profile/picture`, address] : null,
+        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.token),
+        { revalidateOnMount: true }
+    )
+
     const [hodlingCount, swr] = useHodling(address, lim, null, null, profilePictureModalOpen);
+
+    const [token, setToken] = useState(tokenId);
 
     if (!swr.data) {
         return null;
@@ -36,8 +42,10 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                 open={profilePictureModalOpen}
                 setOpen={setProfilePictureModalOpen}
             >
-                <Stack spacing={3} >
-                    <RocketTitle title="Avatar" />
+                <Stack spacing={3} textAlign="center">
+                    <Typography variant="h2" sx={{ fontSize: '18px', fontWeight: 600 }}>Avatar</Typography>
+                    <Typography sx={{ fontSize: '18px', color: '#999' }}>Select an NFT to use as your profile avatar</Typography>
+
                     <InfiniteScroll
                         swr={swr}
                         loadingIndicator={<HodlLoadingSpinner />}
@@ -52,34 +60,52 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                                 />
                         }
                     </InfiniteScroll>
-                    <div>
-                    <Button
-                        disabled={!token}
-                        onClick={async () => {
-                            if (token) {
-                                try {
-                                    const r = await axios.post(
-                                        '/api/profile/picture',
-                                        { token },
-                                        {
-                                            headers: {
-                                                'Accept': 'application/json',
-                                                'Authorization': localStorage.getItem('jwt')
-                                            },
-                                        }
-                                    );
+                    <Box display="grid" gridTemplateColumns={"1fr 1fr"} gap={4}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            sx={{
+                                paddingY: 1.5,
+                                paddingX: 3
+                            }}
+                            disabled={!token}
+                            onClick={async () => {
+                                if (token) {
+                                    try {
+                                        const r = await axios.post(
+                                            '/api/profile/picture',
+                                            { token },
+                                            {
+                                                headers: {
+                                                    'Accept': 'application/json',
+                                                },
+                                            }
+                                        );
 
-                                    mutate([`/api/profile/picture`, address])
-                                    setProfilePictureModalOpen(false);
+                                        mutate([`/api/profile/picture`, address])
+                                        setProfilePictureModalOpen(false);
 
-                                } catch (error) {
+                                    } catch (error) {
+                                    }
                                 }
-                            }
-                        }}
-                    >
-                        Select
-                    </Button>
-                    </div>
+                            }}
+                        >
+                            Select
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="inherit"
+                            sx={{
+                                paddingY: 1.5,
+                                paddingX: 3
+                            }}
+                            onClick={() => {
+                                setProfilePictureModalOpen(false);
+                            }}
+                        >
+                            Cancel
+                        </Button>
+                    </Box>
                 </Stack>
             </HodlModal>
         </>

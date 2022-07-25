@@ -124,7 +124,7 @@ const NftDetail = ({
           </Stack>
         </Grid>
         <Grid item xs={12} md={5} marginBottom={2} paddingRight={{ md: 1 }}>
-          <Stack spacing={1}>
+          <Stack spacing={2}>
             <DetailPageImage token={nft} />
             <Box gap={1.5} display='flex' alignItems='center'>
               <Likes

@@ -189,6 +189,7 @@ const Mint = ({address}) => {
               activeStep={activeStep}
               setActiveStep={setActiveStep}
               stepComplete={stepComplete}
+              formData={formData}
             />
           </Box>
         }

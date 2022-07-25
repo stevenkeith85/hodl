@@ -37,7 +37,7 @@ export const HodlProfileBadge = ({ address }) => {
                 paddingY: 2,
                 border: '1px solid #ddd',
                 borderRadius: 1,
-                boxShadow: '0 0 2px 1px #eee'
+                // boxShadow: '0 0 2px 1px #eee'
             }}
         >
             <Box

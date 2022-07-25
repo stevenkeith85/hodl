@@ -23,7 +23,7 @@ export const getActions = async (
     total: number
   }> => {
     
-  const total = await client.zcard(`${set}:${address}`);
+  const total = await client.zcard(`user:${address}:${set}`);
 
   if (offset >= total) {
     return {
@@ -33,13 +33,14 @@ export const getActions = async (
     };
   }
 
-  const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/${set}:${address}/${offset}/${offset + limit - 1}/rev`, {
+  const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/user:${address}:${set}/${offset}/${offset + limit - 1}/rev`, {
     headers: {
       Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
     }
   })
 
   const actionIds: string[] = r.data.result.map(item => JSON.parse(item));
+  console.log('actionIds', actionIds)
 
   const actions: HodlAction[] = [];
   for (const id of actionIds) {

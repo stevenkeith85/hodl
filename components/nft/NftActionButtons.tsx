@@ -1,15 +1,15 @@
-import { Button, Stack, TextField } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import { useContext, useState } from "react";
-import { buyNft, delistNft, listNftOnMarket } from "../../lib/nft";
+import { buyNft, delistNft } from "../../lib/nft";
 import { WalletContext } from '../../contexts/WalletContext';
-import { HodlModal, RocketTitle, SuccessModal } from "../index";
-import { useRouter } from "next/router";
+import { SuccessModal } from "../index";
 import { useSnackbar } from 'notistack';
+import { ListModal } from "../modals/ListModal";
+
 
 
 export const NftActionButtons = ({ nft }) => {
     const { enqueueSnackbar } = useSnackbar();
-    const router = useRouter();
     const { address } = useContext(WalletContext);
 
     const [listModalOpen, setListModalOpen] = useState(false);
@@ -41,41 +41,13 @@ export const NftActionButtons = ({ nft }) => {
             />
 
             {/* List */}
-            <HodlModal
-                open={listModalOpen}
-                setOpen={setListModalOpen}
-            >
-                <Stack spacing={4}>
-                    <RocketTitle
-                        title="List this token on the market"
-                    />
-                    <TextField
-                        label="Price (Matic)"
-                        value={price}
-                        onChange={(e) => setPrice(e.target.value)}
-                    />
-                    <div>
-                        <Button
-                            onClick={async () => {
-                                try {
-                                    enqueueSnackbar('Please Approve Transaction in Wallet', { variant: "info" });
-                                    await listNftOnMarket(router.query.tokenId, price);
-                                    enqueueSnackbar('Token listed on market', { variant: "success" });
-                                    setListModalOpen(false);
-                                    setListedModalOpen(true);
-                                } catch (e) {
-                                    if (e.code === -32603) {
-                                        smartContractError(e);
-                                    }
-                                }
-                            }}
-                            disabled={!price}
-                        >
-                            Add
-                        </Button>
-                    </div>
-                </Stack>
-            </HodlModal>
+            <ListModal 
+                listModalOpen={listModalOpen} 
+                setListModalOpen={setListModalOpen}
+                setListedModalOpen={setListedModalOpen}
+                price={price} 
+                setPrice={setPrice} 
+            />
 
             {/* Listed */}
             <SuccessModal

@@ -15,8 +15,9 @@ export const NftAvatar = ({ token, size, highlight = false, color = "greyscale" 
             sx={{
                 border: highlight ? '2px solid' : 'none',
                 borderColor: highlight ? 
-                    color === 'greyscale' ? 'white' : theme => theme.palette[color].main : 
-                    'none',
+                    color === 'greyscale' ? 
+                    'white' : theme => theme.palette[color].main : 
+                'none',
                 height: size,
                 width: size,
             }}>

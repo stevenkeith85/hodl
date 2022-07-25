@@ -20,7 +20,27 @@ export const insertTagLinks = (text) => {
         jsx.push(text.slice(lastPosition, index));
         jsx.push(
             <Link href={`/search?q=${tag}`}>
-                <Typography component="a" sx={{ textDecoration: 'none' }}><Chip size="small" sx={{ background: '#f0f0f0', cursor: 'pointer' }} label={tag} /></Typography>
+                <Typography
+                    color="primary"
+                    component="a"
+                    sx={{ 
+                        textDecoration: 'none',
+                        cursor: 'pointer'
+                    }}>
+                    {/* <Chip 
+                        size="small" 
+                        variant="outlined"
+                        sx={{ 
+                            // background: '#f0f0f0', 
+                            cursor: 'pointer',
+                            '&:hover': {
+                                // background: '#efefef', 
+                            }
+                        }} 
+                        label={tag} 
+                    /> */}
+                    {hash}
+                </Typography>
             </Link>);
         lastPosition = index + hash.length;
     }

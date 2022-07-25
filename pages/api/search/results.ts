@@ -79,7 +79,6 @@ route.get(async (req, res) => {
         return res.status(400).json({ message: 'Invalid data supplied' });
     }
 
-    console.log(q)
     const data = await getSearchResults(q, offset, limit);
     return res.status(200).json(data);
 });

@@ -2,7 +2,6 @@ import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
 import axios from 'axios';
-const client = Redis.fromEnv()
 import apiRoute from "../handler";
 import { ActionSet, ActionSetMembers, ActionTypes, HodlAction } from '../../../models/HodlAction';
 import { getPriceHistory } from "../token-bought/[tokenId]";
@@ -22,32 +21,35 @@ import { Nft } from "../../../models/Nft";
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
 
+const client = Redis.fromEnv()
+
 // Data Structures:
 //
-// The hash containing every action made on HodlMyMoon (we only record what is necessary; i.e. we aren't a data farm)
+// Actions are stored as JSON with a STRING mapping
 //
-// "action" -> {
-//   1: "{ id, subject, object, objectId, timestamp }", 
-//   2: "{ id, subject, object, objectId, timestamp }", 
-// }
+// "action:1" -> "{ id, subject, object, objectId, timestamp }", 
+// "action:2" -> "{ id, subject, object, objectId, timestamp }", 
+// 
+// The ZSET of actions THE USER HAS TAKEN
+// "user:0x1234:actions" -> (<action_id>/<timestamp>, <action_id>/<timestamp>, <action_id>/<timestamp>)
 //
-// The sorted set of notifications for the user:
-// "notifications:0x1234" -> (<action_id>/<timestamp>, <action_id>/<timestamp>, <action_id>/<timestamp>)
+// The ZSET of FEED actions THE USER HAS TAKEN
+// "user:0x1234:actions:feed" -> (<action_id>/<timestamp>, <action_id>/<timestamp>, <action_id>/<timestamp>)
 //
-// The sorted set of feed items for the user:
-// "feed:0x1234" -> (<action_id>/<timestamp>, <action_id>/<timestamp>, <action_id>/<timestamp>)
 //
-// The sorted set of actions/activity for the user:
-// "actions:0x1234" -> (<action_id>/<timestamp>, <action_id>/<timestamp>, <action_id>/<timestamp>)
-
+// The ZSET of notifications FOR THE USER:
+// "user:0x1234:notifications" -> (<action_id>/<timestamp>, <action_id>/<timestamp>, <action_id>/<timestamp>)
+//
+// The ZSET of feed items FOR THE USER:
+// "user:0x1234:feed" -> (<action_id>/<timestamp>, <action_id>/<timestamp>, <action_id>/<timestamp>)
+//
 
 // Add the action id to <address>s notifications
 const addNotification = async (address: string, action: HodlAction): Promise<number> => {
   const added = await client.zadd(
-    `notifications:${address}`,
+    `user:${address}:notifications`,
     {
       score: action.timestamp,
-      // member: JSON.stringify(action)
       member: action.id
     }
   );
@@ -59,7 +61,7 @@ const addNotification = async (address: string, action: HodlAction): Promise<num
 // as we'd probably not want to show something at the top of a chronological feed, if it was actually listed a while ago
 const addToFeed = async (address: string, action: HodlAction): Promise<number> => {
   const added = await client.zadd(
-    `feed:${address}`,
+    `user:${address}:feed`,
     {
       score: action.timestamp,
       member: action.id
@@ -74,11 +76,11 @@ const addToFeed = async (address: string, action: HodlAction): Promise<number> =
 // We need this, for scenarios like:
 // When A follows B, we'd like to add B's last action to A's feed (if it's not already there)
 //
-// We could also provide a general activity log at some point for the user/address.
+// We could also provide a general activity log at some point for the user/address. (if that's a feature they'd like)
 const recordAddressActivity = async (action: HodlAction): Promise<number> => {
   // actions the user has taken
   const added = await client.zadd(
-    `actions:${action.subject}`,
+    `user:${action.subject}:actions`,
     {
       score: action.timestamp,
       member: action.id
@@ -91,7 +93,7 @@ const recordAddressActivity = async (action: HodlAction): Promise<number> => {
   // a (different) user's feed if they follow this user in the future
   if (ActionSetMembers[ActionSet.Feed].indexOf(action.action) !== -1) {
     await client.zadd(
-      `actions:feed:${action.subject}`,
+      `user:${action.subject}:actions:feed`,
       {
         score: action.timestamp,
         member: action.id
@@ -110,14 +112,13 @@ const storeAction = async (action: HodlAction): Promise<string | null> => {
 
 // gets the last <x> actions that address took that can be used in a feed
 const getLastXFeedActions = async (address: string, x: number = 5): Promise<HodlAction[]> => {
-  const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/actions:feed:${address}/0/${x}/rev`, {
+  const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/user:${address}:actions:feed/0/${x}/rev`, {
     headers: {
       Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
     }
   })
   const actionIds = r.data.result.map(item => JSON.parse(item));
 
-  console.log('actionIds', actionIds)
   const actions: HodlAction [] = [];
 
   for (const id of actionIds) {
@@ -170,7 +171,7 @@ export const addAction = async (action: HodlAction) => {
         return;
       }
 
-      const comment: HodlComment = await client.hget('comment', `${action.objectId}`);
+      const comment: HodlComment = await client.get(`comment:${action.objectId}`);
 
       return await addNotification(comment.subject, action);
     }

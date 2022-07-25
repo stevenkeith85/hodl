@@ -14,9 +14,18 @@ export const TopAccounts = ({ limit = 10 }) => {
     const { rankings } = useContext(RankingsContext);
 
     return (
-        <Box>
-            <Typography variant='h2' mb={4}>Top accounts</Typography>
-            <AvatarLinksList swr={rankings} limit={limit} />
+        <Box
+        display={"grid"}
+        sx={{
+            gap: 3,
+            paddingX: 2,
+            paddingY: 2,
+            border: '1px solid #ddd',
+            borderRadius: 1,
+            // boxShadow: '0 0 2px 1px #eee'
+        }}>
+            <Typography variant='h2'>Top accounts</Typography>
+            <AvatarLinksList swr={rankings} limit={limit} width={`100%`}/>
         </Box>
     )
 }

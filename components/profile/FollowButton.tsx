@@ -38,7 +38,7 @@ export const FollowButton : React.FC<FollowButtonProps> = ({ profileAddress, var
                 async () => await follow()
             }
         >
-            {isFollowing ? 'unfollow' : 'follow'}
+            {isFollowing ? 'following' : 'follow'}
         </Button>
     )
 }

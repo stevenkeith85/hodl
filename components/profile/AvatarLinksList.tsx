@@ -9,9 +9,10 @@ import { FollowButton } from "./FollowButton";
 interface AvatarLinksListProps {
   swr: SWRInfiniteResponse<any, any>;
   limit: number;
+  width?: string
 }
 
-export const AvatarLinksList: React.FC<AvatarLinksListProps> = ({ swr, limit }) => {
+export const AvatarLinksList: React.FC<AvatarLinksListProps> = ({ swr, limit, width="min-content" }) => {
 
   if (swr?.data && swr?.data[0]?.items?.length === 0) {
     return <Typography sx={{ padding: 2 }}>Nothing to see here</Typography>
@@ -26,7 +27,7 @@ export const AvatarLinksList: React.FC<AvatarLinksListProps> = ({ swr, limit }) 
 
 
     {swr.data &&
-      <Box display="grid" gridTemplateColumns={"1fr 1fr"} gap=" 16px 32px" alignItems="center" width="min-content">
+      <Box display="grid" gridTemplateColumns={"1fr 1fr"} gap=" 16px 32px" alignItems="center" width={width}>
         <InfiniteScroll
           swr={swr}
           loadingIndicator={<HodlLoadingSpinner />}
@@ -37,11 +38,10 @@ export const AvatarLinksList: React.FC<AvatarLinksListProps> = ({ swr, limit }) 
         >
           {
             ({ items }) => items.map(address => <>
-
               <ProfileAvatar key={address} color="primary" profileAddress={address} size="small" />
-              <div>
+              <Box display="flex" justifyContent="right" key={address + '-follow-button'}>
                 <FollowButton profileAddress={address} variant="text" />
-              </div>
+              </Box>
 
             </>
             )

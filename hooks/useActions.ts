@@ -29,7 +29,8 @@ export const useActions = (
     getKey,
     fetcher,
     {
-      dedupingInterval: 5000,
+      dedupingInterval: 2000, // default is 2000
+        focusThrottleInterval: 5000, // default is 5000
       revalidateOnMount: true,
       revalidateFirstPage: true,
       fallbackData

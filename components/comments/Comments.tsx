@@ -96,7 +96,7 @@ export const Comments: FC<CommentsProps> = ({
                 {(count != undefined) &&
                     <Typography
                         sx={{
-                            fontSize: `calc(${fontSize} - 6px)`
+                            fontSize: `calc(${fontSize} - 8px)`
                         }}>
                         {humanize.compactInteger(count, 1)}
                     </Typography>

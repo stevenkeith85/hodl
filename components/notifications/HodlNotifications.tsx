@@ -11,6 +11,8 @@ import { HodlNotificationBox } from "./HodlNotificationBox";
 import { ActionSet, HodlAction } from "../../models/HodlAction";
 import InfiniteScroll from "react-swr-infinite-scroll";
 import { HodlImpactAlert } from "../HodlImpactAlert";
+import useSWR from "swr";
+import axios from "axios";
 
 export const HodlNotifications = ({
     setHoverMenuOpen,
@@ -18,6 +20,8 @@ export const HodlNotifications = ({
     setShowNotifications,
     limit = 4
 }) => {
+
+
     const router = useRouter();
     const theme = useTheme();
     const { address } = useContext(WalletContext);
@@ -25,11 +29,34 @@ export const HodlNotifications = ({
 
     const { actions: notifications } = useActions(showNotifications, ActionSet.Notifications, limit);
 
+    // TODO: Move to hook
+    const { data: unread, mutate: mutateUnread } = useSWR(address ? ['/api/notifications', address] : null,
+        (url, address) => axios.get(url).then(r => Boolean(r.data.unread)),
+        {
+            errorRetryCount: 1,
+            revalidateOnMount: true,
+            revalidateOnFocus: true,
+            revalidateOnReconnect: true
+        }
+    );
+
     const toggleNotifications = async () => {
         setShowNotifications(prev => !prev);
 
-        setTimeout(() => {
-            localStorage.setItem(`notifications-${address}-last-read`, Date.now().toString());
+        setTimeout(async () => {
+            try {
+                const r = await axios.post(
+                    '/api/notifications/read',
+                    {
+                        headers: {
+                            'Accept': 'application/json',
+                        },
+                    }
+                );
+                mutateUnread();
+            } catch (error) {
+            }
+
         }, 1000)
     }
 
@@ -51,8 +78,6 @@ export const HodlNotifications = ({
         return null;
     }
 
-    const lastRead = 0; //(localStorage.getItem(`notifications-${address}-last-read`) || 0);
-
     const menu = <Box
         sx={{
             position: { xs: 'fixed', sm: 'absolute' },
@@ -62,8 +87,8 @@ export const HodlNotifications = ({
             top: 56,
             right: 0,
             minWidth: '500px',
-            // maxHeight: '33vh',
-            height: { xs: 'calc(100vh - 56px)', sm: '300px' },
+            maxHeight: '300px',
+            height: { xs: 'calc(100vh - 56px)', sm: 'auto' },
             width: { xs: '100%', sm: 'auto' },
             overflowY: 'auto',
             border: `1px solid #ddd`,
@@ -102,12 +127,12 @@ export const HodlNotifications = ({
     return (
         <>
             {showNotifications ? <CloseIcon /> :
-                (notifications && lastRead < (notifications[0]?.timestamp || 0) ?
+                (unread ?
                     <NotificationsIcon
                         sx={{
                             cursor: 'pointer',
-                            animation: `shake 0.5s`,
-                            animationDelay: '0.5s',
+                            animation: `shake 0.75s`,
+                            animationDelay: '1s',
                             animationTimingFunction: 'ease-in'
                         }}
                         onClick={e => {
