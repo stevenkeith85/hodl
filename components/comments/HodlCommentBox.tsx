@@ -1,13 +1,10 @@
-import { Typography, Box, Stack, Tooltip } from "@mui/material";
+import { Typography, Box, Tooltip } from "@mui/material";
 import { useRouter } from "next/router";
 import { ProfileAvatar } from "../avatar/ProfileAvatar";
-import formatDistance from 'date-fns/formatDistance';
-import Link from 'next/link';
 import axios from 'axios'
 import useSWR from "swr";
-import { getShortAddress, truncateText } from "../../lib/utils";
 import { Likes } from "../Likes";
-import { HighlightOffOutlined, Message, Notes, Reply } from "@mui/icons-material";
+import { HighlightOffOutlined, Message, Reply } from "@mui/icons-material";
 import { useLike } from "../../hooks/useLike";
 import { useComments, useCommentCount, useDeleteComment } from "../../hooks/useComments";
 import { FC, useContext, useState } from "react";
@@ -54,8 +51,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
 
     const { data: profileNickname } = useSWR(
         comment.subject ? [`/api/profile/nickname`, comment.subject] : null,
-        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.nickname),
-        { revalidateOnMount: true }
+        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.nickname)
     )
 
     // TODO: 
@@ -63,8 +59,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
     // Probably worth using a context soon anyways, as there's a lot of prop drilling going on
     const { data: nft } = useSWR(
         comment.subject ? [`/api/nft`, comment.tokenId] : null,
-        (url, tokenId) => axios.get(`${url}/${tokenId}`).then(r => r.data.token),
-        { revalidateOnMount: true }
+        (url, tokenId) => axios.get(`${url}/${tokenId}`).then(r => r.data.token)
     )
 
     // Comment Metadata

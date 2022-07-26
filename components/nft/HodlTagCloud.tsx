@@ -18,7 +18,6 @@ export const HodlTagCloud = ({ nft, prefetchedTags }) => {
     const { data: tags, mutate: mutateTags } = useSWR(nft.tokenId ? [`/api/tags`, nft.tokenId] : null,
         fetchWithToken,
         {
-            revalidateOnMount: true,
             fallbackData: prefetchedTags
         }
     );

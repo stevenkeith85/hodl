@@ -23,6 +23,7 @@ const getInfuraIPFSAuth = memoize(() => {
 });
 
 // TODO: Check for any XSS attacks here
+// TODO: REDIS TRANSACTION
 route.post(async (req, res: NextApiResponse) => {
   if (!req.address) {
     return res.status(403).json({ message: "Not Authenticated" });
@@ -40,10 +41,20 @@ route.post(async (req, res: NextApiResponse) => {
 
   const { name, description, privilege, image } = await r.data;
 
+  const timestamp = Date.now();
+
+  // store token, and add to sorted set with timestamp
   await client.set("token:" + tokenId, JSON.stringify({ tokenId, name, description, privilege, image, mimeType, filter }));
 
-  // extract tags
-  
+  await client.zadd(
+    `tokens`,
+    {
+      score: timestamp,
+      member: tokenId
+    }
+  );
+
+  // extract tags  
   const tags = [...description.matchAll(TAG_PATTERN)].map(arr => arr[1])
 
   // Add tags. (NB: only the first 6 will be added)

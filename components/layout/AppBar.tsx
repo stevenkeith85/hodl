@@ -41,8 +41,8 @@ const ResponsiveAppBar = ({ showAppBar=true}) => {
 
     const [pages] = useState([
         {
-            label: 'Market',
-            url: '/market',
+            label: 'Explore',
+            url: '/explore',
             icon: <Storefront />,
             publicPage: false
         },

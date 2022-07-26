@@ -27,14 +27,7 @@ export const useActions = (
 
   const swr = useSWRInfinite(
     getKey,
-    fetcher,
-    {
-      dedupingInterval: 2000, // default is 2000
-        focusThrottleInterval: 5000, // default is 5000
-      revalidateOnMount: true,
-      revalidateFirstPage: true,
-      fallbackData
-    }
+    fetcher
   );
 
   return {

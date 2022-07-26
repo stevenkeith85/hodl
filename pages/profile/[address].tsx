@@ -26,7 +26,7 @@ import { HodlImpactAlert } from '../../components/HodlImpactAlert';
 import { authenticate } from '../../lib/jwt';
 import { getFollowingCount } from '../api/following/count'
 import { useFollowingCount } from '../../hooks/useFollowingCount'
-import { AvatarLinksList } from '../../components/profile/AvatarLinksList'
+import { UserLinksList } from '../../components/profile/UserLinksList'
 import { useFollowersCount } from '../../hooks/useFollowersCount'
 import { NftLinksList } from '../../components/profile/NftLinksList'
 import { FollowersContext } from '../../contexts/FollowersContext'
@@ -237,10 +237,10 @@ const Profile = ({
         <NftLinksList swr={listed} limit={limit} />
       </div>
       <div hidden={value !== 2}>
-        <AvatarLinksList swr={following} limit={limit} />
+        <UserLinksList swr={following} limit={limit} />
       </div>
       <div hidden={value !== 3}>
-        <AvatarLinksList swr={followers} limit={limit} />
+        <UserLinksList swr={followers} limit={limit} />
       </div>
       </FollowingContext.Provider>
     </FollowersContext.Provider>

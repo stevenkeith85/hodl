@@ -30,10 +30,14 @@ route.post(async (req, res: NextApiResponse) => {
 
   const exists = await client.zscore(`liked:tokens:${req.address}`, token);
 
-  if (exists) {
+  if (exists) { // unlike
+    // TODO: REDIS TRANSACTION
     await client.zrem(`liked:tokens:${req.address}`, token);
     await client.zrem(`likes:token:${token}`, req.address);
-  } else {
+    await client.zincrby('rankings:token:likes', -1, token);
+    // 
+  } else { // like
+    // TODO: REDIS TRANSACTION
     const timestamp = Date.now();
 
     await client.zadd(`liked:tokens:${req.address}`,
@@ -46,11 +50,12 @@ route.post(async (req, res: NextApiResponse) => {
         member: req.address,
         score: timestamp
       });
+      await client.zincrby('rankings:token:likes', 1, token);
     liked = true;
   }
 
-  likesToken.delete(req.address, token);
-  getLikeCount.delete(token);
+  // likesToken.delete(req.address, token);
+  // getLikeCount.delete(token);
 
   if (liked) {
     const notification: HodlAction = {

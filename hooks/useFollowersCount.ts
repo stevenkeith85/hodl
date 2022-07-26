@@ -7,7 +7,6 @@ export const useFollowersCount = (address, fallbackData = null) => {
         address ? [`/api/followers/count`, address] : null,
         fetchWithAddress,
         { 
-            revalidateOnMount: true,
             fallbackData
         }
     )

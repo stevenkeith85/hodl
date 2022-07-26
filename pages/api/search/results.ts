@@ -10,6 +10,8 @@ import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import HodlMarket from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
 import { SearchValidationSchema } from '../../../validationSchema/search';
 
+import axios from 'axios';
+
 const client = Redis.fromEnv()
 
 dotenv.config({ path: '../.env' })
@@ -25,7 +27,6 @@ const getItems = async (tokenIds) => {
     const tokenContract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
     const marketContract = new ethers.Contract(nftmarketaddress, HodlMarket.abi, provider);
     
-
     const tokens = await Promise.all(
         tokenIds.map(id => getToken(id))
     );
@@ -53,11 +54,31 @@ const getItems = async (tokenIds) => {
 
 export const getSearchResults = async (q, offset, limit) => {
     try {
-        const tag = q;
-        const tokenIds = await client.zrange(`tag:${tag}`, offset, offset + limit - 1);
-        const total = await client.zcount(`tag:${tag}`, '-inf', '+inf');
+        let tokenIds = []
+        let total = 0;
+        let items = [];
 
-        const items = await getItems(tokenIds);
+        const tag = q;
+
+
+        if (tag) {
+            console.log('tag is', tag)
+            tokenIds = await client.zrange(`tag:${tag}`, offset, offset + limit - 1);
+            total = await client.zcard(`tag:${tag}`);
+        } else {
+            const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/tokens/${offset}/${offset + limit - 1}/rev`, {
+                headers: {
+                  Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
+                }
+              })
+            tokenIds = r.data.result
+            total = await client.zcard(`tokens`);
+        }
+        
+        console.log('tokenIds', tokenIds)
+        if (tokenIds.length) {
+            items = await getItems(tokenIds);
+        }
 
         return { items, next: Number(offset) + Number(tokenIds.length), total: Number(total) };
     } catch (e) {
@@ -70,14 +91,14 @@ const route = apiRoute();
 route.get(async (req, res) => {
     const { q, offset, limit } = req.query;
 
-    if (!q || !offset || !limit) {
-        return res.status(400).json({ message: 'Bad Request' });
-    }
+    // if (!offset || !limit) {
+    //     return res.status(400).json({ message: 'Bad Request' });
+    // }
 
-    const isValid = await SearchValidationSchema.isValid({q})
-    if (!isValid) {
-        return res.status(400).json({ message: 'Invalid data supplied' });
-    }
+    // const isValid = await SearchValidationSchema.isValid({q})
+    // if (!isValid) {
+    //     return res.status(400).json({ message: 'Invalid data supplied' });
+    // }
 
     const data = await getSearchResults(q, offset, limit);
     return res.status(200).json(data);

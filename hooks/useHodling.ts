@@ -8,10 +8,7 @@ export const useHodling = (address, limit = 10, prefetchedHodlingCount = null, p
         address ? [`/api/profile/hodlingCount`, address] : null,
         fetchWithAddress,
         {
-            fallbackData: prefetchedHodlingCount,
-            revalidateOnMount: true,
-            dedupingInterval: 4000, // default is 2000
-            focusThrottleInterval: 10000, // default is 5000
+            fallbackData: prefetchedHodlingCount
         }
     )
 
@@ -23,10 +20,7 @@ export const useHodling = (address, limit = 10, prefetchedHodlingCount = null, p
         getKey,
         fetchWithAddressOffsetLimit,
         {
-            fallbackData: prefetchedHodling,
-            revalidateOnMount: true,
-            dedupingInterval: 4000, // default is 2000
-            focusThrottleInterval: 10000, // default is 5000
+            fallbackData: prefetchedHodling
         });
 
 

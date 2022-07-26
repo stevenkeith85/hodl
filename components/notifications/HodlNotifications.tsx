@@ -10,7 +10,6 @@ import { useActions } from "../../hooks/useActions";
 import { HodlNotificationBox } from "./HodlNotificationBox";
 import { ActionSet, HodlAction } from "../../models/HodlAction";
 import InfiniteScroll from "react-swr-infinite-scroll";
-import { HodlImpactAlert } from "../HodlImpactAlert";
 import useSWR from "swr";
 import axios from "axios";
 
@@ -21,7 +20,6 @@ export const HodlNotifications = ({
     limit = 4
 }) => {
 
-
     const router = useRouter();
     const theme = useTheme();
     const { address } = useContext(WalletContext);
@@ -31,13 +29,7 @@ export const HodlNotifications = ({
 
     // TODO: Move to hook
     const { data: unread, mutate: mutateUnread } = useSWR(address ? ['/api/notifications', address] : null,
-        (url, address) => axios.get(url).then(r => Boolean(r.data.unread)),
-        {
-            errorRetryCount: 1,
-            revalidateOnMount: true,
-            revalidateOnFocus: true,
-            revalidateOnReconnect: true
-        }
+        (url, address) => axios.get(url).then(r => Boolean(r.data.unread))
     );
 
     const toggleNotifications = async () => {

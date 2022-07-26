@@ -9,18 +9,12 @@ import { truncateText } from "../../lib/utils";
 export const QuoteComment = ({ reset, id, color }) => {
     const { data: comment } = useSWR(
         id ? [`/api/comment`, id] : null,
-        fetchWithId,
-        {
-            revalidateOnMount: true
-        }
+        fetchWithId
     );
 
     const { data: commenter } = useSWR(
         comment && comment.subject ? [`/api/profile/nickname`, comment.subject] : null,
-        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.nickname),
-        {
-            revalidateOnMount: true
-        }
+        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.nickname)
     )
 
     return (

@@ -13,17 +13,13 @@ export const useLike = (id, token = true, prefetchedLikeCount = null) => {
     id ? [baseUrl + `count`, id] : null,
     (url, id) => axios.get(`${url}?id=${id}`).then(r => r.data.count),
     {
-      fallbackData: prefetchedLikeCount,
-      revalidateOnMount: true
+      fallbackData: prefetchedLikeCount
     }
   );
 
   const { data: userLikesThisToken, mutate: mutateUserLikesThisToken } = useSWR(
     address && id ? [baseUrl + 'likes', address, id] : null,
-    (url, address, id) => axios.get(`${url}?address=${address}&id=${id}`).then(r => Boolean(r.data.likes)),
-    {
-      revalidateOnMount: true
-    }
+    (url, address, id) => axios.get(`${url}?address=${address}&id=${id}`).then(r => Boolean(r.data.likes))
   );
 
   const toggleLike = async () => {

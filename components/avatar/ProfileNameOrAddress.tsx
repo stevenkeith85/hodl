@@ -15,8 +15,7 @@ interface ProfileNameOrAddressProps {
 export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({ profileAddress, size="xsmall", color="inherit", sx = null }) => {
 
     const { data: profileNickname } = useSWR(profileAddress ? [`/api/profile/nickname`, profileAddress] : null,
-        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.nickname),
-        { revalidateOnMount: true }
+        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.nickname)
     )
 
     const mappings = {

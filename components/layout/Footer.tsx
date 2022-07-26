@@ -8,7 +8,7 @@ import { useContext } from "react";
 import { WalletContext } from '../../contexts/WalletContext';
 
 
-const Footer = ({showFooter=true}) => {
+const Footer = ({ showFooter = true }) => {
     const { address } = useContext(WalletContext);
 
     if (!showFooter) {
@@ -16,115 +16,107 @@ const Footer = ({showFooter=true}) => {
     }
 
     return (
-    <Box>
-        <Box sx={{ backgroundColor: grey[200] }}>
-            <Container maxWidth="xl" sx={{
-                paddingTop: {
-                    xs: 4,
-                },
-                paddingBottom: {
-                    xs: 4,
-                },
-            }}>
-                <Stack
-                    direction={{ xs: 'column-reverse', md: 'row' }}
-                    spacing={{
+        <Box>
+            <Box sx={{ backgroundColor: grey[200] }}>
+                <Container maxWidth="xl" sx={{
+                    paddingTop: {
                         xs: 4,
-                        md: 10
-                    }}
+                    },
+                    paddingBottom: {
+                        xs: 4,
+                    },
+                }}>
+                    <Stack
+                        direction={{ xs: 'column-reverse', md: 'row' }}
+                        spacing={{
+                            xs: 4,
+                            md: 10
+                        }}
+                        sx={{
+                            display: 'flex',
+                            justifyContent: {
+                                md: 'space-between'
+                            },
+                            alignItems: {
+                                xs: 'center',
+                                md: 'start'
+                            },
+                            textAlign: {
+                                xs: 'center',
+                                md: 'left'
+                            }
+                        }}
+                    >
+                        <Stack
+                            direction={{
+                                xs: 'column-reverse',
+                                md: 'row'
+                            }}
+                            spacing={{
+                                xs: 4,
+                                md: 12
+                            }}
+                        >
+                            <Stack spacing={0.5}>
+                                <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>Hodl</Typography>
+                                <HodlLink href="/about">About</HodlLink>
+                                <HodlLink href="/contact">Contact</HodlLink>
+                            </Stack>
+                            {address && <Stack spacing={0.5}>
+                                <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>NFTs</Typography>
+                                <HodlLink href="/">Market</HodlLink>
+                                <HodlLink href="/create">Create</HodlLink>
+                            </Stack>}
+                        </Stack>
+                        <Box display="flex" justifyContent="center" alignItems="center" textAlign="center" gap={1}>
+                            <Typography
+                                sx={{
+                                    fontFamily: theme => theme.logo.fontFamily,
+                                    fontSize: theme => theme.logo.fontSize
+                                }}>
+                                Hodl My Moon
+                            </Typography>
+                        </Box>
+                    </Stack>
+                </Container>
+            </Box>
+            <Box sx={{ backgroundColor: grey[300] }}>
+                <Container
+                    maxWidth="xl"
                     sx={{
-                        display: 'flex',
-                        justifyContent: {
-                            md: 'space-between'
+                        paddingTop: {
+                            xs: 2
                         },
-                        alignItems: {
-                            xs: 'center',
-                            md: 'start'
+                        paddingBottom: {
+                            xs: 2,
                         },
-                        textAlign: {
-                            xs: 'center',
-                            md: 'left'
-                        }
                     }}
                 >
                     <Stack
                         direction={{
                             xs: 'column-reverse',
-                            md: 'row'
+                            md: 'row-reverse',
                         }}
                         spacing={{
-                            xs: 4,
-                            md: 12
+                            xs: 1,
                         }}
-                    >
-                        <Stack spacing={0.5}>
-                            <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>Hodl</Typography>
-                            <HodlLink href="/about">About</HodlLink>
-                            <HodlLink href="/contact">Contact</HodlLink>
-                        </Stack>
-                        { address && <Stack spacing={0.5}>
-                            <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>NFTs</Typography>
-                            <HodlLink href="/">Market</HodlLink>
-                            <HodlLink href="/create">Create</HodlLink>
-                        </Stack>}
+                        sx={{
+                            display: 'flex',
+                            justifyContent: {
+                                xs: 'center',
+                                md: 'space-between'
+                            },
+                            alignItems: {
+                                xs: 'center',
+                            },
+                        }}>
+                        <Typography sx={{ fontSize: `12px` }}>Copyright © 2022 Pony Powered Limited.</Typography>
                     </Stack>
-                    <Box textAlign={"center"}>
-                        {/* . . . <RocketLaunchIcon /> */}
-                        <Typography
-                sx={{
-                    fontFamily: theme => theme.logo.fontFamily,
-                    fontSize: theme => theme.logo.fontSize
-                }}>
-                Hodl My Moon
-            </Typography>
-            <Typography
-                sx={{
-                    fontFamily: theme => theme.logo.fontFamily,
-                    fontSize: '14px'
-                }}>
-                An NFT Social Platform
-            </Typography>
-                    </Box>
-                </Stack>
-            </Container>
-        </Box>
-        <Box sx={{ backgroundColor: grey[300] }}>
-            <Container
-                maxWidth="xl"
-                sx={{
-                    paddingTop: {
-                        xs: 2
-                    },
-                    paddingBottom: {
-                        xs: 2,
-                    },
-                }}
-            >
-                <Stack
-                    direction={{
-                        xs: 'column-reverse',
-                        md: 'row-reverse',
-                    }}
-                    spacing={{
-                        xs: 1,
-                    }}
-                    sx={{
-                        display: 'flex',
-                        justifyContent: {
-                            xs: 'center',
-                            md: 'space-between'
-                        },
-                        alignItems: {
-                            xs: 'center',
-                        },
-                    }}>
-                    <Typography sx={{ fontSize: `12px` }}>Copyright © 2022 Pony Powered Limited.</Typography>
-                </Stack>
-            </Container>
-        </Box>
+                </Container>
+            </Box>
 
-    </Box >
-)
-                }
+        </Box >
+    )
+}
 
 export default Footer;

@@ -8,8 +8,7 @@ export const useListed = (address, limit = 10, prefetchedListedCount = null, pre
         address ? [`/api/profile/listedCount`, address] : null,
         fetchWithAddress,
         { 
-            fallbackData: prefetchedListedCount,
-            revalidateOnMount: true
+            fallbackData: prefetchedListedCount
         }
     )
 
@@ -21,8 +20,7 @@ export const useListed = (address, limit = 10, prefetchedListedCount = null, pre
         getKey, 
         fetchWithAddressOffsetLimit, 
         { 
-            fallbackData: prefetchedListed,
-            revalidateOnMount: true
+            fallbackData: prefetchedListed
         });
 
 

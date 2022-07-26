@@ -61,7 +61,7 @@ export const SearchBox = ({ setHoverMenuOpen = null, sx = null }) => {
                 if (setHoverMenuOpen) {
                     setHoverMenuOpen(false);
                 }
-                router.push(`/search?q=${values.q}`);
+                router.push(`/explore?q=${values.q}`);
             }}
         >
             {({ setFieldValue, errors, values }) => (

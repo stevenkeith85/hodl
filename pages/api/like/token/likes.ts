@@ -10,14 +10,18 @@ const client = Redis.fromEnv()
 const route = apiRoute();
 
 // Find out if address likes token
-export const likesToken = memoize(async (address, token) => {
+// export const likesToken = memoize(async (address, token) => {
+//   const likes = await client.zscore(`liked:tokens:${address}`, token);
+//   return Boolean(likes);
+// }, { 
+//   primitive: true,
+//   max: 1000, // 1000 tokens 
+// });
+
+export const likesToken = async (address, token) => {
   const likes = await client.zscore(`liked:tokens:${address}`, token);
   return Boolean(likes);
-}, { 
-  primitive: true,
-  max: 1000, // 1000 tokens 
-});
-
+}
 
 route.get(async (req: NextApiRequest, res: NextApiResponse) => {
   const { address, id: token } = req.query;

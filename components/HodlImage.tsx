@@ -83,8 +83,8 @@ export const HodlImage = ({
             <Box sx={{
                 height,
                 maxHeight: `100%`,
-                lineHeight: 0,
                 img: {
+                    verticalAlign: 'middle',    
                     objectFit: fit,
                     objectPosition: "top",
                     borderRadius: 1,

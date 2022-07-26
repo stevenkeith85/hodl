@@ -21,8 +21,7 @@ export const HodlProfileBadge = ({ address }) => {
     const [followingCount] = useFollowingCount(address);
 
     const { data: profileNickname } = useSWR(address ? [`/api/profile/nickname`, address] : null,
-        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.nickname),
-        { revalidateOnMount: true }
+        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.nickname)
     )
 
     return (
@@ -32,7 +31,7 @@ export const HodlProfileBadge = ({ address }) => {
             justifyContent="space-evenly"
             alignItems={"start"}
             sx={{
-                gap: 2,
+                gap: 2.5,
                 paddingX: 2,
                 paddingY: 2,
                 border: '1px solid #ddd',

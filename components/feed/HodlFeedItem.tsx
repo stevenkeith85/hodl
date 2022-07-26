@@ -27,63 +27,57 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
 
 
     const { data: comment } = useSWR(item.object === "comment" ? [`/api/comment`, item.objectId] : null,
-        fetchWithId,
-        {
-            revalidateOnMount: true
-        });
+        fetchWithId);
 
     const { data: token } = useSWR(item.object === "token" ?
         [`/api/token`, item.objectId] :
         comment ?
             [`/api/token`, comment.tokenId] :
             null,
-        (url, query) => axios.get(`${url}/${query}`).then(r => r.data.token),
-        {
-            revalidateOnMount: true
-        });
+        (url, query) => axios.get(`${url}/${query}`).then(r => r.data.token));
 
     return (
-        <>        
-        {    
-            item.object === "token" && !token && <Box
-                display="flex"
-                flexDirection="column"
-                gap={2}
-                sx={{
-                    border: '1px solid #ddd',
-                    borderRadius: 1,
-                    padding: 2,
-                    boxShadow: '0 0 2px 1px #eee',
-                    width: `100%`,
-                    overflow: 'hidden'
-                }
-                }
-            >
-                <Box
+        <>
+            {
+                item.object === "token" && !token && <Box
                     display="flex"
                     flexDirection="column"
                     gap={2}
-                    sx={{ width: '100%' }}
+                    sx={{
+                        border: '1px solid #ddd',
+                        borderRadius: 1,
+                        padding: 2,
+                        boxShadow: '0 0 2px 1px #eee',
+                        width: `100%`,
+                        overflow: 'hidden'
+                    }
+                    }
                 >
                     <Box
                         display="flex"
-                        alignItems="center"
+                        flexDirection="column"
                         gap={2}
+                        sx={{ width: '100%' }}
                     >
-                        <Skeleton variant="circular" width={44} height={44} />
-                        <Skeleton variant="text" width={100} />
+                        <Box
+                            display="flex"
+                            alignItems="center"
+                            gap={2}
+                        >
+                            <Skeleton variant="circular" width={44} height={44} />
+                            <Skeleton variant="text" width={100} />
+                        </Box>
+                        <Box marginX={-2}>
+                            <Skeleton variant="rectangular" height={300} />
+                        </Box>
                     </Box>
-                    <Box marginX={-2}>
-                        <Skeleton variant="rectangular" height={300} />
+                    <Box display="flex" flexDirection="column" gap={1}>
+                        <Skeleton variant="text" />
+                        <Skeleton variant="text" />
+                        <Skeleton variant="text" />
                     </Box>
                 </Box>
-                <Box display="flex" flexDirection="column" gap={1}>
-                    <Skeleton variant="text" />
-                    <Skeleton variant="text" />
-                    <Skeleton variant="text" />
-                </Box>
-            </Box>
-        }
+            }
             {token && <Box
                 display="flex"
                 flexDirection="column"
@@ -146,56 +140,48 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                         <Link href={comment ? `/nft/${comment.tokenId}` : `/nft/${item.objectId}`}>
                             <Box sx={{ cursor: 'pointer', marginX: -2, background: '#ddd' }}>
                                 {assetType(token) === AssetTypes.Image &&
-                                    // <a>
-                                        <HodlImage
-                                            cid={token.image.split('//')[1]}
-                                            effect={token.filter}
-                                            sx={{ img: { borderRadius: 0 } }}
-                                            loading="eager"
-                                            sizes="(max-width:599px) 600px, (max-width:899px) 900px, 700px"
-                                        />
-                                    // </a>
+                                    <HodlImage
+                                        cid={token.image.split('//')[1]}
+                                        effect={token.filter}
+                                        sx={{ img: { borderRadius: 0, verticalAlign: 'middle' } }}
+                                        loading="eager"
+                                        sizes="(max-width:599px) 600px, (max-width:899px) 900px, 700px"
+                                    />
                                 }
                                 {assetType(token) === AssetTypes.Video &&
-                                    <a>
-                                        <HodlVideo
-                                            cid={token.image.split('//')[1]}
-                                            controls={true}
-                                            onlyPoster={false}
-                                            preload="none"
-                                            audio={false}
-                                            autoPlay={true}
-                                            sx={{ video: { borderRadius: 0, maxHeight: '500px' } }}
-                                        />
-                                    </a>
+                                    <HodlVideo
+                                        cid={token.image.split('//')[1]}
+                                        controls={true}
+                                        onlyPoster={false}
+                                        preload="none"
+                                        audio={false}
+                                        autoPlay={true}
+                                        sx={{ video: { borderRadius: 0, maxHeight: '500px' } }}
+                                    />
                                 }
                                 {assetType(token) === AssetTypes.Gif &&
-                                    <a>
-                                        <HodlVideo
-                                            cid={token.image.split('//')[1]}
-                                            gif={true}
-                                            sx={{ video: { borderRadius: 0, maxHeight: '500px' } }}
-                                        />
-                                    </a>
+                                    <HodlVideo
+                                        cid={token.image.split('//')[1]}
+                                        gif={true}
+                                        sx={{ video: { borderRadius: 0, maxHeight: '500px' } }}
+                                    />
                                 }
                                 {assetType(token) === AssetTypes.Audio &&
-                                    <a>
-                                        <HodlVideo
-                                            cid={token.image.split('//')[1]}
-                                            controls={true}
-                                            onlyPoster={false}
-                                            height="280px"
-                                            preload="true"
-                                            audio={true}
-                                            sx={{
-                                                video: {
-                                                    objectPosition: 'top',
-                                                    borderRadius: 0,
-                                                    maxHeight: '500px'
-                                                }
-                                            }}
-                                        />
-                                    </a>
+                                    <HodlVideo
+                                        cid={token.image.split('//')[1]}
+                                        controls={true}
+                                        onlyPoster={false}
+                                        height="280px"
+                                        preload="true"
+                                        audio={true}
+                                        sx={{
+                                            video: {
+                                                objectPosition: 'top',
+                                                borderRadius: 0,
+                                                maxHeight: '500px'
+                                            }
+                                        }}
+                                    />
                                 }
                             </Box>
                         </Link>
@@ -218,7 +204,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                 </Box>
                 <Box>
                     <Typography marginY={1} component="h2" sx={{ fontWeight: 600 }}>{token?.name}</Typography>
-                    <Box sx={{ whiteSpace: 'pre-line'}}>{ insertTagLinks(token?.description) }</Box>
+                    <Box sx={{ whiteSpace: 'pre-line' }}>{insertTagLinks(token?.description)}</Box>
                 </Box>
             </Box>}
         </>

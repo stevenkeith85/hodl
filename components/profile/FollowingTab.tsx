@@ -1,7 +1,7 @@
 import { Box, Stack, Typography } from "@mui/material";
 import InfiniteScroll from "react-swr-infinite-scroll";
 import { SWRInfiniteResponse } from "swr/infinite/dist/infinite";
-import following from "../../pages/api/rankings";
+import following from "../../pages/api/rankings/user";
 import { ProfileAvatar } from "../avatar/ProfileAvatar";
 import { HodlImpactAlert } from "../HodlImpactAlert";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";

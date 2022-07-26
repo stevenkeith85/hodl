@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Grid, useMediaQuery, Box, useTheme } from '@mui/material'
 import { MintStepperMemo } from '../components/mint/MintStepper'
-import { MintProgressButtonsMemo } from '../components/mint/MintProgressButtons'
+import { MintProgressButtons } from '../components/mint/MintProgressButtons'
 import { HodlLoadingSpinner } from '../components/HodlLoadingSpinner'
 import { AssetPreview } from '../components/mint/AssetPreview'
 import { MintMobileStepper } from '../components/mint/MintMobileStepper'
@@ -184,7 +184,7 @@ const Mint = ({address}) => {
         {
           !xs && activeStep < 4 &&
           <Box >
-            <MintProgressButtonsMemo
+            <MintProgressButtons
               loading={loading}
               activeStep={activeStep}
               setActiveStep={setActiveStep}

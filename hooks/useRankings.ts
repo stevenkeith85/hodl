@@ -5,7 +5,8 @@ import axios from 'axios';
 export const useRankings = (
   getData: boolean,
   limit: number,
-  fallbackData?: any
+  fallbackData?: any,
+  object: "token" | "user" = "user"
 ) => {
 
   const fetcher = (
@@ -18,26 +19,20 @@ export const useRankings = (
         offset, 
         limit 
       },
-      headers: { // This endpoint is public at the moment; but we may make it private
+      headers: {
         'Accept': 'application/json',
-        // 'Authorization': localStorage.getItem('jwt')
       }
     }).then(r => r.data);
 
 
   const getKey = (index, _previous) => {
-    return getData ? [`/api/rankings`, index * limit, limit] : null;
+    return getData ? [`/api/rankings/${object}`, index * limit, limit] : null;
   }
 
   const swr = useSWRInfinite(
     getKey,
     fetcher,
-    {
-      dedupingInterval: 5000,
-      revalidateOnMount: true,
-      revalidateFirstPage: true,
-      fallbackData
-    }
+    { fallbackData }
   );
 
   return {

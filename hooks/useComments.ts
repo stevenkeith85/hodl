@@ -56,12 +56,7 @@ export const useCommentCount = (
 ) => {
     const swr = useSWR(
          [`/api/comments/count`, object, id],
-        fetchWithObjectAndId,
-        {
-            fallbackData: prefetched,
-            revalidateOnMount: true,
-            revalidateOnFocus: true
-        }
+        fetchWithObjectAndId
     );
 
     return swr
@@ -80,10 +75,7 @@ export const useComments = (
 
     const swr = useSWRInfinite(
         load ? getKey : null,
-        fetchWithObjectObjectIdOffsetLimit,
-        {
-            revalidateOnMount: true,
-        }
+        fetchWithObjectObjectIdOffsetLimit
     );
 
     return swr;

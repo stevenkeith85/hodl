@@ -1,8 +1,9 @@
-import { memo } from 'react';
 import { Stack, Button } from '@mui/material';
 
 export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, loading, formData }) => {
 
+  const isVideo = mimeType => mimeType && mimeType.indexOf('video') !== -1;
+  const isGif = mimeType => mimeType && mimeType.indexOf('gif') !== -1;
 
   return (
     <Stack
@@ -10,7 +11,7 @@ export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, l
       sx={{
         justifyContent: "space-between",
         width: '100%'
-      }}
+      }}      
     >
       <Button
         color="primary"
@@ -19,11 +20,7 @@ export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, l
         variant="outlined"
         onClick={
           () => {
-            const { mimeType } = formData;
-            const isVideo = mimeType && mimeType.indexOf('video') !== -1;
-            const isGif = mimeType => mimeType && mimeType.indexOf('gif') !== -1;
-
-            if ((isVideo || isGif) && activeStep == 2) {
+            if ((isVideo(formData?.mimeType) || isGif(formData?.mimeType)) && activeStep == 2) {
               setActiveStep(activeStep => activeStep - 2);
             } else {
               setActiveStep(activeStep => activeStep - 1)
@@ -38,11 +35,7 @@ export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, l
         disabled={loading || stepComplete < activeStep}
         variant="outlined"
         onClick={() => {
-          const { mimeType } = formData;
-          const isVideo = mimeType && mimeType.indexOf('video') !== -1;
-          const isGif = mimeType => mimeType && mimeType.indexOf('gif') !== -1;
-
-          if ((isVideo || isGif) && activeStep == 0) {
+          if ((isVideo(formData?.mimeType) || isGif(formData?.mimeType)) && activeStep == 0) {
             setActiveStep(activeStep => activeStep + 2);
           } else {
             setActiveStep(activeStep => activeStep + 1)
@@ -53,5 +46,3 @@ export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, l
     </Stack>
   )
 };
-
-export const MintProgressButtonsMemo = memo(MintProgressButtons);

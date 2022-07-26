@@ -29,14 +29,12 @@ export const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
 }) => {
     const { data: tokenId } = useSWR(
         profileAddress ? [`/api/profile/picture`, profileAddress] : null,
-        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.token),
-        { revalidateOnMount: true }
+        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.token)
     )
 
     const { data: token } = useSWR(
         tokenId ? [`/api/token`, tokenId] : null,
-        (url, query) => axios.get(`${url}/${query}`).then(r => r.data.token),
-        { revalidateOnMount: true }
+        (url, query) => axios.get(`${url}/${query}`).then(r => r.data.token)
     )
 
     const getSize = () => {

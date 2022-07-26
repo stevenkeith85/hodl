@@ -8,13 +8,18 @@ dotenv.config({ path: '../.env' })
 const client = Redis.fromEnv()
 const route = apiRoute();
 
-export const getLikeCount = memoize(async (token) => {    
+// export const getLikeCount = memoize(async (token) => {    
+//   const count = await client.zcard(`likes:token:${token}`);
+//   return count;
+// }, { 
+//   primitive: true,
+//   max: 10000, // 10000 tokens 
+// });
+
+export const getLikeCount = async (token) => {    
   const count = await client.zcard(`likes:token:${token}`);
   return count;
-}, { 
-  primitive: true,
-  max: 10000, // 10000 tokens 
-});
+}
 
 // Requests the number of users who like a token
 route.get(async (req, res) => {

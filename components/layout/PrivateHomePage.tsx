@@ -2,6 +2,7 @@ import { Box, Grid } from '@mui/material';
 import { HodlFeed } from '../feed/HodlFeed';
 import { HodlProfileBadge } from '../HodlProfileBadge';
 import { TopAccounts } from '../rankings/TopAccounts';
+import { TopTokens } from '../rankings/TopTokens';
 
 export const PrivateHomePage = ({ address }) => {
     return (
@@ -43,6 +44,7 @@ export const PrivateHomePage = ({ address }) => {
                 >
                     <HodlProfileBadge address={address} />
                     <TopAccounts />
+                    <TopTokens />
                 </Box>
             </Grid>
         </Grid>

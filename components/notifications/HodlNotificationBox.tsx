@@ -24,33 +24,25 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
 
 
     const { data: comment } = useSWR(item.object === "comment" ? [`/api/comment`, item.objectId] : null,
-        fetchWithId,
-        {
-            revalidateOnMount: true
-        });
+        fetchWithId);
 
     const { data: token } = useSWR(item.object === "token" ?
         [`/api/token`, item.objectId] :
         comment ?
             [`/api/token`, comment.tokenId] :
             null,
-        (url, query) => axios.get(`${url}/${query}`).then(r => r.data.token),
-        {
-            revalidateOnMount: true
-        });
-
-
-
-    const lastRead = (localStorage.getItem(`notifications-${address}-last-read`) || 0);
+        (url, query) => axios.get(`${url}/${query}`).then(r => r.data.token));
 
     return (
-        <Box sx={{ opacity: lastRead > (item?.timestamp || 0) ? 0.8 : 1 }} >
+        <Box 
+            sx={{ 
+                // opacity: lastRead > (item?.timestamp || 0) ? 0.8 : 1 
+            }} 
+            >
             <Box display="flex" alignItems="center" gap={1} >
                 <Box display="flex" alignItems="center" onClick={() => setShowNotifications(false)} gap={1.5} flexGrow={1}>
                     <ProfileAvatar profileAddress={item.subject} size="small" showNickname={false} />
                     <Box component="span" sx={{ cursor: 'pointer', textDecoration: 'none' }}>
-                        {/* {JSON.stringify(item, null, 2)} */}
-
                         {item?.subject && item?.subject !== address &&
                             <ProfileNameOrAddress
                                 color={"primary"}

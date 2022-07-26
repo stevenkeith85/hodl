@@ -13,10 +13,7 @@ export const useFollow = (profileAddress, feed = null, followers = null, followi
     data: isFollowing,
     mutate: mutateIsFollowing } = useSWR(
       address && address !== profileAddress ? [`/api/follows`, address, profileAddress] : null,
-      fetcher,
-      {
-        revalidateOnMount: true
-      }
+      fetcher
     );
 
   const follow = async () => {

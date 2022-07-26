@@ -1,67 +1,35 @@
-import { Box } from "@mui/material"
-import { indigo, pink, grey } from "@mui/material/colors"
+import { Box, Grid } from "@mui/material"
 import { HomePagePitch } from "./HomePagePitch"
-import { FollowPreview } from "./FollowPreview"
-import { CreatePreview } from "./CreatePreview"
-import { TradePreview } from "./TradePreview"
-import { ProfilePreview } from "./ProfilePreview"
+import { TopAccounts } from "../rankings/TopAccounts"
+import { TopTokens } from "../rankings/TopTokens"
 
 export const PublicHomePage = ({ }) => {
     return (
         <Box
             display="flex"
-            minHeight={'calc(100vh - 195px)'}
             flexDirection="column"
         >
-            <Box
-                display="flex"
-                sx={{
-                    flexGrow: 2,
-                }}
-            >
+            <Box display="flex">
                 <HomePagePitch />
             </Box>
-            <Box
-                display="flex"
-                sx={{
-                    background: pink[100],
-                    color: 'white',
-                    padding: 4,
-                    flexGrow: 2
-                }}
+            <Grid
+                // spacing={1}
+                container
+                paddingBottom={4}
             >
-                <CreatePreview />
-            </Box>
-            <Box
-                display="flex"
-                sx={{
-                    background: grey[100],
-                    padding: 4,
-                    flexGrow: 2,
-                }}
-            >
-                <FollowPreview />
-            </Box>
-            <Box
-                display="flex"
-                sx={{
-                    background: indigo[100],
-                    padding: 4,
-                    flexGrow: 2,
-                }}
-            >
-                <TradePreview />
-            </Box>
-            <Box
-                display="flex"
-                sx={{
-                    background: grey[100],
-                    padding: 4,
-                    flexGrow: 2,
-                }}
-            >
-                <ProfilePreview />
-            </Box>
+                <Grid item xs={12} sm={6} md={3}>
+                    <TopAccounts />
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                    <TopTokens showLikes={false} />
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                    <TopAccounts />
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                    <TopTokens showLikes={false} />
+                </Grid>
+            </Grid>
         </Box >
     )
 }

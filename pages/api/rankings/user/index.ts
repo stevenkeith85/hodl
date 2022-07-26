@@ -2,8 +2,8 @@ import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
 import axios from 'axios'
-import apiRoute from "../handler";
-import { ActionSet, HodlAction } from "../../../models/HodlAction";
+import apiRoute from "../../handler";
+import { ActionSet, HodlAction } from "../../../../models/HodlAction";
 
 dotenv.config({ path: '../.env' })
 
@@ -15,18 +15,14 @@ const route = apiRoute();
 //
 // ZSET (rankings:address:followers) <address> and follower count
 
-// Tee general rankings namespace could look something like (just ideas):
+// The general rankings namespace could look something like (just ideas):
 //
-// ZSET (rankings:address:followers) <address> and their follower count
-// ZSET (rankings:address:likes) <address> and their token like count
-// ZSET (rankings:address:score) <address> and a score that factors in their follower count and token like count (perhaps with some recency bias)
+// ZSET (rankings:user:followers) <address> and their follower count
+// ZSET (rankings:user:likes) <address> and their token like count
+// ZSET (rankings:user:score) <address> and a score that factors in their follower count and token like count (perhaps with some recency bias)
 
-// ZSET (rankings:token:likes) <address> and like count of a token
-
-// We'll start off simple.
-// Return the addresses with the highest follower count
-//
-// We'll increment/decrement the score (follower count) when a user follows/unfollows (see that endpoint)
+// ZSET (rankings:token:likes) <id> and like count of a token
+// ZSET (rankings:token:comments) <id> and comment count of a token
 export const getMostFollowedUsers = async (
   offset: number = 0,
   limit: number = 10
@@ -71,9 +67,9 @@ route.get(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
-  const notifications = await getMostFollowedUsers(+offset, +limit);
+  const addresses = await getMostFollowedUsers(+offset, +limit);
 
-  res.status(200).json(notifications);
+  res.status(200).json(addresses);
 
 });
 

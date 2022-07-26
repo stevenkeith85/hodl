@@ -31,7 +31,6 @@ export const InfiniteScrollSearchResults: React.FC<InfiniteScrollSearchResultsPr
         ({ items, next, total }) =>
           <Box marginY={2} key={next}>
             <NftList
-              showName={false}
               nfts={items}
             />
           </Box>

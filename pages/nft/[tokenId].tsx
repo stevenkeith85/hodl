@@ -36,12 +36,13 @@ import { MaticPrice } from "../../components/MaticPrice";
 import { indigo } from "@mui/material/colors";
 import { insertTagLinks } from "../../lib/templateUtils";
 import { authenticate } from "../../lib/jwt";
+import { FollowButton } from "../../components/profile/FollowButton";
 
 
 export async function getServerSideProps({ params, req, res }) {
   try {
     await authenticate(req, res);
-    
+
     const nft = await fetchNFT(params.tokenId);
 
     const comment = params.comment;
@@ -102,7 +103,12 @@ const NftDetail = ({
               justifyContent: 'space-between',
               alignItems: 'center'
             }}>
-            <ProfileAvatar reverse={false} profileAddress={nft?.owner} showNickname={true} />
+            <Box display="flex" gap={2} alignItems="center">
+              <ProfileAvatar reverse={false} profileAddress={nft?.owner} showNickname={true} />
+              <div>
+                <FollowButton profileAddress={nft?.owner} variant="text" />
+              </div>
+            </Box>
 
             <Box display="flex" justifyContent="start" sx={{
               marginBottom: 2
@@ -147,23 +153,23 @@ const NftDetail = ({
             </Box>
           </Stack>
         </Grid>
-        <Grid 
-          item 
-          xs={12} 
-          md={7} 
-          marginBottom={2} 
+        <Grid
+          item
+          xs={12}
+          md={7}
+          marginBottom={2}
           paddingLeft={{ md: 1 }}
         >
           <div hidden={value !== 0}>
             <Stack spacing={2}>
               <Card variant="outlined">
                 <CardContent>
-                  <Box 
+                  <Box
                     paddingBottom={3}
-                    mb={3} 
+                    mb={3}
                     sx={{ borderBottom: `1px solid #ddd` }}>
-                    <Typography variant="h1" mt={1} mb={3} sx={{ fontWeight: 600}}>{nft.name}</Typography>
-                    <Box sx={{ whiteSpace: 'pre-line'}}>{ insertTagLinks(nft.description) }</Box>
+                    <Typography variant="h1" mt={1} mb={3} sx={{ fontWeight: 600 }}>{nft.name}</Typography>
+                    <Box sx={{ whiteSpace: 'pre-line' }}>{insertTagLinks(nft.description)}</Box>
                   </Box>
                   <HodlCommentsBox
                     tokenId={nft.tokenId}

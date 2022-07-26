@@ -14,8 +14,7 @@ interface DefaultAvatarWithLinkProps {
 export const DefaultAvatarWithLink: React.FC<DefaultAvatarWithLinkProps> = ({ profileAddress, size, color }) => {
 
     const { data: profileNickname } = useSWR(profileAddress ? [`/api/profile/nickname`, profileAddress] : null,
-        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.nickname),
-        { revalidateOnMount: true }
+        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.nickname)
     )
 
     return (<>

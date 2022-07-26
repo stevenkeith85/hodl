@@ -16,8 +16,7 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
 
     const { data: tokenId } = useSWR(
         address ? [`/api/profile/picture`, address] : null,
-        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.token),
-        { revalidateOnMount: true }
+        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.token)
     )
 
     const [hodlingCount, swr] = useHodling(address, lim, null, null, profilePictureModalOpen);

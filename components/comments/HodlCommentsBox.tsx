@@ -43,10 +43,7 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
 
     const { data: comment } = useSWR(
         object === "comment" && objectId ? [`/api/comment`, objectId] : null,
-        fetchWithId,
-        {
-            revalidateOnMount: true
-        }
+        fetchWithId
     );
 
     const swr = useComments(objectId, 10, object, null);

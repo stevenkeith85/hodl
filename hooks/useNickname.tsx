@@ -8,15 +8,7 @@ export const useNickname = () => {
   const [apiError, setApiError] = useState(null);
 
   const { data: nickname } = useSWR(address ? [`/api/profile/nickname`, address] : null,
-    (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.nickname),
-    {
-      dedupingInterval: 5000,
-      focusThrottleInterval: 5000, // default is 5000
-      errorRetryCount: 1,
-      revalidateOnMount: true,
-      revalidateOnFocus: true,
-      revalidateOnReconnect: true
-    })
+    (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.nickname))
 
 
   const update = async (nickname) => {
@@ -26,8 +18,7 @@ export const useNickname = () => {
         { nickname },
         {
           headers: {
-            'Accept': 'application/json',
-            'Authorization': localStorage.getItem('jwt')
+            'Accept': 'application/json'
           },
         }
       );

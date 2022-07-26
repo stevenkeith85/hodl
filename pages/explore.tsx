@@ -8,6 +8,7 @@ import { SearchValidationSchema } from '../validationSchema/search';
 import { getSearchResults } from './api/search/results';
 
 export async function getServerSideProps({ query, req, res }) {
+  console.log('getserevr propos')
   const { q = '' } = query;
 
   await authenticate(req, res);
@@ -15,12 +16,14 @@ export async function getServerSideProps({ query, req, res }) {
   let prefetchedResults;
 
   const limit = 4;
-  const isValid = await SearchValidationSchema.isValid({ q })
-  if (isValid) {
+  // const isValid = await SearchValidationSchema.isValid({ q })
+  // console.log('valid', isValid)
+  // if (isValid) {
+    
     prefetchedResults = await getSearchResults(q, 0, limit);
-  } else {
-    prefetchedResults = { items: [], next: 0, total: 0 };
-  }
+  // } else {
+  //   prefetchedResults = { items: [], next: 0, total: 0 };
+  // }
   return {
     props: {
       address: req.address || null,
@@ -43,8 +46,7 @@ export default function Search({ q, limit, prefetchedResults }) {
       </Head>
 
       { swr?.data[0]?.total === 0 && 
-      <HodlImpactAlert message={"We cannot find any NFTs with that tag"} title="Sorry" />
-        
+      <HodlImpactAlert message={"We can't find anything at the moment"} title="Sorry" />        
       }
       <InfiniteScrollSearchResults swr={swr} limit={limit} />
     </>

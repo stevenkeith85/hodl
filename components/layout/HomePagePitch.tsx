@@ -5,13 +5,11 @@ export const HomePagePitch = ({ }) => {
     return (
         <Grid
             container
-            maxWidth="1200px"
-            margin="0 auto"
             sx={{
                 padding: {
-                    'xs': 4,
-                    'sm': 6,
-                    'md': 8,
+                    'xs': 6,
+                    'sm': 8,
+                    'xl': 12,
                 }
             }}
         >
@@ -28,16 +26,20 @@ export const HomePagePitch = ({ }) => {
                     alignItems="center"
                     justifyContent="center"
                     textAlign="center"
-                    gap={4}
+                    gap={0}
                     height="100%"
                     sx={{
-                        padding: 4,
+                        paddingY: 4,
                     }}
                 >
                     <Box
                         component="span"
                         sx={{
-                            fontSize: '40px',
+                            fontFamily: theme => theme.logo.fontFamily,
+                            fontSize: {
+                                xs: '30px',
+                                sm:'40px',
+                            },
                             fontWeight: 600,
                             color: theme => theme.palette.primary.main
                         }}>
@@ -47,17 +49,11 @@ export const HomePagePitch = ({ }) => {
                     <Typography
                         sx={{
                             fontFamily: theme => theme.logo.fontFamily,
-                            fontSize: '25px'
+                            fontSize: '25px',
+                            color: '#999'
                         }}>
-                        is an NFT Social Platform
+                        is a social NFT platform
                     </Typography>
-                    {/* <Typography
-                        sx={{
-                            fontFamily: theme => theme.logo.fontFamily,
-                            fontSize: '20px'
-                        }}>
-                            Create, Hodl, and Trade NFTs
-                    </Typography> */}
                 </Box>
             </Grid>
             <Grid
@@ -72,17 +68,31 @@ export const HomePagePitch = ({ }) => {
                     flexDirection="column"
                     alignItems="center"
                     justifyContent="center"
-                    gap={4}
-                    height="100%"
+                    gap={0}
                     sx={{
-                        padding: 4,
+                        height:{
+                            sm: "100%"
+                        },
+                        padding: {
+                            xs: 0,
+                        }
                     }}
                 >
                     <Box>
                         <LoginLogoutButton
                             variant="contained"
-                            fontSize='20px'
-                            sx={{ paddingY: 1.5, paddingX: 4 }}
+                            fontSize='18px'
+                            sx={{ 
+                                fontFamily: theme => theme.logo.fontFamily,
+                                paddingY: {
+                                    xs: 1,
+                                    sm: 1.5
+                                },
+                                paddingX: {
+                                    xs: 2,
+                                    sm: 4 
+                                }
+                            }}
                         />
                     </Box>
                 </Box>

@@ -9,7 +9,7 @@ import { ActionSet } from '../models/HodlAction';
 import { Container } from '@mui/material';
 import { getActions } from './api/actions';
 import { useRankings } from '../hooks/useRankings';
-import { getMostFollowedUsers } from './api/rankings';
+import { getMostFollowedUsers } from './api/rankings/user';
 import { RankingsContext } from '../contexts/RankingsContext';
 
 
@@ -33,7 +33,8 @@ export async function getServerSideProps({ req, res }) {
 
 export default function Home({ address, limit, prefetchedFeed, prefetchedTopAccounts }) {
   const { actions: feed } = useActions(address, ActionSet.Feed, limit, prefetchedFeed);
-  const { rankings } = useRankings(true, limit, prefetchedTopAccounts);
+  const { rankings: mostFollowed } = useRankings(true, limit, prefetchedTopAccounts);
+  const { rankings: mostLiked } = useRankings(true, limit, prefetchedTopAccounts, "token");
 
   return (
     <>
@@ -42,18 +43,25 @@ export default function Home({ address, limit, prefetchedFeed, prefetchedTopAcco
         <meta name="description" content="Mint, Showcase, and Trade NFTs at HodlMyMoon"></meta>
       </Head>
 
-      {!address &&
-        <PublicHomePage />
-      }
-      {address &&
-        <FeedContext.Provider value={{ feed }}>
-          <RankingsContext.Provider value={{ rankings }}>
+      <RankingsContext.Provider value={{
+        mostFollowed,
+        mostLiked
+      }}>
+        {!address &&
+          <Container maxWidth="xl">
+            <PublicHomePage />
+          </Container>
+
+        }
+        {address &&
+          <FeedContext.Provider value={{ feed }}>
             <Container maxWidth="xl">
               <PrivateHomePage address={address} />
             </Container>
-          </RankingsContext.Provider>
-        </FeedContext.Provider>
-      }
+
+          </FeedContext.Provider>
+        }
+      </RankingsContext.Provider>
     </>
   )
 }

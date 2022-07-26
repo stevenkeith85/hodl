@@ -91,7 +91,7 @@ const NftList = ({
                             color="white"
                             sx={{
                                 background: "rgba(0,0,0,0.35)",
-                                opacity: 0,
+                                opacity: matches ? 0: 1, // always show on mobiles as they don't really have hover effects
                                 cursor: 'pointer'
                             }}
                         >

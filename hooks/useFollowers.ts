@@ -19,12 +19,7 @@ export const useFollowers = (getData, address, limit = 10) => {
 
     const swr = useSWRInfinite(
         getKey,
-        fetcher,
-        {
-            dedupingInterval: 5000,
-            revalidateOnMount: true,
-            revalidateFirstPage: true
-        }
+        fetcher
     );
 
     return {
