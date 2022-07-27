@@ -28,7 +28,6 @@ export const DefaultAvatar: React.FC<DefaultAvatarProps> = ({ size, color }) => 
                 height: size,
                 width: size,
                 bgcolor: (theme) => getColor(theme),
-                //border: size === 'small' ? `1.5px solid` : `2px solid`,
                 '&:hover': {
                     cursor: 'pointer',
                     bgcolor: 'white',

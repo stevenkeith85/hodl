@@ -1,8 +1,10 @@
 import { Box, Grid } from '@mui/material';
 import { HodlFeed } from '../feed/HodlFeed';
 import { HodlProfileBadge } from '../HodlProfileBadge';
-import { TopAccounts } from '../rankings/TopAccounts';
+import { NewTokens } from '../rankings/NewTokens';
+import { TopUsers } from '../rankings/TopUsers';
 import { TopTokens } from '../rankings/TopTokens';
+import { NewUsers } from '../rankings/NewUsers';
 
 export const PrivateHomePage = ({ address }) => {
     return (
@@ -25,8 +27,9 @@ export const PrivateHomePage = ({ address }) => {
                     display="grid"
                     gridTemplateColumns="1fr"
                     sx={{
+                        top: `64px`,
                         position: {
-                            sm: "fixed"
+                            sm: "sticky"
                         },
                         paddingBottom: 4,
                         paddingY: {
@@ -37,14 +40,16 @@ export const PrivateHomePage = ({ address }) => {
                             sm: 8
                         },
                         gap: {
-                            xs: 4,
+                            xs: 2,
                             // sm: 8
                         }
                     }}
                 >
                     <HodlProfileBadge address={address} />
-                    <TopAccounts />
+                    <TopUsers />
                     <TopTokens />
+                    <NewUsers />
+                    <NewTokens />
                 </Box>
             </Grid>
         </Grid>

@@ -114,7 +114,7 @@ const rateLimits = {
   'POST:/api/comments/add': 6,
   'DELETE:/api/comments/delete': 6,
   
-  // 'GET:/api/search/results': 60,
+  // 'GET:/api/search/tokens': 60,
 }
 
 

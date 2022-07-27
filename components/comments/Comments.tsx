@@ -23,7 +23,7 @@ export const Comments: FC<CommentsProps> = ({
     prefetchedCommentCount = null,
     sx = {}
 }) => {
-    const { data: count } = useCommentCount(nft.tokenId, "token", prefetchedCommentCount)
+    const { data: count } = useCommentCount(nft.id, "token", prefetchedCommentCount)
 
     const [open, setOpen] = useState(false);
 
@@ -31,13 +31,13 @@ export const Comments: FC<CommentsProps> = ({
         objectId: number,
         object: "token" | "comment"
     }>({
-        objectId: nft.tokenId,
+        objectId: nft.id,
         object: "token"
     })
 
     const clearTopLevel = () => {
         setTopLevel({
-            objectId: nft.tokenId,
+            objectId: nft.id,
             object: "token"
         })
     }
@@ -56,7 +56,7 @@ export const Comments: FC<CommentsProps> = ({
                 }}
             >
                 <HodlCommentsBox
-                    tokenId={nft.tokenId}
+                    tokenId={nft.id}
                     setTopLevel={setTopLevel}
                     clearTopLevel={clearTopLevel}
                     objectId={topLevel.objectId}
@@ -67,6 +67,7 @@ export const Comments: FC<CommentsProps> = ({
                     maxHeight="60vh"
                     minHeight="30vh"
                 />
+                
             </HodlModal>
             <Box
                 display="flex"
@@ -80,7 +81,7 @@ export const Comments: FC<CommentsProps> = ({
                 }}
                 onClick={e => {
                     e.stopPropagation();
-                    // e.preventDefault();
+                    e.preventDefault();
                     if (popUp) {
                         setOpen(true)
                     } else {

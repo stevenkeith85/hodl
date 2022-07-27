@@ -37,6 +37,7 @@ import { indigo } from "@mui/material/colors";
 import { insertTagLinks } from "../../lib/templateUtils";
 import { authenticate } from "../../lib/jwt";
 import { FollowButton } from "../../components/profile/FollowButton";
+import { UserAvatarAndHandle } from "../../components/avatar/UserAvatarAndHandle";
 
 
 export async function getServerSideProps({ params, req, res }) {
@@ -61,9 +62,9 @@ export async function getServerSideProps({ params, req, res }) {
       props: {
         address: req.address || null,
         nft,
+        limit,
         prefetchedTags,
         prefetchedComments: [prefetchedComments],
-        limit,
         prefetchedCommentCount,
         priceHistory,
         prefetchedLikeCount
@@ -138,7 +139,7 @@ const NftDetail = ({
                   color: theme => theme.palette.secondary.main,
                   '.MuiTypography-body1': { color: '#666' }
                 }}
-                id={nft.tokenId}
+                id={nft.id}
                 token={true}
                 prefetchedLikeCount={prefetchedLikeCount}
                 fontSize="22px"
@@ -172,9 +173,9 @@ const NftDetail = ({
                     <Box sx={{ whiteSpace: 'pre-line' }}>{insertTagLinks(nft.description)}</Box>
                   </Box>
                   <HodlCommentsBox
-                    tokenId={nft.tokenId}
+                    tokenId={nft.id}
                     object={comment ? "comment" : "token"}
-                    objectId={comment ? comment : nft.tokenId}
+                    objectId={comment ? comment : nft.id}
                     prefetchedComments={prefetchedComments}
                     prefetchedCommentCount={prefetchedCommentCount}
                     limit={limit}

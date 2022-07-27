@@ -34,4 +34,5 @@ export const NftAvatarWithLink = ({
     </>)
 }
 
-export const NftAvatarWithLinkMemo = memo(NftAvatarWithLink, (prev: any, next: any) => prev.size === next.size && prev.token.tokenId === next.token.tokenId);
+export const NftAvatarWithLinkMemo = memo(NftAvatarWithLink, 
+    (prev: any, next: any) => prev.size === next.size && prev.token.id === next.token.id);

@@ -22,7 +22,7 @@ const route = apiRoute();
 const removeComment = async (address, object, objectId, id, tokenId) => {
 
   // const replies = await client.zcard(`comments:${object}:${id}`);
-  const replies = await client.zcard(`${object}:${id}:comments`);
+  const replies = await client.zcard(`comment:${id}:comments`);
 
   if (!replies) {
     // const commentDeleted = await client.hdel(`comment`, id);
@@ -59,7 +59,7 @@ route.delete(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
-  const comment = await client.hget('comment', id);
+  const comment = await client.get(`comment:${id}`);
 
   if (!comment) {
     return res.status(400).json({ message: 'Bad Request' });
@@ -88,6 +88,7 @@ route.delete(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
+  console.log(subject, object, objectId, id, tokenId)
   const success = await removeComment(subject, object, objectId, id, tokenId);
 
   if (success) {

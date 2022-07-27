@@ -1,7 +1,9 @@
 import { Box, Typography } from "@mui/material";
 import InfiniteScroll from "react-swr-infinite-scroll";
 import { SWRInfiniteResponse } from "swr/infinite/dist/infinite";
+import { User } from "../../models/User";
 import { ProfileAvatar } from "../avatar/ProfileAvatar";
+import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 import { FollowButton } from "./FollowButton";
 
@@ -33,13 +35,13 @@ export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit, width 
           }
         >
           {
-            ({ items }) => items.map(address =>
-              <Box display="flex" width={`100%`} alignItems="center">
+            ({ items }) => items.map((user: User) => 
+              <Box display="flex" width={`100%`} alignItems="center" key={user.address}>
                 <Box flexGrow={1}>
-                  <ProfileAvatar key={address} color="primary" profileAddress={address} size="small" />
+                  <UserAvatarAndHandle user={user} />
                 </Box>
                 <Box flexShrink={1}>
-                  <FollowButton profileAddress={address} variant="text" />
+                  <FollowButton profileAddress={user.address} variant="text" />
                 </Box>
               </Box>
             )

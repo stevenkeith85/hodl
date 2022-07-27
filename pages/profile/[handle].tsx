@@ -31,6 +31,10 @@ import { useFollowersCount } from '../../hooks/useFollowersCount'
 import { NftLinksList } from '../../components/profile/NftLinksList'
 import { FollowersContext } from '../../contexts/FollowersContext'
 import { FollowingContext } from '../../contexts/FollowingContext'
+import { userInfo } from 'os'
+import { getUser } from '../api/user/[handle]'
+import { UserAvatar } from '../../components/avatar/UserAvatar'
+import { UserAvatarAndHandle } from '../../components/avatar/UserAvatarAndHandle'
 
 
 const InfiniteScrollTab = dynamic(
@@ -52,59 +56,37 @@ const FollowersTab = dynamic(
 );
 
 
+// TODO - We should just look up the user object and pass that to the page
 export async function getServerSideProps({ params, query, req, res }) {
-
   await authenticate(req, res);
 
-  let profileAddress = params.address; // TODO: Rename this param as it can be an address OR a nickname
-  let nickname = null;
-
-  const limit = 10;
-  const tab = Number(query.tab) || 0;
-
-  const isValid = await isValidAddress(params.address);
-
-  if (isValid) { // params.address is a wallet address her
-    const nickname = await getNickname(params.address);
-
-    if (nickname !== null) {
-      return {
-        redirect: {
-          destination: tab ? `/profile/${nickname}?tab=${tab}` : `/profile/${nickname}`
-        }
-      }
-    }
-  }
-  else {
-    const address = await getAddress(params.address); // params.address is a nickname here
-
-    if (address === null) {
+  const user = await getUser(params.handle);
+  
+  if (!user) {
       return {
         notFound: true
       }
-    }
-
-    profileAddress = address;
-    nickname = params.address;
   }
+  
+  const tab = Number(query.tab) || 0;
+  const limit = 10;  
+  
+  const prefetchedHodlingCount = await getHodlingCount(user.address);
+  const prefetchedHodling = tab == 0 ? await getHodling(user.address, 0, limit) : null;
 
-  const prefetchedHodlingCount = await getHodlingCount(profileAddress);
-  const prefetchedHodling = tab == 0 ? await getHodling(profileAddress, 0, limit) : null;
+  const prefetchedListedCount = await getListedCount(user.address);
+  const prefetchedListed = tab == 1 ? await getListed(user.address, 0, limit) : null;
 
-  const prefetchedListedCount = await getListedCount(profileAddress);
-  const prefetchedListed = tab == 1 ? await getListed(profileAddress, 0, limit) : null;
+  const prefetchedFollowingCount = await getFollowingCount(user.address);
+  const prefetchedFollowing = tab == 2 ? await getFollowing(user.address) : null;
 
-  const prefetchedFollowingCount = await getFollowingCount(profileAddress);
-  const prefetchedFollowing = tab == 2 ? await getFollowing(profileAddress) : null;
-
-  const prefetchedFollowersCount = await getFollowersCount(profileAddress);
-  const prefetchedFollowers = tab == 3 ? await getFollowers(profileAddress) : null;
+  const prefetchedFollowersCount = await getFollowersCount(user.address);
+  const prefetchedFollowers = tab == 3 ? await getFollowers(user.address) : null;
 
   return {
     props: {
+      user,
       address: req.address || null,
-      profileAddress,
-      nickname,
       prefetchedFollowingCount,
       prefetchedFollowing,
       prefetchedFollowersCount,
@@ -120,17 +102,16 @@ export async function getServerSideProps({ params, query, req, res }) {
 }
 
 const Profile = ({
+  user,
   address,
-  profileAddress,
-  nickname,
-  prefetchedFollowingCount,
-  prefetchedFollowing,
-  prefetchedFollowersCount,
-  prefetchedFollowers,
-  prefetchedHodlingCount,
-  prefetchedHodling,
-  prefetchedListedCount,
-  prefetchedListed,
+  prefetchedFollowingCount = null,
+  prefetchedFollowing = null,
+  prefetchedFollowersCount = null,
+  prefetchedFollowers = null,
+  prefetchedHodlingCount = null,
+  prefetchedHodling = null,
+  prefetchedListedCount = null,
+  prefetchedListed = null,
   tab,
   limit
 }) => {
@@ -138,14 +119,14 @@ const Profile = ({
 
   const [value, setValue] = useState(Number(tab)); // tab
 
-  const [hodlingCount, hodling] = useHodling(profileAddress, limit, prefetchedHodlingCount, prefetchedHodling);
-  const [listedCount, listed] = useListed(profileAddress, limit, prefetchedListedCount, prefetchedListed);
+  const [hodlingCount, hodling] = useHodling(user.address, limit, prefetchedHodlingCount, prefetchedHodling);
+  const [listedCount, listed] = useListed(user.address, limit, prefetchedListedCount, prefetchedListed);
 
-  const [followingCount] = useFollowingCount(profileAddress, prefetchedFollowingCount);
-  const { swr: following } = useFollowing(true, profileAddress, limit);
+  const [followingCount] = useFollowingCount(user.address, prefetchedFollowingCount);
+  const { swr: following } = useFollowing(true, user.address, limit);
 
-  const [followersCount] = useFollowersCount(profileAddress, prefetchedFollowersCount);
-  const { swr: followers } = useFollowers(true, profileAddress, limit);
+  const [followersCount] = useFollowersCount(user.address, prefetchedFollowersCount);
+  const { swr: followers } = useFollowers(true, user.address, limit);
 
   useEffect(() => {
     if (!router?.query?.tab) {
@@ -154,11 +135,14 @@ const Profile = ({
   }, [router.asPath, router?.query?.tab]);
 
 
-  return (
+  return (<>
+    <Head>
+      <link href={`/profile/${user.nickname || user.address}`} />
+    </Head>
     <FollowersContext.Provider value={{ followers }}>
       <FollowingContext.Provider value={{ following }}>
       <Head>
-        <title>{nickname || profileAddress} | NFT Market | HodlMyMoon</title>
+        <title>{user.nickname || user.address} | NFT Market | HodlMyMoon</title>
       </Head>
       <Box
         sx={{
@@ -168,8 +152,8 @@ const Profile = ({
           alignItems: 'center',
           marginTop: 4
         }}>
-        <ProfileAvatar size="xlarge" profileAddress={profileAddress} />
-        <FollowButton profileAddress={profileAddress} />
+        <UserAvatarAndHandle user={user} size={'120px'} fontSize={'24px'}/>
+        <FollowButton profileAddress={user.address} />
       </Box>
 
       <Box sx={{
@@ -185,9 +169,9 @@ const Profile = ({
 
             router.push(
               {
-                pathname: '/profile/[address]',
+                pathname: '/profile/[handle]',
                 query: {
-                  address: nickname || profileAddress,
+                  handle: user.nickname || user.address,
                   tab: v
                 }
               },
@@ -244,7 +228,7 @@ const Profile = ({
       </div>
       </FollowingContext.Provider>
     </FollowersContext.Provider>
-  )
+    </>)
 }
 
 export default Profile;

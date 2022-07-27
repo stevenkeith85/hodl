@@ -100,14 +100,9 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
                             sx={{ cursor: 'pointer', color: '#999' }}
                             fontSize="inherit"
                             onClick={() => {
-                                // TODO:
-                                // router.push({
-                                //     pathname: router.pathname,
-                                //     query: { tokenId: comment.tokenId }
-                                // });   
                                 if (clearTopLevel) {
                                     clearTopLevel();
-                                } else {
+                                } else {                                    
                                     router.push(window.location.pathname);
                                 }
 

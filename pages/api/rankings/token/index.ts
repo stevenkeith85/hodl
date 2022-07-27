@@ -34,7 +34,6 @@ export const getMostLikedTokens = async (
   }> => {
 
   const total = await client.zcard(`rankings:token:likes`);
-  console.log('total liked tokens', total)
 
   if (offset >= total) {
     return {
@@ -52,10 +51,19 @@ export const getMostLikedTokens = async (
 
   const ids: string [] = r.data.result;
 
-  console.log('ids', ids)
+  const tokens = [];
+
+  for (const id of ids) {
+    const data = await client.get(`token:${id}`);
+
+    if (data) {
+      tokens.push(data);
+    }
+  }
+  
   
   return {
-    items: ids,
+    items: tokens,
     next: Number(offset) + Number(ids.length),
     total: Number(total)
   };

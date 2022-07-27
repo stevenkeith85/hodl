@@ -29,10 +29,10 @@ const SelectProfileNFT = ({ nfts, onClick, selectedTokenId }: SelectProfileNFTPr
                 <ImageListItem
                     key={i}
                     onClick={(e) => {
-                        onClick(nft.tokenId);
+                        onClick(nft.id);
                     }}
                 >
-                    <NftAvatar token={nft} size={90} highlight={nft.tokenId === selectedTokenId} navigate={false} color="secondary"/>
+                    <NftAvatar token={nft} size={90} highlight={nft.id === selectedTokenId} navigate={false} color="secondary"/>
                 </ImageListItem>
             )
             )}

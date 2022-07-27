@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { getProvider } from '../../../lib/server/connections';
 import { nftmarketaddress } from '../../../config';
 import HodlMarket from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
-import { ipfsUriToCloudinaryUrl, ipfsUriToGatewayUrl } from '../../../lib/utils';
+import { ipfsUriToCid, ipfsUriToGatewayUrl } from '../../../lib/utils';
 import apiRoute from '../handler';
 import { getToken } from '../token/[tokenId]';
 
@@ -34,7 +34,7 @@ const getItems = async (data) => {
             tokenId: token.tokenId,
             owner: listing ? listing.seller : '',
             forSale: true,
-            image: ipfsUriToCloudinaryUrl(token.image),
+            image: ipfsUriToCid(token.image),
             mimeType: token.mimeType || null,
             filter: token.filter || null
         };

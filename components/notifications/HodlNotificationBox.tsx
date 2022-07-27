@@ -34,11 +34,12 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
         (url, query) => axios.get(`${url}/${query}`).then(r => r.data.token));
 
     return (
-        <Box 
-            sx={{ 
+        <Box
+            key={item?.id}
+            sx={{
                 // opacity: lastRead > (item?.timestamp || 0) ? 0.8 : 1 
-            }} 
-            >
+            }}
+        >
             <Box display="flex" alignItems="center" gap={1} >
                 <Box display="flex" alignItems="center" onClick={() => setShowNotifications(false)} gap={1.5} flexGrow={1}>
                     <ProfileAvatar profileAddress={item.subject} size="small" showNickname={false} />

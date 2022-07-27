@@ -4,7 +4,7 @@ import { getProvider } from '../../../lib/server/connections';
 
 import { nftmarketaddress } from '../../../config';
 import HodlMarket from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
-import { ipfsUriToCloudinaryUrl } from '../../../lib/utils';
+import { ipfsUriToCid } from '../../../lib/utils';
 
 import apiRoute from '../handler';
 import { getToken } from '../token/[tokenId]';
@@ -37,17 +37,18 @@ export const getListed = async (address, offset, limit) => {
             if (!token) {
                 return null; 
             }
-            const listing = tokenIdToListing.get(Number(token.tokenId));
+            const listing = tokenIdToListing.get(Number(token.id));
 
             return {
-                tokenId: token.tokenId,
+                id: token.id,
                 name: token.name,
                 description: token.description,
-                image: ipfsUriToCloudinaryUrl(token.image),
+                image: ipfsUriToCid(token.image),
+                mimeType: token.mimeType,
+                filter: token.filter,
+
                 price: listing ? ethers.utils.formatUnits(listing.price, 'ether') : '',
                 owner: listing ? listing.seller : '',
-                mimeType: token.mimeType,
-                filter: token.filter
             };
         })
 

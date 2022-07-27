@@ -1,5 +1,10 @@
+// This is a combination of what's on the blockchain, and what's on Redis
+//
+// TODO: We are moving towards storing everything in Redis, and syncing with the blockchain. 
+
+// i.e. Redis will cache the blockchain data. This will makes things faster, hopefully simpler, and give more certainty about rate-limits, etc
 export interface Nft {
-    tokenId: number;
+    id: number;
     owner: string;
 
     name: string;

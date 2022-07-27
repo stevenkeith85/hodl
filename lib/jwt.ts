@@ -16,7 +16,6 @@ export const apiAuthenticate = async (req, res, next) => {
   const { accessToken, refreshToken } = req.cookies;
 
   if (!accessToken || !refreshToken) {
-    // clearCookies(res);
     req.address = null;
     return next(); // we check for req.address being present in api endpoints that need the user to be auth'd
   }
@@ -43,6 +42,8 @@ export const apiAuthenticate = async (req, res, next) => {
             cookie.serialize('accessToken', accessToken, { httpOnly: true, path: '/' }),
           ])
 
+          const timestamp = Date.now();
+
           // we've update the cookie; so the browser can retry. 
           // (we have an axios retry set up if refreshed is true)
           return res.status(401).json({ refreshed: true });
@@ -50,7 +51,7 @@ export const apiAuthenticate = async (req, res, next) => {
 
         // the sessionId does not match the storedSessionId
         // the user has previously logged out; perhaps on another device
-        
+
         // user will need to re-login to re-auth
         // the next endpoint may not require auth though; so clear req.address and forward the request to it
         // clearCookies(res);
@@ -58,7 +59,7 @@ export const apiAuthenticate = async (req, res, next) => {
         return next();
       } catch (e) {
         // the verify call has failed, i.e. the refreshToken has likely expired. 
-        
+
         // the user will need to re-login to re-auth
         // the next endpoint may not require auth though; so clear req.address and forward the request to it
         // clearCookies(res);

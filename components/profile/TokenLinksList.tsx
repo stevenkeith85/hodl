@@ -7,6 +7,7 @@ import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 import { Likes } from "../Likes";
 import { TokenLink } from "../token/TokenLink";
 import { FollowButton } from "./FollowButton";
+import { Token } from '../../models/Token';
 
 interface TokenLinksListProps {
   swr: SWRInfiniteResponse<any, any>;
@@ -38,8 +39,8 @@ export const TokenLinksList: React.FC<TokenLinksListProps> = ({ swr, limit, show
             }
           >
             {
-              ({ items }) => items.map(id =>
-                <Box display="flex" width={`100%`} alignItems="center">
+              ({ items }) => items.map(({ id } : Token) =>
+                <Box display="flex" width={`100%`} alignItems="center" key={id}>
                   <Box flexGrow={1}>
                     <TokenLink id={id} />
                   </Box>

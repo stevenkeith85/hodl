@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { getProvider } from '../../../lib/server/connections';
 import { nftaddress } from '../../../config';
 import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
-import { ipfsUriToCloudinaryUrl } from '../../../lib/utils';
+import { ipfsUriToCid } from '../../../lib/utils';
 import apiRoute from '../handler';
 import { getToken } from '../token/[tokenId]';
 
@@ -41,13 +41,15 @@ export const getHodling = async (address, offset, limit) => {
             }
 
             return {
-                price: null,
-                tokenId: token.tokenId,
-                owner: address,
-                forSale: false,
-                image: ipfsUriToCloudinaryUrl(token.image),
+                id: token.id,
+                
+                image: ipfsUriToCid(token.image),
                 mimeType: token.mimeType || null,
                 filter: token.filter || null,
+
+                price: null,
+                owner: address,
+                forSale: false,
             }
         });
 

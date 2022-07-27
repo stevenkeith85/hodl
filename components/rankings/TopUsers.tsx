@@ -10,7 +10,7 @@ import { FollowButton } from '../profile/FollowButton';
 import { UserLinksList } from '../profile/UserLinksList';
 
 
-export const TopAccounts = ({ limit = 10, border=false }) => {
+export const TopUsers = ({ limit = 10, border=false }) => {
     const { mostFollowed: rankings } = useContext(RankingsContext);
 
     return (

@@ -14,7 +14,6 @@ export const useStoreToken = () => {
         {
           headers: {
             'Accept': 'application/json',
-            'Authorization': localStorage.getItem('jwt')
           },
         }
       );

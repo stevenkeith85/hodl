@@ -40,7 +40,7 @@ const isOwnerOrSeller = async (token, address) => {
 
 const getProfilePicture = memoize(async (address) => {
   // console.log("CALLING REDIS TO GET PROFILE PIC FOR ADDRESS", address);
-  const token = await client.hget(`user:${address}`, 'picture');
+  const token = await client.hget(`user:${address}`, 'avatar');
   return token;
 }, {
   primitive: true,
@@ -82,7 +82,7 @@ route.post(async (req, res: NextApiResponse) => {
   }
 
   // console.log("CALLING REDIS TO SET USER'S PROFILE PIC TO NFT", token);
-  await client.hset(`user:${req.address}`, { 'picture': token });
+  await client.hset(`user:${req.address}`, { 'avatar': token });
 
   getProfilePicture.delete(req.address);
 

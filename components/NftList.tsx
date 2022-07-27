@@ -1,6 +1,6 @@
 import { Box, imageListItemClasses, ImageListItem, ImageListItemBar, Typography, Button, Skeleton, Stack } from '@mui/material'
 import Link from 'next/link';
-import { assetType, truncateText } from '../lib/utils';
+import { assetType, ipfsUriToCid, truncateText } from '../lib/utils';
 import { ProfileAvatar } from './avatar/ProfileAvatar';
 import { HodlVideo } from './HodlVideo';
 import { Likes } from './Likes';
@@ -11,6 +11,8 @@ import { Comments } from './comments/Comments';
 import { Videocam } from '@mui/icons-material'
 import { AssetTypes } from '../models/AssetType';
 import { MaticPrice } from './MaticPrice';
+import { Token } from '../models/Token';
+import { Nft } from '../models/Nft';
 
 
 const NftList = ({
@@ -36,13 +38,13 @@ const NftList = ({
                 }
             }}
         >
-            {(nfts || []).filter(nft => nft).map((nft, i) => (
+            {(nfts || []).filter(nft => nft).map((nft: Token | Nft) => (
 
-                <ImageListItem key={i} sx={{
+                <ImageListItem key={nft.id} sx={{
                     borderRadius: 1,
                     overflow: 'hidden',
                     '&:hover': {
-                        '.nftItemOverlay': {                            
+                        '.nftItemOverlay': {
                             opacity: 1
                         },
                     }
@@ -79,7 +81,7 @@ const NftList = ({
                     </Box>
 
                     <Link
-                        href={`/nft/${nft?.tokenId}`}>
+                        href={`/nft/${nft?.id}`}>
                         <Box
                             className='nftItemOverlay'
                             position="absolute"
@@ -91,7 +93,7 @@ const NftList = ({
                             color="white"
                             sx={{
                                 background: "rgba(0,0,0,0.35)",
-                                opacity: matches ? 0: 1, // always show on mobiles as they don't really have hover effects
+                                opacity: matches ? 0 : 1, // always show on mobiles as they don't really have hover effects
                                 cursor: 'pointer'
                             }}
                         >
@@ -103,13 +105,13 @@ const NftList = ({
                                     width="100%"
                                     alignItems={"center"}
                                 >
-                                    <ProfileAvatar
+                                    {/* <ProfileAvatar
                                         size="large"
                                         profileAddress={nft?.owner}
                                         color="greyscale"
                                         showNickname={false}
                                         highlight={true}
-                                    />
+                                    /> */}
                                 </Box>
                                 <Box
                                     display="flex"
@@ -123,7 +125,7 @@ const NftList = ({
                                     <Box display="flex"
                                         gap={3}>
                                         <Likes
-                                            id={nft?.tokenId}
+                                            id={nft?.id}
                                             token={true}
                                             color='inherit'
                                             fontSize='26px'
@@ -134,7 +136,7 @@ const NftList = ({
                                             fontSize='26px'
                                             sx={{ paddingRight: 0 }}
                                         />
-                                        {nft?.price && <MaticPrice nft={nft}/>}
+                                        {nft?.price && <MaticPrice nft={nft} />}
                                     </Box>
                                 </Box>
                             </Box>

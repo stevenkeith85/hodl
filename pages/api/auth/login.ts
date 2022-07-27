@@ -8,70 +8,89 @@ import apiRoute from "../handler";
 import { getNonceForAddress } from "./nonce"
 import cookie from 'cookie'
 import { accessTokenExpiresIn, refreshTokenExpiresIn } from "../../../lib/jwt"
+import { User } from "../../../models/User"
 
 dotenv.config({ path: '../.env' })
 
 const client = Redis.fromEnv()
 const route = apiRoute();
 
-// We aren't using localStorage anymore; the jwt will be added to the user's cookies so that
-// it is automatically sent with every request. This will allow us to check if they are logged in before
-// returning the initial response.
-//
-// This allows us to prevent the 'flicker' you get whilst the auth check happens client-side (we check for 'address' in the context)
-//
-// it also allows us to fetch more data in getServerSideProps - as some data needs to know the address
-//
+
 // TODO: CSRF checks - get a library
 
 
 // data structures:
 //
+// A HASH
 // user:<address> = {
 //      nonce - a random number appended to our constant welcome message to ensure the user signs a unique string each time
-//      sessionId
+//      sessionId - a random number that tells us if the refresh token is still valid. if not, the user will need to re-login
+//      picture - an NFT id to use for the users avatar. TODO - rename this to 'avatar'
 // }
+//
+// A ZSET (id, firstlogin) to record all the addresses that have connected to the site. This is effectively our users list.
+// We can use it to check if an address has connected to Hodl My Moon before. If they haven't then their profile URL should 404
+//
+// e.g. /profile/Ox12345 -> 404 if that address isn't in the set
+//
+// users = { 1: 12345, 2: 22345, ...}
+//
+// A ZSET (id, lastlogin) to record all the addresses that have logged in to the site.
+//
+// users = { 1: 42345, 2: 42345, ...}
+//
+
+
 
 // <signature> - the message that's been signed with the user's metamask wallet 
 // <address> - their wallet address
 //
 // User must request a message to sign before this step. that request will generate a <nonce>
+//
+// When authenticating (e.g. in handler.ts), if we get a valid refreshToken, 
+// prior to issuing a new (short lived) accessToken; we'll compare the sessionId
+// sent in the refreshToken with the one we will store (here) in our database
+//
+// If they do not match, the user has been logged out. (by us or themselves)
+// 
+// i.e. clearing the sessionId from the database will correctly prevent us issuing an updated accessToken
 route.post(async (req: NextApiRequest, res: NextApiResponse) => {
-  const { signature, address } = req.body; 
+  const { signature, address } = req.body;
 
   if (!signature || !address) {
-    return res.status(200).json({ error: 'No signed message supplied' });
+    return res.status(200).json({ error: 'Bad request' });
   }
 
-  const exists = await client.hexists(`user:${address}`, 'nonce');
+  const nonce = await client.hget(`user:${address}`, 'nonce');
 
-  if (exists) {
-    const nonce = await client.hget(`user:${address}`, 'nonce');
-
+  if (nonce) {
     const signerAddress = ethers.utils.verifyMessage(messageToSign + nonce, signature);
 
-    if (address == signerAddress) {
-      // Ensure the nonce is different when the next login attempt is made
-      const newNonce = `${Math.floor(Math.random() * 1000000)}`;
-      await client.hset(`user:${address}`, { 'nonce': newNonce });
-      getNonceForAddress.delete(address);
+    if (address == signerAddress) { 
+      // User has connected
 
-      // When authenticating (e.g. in handler.ts), if we get a valid refreshToken, 
-      // prior to issuing a new (short lived) accessToken; we'll compare the sessionId
-      // sent in the refreshToken with the one we will store (here) in our database
-      //
-      // If they do not match, the user has been logged out. (by us or themselves)
-      // 
-      // i.e. clearing the sessionId from the database will correctly prevent us issuing an updated accessToken
+      // Create user
+      await client.hsetnx(`user:${address}`, 'address', address);
+      await client.hsetnx(`user:${address}`, 'nickname', '');
+      await client.hsetnx(`user:${address}`, 'avatar', '');
+
+      // Update
       const sessionId = Math.floor(Math.random() * 1000000);
-      await client.hset(`user:${address}`, { 'sessionId': sessionId });
+      const nonce = Math.floor(Math.random() * 1000000);
+      await client.hset(`user:${address}`, {
+        sessionId,
+        nonce
+      });
 
-      const accessToken = jwt.sign(
-        { address, sessionId }, process.env.JWT_SECRET, { expiresIn: accessTokenExpiresIn }
+      // Create access and refresh tokens
+      const accessToken = jwt.sign({ address, sessionId },
+        process.env.JWT_SECRET,
+        { expiresIn: accessTokenExpiresIn }
       );
 
-      const refreshToken = jwt.sign(
-        { sessionId }, process.env.JWT_SECRET, { expiresIn: refreshTokenExpiresIn }
+      const refreshToken = jwt.sign({ sessionId },
+        process.env.JWT_SECRET,
+        { expiresIn: refreshTokenExpiresIn }
       );
 
       res.setHeader('Set-Cookie', [
@@ -79,11 +98,21 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
         cookie.serialize('refreshToken', refreshToken, { httpOnly: true, path: '/' })
       ])
 
-      return res.status(200).json({ 
-        success: true, 
-        // token: accessToken, 
-        address, 
-        msg: "You are now logged in." 
+      // Log when the user joined
+      const timestamp = Date.now();
+      await client.zadd(
+        `users`,
+        { nx: true },
+        {
+          score: timestamp,
+          member: address
+        }
+      );
+
+      return res.status(200).json({
+        success: true,
+        address,
+        msg: "You are now logged in."
       });
     } else {
       return res.status(401).json({ success: false, address, msg: "You didn't provide the correct signature" });

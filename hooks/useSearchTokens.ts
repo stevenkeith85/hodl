@@ -1,9 +1,9 @@
 import useSWRInfinite from 'swr/infinite'
 import { fetchWithQueryOffsetLimit } from '../lib/swrFetchers';
     
-export const useSearch = (q, limit=10, prefetchedResults=null) => {
+export const useSearchTokens = (q, limit=10, prefetchedResults=null) => {
     const getKey = (index, _previous) => {
-        return [`/api/search/results`, q, index * limit, limit];
+        return [`/api/search/tokens`, q, index * limit, limit];
     }
 
     const swr = useSWRInfinite(
@@ -12,5 +12,5 @@ export const useSearch = (q, limit=10, prefetchedResults=null) => {
         { fallbackData: prefetchedResults });
 
 
-    return [swr];
+    return { results: swr };
 }

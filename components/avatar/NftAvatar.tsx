@@ -50,4 +50,4 @@ export const NftAvatar = ({ token, size, highlight = false, color = "greyscale" 
         </Avatar>
     )
 }
-export const NftAvatarMemo = memo(NftAvatar, (prev: any, next: any) => prev.size === next.size && prev.token.tokenId === next.token.tokenId);
+export const NftAvatarMemo = memo(NftAvatar, (prev: any, next: any) => prev.size === next.size && prev.token.id === next.token.id);

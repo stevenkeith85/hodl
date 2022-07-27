@@ -2,6 +2,7 @@ import { Typography } from "@mui/material";
 import Link from "next/link";
 import { AssetTypes } from "../models/AssetType";
 import { Nft } from "../models/Nft";
+import { Token } from "../models/Token";
 import { commercial, nonCommercial, token } from "./copyright";
 
 export const TAG_PATTERN = /#([\d\w_]+)/g;
@@ -61,7 +62,7 @@ export const createCloudinaryUrl = (assetType = "image", deliveryType = "upload"
   return `https://res.cloudinary.com/${cloudName}/${assetType}/${deliveryType}/${transformations ? transformations + '/' : ''}${environment}/${folder}/${cid}${ext ? '.' + ext : ''}`;
 }
 
-export const imageSizes = [500, 600, 700, 800, 900, 1000, 1100, 1200, 1400, 1500];
+export const imageSizes = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1400, 1500];
 
 export const getShortAddress = address => {
   return address?.slice(0, 5) + '...' + address?.slice(-4);
@@ -95,7 +96,7 @@ export const ipfsUriToGatewayUrl = ipfsUri => {
 
 };
 
-export const ipfsUriToCloudinaryUrl = ipfsUri => {
+export const ipfsUriToCid = ipfsUri => {
   if (!ipfsUri) {
     return '#';
   }
@@ -109,7 +110,7 @@ export const trim = str => {
   return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 }
 
-export const assetType = (nft: Nft) : AssetTypes => {
+export const assetType = (nft: Token | Nft) : AssetTypes => {
   if (!nft.mimeType) {
     return AssetTypes.Image;
   }

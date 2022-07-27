@@ -1,7 +1,9 @@
 import { Box, Grid } from "@mui/material"
 import { HomePagePitch } from "./HomePagePitch"
-import { TopAccounts } from "../rankings/TopAccounts"
+import { TopUsers } from "../rankings/TopUsers"
 import { TopTokens } from "../rankings/TopTokens"
+import { NewTokens } from "../rankings/NewTokens"
+import { NewUsers } from "../rankings/NewUsers"
 
 export const PublicHomePage = ({ }) => {
     return (
@@ -18,16 +20,16 @@ export const PublicHomePage = ({ }) => {
                 paddingBottom={4}
             >
                 <Grid item xs={12} sm={6} md={3}>
-                    <TopAccounts />
+                    <TopUsers />
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
                     <TopTokens showLikes={false} />
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
-                    <TopAccounts />
+                    <NewUsers />
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
-                    <TopTokens showLikes={false} />
+                    <NewTokens showLikes={false} />
                 </Grid>
             </Grid>
         </Box >

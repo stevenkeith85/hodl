@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import axios from 'axios'
 import apiRoute from "../../handler";
 import { ActionSet, HodlAction } from "../../../../models/HodlAction";
+import { User } from "../../../../models/User";
 
 dotenv.config({ path: '../.env' })
 
@@ -28,16 +29,17 @@ export const getMostFollowedUsers = async (
   limit: number = 10
 ): Promise<
   {
-    items: string[],
+    items: User[],
     next: number,
     total: number
   }> => {
 
+  const users : User[] = [];
   const total = await client.zcard(`rankings:user:followers`);
 
   if (offset >= total) {
     return {
-      items: [],
+      items: users,
       next: Number(total),
       total: Number(total)
     };
@@ -49,10 +51,20 @@ export const getMostFollowedUsers = async (
     }
   })
 
-  const addresses: string [] = r.data.result;
+  const addresses: string[] = r.data.result;
+
+  if (addresses.length) {
+    for (const address of addresses) {
+      const data = await client.hmget<User>(`user:${address}`, 'address', 'nickname', 'avatar');
+
+      if (data) {
+        users.push(data);
+      }
+    }
+  }
   
   return {
-    items: addresses,
+    items: users,
     next: Number(offset) + Number(addresses.length),
     total: Number(total)
   };

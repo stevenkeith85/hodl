@@ -19,22 +19,22 @@ export async function getServerSideProps({ req, res }) {
   const limit = 4;
 
   const prefetchedFeed = req.address ? [await getActions(req.address, ActionSet.Feed, 0, limit)] : null;
-  const prefetchedTopAccounts = req.address ? [await getMostFollowedUsers(0, limit)] : null;
+  const prefetchedTopUsers = req.address ? [await getMostFollowedUsers(0, limit)] : null;
 
   return {
     props: {
       address: req.address || null,
       limit,
       prefetchedFeed,
-      prefetchedTopAccounts
+      prefetchedTopUsers
     }
   }
 }
 
-export default function Home({ address, limit, prefetchedFeed, prefetchedTopAccounts }) {
+export default function Home({ address, limit, prefetchedFeed, prefetchedTopUsers }) {
   const { actions: feed } = useActions(address, ActionSet.Feed, limit, prefetchedFeed);
-  const { rankings: mostFollowed } = useRankings(true, limit, prefetchedTopAccounts);
-  const { rankings: mostLiked } = useRankings(true, limit, prefetchedTopAccounts, "token");
+  const { rankings: mostFollowed } = useRankings(true, limit, prefetchedTopUsers);
+  const { rankings: mostLiked } = useRankings(true, limit, null, "token");
 
   return (
     <>

@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
-import memoize from 'memoizee';
 import { getAddress } from "./address";
 import apiRoute from "../handler";
 import { nicknameValidationSchema } from "../../../validationSchema/nickname";
@@ -11,16 +10,10 @@ dotenv.config({ path: '../.env' })
 const client = Redis.fromEnv()
 const route = apiRoute();
 
-export const getNickname = memoize(async (address) => {
-  // console.log("CALLING REDIS FOR NICKNAME FOR ADDRESS", address);
-
-  const nickname = await client.get(`nickname:${address}`);
+export const getNickname = async (address) => {
+  const nickname = await client.hget(`user:${address}`, 'nickname');
   return nickname;
-}, {
-  primitive: true,
-  max: 10000, // store 10,000 nicknames
-});
-
+}
 
 // GET /api/profile/nickname?address=0x1234
 route.get(async (req: NextApiRequest, res: NextApiResponse) => {
@@ -47,27 +40,22 @@ route.post(async (req, res) => {
 
   const { nickname } = req.body;
 
-  const exists = await client.exists(`address:${nickname}`);
+  const exists = await client.exists(`nickname:${nickname}`);
 
   if (exists) {
     return res.status(400).json({
       message: 'Nickname not available'
     });
   } else {
-    const oldNickname = await client.get(`nickname:${req.address}`);
+    // TODO - REDIS TRANSACTION
+    const oldNickname = await client.hget(`user:${req.address}`, 'nickname');
 
-    // set new
-    await client.set(`address:${nickname}`, req.address);
-    await client.set(`nickname:${req.address}`, nickname);
-
-    // and free up the old one (if we have one)
+    client.set(`nickname:${nickname}`, req.address);
+    client.hset(`user:${req.address}`, {nickname})
+    
     if (oldNickname) {
-      await client.del(`address:${oldNickname}`);
+      await client.del(`nickname:${oldNickname}`);
     }
-
-    // clear cache
-    getNickname.delete(req.address);
-    getAddress.delete(nickname);
   }
 
   return res.status(200).json({
