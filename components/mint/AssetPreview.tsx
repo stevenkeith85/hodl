@@ -43,18 +43,16 @@ export const AssetPreview: FC<MintProps> = ({
             onLoad={setLoading}
             height={'400px'}
             audio = {assetType({
+              creator: "",
+              metadata: "",
               mimeType: formData.mimeType,
-              tokenId: 0,
+              id: 0,
               owner: "",
               name: "",
               description: "",
               image: "",
               filter: "",
               privilege: "",
-              ipfsMetadata: "",
-              ipfsMetadataGateway: "",
-              ipfsImage: "",
-              ipfsImageGateway: "",
               forSale: false,
               price: ""
             }) === AssetTypes.Audio}

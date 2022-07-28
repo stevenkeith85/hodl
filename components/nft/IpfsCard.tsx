@@ -1,6 +1,5 @@
-import { Card, CardContent, Typography, Stack, Tooltip, Chip, Link, Box } from "@mui/material";
-import { useRouter } from "next/router";
-import { HodlExternalLink } from "../HodlExternalLink";
+import { Typography, Stack, Tooltip, Link, Box } from "@mui/material";
+import { cidToGatewayUrl } from "../../lib/utils";
 import { IpfsTooltip } from "../tooltips/IpfsTooltip";
 
 export const IpfsCard = ({ nft }) => {
@@ -22,10 +21,10 @@ export const IpfsCard = ({ nft }) => {
             </Typography>
             <Stack direction="row" spacing={2}>
 
-                <Link href={nft?.ipfsMetadataGateway || '#'} target="blank" sx={{ textDecoration: 'none' }}>
+                <Link href={cidToGatewayUrl(nft?.metadata)} target="blank" sx={{ textDecoration: 'none' }}>
                     Metadata
                 </Link>
-                <Link href={nft?.ipfsImageGateway || '#'} target="blank" sx={{ textDecoration: 'none' }}>
+                <Link href={cidToGatewayUrl(nft?.image)} target="blank" sx={{ textDecoration: 'none' }}>
                     Asset
                 </Link>
             </Stack>

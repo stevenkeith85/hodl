@@ -49,11 +49,6 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
     const router = useRouter();
     const { address } = useContext(WalletContext);
 
-    const { data: profileNickname } = useSWR(
-        comment.subject ? [`/api/profile/nickname`, comment.subject] : null,
-        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.nickname)
-    )
-
     // TODO: 
     // We could pass this down the component tree, or use a context here. SWR will dedup the calls though, so we should only do the API call once, even if there's lots of comments
     // Probably worth using a context soon anyways, as there's a lot of prop drilling going on

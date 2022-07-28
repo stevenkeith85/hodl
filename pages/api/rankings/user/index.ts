@@ -5,6 +5,7 @@ import axios from 'axios'
 import apiRoute from "../../handler";
 import { ActionSet, HodlAction } from "../../../../models/HodlAction";
 import { User } from "../../../../models/User";
+import { getUser } from "../../user/[handle]";
 
 dotenv.config({ path: '../.env' })
 
@@ -55,7 +56,7 @@ export const getMostFollowedUsers = async (
 
   if (addresses.length) {
     for (const address of addresses) {
-      const data = await client.hmget<User>(`user:${address}`, 'address', 'nickname', 'avatar');
+      const data = await getUser(address);//await client.hmget<User>(`user:${address}`, 'address', 'nickname', 'avatar');
 
       if (data) {
         users.push(data);

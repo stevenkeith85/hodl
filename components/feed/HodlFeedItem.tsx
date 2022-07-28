@@ -85,7 +85,6 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                 sx={{
                     borderRadius: 1,
                     padding: 2,
-                    // boxShadow: '0 0 2px 1px #eee',
                     border: `1px solid #ddd`,
                     width: `100%`,
                     overflow: 'hidden'
@@ -130,7 +129,6 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                         {item.timestamp && formatDistanceStrict(new Date(item.timestamp), new Date(), { addSuffix: true })}
                                     </Typography>
                                 </Box>
-                                {/* {item.action === ActionTypes.Added && <Box component="span"><Chip label="New" variant="outlined" color="success" /></Box>} */}
                                 {item.action === ActionTypes.Listed && <Box component="span"><Chip label="Listed" variant="outlined" color="secondary" /></Box>}
                             </Box>
                         </Box>
@@ -141,7 +139,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                             <Box sx={{ cursor: 'pointer', marginX: -2, background: '#ddd' }}>
                                 {assetType(token) === AssetTypes.Image &&
                                     <HodlImage
-                                        cid={token.image.split('//')[1]}
+                                        cid={token.image}
                                         effect={token.filter}
                                         sx={{ img: { borderRadius: 0, verticalAlign: 'middle' } }}
                                         loading="eager"

@@ -1,4 +1,4 @@
-// Our token type matches what is stored in Redis
+// Our Token type matches what is stored in Redis
 // At the moment we only store immutable data in Redis
 //
 // We will likely cache the MUTABLE data at some point thoughh
@@ -6,18 +6,17 @@
 
 export interface Token {
     id: number;
+
     creator: string;
 
     name: string;
     description: string;
-    image: string; // ipfs://<cid>
-    metadata: string; // ipfs://<cid>
-    mimeType: string;
-    filter: string;
+
+    metadata: string; // <cid>
+
     privilege: string;
-    
-    // TODO - Mutable data ?
-    // owner: string;
-    // forSale: boolean;
-    // price: string;
+
+    image: string; // <cid>
+    mimeType: string; // image might be a video. mimeType tells us what it actually is. TODO - Rename image to asset. (This technically would be off-spec though as ERC721 uses 'image')
+    filter: string; // we apply the filter dynamically. TODO - We should PROBABLY transform the actual asset as upload time. (unless its very slow to do so)
   };

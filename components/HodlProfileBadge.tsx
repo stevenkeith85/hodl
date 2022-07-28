@@ -1,28 +1,54 @@
-import { Box, Tooltip, Typography } from '@mui/material';
-import { ProfileAvatar } from '../components';
+import { Box, Typography } from '@mui/material';
 import humanize from "humanize-plus";
-import { useFollowers } from '../hooks/useFollowers';
-import { useFollowing } from '../hooks/useFollowing';
 import { useHodling } from '../hooks/useHodling';
 import { useListed } from '../hooks/useListed';
-import useSWR from 'swr';
-import axios from 'axios'
 import Link from 'next/link';
-import { truncateText, getShortAddress } from '../lib/utils';
 import { grey } from '@mui/material/colors';
 import { useFollowingCount } from '../hooks/useFollowingCount';
 import { useFollowersCount } from '../hooks/useFollowersCount';
+import { User } from '../models/User';
+import { UserAvatarAndHandle } from './avatar/UserAvatarAndHandle';
 
-export const HodlProfileBadge = ({ address }) => {
-    const [hodlingCount] = useHodling(address, 0, null, null);
-    const [listedCount] = useListed(address, 0, null, null);
-    
-    const [followersCount] = useFollowersCount(address);
-    const [followingCount] = useFollowingCount(address);
 
-    const { data: profileNickname } = useSWR(address ? [`/api/profile/nickname`, address] : null,
-        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.nickname)
-    )
+interface CountAndLinkProps {
+    count: number;
+    user: User;
+    label: string;
+    tab: number;
+}
+
+const CountAndLink: React.FC<CountAndLinkProps> = ({ count, user, label, tab }) => {
+    return (<>
+        {!isNaN(count) &&
+            <Link href={`/profile/${user.nickname || user.address}?tab=${tab}`} passHref>
+                <Typography
+                    component="a"
+                    sx={{
+                        color: grey[700],
+                        textDecoration: 'none',
+                        span: {
+                            fontWeight: 600,
+                            display: 'block'
+                        }
+                    }}>
+                    <span>{humanize.compactInteger(count, 1)}</span>
+                    {label}
+                </Typography>
+            </Link>
+        }
+    </>)
+}
+
+interface HodlProfileBadgeProps {
+    user: User;
+}
+
+export const HodlProfileBadge: React.FC<HodlProfileBadgeProps> = ({ user }) => {
+    const [hodlingCount] = useHodling(user.address, 0, null, null);
+    const [listedCount] = useListed(user.address, 0, null, null);
+
+    const [followersCount] = useFollowersCount(user.address);
+    const [followingCount] = useFollowingCount(user.address);
 
     return (
         <Box
@@ -36,7 +62,6 @@ export const HodlProfileBadge = ({ address }) => {
                 paddingY: 2,
                 border: '1px solid #ddd',
                 borderRadius: 1,
-                // boxShadow: '0 0 2px 1px #eee'
             }}
         >
             <Box
@@ -47,36 +72,7 @@ export const HodlProfileBadge = ({ address }) => {
                 flexGrow={1}
                 gap={2}
             >
-                <ProfileAvatar profileAddress={address} size={"medium"} showNickname={false} />
-
-                {profileNickname ?
-                    <Link href={`/profile/${profileNickname}`}>
-                        <Tooltip title={address}>
-                            <Typography
-                                sx={{
-                                    fontSize: '18px',
-                                    color: grey[700],
-                                    cursor: 'pointer'
-                                }}>
-                                {truncateText(profileNickname, 20)}
-                            </Typography>
-                        </Tooltip>
-                    </Link>
-                    :
-                    <Link href={`/profile/${address}`}>
-                        <Tooltip title={address}>
-                            <Typography
-                                sx={{
-                                    fontSize: '16px',
-                                    color: grey[700],
-                                    cursor: 'pointer'
-                                }}>
-                                {getShortAddress(address)?.toLowerCase()}
-                            </Typography>
-                        </Tooltip>
-                    </Link>
-                }
-
+                <UserAvatarAndHandle user={user} size="55px" fontSize='18px' />
             </Box>
 
             <Box
@@ -88,8 +84,12 @@ export const HodlProfileBadge = ({ address }) => {
                     gap: 2
                 }}
             >
-                {!isNaN(hodlingCount) &&
-                    <Link href={`/profile/${profileNickname || address}?tab=0`} passHref>
+                <CountAndLink count={hodlingCount} label="Hodling" user={user} tab={0} />
+                <CountAndLink count={listedCount} label="Listed" user={user} tab={1} />
+                <CountAndLink count={followingCount} label="Following" user={user} tab={2} />
+                <CountAndLink count={followersCount} label="Followers" user={user} tab={3} />
+                {/* {!isNaN(hodlingCount) &&
+                    <Link href={`/profile/${user.nickname || user.address}?tab=0`} passHref>
                         <Typography
                             component="a"
                             sx={{
@@ -107,7 +107,7 @@ export const HodlProfileBadge = ({ address }) => {
                     </Link>
                 }
                 {!isNaN(listedCount) &&
-                    <Link href={`/profile/${profileNickname || address}?tab=1`} passHref>
+                    <Link href={`/profile/${user.nickname || user.address}?tab=1`} passHref>
                         <Typography
                             component="a"
                             sx={{
@@ -123,7 +123,7 @@ export const HodlProfileBadge = ({ address }) => {
                     </Link>
                 }
                 {!isNaN(followingCount) &&
-                    <Link href={`/profile/${profileNickname || address}?tab=2`} passHref>
+                    <Link href={`/profile/${user.nickname || user.address}?tab=2`} passHref>
                         <Typography
                             component="a"
                             sx={{
@@ -139,7 +139,7 @@ export const HodlProfileBadge = ({ address }) => {
                     </Link>
                 }
                 {!isNaN(followersCount) &&
-                    <Link href={`/profile/${profileNickname || address}?tab=3`} passHref>
+                    <Link href={`/profile/${user.nickname || user.address}?tab=3`} passHref>
                         <Typography
                             component="a"
                             sx={{
@@ -153,7 +153,7 @@ export const HodlProfileBadge = ({ address }) => {
                             <span>{humanize.compactInteger(followersCount, 1)}</span> Followers
                         </Typography>
                     </Link>
-                }
+                } */}
             </Box>
 
         </Box>

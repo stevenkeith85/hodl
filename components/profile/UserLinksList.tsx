@@ -1,8 +1,7 @@
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import InfiniteScroll from "react-swr-infinite-scroll";
 import { SWRInfiniteResponse } from "swr/infinite/dist/infinite";
 import { User } from "../../models/User";
-import { ProfileAvatar } from "../avatar/ProfileAvatar";
 import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 import { FollowButton } from "./FollowButton";
@@ -25,6 +24,7 @@ export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit, width 
         display="flex"
         gap={2}
         flexDirection={"column"}
+        marginBottom={-2}
       >
         <InfiniteScroll
           swr={swr}
@@ -35,15 +35,22 @@ export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit, width 
           }
         >
           {
-            ({ items }) => items.map((user: User) => 
-              <Box display="flex" width={`100%`} alignItems="center" key={user.address}>
+            ({ items }) => items.map((user: User, i) =>
+
+              <Box
+                display="flex"
+                width={`100%`}
+                alignItems="center"
+                key={user.address}
+              >
                 <Box flexGrow={1}>
-                  <UserAvatarAndHandle user={user} />
+                  <UserAvatarAndHandle user={user} size="40px" fontSize="14px" />
                 </Box>
                 <Box flexShrink={1}>
                   <FollowButton profileAddress={user.address} variant="text" />
                 </Box>
               </Box>
+
             )
           }
         </InfiniteScroll>

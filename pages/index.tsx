@@ -11,30 +11,46 @@ import { getActions } from './api/actions';
 import { useRankings } from '../hooks/useRankings';
 import { getMostFollowedUsers } from './api/rankings/user';
 import { RankingsContext } from '../contexts/RankingsContext';
+import { getUser } from './api/user/[handle]';
+import { getMostLikedTokens } from './api/rankings/token';
+import { useSearchUsers } from '../hooks/useSearchUsers';
+import { getUserSearchResults } from './api/search/users';
 
 
 export async function getServerSideProps({ req, res }) {
   await authenticate(req, res);
 
-  const limit = 4;
+  let user = null;
+
+  if (req.address) {
+    user = await getUser(req.address)
+  }
+
+  const limit = 10;
 
   const prefetchedFeed = req.address ? [await getActions(req.address, ActionSet.Feed, 0, limit)] : null;
-  const prefetchedTopUsers = req.address ? [await getMostFollowedUsers(0, limit)] : null;
+  const prefetchedTopUsers = [await getMostFollowedUsers(0, limit)];
+  const prefetchedTopTokens = [await getMostLikedTokens(0, limit)];
+  const prefetchedNewUsers = [await getUserSearchResults('', 0, limit)];
 
   return {
     props: {
       address: req.address || null,
+      user,
       limit,
       prefetchedFeed,
-      prefetchedTopUsers
+      prefetchedTopUsers,
+      prefetchedTopTokens,
+      prefetchedNewUsers
     }
   }
 }
 
-export default function Home({ address, limit, prefetchedFeed, prefetchedTopUsers }) {
+export default function Home({ address, user, limit, prefetchedFeed, prefetchedTopUsers, prefetchedTopTokens, prefetchedNewUsers }) {
   const { actions: feed } = useActions(address, ActionSet.Feed, limit, prefetchedFeed);
   const { rankings: mostFollowed } = useRankings(true, limit, prefetchedTopUsers);
-  const { rankings: mostLiked } = useRankings(true, limit, null, "token");
+  const { rankings: mostLiked } = useRankings(true, limit, prefetchedTopTokens, "token");
+  const { results: newUsers } = useSearchUsers('', limit, prefetchedNewUsers);
 
   return (
     <>
@@ -45,18 +61,19 @@ export default function Home({ address, limit, prefetchedFeed, prefetchedTopUser
 
       <RankingsContext.Provider value={{
         mostFollowed,
-        mostLiked
+        mostLiked,
+        newUsers
       }}>
         {!address &&
           <Container maxWidth="xl">
             <PublicHomePage />
           </Container>
-
         }
         {address &&
-          <FeedContext.Provider value={{ feed }}>
+          <FeedContext.Provider 
+            value={{ feed }}>
             <Container maxWidth="xl">
-              <PrivateHomePage address={address} />
+              <PrivateHomePage user={user} address={address} />
             </Container>
 
           </FeedContext.Provider>

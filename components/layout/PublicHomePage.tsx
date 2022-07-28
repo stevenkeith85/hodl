@@ -15,7 +15,7 @@ export const PublicHomePage = ({ }) => {
                 <HomePagePitch />
             </Box>
             <Grid
-                // spacing={1}
+                spacing={4}
                 container
                 paddingBottom={4}
             >

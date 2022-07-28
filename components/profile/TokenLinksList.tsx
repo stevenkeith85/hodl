@@ -1,12 +1,9 @@
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import InfiniteScroll from "react-swr-infinite-scroll";
 import { SWRInfiniteResponse } from "swr/infinite/dist/infinite";
-import { ProfileAvatar } from "../avatar/ProfileAvatar";
-import { HodlImpactAlert } from "../HodlImpactAlert";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 import { Likes } from "../Likes";
 import { TokenLink } from "../token/TokenLink";
-import { FollowButton } from "./FollowButton";
 import { Token } from '../../models/Token';
 
 interface TokenLinksListProps {
@@ -29,6 +26,7 @@ export const TokenLinksList: React.FC<TokenLinksListProps> = ({ swr, limit, show
           display="flex"
           gap={2}
           flexDirection={"column"}
+          marginBottom={-2}
         >
           <InfiniteScroll
             swr={swr}
@@ -39,13 +37,13 @@ export const TokenLinksList: React.FC<TokenLinksListProps> = ({ swr, limit, show
             }
           >
             {
-              ({ items }) => items.map(({ id } : Token) =>
-                <Box display="flex" width={`100%`} alignItems="center" key={id}>
+              ({ items }) => items.map((token : Token) => 
+                <Box display="flex" width={`100%`} alignItems="center" key={token.id}>
                   <Box flexGrow={1}>
-                    <TokenLink id={id} />
+                    <TokenLink token={token} />
                   </Box>
                   {showLikes && <Box flexShrink={1}>
-                    <Likes id={id} token={true} />
+                    <Likes id={token.id} token={true} />
                   </Box>
                   }
                 </Box>

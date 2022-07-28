@@ -1,4 +1,4 @@
-import { Box, Stack, Tooltip } from "@mui/material";
+import { Box, Stack, Tooltip, Typography } from "@mui/material";
 import { DefaultAvatar } from "./DefaultAvatar";
 import { User } from "../../models/User";
 import { UserHandle } from "./UserHandle";
@@ -13,25 +13,34 @@ interface UserAvatarProps {
     fontSize?: string;
 }
 
-export const UserAvatarAndHandle: React.FC<UserAvatarProps> = ({ user, size="42px", fontSize="14px" }) => {
+export const UserAvatarAndHandle: React.FC<UserAvatarProps> = ({ user, size = "40px", fontSize = "14px" }) => {
 
     return (
-        <Link href={`/profile/${user.nickname || user.address}`}>
-            <Tooltip title={user.address} arrow placement="right">
-                <a>
-                    <Box 
+        <Link href={`/profile/${user.nickname || user.address}`} passHref>
+            <Typography component="a" sx={{ 
+                textDecoration: 'none', 
+                color: '#333'
+                }}>
+            <Box
+                sx={{
+                    display: 'flex',
+                    cursor: 'pointer'
+                }}
+            >
+                <Tooltip title={user.address} arrow placement="right">
+                    <Box
                         sx={{
                             display: 'flex',
                             alignItems: 'center',
-                            gap: 3,
-                            cursor: 'pointer'
+                            gap: 2,
                         }}
                     >
                         {user.avatar ? <UserAvatar user={user} size={size} /> : <UserDefaultAvatar size={size} />}
                         <UserHandle user={user} fontSize={fontSize} />
                     </Box>
-                </a>
-            </Tooltip>
+                </Tooltip>
+            </Box>
+            </Typography>
         </Link>
 
     )

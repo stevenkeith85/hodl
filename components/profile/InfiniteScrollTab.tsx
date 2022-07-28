@@ -32,9 +32,7 @@ export const InfiniteScrollTab: React.FC<InfiniteScrollTabProps> = ({ swr, limit
         {
           ({ items, next, total }) =>
             <Box marginY={2} key={next}>
-              <NftList
-                nfts={items}
-                />
+              <NftList nfts={items} />
             </Box>
         }
       </InfiniteScroll>

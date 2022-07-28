@@ -1,14 +1,10 @@
 import { useEffect, useState } from 'react'
-import { isValidAddress } from '../../lib/profile'
 import { Badge, Box, Tab, Tabs } from '@mui/material'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
 import { HodlLoadingSpinner } from '../../components/HodlLoadingSpinner'
-import { ProfileAvatar } from '../../components/avatar/ProfileAvatar'
 import { FollowButton } from '../../components/profile/FollowButton'
 import Head from 'next/head'
-import { getNickname } from '../api/profile/nickname'
-import { getAddress } from '../api/profile/address'
 import { getHodlingCount } from '../api/profile/hodlingCount'
 import { getListedCount } from '../api/profile/listedCount'
 
@@ -22,47 +18,37 @@ import { useFollowers } from '../../hooks/useFollowers';
 import { useListed } from '../../hooks/useListed';
 import { useHodling } from '../../hooks/useHodling';
 import humanize from "humanize-plus";
-import { HodlImpactAlert } from '../../components/HodlImpactAlert';
 import { authenticate } from '../../lib/jwt';
 import { getFollowingCount } from '../api/following/count'
 import { useFollowingCount } from '../../hooks/useFollowingCount'
-import { UserLinksList } from '../../components/profile/UserLinksList'
 import { useFollowersCount } from '../../hooks/useFollowersCount'
-import { NftLinksList } from '../../components/profile/NftLinksList'
 import { FollowersContext } from '../../contexts/FollowersContext'
 import { FollowingContext } from '../../contexts/FollowingContext'
-import { userInfo } from 'os'
 import { getUser } from '../api/user/[handle]'
-import { UserAvatar } from '../../components/avatar/UserAvatar'
 import { UserAvatarAndHandle } from '../../components/avatar/UserAvatarAndHandle'
 
 
-const InfiniteScrollTab = dynamic(
+
+const NftLinksList = dynamic(
   // @ts-ignore
-  () => import('../../components/profile/InfiniteScrollTab').then((module) => module.InfiniteScrollTab),
+  () => import('../../components/profile/NftLinksList').then((module) => module.NftLinksList),
   { loading: () => <HodlLoadingSpinner /> }
 );
 
-const FollowingTab = dynamic(
+const UserLinksList = dynamic(
   // @ts-ignore
-  () => import('../../components/profile/FollowingTab').then((module) => module.FollowingTab),
-  { loading: () => <HodlLoadingSpinner /> }
-);
-
-const FollowersTab = dynamic(
-  // @ts-ignore
-  () => import('../../components/profile/FollowersTab').then((module) => module.FollowersTab),
+  () => import('../../components/profile/UserLinksList').then((module) => module.UserLinksList),
   { loading: () => <HodlLoadingSpinner /> }
 );
 
 
-// TODO - We should just look up the user object and pass that to the page
+
 export async function getServerSideProps({ params, query, req, res }) {
   await authenticate(req, res);
 
-  const user = await getUser(params.handle);
+  const owner = await getUser(params.handle);
   
-  if (!user) {
+  if (!owner) {
       return {
         notFound: true
       }
@@ -71,21 +57,21 @@ export async function getServerSideProps({ params, query, req, res }) {
   const tab = Number(query.tab) || 0;
   const limit = 10;  
   
-  const prefetchedHodlingCount = await getHodlingCount(user.address);
-  const prefetchedHodling = tab == 0 ? await getHodling(user.address, 0, limit) : null;
+  const prefetchedHodlingCount = await getHodlingCount(owner.address);
+  const prefetchedHodling = tab == 0 ? await getHodling(owner.address, 0, limit) : null;
 
-  const prefetchedListedCount = await getListedCount(user.address);
-  const prefetchedListed = tab == 1 ? await getListed(user.address, 0, limit) : null;
+  const prefetchedListedCount = await getListedCount(owner.address);
+  const prefetchedListed = tab == 1 ? await getListed(owner.address, 0, limit) : null;
 
-  const prefetchedFollowingCount = await getFollowingCount(user.address);
-  const prefetchedFollowing = tab == 2 ? await getFollowing(user.address) : null;
+  const prefetchedFollowingCount = await getFollowingCount(owner.address);
+  const prefetchedFollowing = tab == 2 ? await getFollowing(owner.address) : null;
 
-  const prefetchedFollowersCount = await getFollowersCount(user.address);
-  const prefetchedFollowers = tab == 3 ? await getFollowers(user.address) : null;
+  const prefetchedFollowersCount = await getFollowersCount(owner.address);
+  const prefetchedFollowers = tab == 3 ? await getFollowers(owner.address) : null;
 
   return {
     props: {
-      user,
+      owner,
       address: req.address || null,
       prefetchedFollowingCount,
       prefetchedFollowing,
@@ -102,7 +88,7 @@ export async function getServerSideProps({ params, query, req, res }) {
 }
 
 const Profile = ({
-  user,
+  owner,
   address,
   prefetchedFollowingCount = null,
   prefetchedFollowing = null,
@@ -119,14 +105,14 @@ const Profile = ({
 
   const [value, setValue] = useState(Number(tab)); // tab
 
-  const [hodlingCount, hodling] = useHodling(user.address, limit, prefetchedHodlingCount, prefetchedHodling);
-  const [listedCount, listed] = useListed(user.address, limit, prefetchedListedCount, prefetchedListed);
+  const [hodlingCount, hodling] = useHodling(owner.address, limit, prefetchedHodlingCount, prefetchedHodling);
+  const [listedCount, listed] = useListed(owner.address, limit, prefetchedListedCount, prefetchedListed);
 
-  const [followingCount] = useFollowingCount(user.address, prefetchedFollowingCount);
-  const { swr: following } = useFollowing(true, user.address, limit);
+  const [followingCount] = useFollowingCount(owner.address, prefetchedFollowingCount);
+  const { swr: following } = useFollowing(true, owner.address, limit);
 
-  const [followersCount] = useFollowersCount(user.address, prefetchedFollowersCount);
-  const { swr: followers } = useFollowers(true, user.address, limit);
+  const [followersCount] = useFollowersCount(owner.address, prefetchedFollowersCount);
+  const { swr: followers } = useFollowers(true, owner.address, limit);
 
   useEffect(() => {
     if (!router?.query?.tab) {
@@ -137,12 +123,12 @@ const Profile = ({
 
   return (<>
     <Head>
-      <link href={`/profile/${user.nickname || user.address}`} />
+      <link href={`/profile/${owner.nickname || owner.address}`} />
     </Head>
     <FollowersContext.Provider value={{ followers }}>
       <FollowingContext.Provider value={{ following }}>
       <Head>
-        <title>{user.nickname || user.address} | NFT Market | HodlMyMoon</title>
+        <title>{owner.nickname || owner.address} | NFT Market | HodlMyMoon</title>
       </Head>
       <Box
         sx={{
@@ -152,8 +138,8 @@ const Profile = ({
           alignItems: 'center',
           marginTop: 4
         }}>
-        <UserAvatarAndHandle user={user} size={'120px'} fontSize={'24px'}/>
-        <FollowButton profileAddress={user.address} />
+        <UserAvatarAndHandle user={owner} size={'120px'} fontSize={'24px'}/>
+        <FollowButton profileAddress={owner.address} />
       </Box>
 
       <Box sx={{
@@ -171,7 +157,7 @@ const Profile = ({
               {
                 pathname: '/profile/[handle]',
                 query: {
-                  handle: user.nickname || user.address,
+                  handle: owner.nickname || owner.address,
                   tab: v
                 }
               },

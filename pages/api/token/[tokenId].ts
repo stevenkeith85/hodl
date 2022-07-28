@@ -9,21 +9,24 @@ import apiRoute from '../handler';
 //
 
 import { Redis } from '@upstash/redis';
+import { ipfsUriToCid } from "../../../lib/utils";
+import { Token } from "../../../models/Token";
 
 dotenv.config({ path: '../.env' })
 
 const client = Redis.fromEnv()
 const route = apiRoute();
 
-export const getToken = memoize(async (tokenId) => {
-  const token = await client.get('token:' + tokenId);
-  return token;
-}, { 
-  async: true,
-  primitive: true,
-  max: 10000, 
-});
+export const getToken =async (tokenId) => {
+  const token: Token = await client.get('token:' + tokenId);
 
+  // TODO - Don't bother storing the 'ipfs://' prefix in Redis. 
+  // It will make it easier to construct URLs without it
+  // We WILL store it in the metadata though
+  token.image = ipfsUriToCid(token.image);
+  token.metadata = ipfsUriToCid(token.metadata);
+  return token;
+}
 
 route.get(async (req: NextApiRequest, res: NextApiResponse) => {
   const { tokenId } = req.query;

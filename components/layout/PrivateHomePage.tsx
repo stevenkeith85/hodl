@@ -5,8 +5,16 @@ import { NewTokens } from '../rankings/NewTokens';
 import { TopUsers } from '../rankings/TopUsers';
 import { TopTokens } from '../rankings/TopTokens';
 import { NewUsers } from '../rankings/NewUsers';
+import { HodlBorderedBox } from '../HodlBorderedBox';
+import { User } from '../../models/User';
 
-export const PrivateHomePage = ({ address }) => {
+
+interface PrivateHomePageProps {
+    user: User;
+    address: string;
+}
+
+export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
     return (
 
         <Grid
@@ -45,11 +53,20 @@ export const PrivateHomePage = ({ address }) => {
                         }
                     }}
                 >
-                    <HodlProfileBadge address={address} />
-                    <TopUsers />
-                    <TopTokens />
-                    <NewUsers />
-                    <NewTokens />
+                    <HodlProfileBadge user={user} />
+                    <HodlBorderedBox>
+                        <TopUsers />
+                    </HodlBorderedBox>
+
+                    <HodlBorderedBox>
+                        <TopTokens />
+                    </HodlBorderedBox>
+                    <HodlBorderedBox>
+                        <NewUsers />
+                    </HodlBorderedBox>
+                    <HodlBorderedBox>
+                        <NewTokens />
+                    </HodlBorderedBox>
                 </Box>
             </Grid>
         </Grid>

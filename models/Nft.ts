@@ -2,24 +2,13 @@
 //
 // TODO: We are moving towards storing everything in Redis, and syncing with the blockchain. 
 
-// i.e. Redis will cache the blockchain data. This will makes things faster, hopefully simpler, and give more certainty about rate-limits, etc
-export interface Nft {
-    id: number;
-    owner: string;
+import { Token } from "./Token";
 
-    name: string;
-    description: string;
-    image: string;
-
-    mimeType: string;
-    filter: string;
-    privilege: string | null;
-
-    ipfsMetadata: string;
-    ipfsMetadataGateway: string;
-    ipfsImage: string;
-    ipfsImageGateway: string;
-
-    forSale: boolean;
-    price: string;
-  };
+// Nft includes the base fields of Token (which come from Redis), and the addional fields that
+// depend on the blockchain
+// TODO - A better name. Perhaps BlockchainToken, MarketItem, TokenWithMetadata, MutableToken, ExtendedToken
+export interface Nft extends Token {
+  owner: string;
+  forSale: boolean;
+  price: string;
+};

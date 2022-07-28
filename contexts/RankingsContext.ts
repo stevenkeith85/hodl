@@ -5,7 +5,9 @@ import { SWRInfiniteResponse } from 'swr/infinite/dist/infinite';
 export const RankingsContext = createContext<{
     mostFollowed: SWRInfiniteResponse<any, any>,
     mostLiked: SWRInfiniteResponse<any, any>,
+    newUsers: SWRInfiniteResponse<any, any>,
 }>({
     mostFollowed: null,
-    mostLiked: null
+    mostLiked: null,
+    newUsers: null
 });

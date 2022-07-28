@@ -93,7 +93,6 @@ export const ipfsUriToGatewayUrl = ipfsUri => {
   }
 
   return `https://${cid}.ipfs.infura-ipfs.io`;
-
 };
 
 export const ipfsUriToCid = ipfsUri => {
@@ -104,6 +103,14 @@ export const ipfsUriToCid = ipfsUri => {
   const [_protocol, uri] = ipfsUri.split('//');
   const [cid, _path] = uri.split('/');
   return `${cid}`
+};
+
+export const cidToGatewayUrl = cid => {
+  if (!cid) {
+    return '#';
+  }
+
+  return `https://${cid}.ipfs.infura-ipfs.io`;
 };
 
 export const trim = str => {

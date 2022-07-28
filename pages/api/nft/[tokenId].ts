@@ -77,49 +77,64 @@ const isTokenForSale = ({ price, seller, tokenId }) => {
     tokenId !== ethers.constants.Zero;
 }
 
+// The main function we call on the detail pages
+// if the item is for sale, then we only consult Redis in O(1) and a blockchain call to 'getListed' (Market contract)
+// it its not for sale, then we do Redis O(1), getListed (Market contract), and exists / ownerOf (Token contract)
+
+// TODO: We read the blockchain here. We could (in future) just read from cached data in Redis. (once we've implemented a robust caching strategy)
 export const fetchNFT = async (id: number): Promise<Nft> => {
   const provider = await getProvider();
 
   const marketContract = new ethers.Contract(nftmarketaddress, Market.abi, provider);
-  const tokenContract = new ethers.Contract(nftaddress, NFT.abi, provider);
-
-  const tokenExists = await tokenContract.exists(id);
-
-  if (!tokenExists) {
-    throw new Error('token does not exist');
-  }
 
   const marketItem = await marketContract.getListing(id);
-  const owner = await tokenContract.ownerOf(id);
-  const tokenUri = await tokenContract.tokenURI(id);
+  const forSale = isTokenForSale(marketItem);
 
+  // Determine the token owner
+  let owner = null;
+  let price = '0';
+
+  // if its for sale, technically the 'owner' will be the marketplace contract. 
+  // We set it to the seller though; who is the 'actual owner'.
+  if (forSale) { 
+    owner = marketItem.seller;
+    price = ethers.utils.formatUnits(marketItem.price.toString(), 'ether');
+  } else { 
+    // we'll have to consult the token contract to get the owner
+    const tokenContract = new ethers.Contract(nftaddress, NFT.abi, provider);
+    const tokenExists = await tokenContract.exists(id);
+
+    if (!tokenExists) { // it was never minted on the blockchain. TODO: We could tell the user the token hasn't been minted
+      throw new Error('token does not exist');
+    }
+    owner = await tokenContract.ownerOf(id);
+  }
+
+  // Look up our immutable data from Redis
   const token = await getToken(id);
 
   if (!token) {
-    throw new Error('could not get token');
+    throw new Error('Error retrieving token'); // it's gone missing from our database! (TODO: We could probably read the data from the blockchain here, and repopulate (or schedule that to happen in a task))
   }
-
-  const price = ethers.utils.formatUnits(marketItem.price.toString(), 'ether');
 
   const result: Nft = {
     id: token.id,
+
+    creator: token.creator,
+
     name: token.name,
     description: token.description,
-    privilege: token.privilege || null,
-    image: ipfsUriToCid(token.image),
-    mimeType: token.mimeType || '',
-    filter: token.filter || null,
+    privilege: token.privilege,
+
+    metadata: token.metadata,
+    image: token.image,
+    mimeType: token.mimeType,
+
+    filter: token.filter,
 
     price,
-    owner: isTokenForSale(marketItem) ? marketItem.seller : owner,
-    forSale: isTokenForSale(marketItem),
-    
-    // TODO - Clean all this up. we probably should just store content ids and construct things off that
-    ipfsMetadata: tokenUri,
-    ipfsMetadataGateway: ipfsUriToGatewayUrl(tokenUri),
-    ipfsImage: token.image,
-    ipfsImageGateway: ipfsUriToGatewayUrl(token.image),
-    
+    owner,
+    forSale,
   }
 
   return result;

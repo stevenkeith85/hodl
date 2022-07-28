@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import axios from 'axios'
 import apiRoute from "../../handler";
 import { ActionSet, HodlAction } from "../../../../models/HodlAction";
+import { getToken } from "../../token/[tokenId]";
 
 dotenv.config({ path: '../.env' })
 
@@ -54,7 +55,7 @@ export const getMostLikedTokens = async (
   const tokens = [];
 
   for (const id of ids) {
-    const data = await client.get(`token:${id}`);
+    const data = await getToken(id);
 
     if (data) {
       tokens.push(data);

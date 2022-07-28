@@ -22,7 +22,8 @@ export async function getServerSideProps({ req, res }) {
   }
 }
 
-
+// TODO: We aren't using this at the moment.
+// We'll likely make the explore page handle for sale items; so this will likely go
 export default function Market({ limit, prefetchedListed }) {
   const [swr] = useMarket(limit, prefetchedListed);
 

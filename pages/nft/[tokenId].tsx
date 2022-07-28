@@ -38,6 +38,7 @@ import { insertTagLinks } from "../../lib/templateUtils";
 import { authenticate } from "../../lib/jwt";
 import { FollowButton } from "../../components/profile/FollowButton";
 import { UserAvatarAndHandle } from "../../components/avatar/UserAvatarAndHandle";
+import { getUser } from "../api/user/[handle]";
 
 
 export async function getServerSideProps({ params, req, res }) {
@@ -45,6 +46,13 @@ export async function getServerSideProps({ params, req, res }) {
     await authenticate(req, res);
 
     const nft = await fetchNFT(params.tokenId);
+
+    if (!nft) {
+      return { notFound: true }
+    }
+
+    // To populate their avatar
+    const owner = await getUser(nft.owner);
 
     const comment = params.comment;
     const limit = 10;
@@ -62,6 +70,7 @@ export async function getServerSideProps({ params, req, res }) {
       props: {
         address: req.address || null,
         nft,
+        owner,
         limit,
         prefetchedTags,
         prefetchedComments: [prefetchedComments],
@@ -71,6 +80,7 @@ export async function getServerSideProps({ params, req, res }) {
       },
     }
   } catch (e) {
+    console.log('e', e)
     return { notFound: true }
   }
 }
@@ -78,6 +88,7 @@ export async function getServerSideProps({ params, req, res }) {
 const NftDetail = ({
   address,
   nft,
+  owner,
   prefetchedTags,
   prefetchedComments,
   limit,
@@ -105,7 +116,7 @@ const NftDetail = ({
               alignItems: 'center'
             }}>
             <Box display="flex" gap={2} alignItems="center">
-              <ProfileAvatar reverse={false} profileAddress={nft?.owner} showNickname={true} />
+              <UserAvatarAndHandle user={owner} size={'50px'} fontSize={'18px'}/>
               <div>
                 <FollowButton profileAddress={nft?.owner} variant="text" />
               </div>
@@ -114,7 +125,6 @@ const NftDetail = ({
             <Box display="flex" justifyContent="start" sx={{
               marginBottom: 2
             }}>
-
               <Tabs
                 value={value}
                 onChange={(e, v) => {

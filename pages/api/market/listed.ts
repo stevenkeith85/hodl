@@ -27,11 +27,11 @@ const getItems = async (data) => {
     );
 
     const items = tokens.filter(token => token).map(token => {
-        const listing = tokenIdToListing.get(Number(token.tokenId));
+        const listing = tokenIdToListing.get(Number(token.id));
 
         return {
             price: listing ? ethers.utils.formatUnits(listing.price.toString(), 'ether') : '',
-            tokenId: token.tokenId,
+            tokenId: token.id,
             owner: listing ? listing.seller : '',
             forSale: true,
             image: ipfsUriToCid(token.image),

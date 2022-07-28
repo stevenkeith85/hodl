@@ -14,6 +14,73 @@ import { MaticPrice } from './MaticPrice';
 import { Token } from '../models/Token';
 import { Nft } from '../models/Nft';
 
+const Overlay = ({ nft }) => {
+    const theme = useTheme();
+    const matches = useMediaQuery(theme.breakpoints.up('sm'));
+
+    return (<Link
+        href={`/nft/${nft?.id}`}>
+        <Box
+            className='nftItemOverlay'
+            position="absolute"
+            width="100%"
+            height="100%"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            color="white"
+            sx={{
+                background: "rgba(0,0,0,0.35)",
+                opacity: matches ? 0 : 1, // always show on mobiles as they don't really have hover effects
+                cursor: 'pointer'
+            }}
+        >
+            <Box display="flex" flexDirection="column" gap={2}>
+                <Box
+                    display="flex"
+                    gap={2}
+                    justifyContent="center"
+                    width="100%"
+                    alignItems={"center"}
+                >
+                    {/* <ProfileAvatar
+                    size="large"
+                    profileAddress={nft?.owner}
+                    color="greyscale"
+                    showNickname={false}
+                    highlight={true}
+                /> */}
+                </Box>
+                <Box
+                    display="flex"
+                    width="100%"
+                    justifyContent="center"
+                    alignItems={"center"}
+                    sx={{
+                        height: '44px'
+                    }}
+                >
+                    <Box display="flex"
+                        gap={3}>
+                        <Likes
+                            id={nft?.id}
+                            token={true}
+                            color='inherit'
+                            fontSize='26px'
+                        />
+                        <Comments
+                            nft={nft}
+                            color='inherit'
+                            fontSize='26px'
+                            sx={{ paddingRight: 0 }}
+                        />
+                        {nft?.price && <MaticPrice nft={nft} />}
+                    </Box>
+                </Box>
+            </Box>
+        </Box>
+    </Link>)
+}
 
 const NftList = ({
     nfts,
@@ -38,8 +105,7 @@ const NftList = ({
                 }
             }}
         >
-            {(nfts || []).filter(nft => nft).map((nft: Token | Nft) => (
-
+            {(nfts || []).filter(nft => nft).map((nft: Token) => (
                 <ImageListItem key={nft.id} sx={{
                     borderRadius: 1,
                     overflow: 'hidden',
@@ -49,7 +115,6 @@ const NftList = ({
                         },
                     }
                 }}>
-
                     <Box>
                         {assetType(nft) === AssetTypes.Gif &&
                             <HodlVideo
@@ -79,69 +144,7 @@ const NftList = ({
                             />
                         }
                     </Box>
-
-                    <Link
-                        href={`/nft/${nft?.id}`}>
-                        <Box
-                            className='nftItemOverlay'
-                            position="absolute"
-                            width="100%"
-                            height="100%"
-                            display="flex"
-                            alignItems="center"
-                            justifyContent="center"
-                            color="white"
-                            sx={{
-                                background: "rgba(0,0,0,0.35)",
-                                opacity: matches ? 0 : 1, // always show on mobiles as they don't really have hover effects
-                                cursor: 'pointer'
-                            }}
-                        >
-                            <Box display="flex" flexDirection="column" gap={2}>
-                                <Box
-                                    display="flex"
-                                    gap={2}
-                                    justifyContent="center"
-                                    width="100%"
-                                    alignItems={"center"}
-                                >
-                                    {/* <ProfileAvatar
-                                        size="large"
-                                        profileAddress={nft?.owner}
-                                        color="greyscale"
-                                        showNickname={false}
-                                        highlight={true}
-                                    /> */}
-                                </Box>
-                                <Box
-                                    display="flex"
-                                    width="100%"
-                                    justifyContent="center"
-                                    alignItems={"center"}
-                                    sx={{
-                                        height: '44px'
-                                    }}
-                                >
-                                    <Box display="flex"
-                                        gap={3}>
-                                        <Likes
-                                            id={nft?.id}
-                                            token={true}
-                                            color='inherit'
-                                            fontSize='26px'
-                                        />
-                                        <Comments
-                                            nft={nft}
-                                            color='inherit'
-                                            fontSize='26px'
-                                            sx={{ paddingRight: 0 }}
-                                        />
-                                        {nft?.price && <MaticPrice nft={nft} />}
-                                    </Box>
-                                </Box>
-                            </Box>
-                        </Box>
-                    </Link>
+                    <Overlay nft={nft} />
                 </ImageListItem>
             )
             )}
