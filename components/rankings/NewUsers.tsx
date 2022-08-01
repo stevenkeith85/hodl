@@ -1,11 +1,10 @@
 import { Box, Typography } from '@mui/material';
 import { UserLinksList } from '../profile/UserLinksList';
-import { useSearchUsers } from '../../hooks/useSearchUsers';
 import { useContext } from 'react';
 import { RankingsContext } from '../../contexts/RankingsContext';
 
 
-export const NewUsers = ({ limit = 10, fallbackData=null}) => {
+export const NewUsers = ({ limit = 10}) => {
     const { newUsers } = useContext(RankingsContext);
 
     return (

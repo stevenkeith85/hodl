@@ -16,6 +16,7 @@ import { HodlVideo } from "../HodlVideo";
 import { Likes } from "../Likes";
 import { Comments } from "../comments/Comments";
 import { insertTagLinks } from "../../lib/templateUtils";
+import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
 
 
 interface HodlFeedItemProps {
@@ -102,10 +103,9 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                         alignItems="center"
                         gap={2}
                     >
-                        <ProfileAvatar
-                            profileAddress={item.subject}
-                            size="small"
-                            showNickname={false}
+                        <UserAvatarAndHandle 
+                            address={item.subject} 
+                            handle={false}    
                         />
                         <Box
                             flexGrow={1}

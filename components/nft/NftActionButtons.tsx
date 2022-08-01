@@ -104,6 +104,7 @@ export const NftActionButtons = ({ nft }) => {
                                         onClick={async () => {
                                             try {
                                                 enqueueSnackbar('Please Approve Transaction in Wallet', { variant: "info" });
+                                                console.log('nft is', nft)
                                                 await delistNft(nft);
                                                 setDelistModalOpen(true);
                                             } catch (e) {

@@ -13,6 +13,7 @@ import { ProfileNameOrAddress } from '../avatar/ProfileNameOrAddress';
 import { formatDistanceStrict } from "date-fns";
 import { AssetTypes } from "../../models/AssetType";
 import { HodlVideo } from "../HodlVideo";
+import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
 
 interface HodlNotificationBoxProps {
     item: HodlAction;
@@ -42,7 +43,11 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
         >
             <Box display="flex" alignItems="center" gap={1} >
                 <Box display="flex" alignItems="center" onClick={() => setShowNotifications(false)} gap={1.5} flexGrow={1}>
-                    <ProfileAvatar profileAddress={item.subject} size="small" showNickname={false} />
+                    <UserAvatarAndHandle 
+                        address={item.subject} 
+                        size="44px" 
+                        handle={false}
+                    />
                     <Box component="span" sx={{ cursor: 'pointer', textDecoration: 'none' }}>
                         {item?.subject && item?.subject !== address &&
                             <ProfileNameOrAddress
@@ -142,7 +147,7 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
                             {assetType(token) === AssetTypes.Image &&
                                 <a>
                                     <HodlImage
-                                        cid={token.image.split('//')[1]}
+                                        cid={token.image}
                                         effect={token.filter}
                                         height={'44px'}
                                         width={'44px'}
@@ -153,7 +158,7 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
                             {assetType(token) === AssetTypes.Video &&
                                 <a>
                                     <HodlVideo
-                                        cid={token.image.split('//')[1]}
+                                        cid={token.image}
                                         controls={false}
                                         onlyPoster={true}
                                         preload="none"
@@ -174,7 +179,7 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
                             {assetType(token) === AssetTypes.Gif &&
                                 <a>
                                     <HodlVideo
-                                        cid={token.image.split('//')[1]}
+                                        cid={token.image}
                                         gif={true}
                                         height='44px'
                                         width='44px'
@@ -192,7 +197,7 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
                             {assetType(token) === AssetTypes.Audio &&
                                 <a>
                                     <HodlVideo
-                                        cid={token.image.split('//')[1]}
+                                        cid={token.image}
                                         controls={false}
                                         onlyPoster={true}
                                         preload="none"

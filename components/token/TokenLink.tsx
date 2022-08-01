@@ -14,9 +14,13 @@ interface TokenLinkProps {
 }
 
 export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = "40px", fontSize = "14px" }) => {
-    return (
-        <>
-            <Link href={`/nft/${token.id}`}>
+
+    return (<>
+        <Link href={`/nft/${token.id}`} passHref>
+            <Typography component="a" sx={{
+                textDecoration: 'none',
+                color: '#333'
+            }}>
                 <Box
                     display="flex"
                     alignItems="center"
@@ -25,81 +29,73 @@ export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = "40px", font
                 >
                     {token?.image && <Box>
                         {assetType(token) === AssetTypes.Image &&
-                            <a>
-                                <HodlImage
-                                    cid={token.image}
-                                    effect={token.filter}
-                                    height={size}
-                                    width={size}
-                                    sx={{ img: { borderRadius: 0 } }}
-                                />
-                            </a>
+                            <HodlImage
+                                cid={token.image}
+                                effect={token.filter}
+                                height={size}
+                                width={size}
+                                sx={{ img: { borderRadius: 0 } }}
+                            />
                         }
                         {assetType(token) === AssetTypes.Video &&
-                            <a>
-                                <HodlVideo
-                                    cid={token.image}
-                                    controls={false}
-                                    onlyPoster={true}
-                                    preload="none"
-                                    audio={false}
-                                    height={size}
-                                    width={size}
-                                    sx={{
-                                        video: {
-                                            objectFit: 'cover',
-                                            objectPosition: 'center',
-                                            borderRadius: 0,
-                                            background: '#fafafa',
-                                        }
-                                    }}
-                                />
-                            </a>
+                            <HodlVideo
+                                cid={token.image}
+                                controls={false}
+                                onlyPoster={true}
+                                preload="none"
+                                audio={false}
+                                height={size}
+                                width={size}
+                                sx={{
+                                    video: {
+                                        objectFit: 'cover',
+                                        objectPosition: 'center',
+                                        borderRadius: 0,
+                                        background: '#fafafa',
+                                    }
+                                }}
+                            />
                         }
                         {assetType(token) === AssetTypes.Gif &&
-                            <a>
-                                <HodlVideo
-                                    cid={token.image}
-                                    gif={true}
-                                    height={size}
-                                    width={size}
-                                    sx={{
-                                        video: {
-                                            objectFit: 'cover',
-                                            objectPosition: 'center',
-                                            borderRadius: 0,
-                                            background: '#fafafa',
-                                        }
-                                    }}
-                                />
-                            </a>
+                            <HodlVideo
+                                cid={token.image}
+                                gif={true}
+                                height={size}
+                                width={size}
+                                sx={{
+                                    video: {
+                                        objectFit: 'cover',
+                                        objectPosition: 'center',
+                                        borderRadius: 0,
+                                        background: '#fafafa',
+                                    }
+                                }}
+                            />
                         }
                         {assetType(token) === AssetTypes.Audio &&
-                            <a>
-                                <HodlVideo
-                                    cid={token.image}
-                                    controls={false}
-                                    onlyPoster={true}
-                                    preload="none"
-                                    audio={true}
-                                    height={size}
-                                    width={size}
-                                    sx={{
-                                        video: {
-                                            objectFit: 'contain',
-                                            objectPosition: 'center',
-                                            borderRadius: 0,
-                                            background: '#fafafa',
-                                        }
-                                    }}
-                                />
-                            </a>
+                            <HodlVideo
+                                cid={token.image}
+                                controls={false}
+                                onlyPoster={true}
+                                preload="none"
+                                audio={true}
+                                height={size}
+                                width={size}
+                                sx={{
+                                    video: {
+                                        objectFit: 'contain',
+                                        objectPosition: 'center',
+                                        borderRadius: 0,
+                                        background: '#fafafa',
+                                    }
+                                }}
+                            />
                         }
                     </Box>
                     }
                     <Typography sx={{ fontSize, textTransform: 'lowercase' }}>{token?.name}</Typography>
                 </Box>
-            </Link>
-        </>
-    )
+            </Typography>
+        </Link>
+    </>)
 }

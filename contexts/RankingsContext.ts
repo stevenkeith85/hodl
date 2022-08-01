@@ -6,8 +6,10 @@ export const RankingsContext = createContext<{
     mostFollowed: SWRInfiniteResponse<any, any>,
     mostLiked: SWRInfiniteResponse<any, any>,
     newUsers: SWRInfiniteResponse<any, any>,
+    newTokens: SWRInfiniteResponse<any, any>,
 }>({
     mostFollowed: null,
     mostLiked: null,
-    newUsers: null
+    newUsers: null,
+    newTokens: null
 });

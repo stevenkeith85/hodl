@@ -2,7 +2,7 @@ import axios from 'axios';
 import useSWRInfinite from 'swr/infinite'
 
 
-export const useFollowers = (getData, address, limit = 10) => {
+export const useFollowers = (getData, address, limit = 10, fallbackData=null) => {
     const fetcher = (url: string, address: string, offset: number, limit: number) => axios.get(
         url,
         {
@@ -19,7 +19,8 @@ export const useFollowers = (getData, address, limit = 10) => {
 
     const swr = useSWRInfinite(
         getKey,
-        fetcher
+        fetcher,
+        { fallbackData }
     );
 
     return {

@@ -27,10 +27,10 @@ import { getCommentsForToken } from "../api/comments";
 import { HodlCommentsBox } from "../../components/comments/HodlCommentsBox";
 import { Comments } from "../../components/comments/Comments";
 import { getCommentCount } from "../api/comments/count";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Forum, Insights } from "@mui/icons-material";
 
-import { useRouter } from "next/router";
+import router, { useRouter } from "next/router";
 import { getLikeCount } from "../api/like/token/count";
 import { MaticPrice } from "../../components/MaticPrice";
 import { indigo } from "@mui/material/colors";
@@ -41,7 +41,7 @@ import { UserAvatarAndHandle } from "../../components/avatar/UserAvatarAndHandle
 import { getUser } from "../api/user/[handle]";
 
 
-export async function getServerSideProps({ params, req, res }) {
+export async function getServerSideProps({ params, query, req, res }) {
   try {
     await authenticate(req, res);
 
@@ -56,8 +56,7 @@ export async function getServerSideProps({ params, req, res }) {
 
     const comment = params.comment;
     const limit = 10;
-
-    const prefetchedTags = await getTagsForToken(params.tokenId);
+    const tab = Number(query.tab) || 0;
 
     const prefetchedComments = await getCommentsForToken(comment ? "comment" : "token", comment ? comment : params.tokenId, 0, limit);
     const prefetchedCommentCount = await getCommentCount(comment ? "comment" : "token", comment ? comment : params.tokenId);
@@ -72,11 +71,11 @@ export async function getServerSideProps({ params, req, res }) {
         nft,
         owner,
         limit,
-        prefetchedTags,
         prefetchedComments: [prefetchedComments],
         prefetchedCommentCount,
         priceHistory,
-        prefetchedLikeCount
+        prefetchedLikeCount,
+        tab
       },
     }
   } catch (e) {
@@ -89,14 +88,14 @@ const NftDetail = ({
   address,
   nft,
   owner,
-  prefetchedTags,
   prefetchedComments,
   limit,
   prefetchedCommentCount,
   priceHistory,
-  prefetchedLikeCount
+  prefetchedLikeCount,
+  tab
 }) => {
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(Number(tab)); // tab
 
   const { query } = useRouter();
   const comment = Array.isArray(query?.comment) ? query.comment[0] : query?.comment;
@@ -116,7 +115,12 @@ const NftDetail = ({
               alignItems: 'center'
             }}>
             <Box display="flex" gap={2} alignItems="center">
-              <UserAvatarAndHandle user={owner} size={'50px'} fontSize={'18px'}/>
+              <UserAvatarAndHandle 
+                address={owner.address} 
+                fallbackData={owner} 
+                size={'50px'} 
+                fontSize={'18px'}
+                />
               <div>
                 <FollowButton profileAddress={nft?.owner} variant="text" />
               </div>
@@ -129,6 +133,20 @@ const NftDetail = ({
                 value={value}
                 onChange={(e, v) => {
                   setValue(v);
+      
+                  router.push(
+                    {
+                      pathname: '/nft/[tokenId]',
+                      query: {
+                        tokenId: nft.id,
+                        tab: v
+                      }
+                    },
+                    undefined,
+                    {
+                      shallow: true
+                    }
+                  )
                 }}
                 textColor="secondary"
                 indicatorColor="secondary"
@@ -173,13 +191,15 @@ const NftDetail = ({
         >
           <div hidden={value !== 0}>
             <Stack spacing={2}>
-              <Card variant="outlined">
+              <Card 
+
+              variant="outlined">
                 <CardContent>
                   <Box
                     paddingBottom={3}
                     mb={3}
                     sx={{ borderBottom: `1px solid #ddd` }}>
-                    <Typography variant="h1" mt={1} mb={3} sx={{ fontWeight: 600 }}>{nft.name}</Typography>
+                    <Typography variant="h1" mb={3} sx={{ fontWeight: 600 }}>{nft.name}</Typography>
                     <Box sx={{ whiteSpace: 'pre-line' }}>{insertTagLinks(nft.description)}</Box>
                   </Box>
                   <HodlCommentsBox

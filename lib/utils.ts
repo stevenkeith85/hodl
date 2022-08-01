@@ -65,7 +65,7 @@ export const createCloudinaryUrl = (assetType = "image", deliveryType = "upload"
 export const imageSizes = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1400, 1500];
 
 export const getShortAddress = address => {
-  return address?.slice(0, 5) + '...' + address?.slice(-4);
+  return (address?.slice(0, 5) + '...' + address?.slice(-4)).toLowerCase();
 }
 
 export const truncateText = (text, length = 30) => {
@@ -142,8 +142,8 @@ export const assetType = (nft: Token | Nft) : AssetTypes => {
 export const messageToSign = `
 Welcome to HodlMyMoon. 
 
-To log in to the website, please sign this message. 
+To connect, please sign this message. 
 
 It will NOT cost you a transaction fee. 
 
-Nonce: `
+`

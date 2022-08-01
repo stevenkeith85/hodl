@@ -9,6 +9,7 @@ import { SWRConfig } from 'swr';
 import { WalletContext } from '../contexts/WalletContext';
 // import { CacheProvider, EmotionCache } from '@emotion/react';
 import '../styles/globals.css'
+import { ConfirmProvider } from 'material-ui-confirm';
 
 import Layout from '../components/layout/Layout';
 import { CacheProvider, EmotionCache } from '@emotion/react';
@@ -38,6 +39,7 @@ export default function MyApp(props: MyAppProps) {
 
   return (
     <CacheProvider value={emotionCache}>
+       <ConfirmProvider>
       <Head>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
@@ -65,6 +67,7 @@ export default function MyApp(props: MyAppProps) {
           </WalletContext.Provider>
         </SWRConfig>
       </ThemeProvider>
+      </ConfirmProvider>
     </CacheProvider>
   )
 }

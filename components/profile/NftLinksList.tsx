@@ -11,7 +11,7 @@ interface NftLinksList {
 export const NftLinksList: React.FC<NftLinksList> = ({ swr, limit }) => {
 
   if (swr?.data && swr?.data[0]?.items?.length === 0) {
-    return <Typography sx={{ padding: 2 }}>Nothing to see here</Typography>
+    return null;
   }
 
   return (

@@ -1,11 +1,11 @@
 import { Box, Typography } from '@mui/material';
-
 import { TokenLinksList } from '../profile/TokenLinksList';
-import { useSearchTokens } from '../../hooks/useSearchTokens';
+import { useContext } from 'react';
+import { RankingsContext } from '../../contexts/RankingsContext';
 
 
 export const NewTokens = ({ limit = 10, showLikes = true }) => {
-    const { results } = useSearchTokens('', 10);
+    const { newTokens } = useContext(RankingsContext);
 
     return (
         <Box
@@ -14,7 +14,7 @@ export const NewTokens = ({ limit = 10, showLikes = true }) => {
                 gap: 2,
             }}>
             <Typography variant='h2' sx={{ fontFamily: theme => theme.logo.fontFamily }}>New NFTs</Typography>
-            <TokenLinksList limit={limit} swr={results} width={`100%`} showLikes={showLikes} />
+            <TokenLinksList limit={limit} swr={newTokens} width={`100%`} showLikes={showLikes} />
         </Box>
     )
 }

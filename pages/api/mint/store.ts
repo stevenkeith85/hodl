@@ -88,7 +88,7 @@ route.post(async (req, res: NextApiResponse) => {
     await addTokenToTag(tag, id);
   }
 
-  getToken.delete(id);
+  // getToken.delete(id);
 
   // TODO
   const notification: HodlAction = {

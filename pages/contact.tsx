@@ -3,6 +3,7 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import { grey } from '@mui/material/colors';
 import { Reddit, RocketLaunch } from "@mui/icons-material";
 import { authenticate } from "../lib/jwt";
+import { ContactPagePitch } from "../components/layout/ContactPagePitch";
 
 export async function getServerSideProps({ req, res }) {
     await authenticate(req, res);
@@ -16,10 +17,9 @@ export async function getServerSideProps({ req, res }) {
 
 export default function Contact({ address}) {
     return (
-        <Box marginY={4}>
-            <Typography marginY={2} variant="h1" color="secondary">Contact</Typography>
-            <Typography marginY={2}>If you reach out to us on one of the following channels, we will get back to you as soon as possible.</Typography>
-            <Stack marginY={4} direction="column" spacing={2} sx={{ color: grey[600] }}>
+        <Box marginY={4} textAlign="center">
+            <ContactPagePitch />
+            <Stack direction="column" spacing={4} sx={{ color: grey[600], alignItems: "center" }}>
                 <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
                     <RocketLaunch />
                     <Typography>hodlmymoon</Typography>

@@ -31,7 +31,7 @@ route.get(async (req, res) => {
   }
 
   const count = await getFollowersCount(address);
-  res.status(200).json({count});
+  res.status(200).json(count);
 });
 
 

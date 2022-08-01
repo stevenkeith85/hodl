@@ -3,12 +3,15 @@ import { ethers } from 'ethers';
 import { getProvider } from '../../../lib/server/connections';
 import { nftaddress } from '../../../config';
 import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
-import { ipfsUriToCid } from '../../../lib/utils';
 import apiRoute from '../handler';
 import { getToken } from '../token/[tokenId]';
+import { Nft } from '../../../models/Nft';
+import { Token } from '../../../models/Token';
 
 dotenv.config({ path: '../.env' })
 
+// The get hodling / get listed functionality should work fairly similar
+// TODO: We may read more data from Redis in future if we can set up a decent blockchain/redis cache mechanism
 const addressToTokenIds = async (address, offset, limit) => {
     const provider = await getProvider();
     const tokenContract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
@@ -16,10 +19,6 @@ const addressToTokenIds = async (address, offset, limit) => {
     return result;
 }
 
-// TODO: We may wish to just return full Nfts here. See fetchNft.
-// We exclude fields that we do not need at the moment.
-// We use the same names/conventions as the <Nft> type where possible.
-// And are returning the same fields as getHolding/getItems
 export const getHodling = async (address, offset, limit) => {
     try {
         const [tokenIds, next, total] = await addressToTokenIds(address, offset, limit);
@@ -28,30 +27,25 @@ export const getHodling = async (address, offset, limit) => {
             return { items: [], next: 0, total: 0 };
         }
 
-        const tokens = await Promise.all(
-            tokenIds.map(id => getToken(id))
-        );
+        const items : Nft [] = await Promise.all(tokenIds.map(async id => {
+            const token: Token = await getToken(id);
 
-        const items = tokens.map(token => {
-            // We want to keep the number of items in the array, 
-            // so that it ties up with blockchain (and our infinite scroll iterator works), but 
-            // won't show anything not in our database
+            // If the token is present on the blockchain, 
+            // but not in our database
+            // we'll mark this as null.
             if (!token) {
                 return null;
             }
 
-            return {
-                id: token.id,
-                
-                image: ipfsUriToCid(token.image),
-                mimeType: token.mimeType || null,
-                filter: token.filter || null,
-
-                price: null,
+            const nft : Nft = {
+                ...token,
                 owner: address,
                 forSale: false,
-            }
-        });
+                price: null
+            };
+
+            return nft;
+        }));
 
         return { items, next: Number(next), total: Number(total) };
     } catch (e) {

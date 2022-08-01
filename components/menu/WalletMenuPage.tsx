@@ -123,12 +123,7 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
                                         paddingX: 2,
                                         paddingY: 1.5
                                     }}>
-                                    <ProfileNameOrAddress
-                                        color={"primary"}
-                                        profileAddress={address}
-                                        size={"small"}
-                                        sx={{ fontWeight: 600 }}
-                                    />
+                                    Profile
                                 </Button>
                             </Stack>
                             {walletPages.map((page, i) => (

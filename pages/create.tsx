@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Grid, useMediaQuery, Box, useTheme } from '@mui/material'
+import { useEffect, useState } from 'react'
+import { Grid, useMediaQuery, Box, useTheme, Dialog, DialogTitle, Typography, DialogContent, DialogActions, Button, DialogContentText } from '@mui/material'
 import { MintStepperMemo } from '../components/mint/MintStepper'
 import { MintProgressButtons } from '../components/mint/MintProgressButtons'
 import { HodlLoadingSpinner } from '../components/HodlLoadingSpinner'
@@ -9,6 +9,8 @@ import { MintMobileStepper } from '../components/mint/MintMobileStepper'
 import dynamic from "next/dynamic";
 import Head from 'next/head'
 import { authenticate } from '../lib/jwt'
+import router, { Router, useRouter } from 'next/router'
+import { useWarningOnExit } from '../hooks/useWarningOnExit'
 
 const SelectAssetAction = dynamic(
   () => import('../components/mint/SelectAssetAction').then((module) => module.SelectAssetAction),
@@ -41,7 +43,8 @@ export async function getServerSideProps({ req, res }) {
   }
 }
 
-const Mint = ({address}) => {
+
+const Mint = ({ address }) => {
   const [formData, setFormData] = useState<any>({
     fileName: null,
     mimeType: null,
@@ -53,6 +56,7 @@ const Mint = ({address}) => {
     tokenId: null,
   })
 
+  
   const [loading, setLoading] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const [stepComplete, setStepComplete] = useState(-1);
@@ -65,6 +69,9 @@ const Mint = ({address}) => {
     'Mint',
     'Hodl'
   ];
+
+  const warning = useWarningOnExit(stepComplete !== 4 && activeStep > 0, "If you leave now, your token will not be added to Hodl My Moon. Are you sure?")
+  
 
   return (
     <>

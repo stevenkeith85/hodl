@@ -23,6 +23,7 @@ import axios from 'axios'
 import { useSnackbar } from 'notistack';
 import { SearchBox } from '../Search';
 import { ProfileAvatar } from '../avatar/ProfileAvatar';
+import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
 
 const ResponsiveAppBar = ({ showAppBar=true}) => {
     const { address, setAddress, setSigner } = useContext(WalletContext);
@@ -232,7 +233,11 @@ const ResponsiveAppBar = ({ showAppBar=true}) => {
                                         desktopMenuOpen ?
                                             <Box width={44} display="flex" alignItems="center" justifyContent="center"><CloseIcon /></Box> :
                                             address ?
-                                                <ProfileAvatar profileAddress={address} size="small" showNickname={false} withLink={false} /> :
+                                                <UserAvatarAndHandle 
+                                                    address={address} 
+                                                    withLink={false} 
+                                                    handle={false}    
+                                                /> :
                                                 <Box width={44} display="flex" alignItems="center" justifyContent="center"><AccountBalanceWallet /></Box>
                                     }
                                 </IconButton>

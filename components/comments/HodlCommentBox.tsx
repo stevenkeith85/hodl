@@ -12,6 +12,7 @@ import { HodlComment } from "../../models/HodlComment";
 import { WalletContext } from "../../contexts/WalletContext";
 import { formatDistanceStrict } from "date-fns";
 import { ProfileNameOrAddress } from "../avatar/ProfileNameOrAddress";
+import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
 
 interface HodlCommentBoxProps {
     comment: HodlComment;
@@ -113,7 +114,10 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                         gap={2}
                         flexGrow={1}
                     >
-                        <ProfileAvatar profileAddress={comment.subject} size="small" showNickname={false} />
+                        <UserAvatarAndHandle
+                            address={comment.subject}
+                            handle={false}
+                        />
                         <Box
                             display="flex"
                             flexDirection="column"
@@ -168,7 +172,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                         },
                                         fontSize: "16px"
                                     }}
-                                    
+
                                     onClick={() => {
                                         setCommentingOn({
                                             object: "comment",

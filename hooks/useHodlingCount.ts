@@ -1,12 +1,13 @@
 import useSWR from 'swr';
 import { fetchWithAddress } from '../lib/swrFetchers';
 
-export const useFollowersCount = (address, fallbackData = null) => {
-
+export const useHodlingCount = (address, fallbackData=null) => {
+   
+    // TODO: Change route to /api/hodling/count
     const { data } = useSWR(
-        address ? [`/api/followers/count`, address] : null,
+        address ? [`/api/profile/hodlingCount`, address] : null,
         fetchWithAddress,
-        { 
+        {
             fallbackData
         }
     )

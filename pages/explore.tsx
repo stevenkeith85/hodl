@@ -3,7 +3,7 @@ import { HodlImpactAlert } from '../components/HodlImpactAlert';
 import { InfiniteScrollSearchResults } from '../components/profile/InfiniteScrollSearchResults';
 import { useSearchTokens } from '../hooks/useSearchTokens';
 import { authenticate } from '../lib/jwt';
-import { getSearchResults } from './api/search/tokens';
+import { getTokenSearchResults } from './api/search/tokens';
 
 
 export async function getServerSideProps({ query, req, res }) {
@@ -14,7 +14,7 @@ export async function getServerSideProps({ query, req, res }) {
   let prefetchedResults;
 
   const limit = 10;    
-    prefetchedResults = await getSearchResults(q, 0, limit);
+    prefetchedResults = await getTokenSearchResults(q, 0, limit);
   return {
     props: {
       address: req.address || null,

@@ -13,13 +13,14 @@ import { AssetTypes } from '../models/AssetType';
 import { MaticPrice } from './MaticPrice';
 import { Token } from '../models/Token';
 import { Nft } from '../models/Nft';
+import { UserAvatar } from './avatar/UserAvatar';
+import { UserAvatarAndHandle } from './avatar/UserAvatarAndHandle';
 
 const Overlay = ({ nft }) => {
     const theme = useTheme();
     const matches = useMediaQuery(theme.breakpoints.up('sm'));
 
-    return (<Link
-        href={`/nft/${nft?.id}`}>
+    return (<Link href={nft?.forSale ? `/nft/${nft?.id}?tab=1` : `/nft/${nft?.id}`}>
         <Box
             className='nftItemOverlay'
             position="absolute"
@@ -43,13 +44,12 @@ const Overlay = ({ nft }) => {
                     width="100%"
                     alignItems={"center"}
                 >
-                    {/* <ProfileAvatar
-                    size="large"
-                    profileAddress={nft?.owner}
-                    color="greyscale"
-                    showNickname={false}
-                    highlight={true}
-                /> */}
+                    <UserAvatarAndHandle
+                        address={nft?.owner}
+                        color="greyscale"
+                        size="60px"
+                        handle={false}
+                    />
                 </Box>
                 <Box
                     display="flex"

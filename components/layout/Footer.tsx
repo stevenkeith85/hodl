@@ -58,13 +58,13 @@ const Footer = ({ showFooter = true }) => {
                             }}
                         >
                             <Stack spacing={0.5}>
-                                <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>Hodl</Typography>
+                                <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>Hodl My Moon</Typography>
                                 <HodlLink href="/about">About</HodlLink>
                                 <HodlLink href="/contact">Contact</HodlLink>
                             </Stack>
                             {address && <Stack spacing={0.5}>
                                 <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>NFTs</Typography>
-                                <HodlLink href="/">Market</HodlLink>
+                                <HodlLink href="/explore">Explore</HodlLink>
                                 <HodlLink href="/create">Create</HodlLink>
                             </Stack>}
                         </Stack>

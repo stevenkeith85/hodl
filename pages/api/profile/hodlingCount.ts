@@ -1,5 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-
 import dotenv from 'dotenv'
 import apiRoute from "../handler";
 import memoize from 'memoizee';
@@ -32,7 +30,7 @@ route.get(async (req, res) => {
   }
 
   const count = await getHodlingCount(address);
-  res.status(200).json({count});
+  res.status(200).json(count);
 });
 
 

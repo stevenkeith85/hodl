@@ -19,7 +19,7 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
         (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.token)
     )
 
-    const [hodlingCount, swr] = useHodling(address, lim, null, null, profilePictureModalOpen);
+    const {swr} = useHodling(address, lim, null, profilePictureModalOpen);
 
     const [token, setToken] = useState(tokenId);
 
@@ -81,7 +81,7 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                                             }
                                         );
 
-                                        mutate([`/api/profile/picture`, address])
+                                        mutate([`/api/user`, address])
                                         setProfilePictureModalOpen(false);
 
                                     } catch (error) {

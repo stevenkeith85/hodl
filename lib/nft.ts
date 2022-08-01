@@ -5,9 +5,10 @@ import { ethers } from 'ethers'
 import { nftmarketaddress, nftaddress } from '../config.js'
 import Market from '../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
 
-import { getMetaMaskSigner } from "../lib/connections";
+import { getMetaMaskSigner } from "./connections";
 import { ActionTypes } from '../models/HodlAction';
 import axios from 'axios'
+import { Nft } from '../models/Nft.js';
 
 export const listNftOnMarket = async (tokenId, tokenPrice) => {
   const signer = await getMetaMaskSigner();
@@ -30,7 +31,6 @@ export const listNftOnMarket = async (tokenId, tokenPrice) => {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          // 'Authorization': localStorage.getItem('jwt')
         },
       }
     )
@@ -39,13 +39,13 @@ export const listNftOnMarket = async (tokenId, tokenPrice) => {
   }
 }
 
-export const buyNft = async (nft) => {
+export const buyNft = async (nft: Nft) => {
   const signer = await getMetaMaskSigner();
   const contract = new ethers.Contract(nftmarketaddress, Market.abi, signer);
 
   const price = ethers.utils.parseUnits(nft.price.toString(), 'ether')
 
-  const tx = await contract.buyToken(nftaddress, nft.tokenId, { value: price })
+  const tx = await contract.buyToken(nftaddress, nft.id, { value: price })
   await tx.wait();
 
   try {
@@ -54,13 +54,12 @@ export const buyNft = async (nft) => {
       { 
         action: ActionTypes.Bought, 
         object: "token",
-        id: nft.tokenId 
+        id: nft.id
       },
       {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'Authorization': localStorage.getItem('jwt')
         },
       }
     )
@@ -71,10 +70,10 @@ export const buyNft = async (nft) => {
 
 
 
-export const delistNft = async (nft) => {
+export const delistNft = async (nft: Nft) => {
   const signer = await getMetaMaskSigner();
   const contract = new ethers.Contract(nftmarketaddress, Market.abi, signer);
 
-  const tx = await contract.delistToken(nftaddress, nft.tokenId);
+  const tx = await contract.delistToken(nftaddress, nft.id);
   await tx.wait();
 }

@@ -11,5 +11,5 @@ export const useFollowingCount = (address, fallbackData=null) => {
         }
     )
 
-    return [data?.count];
+    return [data];
 }

@@ -26,7 +26,8 @@ import { FollowersContext } from '../../contexts/FollowersContext'
 import { FollowingContext } from '../../contexts/FollowingContext'
 import { getUser } from '../api/user/[handle]'
 import { UserAvatarAndHandle } from '../../components/avatar/UserAvatarAndHandle'
-
+import { useHodlingCount } from '../../hooks/useHodlingCount'
+import { useListedCount } from '../../hooks/useListedCount'
 
 
 const NftLinksList = dynamic(
@@ -40,7 +41,6 @@ const UserLinksList = dynamic(
   () => import('../../components/profile/UserLinksList').then((module) => module.UserLinksList),
   { loading: () => <HodlLoadingSpinner /> }
 );
-
 
 
 export async function getServerSideProps({ params, query, req, res }) {
@@ -57,17 +57,16 @@ export async function getServerSideProps({ params, query, req, res }) {
   const tab = Number(query.tab) || 0;
   const limit = 10;  
   
+  // TODO - We could run these in parallel
   const prefetchedHodlingCount = await getHodlingCount(owner.address);
-  const prefetchedHodling = tab == 0 ? await getHodling(owner.address, 0, limit) : null;
-
   const prefetchedListedCount = await getListedCount(owner.address);
-  const prefetchedListed = tab == 1 ? await getListed(owner.address, 0, limit) : null;
-
   const prefetchedFollowingCount = await getFollowingCount(owner.address);
-  const prefetchedFollowing = tab == 2 ? await getFollowing(owner.address) : null;
-
   const prefetchedFollowersCount = await getFollowersCount(owner.address);
-  const prefetchedFollowers = tab == 3 ? await getFollowers(owner.address) : null;
+
+  const prefetchedHodling = tab == 0 ? [await getHodling(owner.address, 0, limit)] : null;
+  const prefetchedListed = tab == 1 ? [await getListed(owner.address, 0, limit)] : null;
+  const prefetchedFollowing = tab == 2 ? await getFollowing(owner.address, 0, limit) : null;
+  const prefetchedFollowers = tab == 3 ? await getFollowers(owner.address, 0, limit) : null;
 
   return {
     props: {
@@ -78,9 +77,9 @@ export async function getServerSideProps({ params, query, req, res }) {
       prefetchedFollowersCount,
       prefetchedFollowers,
       prefetchedHodlingCount,
-      prefetchedHodling: prefetchedHodling ? [prefetchedHodling] : null,
+      prefetchedHodling,
       prefetchedListedCount,
-      prefetchedListed: prefetchedListed ? [prefetchedListed] : null,
+      prefetchedListed,
       tab,
       limit
     },
@@ -105,14 +104,17 @@ const Profile = ({
 
   const [value, setValue] = useState(Number(tab)); // tab
 
-  const [hodlingCount, hodling] = useHodling(owner.address, limit, prefetchedHodlingCount, prefetchedHodling);
-  const [listedCount, listed] = useListed(owner.address, limit, prefetchedListedCount, prefetchedListed);
+  const [hodlingCount] = useHodlingCount(owner.address, prefetchedHodlingCount);
+  const {swr: hodling } = useHodling(owner.address, limit, prefetchedHodling);
+  
+  const [listedCount] = useListedCount(owner.address, prefetchedListedCount);
+  const {swr: listed } = useListed(owner.address, limit, prefetchedListed);
 
   const [followingCount] = useFollowingCount(owner.address, prefetchedFollowingCount);
-  const { swr: following } = useFollowing(true, owner.address, limit);
+  const { swr: following } = useFollowing(true, owner.address, limit, prefetchedFollowing);
 
   const [followersCount] = useFollowersCount(owner.address, prefetchedFollowersCount);
-  const { swr: followers } = useFollowers(true, owner.address, limit);
+  const { swr: followers } = useFollowers(true, owner.address, limit, prefetchedFollowers);
 
   useEffect(() => {
     if (!router?.query?.tab) {
@@ -138,7 +140,12 @@ const Profile = ({
           alignItems: 'center',
           marginTop: 4
         }}>
-        <UserAvatarAndHandle user={owner} size={'120px'} fontSize={'24px'}/>
+        <UserAvatarAndHandle 
+          address={owner.address} 
+          fallbackData={owner} 
+          size={'120px'} 
+          fontSize={'24px'}
+          />
         <FollowButton profileAddress={owner.address} />
       </Box>
 
@@ -170,32 +177,55 @@ const Profile = ({
           textColor="secondary"
           indicatorColor="secondary"
         >
+          
           <Tab
             key={0}
             value={0}
             label="Hodling"
-            icon={<Badge sx={{ p: '6px 3px' }} showZero badgeContent={!isNaN(hodlingCount) && humanize.compactInteger(hodlingCount, 1)}></Badge>}
+            icon={<Badge 
+              sx={{ p: '6px 3px' }} 
+              showZero 
+              badgeContent={humanize.compactInteger(hodlingCount, 1)}
+              >
+              </Badge>
+            }
             iconPosition="end"
           />
           <Tab
             key={1}
             value={1}
             label="Listed"
-            icon={<Badge sx={{ p: '6px 3px' }} showZero badgeContent={!isNaN(listedCount) && humanize.compactInteger(listedCount, 1)}></Badge>}
+            icon={<Badge 
+              sx={{ p: '6px 3px' }} 
+              showZero 
+              badgeContent={humanize.compactInteger(listedCount, 1)}
+              >
+              </Badge>
+              }
             iconPosition="end"
           />
           <Tab
             key={2}
             value={2}
             label="Following"
-            icon={<Badge sx={{ p: '6px 3px' }} showZero badgeContent={!isNaN(followingCount) && humanize.compactInteger(followingCount, 1)}></Badge>}
+            icon={<Badge 
+              sx={{ p: '6px 3px' }} 
+              showZero 
+              badgeContent={humanize.compactInteger(followingCount, 1)}
+              >
+              </Badge>}
             iconPosition="end"
           />
           <Tab
             key={3}
             value={3}
             label="Followers"
-            icon={<Badge sx={{ p: '6px 3px' }} showZero badgeContent={!isNaN(followersCount) && humanize.compactInteger(followersCount, 1)}></Badge>}
+            icon={<Badge 
+              sx={{ p: '6px 3px' }} 
+              showZero 
+              badgeContent={humanize.compactInteger(followersCount, 1)}
+              >
+              </Badge>}
             iconPosition="end"
           />
         </Tabs>

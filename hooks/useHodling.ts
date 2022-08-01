@@ -1,17 +1,9 @@
-import useSWR from 'swr';
 import useSWRInfinite from 'swr/infinite'
-import { fetchWithAddress, fetchWithAddressOffsetLimit } from '../lib/swrFetchers';
+import { fetchWithAddressOffsetLimit } from '../lib/swrFetchers';
 
-export const useHodling = (address, limit = 10, prefetchedHodlingCount = null, prefetchedHodling = null, load=true) => {
+export const useHodling = (address, limit = 10, fallbackData = null, load=true) => {
 
-    const { data: hodlingCount } = useSWR(
-        address ? [`/api/profile/hodlingCount`, address] : null,
-        fetchWithAddress,
-        {
-            fallbackData: prefetchedHodlingCount
-        }
-    )
-
+    // TODO: Change route to /api/hodling
     const getKey = (index, _previous) => {
         return load && limit ? [`/api/profile/hodling`, address, index * limit, limit] : null;
     }
@@ -20,9 +12,11 @@ export const useHodling = (address, limit = 10, prefetchedHodlingCount = null, p
         getKey,
         fetchWithAddressOffsetLimit,
         {
-            fallbackData: prefetchedHodling
+            fallbackData
         });
 
 
-    return [hodlingCount?.count, swr];
+    return {
+        swr
+    };
 }

@@ -10,7 +10,7 @@ const client = Redis.fromEnv()
 dotenv.config({ path: '../.env' })
 
 
-export const getSearchResults = async (q, offset, limit) => {
+export const getTokenSearchResults = async (q, offset, limit) => {
     try {
         let ids = []
         const tokens = [];
@@ -38,7 +38,7 @@ export const getSearchResults = async (q, offset, limit) => {
 
         if (ids.length) {
             for (const id of ids) {
-                const data = await getToken(id);//await client.get<Token>(`token:${id}`);
+                const data = await getToken(id);
 
                 if (data) {
                     tokens.push(data);
@@ -57,7 +57,7 @@ const route = apiRoute();
 route.get(async (req, res) => {
     const { q, offset, limit } = req.query;
 
-    const data = await getSearchResults(q, offset, limit);
+    const data = await getTokenSearchResults(q, offset, limit);
     return res.status(200).json(data);
 });
 

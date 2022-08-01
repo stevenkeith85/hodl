@@ -10,5 +10,5 @@ import { Token } from "./Token";
 export interface Nft extends Token {
   owner: string;
   forSale: boolean;
-  price: string;
+  price: string; // price in ether
 };

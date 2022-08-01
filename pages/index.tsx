@@ -15,6 +15,17 @@ import { getUser } from './api/user/[handle]';
 import { getMostLikedTokens } from './api/rankings/token';
 import { useSearchUsers } from '../hooks/useSearchUsers';
 import { getUserSearchResults } from './api/search/users';
+import { getTokenSearchResults } from './api/search/tokens';
+import { useSearchTokens } from '../hooks/useSearchTokens';
+import { UserContext } from '../contexts/UserContext';
+import { useFollowersCount } from '../hooks/useFollowersCount';
+import { useFollowingCount } from '../hooks/useFollowingCount';
+import { useHodlingCount } from '../hooks/useHodlingCount';
+import { useListedCount } from '../hooks/useListedCount';
+import { getHodlingCount } from './api/profile/hodlingCount';
+import { getListedCount } from './api/profile/listedCount';
+import { getFollowingCount } from './api/following/count';
+import { getFollowersCount } from './api/followers/count';
 
 
 export async function getServerSideProps({ req, res }) {
@@ -28,10 +39,16 @@ export async function getServerSideProps({ req, res }) {
 
   const limit = 10;
 
-  const prefetchedFeed = req.address ? [await getActions(req.address, ActionSet.Feed, 0, limit)] : null;
+  const prefetchedFeed = user?.address ? [await getActions(user.address, ActionSet.Feed, 0, limit)] : null;
   const prefetchedTopUsers = [await getMostFollowedUsers(0, limit)];
   const prefetchedTopTokens = [await getMostLikedTokens(0, limit)];
   const prefetchedNewUsers = [await getUserSearchResults('', 0, limit)];
+  const prefetchedNewTokens = [await getTokenSearchResults('', 0, limit)];
+
+  const prefetchedHodlingCount = user?.address ? await getHodlingCount(user.address): null;
+  const prefetchedListedCount = user?.address ? await getListedCount(user.address): null;
+  const prefetchedFollowingCount = user?.address ? await getFollowingCount(user.address): null;
+  const prefetchedFollowersCount = user?.address ? await getFollowersCount(user.address): null;
 
   return {
     props: {
@@ -41,16 +58,43 @@ export async function getServerSideProps({ req, res }) {
       prefetchedFeed,
       prefetchedTopUsers,
       prefetchedTopTokens,
-      prefetchedNewUsers
+      prefetchedNewUsers,
+      prefetchedNewTokens,
+      prefetchedHodlingCount,
+      prefetchedListedCount,
+      prefetchedFollowingCount,
+      prefetchedFollowersCount
     }
   }
 }
 
-export default function Home({ address, user, limit, prefetchedFeed, prefetchedTopUsers, prefetchedTopTokens, prefetchedNewUsers }) {
-  const { actions: feed } = useActions(address, ActionSet.Feed, limit, prefetchedFeed);
+export default function Home({ 
+  address, 
+  user, 
+  limit, 
+  prefetchedFeed, 
+  prefetchedTopUsers, 
+  prefetchedTopTokens, 
+  prefetchedNewUsers, 
+  prefetchedNewTokens, 
+  prefetchedHodlingCount,
+  prefetchedListedCount,
+  prefetchedFollowingCount,
+  prefetchedFollowersCount
+}) {
+  
   const { rankings: mostFollowed } = useRankings(true, limit, prefetchedTopUsers);
   const { rankings: mostLiked } = useRankings(true, limit, prefetchedTopTokens, "token");
   const { results: newUsers } = useSearchUsers('', limit, prefetchedNewUsers);
+  const { results: newTokens } = useSearchTokens('', limit, prefetchedNewTokens);
+
+  const { actions: feed } = useActions(user?.address, ActionSet.Feed, limit, prefetchedFeed);
+
+  const [hodlingCount] = useHodlingCount(user?.address, prefetchedHodlingCount);
+  const [listedCount] = useListedCount(user?.address, prefetchedListedCount);
+
+  const [followersCount] = useFollowersCount(user?.address, prefetchedFollowingCount);
+  const [followingCount] = useFollowingCount(user?.address, prefetchedFollowersCount);
 
   return (
     <>
@@ -62,7 +106,8 @@ export default function Home({ address, user, limit, prefetchedFeed, prefetchedT
       <RankingsContext.Provider value={{
         mostFollowed,
         mostLiked,
-        newUsers
+        newUsers,
+        newTokens
       }}>
         {!address &&
           <Container maxWidth="xl">
@@ -70,12 +115,20 @@ export default function Home({ address, user, limit, prefetchedFeed, prefetchedT
           </Container>
         }
         {address &&
-          <FeedContext.Provider 
+          <FeedContext.Provider
             value={{ feed }}>
-            <Container maxWidth="xl">
-              <PrivateHomePage user={user} address={address} />
-            </Container>
-
+            <UserContext.Provider
+              value={{
+                hodlingCount,
+                listedCount,
+                followersCount,
+                followingCount
+              }}
+            >
+              <Container maxWidth="xl">
+                <PrivateHomePage user={user} address={address} />
+              </Container>
+            </UserContext.Provider>
           </FeedContext.Provider>
         }
       </RankingsContext.Provider>

@@ -1,67 +1,49 @@
-import {Stack} from "@mui/material";
 import useSWR from "swr";
 import axios from 'axios';
-import { ProfileNameOrAddress } from "./ProfileNameOrAddress";
-import { DefaultAvatar } from "./DefaultAvatar";
-import { DefaultAvatarWithLink } from "./DefaultAvatarWithLink";
-import { NftAvatarMemo } from "./NftAvatar";
-import { NftAvatarWithLinkMemo } from "./NftAvatarWithLink";
+import { UserAvatarAndHandle } from "./UserAvatarAndHandle";
 
 
 interface ProfileAvatarProps {
-    profileAddress: string;
-    reverse?: boolean;
-    size?: "xsmall" | "small" | "medium" | "large" | "xlarge";
-    color?: "primary" | "secondary" | "greyscale";
-    showNickname?: boolean;
+    address: string;
+    size?: string;
+    fontSize?: string;
+    handle?: boolean;
     withLink?: boolean;
-    highlight?: boolean;
+    color?: "primary" | "secondary" | "greyscale";
 }
 
+// This is the dynamic avatar that does an API call to get the user data
 export const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
-    profileAddress,
-    reverse = false,
-    size = "medium",
-    color = "secondary",
-    showNickname = true,
+    address,
+    size = "44px",
+    fontSize = "14px",
+    handle = false,
     withLink = true,
-    highlight=false,
+    color="secondary"
 }) => {
-    const { data: tokenId } = useSWR(
-        profileAddress ? [`/api/profile/picture`, profileAddress] : null,
-        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.token)
+
+    if (!address) {
+        return null;
+    }
+
+    const { data: user } = useSWR(
+        [`/api/user`, address],
+        (url, query) => axios.get(`${url}/${query}`).then(r => r.data.user)
     )
 
-    const { data: token } = useSWR(
-        tokenId ? [`/api/token`, tokenId] : null,
-        (url, query) => axios.get(`${url}/${query}`).then(r => r.data.token)
-    )
-
-    const getSize = () => {
-        const mappings = {
-            xsmall: 36,
-            small: 44,
-            medium: 54,
-            large: 70,
-            xlarge: 100
-        }
-
-        return mappings[size];
+    if (!user) {
+        return null;
     }
 
     return (
-        <Stack sx={{
-            alignItems: "center",
-            cursor: 'pointer',
-        }}
-            spacing={2}
-            direction={reverse ? 'row-reverse' : 'row'}
-        >
-            { token && withLink && <NftAvatarWithLinkMemo token={token} size={getSize()} profileAddress={profileAddress} highlight={highlight} color={color}/> }
-            { token && !withLink && <NftAvatarMemo token={token} size={getSize()} highlight={highlight} color={color}/> }            
-            { !token && withLink && <DefaultAvatarWithLink size={getSize()} color={color} profileAddress={profileAddress} /> }
-            { !token && !withLink && <DefaultAvatar size={getSize()} color={color} /> }
-            {showNickname && <ProfileNameOrAddress color={color} profileAddress={profileAddress} size={size} />}
-        </Stack>
+        <UserAvatarAndHandle 
+            address={user.address} 
+            fallbackData={user} 
+            fontSize={fontSize} 
+            size={size} 
+            handle={handle} 
+            withLink={withLink} 
+            color={color} 
+        />
     )
 }

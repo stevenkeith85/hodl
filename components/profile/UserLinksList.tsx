@@ -12,7 +12,7 @@ interface UserLinksListProps {
   width?: string
 }
 
-export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit, width = "min-content" }) => {
+export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit }) => {
 
   if (swr?.data && swr?.data[0]?.items?.length === 0) {
     return null;
@@ -44,7 +44,12 @@ export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit, width 
                 key={user.address}
               >
                 <Box flexGrow={1}>
-                  <UserAvatarAndHandle user={user} size="40px" fontSize="14px" />
+                  <UserAvatarAndHandle 
+                    address={user.address} 
+                    fallbackData={user} 
+                    size="40px" 
+                    fontSize="14px" 
+                  />
                 </Box>
                 <Box flexShrink={1}>
                   <FollowButton profileAddress={user.address} variant="text" />

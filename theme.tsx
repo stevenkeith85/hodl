@@ -113,9 +113,9 @@ let theme = createTheme({
     MuiCardContent: {
       styleOverrides: {
         root: {
-          padding: '12px',
+          padding: '16px',
           '&:last-child': {
-            paddingBottom: '12px'
+            paddingBottom: '16px'
           }    
         }
       }

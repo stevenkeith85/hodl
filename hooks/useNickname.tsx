@@ -23,7 +23,7 @@ export const useNickname = () => {
         }
       );
 
-      mutate([`/api/profile/nickname`, address])
+      mutate([`/api/user`, address])
       return true;
 
     } catch (error) {

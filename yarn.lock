@@ -7613,6 +7613,11 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
+material-ui-confirm@^3.0.4:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/material-ui-confirm/-/material-ui-confirm-3.0.4.tgz#db4892452f65628f4bb9da3166bfbc0c53877d3b"
+  integrity sha512-2Aqh1gU6JqGvFtm2KTEUsFf+SKkNQPxWXz6CU3lJlbuFkLmIm28kjmT9sUjNkcdFOL0WhRmI3UwIbBVVBPckiA==
+
 mcl-wasm@^0.7.1:
   version "0.7.9"
   resolved "https://registry.yarnpkg.com/mcl-wasm/-/mcl-wasm-0.7.9.tgz#c1588ce90042a8700c3b60e40efb339fc07ab87f"
