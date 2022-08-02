@@ -10,7 +10,7 @@ export const useAddComment = (): [(comment: HodlComment) => Promise<void>] => {
             const r = await axios.post(
                 `/api/comments/add`,
                 {
-                    comment: comment.comment, // the text string
+                    comment: comment.comment.trim(), // the text string
                     objectId: comment.objectId, // the id of what we are commenting on.
                     object: comment.object, // the type of object we are commenting on (a token (top level) or a comment (reply))
                     tokenId: comment.tokenId // the token this comment was made under
@@ -18,7 +18,6 @@ export const useAddComment = (): [(comment: HodlComment) => Promise<void>] => {
                 {
                     headers: {
                         'Accept': 'application/json',
-                        'Authorization': localStorage.getItem('jwt')
                     }
                 });
         } catch (error) {

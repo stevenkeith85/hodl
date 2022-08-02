@@ -130,7 +130,9 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                 flexWrap="wrap"
                                 gap={0}
                             >
-                                <ProfileNameOrAddress profileAddress={comment.subject} />
+                                <ProfileNameOrAddress 
+                                    profileAddress={comment.subject} 
+                                />
                                 <Typography>
                                     {comment.comment}
                                 </Typography>

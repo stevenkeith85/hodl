@@ -32,12 +32,11 @@ export const useLike = (id, token = true, prefetchedLikeCount = null) => {
 
     try {
       const r = await axios.post(
-        baseUrl + 'like',
+        baseUrl,
         { id },
         {
           headers: {
-            'Accept': 'application/json',
-            'Authorization': localStorage.getItem('jwt')
+            'Accept': 'application/json'
           },
         }
       )

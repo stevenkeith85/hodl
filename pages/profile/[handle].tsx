@@ -47,16 +47,16 @@ export async function getServerSideProps({ params, query, req, res }) {
   await authenticate(req, res);
 
   const owner = await getUser(params.handle);
-  
+
   if (!owner) {
-      return {
-        notFound: true
-      }
+    return {
+      notFound: true
+    }
   }
-  
+
   const tab = Number(query.tab) || 0;
-  const limit = 10;  
-  
+  const limit = 10;
+
   // TODO - We could run these in parallel
   const prefetchedHodlingCount = await getHodlingCount(owner.address);
   const prefetchedListedCount = await getListedCount(owner.address);
@@ -105,10 +105,10 @@ const Profile = ({
   const [value, setValue] = useState(Number(tab)); // tab
 
   const [hodlingCount] = useHodlingCount(owner.address, prefetchedHodlingCount);
-  const {swr: hodling } = useHodling(owner.address, limit, prefetchedHodling);
-  
+  const { swr: hodling } = useHodling(owner.address, limit, prefetchedHodling);
+
   const [listedCount] = useListedCount(owner.address, prefetchedListedCount);
-  const {swr: listed } = useListed(owner.address, limit, prefetchedListed);
+  const { swr: listed } = useListed(owner.address, limit, prefetchedListed);
 
   const [followingCount] = useFollowingCount(owner.address, prefetchedFollowingCount);
   const { swr: following } = useFollowing(true, owner.address, limit, prefetchedFollowing);
@@ -116,9 +116,11 @@ const Profile = ({
   const [followersCount] = useFollowersCount(owner.address, prefetchedFollowersCount);
   const { swr: followers } = useFollowers(true, owner.address, limit, prefetchedFollowers);
 
+  console.log('followers', followers)
+
   useEffect(() => {
     if (!router?.query?.tab) {
-      setValue(0)// redirect to first tab on route change
+      setValue(0)// redirect to first tab on route change. TODO - is this still needed?
     }
   }, [router.asPath, router?.query?.tab]);
 
@@ -129,122 +131,128 @@ const Profile = ({
     </Head>
     <FollowersContext.Provider value={{ followers }}>
       <FollowingContext.Provider value={{ following }}>
-      <Head>
-        <title>{owner.nickname || owner.address} | NFT Market | HodlMyMoon</title>
-      </Head>
-      <Box
-        sx={{
+        <Head>
+          <title>{owner.nickname || owner.address} | NFT Market | HodlMyMoon</title>
+        </Head>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginTop: 4
+          }}>
+          <UserAvatarAndHandle
+            address={owner.address}
+            fallbackData={owner}
+            size={'120px'}
+            fontSize={'24px'}
+          />
+          <FollowButton profileAddress={owner.address} />
+        </Box>
+
+        <Box sx={{
           display: 'flex',
-          flexDirection: 'row',
           justifyContent: 'space-between',
-          alignItems: 'center',
-          marginTop: 4
+          marginTop: 4,
+          marginBottom: 4
         }}>
-        <UserAvatarAndHandle 
-          address={owner.address} 
-          fallbackData={owner} 
-          size={'120px'} 
-          fontSize={'24px'}
-          />
-        <FollowButton profileAddress={owner.address} />
-      </Box>
+          <Tabs
+            value={value}
+            onChange={(e, v) => {
+              setValue(v);
 
-      <Box sx={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        marginTop: 4,
-        marginBottom: 4
-      }}>
-        <Tabs
-          value={value}
-          onChange={(e, v) => {
-            setValue(v);
-
-            router.push(
-              {
-                pathname: '/profile/[handle]',
-                query: {
-                  handle: owner.nickname || owner.address,
-                  tab: v
+              router.push(
+                {
+                  pathname: '/profile/[handle]',
+                  query: {
+                    handle: owner.nickname || owner.address,
+                    tab: v
+                  }
+                },
+                undefined,
+                {
+                  shallow: true
                 }
-              },
-              undefined,
-              {
-                shallow: true
+              )
+            }}
+            textColor="secondary"
+            indicatorColor="secondary"
+          >
+
+            <Tab
+              key={0}
+              value={0}
+              label="Hodling"
+              icon={<Badge
+                sx={{ p: '6px 3px' }}
+                showZero
+                badgeContent={humanize.compactInteger(hodlingCount, 1)}
+              >
+              </Badge>
               }
-            )
-          }}
-          textColor="secondary"
-          indicatorColor="secondary"
+              iconPosition="end"
+            />
+            <Tab
+              key={1}
+              value={1}
+              label="Listed"
+              icon={<Badge
+                sx={{ p: '6px 3px' }}
+                showZero
+                badgeContent={humanize.compactInteger(listedCount, 1)}
+              >
+              </Badge>
+              }
+              iconPosition="end"
+            />
+            <Tab
+              key={2}
+              value={2}
+              label="Following"
+              icon={<Badge
+                sx={{ p: '6px 3px' }}
+                showZero
+                badgeContent={humanize.compactInteger(followingCount, 1)}
+              >
+              </Badge>}
+              iconPosition="end"
+            />
+            <Tab
+              key={3}
+              value={3}
+              label="Followers"
+              icon={<Badge
+                sx={{ p: '6px 3px' }}
+                showZero
+                badgeContent={humanize.compactInteger(followersCount, 1)}
+              >
+              </Badge>}
+              iconPosition="end"
+            />
+          </Tabs>
+        </Box>
+        <div hidden={value !== 0}>
+          <NftLinksList swr={hodling} limit={limit} />
+        </div>
+        <div hidden={value !== 1}>
+          <NftLinksList swr={listed} limit={limit} />
+        </div>
+        <Box
+          hidden={value !== 2}
+          width={'max-content'}
         >
-          
-          <Tab
-            key={0}
-            value={0}
-            label="Hodling"
-            icon={<Badge 
-              sx={{ p: '6px 3px' }} 
-              showZero 
-              badgeContent={humanize.compactInteger(hodlingCount, 1)}
-              >
-              </Badge>
-            }
-            iconPosition="end"
-          />
-          <Tab
-            key={1}
-            value={1}
-            label="Listed"
-            icon={<Badge 
-              sx={{ p: '6px 3px' }} 
-              showZero 
-              badgeContent={humanize.compactInteger(listedCount, 1)}
-              >
-              </Badge>
-              }
-            iconPosition="end"
-          />
-          <Tab
-            key={2}
-            value={2}
-            label="Following"
-            icon={<Badge 
-              sx={{ p: '6px 3px' }} 
-              showZero 
-              badgeContent={humanize.compactInteger(followingCount, 1)}
-              >
-              </Badge>}
-            iconPosition="end"
-          />
-          <Tab
-            key={3}
-            value={3}
-            label="Followers"
-            icon={<Badge 
-              sx={{ p: '6px 3px' }} 
-              showZero 
-              badgeContent={humanize.compactInteger(followersCount, 1)}
-              >
-              </Badge>}
-            iconPosition="end"
-          />
-        </Tabs>
-      </Box>
-      <div hidden={value !== 0}>
-        <NftLinksList swr={hodling} limit={limit} />
-      </div>
-      <div hidden={value !== 1}>
-        <NftLinksList swr={listed} limit={limit} />
-      </div>
-      <div hidden={value !== 2}>
-        <UserLinksList swr={following} limit={limit} />
-      </div>
-      <div hidden={value !== 3}>
-        <UserLinksList swr={followers} limit={limit} />
-      </div>
+          <UserLinksList swr={following} limit={limit} />
+        </Box>
+        <Box
+          hidden={value !== 3}
+          width={'max-content'}
+        >
+          <UserLinksList swr={followers} limit={limit} />
+        </Box>
       </FollowingContext.Provider>
     </FollowersContext.Provider>
-    </>)
+  </>)
 }
 
 export default Profile;

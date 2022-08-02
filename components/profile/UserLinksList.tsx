@@ -13,13 +13,12 @@ interface UserLinksListProps {
 }
 
 export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit }) => {
-
-  if (swr?.data && swr?.data[0]?.items?.length === 0) {
+  
+  if (!swr?.data || !swr.data.length) {
     return null;
   }
 
-  return (<>
-    {swr.data &&
+  return (
       <Box
         display="flex"
         gap={2}
@@ -29,19 +28,19 @@ export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit }) => {
         <InfiniteScroll
           swr={swr}
           loadingIndicator={<HodlLoadingSpinner />}
-          isReachingEnd={following =>
-            !following.data[0].items.length ||
-            following.data[following.data.length - 1]?.items.length < limit
+          isReachingEnd={x =>
+            !x.data[0].items.length ||
+            x.data[x.data.length - 1]?.items.length < limit
           }
         >
           {
-            ({ items }) => items.map((user: User, i) =>
-
+            ({ items }) => items.map((user: User) =>
               <Box
                 display="flex"
                 width={`100%`}
                 alignItems="center"
                 key={user.address}
+                gap={4}
               >
                 <Box flexGrow={1}>
                   <UserAvatarAndHandle 
@@ -60,7 +59,5 @@ export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit }) => {
           }
         </InfiniteScroll>
       </Box>
-    }
-  </>
   )
 }

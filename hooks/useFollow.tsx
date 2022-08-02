@@ -2,10 +2,20 @@ import { useContext } from 'react';
 import useSWR, { mutate } from 'swr';
 import { WalletContext } from '../contexts/WalletContext';
 import axios from 'axios';
+import { FeedContext } from '../contexts/FeedContext';
+import { FollowersContext } from '../contexts/FollowersContext';
+import { FollowingContext } from '../contexts/FollowingContext';
+import { RankingsContext } from '../contexts/RankingsContext';
 
 
-export const useFollow = (profileAddress, feed = null, followers = null, following = null) => {
+export const useFollow = (profileAddress) => {
   const { address } = useContext(WalletContext);
+  
+  const { feed } = useContext(FeedContext);
+
+  const { followers } = useContext(FollowersContext);
+
+  const { mostFollowed } = useContext(RankingsContext);
 
   const fetcher = (url, address, profileAddress) => axios.get(`${url}?address1=${address}&address2=${profileAddress}`).then(r => Boolean(r.data.follows));
 
@@ -25,9 +35,7 @@ export const useFollow = (profileAddress, feed = null, followers = null, followi
           return data
         }
 
-        const { count } = data;
-
-        return ({ count: isFollowing ? count - 1 : count + 1 })
+        return isFollowing ? data - 1 : data + 1;
       },
       {
         revalidate: false
@@ -41,10 +49,7 @@ export const useFollow = (profileAddress, feed = null, followers = null, followi
           return data
         }
 
-        const { count } = data;
-
-        console.log('user following', count);
-        return ({ count: isFollowing ? count - 1 : count + 1 })
+        return isFollowing ? data - 1 : data + 1;
       },
       {
         revalidate: false
@@ -69,16 +74,15 @@ export const useFollow = (profileAddress, feed = null, followers = null, followi
         feed.mutate();
       }
 
+      // This is on the feed page
+      if (mostFollowed) {
+        mostFollowed.mutate();
+      }
+
       // This is on the profile page
       if (followers) {
         followers.mutate();
       }
-
-      // This isn't needed on the profile or feed page at the moment. 
-      // Leaving here for completeness
-      // if (following) {
-      //   following.mutate();
-      // }
 
       return true;
 

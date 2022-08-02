@@ -56,7 +56,7 @@ export const getMostFollowedUsers = async (
 
   if (addresses.length) {
     for (const address of addresses) {
-      const data = await getUser(address);//await client.hmget<User>(`user:${address}`, 'address', 'nickname', 'avatar');
+      const data = await getUser(address);
 
       if (data) {
         users.push(data);

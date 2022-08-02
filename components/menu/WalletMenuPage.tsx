@@ -33,7 +33,6 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
     }
 
     useEffect(() => {
-        console.log('wallet menu route change')
         router.events.on('routeChangeComplete', handleRouteChange)
         return () => {
             router.events.off('routeChangeComplete', handleRouteChange)
@@ -123,7 +122,7 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
                                         paddingX: 2,
                                         paddingY: 1.5
                                     }}>
-                                    Profile
+                                    <ProfileNameOrAddress profileAddress={address} />
                                 </Button>
                             </Stack>
                             {walletPages.map((page, i) => (

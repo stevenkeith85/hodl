@@ -139,11 +139,11 @@ export const assetType = (nft: Token | Nft) : AssetTypes => {
   }
 }
 
-export const messageToSign = `
-Welcome to HodlMyMoon. 
+export const messageToSign = `Welcome to HodlMyMoon!
 
 To connect, please sign this message. 
 
-It will NOT cost you a transaction fee. 
+This request will not trigger a blockchain transaction or cost any gas fees.
 
+Nonce:
 `

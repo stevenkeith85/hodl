@@ -43,7 +43,10 @@ export const buyNft = async (nft: Nft) => {
   const signer = await getMetaMaskSigner();
   const contract = new ethers.Contract(nftmarketaddress, Market.abi, signer);
 
+  console.log("nft.price", nft.price)
   const price = ethers.utils.parseUnits(nft.price.toString(), 'ether')
+
+  console.log("price", price)
 
   const tx = await contract.buyToken(nftaddress, nft.id, { value: price })
   await tx.wait();
@@ -67,7 +70,6 @@ export const buyNft = async (nft: Nft) => {
     console.log(e)
   }
 }
-
 
 
 export const delistNft = async (nft: Nft) => {

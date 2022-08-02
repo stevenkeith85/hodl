@@ -78,8 +78,8 @@ export const HodlNotifications = ({
             color: 'black',
             top: 56,
             right: 0,
-            minWidth: '500px',
-            maxHeight: '300px',
+            minWidth: '525px',
+            maxHeight: '375px',
             height: { xs: 'calc(100vh - 56px)', sm: 'auto' },
             width: { xs: '100%', sm: 'auto' },
             overflowY: 'auto',
@@ -91,7 +91,7 @@ export const HodlNotifications = ({
         }}
         display="flex"
         flexDirection="column"
-        gap={2}
+        gap={3}
     >
         {
             notifications.data && !notifications.data[0].items.length &&

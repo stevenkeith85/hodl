@@ -25,17 +25,15 @@ export const getPriceHistory = async tokenId => {
     ]);
 
     result.push({
-      sellerNickname,
-      sellerAddress: tx.args.seller,
-      buyerNickname,
-      buyerAddress: tx.args.buyer,
+      seller: sellerNickname || tx.args.seller,
+      buyer: buyerNickname || tx.args.buyer,
       price: ethers.utils.formatEther(tx.args.price),
       timestamp: block.timestamp
     })
 
   }
 
-  return result.reverse(); // we want the newest first for the UI 
+  return result;//.reverse(); // we want the newest first for the UI 
 }
 
 // const route = apiRoute();

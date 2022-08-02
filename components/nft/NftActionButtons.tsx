@@ -36,7 +36,7 @@ export const NftActionButtons = ({ nft }) => {
             <SuccessModal
                 modalOpen={boughtModalOpen}
                 setModalOpen={setBoughtModalOpen}
-                message="You&apos;ve successfully bought a token on the market"
+                message="You&apos;ve bought a token"
                 tab={0}
             />
 
@@ -104,7 +104,6 @@ export const NftActionButtons = ({ nft }) => {
                                         onClick={async () => {
                                             try {
                                                 enqueueSnackbar('Please Approve Transaction in Wallet', { variant: "info" });
-                                                console.log('nft is', nft)
                                                 await delistNft(nft);
                                                 setDelistModalOpen(true);
                                             } catch (e) {

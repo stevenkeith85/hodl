@@ -1,12 +1,9 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextApiResponse } from "next";
 
 import dotenv from 'dotenv'
-import memoize from 'memoizee';
 import apiRoute from '../handler';
 
 import { Redis } from '@upstash/redis';
-import { getAsString } from "../../../lib/utils";
-import { HodlAction } from "../../../models/HodlAction";
 import axios from 'axios';
 
 dotenv.config({ path: '../.env' })

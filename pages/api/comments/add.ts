@@ -127,9 +127,14 @@ route.post(async (req, res: NextApiResponse) => {
     }
   }
 
+  // We trim the comment on both the client and server. 
+  //
+  // Yup's 'trim' validates the input IS a trimmed string every time the user types a character
+  // Given we expect there to be spaces in a comment, it would be pretty annoying for the user 
+  // to constantly get error messages like 'must be a trimmed string' as they type on the UI
   const hodlComment: HodlComment = {
     subject: req.address,
-    comment,
+    comment: comment.trim(), 
     object,
     objectId,
     tokenId,

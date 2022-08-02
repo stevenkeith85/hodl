@@ -1,5 +1,5 @@
 import { Badge, Box, Chip, Skeleton, Typography } from "@mui/material";
-import useSWR from "swr";
+import useSWR, { Fetcher } from "swr";
 import { fetchWithId } from "../../lib/swrFetchers";
 import Link from "next/link";
 import { ProfileAvatar } from "../avatar/ProfileAvatar";
@@ -17,6 +17,7 @@ import { Likes } from "../Likes";
 import { Comments } from "../comments/Comments";
 import { insertTagLinks } from "../../lib/templateUtils";
 import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
+import { Token } from "../../models/Token";
 
 
 interface HodlFeedItemProps {
@@ -30,12 +31,12 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
     const { data: comment } = useSWR(item.object === "comment" ? [`/api/comment`, item.objectId] : null,
         fetchWithId);
 
+    const fetcher: Fetcher<Token, [string, string]> = (url, query) => axios.get(`${url}/${query}`).then(r => r.data.token);
+
     const { data: token } = useSWR(item.object === "token" ?
-        [`/api/token`, item.objectId] :
-        comment ?
-            [`/api/token`, comment.tokenId] :
-            null,
-        (url, query) => axios.get(`${url}/${query}`).then(r => r.data.token));
+                                    [`/api/token`, item.objectId] :
+                                    comment ? [`/api/token`, comment.tokenId] : null,
+        fetcher);
 
     return (
         <>
@@ -119,7 +120,6 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                         <ProfileNameOrAddress
                                             color={"primary"}
                                             profileAddress={item.subject}
-                                            size={"small"}
                                             sx={{ fontWeight: 600 }}
                                         />}
                                     {item?.subject && item?.subject === address &&
@@ -190,7 +190,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                 >
                     {token && <Box display="flex" gap={2}>
                         <Likes
-                            id={token?.tokenId}
+                            id={token?.id}
                             token={true}
                             fontSize='22px'
                         />

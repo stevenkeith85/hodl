@@ -6,6 +6,8 @@ import apiRoute from "../handler";
 import { isValidAddress } from "../../../lib/profile";
 import axios from 'axios'
 import { getAsString } from "../../../lib/utils";
+import { User } from "../../../models/User";
+import { getUser } from "../user/[handle]";
 
 
 dotenv.config({ path: '../.env' })
@@ -13,36 +15,20 @@ dotenv.config({ path: '../.env' })
 const client = Redis.fromEnv()
 const route = apiRoute();
 
-
-// export const getFollowing = memoize(async (address) => {
-//   const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/users:${address}:following/+inf/-inf/rev/byscore`, {
-//     headers: {
-//       Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-//     }
-//   })
-
-//   return r.data.result;
-// }, { 
-//   primitive: true,
-//   max: 10000, 
-// });
-
-// export const getFollowing = async (address) => {
-//   const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/users:${address}:following/+inf/-inf/rev/byscore`, {
-//     headers: {
-//       Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-//     }
-//   })
-
-//   return r.data.result;
-// }
-
+// TODO: getFollowers and getFollowing are almost the same pattern. 
+// Seems like getting a list of users could be a shared
+// function that a few API endpoints could make use of
 export const getFollowing = async (address: string, offset: number = 0, limit: number = 10) => {
   try {
+    const users: User[] = [];
     const total = await client.zcard(`user:${address}:following`);
 
     if (offset >= total) {
-      return { items: [], next: Number(total), total: Number(total) };
+      return {
+        items: users,
+        next: Number(total),
+        total: Number(total)
+      };
     }
 
     const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/user:${address}:following/${offset}/${offset + limit - 1}/rev`, {
@@ -50,14 +36,48 @@ export const getFollowing = async (address: string, offset: number = 0, limit: n
         Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
       }
     })
-    const following = r.data.result
 
 
-    return { items: following, next: Number(offset) + Number(following.length), total: Number(total) };
+    const addresses: string[] = r.data.result;
+
+    if (addresses.length) {
+      for (const address of addresses) {
+        const data = await getUser(address);
+
+        if (data) {
+          users.push(data);
+        }
+      }
+    }
+
+
+    return { items: users, next: Number(offset) + Number(users.length), total: Number(total) };
   } catch (e) {
     return { items: [], next: 0, total: 0 };
   }
 }
+
+// export const getFollowing = async (address: string, offset: number = 0, limit: number = 10) => {
+//   try {
+//     const total = await client.zcard(`user:${address}:following`);
+
+//     if (offset >= total) {
+//       return { items: [], next: Number(total), total: Number(total) };
+//     }
+
+//     const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/user:${address}:following/${offset}/${offset + limit - 1}/rev`, {
+//       headers: {
+//         Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
+//       }
+//     })
+//     const following = r.data.result
+
+
+//     return { items: following, next: Number(offset) + Number(following.length), total: Number(total) };
+//   } catch (e) {
+//     return { items: [], next: 0, total: 0 };
+//   }
+// }
 
 route.get(async (req: NextApiRequest, res: NextApiResponse) => {  
   const address = getAsString(req.query.address);
