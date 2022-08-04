@@ -1,27 +1,32 @@
 import { Box, Tooltip, Typography } from '@mui/material';
 import axios from 'axios';
 import { FC } from 'react';
-import useSWR from 'swr';
+import useSWR, { Fetcher } from 'swr';
 import { getShortAddress, truncateText } from '../../lib/utils';
 import Link from 'next/link';
+import { User } from '../../models/User';
+import { useUser } from '../../hooks/useUser';
 
 interface ProfileNameOrAddressProps {
     profileAddress: string;
     fontSize?: string;
     color?: string;
     sx?: object | null;
+    fallbackData?: User | null;
 }
 
 export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({ 
     profileAddress, 
     fontSize="14px", 
     color="inherit", 
-    sx = null 
+    sx = null,
+    fallbackData=null
 }) => {
 
-    const { data: profileNickname } = useSWR(profileAddress ? [`/api/profile/nickname`, profileAddress] : null,
-        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.nickname)
-    )
+    const user: User = useUser(profileAddress, fallbackData);
+    if (!user) {
+        return null;
+    }
 
     return (<Box
         component="span"
@@ -33,18 +38,18 @@ export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({
             },
             ...sx
         }}>
-        {profileNickname ?
-            <Link href={`/profile/${profileNickname}`}>
+        {user.nickname ?
+            <Link href={`/profile/${user.nickname}`}>
                 <Tooltip title={profileAddress} arrow placement="right">
                     <a>
-                        {truncateText(profileNickname, 20)}
+                        {truncateText(user.nickname, 20)}
                     </a>
                 </Tooltip>
             </Link>
             :
-            <Link href={`/profile/${profileAddress}`}>
-                <Tooltip title={profileAddress} arrow placement="right">
-                    <a>{getShortAddress(profileAddress)}</a>
+            <Link href={`/profile/${user.address}`}>
+                <Tooltip title={user.address} arrow placement="right">
+                    <a>{getShortAddress(user.address)}</a>
                 </Tooltip>
             </Link >
 

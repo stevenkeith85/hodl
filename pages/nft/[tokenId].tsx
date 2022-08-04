@@ -17,17 +17,15 @@ import {
 
 import { fetchNFT } from "../api/nft/[tokenId]";
 import { PriceHistory } from "../../components/nft/PriceHistory";
-import { ProfileAvatar } from "../../components/avatar/ProfileAvatar";
 import { Likes } from "../../components/Likes";
 import Head from "next/head";
 import { getPriceHistory } from "../api/token-bought/[tokenId]";
-import { getTagsForToken } from "../api/tags";
 import { HodlerPrivilege } from "../../components/nft/HodlerPrivilege";
 import { getCommentsForToken } from "../api/comments";
 import { HodlCommentsBox } from "../../components/comments/HodlCommentsBox";
 import { Comments } from "../../components/comments/Comments";
 import { getCommentCount } from "../api/comments/count";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Forum, Insights } from "@mui/icons-material";
 
 import router, { useRouter } from "next/router";
@@ -39,6 +37,7 @@ import { authenticate } from "../../lib/jwt";
 import { FollowButton } from "../../components/profile/FollowButton";
 import { UserAvatarAndHandle } from "../../components/avatar/UserAvatarAndHandle";
 import { getUser } from "../api/user/[handle]";
+import { NftContext } from "../../contexts/NftContext";
 
 
 export async function getServerSideProps({ params, query, req, res }) {
@@ -102,137 +101,133 @@ const NftDetail = ({
 
   return (
     <>
-      <Head>
-        <title>{nft.name} | HodlMyMoon</title>
-      </Head>
-      <Grid container>
-        <Grid item xs={12} marginY={4}>
-          <Stack
-            spacing={1}
-            direction="row"
-            sx={{
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}>
-            <Box display="flex" gap={2} alignItems="center">
-              <UserAvatarAndHandle 
-                address={owner.address} 
-                fallbackData={owner} 
-                size={'50px'} 
-                fontSize={'18px'}
-                />
-              <div>
-                <FollowButton profileAddress={nft?.owner} variant="text" />
-              </div>
-            </Box>
-
-            <Box display="flex" justifyContent="start" sx={{
-              marginBottom: 2
-            }}>
-              <Tabs
-                value={value}
-                onChange={(e, v) => {
-                  setValue(v);
-      
-                  router.push(
-                    {
-                      pathname: '/nft/[tokenId]',
-                      query: {
-                        tokenId: nft.id,
-                        tab: v
-                      }
-                    },
-                    undefined,
-                    {
-                      shallow: true
-                    }
-                  )
-                }}
-                textColor="secondary"
-                indicatorColor="secondary"
-              >
-                <Tab key={0} value={0} icon={<Forum />} />
-                <Tab key={1} value={1} icon={<Insights />} />
-              </Tabs>
-            </Box>
-
-          </Stack>
-        </Grid>
-        <Grid item xs={12} md={5} marginBottom={2} paddingRight={{ md: 1 }}>
-          <Stack spacing={2}>
-            <DetailPageImage token={nft} />
-            <Box gap={1.5} display='flex' alignItems='center'>
-              <Likes
-                sx={{
-                  color: theme => theme.palette.secondary.main,
-                  '.MuiTypography-body1': { color: '#666' }
-                }}
-                id={nft.id}
-                token={true}
-                prefetchedLikeCount={prefetchedLikeCount}
-                fontSize="22px"
-              />
-              <Comments
-                fontSize="22px"
-                nft={nft}
-                popUp={false}
-                prefetchedCommentCount={prefetchedCommentCount}
-                sx={{ color: '#333' }}
-              />
-            </Box>
-          </Stack>
-        </Grid>
-        <Grid
-          item
-          xs={12}
-          md={7}
-          marginBottom={2}
-          paddingLeft={{ md: 1 }}
-        >
-          <div hidden={value !== 0}>
-            <Stack spacing={2}>
-              <Card 
-
-              variant="outlined">
-                <CardContent>
-                  <Box
-                    paddingBottom={3}
-                    mb={3}
-                    sx={{ borderBottom: `1px solid #ddd` }}>
-                    <Typography variant="h1" mb={3} sx={{ fontWeight: 600 }}>{nft.name}</Typography>
-                    <Box sx={{ whiteSpace: 'pre-line' }}>{insertTagLinks(nft.description)}</Box>
-                  </Box>
-                  <HodlCommentsBox
-                    tokenId={nft.id}
-                    object={comment ? "comment" : "token"}
-                    objectId={comment ? comment : nft.id}
-                    prefetchedComments={prefetchedComments}
-                    prefetchedCommentCount={prefetchedCommentCount}
-                    limit={limit}
-                  />
-                </CardContent>
-              </Card>
-            </Stack>
-          </div>
-          <div hidden={value !== 1}>
-            <Box display="grid" gap={2}>
-              <Box display="grid" gap={3} sx={{
-                background: indigo[50],
-                padding: 2,
-                border: `1px solid #ddd`,
-                borderRadius: 1
+      <NftContext.Provider
+        value={{
+          nft
+        }}
+      >
+        <Head>
+          <title>{nft.name} | HodlMyMoon</title>
+        </Head>
+        <Grid container>
+          <Grid item xs={12} marginY={4}>
+            <Stack
+              spacing={1}
+              direction="row"
+              sx={{
+                justifyContent: 'space-between',
+                alignItems: 'center'
               }}>
-                <Typography variant="h2">Price</Typography>
-                <MaticPrice nft={nft} color="black" />
-                <NftActionButtons nft={nft} />
+              <Box display="flex" gap={2} alignItems="center">
+                <UserAvatarAndHandle
+                  address={owner.address}
+                  fallbackData={owner}
+                  size={'50px'}
+                  fontSize={'18px'}
+                />
+                <div>
+                  <FollowButton profileAddress={nft?.owner} variant="text" />
+                </div>
               </Box>
-              <PriceHistory priceHistory={priceHistory} />
-              <HodlerPrivilege nft={nft} />
-              <IpfsCard nft={nft} />
-            </Box>
-          </div>
-        </Grid>
-      </Grid >
+
+              <Box display="flex" justifyContent="start" sx={{
+                marginBottom: 2
+              }}>
+                <Tabs
+                  value={value}
+                  onChange={(e, v) => {
+                    setValue(v);
+
+                    router.push(
+                      {
+                        pathname: '/nft/[tokenId]',
+                        query: {
+                          tokenId: nft.id,
+                          tab: v
+                        }
+                      },
+                      undefined,
+                      {
+                        shallow: true
+                      }
+                    )
+                  }}
+                  textColor="secondary"
+                  indicatorColor="secondary"
+                >
+                  <Tab key={0} value={0} icon={<Forum />} />
+                  <Tab key={1} value={1} icon={<Insights />} />
+                </Tabs>
+              </Box>
+
+            </Stack>
+          </Grid>
+          <Grid item xs={12} md={5} marginBottom={2} paddingRight={{ md: 1 }}>
+            <Stack spacing={2}>
+              <DetailPageImage token={nft} />
+              <Box gap={1.5} display='flex' alignItems='center'>
+                <Likes
+                  sx={{
+                    color: theme => theme.palette.secondary.main,
+                    '.MuiTypography-body1': { color: '#666' }
+                  }}
+                  id={nft.id}
+                  object="token"
+                  prefetchedLikeCount={prefetchedLikeCount}
+                  fontSize="22px"
+                />
+                <Comments
+                  fontSize="22px"
+                  nft={nft}
+                  popUp={false}
+                  sx={{ color: '#333' }}
+                />
+              </Box>
+            </Stack>
+          </Grid>
+          <Grid
+            item
+            xs={12}
+            md={7}
+            marginBottom={2}
+            paddingLeft={{ md: 1 }}
+          >
+            <div hidden={value !== 0}>
+              <Stack spacing={2}>
+                <Card variant="outlined">
+                  <CardContent>
+                    <Box
+                      paddingBottom={3}
+                      mb={3}
+                      sx={{ borderBottom: `1px solid #ddd` }}>
+                      <Typography variant="h1" mb={3} sx={{ fontWeight: 600 }}>{nft.name}</Typography>
+                      <Box sx={{ whiteSpace: 'pre-line' }}>{insertTagLinks(nft.description)}</Box>
+                    </Box>
+                    <HodlCommentsBox limit={limit} />
+                  </CardContent>
+                </Card>
+              </Stack>
+            </div>
+            <div hidden={value !== 1}>
+              <Box display="grid" gap={2}>
+                <Box display="grid" gap={3} sx={{
+                  background: indigo[50],
+                  padding: 2,
+                  border: `1px solid #ddd`,
+                  borderRadius: 1
+                }}>
+                  <Typography variant="h2">Price</Typography>
+                  <MaticPrice nft={nft} color="black" />
+                  <NftActionButtons nft={nft} />
+                </Box>
+                <PriceHistory priceHistory={priceHistory} />
+                <HodlerPrivilege nft={nft} />
+                <IpfsCard nft={nft} />
+              </Box>
+            </div>
+          </Grid>
+        </Grid >
+      </NftContext.Provider>
     </>
   )
 }

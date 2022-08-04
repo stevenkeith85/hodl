@@ -806,7 +806,7 @@ describe("HodlMarket Contract", function () {
             await tx.wait();
 
             try {
-                tx = await hodlMarketAsUser2.buyToken(hodlNFTAsUser2.address, BigNumber.from(1), {  value: ethers.utils.parseEther("10") } )
+                tx = await hodlMarketAsUser2.buyToken(hodlNFTAsUser2.address, BigNumber.from(1), { value: ethers.utils.parseEther("10") })
                 await tx.wait()
             } catch (e) {
                 expect(e.message).to.equal("VM Exception while processing transaction: reverted with reason string 'Pausable: paused'");
@@ -817,7 +817,7 @@ describe("HodlMarket Contract", function () {
             tx = await hodlMarketAsOwner.unpauseContract();
             await tx.wait();
 
-            tx = await hodlMarketAsUser2.buyToken(hodlNFTAsUser2.address, BigNumber.from(1), {  value: ethers.utils.parseEther("10") } )
+            tx = await hodlMarketAsUser2.buyToken(hodlNFTAsUser2.address, BigNumber.from(1), { value: ethers.utils.parseEther("10") })
             await tx.wait()
 
             expect(await hodlNFTAsUser.ownerOf(BigNumber.from(1))).to.equal(process.env.ACCOUNT2_PUBLIC_KEY)
@@ -840,6 +840,50 @@ describe("HodlMarket Contract", function () {
             await tx.wait()
 
             expect(await hodlNFTAsUser.ownerOf(BigNumber.from(1))).to.equal(process.env.ACCOUNT1_PUBLIC_KEY)
+        });
+
+        it.only("The market needs to be approved AFTER a sale; so that relisting can occur", async function () {
+            const tokenUri = "ipfs://123456"
+            
+            let tx = await hodlNFTAsUser.createToken(tokenUri, { value: mintFee });
+            await tx.wait();
+
+            const transferEvents = await hodlNFTAsUser.queryFilter("Transfer")
+            const tokenId = transferEvents[0].args.tokenId;
+
+            let owner = await hodlNFTAsUser.ownerOf(tokenId);
+
+            // The creator owns it
+            expect(owner).to.equal(userAccount.address);
+            
+            // The market is approved by the creator to transfer it
+            // let approved = await hodlNFTAsUser.isApprovedForAll(owner, hodlMarketAsOwner.address);
+            // expect(approved).to.equal(true);
+
+            // The creator lists it
+            tx = await hodlMarketAsUser.listToken(hodlNFTAsUser.address, 1, ethers.utils.parseEther("10"));
+            await tx.wait();
+
+            // The market is still approved by the creator to transfer it
+            // approved = await hodlNFTAsUser.isApprovedForAll(owner, hodlMarketAsOwner.address);
+            // expect(approved).to.equal(true);
+
+            // The market actually owns it at the moment
+            owner = await hodlNFTAsUser.ownerOf(tokenId);
+            expect(owner).to.equal(hodlMarketAsOwner.address);
+
+            // A different user buys it
+            tx = await hodlMarketAsUser2.buyToken(hodlNFTAsUser2.address, tokenId, { value: ethers.utils.parseEther("10") })
+            await tx.wait();
+
+            // The new user owns it
+            owner = await hodlNFTAsUser2.ownerOf(tokenId);
+            expect(owner).to.equal(userAccount2.address);
+
+            // The market SHOULD BE approved by the new owner to transfer it. (so they can list it)
+            // approved = await hodlNFTAsUser.isApprovedForAll(owner, hodlMarketAsOwner.address);
+            // expect(approved).to.equal(true);
+
         });
     });
 });

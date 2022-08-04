@@ -4,6 +4,7 @@ import { ethers } from 'ethers'
 
 import { nftmarketaddress, nftaddress } from '../config.js'
 import Market from '../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
+import NFT from '../artifacts/contracts/HodlNFT.sol/HodlNFT.json'
 
 import { getMetaMaskSigner } from "./connections";
 import { ActionTypes } from '../models/HodlAction';
@@ -12,20 +13,34 @@ import { Nft } from '../models/Nft.js';
 
 export const listNftOnMarket = async (tokenId, tokenPrice) => {
   const signer = await getMetaMaskSigner();
+
+  console.log('address', await signer.getAddress())
   const contract = new ethers.Contract(nftmarketaddress, Market.abi, signer);
 
+  console.log(nftmarketaddress, Market.abi, signer);
   const price = ethers.utils.parseUnits(tokenPrice, 'ether');
 
-  const tx = await contract.listToken(nftaddress, tokenId, price);
-  await tx.wait();
+  console.log("nftaddress, tokenId, price", nftaddress, tokenId, price)
+
+  const tokenContract = new ethers.Contract(nftaddress, NFT.abi, signer);
+
+  // If we aren't approved, then ask for approval.
+  // This could happen if a user hasn't ever minted a token.
+  if (!await tokenContract.isApprovedForAll(await signer.getAddress(), nftmarketaddress)) {
+    const approvalTx = await tokenContract.setApprovalForAll(nftmarketaddress, tokenId);
+    await approvalTx.wait();
+  };
+
+  const listTx = await contract.listToken(nftaddress, tokenId, price);
+  await listTx.wait();
 
   try {
     const r = await axios.post(
       '/api/actions/add',
-      { 
-        action: ActionTypes.Listed, 
+      {
+        action: ActionTypes.Listed,
         object: "token",
-        id: Number(tokenId) 
+        id: Number(tokenId)
       },
       {
         headers: {
@@ -47,15 +62,14 @@ export const buyNft = async (nft: Nft) => {
   const price = ethers.utils.parseUnits(nft.price.toString(), 'ether')
 
   console.log("price", price)
-
   const tx = await contract.buyToken(nftaddress, nft.id, { value: price })
   await tx.wait();
 
   try {
     const r = await axios.post(
       '/api/actions/add',
-      { 
-        action: ActionTypes.Bought, 
+      {
+        action: ActionTypes.Bought,
         object: "token",
         id: nft.id
       },

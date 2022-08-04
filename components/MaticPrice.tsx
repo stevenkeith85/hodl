@@ -23,7 +23,7 @@ export const MaticPrice: React.FC<MaticPriceProps> = ({nft, color="white"}) => {
             { console.log(nft)}
             {/* TODO - We are trying to make the NFT data structures as consistent as possible; so we can likely switch this to .forSale before going to prod. i.e. data issue at the moment */}
             {nft?.price > 0 && <Typography sx={{ fontSize: '18px' }}>{nft?.price}</Typography>} 
-            {nft?.price == 0 && <Typography sx={{ fontSize: '18px' }}>Not For Sale</Typography>}
+            {nft?.price == 0 && <Typography sx={{ fontSize: '18px' }}>Not for sale</Typography>}
         </Box>
     )
 }

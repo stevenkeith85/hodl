@@ -1,5 +1,3 @@
-import { Typography } from "@mui/material";
-import Link from "next/link";
 import { AssetTypes } from "../models/AssetType";
 import { Nft } from "../models/Nft";
 import { Token } from "../models/Token";

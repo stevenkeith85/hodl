@@ -4,6 +4,8 @@ require('solidity-coverage')
 require('hardhat-contract-sizer');
 require('dotenv').config()
 
+require('./tasks/token');
+
 module.exports = {
   solidity: {
     version: "0.8.9",

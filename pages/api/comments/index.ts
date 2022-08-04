@@ -9,6 +9,12 @@ import { ethers } from "ethers";
 import { nftaddress } from "../../../config";
 import { getProvider } from "../../../lib/server/connections";
 import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
+import { getUser } from "../user/[handle]";
+import { HodlComment, HodlCommentViewModel } from "../../../models/HodlComment";
+import { getToken } from "../token/[tokenId]";
+import { fetchNFT } from "../nft/[tokenId]";
+import { getCommentLikeCount } from "../like/comment/count";
+import { getComment } from "../comment";
 
 dotenv.config({ path: '../.env' })
 
@@ -31,9 +37,14 @@ export const getCommentsForToken = async (object: "token" | "comment", objectId:
     })
     const commentIds = r.data.result.map(item => JSON.parse(item));
 
-    const comments = [];
+    const comments: HodlCommentViewModel[] = [];
+
     for (const id of commentIds) {
-      comments.push(await client.get(`comment:${id}`));
+      const comment : HodlCommentViewModel = await getComment(id);
+
+      if (comment) {
+        comments.push(comment);
+      }
     }
 
     return { items: comments, next: Number(offset) + Number(comments.length), total: Number(total) };

@@ -116,8 +116,6 @@ const Profile = ({
   const [followersCount] = useFollowersCount(owner.address, prefetchedFollowersCount);
   const { swr: followers } = useFollowers(true, owner.address, limit, prefetchedFollowers);
 
-  console.log('followers', followers)
-
   useEffect(() => {
     if (!router?.query?.tab) {
       setValue(0)// redirect to first tab on route change. TODO - is this still needed?

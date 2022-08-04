@@ -7,6 +7,7 @@ import { AddCommentValidationSchema } from "../../validationSchema/comments/addC
 import { useAddComment } from "../../hooks/useComments";
 import { HodlComment } from "../../models/HodlComment";
 import { QuoteComment } from "./QuoteComment";
+import { NftContext } from "../../contexts/NftContext";
 
 
 interface AddCommentProps {
@@ -22,7 +23,7 @@ interface AddCommentProps {
 }
 
 export const AddComment: FC<AddCommentProps> = ({
-    tokenId,
+    tokenId, // TODO: We don't need to pass this now, as we have access to 'nft' via the context
     objectId,
     object,
     commentingOn,
@@ -34,11 +35,12 @@ export const AddComment: FC<AddCommentProps> = ({
 }) => {
     const { address } = useContext(WalletContext);
     const [addComment] = useAddComment();
-
+    const { nft } = useContext(NftContext);
+    
     const reset = () => {
         setCommentingOn({
             object,
-            objectId: Number(objectId),
+            objectId,
             mutateList,
             mutateCount,
             setShowThread: () => null,

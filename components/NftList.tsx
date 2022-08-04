@@ -64,7 +64,7 @@ const Overlay = ({ nft }) => {
                         gap={3}>
                         <Likes
                             id={nft?.id}
-                            token={true}
+                            object="token"
                             color='inherit'
                             fontSize='26px'
                         />

@@ -237,6 +237,7 @@ export const addAction = async (action: HodlAction) => {
     }
   }
 
+  // TODO: Debug this. I don't think its adding it to the followers feed
   // Who: Tell the seller's followers (via their feed) there's a new token on the site
   if (action.action === ActionTypes.Added) {
     try {

@@ -117,13 +117,14 @@ contract HodlNFT is
 
         _mint(msg.sender, tokenId);
         _setTokenURI(tokenId, tokenURI);
+
+        // Approve the marketplace to transfer hodltokens for this user
+        // If the user nevers mint a token, then they will need to approve the market place on
+        // their first attempt to list a token. this can be done client-side
         setApprovalForAll(marketAddress, true);
 
         (bool received, ) = owner().call{value: msg.value}("");
-        require(
-            received,
-            "Could not send the contract owner the minting fee"
-        );
+        require(received, "Could not send the contract owner the minting fee");
 
         return tokenId;
     }

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { UserAvatar } from "./UserAvatar";
 import useSWR from "swr";
 import axios from 'axios';
+import { useUser } from "../../hooks/useUser";
 
 
 const UserAvatarAndHandleBody = ({ user, size, fontSize, handle, color }) => (<Box
@@ -48,16 +49,21 @@ export const UserAvatarAndHandle: React.FC<UserAvatarProps> = ({
     color = "secondary"
 }) => {
 
-    const { data: user } = useSWR(
-        [`/api/user`, address],
-        (url, query) => axios.get(`${url}/${query}`).then(r => r.data.user),
-        { fallbackData }
-    )
+    // const { data: user } = useSWR(
+    //     [`/api/user`, address],
+    //     (url, query) => axios.get(`${url}/${query}`).then(r => r.data.user),
+    //     { fallbackData }
+    // )
 
+    // if (!user) {
+    //     return null;
+    // }
+
+    const user = useUser(address, fallbackData);
     if (!user) {
         return null;
     }
-    
+
     return (<>
         {
             withLink ?

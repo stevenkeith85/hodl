@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import InfiniteScroll from 'react-swr-infinite-scroll'
-import { HodlComment } from "../../models/HodlComment";
+import { HodlComment, HodlCommentViewModel } from "../../models/HodlComment";
 import { HodlCommentBox } from "../comments/HodlCommentBox";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 
@@ -46,7 +46,7 @@ export const InfiniteScrollComments: React.FC<InfiniteScrollCommentsProps> = ({
         ({ items, next, total }) => <Box key={next} display="flex" flexDirection="column" gap={1.5} sx={{ margin: `0 0 12px 0`}}>
           {
             (items || []).map(
-              (comment: HodlComment, i: number) =>
+              (comment: HodlCommentViewModel, i: number) =>
                 <HodlCommentBox
                   key={`hodl-comments-${comment.id}`}
                   comment={comment}

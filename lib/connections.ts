@@ -8,7 +8,7 @@ export const getMetaMaskSigner = async (returningUser=true) => {
   
     // if we've forgotten the user (because they asked to disconnect), then ask them to pick an account again
     if (!returningUser) {
-      await provider.send("wallet_requestPermissions",  [{
+      await provider.send("wallet_requestPermissions",  [{ // This RPC method is not yet available in MetaMask Mobile.
         eth_accounts: {}
       }]);
     }

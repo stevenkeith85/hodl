@@ -1,21 +1,16 @@
 import { useState, useContext } from 'react';
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 import { WalletContext } from '../contexts/WalletContext';
 import axios from 'axios'
 
-export const useLike = (id, token = true, prefetchedLikeCount = null) => {
+export const useLike = (
+  id: number,
+  object: "token" | "comment"
+) => {
   const { address } = useContext(WalletContext);
   const [error, setError] = useState('');
 
-  const baseUrl = token ? `/api/like/token/` : `/api/like/comment/`;
-
-  const { data: tokenLikesCount, mutate: mutateLikesCount } = useSWR(
-    id ? [baseUrl + `count`, id] : null,
-    (url, id) => axios.get(`${url}?id=${id}`).then(r => r.data.count),
-    {
-      fallbackData: prefetchedLikeCount
-    }
-  );
+  const baseUrl = `/api/like/${object}/`;
 
   const { data: userLikesThisToken, mutate: mutateUserLikesThisToken } = useSWR(
     address && id ? [baseUrl + 'likes', address, id] : null,
@@ -27,7 +22,7 @@ export const useLike = (id, token = true, prefetchedLikeCount = null) => {
       return;
     }
 
-    mutateLikesCount(old => userLikesThisToken ? old - 1 : old + 1, { revalidate: false });
+    mutate(`/api/like/${object}/count`, old => userLikesThisToken ? old - 1 : old + 1, { revalidate: false });
     mutateUserLikesThisToken(old => !old, { revalidate: false })
 
     try {
@@ -40,13 +35,14 @@ export const useLike = (id, token = true, prefetchedLikeCount = null) => {
           },
         }
       )
+
     } catch (error) {
-      mutateLikesCount();
+      mutate(`/api/like/${object}/count`);
       mutateUserLikesThisToken();
 
       return { success: false, fileName: null, mimeType: null };
     }
   }
 
-  return [tokenLikesCount, userLikesThisToken, toggleLike, error, setError];
+  return [userLikesThisToken, toggleLike, error, setError];
 }

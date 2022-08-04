@@ -21,21 +21,17 @@ const route = apiRoute();
 // if a token has replies, we just change the text to "[deleted]", so that the replies still have an anchor
 const removeComment = async (address, object, objectId, id, tokenId) => {
 
-  // const replies = await client.zcard(`comments:${object}:${id}`);
   const replies = await client.zcard(`comment:${id}:comments`);
 
   if (!replies) {
-    // const commentDeleted = await client.hdel(`comment`, id);
-    // const userRecordDeleted = await client.zrem(`commented:${address}`, id);
-    // const tokenRecordDeleted = await client.zrem(`comments:${object}:${objectId}`, id);
-    // const commentCountUpdated = await client.zincrby("commentCount", -1, tokenId);
-
     const commentDeleted = await client.del(`comment:${id}`);
     const userRecordDeleted = await client.zrem(`user:${address}:comments`, id);
     const tokenRecordDeleted = await client.zrem(`${object}:${objectId}:comments`, id);
-    const commentCountUpdated = await client.incrby(`token:${id}:comments:count`, -1);
 
-    return commentDeleted + userRecordDeleted + tokenRecordDeleted;
+    // We always decrement the token id's comment count; as this represents the number of top level and sub level comments
+    const commentCountUpdated = await client.incrby(`token:${tokenId}:comments:count`, -1);
+
+    return commentDeleted + userRecordDeleted + tokenRecordDeleted + commentCountUpdated;
   } else {
     const comment: HodlComment = await client.get(`comment:${id}`);
     comment.comment = "[deleted]";

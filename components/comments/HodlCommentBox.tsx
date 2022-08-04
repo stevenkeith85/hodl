@@ -1,6 +1,5 @@
 import { Typography, Box, Tooltip } from "@mui/material";
 import { useRouter } from "next/router";
-import { ProfileAvatar } from "../avatar/ProfileAvatar";
 import axios from 'axios'
 import useSWR from "swr";
 import { Likes } from "../Likes";
@@ -8,14 +7,16 @@ import { HighlightOffOutlined, Message, Reply } from "@mui/icons-material";
 import { useLike } from "../../hooks/useLike";
 import { useComments, useCommentCount, useDeleteComment } from "../../hooks/useComments";
 import { FC, useContext, useState } from "react";
-import { HodlComment } from "../../models/HodlComment";
+import { HodlComment, HodlCommentViewModel } from "../../models/HodlComment";
 import { WalletContext } from "../../contexts/WalletContext";
 import { formatDistanceStrict } from "date-fns";
 import { ProfileNameOrAddress } from "../avatar/ProfileNameOrAddress";
 import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
+import { NftContext } from "../../contexts/NftContext";
+import { useLikeCount } from "../../hooks/useLikeCount";
 
 interface HodlCommentBoxProps {
-    comment: HodlComment;
+    comment: HodlCommentViewModel;
     color?: "primary" | "secondary";
     setCommentingOn: Function;
 
@@ -48,20 +49,12 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
 }) => {
 
     const router = useRouter();
+
     const { address } = useContext(WalletContext);
+    const { nft } = useContext(NftContext);
 
-    // TODO: 
-    // We could pass this down the component tree, or use a context here. SWR will dedup the calls though, so we should only do the API call once, even if there's lots of comments
-    // Probably worth using a context soon anyways, as there's a lot of prop drilling going on
-    const { data: nft } = useSWR(
-        comment.subject ? [`/api/nft`, comment.tokenId] : null,
-        (url, tokenId) => axios.get(`${url}/${tokenId}`).then(r => r.data.token)
-    )
+    const likesCount = useLikeCount(comment.id, "comment");
 
-    // Comment Metadata
-    const [likesCount] = useLike(comment.id, false);
-
-    // Actions
     const [deleteComment] = useDeleteComment();
     const [showThread, setShowThread] = useState(shouldShowThread);
 
@@ -78,19 +71,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
     const internalCountSWR = useCommentCount(comment.id, "comment", null);
     const countSWR = replyCountSWR || internalCountSWR;
 
-    const canDeleteComment = (comment: HodlComment) => {
-        const { subject, tokenId } = comment;
-
-        if (subject === address) {
-            return true;
-        }
-
-        if (nft?.owner === address) {
-            return true;
-        }
-
-        return false;
-    }
+    const canDeleteComment = (comment: HodlCommentViewModel) => comment.user.address === address || nft?.owner === address;
 
     return (
         <Box display="flex" flexDirection="column" gap={1}>
@@ -115,7 +96,8 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                         flexGrow={1}
                     >
                         <UserAvatarAndHandle
-                            address={comment.subject}
+                            address={comment.user.address}
+                            fallbackData={comment.user}
                             handle={false}
                         />
                         <Box
@@ -130,12 +112,11 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                 flexWrap="wrap"
                                 gap={0}
                             >
-                                <ProfileNameOrAddress 
-                                    profileAddress={comment.subject} 
+                                <ProfileNameOrAddress
+                                    profileAddress={comment.user.address}
+                                    fallbackData={comment.user}
                                 />
-                                <Typography>
-                                    {comment.comment}
-                                </Typography>
+                                <Typography>{comment.comment}</Typography>
                             </Box>
                             <Box display="flex" gap={0.5}>
                                 <Typography sx={{ fontSize: 10, color: "#999" }}>{likesCount} likes</Typography>
@@ -157,7 +138,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                 }}
                                 fontSize="16px"
                                 id={comment.id}
-                                token={false}
+                                object="comment"
                                 showCount={false}
                                 likeTooltip={'Like this Comment'}
                                 unlikeTooltip={'Stop liking this Comment'}
@@ -201,14 +182,11 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                 }}
                                 fontSize="inherit"
                                 onClick={() => {
-                                    if (setTopLevel !== null) {
-                                        setTopLevel({ objectId: comment.id, object: "comment" });
-                                    } else {
-                                        router.push({
-                                            pathname: window.location.pathname,
-                                            query: { comment: comment.id }
-                                        });
-                                    }
+                                    setTopLevel({ objectId: comment.id, object: "comment" });
+                                    router.push({
+                                        pathname: window.location.pathname,
+                                        query: { comment: comment.id }
+                                    }, undefined, { shallow: true });
                                 }}
                             />
                         </Tooltip>
@@ -237,9 +215,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                         }
                     </Box>
                 </Box>
-
             </Box>
-
             {
                 Boolean(countSWR.data) &&
                 <Box
@@ -248,7 +224,6 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                     gap={1}
                     marginLeft={'55px'}
                 >
-
                     {showThread && !swr.error && !swr.data ?
                         <Typography
                             sx={{
@@ -279,7 +254,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                 showThread && swr?.data?.map(({ items, next, total }) => (<>
                                     <Box key={next} display="flex" flexDirection="column" gap={1.5}> {
                                         (items || []).map(
-                                            (comment: HodlComment, i: number) => (<HodlCommentBox
+                                            (comment: HodlCommentViewModel, i: number) => (<HodlCommentBox
                                                 key={`hodl-comments-${comment.id}`}
                                                 comment={comment}
                                                 color={i % 2 ? 'primary' : 'secondary'}

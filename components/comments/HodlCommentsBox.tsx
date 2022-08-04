@@ -1,55 +1,42 @@
-import { Card, CardContent, Typography, Box, Badge, Tooltip } from "@mui/material";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
+import { object } from "yup";
+import { NftContext } from "../../contexts/NftContext";
 import { useCommentCount, useComments } from "../../hooks/useComments";
-import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
+import { getAsString } from "../../lib/utils";
 import { AddComment } from "../nft/AddComment";
-import { InfiniteScrollComments } from "../profile/InfiniteScrollComments";
-import { HodlCommentBox } from "./HodlCommentBox";
-import { fetchWithId } from "../../lib/swrFetchers";
-import useSWR from "swr";
-import { Forum } from "@mui/icons-material";
-import { HodlImpactAlert } from "../HodlImpactAlert";
+import { HodlCommentsBoxBody } from "./HodlCommentsBoxBody";
+import { HodlCommentsBoxHeader } from "./HodlCommentsBoxHeader";
 
 
 interface HodlCommentsBoxProps {
-    tokenId: number, // the nft these comments are about. Each comment will store a reference to this to allow us to check who can delete comments. (i.e. the user or token owner)
-    objectId: number, // the base object the main comment thread is about
-    object: "token" | "comment", // the base object type the main comment thread is about
-    prefetchedComments: any,
-    prefetchedCommentCount: number,
     limit: number,
     minHeight?: string,
     maxHeight?: string,
-    setTopLevel?: any | null,
-    clearTopLevel?: any | null
 }
 
 export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
-    tokenId,
-    objectId,
-    object = "token",
-    prefetchedComments, // TODO - NEEDS UPDATED
-    prefetchedCommentCount, // TODO - NEEDS UPDATED
     limit,
     minHeight = '200px',
     maxHeight = '500px',
-    setTopLevel = null,
-    clearTopLevel = null,
 }) => {
+    const { nft } = useContext(NftContext);
     const router = useRouter();
+
+    const [topLevel, setTopLevel] = useState<{
+        objectId: number,
+        object: "token" | "comment"
+    }>({
+        objectId: getAsString(router.query.comment) || nft.id,
+        object: router.query.comment ? "comment" : "token"
+    })
+
     const newTagRef = useRef();
     const [loading, setLoading] = useState(false);
 
-    const { data: comment } = useSWR(
-        object === "comment" && objectId ? [`/api/comment`, objectId] : null,
-        fetchWithId
-    );
-
-    const swr = useComments(objectId, 10, object, null);
-
-    const countSWR = useCommentCount(objectId, object, null);
-
+    const swr = useComments(topLevel.objectId, 10, topLevel.object, null);
+    const countSWR = useCommentCount(topLevel.objectId, topLevel.object, null);
+    
     const [commentingOn, setCommentingOn] = useState<{
         object: "token" | "comment",
         objectId: number,
@@ -58,8 +45,8 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
         setShowThread: Function,
         color: "primary" | "secondary"
     }>({
-        object,
-        objectId,
+        object: "token", // we are initially commenting on the nft. this can be set to a comment by the user though
+        objectId: nft.id,
         mutateList: swr.mutate,
         mutateCount: countSWR.mutate,
         setShowThread: () => null,
@@ -68,103 +55,37 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
 
     useEffect(() => {
         setCommentingOn({
-            object,
-            objectId: Number(objectId),
+            object: topLevel.object,
+            objectId: topLevel.objectId,
             mutateList: swr.mutate,
             mutateCount: countSWR.mutate,
             setShowThread: () => null,
             color: "primary"
         })
-    }, [object, objectId]);
+    }, [topLevel.object, topLevel.objectId]);
 
     return (<>
-        <Box
-            display="flex"
-            justifyContent="space-between"
-        >
-            {object === "token" ?
-                <Typography
-                    variant="h2"
-                    sx={{ marginBottom: 2 }}
-                >
-                    Comments <Badge sx={{ p: '6px 3px' }} showZero badgeContent={countSWR.data} max={1000}></Badge>
-                </Typography> :
-                (<><Typography
-                    variant="h3"
-                    sx={{ marginBottom: 2 }}
-                >
-                    Single Comment Thread
-                </Typography>
-                    <Tooltip title="View All Comments">
-                        <Forum
-                            sx={{ cursor: 'pointer', color: '#999' }}
-                            fontSize="inherit"
-                            onClick={() => {
-                                if (clearTopLevel) {
-                                    clearTopLevel();
-                                } else {                                    
-                                    router.push(window.location.pathname);
-                                }
-
-                            }} />
-                    </Tooltip>
-                </>)
-            }
-        </Box>
-        <Box
-            sx={{
-                maxHeight,
-                minHeight,
-                overflow: 'auto',
-                position: 'relative',
-            }}
-        >
-            {
-                loading &&
-                <Box sx={{
-                    position: 'absolute',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    height: '100%',
-                }}>
-                    <HodlLoadingSpinner />
-                </Box>
-            }
-            {object === "token" ?
-                <Box marginRight={1}>
-                    <InfiniteScrollComments
-                        swr={swr}
-                        limit={limit}
-                        setCommentingOn={setCommentingOn}
-                        addCommentInput={newTagRef?.current}
-                        parentMutateCount={countSWR.mutate}
-                        setTopLevel={setTopLevel}
-                        mutateCount={countSWR.mutate}
-                    />
-                    {swr?.data && swr?.data[0]?.items?.length === 0 && <Typography>Be the first to comment</Typography>}
-
-                </Box> :
-                comment && <HodlCommentBox
-                    color="primary"
-                    shouldShowThread={true}
-                    comment={comment}
-                    setCommentingOn={setCommentingOn}
-                    parentMutateList={() => null}
-                    parentMutateCount={() => null}
-                    addCommentInput={newTagRef.current}
-                    replySWR={swr}
-                    replyCountSWR={countSWR}
-                    setTopLevel={setTopLevel}
-                    mutateCount={countSWR.mutate}
-                />
-            }
-        </Box>
+        <HodlCommentsBoxHeader 
+            object={topLevel.object} 
+            countSWR={countSWR} 
+            setTopLevel={setTopLevel}
+            />
+        <HodlCommentsBoxBody 
+            topLevelObject={topLevel.object} 
+            topLevelObjectId={topLevel.objectId} 
+            swr={swr}
+            countSWR={countSWR} 
+            loading={loading} 
+            minHeight={minHeight} 
+            maxHeight={maxHeight}
+            limit={limit} 
+            setCommentingOn={setCommentingOn} // TODO: Looks like its really this that we'd want to put in a context - as its just passed through intermediate components
+            setTopLevel={setTopLevel} 
+            newTagRef={newTagRef} />
         <AddComment
-            tokenId={tokenId}
-            object={object}
-            objectId={objectId}
+            object={topLevel.object}
+            objectId={topLevel.objectId}
+            tokenId={nft.id}
             commentingOn={commentingOn}
             setCommentingOn={setCommentingOn}
             mutateList={swr.mutate}

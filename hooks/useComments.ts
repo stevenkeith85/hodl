@@ -2,7 +2,7 @@ import useSWR from 'swr';
 import useSWRInfinite from 'swr/infinite'
 import { fetchWithObjectAndId, fetchWithObjectObjectIdOffsetLimit } from '../lib/swrFetchers';
 import axios from 'axios';
-import { HodlComment } from '../models/HodlComment';
+import { HodlComment, HodlCommentViewModel } from '../models/HodlComment';
 
 export const useAddComment = (): [(comment: HodlComment) => Promise<void>] => {
     const addComment = async (comment: HodlComment) => {
@@ -27,15 +27,14 @@ export const useAddComment = (): [(comment: HodlComment) => Promise<void>] => {
     return [addComment]
 }
 
-export const useDeleteComment = (): [(comment: HodlComment) => Promise<void>] => {
-    const deleteComment = async (comment: HodlComment) => {
+export const useDeleteComment = (): [(comment: HodlCommentViewModel) => Promise<void>] => {
+    const deleteComment = async (comment: HodlCommentViewModel) => {
         try {
             const r = await axios.delete(
                 `/api/comments/delete`,
                 {
                     headers: {
                         'Accept': 'application/json',
-                        'Authorization': localStorage.getItem('jwt')
                     },
                     data: {
                         id: comment.id

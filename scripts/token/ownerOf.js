@@ -12,9 +12,8 @@ async function main() {
   const ownerAccount = new ethers.Wallet(process.env.ACCOUNT0_PRIVATE_KEY, ethers.provider);
   const hodlNFTAsOwner = new ethers.Contract(HodlNFTProxy, HodlNFTABI.abi, ownerAccount);
 
-  const owner = await hodlNFTAsOwner.ownerOf(10);
+  const owner = await hodlNFTAsOwner.ownerOf(1);
   
-
   console.log(await hodlNFTAsOwner.isApprovedForAll(owner, HodlMarketProxy));
 }
 

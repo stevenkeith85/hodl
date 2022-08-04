@@ -191,7 +191,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                     {token && <Box display="flex" gap={2}>
                         <Likes
                             id={token?.id}
-                            token={true}
+                            object="token"
                             fontSize='22px'
                         />
                         <Comments

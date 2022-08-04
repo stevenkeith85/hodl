@@ -14,13 +14,14 @@ import { isValidAddress } from "../../../lib/profile";
 import { User } from "../../../models/User";
 import { Token } from "../../../models/Token";
 import { ipfsUriToCid } from "../../../lib/utils";
+import { isOwnerOrSeller } from "../nft/[tokenId]";
 
 dotenv.config({ path: '../.env' })
 
 const client = Redis.fromEnv()
 const route = apiRoute();
 
-export const getUser = async (handle) => {
+export const getUser = async (handle) : Promise<User> => {
   const isAddress = await isValidAddress(handle);
 
   // if we have an address, just look it up
@@ -28,8 +29,17 @@ export const getUser = async (handle) => {
   if (isAddress) {
     const user = await client.hmget<User>(`user:${handle}`, 'address', 'nickname', 'avatar');
     if (user.avatar) {
-      user.avatar = await client.get<Token>(`token:${user.avatar}`);
-      user.avatar.image = ipfsUriToCid(user.avatar.image);
+
+      // check if the user still owns this token
+      const ownsToken = await isOwnerOrSeller(user.address, user.avatar);
+
+      if (ownsToken) {
+        user.avatar = await client.get<Token>(`token:${user.avatar}`);
+        user.avatar.image = ipfsUriToCid(user.avatar.image);
+      } else {
+        user.avatar = null;
+      }
+      
     }
     return user;
   }

@@ -15,7 +15,7 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
     const { address } = useContext(WalletContext);
 
     const { data: tokenId } = useSWR(
-        address ? [`/api/profile/picture`, address] : null,
+        profilePictureModalOpen && address ? [`/api/profile/picture`, address] : null,
         (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.token)
     )
 

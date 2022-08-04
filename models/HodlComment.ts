@@ -2,10 +2,16 @@
 //
 // it will be saved at comment.id in Redis, and is displayed at the url nft/tokenId
 
+import { Nft } from "./Nft";
+import { Token } from "./Token";
+import { User } from "./User";
+
+// We store this in redis
 export interface HodlComment {
     id?: number; // the id that the comment will be stored against
 
     subject: string; // the address that made the comment
+
     comment?: string; // the comment string
 
     // This is basically a pointer to the parent
@@ -15,4 +21,17 @@ export interface HodlComment {
     timestamp?: number; // when was the comment was made
 
     tokenId?: number; // the id of the nft this comment was made at. For 'top level' comments, it will be the same as objectId.
+}
+
+// We use this on the UI
+export interface HodlCommentViewModel {
+    id: number; // the id that the comment was stored against
+
+    user: User; // the user that made the comment
+
+    comment: string; // the comment string
+
+    timestamp: number; // when was the comment was made
+
+    // likes: number; TODO
 }

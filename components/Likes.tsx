@@ -4,10 +4,11 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useLike } from "../hooks/useLike";
 import { FC } from "react";
 import humanize from "humanize-plus";
+import { useLikeCount } from "../hooks/useLikeCount";
 
 export interface LikesProps {
     id: number;
-    token?: boolean;
+    object: "token" | "comment";
     color?: "inherit" | "disabled" | "action" | "secondary" | "primary" | "error" | "info" | "success" | "warning";
     fontSize?: string;
     showCount?: boolean;
@@ -19,7 +20,7 @@ export interface LikesProps {
 
 export const Likes: FC<LikesProps> = ({
     id,
-    token = true,
+    object,
     color = "secondary",
     fontSize = '20px',
     showCount = true,
@@ -28,7 +29,8 @@ export const Likes: FC<LikesProps> = ({
     unlikeTooltip = "Unlike this",
     sx = {}
 }) => {
-    const [tokenLikesCount, userLikesThisToken, toggleLike] = useLike(id, token, prefetchedLikeCount);
+    const [userLikesThisToken, toggleLike] = useLike(id, object);
+    const likeCount = useLikeCount(id, object, prefetchedLikeCount);
 
     return (
         <>
@@ -67,10 +69,10 @@ export const Likes: FC<LikesProps> = ({
                             />
                         </Tooltip>
                 }
-                {showCount && (tokenLikesCount != undefined) &&
+                {showCount && (likeCount != undefined) &&
                     <Typography sx={{ 
                         fontSize: `calc(${fontSize} - 8px)`
-                    }}>{humanize.compactInteger(tokenLikesCount, 1)}</Typography>
+                    }}>{humanize.compactInteger(likeCount, 1)}</Typography>
                 }
             </Box>
         </>
