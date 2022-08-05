@@ -1,14 +1,14 @@
-import { useState, useContext } from 'react';
-import useSWR, { mutate } from 'swr';
+import { useContext } from 'react';
+import useSWR, { mutate, SWRResponse, SWRResponse } from 'swr';
 import { WalletContext } from '../contexts/WalletContext';
 import axios from 'axios'
 
 export const useLike = (
   id: number,
-  object: "token" | "comment"
-) => {
+  object: "token" | "comment",
+  likeCount: SWRResponse
+) : [boolean, Function]=> {
   const { address } = useContext(WalletContext);
-  const [error, setError] = useState('');
 
   const baseUrl = `/api/like/${object}/`;
 
@@ -22,7 +22,8 @@ export const useLike = (
       return;
     }
 
-    mutate(`/api/like/${object}/count`, old => userLikesThisToken ? old - 1 : old + 1, { revalidate: false });
+    // mutate(`/api/like/${object}/count`, old => userLikesThisToken ? old - 1 : old + 1, { revalidate: false });
+    
     mutateUserLikesThisToken(old => !old, { revalidate: false })
 
     try {
@@ -36,13 +37,13 @@ export const useLike = (
         }
       )
 
-    } catch (error) {
-      mutate(`/api/like/${object}/count`);
-      mutateUserLikesThisToken();
+      likeCount.mutate();
 
-      return { success: false, fileName: null, mimeType: null };
+    } catch (error) {
+      likeCount.mutate();
+      mutateUserLikesThisToken();
     }
   }
 
-  return [userLikesThisToken, toggleLike, error, setError];
+  return [userLikesThisToken, toggleLike];
 }

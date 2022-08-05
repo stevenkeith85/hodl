@@ -79,7 +79,7 @@ export const HodlNotifications = ({
             top: 56,
             right: 0,
             minWidth: '525px',
-            maxHeight: '375px',
+            maxHeight: '525px',
             height: { xs: 'calc(100vh - 56px)', sm: 'auto' },
             width: { xs: '100%', sm: 'auto' },
             overflowY: 'auto',

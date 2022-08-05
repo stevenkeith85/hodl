@@ -9,7 +9,7 @@ export const useLikeCount = (
   
   const fetcher : Fetcher<number, [string, number]>= (url, id) => axios.get(`${url}?id=${id}`).then(r => r.data);
 
-  const { data } = useSWR(
+  const swr = useSWR(
     id ? [`/api/like/${object}/count`, id] : null,
     fetcher,
     {
@@ -17,5 +17,7 @@ export const useLikeCount = (
     }
   );
 
-  return data;
+  return {
+    swr
+  }
 }

@@ -21,7 +21,7 @@ dotenv.config({ path: '../.env' })
 const client = Redis.fromEnv()
 const route = apiRoute();
 
-export const getCommentsForToken = async (object: "token" | "comment", objectId: number, offset: number, limit: number) => {
+export const getCommentsForToken = async (object: "token" | "comment", objectId: number, offset: number, limit: number, reverse = false) => {
 
   try {
     const total = await client.zcard(`${object}:${objectId}:comments`);
@@ -30,7 +30,11 @@ export const getCommentsForToken = async (object: "token" | "comment", objectId:
       return { items: [], next: Number(total), total: Number(total) };
     }
 
-    const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/${object}:${objectId}:comments/${offset}/${offset + limit - 1}/rev`, {
+    console.log(reverse)
+    let url = `${process.env.UPSTASH_REDIS_REST_URL}/zrange/${object}:${objectId}:comments/${offset}/${offset + limit - 1}/`;
+    url = reverse ? url + 'rev': url
+
+    const r = await axios.get(url, {
       headers: {
         Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
       }
@@ -40,7 +44,7 @@ export const getCommentsForToken = async (object: "token" | "comment", objectId:
     const comments: HodlCommentViewModel[] = [];
 
     for (const id of commentIds) {
-      const comment : HodlCommentViewModel = await getComment(id);
+      const comment: HodlCommentViewModel = await getComment(id);
 
       if (comment) {
         comments.push(comment);
@@ -58,7 +62,9 @@ route.get(async (req, res: NextApiResponse) => {
   const objectId = Array.isArray(req.query.objectId) ? req.query.objectId[0] : req.query.objectId;
   const offset = Array.isArray(req.query.offset) ? req.query.offset[0] : req.query.offset;
   const limit = Array.isArray(req.query.limit) ? req.query.limit[0] : req.query.limit;
+  const rev = (Array.isArray(req.query.rev) ? req.query.rev[0] : req.query.rev) || "false";
 
+  console.log('rev', rev)
   const isValid = await GetCommentsValidationSchema.isValid(req.query)
   if (!isValid) {
     return res.status(400).json({ message: 'Bad Request' });
@@ -74,7 +80,7 @@ route.get(async (req, res: NextApiResponse) => {
     }
   }
 
-  const comments = await getCommentsForToken(object as "comment" | "token", Number(objectId), Number(offset), Number(limit));
+  const comments = await getCommentsForToken(object as "comment" | "token", Number(objectId), Number(offset), Number(limit), JSON.parse(rev));
   res.status(200).json(comments);
 });
 

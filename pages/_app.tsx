@@ -46,8 +46,8 @@ export default function MyApp(props: MyAppProps) {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <SWRConfig value={{
-          dedupingInterval: 10000, // default is 2000
-          focusThrottleInterval: 10000, // default is 5000
+          dedupingInterval: 15000, // default is 2000
+          focusThrottleInterval: 15000, // default is 5000
           errorRetryCount: 0
         }}>
           <WalletContext.Provider value={{

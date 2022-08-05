@@ -49,7 +49,7 @@ route.post(async (req, res: NextApiResponse) => {
   }
 
   likesComment.delete(req.address, comment);
-  getCommentLikeCount.delete(comment);
+  // getCommentLikeCount.delete(comment);
 
   if (liked) {
     const notification: HodlAction = {

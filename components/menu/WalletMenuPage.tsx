@@ -158,23 +158,22 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
                         <Box
                             display="flex"
                             flexDirection="column"
-                            gap={2}
+                            gap={3}
                         >
-                            <Typography variant="h1">Connect</Typography>
-                            <Typography>Your wallet to get started</Typography>
-                            <Typography>We officially support <Link href="https://metamask.io/download/">MetaMask</Link></Typography>
+                            <Typography variant="h1">Connect with Metamask</Typography>
+                            <Typography sx={{ color: '#666' }}>Don't have metamask? Get it <Link href="https://metamask.io/download/">here</Link></Typography>
                             <Box>
                                 <LoginLogoutButton
                                     sx={{
-                                        justifyContent: "flex-start",
                                         paddingY: 1,
                                         paddingX: 2
                                     }} />
                             </Box>
+
                         </Box>
                     }
                 </Box>
-                { address && <LoginLogoutButton
+                {address && <LoginLogoutButton
                     variant="text"
                     sx={{
                         paddingX: 2,

@@ -203,7 +203,7 @@ const NftDetail = ({
                       <Typography variant="h1" mb={3} sx={{ fontWeight: 600 }}>{nft.name}</Typography>
                       <Box sx={{ whiteSpace: 'pre-line' }}>{insertTagLinks(nft.description)}</Box>
                     </Box>
-                    <HodlCommentsBox limit={limit} />
+                    <HodlCommentsBox limit={limit} header={false}/>
                   </CardContent>
                 </Card>
               </Stack>

@@ -65,15 +65,17 @@ export const useComments = (
     limit: number,
     object: "token" | "comment",
     prefetched = null,
-    load = true
+    load = true,
+    rev = false
 ) => {
     const getKey = (index, _previous) => {
-        return objectId ? [`/api/comments`, object, objectId, index * limit, limit] : null;
+        return objectId ? [`/api/comments`, object, objectId, index * limit, limit, rev] : null;
     }
 
+    const fetcher = (url, object, objectId, offset, limit, rev) => axios.get(url, { params: { object, objectId, offset, limit, rev } }).then(r => r.data);
     const swr = useSWRInfinite(
         load ? getKey : null,
-        fetchWithObjectObjectIdOffsetLimit
+        fetcher
     );
 
     return swr;

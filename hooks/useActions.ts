@@ -1,8 +1,9 @@
 import { useContext } from "react";
 import useSWRInfinite from 'swr/infinite'
 import { WalletContext } from "../contexts/WalletContext";
-import { ActionSet } from "../models/HodlAction";
+import { ActionSet, HodlActionViewModal } from "../models/HodlAction";
 import axios from 'axios';
+import { Fetcher } from "swr";
 
 
 export const useActions = (
@@ -11,7 +12,7 @@ export const useActions = (
   limit: number,
   fallbackData = null,
 ) => {
-  const fetcher = (url: string, set: ActionSet, offset: number, limit: number) => axios.get(
+  const fetcher: Fetcher<{ items: HodlActionViewModal[], next: number, offset: number }, [string, ActionSet, number, number]> = (url, set, offset, limit) => axios.get(
     url,
     {
       params: { set, offset, limit },

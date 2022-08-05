@@ -3,7 +3,9 @@ import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
 import axios from 'axios'
 import apiRoute from "../handler";
-import { ActionSet, HodlAction } from "../../../models/HodlAction";
+import { ActionSet, HodlAction, HodlActionViewModal } from "../../../models/HodlAction";
+import { getToken } from "../token/[tokenId]";
+import { getComment } from "../comment";
 
 dotenv.config({ path: '../.env' })
 
@@ -18,7 +20,7 @@ export const getActions = async (
   limit: number = 10
 ): Promise<
   {
-    items: HodlAction[],
+    items: HodlActionViewModal[],
     next: number,
     total: number
   }> => {
@@ -42,9 +44,25 @@ export const getActions = async (
   const actionIds: string[] = r.data.result.map(item => JSON.parse(item));
   console.log('actionIds', actionIds)
 
-  const actions: HodlAction[] = [];
+  const actions: HodlActionViewModal[] = [];
   for (const id of actionIds) {
-    actions.push(await client.get(`action:${id}`));
+    const hodlAction : HodlAction = await client.get(`action:${id}`);
+    
+    const vm: HodlActionViewModal = {
+      ...hodlAction,
+    };
+
+    if (hodlAction.object === "token") {
+      vm.token = await getToken(hodlAction.objectId);
+    } else if (hodlAction.object === "comment") {
+      vm.comment = await getComment(hodlAction.objectId);
+
+      if (vm.comment) {
+        vm.token = await getToken(vm.comment.tokenId);
+      }
+    }
+
+    actions.push(vm);
   }
 
   return {
@@ -53,7 +71,6 @@ export const getActions = async (
     total: Number(total)
   };
 }
-
 
 route.get(async (req, res: NextApiResponse) => {
   if (!req.address) {

@@ -6,11 +6,12 @@ import { getShortAddress, truncateText } from '../../lib/utils';
 import Link from 'next/link';
 import { User } from '../../models/User';
 import { useUser } from '../../hooks/useUser';
+import theme from '../../theme';
 
 interface ProfileNameOrAddressProps {
     profileAddress: string;
     fontSize?: string;
-    color?: string;
+    color?: "primary" | "secondary" | "inherit";
     sx?: object | null;
     fallbackData?: User | null;
 }
@@ -28,13 +29,23 @@ export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({
         return null;
     }
 
+    const getColor = (color) => {
+        if (color === "inherit") {
+            return theme.palette.text.primary;
+        }
+
+        return theme.palette[color].main;
+    }
+
     return (<Box
         component="span"
         sx={{
+            fontSize,
             a: {
                 fontSize,
                 textDecoration: 'none',
-                color: color === 'greyscale' ? 'white' : '#000'
+                color: getColor(color),
+                cursor: 'pointer'
             },
             ...sx
         }}>

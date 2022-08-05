@@ -16,5 +16,6 @@ export const GetCommentsValidationSchema = yup.object({
     .number()
     .required()
     .positive()
-    .integer()
+    .integer(),
+  rev: yup.boolean()
 });

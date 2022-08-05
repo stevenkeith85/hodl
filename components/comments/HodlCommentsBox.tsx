@@ -10,13 +10,15 @@ import { HodlCommentsBoxHeader } from "./HodlCommentsBoxHeader";
 
 
 interface HodlCommentsBoxProps {
-    limit: number,
-    minHeight?: string,
-    maxHeight?: string,
+    limit: number;
+    header?: boolean;
+    minHeight?: string;
+    maxHeight?: string;
 }
 
 export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
     limit,
+    header = true,
     minHeight = '200px',
     maxHeight = '500px',
 }) => {
@@ -34,9 +36,9 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
     const newTagRef = useRef();
     const [loading, setLoading] = useState(false);
 
-    const swr = useComments(topLevel.objectId, 10, topLevel.object, null);
+    const swr = useComments(topLevel.objectId, 10, topLevel.object, null, true, topLevel.object === "token");
     const countSWR = useCommentCount(topLevel.objectId, topLevel.object, null);
-    
+
     const [commentingOn, setCommentingOn] = useState<{
         object: "token" | "comment",
         objectId: number,
@@ -64,23 +66,30 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
         })
     }, [topLevel.object, topLevel.objectId]);
 
+    useEffect(() => {
+        setTopLevel({
+            objectId: getAsString(router.query.comment),
+            object: "comment"
+        })
+    }, [router.query.comment])
+
     return (<>
-        <HodlCommentsBoxHeader 
-            object={topLevel.object} 
-            countSWR={countSWR} 
+        <HodlCommentsBoxHeader
+            object={topLevel.object}
+            countSWR={countSWR}
             setTopLevel={setTopLevel}
-            />
-        <HodlCommentsBoxBody 
-            topLevelObject={topLevel.object} 
-            topLevelObjectId={topLevel.objectId} 
+        />
+        <HodlCommentsBoxBody
+            topLevelObject={topLevel.object}
+            topLevelObjectId={topLevel.objectId}
             swr={swr}
-            countSWR={countSWR} 
-            loading={loading} 
-            minHeight={minHeight} 
+            countSWR={countSWR}
+            loading={loading}
+            minHeight={minHeight}
             maxHeight={maxHeight}
-            limit={limit} 
+            limit={limit}
             setCommentingOn={setCommentingOn} // TODO: Looks like its really this that we'd want to put in a context - as its just passed through intermediate components
-            setTopLevel={setTopLevel} 
+            setTopLevel={setTopLevel}
             newTagRef={newTagRef} />
         <AddComment
             object={topLevel.object}

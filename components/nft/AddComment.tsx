@@ -1,4 +1,4 @@
-import { Typography, Box, Tooltip } from "@mui/material";
+import { Typography, Box, Tooltip, Button } from "@mui/material";
 import { FC, useContext } from "react";
 import { WalletContext } from "../../contexts/WalletContext";
 import { Formik, Form, Field } from "formik";
@@ -36,7 +36,7 @@ export const AddComment: FC<AddCommentProps> = ({
     const { address } = useContext(WalletContext);
     const [addComment] = useAddComment();
     const { nft } = useContext(NftContext);
-    
+
     const reset = () => {
         setCommentingOn({
             object,
@@ -76,7 +76,7 @@ export const AddComment: FC<AddCommentProps> = ({
                 setLoading(true);
 
                 await addComment(comment);
-                
+
                 commentingOn.setShowThread(true);
                 commentingOn.mutateList();
                 commentingOn.mutateCount();
@@ -96,8 +96,9 @@ export const AddComment: FC<AddCommentProps> = ({
                                 {JSON.stringify(values)} */}
                     <Form>
                         <Box display="flex" alignItems="center" marginTop={2}>
-                            <Tooltip title={errors?.comment || ''} >
-                                <Box display="flex" flexDirection="column" position="relative" flexGrow={1}>
+
+                            <Box display="flex" flexDirection="column" position="relative" flexGrow={1} gap={1}>
+                                <Tooltip title={errors?.comment || ''} >
                                     <Box
                                         display="flex"
                                         flexDirection="column"
@@ -118,9 +119,11 @@ export const AddComment: FC<AddCommentProps> = ({
                                             autoComplete='off'
                                             inputRef={newTagRef}
                                             component={InputBase}
+                                            multiline
+                                            minRows={2}
                                             sx={{
                                                 flexGrow: 1,
-                                                paddingX: 0.5
+                                                paddingX: 0.5,
                                             }}
                                             placeholder={
                                                 commentingOn.object === "comment" ? "Add Reply" : "Add Comment"
@@ -129,10 +132,16 @@ export const AddComment: FC<AddCommentProps> = ({
                                             id="hodl-comments-add"
                                             type="text"
                                         />
+
                                     </Box>
+                                </Tooltip>
+                                <Box display="flex" justifyContent="right" alignItems="center" gap={2}>
+                                    <Typography sx={{ fontSize: 10, paddingLeft: 0.75 }}>{values?.comment?.length} / 400</Typography>
+                                    <Button type="submit">{commentingOn.object === "comment" ? "Reply": "Comment"}</Button>
                                 </Box>
-                            </Tooltip>
-                            <Typography sx={{ textAlign: 'right', fontSize: 10, paddingLeft: 0.75 }}>{values?.comment?.length} / 150</Typography>
+                            </Box>
+
+
                         </Box>
                     </Form>
                 </>)}

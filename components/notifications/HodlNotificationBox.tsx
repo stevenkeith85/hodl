@@ -1,11 +1,8 @@
 import { Box, Typography } from "@mui/material";
-import useSWR from "swr";
-import { fetchWithId } from "../../lib/swrFetchers";
 import Link from "next/link";
 import { FC, useContext } from "react";
-import axios from 'axios';
 import { WalletContext } from "../../contexts/WalletContext";
-import { HodlAction, ActionTypes } from "../../models/HodlAction";
+import { ActionTypes, HodlActionViewModal } from "../../models/HodlAction";
 import { truncateText } from "../../lib/utils";
 import { ProfileNameOrAddress } from '../avatar/ProfileNameOrAddress';
 import { formatDistanceStrict } from "date-fns";
@@ -14,22 +11,12 @@ import { AssetThumbnail } from "../AssetThumbnail";
 import { FollowButton } from "../profile/FollowButton";
 
 interface HodlNotificationBoxProps {
-    item: HodlAction;
+    item: HodlActionViewModal;
     setShowNotifications: Function;
 }
 
 export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setShowNotifications }) => {
     const { address } = useContext(WalletContext);
-
-    const { data: comment } = useSWR(item.object === "comment" ? [`/api/comment`, item.objectId] : null,
-        fetchWithId);
-
-    const { data: token } = useSWR(item.object === "token" ?
-        [`/api/token`, item.objectId] :
-        comment ?
-            [`/api/token`, comment.tokenId] :
-            null,
-        (url, query) => axios.get(`${url}/${query}`).then(r => r.data.token));
 
     return (
         <Box key={item?.id}>
@@ -58,8 +45,8 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
 
                         {/* Liked Token */}
                         {
-                            item.action === ActionTypes.Liked && item.object === "token" && token && <>
-                                <Link href={`/nft/${item.objectId}`} passHref>
+                            item.action === ActionTypes.Liked && item.object === "token" && <>
+                                <Link href={`/nft/${item.token.id}`} passHref>
                                     <Typography component="a" sx={{ textDecoration: 'none', color: '#333' }}>
                                         liked a token.
                                     </Typography>
@@ -68,63 +55,45 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
                         }
                         {/* Liked Comment */}
                         {
-                            item.action === ActionTypes.Liked && item.object === "comment" && comment && <>
-                                <Link href={`/nft/${comment.tokenId}?comment=${comment.id}`}>
+                            item.action === ActionTypes.Liked && item.object === "comment" && <>
+                                <Link href={`/nft/${item.token.id}?comment=${item.comment.id}`} passHref>
                                     <Typography component="a" sx={{ textDecoration: 'none', color: '#333' }}>
-                                        liked a comment: {truncateText(comment.comment, 80)}.
+                                        liked a comment: {truncateText(item.comment.comment, 80)}
                                     </Typography>
                                 </Link>
                             </>
                         }
-
                         {/* Commented / Replied */}
                         {
-                            item.action === ActionTypes.CommentedOn && item.object === "comment" && comment && <>
+                            item.action === ActionTypes.CommentedOn && item.object === "comment" && <>
                                 {
-                                    comment.object === "token" && <>
-                                        <Link href={`/nft/${comment.tokenId}?comment=${comment.id}`}>
+                                    item.comment === null && <>made a comment, that has now been [ deleted ].</>
+                                }
+                                {
+                                    item.comment && item.comment.object === "token" && <>
+                                        <Link href={`/nft/${item.token.id}?comment=${item.comment.id}`} passHref>
                                             <Typography component="a" sx={{ textDecoration: 'none', color: '#333' }}>
-                                                commented: {truncateText(comment.comment, 80)}.
+                                                commented: {truncateText(item.comment.comment, 80)}
                                             </Typography>
                                         </Link>
                                     </>
                                 }
                                 {
-                                    comment.object === "comment" && <>
-                                        <Link href={`/nft/${comment.tokenId}?comment=${comment.objectId}`}>
+                                    item.comment && item.comment.object === "comment" && <>
+                                        <Link href={`/nft/${item.token.id}?comment=${item.comment.id}`} passHref>
                                             <Typography component="a" sx={{ textDecoration: 'none', color: '#333' }}>
-                                                replied: {truncateText(comment.comment, 80)}.
+                                                replied: {truncateText(item.comment.comment, 80)}
                                             </Typography>
                                         </Link>
                                     </>
                                 }
                             </>
-                        }
-
-                        {/* Added */}
-                        {
-                            item.action === ActionTypes.Added &&
-                            <Link href={`/nft/${item.objectId}`}>
-                                <Typography component="a" sx={{ textDecoration: 'none', color: '#333' }}>
-                                    added a new token.
-                                </Typography>
-                            </Link>
-                        }
-
-                        {/* Listed */}
-                        {
-                            item.action === ActionTypes.Listed &&
-                            <Link href={`/nft/${item.objectId}`}>
-                                <Typography component="a" sx={{ textDecoration: 'none', color: '#333' }}>
-                                    listed a token.
-                                </Typography>
-                            </Link>
                         }
 
                         {/* Bought */}
                         {
                             item.action === ActionTypes.Bought &&
-                            <Link href={`/nft/${item.objectId}`}>
+                            <Link href={`/nft/${item.token.id}`} passHref>
                                 <Typography component="a" sx={{ cursor: "pointer" }}>
                                     bought a token.
                                 </Typography>
@@ -143,9 +112,11 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
                     </Box>
                 </Box>
                 {
-                    token && token.image &&
-                    <Link href={comment ? `/nft/${comment.tokenId}` : `/nft/${item.objectId}`}>
-                        <AssetThumbnail token={token} />
+                    item.token && item.token &&
+                    <Link href={`/nft/${item.token.id}`} passHref>
+                        <a>
+                            <AssetThumbnail token={item.token} />
+                        </a>
                     </Link>
                 }
                 {/* Followed */}

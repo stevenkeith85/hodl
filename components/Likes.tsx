@@ -29,8 +29,8 @@ export const Likes: FC<LikesProps> = ({
     unlikeTooltip = "Unlike this",
     sx = {}
 }) => {
-    const [userLikesThisToken, toggleLike] = useLike(id, object);
-    const likeCount = useLikeCount(id, object, prefetchedLikeCount);
+    const {swr: likeCount} = useLikeCount(id, object, prefetchedLikeCount);
+    const [userLikesThisToken, toggleLike] = useLike(id, object, likeCount);
 
     return (
         <>
@@ -72,7 +72,7 @@ export const Likes: FC<LikesProps> = ({
                 {showCount && (likeCount != undefined) &&
                     <Typography sx={{ 
                         fontSize: `calc(${fontSize} - 8px)`
-                    }}>{humanize.compactInteger(likeCount, 1)}</Typography>
+                    }}>{humanize.compactInteger(likeCount.data, 1)}</Typography>
                 }
             </Box>
         </>

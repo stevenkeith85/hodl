@@ -41,7 +41,9 @@ export const getComment = async (id) => {
       id: comment.id,
       user: await getUser(comment.subject),
       comment: comment.comment,
-      timestamp: comment.timestamp
+      timestamp: comment.timestamp,
+      object: comment.object,
+      tokenId: comment.tokenId
     }
 
     return vm;
