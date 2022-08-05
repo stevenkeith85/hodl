@@ -1,6 +1,10 @@
 import { Box } from "@mui/material";
 
-export const HodlBorderedBox = ({ sx, children }) => (
+interface HodlBorderedBoxProps {
+    sx?: object,
+}
+
+export const HodlBorderedBox: React.FC<HodlBorderedBoxProps> = ({ sx=null, children }) => (
     <Box
         sx = {{
             border: `1px solid #ddd`,

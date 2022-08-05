@@ -1,21 +1,15 @@
 import { Box, Typography } from '@mui/material';
 import humanize from "humanize-plus";
-import { useHodling } from '../hooks/useHodling';
-import { useListed } from '../hooks/useListed';
 import Link from 'next/link';
 import { grey } from '@mui/material/colors';
-import { useFollowingCount } from '../hooks/useFollowingCount';
-import { useFollowersCount } from '../hooks/useFollowersCount';
 import { User } from '../models/User';
 import { UserAvatarAndHandle } from './avatar/UserAvatarAndHandle';
-import { useHodlingCount } from '../hooks/useHodlingCount';
-import { useListedCount } from '../hooks/useListedCount';
 import { useContext } from 'react';
 import { UserContext } from '../contexts/UserContext';
 
 
 interface CountAndLinkProps {
-    count: string;
+    count: number;
     user: User;
     label: string;
     tab: number;

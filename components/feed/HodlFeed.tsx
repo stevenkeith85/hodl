@@ -11,10 +11,6 @@ import { FeedContext } from "../../contexts/FeedContext";
 export const HodlFeed = ({ limit = 10 }) => {
     const { feed } = useContext(FeedContext);
 
-    if (!feed.data) {
-        return null;
-    }
-
     return (
         <Box
             sx={{
@@ -43,7 +39,7 @@ export const HodlFeed = ({ limit = 10 }) => {
             flexDirection="column"
         >
             {
-                feed.data[0] && !feed.data[0].items.length &&
+                feed?.data?.[0] && !feed?.data[0]?.items?.length &&
                 (
                     <Box display="flex" flexDirection="column">
                         <HodlImpactAlert message={"Follow some users to see what they are up to."} title="Your feed is currently empty" />
@@ -55,9 +51,10 @@ export const HodlFeed = ({ limit = 10 }) => {
             <InfiniteScroll
                 swr={feed}
                 loadingIndicator={<HodlLoadingSpinner />}
-                isReachingEnd={feed =>
-                    !feed.data[0].items.length ||
-                    feed.data[feed.data.length - 1]?.items.length < limit
+                isReachingEnd={swr => {
+                    return swr.data?.[0]?.items?.length == 0 || 
+                            swr.data?.[swr.data?.length - 1]?.items?.length < limit
+                  }
                 }
             >
                 {

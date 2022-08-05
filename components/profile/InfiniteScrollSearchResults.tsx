@@ -9,21 +9,14 @@ interface InfiniteScrollSearchResultsProps {
 }
 
 export const InfiniteScrollSearchResults: React.FC<InfiniteScrollSearchResultsProps> = ({ swr, limit }) => {
-  if (swr.error) {
-    return null;
-  }
-
-  if (!swr.data) {
-    return null;
-  }
-
   return (
     <InfiniteScroll
       swr={swr}
       loadingIndicator={<HodlLoadingSpinner />}
       isReachingEnd={
         swr => {
-          return !swr.data[0].items.length || swr.data[swr.data.length - 1]?.items.length < limit
+          return swr.data?.[0]?.items?.length == 0 || 
+                  swr.data?.[swr.data?.length - 1]?.items?.length < limit
         }
       }
     >

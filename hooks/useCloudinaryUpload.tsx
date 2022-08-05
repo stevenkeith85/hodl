@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import axios from 'axios'
 
-export const useCloudinaryUpload = () => {
+export const useCloudinaryUpload = () : [Function, number, string, Function] => {
   const previousFile = useRef(null);
 
   const [error, setError] = useState('');
@@ -23,7 +23,6 @@ export const useCloudinaryUpload = () => {
         {
           headers: {
             'Accept': 'application/json',
-            'Authorization': localStorage.getItem('jwt')
           },
           onUploadProgress: progress => {
             if (!progress.lenthComputable) {

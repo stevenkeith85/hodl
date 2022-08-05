@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import useSWR, { mutate, SWRResponse, SWRResponse } from 'swr';
+import useSWR, { SWRResponse } from 'swr';
 import { WalletContext } from '../contexts/WalletContext';
 import axios from 'axios'
 
@@ -21,8 +21,6 @@ export const useLike = (
     if (!address) {
       return;
     }
-
-    // mutate(`/api/like/${object}/count`, old => userLikesThisToken ? old - 1 : old + 1, { revalidate: false });
     
     mutateUserLikesThisToken(old => !old, { revalidate: false })
 

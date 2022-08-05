@@ -1,6 +1,4 @@
-import { LinearProgress, Stack } from "@mui/material";
-import { FC, useCallback, useEffect } from "react";
-import { FilterButtons } from "./FilterButtons";
+import { FC, useCallback } from "react";
 import { useSnackbar } from 'notistack';
 import { useCloudinaryUpload } from "../../hooks/useCloudinaryUpload";
 import { MintProps } from "./models";
@@ -14,23 +12,13 @@ export const SelectAssetAction: FC<MintProps> = ({
   setStepComplete
 }: MintProps) => {
   const { enqueueSnackbar } = useSnackbar();
-  const [uploadToCloudinary, progress, error, setError] = useCloudinaryUpload();
+  const [uploadToCloudinary, progress] = useCloudinaryUpload();
 
-  const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
-    if (rejectedFiles.length === 1) {
-      enqueueSnackbar(rejectedFiles[0].errors[0].message, {variant: 'error'});
-    }
-    else if (acceptedFiles.length === 1) {
-      cloudinaryUpload(acceptedFiles[0]);
-    }
-    // @ts-ignore
-  }, [])
-
-  async function cloudinaryUpload(file) {
+  const cloudinaryUpload = useCallback(async (file) => {
     setLoading(true);
 
     enqueueSnackbar('Large files may take some time', { variant: "info" });
-    // @ts-ignore
+    
     const { success, fileName, mimeType } = await uploadToCloudinary(file);
 
     if (success) {
@@ -44,18 +32,28 @@ export const SelectAssetAction: FC<MintProps> = ({
     } else {
       setLoading(false);
     }
-  }
+  }, [enqueueSnackbar, setFormData, setLoading, setStepComplete, uploadToCloudinary]);
+
+  const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
+    if (rejectedFiles.length === 1) {
+      enqueueSnackbar(rejectedFiles[0].errors[0].message, { variant: 'error' });
+    }
+    else if (acceptedFiles.length === 1) {
+      cloudinaryUpload(acceptedFiles[0]);
+    }
+  }, [cloudinaryUpload, enqueueSnackbar]);
+
 
   return (
     <Formik
       initialValues={{
         fileName: ''
       }}
-      onSubmit={() => {}}
+      onSubmit={() => { }}
     >
       {() => (
         <Form>
-            <HodlDropzone onDrop={onDrop} progress={progress}/>
+          <HodlDropzone onDrop={onDrop} progress={progress} />
         </Form>
       )}
     </Formik>

@@ -13,10 +13,6 @@ interface UserLinksListProps {
 }
 
 export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit }) => {
-  
-  if (!swr?.data || !swr.data.length) {
-    return null;
-  }
 
   return (
       <Box
@@ -28,9 +24,10 @@ export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit }) => {
         <InfiniteScroll
           swr={swr}
           loadingIndicator={<HodlLoadingSpinner />}
-          isReachingEnd={x =>
-            !x.data[0].items.length ||
-            x.data[x.data.length - 1]?.items.length < limit
+          isReachingEnd={swr => {
+            return swr.data?.[0]?.items?.length == 0 || 
+                    swr.data?.[swr.data?.length - 1]?.items?.length < limit
+          }
           }
         >
           {

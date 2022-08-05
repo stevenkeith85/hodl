@@ -23,14 +23,6 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
 
     const [token, setToken] = useState(tokenId);
 
-    if (!swr.data) {
-        return null;
-    }
-
-    if (swr?.error) {
-        return null;
-    }
-
     if (!profilePictureModalOpen) {
         return null
     }
@@ -48,7 +40,12 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                     <InfiniteScroll
                         swr={swr}
                         loadingIndicator={<HodlLoadingSpinner />}
-                        isReachingEnd={swr => swr.data?.[0]?.items.length === 0 || swr.data?.[swr.data?.length - 1]?.items.length < lim}
+                        isReachingEnd={
+                            swr => {
+                                return swr.data?.[0]?.items?.length == 0 || 
+                                        swr.data?.[swr.data?.length - 1]?.items?.length < lim
+                              }
+                        }
                     >
                         {
                             ({ items }) =>

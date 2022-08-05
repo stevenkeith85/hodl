@@ -2,7 +2,7 @@ import { AccountCircle, ArrowRightAlt, ChevronRightOutlined } from "@mui/icons-m
 import { Typography, Box, Stack, ClickAwayListener, useTheme, useMediaQuery } from "@mui/material";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { WalletContext } from '../../contexts/WalletContext';
 import { SearchBox } from "../Search";
 
@@ -18,11 +18,11 @@ export const MainMenuPage = ({
     const theme = useTheme();
     const matches = useMediaQuery(theme.breakpoints.down('md'));
 
-    const handleRouteChange = () => {
+    const handleRouteChange = useCallback(() => {
         if (hoverMenuOpen) {
             setHoverMenuOpen(false)
         }
-    }
+    }, [hoverMenuOpen, setHoverMenuOpen]);
 
     useEffect(() => {
         router.events.on('routeChangeComplete', handleRouteChange)
@@ -30,7 +30,7 @@ export const MainMenuPage = ({
           router.events.off('routeChangeComplete', handleRouteChange)
         };
             
-      }, [router.events]);
+      }, [router.events, handleRouteChange]);
 
     return (
         <Box sx={{

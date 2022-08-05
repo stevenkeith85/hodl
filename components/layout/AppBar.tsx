@@ -26,10 +26,9 @@ import { ProfileAvatar } from '../avatar/ProfileAvatar';
 import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
 
 const ResponsiveAppBar = ({ showAppBar=true}) => {
-    const { address, setAddress, setSigner } = useContext(WalletContext);
+    const { address, setSigner } = useContext(WalletContext);
 
     const router = useRouter();
-    const [connect] = useConnect();
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [desktopMenuOpen, setDesktopMenuOpen] = useState(false);
@@ -60,11 +59,9 @@ const ResponsiveAppBar = ({ showAppBar=true}) => {
     useEffect(() => {
         if (error !== '') {
             enqueueSnackbar(error, { variant: "error" });
-            // @ts-ignore
             setError('');
         }
-        // @ts-ignore
-    }, [error])
+    }, [error, enqueueSnackbar]) //  Warning: React Hook useEffect has a missing dependency: 'enqueueSnackbar'. Either include it or remove the dependency array.
 
     useEffect(() => {
         axios.interceptors.response.use(null, async (error) => {
@@ -90,7 +87,7 @@ const ResponsiveAppBar = ({ showAppBar=true}) => {
 
             return Promise.reject(error);
         });
-    }, []);
+    }, [setSigner]);
 
     if (!showAppBar) {
         return null;

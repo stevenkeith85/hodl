@@ -22,12 +22,8 @@ export const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
     color="secondary"
 }) => {
 
-    if (!address) {
-        return null;
-    }
-
     const { data: user } = useSWR(
-        [`/api/user`, address],
+        address ? [`/api/user`, address] : null,
         (url, query) => axios.get(`${url}/${query}`).then(r => r.data.user)
     )
 

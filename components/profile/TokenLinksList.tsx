@@ -15,10 +15,6 @@ interface TokenLinksListProps {
 
 export const TokenLinksList: React.FC<TokenLinksListProps> = ({ swr, limit, showLikes = true }) => {
 
-  if (swr?.data && swr?.data[0]?.items?.length === 0) {
-    return null;
-  }
-
   return (
     <>
       {swr.data &&
@@ -31,9 +27,10 @@ export const TokenLinksList: React.FC<TokenLinksListProps> = ({ swr, limit, show
           <InfiniteScroll
             swr={swr}
             loadingIndicator={<HodlLoadingSpinner />}
-            isReachingEnd={following =>
-              !following.data[0].items.length ||
-              following.data[following.data.length - 1]?.items.length < limit
+            isReachingEnd={swr => {
+              return swr.data?.[0]?.items?.length == 0 || 
+                      swr.data?.[swr.data?.length - 1]?.items?.length < limit
+            }
             }
           >
             {

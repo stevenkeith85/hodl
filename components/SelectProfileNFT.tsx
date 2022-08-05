@@ -1,7 +1,5 @@
 import { Box, imageListItemClasses, ImageListItem, Typography } from '@mui/material'
-import { NftAvatar } from './avatar/NftAvatar';
-import { ProfileAvatar } from './avatar/ProfileAvatar';
-import { UserAvatarAndHandle } from './avatar/UserAvatarAndHandle';
+import { AssetThumbnail } from './AssetThumbnail';
 import { HodlImage } from './HodlImage';
 
 interface SelectProfileNFTProps {
@@ -35,15 +33,7 @@ const SelectProfileNFT = ({ nfts, onClick, selectedTokenId }: SelectProfileNFTPr
                         onClick(nft.id);
                     }}
                 >
-                    {/* TODO: We need to handle all media types. We often have to do that; so perhaps we should extract a component
-                        and update the other places that do that sort of thing
-                    */}
-                    <HodlImage
-                        cid={nft?.image}
-                        effect={nft?.filter}
-                        width="90px"
-                        height="90px"
-                    />
+                    <AssetThumbnail token={nft} size="90px" />
                 </ImageListItem>
             )
             )}

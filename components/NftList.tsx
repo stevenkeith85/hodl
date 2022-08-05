@@ -1,7 +1,6 @@
-import { Box, imageListItemClasses, ImageListItem, ImageListItemBar, Typography, Button, Skeleton, Stack } from '@mui/material'
+import { Box, imageListItemClasses, ImageListItem } from '@mui/material'
 import Link from 'next/link';
-import { assetType, ipfsUriToCid, truncateText } from '../lib/utils';
-import { ProfileAvatar } from './avatar/ProfileAvatar';
+import { assetType } from '../lib/utils';
 import { HodlVideo } from './HodlVideo';
 import { Likes } from './Likes';
 import { HodlImage } from './HodlImage';
@@ -12,15 +11,13 @@ import { Videocam } from '@mui/icons-material'
 import { AssetTypes } from '../models/AssetType';
 import { MaticPrice } from './MaticPrice';
 import { Token } from '../models/Token';
-import { Nft } from '../models/Nft';
-import { UserAvatar } from './avatar/UserAvatar';
 import { UserAvatarAndHandle } from './avatar/UserAvatarAndHandle';
 
 const Overlay = ({ nft }) => {
     const theme = useTheme();
     const matches = useMediaQuery(theme.breakpoints.up('sm'));
 
-    return (<Link href={nft?.forSale ? `/nft/${nft?.id}?tab=1` : `/nft/${nft?.id}`}>
+    return (<Link href={nft?.forSale ? `/nft/${nft?.id}?tab=1` : `/nft/${nft?.id}`} passHref>
         <Box
             className='nftItemOverlay'
             position="absolute"
@@ -130,7 +127,6 @@ const NftList = ({
                                     cid={nft?.image}
                                     controls={false}
                                     onlyPoster={true}
-                                    preload="none"
                                     audio={assetType(nft) === AssetTypes.Audio}
                                     height={matches ? '400px' : '500px'}
                                 />

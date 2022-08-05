@@ -2,7 +2,7 @@ import { Box, ClickAwayListener, Fade, Typography, useMediaQuery, useTheme } fro
 import CloseIcon from '@mui/icons-material/Close';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { WalletContext } from "../../contexts/WalletContext";
 import { useRouter } from "next/router";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
@@ -52,11 +52,11 @@ export const HodlNotifications = ({
         }, 1000)
     }
 
-    const handleRouteChange = () => {
+    const handleRouteChange = useCallback(() => {
         if (showNotifications) {
             setShowNotifications(false)
         }
-    }
+    },[showNotifications, setShowNotifications]);
 
     useEffect(() => {
         router.events.on('routeChangeComplete', handleRouteChange)
@@ -64,7 +64,7 @@ export const HodlNotifications = ({
             router.events.off('routeChangeComplete', handleRouteChange)
         };
 
-    }, [router.events]);
+    }, [router.events, handleRouteChange]);
 
     if (!address) {
         return null;
@@ -94,15 +94,21 @@ export const HodlNotifications = ({
         gap={3}
     >
         {
-            notifications.data && !notifications.data[0].items.length &&
+            notifications?.data && !notifications?.data?.[0]?.items?.length &&
             <Typography marginTop={2}>No notifications at the moment</Typography>
         }
-        {notifications.data && <InfiniteScroll
+        <InfiniteScroll
             swr={notifications}
             loadingIndicator={<HodlLoadingSpinner />}
-            isReachingEnd={notifications =>
-                !notifications.data[0].items.length ||
-                notifications.data[notifications.data.length - 1]?.items.length < limit
+            isReachingEnd={
+                // notifications =>
+                // !notifications.data[0].items.length ||
+                // notifications.data[notifications.data.length - 1]?.items.length < limit
+
+                swr => {
+                    return swr.data?.[0]?.items?.length == 0 || 
+                            swr.data?.[swr.data?.length - 1]?.items?.length < limit
+                  }
             }
         >
             {
@@ -113,7 +119,7 @@ export const HodlNotifications = ({
                     )
                 }
             }
-        </InfiniteScroll>}
+        </InfiniteScroll>
     </Box>
 
     return (

@@ -39,6 +39,7 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
     const swr = useComments(topLevel.objectId, 10, topLevel.object, null, true, topLevel.object === "token");
     const countSWR = useCommentCount(topLevel.objectId, topLevel.object, null);
 
+
     const [commentingOn, setCommentingOn] = useState<{
         object: "token" | "comment",
         objectId: number,
@@ -64,13 +65,15 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
             setShowThread: () => null,
             color: "primary"
         })
-    }, [topLevel.object, topLevel.objectId]);
+    }, [topLevel.object, topLevel.objectId, swr.mutate, countSWR.mutate]);
 
     useEffect(() => {
-        setTopLevel({
-            objectId: getAsString(router.query.comment),
-            object: "comment"
-        })
+        if (router.query.comment) {
+            setTopLevel({
+                objectId: getAsString(router.query.comment),
+                object: "comment"
+            })
+        }
     }, [router.query.comment])
 
     return (<>

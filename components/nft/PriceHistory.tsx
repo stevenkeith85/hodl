@@ -50,7 +50,7 @@ const CustomTick = ({ x, y, stroke, payload }) => {
         <g>
             <text x={x - 18} y={y + 18}>
                 {formattedDate}
-             </text>
+            </text>
         </g>
     );
 };
@@ -69,9 +69,6 @@ export const PriceHistory = ({ priceHistory }) => {
                 width={'100%'}
                 height={300}>
                 <LineChart
-                
-                    // width={800}
-                    // height={400}
                     margin={{
                         left: 0,
                         bottom: 20,
@@ -82,7 +79,10 @@ export const PriceHistory = ({ priceHistory }) => {
                 >
                     <Line dataKey="price" stroke={indigo[500]} />
                     <CartesianGrid stroke="#ddd" strokeDasharray="5" />
-                    <XAxis dataKey="timestamp" tick={<CustomTick />}>
+                    <XAxis dataKey="timestamp" tick={
+                        // @ts-ignore
+                        <CustomTick />
+                    }>
                         <Label position="bottom">Date</Label>
                     </XAxis>
                     <YAxis>

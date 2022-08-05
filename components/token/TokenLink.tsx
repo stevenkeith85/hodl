@@ -42,7 +42,6 @@ export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = "40px", font
                                 cid={token.image}
                                 controls={false}
                                 onlyPoster={true}
-                                preload="none"
                                 audio={false}
                                 height={size}
                                 width={size}
@@ -77,7 +76,6 @@ export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = "40px", font
                                 cid={token.image}
                                 controls={false}
                                 onlyPoster={true}
-                                preload="none"
                                 audio={true}
                                 height={size}
                                 width={size}

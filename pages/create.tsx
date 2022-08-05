@@ -128,8 +128,6 @@ const Mint = ({ address }) => {
               <ApplyFilterAction
                 formData={formData}
                 setFormData={setFormData}
-                loading={loading}
-                setLoading={setLoading}
                 setStepComplete={setStepComplete}
               />
             }

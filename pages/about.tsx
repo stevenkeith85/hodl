@@ -61,7 +61,7 @@ export default function About({ address }) {
                 <Box>
                     <Typography mb={1} variant="h2" color="primary">Minting</Typography>
                     <Typography mb={0}>
-                        Minting a token is cheap. We charge a flat rate of 1 Matic (Polygon's cryptocurrency)
+                        Minting a token is cheap. We charge a flat rate of 1 Matic (Polygon&apos;s cryptocurrency)
                     </Typography>
                 </Box>
                 <Box>

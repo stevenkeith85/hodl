@@ -7,9 +7,10 @@ import { HodlVideo } from "./HodlVideo";
 
 interface AssetThumbnailProps {
     token: Token;
+    size?: string;
 }
 
-export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token }) => {
+export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token, size="44px" }) => {
 
     return (<Box
         sx={{ cursor: 'pointer' }}
@@ -20,8 +21,8 @@ export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token }) => {
                 <HodlImage
                     cid={token.image}
                     effect={token.filter}
-                    height={'44px'}
-                    width={'44px'}
+                    height={size}
+                    width={size}
                     sx={{ img: { borderRadius: 0 } }}
                 />
             </a>
@@ -32,10 +33,9 @@ export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token }) => {
                     cid={token.image}
                     controls={false}
                     onlyPoster={true}
-                    preload="none"
                     audio={false}
-                    height='44px'
-                    width='44px'
+                    height={size}
+                    width={size}
                     sx={{
                         video: {
                             objectFit: 'cover',
@@ -52,8 +52,8 @@ export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token }) => {
                 <HodlVideo
                     cid={token.image}
                     gif={true}
-                    height='44px'
-                    width='44px'
+                    height={size}
+                    width={size}
                     sx={{
                         video: {
                             objectFit: 'cover',
@@ -71,10 +71,9 @@ export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token }) => {
                     cid={token.image}
                     controls={false}
                     onlyPoster={true}
-                    preload="none"
                     audio={true}
-                    height='44px'
-                    width='44px'
+                    height={size}
+                    width={size}
                     sx={{
                         video: {
                             objectFit: 'contain',

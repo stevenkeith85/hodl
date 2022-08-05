@@ -92,6 +92,7 @@ export const HodlImage = ({
                 ...sx
             }}>
                 <img
+                    alt=""
                     onLoad={() => {
                         setLoaded(true);
                         if (onLoad) {

@@ -1,7 +1,7 @@
 import { AccountCircle, ChevronLeftOutlined, DisplaySettingsOutlined, CameraAltOutlined, PersonOffOutlined, Person, PersonOutlined } from "@mui/icons-material";
 import { Typography, Box, Stack, Link, ClickAwayListener, useMediaQuery, useTheme, Button } from "@mui/material";
 import { useRouter } from "next/router";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useNickname } from "../../hooks/useNickname";
 import { WalletContext } from '../../contexts/WalletContext';
 import { NicknameModal } from "../modals/NicknameModal";
@@ -26,11 +26,11 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
         { label: 'Avatar', action: () => setProfilePictureModalOpen(true), icon: <CameraAltOutlined /> },
     ]);
 
-    const handleRouteChange = () => {
+    const handleRouteChange = useCallback(() => {
         if (hoverMenuOpen) {
             setHoverMenuOpen(false)
         }
-    }
+    }, [hoverMenuOpen, setHoverMenuOpen]);
 
     useEffect(() => {
         router.events.on('routeChangeComplete', handleRouteChange)
@@ -38,7 +38,7 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
             router.events.off('routeChangeComplete', handleRouteChange)
         };
 
-    }, [router.events]);
+    }, [router.events, handleRouteChange]);
 
 
     return (
@@ -161,7 +161,7 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
                             gap={3}
                         >
                             <Typography variant="h1">Connect with Metamask</Typography>
-                            <Typography sx={{ color: '#666' }}>Don't have metamask? Get it <Link href="https://metamask.io/download/">here</Link></Typography>
+                            <Typography sx={{ color: '#666' }}>Don&apos;t have metamask? Get it <Link href="https://metamask.io/download/">here</Link></Typography>
                             <Box>
                                 <LoginLogoutButton
                                     sx={{

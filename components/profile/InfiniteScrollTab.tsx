@@ -11,22 +11,15 @@ interface InfiniteScrollTabProps {
 }
 
 export const InfiniteScrollTab: React.FC<InfiniteScrollTabProps> = ({ swr, limit, showAvatar=true, showName=false }) => {
-  if (swr.error) {
-    return null;
-  }
-
-  if (!swr.data) {
-    return null;
-  }
-
   return (
       <InfiniteScroll
         swr={swr}
         loadingIndicator={<HodlLoadingSpinner />}
         isReachingEnd={
-          swr => { 
-            return !swr.data[0].items.length || swr.data[swr.data.length - 1]?.items.length < limit
-        }
+          swr => {
+            return swr.data?.[0]?.items?.length == 0 || 
+                    swr.data?.[swr.data?.length - 1]?.items?.length < limit
+          }
       }
       >
         {

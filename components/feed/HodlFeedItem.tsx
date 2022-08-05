@@ -135,7 +135,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                     </Box>
                     {
                         token && token?.image &&
-                        <Link href={comment ? `/nft/${comment.tokenId}` : `/nft/${item.objectId}`}>
+                        <Link href={comment ? `/nft/${comment.tokenId}` : `/nft/${item.objectId}`} passHref>
                             <Box sx={{ cursor: 'pointer', marginX: -2, background: '#ddd' }}>
                                 {assetType(token) === AssetTypes.Image &&
                                     <HodlImage
@@ -151,9 +151,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                         cid={token.image.split('//')[1]}
                                         controls={true}
                                         onlyPoster={false}
-                                        preload="none"
                                         audio={false}
-                                        autoPlay={true}
                                         sx={{ video: { borderRadius: 0, maxHeight: '500px' } }}
                                     />
                                 }
@@ -170,7 +168,6 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                         controls={true}
                                         onlyPoster={false}
                                         height="280px"
-                                        preload="true"
                                         audio={true}
                                         sx={{
                                             video: {

@@ -1,5 +1,5 @@
-import { Box, Skeleton } from "@mui/material";
-import { useEffect, useRef } from "react";
+import { Box } from "@mui/material";
+import { useCallback, useEffect, useRef } from "react";
 import { createCloudinaryUrl } from "../lib/utils";
 
 interface HodlVideoProps {
@@ -9,14 +9,11 @@ interface HodlVideoProps {
     sx?: object;
     controls?: boolean;
     onlyPoster?: boolean;
-    pauseWhenOffScreen?: boolean;
     gif?: boolean;
     audio?: boolean;
     height?: string;
     width?: string;
-    preload?: string,
     onLoad?: Function;
-    autoPlay?: boolean;
 }
 
 export const HodlVideo = ({
@@ -26,21 +23,18 @@ export const HodlVideo = ({
     sx = {},
     controls = true,
     onlyPoster = false,
-    pauseWhenOffScreen = true,
     gif = false,
     audio = false,
     height = 'auto',
     width = '100%',
-    preload = "auto",
     onLoad = null,
-    autoPlay = false
 }: HodlVideoProps) => {
     const asset = `${createCloudinaryUrl(gif ? 'image' : 'video', 'upload', transformations, folder, cid)}`
     const video = useRef(null);
 
     // If the video is brought onscreen, play it (if the user hasn't already watched it).
     // If it goes offscreen pause it.
-    const pauseVideoOffscreen = () => {
+    const pauseVideoOffscreen = useCallback(() => {
         if (gif) {
             return;
         }
@@ -57,21 +51,19 @@ export const HodlVideo = ({
         }, { threshold: 1 });
 
         observer.observe(video.current);
-    }
-
-    const listenToPausePlayEvents = () => {
-        video?.current?.addEventListener('volumechange', (event) => {
-            localStorage.setItem('muted', video?.current?.muted);
-        });
-    }
+    }, [gif]);
 
     useEffect(() => {
         try {
             pauseVideoOffscreen();
-            listenToPausePlayEvents()
+            
+            video?.current?.addEventListener('volumechange', (event) => {
+                localStorage.setItem('muted', video?.current?.muted);
+            });
         } catch (e) {
         }
-    }, [video?.current])
+    }, [pauseVideoOffscreen])
+
 
     const getPoster = () => {
         if (gif) {
@@ -99,7 +91,6 @@ export const HodlVideo = ({
                 },
                 ...sx
             }}>
-                {/* <Skeleton variant="rectangular" width="100%" height={height}></Skeleton> */}
                 <video
                     onLoadedData={() => {
                         if (onLoad) {
@@ -111,7 +102,7 @@ export const HodlVideo = ({
                     ref={video}
                     autoPlay={true}
                     loop={gif}
-                    // muted={JSON.parse(localStorage.getItem('muted'))}
+                    muted={JSON.parse(localStorage.getItem('muted'))}
                     controls={!gif && controls}
                     controlsList="nodownload"
                     poster={getPoster()}>
