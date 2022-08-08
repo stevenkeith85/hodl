@@ -1,9 +1,12 @@
 import axios from 'axios';
+import { Fetcher } from 'swr';
 import useSWRInfinite from 'swr/infinite'
+import { User } from '../models/User';
 
 
 export const useFollowers = (getData, address, limit = 10, fallbackData=null) => {
-    const fetcher = (url: string, address: string, offset: number, limit: number) => axios.get(
+
+    const fetcher: Fetcher<[{items: User[], total: number, offset: number}, string, number, number]>= (url: string, address: string, offset: number, limit: number) => axios.get(
         url,
         {
             params: { address, offset, limit },

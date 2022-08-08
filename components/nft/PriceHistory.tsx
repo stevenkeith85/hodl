@@ -1,10 +1,13 @@
 import { Typography, Box } from "@mui/material"
 import { indigo } from "@mui/material/colors";
-
-
+import axios from "axios";
+import useSWR from "swr";
 import { format, fromUnixTime } from "date-fns";
 import { ResponsiveContainer, CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis, Label } from "recharts";
+import { Fetcher } from "swr";
+import { PriceHistory } from "../../models/PriceHistory";
 import { HodlBorderedBox } from "../HodlBorderedBox";
+import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 
 const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
@@ -55,17 +58,28 @@ const CustomTick = ({ x, y, stroke, payload }) => {
     );
 };
 
-export const PriceHistory = ({ priceHistory }) => {
+export const PriceHistoryGraph = ({ nft, fallbackData }) => {
+    const fetcher: Fetcher<PriceHistory[], [string, string]> = (url, query) => axios.get(`${url}/${query}`).then(r => r.data.priceHistory);
 
-    console.log(priceHistory)
-    if (!priceHistory.length) {
-        return null;
+    const { data: priceHistory, error } = useSWR(nft.id ? [`/api/token-bought/`, nft.id] : null,
+        fetcher,
+        { fallbackData }
+    );
+
+    if (!priceHistory && !error) {
+        return <HodlBorderedBox>
+            <Typography variant="h2" sx={{ marginBottom: 2 }}>History</Typography>
+            <HodlLoadingSpinner />
+        </HodlBorderedBox>
     }
 
+    // We are doing key={Date.now()} to force a rerender; as the chart doesn't seem to rerender when we get 
+    // new data. :(
     return (
         <HodlBorderedBox>
             <Typography variant="h2" sx={{ marginBottom: 2 }}>History</Typography>
             <ResponsiveContainer
+                key={Date.now()}
                 width={'100%'}
                 height={300}>
                 <LineChart
@@ -77,7 +91,7 @@ export const PriceHistory = ({ priceHistory }) => {
                     }}
                     data={priceHistory}
                 >
-                    <Line dataKey="price" stroke={indigo[500]} />
+                    <Line dataKey="price" stroke={indigo[500]} isAnimationActive={true} />
                     <CartesianGrid stroke="#ddd" strokeDasharray="5" />
                     <XAxis dataKey="timestamp" tick={
                         // @ts-ignore

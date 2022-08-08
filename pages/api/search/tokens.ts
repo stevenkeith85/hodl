@@ -4,13 +4,14 @@ import { getToken } from '../token/[tokenId]';
 import { Redis } from '@upstash/redis';
 
 import axios from 'axios';
+import { getAsString } from '../../../lib/utils';
 
 const client = Redis.fromEnv()
 
 dotenv.config({ path: '../.env' })
 
 
-export const getTokenSearchResults = async (q, offset, limit) => {
+export const getTokenSearchResults = async (q: string, offset: number, limit: number) => {
     try {
         let ids = []
         const tokens = [];
@@ -55,9 +56,15 @@ export const getTokenSearchResults = async (q, offset, limit) => {
 
 const route = apiRoute();
 route.get(async (req, res) => {
-    const { q, offset, limit } = req.query;
+    const q = getAsString(req.query.q);
+    const offset = getAsString(req.query.offset);
+    const limit = getAsString(req.query.limit);
 
-    const data = await getTokenSearchResults(q, offset, limit);
+    if (!offset || !limit) {
+        return res.status(400).json({ message: 'Bad Request' });
+    }
+
+    const data = await getTokenSearchResults(q, +offset, +limit);
     return res.status(200).json(data);
 });
 

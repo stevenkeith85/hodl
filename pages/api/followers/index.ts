@@ -1,9 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
-import memoize from 'memoizee';
 import apiRoute from "../handler";
-import { isValidAddress } from "../../../lib/profile";
 import axios from 'axios';
 import { getAsString } from "../../../lib/utils";
 import { User } from "../../../models/User";
@@ -15,9 +13,10 @@ const client = Redis.fromEnv()
 const route = apiRoute();
 
 
-export const getFollowers = async (address: string, offset: number = 0, limit: number = 10) => {
+export const getFollowers = async (address: string, offset: number = 0, limit: number = 10)
+  : Promise<{ items: User[], next: number, total: number } | null> => {
   try {
-    const users: User[] = [];
+    let users: User[] = [];
     const total = await client.zcard(`user:${address}:followers`);
 
     if (offset >= total) {
@@ -34,19 +33,14 @@ export const getFollowers = async (address: string, offset: number = 0, limit: n
       }
     })
 
-
     const addresses: string[] = r.data.result;
 
-    if (addresses.length) {
-      for (const address of addresses) {
-        const data = await getUser(address);
-
-        if (data) {
-          users.push(data);
-        }
-      }
-    }
-
+    console.log('followers', addresses)
+    const promises = addresses.map(address => getUser(address));
+    console.log('promises', promises)
+    users = await Promise.all(promises);
+    console.log('bar')
+    console.log('USERS', users)
 
     return { items: users, next: Number(offset) + Number(users.length), total: Number(total) };
   } catch (e) {

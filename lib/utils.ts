@@ -13,7 +13,7 @@ export const addLinksToTags = text => {
 }
 
 
-export const getAsString = param => Array.isArray(param) ? param[0] : param;
+export const getAsString = (param) : string | null => Array.isArray(param) ? param[0] : param;
 
 export function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -113,6 +113,12 @@ export const cidToGatewayUrl = cid => {
 
 export const trim = str => {
   return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+}
+
+export const pluralize = (n: number, item: string) => {
+  const v = n || 0;
+  const endsWithY = item[item.length - 1] === 'y';
+  return v !== 1 ? `${v} ${endsWithY ? item.slice(0, -1) + 'ies' : item + 's'}`: `1 ${item}`
 }
 
 export const assetType = (nft: Token | Nft) : AssetTypes => {

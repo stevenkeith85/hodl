@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { Likes } from "../Likes";
 import { HighlightOffOutlined, Message, Reply } from "@mui/icons-material";
 import { useComments, useCommentCount, useDeleteComment } from "../../hooks/useComments";
-import { FC, useContext, useState } from "react";
+import React, { FC, useContext, useState } from "react";
 import { HodlCommentViewModel } from "../../models/HodlComment";
 import { WalletContext } from "../../contexts/WalletContext";
 import { formatDistanceStrict } from "date-fns";
@@ -11,7 +11,136 @@ import { ProfileNameOrAddress } from "../avatar/ProfileNameOrAddress";
 import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
 import { NftContext } from "../../contexts/NftContext";
 import { useLikeCount } from "../../hooks/useLikeCount";
+import { pluralize } from "../../lib/utils";
+import { SWRInfiniteResponse } from "swr/infinite/dist/infinite";
+import { SWRResponse } from "swr";
 
+
+interface HodlCommentActionButtonsProps {
+    comment: HodlCommentViewModel;
+    setCommentingOn: Function;
+    swr: SWRInfiniteResponse;
+    countSWR: SWRResponse;
+    setShowThread: Function;
+    color: "primary" | "secondary"
+    addCommentInput: any;
+    setTopLevel: Function;
+    parentMutateList: Function;
+    parentMutateCount: Function;
+    mutateCount: Function;
+}
+
+export const HodlCommentActionButtons: React.FC<HodlCommentActionButtonsProps> = ({
+    comment,
+    setCommentingOn,
+    swr,
+    countSWR,
+    setShowThread,
+    color,
+    addCommentInput,
+    setTopLevel,
+    parentMutateList,
+    parentMutateCount,
+    mutateCount
+}) => {
+    const router = useRouter();
+
+    const { address } = useContext(WalletContext);
+    const { nft } = useContext(NftContext);
+
+    const canDeleteComment = (comment: HodlCommentViewModel) => comment.user.address === address || nft?.owner === address;
+    const [deleteComment] = useDeleteComment();
+
+    return (<Box display="flex" alignItems="start" gap={1}>
+        {address &&
+            <Likes
+                color="inherit"
+                sx={{
+                    cursor: 'pointer',
+                    color: theme => theme.palette.text.secondary,
+                    '&:hover': {
+                        color: theme => theme.palette.text.primary,
+                    }
+                }}
+                fontSize="14px"
+                id={comment.id}
+                object="comment"
+                showCount={false}
+                likeTooltip={'Like this Comment'}
+                unlikeTooltip={'Stop liking this Comment'}
+            />
+        }
+        {address &&
+            <Tooltip title="Reply to this Comment">
+                <Reply
+                    sx={{
+                        cursor: 'pointer',
+                        color: theme => theme.palette.text.secondary,
+                        '&:hover': {
+                            color: theme => theme.palette.text.primary,
+                        },
+                        fontSize: `14px`
+                    }}
+                    onClick={() => {
+                        setCommentingOn({
+                            object: "comment",
+                            objectId: comment.id,
+                            mutateList: swr.mutate,
+                            mutateCount: countSWR.mutate,
+                            setShowThread,
+                            color
+                        })
+                        addCommentInput?.focus();
+                    }
+                    } />
+            </Tooltip>
+        }
+        {Boolean(countSWR.data) && <Tooltip title="View Single Comment Thread">
+            <Message
+                sx={{
+                    cursor: 'pointer',
+                    color: theme => theme.palette.text.secondary,
+                    '&:hover': {
+                        color: theme => theme.palette.text.primary,
+                    },
+                    fontSize: "14px"
+                }}
+                fontSize="inherit"
+                onClick={() => {
+                    setTopLevel({ objectId: comment.id, object: "comment" });
+                    router.push({
+                        pathname: window.location.pathname,
+                        query: { comment: comment.id }
+                    }, undefined, { shallow: true });
+                }}
+            />
+        </Tooltip>
+        }
+        {
+            address && canDeleteComment(comment) &&
+            <Tooltip title="Delete this Comment">
+                <HighlightOffOutlined
+                    sx={{
+                        cursor: 'pointer',
+                        color: theme => theme.palette.text.secondary,
+                        '&:hover': {
+                            color: theme => theme.palette.text.primary,
+                        },
+                        fontSize: `14px`
+                    }}
+                    fontSize="inherit"
+                    onClick={async () => {
+                        await deleteComment(comment);
+                        parentMutateList();
+                        parentMutateCount();
+                        mutateCount();
+                    }
+                    }
+                />
+            </Tooltip>
+        }
+    </Box>)
+}
 
 export const Replies = ({
     countSWR,
@@ -119,14 +248,8 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
     mutateCount = null,
 }) => {
 
-    const router = useRouter();
+    const { swr: likesCount } = useLikeCount(comment.id, "comment");
 
-    const { address } = useContext(WalletContext);
-    const { nft } = useContext(NftContext);
-
-    const {swr: likesCount} = useLikeCount(comment.id, "comment");
-
-    const [deleteComment] = useDeleteComment();
     const [showThread, setShowThread] = useState(shouldShowThread);
 
     // SWRs
@@ -142,17 +265,21 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
     const internalCountSWR = useCommentCount(comment.id, "comment", null);
     const countSWR = replyCountSWR || internalCountSWR;
 
-    const canDeleteComment = (comment: HodlCommentViewModel) => comment.user.address === address || nft?.owner === address;
-
     return (
-        <Box display="flex" flexDirection="column" gap={1}
+        <Box 
+            display="flex" 
+            flexDirection="column" 
+            gap={1} 
+            width={`100%`} 
+            // paddingRight={1}
         >
             <Box
                 display="flex"
                 flexDirection="column"
                 gap={0.5}
                 sx={{
-                    paddingY: 1,
+                    padding: 1,
+                    paddingLeft: 0,
                     width: `100%`
                 }}
             >
@@ -184,16 +311,18 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                         <Box
 
                             sx={{
-                                // background: 'blue',
+                                // background: 'lightblue',
                                 display: 'flex',
                                 width: `100%`,
-                                justifyContent: 'space-between'
+                                // justifyContent: 'space-between',
+                                // paddingRight: 1
                             }}>
                             <Box
                                 display="flex"
                                 flexDirection="column"
                                 flexWrap="wrap"
                                 gap={1}
+                                width={`100%`}
                             >
                                 <Box
                                     display="flex"
@@ -205,38 +334,56 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                         display: 'flex',
                                         gap: 1,
                                         alignItems: 'center',
-                                        // background: 'yellow'
+                                        // background: 'yellow',
+                                        justifyContent: 'space-between',
+                                        width: `100%`
                                     }}>
-                                        <ProfileNameOrAddress
+                                        <Box display="flex" sx={{
+                                            gap: 1,
+                                            alignItems: 'center',
+                                        }}> 
+                                                     <ProfileNameOrAddress
                                             profileAddress={comment.user.address}
                                             fallbackData={comment.user}
                                             color={color}
-                                            // fontSize="12px"
+                                        // fontSize="12px"
                                         />
-                                        <Typography
-                                            sx={{
-                                                // fontSize: "12px",
-                                                fontWeight: 600,
-                                                color: theme => theme.palette.text.secondary
-                                            }}>
-                                            ·
-                                        </Typography>
-                                        <Typography
-                                            sx={{
-                                                fontSize: "12px",
-                                                color: theme => theme.palette.text.secondary
-                                            }}>
-                                            {comment.timestamp && formatDistanceStrict(new Date(comment.timestamp), new Date(), { addSuffix: false })}
-                                        </Typography>
+                                            <Typography
+                                                sx={{
+                                                    // fontSize: "12px",
+                                                    fontWeight: 600,
+                                                    color: theme => theme.palette.text.secondary
+                                                }}>
+                                                ·
+                                            </Typography>
+                                            <Typography
+                                                sx={{
+                                                    fontSize: "12px",
+                                                    color: theme => theme.palette.text.secondary
+                                                }}>
+                                                {comment.timestamp && formatDistanceStrict(new Date(comment.timestamp), new Date(), { addSuffix: false })}
+                                            </Typography></Box><HodlCommentActionButtons
+                                            comment={comment}
+                                            setCommentingOn={setCommentingOn}
+                                            swr={swr}
+                                            countSWR={countSWR}
+                                            setShowThread={setShowThread}
+                                            color={color}
+                                            addCommentInput={addCommentInput}
+                                            setTopLevel={setTopLevel}
+                                            parentMutateList={parentMutateList}
+                                            parentMutateCount={parentMutateCount}
+                                            mutateCount={mutateCount}
+                                        />
+
                                     </Box>
                                     <Typography sx={{ whiteSpace: 'pre-line' }}>{comment.comment}</Typography>
                                 </Box>
-                                <Box 
-                                    display="flex" 
-                                    gap={1} 
-                                    // sx={{ background: 'orange'}}
+                                <Box
+                                    display="flex"
+                                    gap={1}
+                                    // sx={{ background: 'orange' }}
                                 >
-
                                     {countSWR.data && showThread && !swr.error && !swr.data ?
                                         <Typography
                                             sx={{
@@ -250,15 +397,15 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                         <Typography
                                             sx={{
                                                 fontSize: "12px",
-                                                color: countSWR.data ? theme => theme.palette.secondary.dark: theme => theme.palette.text.secondary,
-                                                cursor: countSWR.data ? 'pointer': 'unset',
+                                                color: countSWR.data ? theme => theme.palette.secondary.dark : theme => theme.palette.text.secondary,
+                                                cursor: countSWR.data ? 'pointer' : 'unset',
                                                 '&:hover': {
-                                                    color: countSWR.data ? theme => theme.palette.text.primary: theme => theme.palette.text.secondary
+                                                    color: countSWR.data ? theme => theme.palette.text.primary : theme => theme.palette.text.secondary
                                                 }
                                             }}
                                             onClick={() => setShowThread(old => !old)}
                                         >
-                                            { countSWR.data !== 1 ?`${countSWR.data} replies`: `1 reply` }
+                                            {pluralize(countSWR.data, 'reply')}
                                         </Typography>
                                     }
                                     <Typography
@@ -266,100 +413,23 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                             fontSize: "12px",
                                             color: theme => theme.palette.text.secondary
                                         }}>
-                                        {likesCount?.data} likes
+                                        {pluralize(likesCount?.data, 'like')}
                                     </Typography>
                                 </Box>
                             </Box>
-                            <Box display="flex" alignItems="start" gap={1}>
-                                {address &&
-                                    <Likes
-                                        color="inherit"
-                                        sx={{
-                                            cursor: 'pointer',
-                                            color: '#999',
-                                            '&:hover': {
-                                                color: '#333',
-                                            }
-                                        }}
-                                        fontSize="14px"
-                                        id={comment.id}
-                                        object="comment"
-                                        showCount={false}
-                                        likeTooltip={'Like this Comment'}
-                                        unlikeTooltip={'Stop liking this Comment'}
-                                    />
-                                }
-                                {address &&
-                                    <Tooltip title="Reply to this Comment">
-                                        <Reply
-                                            sx={{
-                                                cursor: 'pointer',
-                                                color: '#999',
-                                                '&:hover': {
-                                                    color: '#333',
-                                                },
-                                                fontSize: "14px"
-                                            }}
-
-                                            onClick={() => {
-                                                setCommentingOn({
-                                                    object: "comment",
-                                                    objectId: comment.id,
-                                                    mutateList: swr.mutate,
-                                                    mutateCount: countSWR.mutate,
-                                                    setShowThread,
-                                                    color
-                                                })
-                                                addCommentInput?.focus();
-                                            }
-                                            } />
-                                    </Tooltip>
-                                }
-                                {Boolean(countSWR.data) && <Tooltip title="View Single Comment Thread">
-                                    <Message
-                                        sx={{
-                                            cursor: 'pointer',
-                                            color: theme => theme.palette.text.secondary,
-                                            '&:hover': {
-                                                color: theme => theme.palette.text.primary,
-                                            },
-                                            fontSize: "14px"
-                                        }}
-                                        fontSize="inherit"
-                                        onClick={() => {
-                                            setTopLevel({ objectId: comment.id, object: "comment" });
-                                            router.push({
-                                                pathname: window.location.pathname,
-                                                query: { comment: comment.id }
-                                            }, undefined, { shallow: true });
-                                        }}
-                                    />
-                                </Tooltip>
-                                }
-                                {
-                                    address && canDeleteComment(comment) &&
-                                    <Tooltip title="Delete this Comment">
-                                        <HighlightOffOutlined
-                                            sx={{
-                                                cursor: 'pointer',
-                                                color: '#999',
-                                                '&:hover': {
-                                                    color: '#333',
-                                                },
-                                                fontSize: "14px"
-                                            }}
-                                            fontSize="inherit"
-                                            onClick={async () => {
-                                                await deleteComment(comment);
-                                                parentMutateList();
-                                                parentMutateCount();
-                                                mutateCount();
-                                            }
-                                            }
-                                        />
-                                    </Tooltip>
-                                }
-                            </Box>
+                            {/* <HodlCommentActionButtons 
+                                comment={comment} 
+                                setCommentingOn={setCommentingOn} 
+                                swr={swr} 
+                                countSWR={countSWR} 
+                                setShowThread={setShowThread} 
+                                color={color} 
+                                addCommentInput={addCommentInput} 
+                                setTopLevel={setTopLevel} 
+                                parentMutateList={parentMutateList} 
+                                parentMutateCount={parentMutateCount} 
+                                mutateCount={mutateCount} 
+                            /> */}
                         </Box>
                         <Replies
                             countSWR={countSWR}

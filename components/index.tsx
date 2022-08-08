@@ -4,7 +4,6 @@ export { HodlModal } from "./modals/HodlModal";
 export { HodlLink } from "./HodlLink";
 export { SuccessModal } from "./modals/SuccessModal";
 export { DetailPageImage } from "./nft/DetailPageImage";
-export { ProfileAvatar } from './avatar/ProfileAvatar';
 export { HodlExternalLink } from './HodlExternalLink';
 export { IpfsCard } from './nft/IpfsCard';
 export { PriceCard } from './nft/PriceCard';

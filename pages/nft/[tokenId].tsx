@@ -16,7 +16,7 @@ import {
 } from '../../components';
 
 import { fetchNFT } from "../api/nft/[tokenId]";
-import { PriceHistory } from "../../components/nft/PriceHistory";
+import { PriceHistoryGraph } from "../../components/nft/PriceHistory";
 import { Likes } from "../../components/Likes";
 import Head from "next/head";
 import { getPriceHistory } from "../api/token-bought/[tokenId]";
@@ -57,9 +57,11 @@ export async function getServerSideProps({ params, query, req, res }) {
     const limit = 10;
     const tab = Number(query.tab) || 0;
 
-    const prefetchedComments = await getCommentsForToken(comment ? "comment" : "token", comment ? comment : params.tokenId, 0, limit);
+    // TODO: We might not prefetch this; to speed up the initial load
+    const prefetchedComments = await getCommentsForToken(comment ? "comment" : "token", comment ? comment : params.tokenId, 0, limit, !comment);
     const prefetchedCommentCount = await getCommentCount(comment ? "comment" : "token", comment ? comment : params.tokenId);
 
+    // TODO: We might not prefetch this; to speed up the initial load
     const priceHistory = await getPriceHistory(params.tokenId);
 
     const prefetchedLikeCount = await getLikeCount(params.tokenId);
@@ -70,7 +72,7 @@ export async function getServerSideProps({ params, query, req, res }) {
         nft,
         owner,
         limit,
-        prefetchedComments: [prefetchedComments],
+        prefetchedComments: null,//[prefetchedComments],
         prefetchedCommentCount,
         priceHistory,
         prefetchedLikeCount,
@@ -78,7 +80,6 @@ export async function getServerSideProps({ params, query, req, res }) {
       },
     }
   } catch (e) {
-    console.log('e', e)
     return { notFound: true }
   }
 }
@@ -181,6 +182,7 @@ const NftDetail = ({
                   nft={nft}
                   popUp={false}
                   sx={{ color: '#333' }}
+                  fallbackData={prefetchedCommentCount}
                 />
               </Box>
             </Stack>
@@ -203,7 +205,7 @@ const NftDetail = ({
                       <Typography variant="h1" mb={3} sx={{ fontWeight: 600 }}>{nft.name}</Typography>
                       <Box sx={{ whiteSpace: 'pre-line' }}>{insertTagLinks(nft.description)}</Box>
                     </Box>
-                    <HodlCommentsBox limit={limit} header={false}/>
+                    <HodlCommentsBox limit={limit} header={false} fallbackData={prefetchedComments}/>
                   </CardContent>
                 </Card>
               </Stack>
@@ -220,7 +222,7 @@ const NftDetail = ({
                   <MaticPrice nft={nft} color="black" />
                   <NftActionButtons nft={nft} />
                 </Box>
-                <PriceHistory priceHistory={priceHistory} />
+                <PriceHistoryGraph fallbackData={priceHistory} nft={nft} />
                 <HodlerPrivilege nft={nft} />
                 <IpfsCard nft={nft} />
               </Box>

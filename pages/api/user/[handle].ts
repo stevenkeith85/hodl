@@ -21,15 +21,33 @@ dotenv.config({ path: '../.env' })
 const client = Redis.fromEnv()
 const route = apiRoute();
 
-export const getUser = async (handle) : Promise<User> => {
+export const getUser = async (handle) : Promise<User | null> => {
+
+  if (!handle) {
+    return null;
+  }
+  
   const isAddress = await isValidAddress(handle);
 
   // if we have an address, just look it up
   // TODO - We should check the 'users' collection first; as the user may have a nonce entry; but they've not actually signed the message to connect to the site
   if (isAddress) {
     const user = await client.hmget<User>(`user:${handle}`, 'address', 'nickname', 'avatar');
-    if (user.avatar) {
-
+    
+    // if we haven't seen this user before, then just return basic info.
+    // this shouldn't actually happen. doing it to allow us to populate the db with dummy addresses
+    // to do some load testing
+    //
+    // TODO: We should probably return null, and make sure the UI handles that, as we don't want a lot of dummy profiles
+    if(!user) {
+      return {
+        address: handle,
+        nickname: null,
+        avatar: null
+      }
+    }
+    
+    if (user?.avatar) {
       // check if the user still owns this token
       const ownsToken = await isOwnerOrSeller(user.address, user.avatar);
 
@@ -39,8 +57,9 @@ export const getUser = async (handle) : Promise<User> => {
       } else {
         user.avatar = null;
       }
-      
     }
+
+    console.log('user is ', user)
     return user;
   }
 

@@ -50,11 +50,12 @@ export const useDeleteComment = (): [(comment: HodlCommentViewModel) => Promise<
 export const useCommentCount = (
     id: number,
     object: "token" | "comment",
-    prefetched = null,
+    fallbackData = null,
 ) => {
     const swr = useSWR(
          [`/api/comments/count`, object, id],
-        fetchWithObjectAndId
+        fetchWithObjectAndId,
+        { fallbackData }
     );
 
     return swr
@@ -64,7 +65,7 @@ export const useComments = (
     objectId: number,
     limit: number,
     object: "token" | "comment",
-    prefetched = null,
+    fallbackData = null,
     load = true,
     rev = false
 ) => {
@@ -75,7 +76,8 @@ export const useComments = (
     const fetcher = (url, object, objectId, offset, limit, rev) => axios.get(url, { params: { object, objectId, offset, limit, rev } }).then(r => r.data);
     const swr = useSWRInfinite(
         load ? getKey : null,
-        fetcher
+        fetcher,
+        { fallbackData }
     );
 
     return swr;

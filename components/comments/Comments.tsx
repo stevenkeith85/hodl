@@ -12,7 +12,8 @@ export interface CommentsProps {
     popUp?: boolean,
     color?: "inherit" | "disabled" | "action" | "secondary" | "primary" | "error" | "info" | "success" | "warning",
     fontSize?: string,
-    sx?: any
+    sx?: any;
+    fallbackData?: any;
 }
 
 export const Comments: FC<CommentsProps> = ({
@@ -20,9 +21,10 @@ export const Comments: FC<CommentsProps> = ({
     popUp = true,
     color = "primary",
     fontSize = "20px",
-    sx = {}
+    sx = {},
+    fallbackData = null
 }) => {
-    const { data: count } = useCommentCount(nft.id, "token")
+    const { data: count } = useCommentCount(nft.id, "token", fallbackData)
 
     const [open, setOpen] = useState(false);
 

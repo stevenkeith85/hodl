@@ -27,14 +27,14 @@ export interface HodlComment {
 export interface HodlCommentViewModel {
     id: number; // the id that the comment was stored against
 
-    user: User; // the user that made the comment
+    user?: User; // the user that made the comment. optional so that we can skip it, if we already know the user. i.e. with actions
 
     comment: string; // the comment string
 
     timestamp: number; // when was the comment was made
 
     object: "token" | "comment"; // what was this comment about
-    
+
     tokenId: number;
     // TODO
     // reply?: boolean; // if "object" in HodlComment is a "comment" then this will be true; otherwise false

@@ -8,7 +8,7 @@ import { HodlImpactAlert } from "../HodlImpactAlert";
 import { FeedContext } from "../../contexts/FeedContext";
 
 
-export const HodlFeed = ({ limit = 10 }) => {
+export const HodlFeed = ({ limit = 4 }) => {
     const { feed } = useContext(FeedContext);
 
     return (
@@ -46,8 +46,6 @@ export const HodlFeed = ({ limit = 10 }) => {
                     </Box>
                 )
             }
-
-
             <InfiniteScroll
                 swr={feed}
                 loadingIndicator={<HodlLoadingSpinner />}

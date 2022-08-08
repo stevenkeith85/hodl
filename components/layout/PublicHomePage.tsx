@@ -4,6 +4,7 @@ import { TopUsers } from "../rankings/TopUsers"
 import { TopTokens } from "../rankings/TopTokens"
 import { NewTokens } from "../rankings/NewTokens"
 import { NewUsers } from "../rankings/NewUsers"
+import { HodlBorderedBox } from "../HodlBorderedBox"
 
 export const PublicHomePage = ({ }) => {
     return (
@@ -20,16 +21,25 @@ export const PublicHomePage = ({ }) => {
                 paddingBottom={4}
             >
                 <Grid item xs={12} sm={6} md={3}>
-                    <TopUsers />
+                    <HodlBorderedBox>
+                        <TopUsers />
+                    </HodlBorderedBox>
+
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
-                    <TopTokens showLikes={false} />
+                    <HodlBorderedBox>
+                        <TopTokens showLikes={false} />
+                    </HodlBorderedBox>
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
-                    <NewUsers />
+                    <HodlBorderedBox>
+                        <NewUsers />
+                    </HodlBorderedBox>
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
-                    <NewTokens showLikes={false} />
+                    <HodlBorderedBox>
+                        <NewTokens showLikes={false} />
+                    </HodlBorderedBox>
                 </Grid>
             </Grid>
         </Box >

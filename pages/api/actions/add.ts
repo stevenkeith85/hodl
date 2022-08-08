@@ -45,6 +45,7 @@ const client = Redis.fromEnv()
 //
 
 // Add the action id to <address>s notifications
+// TODO: We may want to trim this set as it is queried from the FE. Possibly we archive the data?
 const addNotification = async (address: string, action: HodlAction): Promise<number> => {
   const added = await client.zadd(
     `user:${address}:notifications`,
@@ -59,6 +60,8 @@ const addNotification = async (address: string, action: HodlAction): Promise<num
 
 // Add the action id to <address>s feed. We'll set the feed entry's timestamp to use the action's timestamp (for now)
 // as we'd probably not want to show something at the top of a chronological feed, if it was actually listed a while ago
+
+// TODO: We may want to trim this set as it is queried from the FE. Possibly we archive the data?
 const addToFeed = async (address: string, action: HodlAction): Promise<number> => {
   const added = await client.zadd(
     `user:${address}:feed`,
@@ -134,6 +137,23 @@ const getLastXFeedActions = async (address: string, x: number = 5): Promise<Hodl
 
   return actions;
 }
+
+
+const addToFeedOfFollowers = async (action: HodlAction) => {      
+      // TODO: Optimise this as user could have millions of followers
+      // TEMP FIX: Only tell the first X followers :(
+      // We actually want this to happen in parallel if possibly. Otherwise one follower
+      // might get notified way ahead of another, which could be an advantage for them
+      const {items: followers} = await getFollowers(action.subject, 0, 10000); 
+
+      let count = 0;
+      for (let follower of followers) {
+        count += await addToFeed(`${follower.address}`, action);
+      }
+
+      return count;
+}
+
 
 // This is the entry point ot the actions system, that will also add the appropriate feed item or notification
 //
@@ -222,14 +242,8 @@ export const addAction = async (action: HodlAction) => {
         return;
       }
 
-      // might need to think about this. user could have millions of followers
-      // just do the most recent 10,000 at the moment
-      const followers = await getFollowers(action.subject, 0, 10000); 
-
-      let count = 0;
-      for (let address of followers.items) {
-        count += await addToFeed(`${address}`, action);
-      }
+      // TODO: Possibly don't need to wait here. i.e. we could prevent the UI hanging by doing this async?
+      const count = await addToFeedOfFollowers(action);
 
       return count;
     } catch (e) {
@@ -247,14 +261,17 @@ export const addAction = async (action: HodlAction) => {
         return;
       }
 
-      // might need to think about this. user could have millions of followers
-      // just do the most recent 10,000 at the moment
-      const followers = await getFollowers(action.subject, 0, 10000); 
+      // // might need to think about this. user could have millions of followers
+      // // just do the most recent 10,000 at the moment
+      // const {items: followers} = await getFollowers(action.subject, 0, 10000); 
 
-      let count = 0;
-      for (let address of followers.items) {
-        count += await addToFeed(`${address}`, action);
-      }
+      // let count = 0;
+      // for (let follower of followers) {
+      //   count += await addToFeed(`${follower.address}`, action);
+      // }
+
+      // TODO: Possibly don't need to wait here. i.e. we could prevent the UI hanging by doing this async?
+      const count = await addToFeedOfFollowers(action);
 
       return count;
     } catch (e) {

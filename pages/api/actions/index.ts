@@ -3,16 +3,61 @@ import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
 import axios from 'axios'
 import apiRoute from "../handler";
-import { ActionSet, HodlAction, HodlActionViewModal } from "../../../models/HodlAction";
+import { ActionSet, HodlAction, HodlActionViewModel } from "../../../models/HodlAction";
 import { getToken } from "../token/[tokenId]";
 import { getComment } from "../comment";
+import { getUser } from "../user/[handle]";
+
+import https from "https";
+import http from "http";
 
 dotenv.config({ path: '../.env' })
+
+const httpAgent = new http.Agent({ keepAlive: true });
+const httpsAgent = new https.Agent({ keepAlive: true });
 
 const client = Redis.fromEnv()
 const route = apiRoute();
 
+// Gets the HodlAction  and adds the user, token and comment to it to create the HodlActionViewModel
+// We can get some data in parallel, like the user and token as they don't rely on each other
+const actionIdToViewModel = async (id): Promise<HodlActionViewModel | null> => {
+  const hodlAction: HodlAction = await client.get(`action:${id}`);
 
+  if (!hodlAction) {
+    return null;
+  }
+
+  const vm: HodlActionViewModel = {
+    ...hodlAction,
+  };
+
+  const userPromise = getUser(hodlAction.subject);
+
+  let tokenPromise = null;
+  if (hodlAction.object === "comment") {
+    vm.comment = await getComment(hodlAction.objectId, false);
+
+    if (vm.comment) {
+      tokenPromise = getToken(vm.comment.tokenId)
+    }
+
+  } else {
+    tokenPromise = getToken(hodlAction.objectId);
+  }
+
+  const [user, token] = await Promise.all([userPromise, tokenPromise]);
+
+  vm.user = user;
+  vm.token = token;
+
+  return vm;
+}
+
+// TODO: Set a max limit of 10 or something as we get the actions in parallel - so we don't want to hammer the db?
+
+// TODO: ZRANGE is O(log(N)+M), with N being the number of elements in the set. 
+// We should consider trimming this set size somehow. Possibly we trim it when we add actions. i.e. if it hits 100 or 1000 or something we add the leftover stuff to an archive
 export const getActions = async (
   address: string,
   set: ActionSet = ActionSet.Notifications,
@@ -20,11 +65,11 @@ export const getActions = async (
   limit: number = 10
 ): Promise<
   {
-    items: HodlActionViewModal[],
+    items: HodlActionViewModel[],
     next: number,
     total: number
   }> => {
-    
+
   const total = await client.zcard(`user:${address}:${set}`);
 
   if (offset >= total) {
@@ -38,32 +83,17 @@ export const getActions = async (
   const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/user:${address}:${set}/${offset}/${offset + limit - 1}/rev`, {
     headers: {
       Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-    }
+    },
+    httpAgent, // https://github.com/axios/axios/issues/1846
+    httpsAgent
   })
 
   const actionIds: string[] = r.data.result.map(item => JSON.parse(item));
-  console.log('actionIds', actionIds)
 
-  const actions: HodlActionViewModal[] = [];
-  for (const id of actionIds) {
-    const hodlAction : HodlAction = await client.get(`action:${id}`);
-    
-    const vm: HodlActionViewModal = {
-      ...hodlAction,
-    };
+  // The actions don't depend on each other, so we can do this async
+  const actionPromises = actionIds.map(id => actionIdToViewModel(id));
 
-    if (hodlAction.object === "token") {
-      vm.token = await getToken(hodlAction.objectId);
-    } else if (hodlAction.object === "comment") {
-      vm.comment = await getComment(hodlAction.objectId);
-
-      if (vm.comment) {
-        vm.token = await getToken(vm.comment.tokenId);
-      }
-    }
-
-    actions.push(vm);
-  }
+  const actions: HodlActionViewModel[] = await Promise.all(actionPromises);
 
   return {
     items: actions,

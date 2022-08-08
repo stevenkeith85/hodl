@@ -1,6 +1,5 @@
 import { Box, imageListItemClasses, ImageListItem, Typography } from '@mui/material'
 import { AssetThumbnail } from './AssetThumbnail';
-import { HodlImage } from './HodlImage';
 
 interface SelectProfileNFTProps {
     nfts: any[];

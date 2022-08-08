@@ -33,13 +33,17 @@ const route = apiRoute();
 //   max: 10000, 
 // });
 
-export const getComment = async (id) => {
+export const getComment = async (id, withUser: boolean = true) : Promise<HodlCommentViewModel | null> => {
+  if (!id) {
+    return null;
+  }
+
   const comment: HodlComment = await client.get(`comment:${id}`);
 
   if (comment) {
     const vm: HodlCommentViewModel = {
       id: comment.id,
-      user: await getUser(comment.subject),
+      user: withUser ? await getUser(comment.subject): null,
       comment: comment.comment,
       timestamp: comment.timestamp,
       object: comment.object,

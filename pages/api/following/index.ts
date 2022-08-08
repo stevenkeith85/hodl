@@ -1,9 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
-import memoize from 'memoizee';
 import apiRoute from "../handler";
-import { isValidAddress } from "../../../lib/profile";
 import axios from 'axios'
 import { getAsString } from "../../../lib/utils";
 import { User } from "../../../models/User";
@@ -20,7 +18,7 @@ const route = apiRoute();
 // function that a few API endpoints could make use of
 export const getFollowing = async (address: string, offset: number = 0, limit: number = 10) => {
   try {
-    const users: User[] = [];
+    let users: User[] = [];
     const total = await client.zcard(`user:${address}:following`);
 
     if (offset >= total) {
@@ -37,47 +35,15 @@ export const getFollowing = async (address: string, offset: number = 0, limit: n
       }
     })
 
-
     const addresses: string[] = r.data.result;
-
-    if (addresses.length) {
-      for (const address of addresses) {
-        const data = await getUser(address);
-
-        if (data) {
-          users.push(data);
-        }
-      }
-    }
-
+    const promises = addresses.map(address => getUser(address));
+    users = await Promise.all(promises);
 
     return { items: users, next: Number(offset) + Number(users.length), total: Number(total) };
   } catch (e) {
     return { items: [], next: 0, total: 0 };
   }
 }
-
-// export const getFollowing = async (address: string, offset: number = 0, limit: number = 10) => {
-//   try {
-//     const total = await client.zcard(`user:${address}:following`);
-
-//     if (offset >= total) {
-//       return { items: [], next: Number(total), total: Number(total) };
-//     }
-
-//     const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/user:${address}:following/${offset}/${offset + limit - 1}/rev`, {
-//       headers: {
-//         Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-//       }
-//     })
-//     const following = r.data.result
-
-
-//     return { items: following, next: Number(offset) + Number(following.length), total: Number(total) };
-//   } catch (e) {
-//     return { items: [], next: 0, total: 0 };
-//   }
-// }
 
 route.get(async (req: NextApiRequest, res: NextApiResponse) => {  
   const address = getAsString(req.query.address);

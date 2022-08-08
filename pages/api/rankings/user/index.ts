@@ -6,6 +6,7 @@ import apiRoute from "../../handler";
 import { ActionSet, HodlAction } from "../../../../models/HodlAction";
 import { User } from "../../../../models/User";
 import { getUser } from "../../user/[handle]";
+import { getAsString } from "../../../../lib/utils";
 
 dotenv.config({ path: '../.env' })
 
@@ -73,11 +74,11 @@ export const getMostFollowedUsers = async (
 
 
 route.get(async (req, res: NextApiResponse) => {
-  const offset = Array.isArray(req.query.offset) ? req.query.offset[0] : req.query.offset;
-  const limit = Array.isArray(req.query.limit) ? req.query.limit[0] : req.query.limit;
+  const offset = getAsString(req.query.offset);
+  const limit = getAsString(req.query.limit);
 
   if (!offset || !limit) {
-    return res.status(400).json({ message: 'Bad Request' });
+      return res.status(400).json({ message: 'Bad Request' });
   }
 
   const addresses = await getMostFollowedUsers(+offset, +limit);

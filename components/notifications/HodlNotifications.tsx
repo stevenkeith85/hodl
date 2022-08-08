@@ -17,7 +17,7 @@ export const HodlNotifications = ({
     setHoverMenuOpen,
     showNotifications,
     setShowNotifications,
-    limit = 4
+    limit = 8
 }) => {
 
     const router = useRouter();
@@ -79,7 +79,7 @@ export const HodlNotifications = ({
             top: 56,
             right: 0,
             minWidth: '525px',
-            maxHeight: '525px',
+            maxHeight: '425px',
             height: { xs: 'calc(100vh - 56px)', sm: 'auto' },
             width: { xs: '100%', sm: 'auto' },
             overflowY: 'auto',
@@ -91,7 +91,7 @@ export const HodlNotifications = ({
         }}
         display="flex"
         flexDirection="column"
-        gap={3}
+        gap={4}
     >
         {
             notifications?.data && !notifications?.data?.[0]?.items?.length &&
@@ -101,10 +101,6 @@ export const HodlNotifications = ({
             swr={notifications}
             loadingIndicator={<HodlLoadingSpinner />}
             isReachingEnd={
-                // notifications =>
-                // !notifications.data[0].items.length ||
-                // notifications.data[notifications.data.length - 1]?.items.length < limit
-
                 swr => {
                     return swr.data?.[0]?.items?.length == 0 || 
                             swr.data?.[swr.data?.length - 1]?.items?.length < limit

@@ -5,6 +5,7 @@ import { Redis } from '@upstash/redis';
 import axios from 'axios';
 import { User } from '../../../models/User';
 import { getUser } from '../user/[handle]';
+import { getAsString } from '../../../lib/utils';
 
 const client = Redis.fromEnv()
 
@@ -13,18 +14,23 @@ dotenv.config({ path: '../.env' })
 
 // Pretty basic at the moment. We'll just return the newest users.
 // We should at least allow a lookup by nickname/address though. ideally a partial match
-export const getUserSearchResults = async (q, offset, limit) => {
+export const getUserSearchResults = async (q: string | null, offset: number, limit: number) => {
     try {
-        const users : User []= [];
+        const users: User[] = [];
         let addresses = [];
         let total = 0;
 
-        const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/users/${offset}/${offset + limit - 1}/rev`, {
+        const url = `${process.env.UPSTASH_REDIS_REST_URL}/zrange/users/${offset}/${offset + limit - 1}/rev`;
+        console.log("FOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO URL", url)
+        const r = await axios.get(url, {
             headers: {
                 Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
             }
         })
         addresses = r.data.result
+
+        console.log('addresses', addresses)
+
         total = await client.zcard(`users`);
 
         if (addresses.length) {
@@ -46,9 +52,15 @@ export const getUserSearchResults = async (q, offset, limit) => {
 
 const route = apiRoute();
 route.get(async (req, res) => {
-    const { q, offset, limit } = req.query;
+    const q = getAsString(req.query.q);
+    const offset = getAsString(req.query.offset);
+    const limit = getAsString(req.query.limit);
 
-    const data = await getUserSearchResults(q, offset, limit);
+    if (!offset || !limit) {
+        return res.status(400).json({ message: 'Bad Request' });
+    }
+
+    const data = await getUserSearchResults(q, +offset, +limit);
     return res.status(200).json(data);
 });
 

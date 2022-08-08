@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
 import { useContext, useEffect, useRef, useState } from "react";
-import { object } from "yup";
 import { NftContext } from "../../contexts/NftContext";
 import { useCommentCount, useComments } from "../../hooks/useComments";
 import { getAsString } from "../../lib/utils";
@@ -14,6 +13,7 @@ interface HodlCommentsBoxProps {
     header?: boolean;
     minHeight?: string;
     maxHeight?: string;
+    fallbackData?: any;
 }
 
 export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
@@ -21,6 +21,7 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
     header = true,
     minHeight = '200px',
     maxHeight = '500px',
+    fallbackData = null
 }) => {
     const { nft } = useContext(NftContext);
     const router = useRouter();
@@ -36,7 +37,7 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
     const newTagRef = useRef();
     const [loading, setLoading] = useState(false);
 
-    const swr = useComments(topLevel.objectId, 10, topLevel.object, null, true, topLevel.object === "token");
+    const swr = useComments(topLevel.objectId, limit, topLevel.object, fallbackData, true, topLevel.object === "token");
     const countSWR = useCommentCount(topLevel.objectId, topLevel.object, null);
 
 

@@ -65,8 +65,8 @@ export async function getServerSideProps({ params, query, req, res }) {
 
   const prefetchedHodling = tab == 0 ? [await getHodling(owner.address, 0, limit)] : null;
   const prefetchedListed = tab == 1 ? [await getListed(owner.address, 0, limit)] : null;
-  const prefetchedFollowing = tab == 2 ? await getFollowing(owner.address, 0, limit) : null;
-  const prefetchedFollowers = tab == 3 ? await getFollowers(owner.address, 0, limit) : null;
+  const prefetchedFollowing = tab == 2 ? [await getFollowing(owner.address, 0, limit)] : null;
+  const prefetchedFollowers = tab == 3 ? [await getFollowers(owner.address, 0, limit)] : null;
 
   return {
     props: {

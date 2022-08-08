@@ -1,4 +1,4 @@
-import { Chip, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import Link from "next/link";
 
 export const insertTagLinks = (text) => {
@@ -19,7 +19,7 @@ export const insertTagLinks = (text) => {
     for (const { index, hash, tag } of parsed) {
         jsx.push(text.slice(lastPosition, index));
         jsx.push(
-            <Link href={`/search?q=${tag}`} passHref>
+            <Link href={`/explore?q=${tag}`} passHref>
                 <Typography
                     color="primary"
                     component="a"

@@ -17,9 +17,16 @@ dotenv.config({ path: '../.env' })
 const client = Redis.fromEnv()
 const route = apiRoute();
 
-export const getToken =async (tokenId) => {
+export const getToken = async (tokenId) => {
+  if (!tokenId) {
+    return null;
+  }
+
   const token: Token = await client.get('token:' + tokenId);
 
+  if (!token) {
+    return null;
+  }
   // TODO - Don't bother storing the 'ipfs://' prefix in Redis. 
   // It will make it easier to construct URLs without it
   // We WILL store it in the metadata though
@@ -32,7 +39,7 @@ route.get(async (req: NextApiRequest, res: NextApiResponse) => {
   const { tokenId } = req.query;
 
   if (!tokenId) {
-    return res.status(400).json({message: 'Bad Request'});
+    return res.status(400).json({ message: 'Bad Request' });
   }
 
   const token = await getToken(tokenId);

@@ -5,6 +5,7 @@ import axios from 'axios'
 import apiRoute from "../../handler";
 import { ActionSet, HodlAction } from "../../../../models/HodlAction";
 import { getToken } from "../../token/[tokenId]";
+import { getAsString } from "../../../../lib/utils";
 
 dotenv.config({ path: '../.env' })
 
@@ -72,11 +73,11 @@ export const getMostLikedTokens = async (
 
 
 route.get(async (req, res: NextApiResponse) => {
-  const offset = Array.isArray(req.query.offset) ? req.query.offset[0] : req.query.offset;
-  const limit = Array.isArray(req.query.limit) ? req.query.limit[0] : req.query.limit;
+  const offset = getAsString(req.query.offset);
+  const limit = getAsString(req.query.limit);
 
   if (!offset || !limit) {
-    return res.status(400).json({ message: 'Bad Request' });
+      return res.status(400).json({ message: 'Bad Request' });
   }
 
   const tokens = await getMostLikedTokens(+offset, +limit);

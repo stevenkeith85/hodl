@@ -59,7 +59,7 @@ export interface HodlAction {
     objectId?: number | string; // if object is (token | comment) then it will a numeric id (e.g. liked a token); otherwise it will be a wallet address (e.g. followed an address)
 }
 
-export interface HodlActionViewModal {
+export interface HodlActionViewModel {
     id?: number; // the id that the action will be stored against
     timestamp?: number; // when the action was created
 
@@ -74,12 +74,8 @@ export interface HodlActionViewModal {
     // TODO: We want to return the actual data we need; so that the UI doesn't have to ask for it every time it gets ids. This should make things appear smoother to the user and reduce the number of server calls. NB: database calls will be the same
     // id?: number; 
     
-    // user: User;
-
-    // action: ActionTypes;
-
-    // timestamp?: number;
-
+    // The user who took the action
+    user?: User;
     token?: Token;
     comment?: HodlCommentViewModel;
     // address?: string;

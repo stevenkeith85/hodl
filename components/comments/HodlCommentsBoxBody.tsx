@@ -47,7 +47,7 @@ export const HodlCommentsBoxBody = ({
                 </Box>
             }
             {topLevelObject === "token" ?
-                <Box marginRight={1}>
+                <Box>
                     <InfiniteScrollComments
                         swr={swr}
                         limit={limit}

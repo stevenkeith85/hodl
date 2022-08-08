@@ -15,14 +15,12 @@ import { Stack } from '@mui/material';
 import { useRouter } from 'next/router';
 import { HoverMenu } from '../menu/HoverMenu';
 import { AccountBalanceWallet, Spa, Storefront } from '@mui/icons-material';
-import { useConnect } from '../../hooks/useConnect';
 import { WalletContext } from '../../contexts/WalletContext';
 import { useNickname } from '../../hooks/useNickname';
 import { HodlNotifications } from '../notifications/HodlNotifications';
 import axios from 'axios'
 import { useSnackbar } from 'notistack';
 import { SearchBox } from '../Search';
-import { ProfileAvatar } from '../avatar/ProfileAvatar';
 import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
 
 const ResponsiveAppBar = ({ showAppBar=true}) => {

@@ -1,4 +1,4 @@
-import { AccountCircle, ChevronLeftOutlined, DisplaySettingsOutlined, CameraAltOutlined, PersonOffOutlined, Person, PersonOutlined } from "@mui/icons-material";
+import { AccountCircle, ChevronLeftOutlined, DisplaySettingsOutlined, CameraAltOutlined, PersonOutlined } from "@mui/icons-material";
 import { Typography, Box, Stack, Link, ClickAwayListener, useMediaQuery, useTheme, Button } from "@mui/material";
 import { useRouter } from "next/router";
 import { useCallback, useContext, useEffect, useState } from "react";
@@ -7,7 +7,6 @@ import { WalletContext } from '../../contexts/WalletContext';
 import { NicknameModal } from "../modals/NicknameModal";
 import { ProfilePictureModal } from "../modals/ProfilePictureModal";
 import { LoginLogoutButton } from "./LoginLogoutButton";
-import { ProfileAvatar } from "../avatar/ProfileAvatar";
 import { ProfileNameOrAddress } from "../avatar/ProfileNameOrAddress";
 
 export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, menuPage }) => {
