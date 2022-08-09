@@ -1,5 +1,5 @@
-import { AccountCircle, ChevronLeftOutlined, DisplaySettingsOutlined, CameraAltOutlined, PersonOutlined } from "@mui/icons-material";
-import { Typography, Box, Stack, Link, ClickAwayListener, useMediaQuery, useTheme, Button } from "@mui/material";
+import { DisplaySettingsOutlined, CameraAltOutlined, PersonOutlined } from "@mui/icons-material";
+import { Typography, Box, Stack, Link, ClickAwayListener, useTheme, Button } from "@mui/material";
 import { useRouter } from "next/router";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useNickname } from "../../hooks/useNickname";
@@ -9,7 +9,15 @@ import { ProfilePictureModal } from "../modals/ProfilePictureModal";
 import { LoginLogoutButton } from "./LoginLogoutButton";
 import { ProfileNameOrAddress } from "../avatar/ProfileNameOrAddress";
 
-export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, menuPage }) => {
+interface WalletMenuPageProps {
+    hoverMenuOpen: boolean;
+    setHoverMenuOpen: Function;
+}
+
+export const WalletMenuPage: React.FC<WalletMenuPageProps> = ({
+    setHoverMenuOpen,
+    hoverMenuOpen,
+}) => {
     const router = useRouter();
     const [_update, _apiError, _setApiError, nickname] = useNickname();
     const { address } = useContext(WalletContext);
@@ -17,12 +25,9 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
     const [nicknameModalOpen, setNicknameModalOpen] = useState(false);
     const [profilePictureModalOpen, setProfilePictureModalOpen] = useState(false);
 
-    const theme = useTheme();
-    const matches = useMediaQuery(theme.breakpoints.down('md'));
-
     const [walletPages] = useState([
-        { label: 'Nickname', action: () => setNicknameModalOpen(true), icon: <DisplaySettingsOutlined /> },
-        { label: 'Avatar', action: () => setProfilePictureModalOpen(true), icon: <CameraAltOutlined /> },
+        { label: 'nickname', action: () => setNicknameModalOpen(true), icon: <DisplaySettingsOutlined /> },
+        { label: 'avatar', action: () => setProfilePictureModalOpen(true), icon: <CameraAltOutlined /> },
     ]);
 
     const handleRouteChange = useCallback(() => {
@@ -62,40 +67,6 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
                     flexShrink: 0,
                     flexBasis: 'auto',
                 }}>
-                    {matches && <Box
-                        display="flex"
-                        alignItems="center"
-                        sx={{
-                            color: '#666',
-                            '&:hover': {
-                                cursor: 'pointer',
-                                color: theme => theme.palette.secondary.main,
-                            },
-                            borderBottom: '1px solid #f0f0f0',
-                            paddingBottom: 2,
-                            marginBottom: 2
-                        }}
-                        onClick={e => {
-                            e.stopPropagation();
-                            setMenuPage(0)
-                        }}
-                    >
-                        <Box
-                            flexGrow="1"
-                            display="flex"
-                            alignItems="center">
-                            <AccountCircle />
-                            <Typography
-                                component="a"
-                                sx={{
-                                    textDecoration: 'none',
-                                    marginLeft: 1,
-                                }} >
-                                Account
-                            </Typography>
-                        </Box>
-                        <ChevronLeftOutlined />
-                    </Box>}
                     {
                         address &&
                         <Stack spacing={0} m={0} >
@@ -165,7 +136,8 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
                                 <LoginLogoutButton
                                     sx={{
                                         paddingY: 1,
-                                        paddingX: 2
+                                        paddingX: 2,
+                                        textTransform: 'lowercase'
                                     }} />
                             </Box>
 
@@ -178,6 +150,7 @@ export const WalletMenuPage = ({ setHoverMenuOpen, hoverMenuOpen, setMenuPage, m
                         paddingX: 2,
                         paddingY: 1.5,
                         justifyContent: "flex-start",
+                        textTransform: 'lowercase'
                     }} />}
             </Box>
         </ClickAwayListener>

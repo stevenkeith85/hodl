@@ -30,17 +30,17 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
         objectId: number,
         object: "token" | "comment"
     }>({
-        objectId: getAsString(router.query.comment) || nft.id,
-        object: router.query.comment ? "comment" : "token"
+        objectId: +getAsString(router.query.comment) || nft.id,
+        object: router?.query?.comment ? "comment" : "token"
     })
 
     const newTagRef = useRef();
     const [loading, setLoading] = useState(false);
 
-    const swr = useComments(topLevel.objectId, limit, topLevel.object, fallbackData, true, topLevel.object === "token");
+    const swr = useComments(topLevel.objectId, limit, topLevel.object, fallbackData, true, (topLevel.object === "token"));
     const countSWR = useCommentCount(topLevel.objectId, topLevel.object, null);
 
-
+    // TODO: We should maybe just store a Token | HodlComment 
     const [commentingOn, setCommentingOn] = useState<{
         object: "token" | "comment",
         objectId: number,
@@ -71,7 +71,7 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
     useEffect(() => {
         if (router.query.comment) {
             setTopLevel({
-                objectId: getAsString(router.query.comment),
+                objectId: +getAsString(router.query.comment),
                 object: "comment"
             })
         }

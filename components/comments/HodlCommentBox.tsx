@@ -24,7 +24,6 @@ interface HodlCommentActionButtonsProps {
     setShowThread: Function;
     color: "primary" | "secondary"
     addCommentInput: any;
-    setTopLevel: Function;
     parentMutateList: Function;
     parentMutateCount: Function;
     mutateCount: Function;
@@ -38,12 +37,10 @@ export const HodlCommentActionButtons: React.FC<HodlCommentActionButtonsProps> =
     setShowThread,
     color,
     addCommentInput,
-    setTopLevel,
     parentMutateList,
     parentMutateCount,
-    mutateCount
+    mutateCount,
 }) => {
-    const router = useRouter();
 
     const { address } = useContext(WalletContext);
     const { nft } = useContext(NftContext);
@@ -51,25 +48,7 @@ export const HodlCommentActionButtons: React.FC<HodlCommentActionButtonsProps> =
     const canDeleteComment = (comment: HodlCommentViewModel) => comment.user.address === address || nft?.owner === address;
     const [deleteComment] = useDeleteComment();
 
-    return (<Box display="flex" alignItems="start" gap={1}>
-        {address &&
-            <Likes
-                color="inherit"
-                sx={{
-                    cursor: 'pointer',
-                    color: theme => theme.palette.text.secondary,
-                    '&:hover': {
-                        color: theme => theme.palette.text.primary,
-                    }
-                }}
-                fontSize="14px"
-                id={comment.id}
-                object="comment"
-                showCount={false}
-                likeTooltip={'Like this Comment'}
-                unlikeTooltip={'Stop liking this Comment'}
-            />
-        }
+    return (<Box display="flex" alignItems="start" gap={1.5} marginX={1}>
         {address &&
             <Tooltip title="Reply to this Comment">
                 <Reply
@@ -95,26 +74,23 @@ export const HodlCommentActionButtons: React.FC<HodlCommentActionButtonsProps> =
                     } />
             </Tooltip>
         }
-        {Boolean(countSWR.data) && <Tooltip title="View Single Comment Thread">
-            <Message
+        {address &&
+            <Likes
+                color="inherit"
                 sx={{
                     cursor: 'pointer',
                     color: theme => theme.palette.text.secondary,
                     '&:hover': {
                         color: theme => theme.palette.text.primary,
-                    },
-                    fontSize: "14px"
+                    }
                 }}
-                fontSize="inherit"
-                onClick={() => {
-                    setTopLevel({ objectId: comment.id, object: "comment" });
-                    router.push({
-                        pathname: window.location.pathname,
-                        query: { comment: comment.id }
-                    }, undefined, { shallow: true });
-                }}
+                fontSize="14px"
+                id={comment.id}
+                object="comment"
+                showCount={false}
+                likeTooltip={'Like this Comment'}
+                unlikeTooltip={'Stop liking this Comment'}
             />
-        </Tooltip>
         }
         {
             address && canDeleteComment(comment) &&
@@ -145,13 +121,13 @@ export const HodlCommentActionButtons: React.FC<HodlCommentActionButtonsProps> =
 export const Replies = ({
     countSWR,
     showThread,
-    setShowThread,
     swr,
     setCommentingOn,
     addCommentInput,
     setTopLevel,
     mutateCount,
-    parentColor
+    parentColor,
+    level
 }) => {
 
     const colors: ("primary" | "secondary")[] = ["primary", "secondary"];
@@ -172,7 +148,7 @@ export const Replies = ({
                     (<>
                         {
                             showThread && swr?.data?.map(({ items, next, total }) => (<>
-                                <Box key={next} display="flex" flexDirection="column" gap={1.5}> {
+                                <Box key={next} display="flex" flexDirection="column" gap={2}> {
                                     (items || []).map(
                                         (comment: HodlCommentViewModel, i: number) => (<HodlCommentBox
                                             key={`hodl-comments-${comment.id}`}
@@ -184,6 +160,7 @@ export const Replies = ({
                                             parentMutateCount={countSWR.mutate}
                                             setTopLevel={setTopLevel}
                                             mutateCount={mutateCount}
+                                            level={level + 1}
                                         />)
                                     )
                                 }</Box>
@@ -232,6 +209,8 @@ interface HodlCommentBoxProps {
     shouldShowThread?: boolean;
     setTopLevel?: any | null;
     mutateCount?: any | null;
+
+    level?: number; // tells us how deep we are in the thread. we only show the 'view single comment thread' thing when they are a few levels in
 }
 
 export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
@@ -246,11 +225,13 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
     shouldShowThread = false,
     setTopLevel = null,
     mutateCount = null,
+    level = 0
 }) => {
 
     const { swr: likesCount } = useLikeCount(comment.id, "comment");
 
-    const [showThread, setShowThread] = useState(shouldShowThread);
+    // if we are on the first level, we'll show the replies. Bit nicer for the user
+    const [showThread, setShowThread] = useState(shouldShowThread || level < 1);
 
     // SWRs
 
@@ -265,20 +246,22 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
     const internalCountSWR = useCommentCount(comment.id, "comment", null);
     const countSWR = replyCountSWR || internalCountSWR;
 
+    const router = useRouter();
+
     return (
-        <Box 
-            display="flex" 
-            flexDirection="column" 
-            gap={1} 
-            width={`100%`} 
-            // paddingRight={1}
+        <Box
+            display="flex"
+            flexDirection="column"
+            gap={1}
+            width={`100%`}
         >
+            {/* {level} */}
             <Box
                 display="flex"
                 flexDirection="column"
                 gap={0.5}
                 sx={{
-                    padding: 1,
+                    // padding: 1,
                     paddingLeft: 0,
                     width: `100%`
                 }}
@@ -301,15 +284,14 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                     <Box
                         display="flex"
                         flexDirection="column"
-                        alignItems="start"
-                        gap={1}
+                        // alignItems="start"
+                        gap={2}
                         sx={{
                             // background: 'orange',
                             width: `100%`
                         }}
                     >
                         <Box
-
                             sx={{
                                 // background: 'lightblue',
                                 display: 'flex',
@@ -341,13 +323,13 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                         <Box display="flex" sx={{
                                             gap: 1,
                                             alignItems: 'center',
-                                        }}> 
-                                                     <ProfileNameOrAddress
-                                            profileAddress={comment.user.address}
-                                            fallbackData={comment.user}
-                                            color={color}
-                                        // fontSize="12px"
-                                        />
+                                        }}>
+                                            <ProfileNameOrAddress
+                                                profileAddress={comment.user.address}
+                                                fallbackData={comment.user}
+                                                color={color}
+                                            // fontSize="12px"
+                                            />
                                             <Typography
                                                 sx={{
                                                     // fontSize: "12px",
@@ -362,7 +344,8 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                                     color: theme => theme.palette.text.secondary
                                                 }}>
                                                 {comment.timestamp && formatDistanceStrict(new Date(comment.timestamp), new Date(), { addSuffix: false })}
-                                            </Typography></Box><HodlCommentActionButtons
+                                            </Typography></Box>
+                                        <HodlCommentActionButtons
                                             comment={comment}
                                             setCommentingOn={setCommentingOn}
                                             swr={swr}
@@ -370,7 +353,6 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                             setShowThread={setShowThread}
                                             color={color}
                                             addCommentInput={addCommentInput}
-                                            setTopLevel={setTopLevel}
                                             parentMutateList={parentMutateList}
                                             parentMutateCount={parentMutateCount}
                                             mutateCount={mutateCount}
@@ -382,31 +364,43 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                 <Box
                                     display="flex"
                                     gap={1}
-                                    // sx={{ background: 'orange' }}
+                                // sx={{ background: 'orange' }}
                                 >
-                                    {countSWR.data && showThread && !swr.error && !swr.data ?
-                                        <Typography
-                                            sx={{
-                                                fontSize: "12px",
-                                                color: theme => theme.palette.text.secondary,
-                                                cursor: 'pointer'
-                                            }}
-                                        >
-                                            loading
-                                        </Typography> :
-                                        <Typography
-                                            sx={{
-                                                fontSize: "12px",
-                                                color: countSWR.data ? theme => theme.palette.secondary.dark : theme => theme.palette.text.secondary,
-                                                cursor: countSWR.data ? 'pointer' : 'unset',
-                                                '&:hover': {
-                                                    color: countSWR.data ? theme => theme.palette.text.primary : theme => theme.palette.text.secondary
-                                                }
-                                            }}
-                                            onClick={() => setShowThread(old => !old)}
-                                        >
-                                            {pluralize(countSWR.data, 'reply')}
-                                        </Typography>
+                                    {
+                                        countSWR.data && showThread && !swr.error && !swr.data ?
+                                            <Typography
+                                                sx={{
+                                                    fontSize: "12px",
+                                                    color: theme => theme.palette.text.secondary,
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                loading
+                                            </Typography> :
+                                            <Typography
+                                                sx={{
+                                                    fontSize: "12px",
+                                                    color: countSWR.data ? theme => theme.palette.secondary.dark : theme => theme.palette.text.secondary,
+                                                    cursor: countSWR.data ? 'pointer' : 'unset',
+                                                    '&:hover': {
+                                                        color: countSWR.data ? theme => theme.palette.text.primary : theme => theme.palette.text.secondary
+                                                    }
+                                                }}
+                                                onClick={() => {
+                                                    if (level < 4) {
+                                                        setShowThread(old => !old);
+                                                    } else {
+                                                        setTopLevel({ objectId: comment.id, object: "comment" });
+                                                        router.push({
+                                                            pathname: window.location.pathname,
+                                                            query: { comment: comment.id }
+                                                        }, undefined, { shallow: true });
+                                                    }
+
+                                                }}
+                                            >
+                                                {level < 4 ? pluralize(countSWR.data, 'reply') : 'View thread'}
+                                            </Typography>
                                     }
                                     <Typography
                                         sx={{
@@ -417,34 +411,21 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                     </Typography>
                                 </Box>
                             </Box>
-                            {/* <HodlCommentActionButtons 
-                                comment={comment} 
-                                setCommentingOn={setCommentingOn} 
-                                swr={swr} 
-                                countSWR={countSWR} 
-                                setShowThread={setShowThread} 
-                                color={color} 
-                                addCommentInput={addCommentInput} 
-                                setTopLevel={setTopLevel} 
-                                parentMutateList={parentMutateList} 
-                                parentMutateCount={parentMutateCount} 
-                                mutateCount={mutateCount} 
-                            /> */}
                         </Box>
                         <Replies
                             countSWR={countSWR}
                             showThread={showThread}
-                            setShowThread={setShowThread}
                             swr={swr}
                             setCommentingOn={setCommentingOn}
                             addCommentInput={addCommentInput}
                             setTopLevel={setTopLevel}
                             mutateCount={mutateCount}
                             parentColor={color}
+                            level={level}
                         />
                     </Box>
                 </Box>
             </Box>
-        </Box>
+        </Box >
     );
 };

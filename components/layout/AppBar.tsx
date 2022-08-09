@@ -11,10 +11,10 @@ import { useState, useContext, useEffect } from 'react';
 import Link from 'next/link';
 import { Logo } from '../Logo';
 
-import { Stack } from '@mui/material';
+import { Stack, Tooltip, useMediaQuery, useTheme } from '@mui/material';
 import { useRouter } from 'next/router';
 import { HoverMenu } from '../menu/HoverMenu';
-import { AccountBalanceWallet, Spa, Storefront } from '@mui/icons-material';
+import { AccountBalanceWallet, AddCircle, Explore, RocketLaunch, Spa, Storefront } from '@mui/icons-material';
 import { WalletContext } from '../../contexts/WalletContext';
 import { useNickname } from '../../hooks/useNickname';
 import { HodlNotifications } from '../notifications/HodlNotifications';
@@ -22,8 +22,9 @@ import axios from 'axios'
 import { useSnackbar } from 'notistack';
 import { SearchBox } from '../Search';
 import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
+import { WalletMenuPage } from '../menu/WalletMenuPage';
 
-const ResponsiveAppBar = ({ showAppBar=true}) => {
+const ResponsiveAppBar = ({ showAppBar = true }) => {
     const { address, setSigner } = useContext(WalletContext);
 
     const router = useRouter();
@@ -37,17 +38,26 @@ const ResponsiveAppBar = ({ showAppBar=true}) => {
     const { enqueueSnackbar } = useSnackbar();
     const [error, setError] = useState('');
 
+    const theme = useTheme();
+    const xs = useMediaQuery(theme.breakpoints.only('xs'));
+
     const [pages] = useState([
         {
-            label: 'Explore',
-            url: '/explore',
-            icon: <Storefront />,
-            publicPage: false
+            label: 'hodl my moon',
+            url: '/',
+            icon: <RocketLaunch />,
+            publicPage: true
         },
         {
-            label: 'Create',
+            label: 'explore',
+            url: '/explore',
+            icon: <Explore />,
+            publicPage: true
+        },
+        {
+            label: 'create',
             url: '/create',
-            icon: <Spa />,
+            icon: <AddCircle />,
             publicPage: false
         },
     ]);
@@ -93,150 +103,120 @@ const ResponsiveAppBar = ({ showAppBar=true}) => {
 
     return (
         <>
-            <AppBar position="fixed" sx={{ maxWidth: `100vw`, left: 0 }}>
-                <Container maxWidth="xl" sx={{ width: '100%', position: 'relative' }}>
-                    <Toolbar disableGutters>
-                        {/* Mobile */}
-                        <Box sx={{ display: { xs: 'flex', md: 'none' }, width: '100%', justifyContent: 'space-between' }}>
-                            <HoverMenu
-                                page={0}
-                                pages={pages}
-                                hoverMenuOpen={mobileMenuOpen}
-                                setHoverMenuOpen={setMobileMenuOpen}
-                            />
-                            <Logo />
-                            <Stack
-                                direction="row"
-                                sx={{
-                                    position: { sm: 'relative' },
-                                    display: { xs: 'flex', md: 'none' },
-                                    alignItems: 'center'
-                                }}
-                            >
-                                <HodlNotifications
-                                    setHoverMenuOpen={setMobileMenuOpen}
-                                    showNotifications={showMobileNotifications}
-                                    setShowNotifications={setShowMobileNotifications}
-                                />
-                                <IconButton
-                                    sx={{ zIndex: 999 }}
-                                    size="large"
-                                    onClick={e => {
-                                        setShowMobileNotifications(false);
-                                        setMobileMenuOpen(prev => !prev);
-                                        e.stopPropagation();
-                                    }}
-                                    color="inherit"
-                                >
-                                    {mobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
-                                </IconButton>
-                            </Stack>
-                        </Box>
-
-
-                        {/* Desktop */}
+            <AppBar
+                position="fixed"
+                sx={{
+                    maxWidth: `100vw`,
+                    left: 0
+                }}>
+                <Container
+                    maxWidth="xl"
+                    sx={{
+                        width: '100%',
+                        position: 'relative'
+                    }}>
+                    <Toolbar
+                        disableGutters
+                    >
                         <Box sx={{
-                            display: { xs: 'none', md: 'flex' },
+                            display: 'flex',
                             width: '100%',
                             justifyContent: 'space-between'
                         }}>
-                            <Stack direction="row" spacing={6} sx={{ alignItems: 'center' }}>
-                                <Logo />
-                                <Box sx={{
-                                    display: 'grid',
-                                    gap: 6,
-                                    gridTemplateColumns: `repeat(3, minmax(0, 1fr))`,
+                            <Box sx={{
+                                display: 'flex',
+                                gap: {xs: 4, md: 6},
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}>
 
-                                }}>
-                                    {pages.filter(p => p.publicPage || address).map(page => (
-                                        <Link
-                                            key={page.url}
-                                            href={page.url === '/profile' ? `${page.url}/${nickname || address}` : page.url}
-                                            passHref
-                                        >
-                                            {router.asPath === page.url ?
-                                                <Typography
-                                                    key={page.label}
-                                                    sx={{
-                                                        fontFamily: theme => theme.logo.fontFamily,
-                                                        cursor: 'pointer',
-                                                        color: 'white',
-                                                        textTransform: 'none',
-                                                        fontSize: {
-                                                            md: 16,
-                                                        },
-                                                        fontWeight: 900
-                                                    }}
-                                                >
-                                                    {page.label}
-                                                </Typography>
-                                                : <Typography
-                                                    key={page.label}
-                                                    sx={{
-                                                        fontFamily: theme => theme.logo.fontFamily,
-                                                        cursor: 'pointer',
-                                                        color: 'white',
-                                                        textTransform: 'none',
-                                                        fontSize: {
-                                                            md: 16,
-                                                        },
-                                                        '&:hover': {
-                                                            fontWeight: 900,
-                                                        }
-                                                    }}
-                                                >
-                                                    {page.label}
-                                                </Typography>
-                                            }
-                                        </Link>
-                                    ))}
-                                </Box>
-                            </Stack>
-                            <Stack
-                                direction="row"
-                                spacing={3}
+                                {pages.filter(p => p.publicPage || address).map((page, i) => (
+                                    <Link
+                                        key={page.url}
+                                        href={page.url}
+                                        passHref
+                                    >
+                                        <Tooltip title={page.label} >
+                                            <Typography
+                                                component="a"
+                                                key={page.label}
+                                                sx={{
+                                                    margin: 0,
+                                                    padding: 0,
+                                                    lineHeight: 0,
+                                                    fontFamily: theme => theme.logo.fontFamily,
+                                                    cursor: 'pointer',
+                                                    color: 'white',
+                                                    textTransform: 'none',
+                                                    textDecoration: 'none',
+                                                    fontSize: {
+                                                        md: 16,
+                                                    },
+                                                }}
+                                            >
+                                                {i > 0 && !xs ? page.label : page.icon}
+                                            </Typography>
+                                        </Tooltip>
+                                    </Link>
+                                ))}
+                            </Box>
+                            <Box
+                                
                                 sx={{
                                     position: { sm: 'relative' },
-                                    display: { xs: 'none', md: 'flex' },
-                                    alignItems: 'center'
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: {xs: 2, md: 4},
                                 }}
                             >
-                                <SearchBox setHoverMenuOpen={null} />
+                                {!xs && <SearchBox setHoverMenuOpen={null} />}
                                 <HodlNotifications
                                     setHoverMenuOpen={setDesktopMenuOpen}
                                     showNotifications={showDesktopNotifications}
                                     setShowNotifications={setShowDesktopNotifications}
                                 />
                                 <HoverMenu
-                                    page={1}
-                                    pages={pages}
                                     hoverMenuOpen={desktopMenuOpen}
                                     setHoverMenuOpen={setDesktopMenuOpen}
                                 />
                                 <IconButton
                                     size="large"
-                                    sx={{ margin: 0, padding: 0 }}
+                                    sx={{
+                                        margin: 0,
+                                        padding: 0
+                                    }}
                                     onClick={e => {
                                         setShowDesktopNotifications(false);
                                         setDesktopMenuOpen(prev => !prev);
                                         e.stopPropagation();
                                     }}
                                     color="inherit"
-                                    aria-label='Account Menu'
                                 >
                                     {
                                         desktopMenuOpen ?
-                                            <Box width={44} display="flex" alignItems="center" justifyContent="center"><CloseIcon /></Box> :
+                                            <Box
+                                                width={40}
+                                                display="flex"
+                                                alignItems="center"
+                                                justifyContent="center">
+                                                <CloseIcon />
+                                            </Box> :
                                             address ?
-                                                <UserAvatarAndHandle 
-                                                    address={address} 
-                                                    withLink={false} 
-                                                    handle={false}    
+                                                <UserAvatarAndHandle
+                                                    address={address}
+                                                    withLink={false}
+                                                    handle={false}
                                                 /> :
-                                                <Box width={44} display="flex" alignItems="center" justifyContent="center"><AccountBalanceWallet /></Box>
+                                                <Box
+                                                    width={40}
+                                                    display="flex"
+                                                    alignItems="center"
+                                                    justifyContent="center">
+                                                    <AccountBalanceWallet />
+                                                </Box>
                                     }
                                 </IconButton>
-                            </Stack>
+                            </Box>
                         </Box>
                     </Toolbar>
                 </Container>

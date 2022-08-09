@@ -17,6 +17,9 @@ import { getProvider } from "../../../lib/server/connections";
 import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 
 import { Nft } from "../../../models/Nft";
+import { Token } from "../../../models/Token";
+import { getUser } from "../user/[handle]";
+import { getComment } from "../comment";
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
@@ -122,36 +125,36 @@ const getLastXFeedActions = async (address: string, x: number = 5): Promise<Hodl
   })
   const actionIds = r.data.result.map(item => JSON.parse(item));
 
-  const actions: HodlAction [] = [];
+  const actions: HodlAction[] = [];
 
   for (const id of actionIds) {
-    const data : HodlAction = await client.get(`action:${id}`);
+    const data: HodlAction = await client.get(`action:${id}`);
 
     // If the set has an id of an action that no longer exists, then we do not want to add it.
     // Ideally, we'd never be in this situation
-    if (data) { 
+    if (data) {
       actions.push(data);
     }
-    
+
   }
 
   return actions;
 }
 
 
-const addToFeedOfFollowers = async (action: HodlAction) => {      
-      // TODO: Optimise this as user could have millions of followers
-      // TEMP FIX: Only tell the first X followers :(
-      // We actually want this to happen in parallel if possibly. Otherwise one follower
-      // might get notified way ahead of another, which could be an advantage for them
-      const {items: followers} = await getFollowers(action.subject, 0, 10000); 
+const addToFeedOfFollowers = async (action: HodlAction) => {
+  // TODO: Optimise this as user could have millions of followers
+  // TEMP FIX: Only tell the first X followers :(
+  // We actually want this to happen in parallel if possibly. Otherwise one follower
+  // might get notified way ahead of another, which could be an advantage for them
+  const { items: followers } = await getFollowers(action.subject, 0, 10000);
 
-      let count = 0;
-      for (let follower of followers) {
-        count += await addToFeed(`${follower.address}`, action);
-      }
+  let count = 0;
+  for (let follower of followers) {
+    count += await addToFeed(`${follower.address}`, action);
+  }
 
-      return count;
+  return count;
 }
 
 
@@ -180,7 +183,7 @@ export const addAction = async (action: HodlAction) => {
       const owner = await getOwnerOrSellerAddress(action.objectId);
 
       // THIS IS TEMP. MAKES IT EASIER TO DEBUG
-      await addNotification(action.subject, action);
+      // await addNotification(action.subject, action);
 
       return await addNotification(owner, action);
 
@@ -197,14 +200,24 @@ export const addAction = async (action: HodlAction) => {
     }
   }
 
-  // Who: 
-  // if a reply, tell the comment author. 
-  // if a token, tell the token owner.
-  if (action.action === ActionTypes.CommentedOn) {
-    const comment: HodlComment = await client.get(`comment:${action.objectId}`);
-    const owner = await getOwnerOrSellerAddress(comment.tokenId);
+  // Who: The token author if the action is about a token; or the comment author if the action is about the comment
+  if (action.action === ActionTypes.Commented) {
 
-    return await addNotification(owner, action);
+    const comment: HodlComment = await client.get(`comment:${action.objectId}`);
+
+    if (comment?.object === "token") { // the comment was about a token, tell the token owner.
+      const owner = await getOwnerOrSellerAddress(comment.tokenId);
+
+      // TODO: perhaps we should start logging this sort of thing?
+      console.log(`adding a notification for ${(await getUser(owner)).nickname}, as someone commented on their token`)
+      return await addNotification(owner, action);
+    } else if (comment?.object === "comment") { // the comment was a reply, tell the comment author. 
+      const commentThatWasRepliedTo: HodlComment = await client.get(`comment:${comment.objectId}`);
+
+      // TODO: perhaps we should start logging this sort of thing?
+      console.log(`adding a notification for ${(await getUser(commentThatWasRepliedTo.subject)).nickname}, as someone replied to their comment`)
+      return await addNotification(commentThatWasRepliedTo.subject, action);
+    }
   }
 
   if (action.action === ActionTypes.Followed) { // tell the account someone followed it

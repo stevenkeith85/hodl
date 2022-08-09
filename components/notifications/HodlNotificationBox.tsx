@@ -9,46 +9,40 @@ import { formatDistanceStrict } from "date-fns";
 import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
 import { AssetThumbnail } from "../AssetThumbnail";
 import { FollowButton } from "../profile/FollowButton";
+import { blue, indigo, lightBlue } from "@mui/material/colors";
 
 interface HodlNotificationBoxProps {
     item: HodlActionViewModel;
     setShowNotifications: Function;
+    lastRead: number;
 }
 
-export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setShowNotifications }) => {
-    const { address } = useContext(WalletContext);
+export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setShowNotifications, lastRead }) => {
 
     return (
-        <Box key={item?.id}>
+        <Box key={item?.id} sx={{
+            background: lastRead < item.timestamp ? "#ECF3FF": "none",
+            padding: 1
+        }}>
             <Box display="flex" alignItems="center" gap={2} >
                 <Box display="flex" alignItems="center" onClick={() => setShowNotifications(false)} gap={1.5} flexGrow={1}>
+                {/* <div><pre style={{ width:`400px`}}>{ JSON.stringify(item, null, 2)}</pre></div> */}
                     <UserAvatarAndHandle
                         address={item.subject}
                         size="44px"
                         handle={false}
                         fallbackData={item.user}
                     />
+                    
                     <Box component="span" sx={{ cursor: 'pointer', textDecoration: 'none' }}>
                         {
-                            item?.subject && item?.subject !== address &&
+                            item?.subject &&
                             <ProfileNameOrAddress
                                 color={"primary"}
                                 profileAddress={item.subject}
                                 fallbackData={item.user}
                                 sx={{ fontWeight: 600 }}
                             />}
-
-                        {/* TODO: This is just a temp thing as we are notifying the user of extra stuff at the moment */}
-                        {
-                            item?.subject && item?.subject === address &&
-                            <Typography
-                                component="span"
-                                sx={{ 
-                                    fontWeight: 600 
-                            }}>
-                                You
-                            </Typography>
-                        }
                         {' '}
 
                         {/* Liked Token */}
@@ -86,7 +80,7 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
                         }
                         {/* Commented / Replied */}
                         {
-                            item.action === ActionTypes.CommentedOn && item.object === "comment" && <>
+                            item.action === ActionTypes.Commented && item.object === "comment" && <>
                                 {
                                     item.comment === null && <>made a comment, that has now been [deleted].</>
                                 }

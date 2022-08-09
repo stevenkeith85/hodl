@@ -9,10 +9,11 @@ import { FollowButton } from "./FollowButton";
 interface UserLinksListProps {
   swr: SWRInfiniteResponse<any, any>;
   limit: number;
-  width?: string
+  width?: string;
+  followButton?: boolean;
 }
 
-export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit }) => {
+export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit, followButton = true }) => {
 
   if (!swr) {
     return null;
@@ -21,7 +22,7 @@ export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit }) => {
   if (!swr.data) {
     return;
   }
-  
+
   return (
     <Box
       display="flex"
@@ -54,9 +55,9 @@ export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit }) => {
                   fontSize="14px"
                 />
               </Box>
-              <Box flexShrink={1}>
+              {followButton && <Box flexShrink={1}>
                 <FollowButton profileAddress={user?.address} variant="text" />
-              </Box>
+              </Box>}
             </Box>
           )
         }

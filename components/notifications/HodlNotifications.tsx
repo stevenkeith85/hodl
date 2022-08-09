@@ -17,7 +17,7 @@ export const HodlNotifications = ({
     setHoverMenuOpen,
     showNotifications,
     setShowNotifications,
-    limit = 8
+    limit = 10
 }) => {
 
     const router = useRouter();
@@ -32,6 +32,21 @@ export const HodlNotifications = ({
         (url, address) => axios.get(url).then(r => Boolean(r.data.unread))
     );
 
+    const { data: lastRead, mutate: mutateLastRead } = useSWR(address ? ['/api/notifications/read', address] : null,
+        (url, address) => axios.get(url).then(r => r.data),
+        { 
+            revalidateOnFocus: false // we don't need to revalidate unless we actually read the messages. we call mutate when we do that
+        }
+    );
+
+    // when the user closes the notifications, we'll update the last read on the UI so that they don't get the highlight effect next time
+    useEffect(() => {
+        if (!showNotifications) {
+            mutateLastRead();
+        }
+    }, [showNotifications])
+    
+
     const toggleNotifications = async () => {
         setShowNotifications(prev => !prev);
 
@@ -45,10 +60,15 @@ export const HodlNotifications = ({
                         },
                     }
                 );
+
                 mutateUnread();
+
+                // setTimeout(async () => {
+                //     mutateLastRead(); // we wait 5 seconds before updating the last read time; so that the UI highlights the new notifications for a little bit
+                // }, 5000);
+                
             } catch (error) {
             }
-
         }, 1000)
     }
 
@@ -78,8 +98,8 @@ export const HodlNotifications = ({
             color: 'black',
             top: 56,
             right: 0,
-            minWidth: '525px',
-            maxHeight: '425px',
+            minWidth: {sm: '525px'},
+            maxHeight: {sm: '425px'},
             height: { xs: 'calc(100vh - 56px)', sm: 'auto' },
             width: { xs: '100%', sm: 'auto' },
             overflowY: 'auto',
@@ -91,7 +111,7 @@ export const HodlNotifications = ({
         }}
         display="flex"
         flexDirection="column"
-        gap={4}
+        gap={2}
     >
         {
             notifications?.data && !notifications?.data?.[0]?.items?.length &&
@@ -110,7 +130,7 @@ export const HodlNotifications = ({
             {
                 ({ items }) => {
                     return (items || []).map((item: HodlAction) => <>
-                        {item && <HodlNotificationBox key={item.id} item={item} setShowNotifications={setShowNotifications} />}
+                        {item && <HodlNotificationBox key={item.id} item={item} setShowNotifications={setShowNotifications} lastRead={lastRead}/>}
                     </>
                     )
                 }

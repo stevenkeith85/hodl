@@ -4,6 +4,7 @@ import useSWR from "swr";
 import { HighlightOffOutlined } from "@mui/icons-material";
 import { fetchWithId } from "../../lib/swrFetchers";
 import { truncateText } from "../../lib/utils";
+import { ProfileNameOrAddress } from "../avatar/ProfileNameOrAddress";
 
 
 export const QuoteComment = ({ reset, id, color }) => {
@@ -11,11 +12,6 @@ export const QuoteComment = ({ reset, id, color }) => {
         id ? [`/api/comment`, id] : null,
         fetchWithId
     );
-
-    const { data: commenter } = useSWR(
-        comment && comment.subject ? [`/api/profile/nickname`, comment.subject] : null,
-        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.nickname)
-    )
 
     return (
         <Box
@@ -29,8 +25,8 @@ export const QuoteComment = ({ reset, id, color }) => {
             }}
         >
             <Box>
-                <Typography sx={{ color: theme => theme.palette[color].main }}>{commenter}</Typography>
-                <Typography sx={{ color: '#666' }}>{truncateText(comment?.comment || '...', 70)}</Typography>
+                <ProfileNameOrAddress profileAddress={comment?.user?.address} fallbackData={comment?.user} color={color}/>
+                <Typography sx={{ color: '#666' }}>{truncateText(comment?.comment || '...', 80)}</Typography>
             </Box>
             <HighlightOffOutlined
                 sx={{ cursor: 'pointer', position: 'absolute', right: 8, top: 8, color: '#999' }}

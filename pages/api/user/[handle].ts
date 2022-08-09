@@ -59,7 +59,7 @@ export const getUser = async (handle) : Promise<User | null> => {
       }
     }
 
-    console.log('user is ', user)
+    // console.log('user is ', user)
     return user;
   }
 

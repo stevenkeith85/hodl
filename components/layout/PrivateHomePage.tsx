@@ -16,7 +16,6 @@ interface PrivateHomePageProps {
 
 export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
     return (
-
         <Grid
             container
         >
@@ -35,10 +34,6 @@ export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address 
                     display="grid"
                     gridTemplateColumns="1fr"
                     sx={{
-                        top: `64px`,
-                        position: {
-                            sm: "sticky"
-                        },
                         paddingBottom: 4,
                         paddingY: {
                             sm: 4
@@ -49,24 +44,14 @@ export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address 
                         },
                         gap: {
                             xs: 2,
-                            // sm: 8
                         }
                     }}
                 >
                     <HodlProfileBadge user={user} />
-                    <HodlBorderedBox>
-                        <TopUsers />
-                    </HodlBorderedBox>
-
-                    <HodlBorderedBox>
-                        <TopTokens />
-                    </HodlBorderedBox>
-                    <HodlBorderedBox>
-                        <NewUsers />
-                    </HodlBorderedBox>
-                    <HodlBorderedBox>
-                        <NewTokens />
-                    </HodlBorderedBox>
+                    <TopUsers />
+                    <TopTokens />
+                    <NewUsers />
+                    <NewTokens />
                 </Box>
             </Grid>
         </Grid>

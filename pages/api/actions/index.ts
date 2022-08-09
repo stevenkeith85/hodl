@@ -35,6 +35,7 @@ const actionIdToViewModel = async (id): Promise<HodlActionViewModel | null> => {
   const userPromise = getUser(hodlAction.subject);
 
   let tokenPromise = null;
+
   if (hodlAction.object === "comment") {
     vm.comment = await getComment(hodlAction.objectId, false);
 

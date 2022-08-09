@@ -9,10 +9,6 @@ const client = Redis.fromEnv();
 // THIS IS JUST USED FOR A BIT BASIC LOAD TESTING. 
 // WE'LL ASSIGN 1000 RANDOM ADDRESSES TO THE USERS FOLLOWERS
 const main = async () => {
-    // const keys = await client.keys('likes:*');
-    // for (const key of keys) {
-    //     client.del(key);
-    // }
     const promises = [...Array(100)].map((_, i) => ethers.Wallet.createRandom().getAddress())
 
     const addresses = await Promise.all(promises);

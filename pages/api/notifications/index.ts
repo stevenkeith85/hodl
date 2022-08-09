@@ -14,6 +14,7 @@ const route = apiRoute();
 // We compare the timestamp of the latest notifications with the stored timestamp in the user hash.
 //
 // The 'notifications read at' timestamp will be updated when the user gets the lastest notifications i.e. opens the notifications menu.
+
 export const checkForNewNotifications = async (address) => {
   const lastRead: string = await client.get(`user:${address}:notifications:lastRead`);
   

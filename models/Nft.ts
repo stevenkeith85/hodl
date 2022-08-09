@@ -8,7 +8,7 @@ import { Token } from "./Token";
 // depend on the blockchain
 // TODO - A better name. Perhaps BlockchainToken, MarketItem, TokenWithMetadata, MutableToken, ExtendedToken
 export interface Nft extends Token {
-  owner: string;
-  forSale: boolean;
-  price: string; // price in ether
+  owner?: string;
+  forSale?: boolean;
+  price?: string; // price in ether
 };

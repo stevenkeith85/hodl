@@ -1,26 +1,15 @@
-import { Box, Typography } from '@mui/material';
 import { UserLinksList } from '../profile/UserLinksList';
 import { useContext } from 'react';
 import { RankingsContext } from '../../contexts/RankingsContext';
+import { HodlScrollBox } from '../HodlScrollBox';
 
 
-export const NewUsers = ({ limit = 10 }) => {
+export const NewUsers = ({ limit = 10, followButton=true }) => {
     const { newUsers } = useContext(RankingsContext);
 
     return (
-        <Box
-            display={"grid"}
-            sx={{
-                gap: 2
-            }}>
-            <Typography variant='h2' sx={{ fontFamily: theme => theme.logo.fontFamily }}>New Users</Typography>
-            <Box
-                sx={{
-                    maxHeight: '210px',
-                    overflow: 'auto'
-                }}>
-                <UserLinksList swr={newUsers} limit={limit} width={`100%`} />
-            </Box>
-        </Box >
+        <HodlScrollBox title="New Users">
+            <UserLinksList swr={newUsers} limit={limit} width={`100%`} followButton={followButton}/>
+        </HodlScrollBox>
     )
 }

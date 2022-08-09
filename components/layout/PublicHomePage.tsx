@@ -21,25 +21,16 @@ export const PublicHomePage = ({ }) => {
                 paddingBottom={4}
             >
                 <Grid item xs={12} sm={6} md={3}>
-                    <HodlBorderedBox>
-                        <TopUsers />
-                    </HodlBorderedBox>
-
+                    <TopUsers followButton={false} />
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
-                    <HodlBorderedBox>
-                        <TopTokens showLikes={false} />
-                    </HodlBorderedBox>
+                    <TopTokens showLikes={false} />
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
-                    <HodlBorderedBox>
-                        <NewUsers />
-                    </HodlBorderedBox>
+                    <NewUsers followButton={false} />
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
-                    <HodlBorderedBox>
-                        <NewTokens showLikes={false} />
-                    </HodlBorderedBox>
+                    <NewTokens showLikes={false} />
                 </Grid>
             </Grid>
         </Box >

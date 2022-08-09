@@ -77,15 +77,12 @@ export const Comments: FC<CommentsProps> = ({
                     <CommentOutlined
                         color={color}
                         sx={{ fontSize }} />
-
-                    {(count != undefined) &&
                         <Typography
                             sx={{
                                 fontSize: `calc(${fontSize} - 8px)`
                             }}>
-                            {humanize.compactInteger(count, 1)}
+                            {humanize.compactInteger(count || 0, 1)}
                         </Typography>
-                    }
                 </Box>
             </NftContext.Provider>
         </>

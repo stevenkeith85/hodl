@@ -140,8 +140,6 @@ export const AddComment: FC<AddCommentProps> = ({
                                     <Button type="submit">{commentingOn.object === "comment" ? "Reply": "Comment"}</Button>
                                 </Box>
                             </Box>
-
-
                         </Box>
                     </Form>
                 </>)}

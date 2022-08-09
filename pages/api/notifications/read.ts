@@ -13,6 +13,20 @@ export const setNotificationsLastRead = async (address) => {
     return await client.set(`user:${address}:notifications:lastRead`, Date.now());
 }
 
+export const getNotificationsLastRead = async (address) => {
+    return await client.get(`user:${address}:notifications:lastRead`);
+}
+
+// check when the user last read their notifications
+route.get(async (req, res: NextApiResponse) => {
+    if (!req.address) {
+        return res.status(403).json({ message: "Not Authenticated" });
+    }
+
+    const time = await getNotificationsLastRead(req.address);
+
+    return res.status(200).json(time);
+});
 
 route.post(async (req, res: NextApiResponse) => {
     if (!req.address) {

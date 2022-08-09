@@ -7,7 +7,7 @@ export enum ActionTypes {
     Listed = 'listed', // token listed on the market
     Bought = 'bought', // token bought from market
     Liked = 'liked', // token or comment liked
-    CommentedOn = 'commented on', // token or comment commented on - maybe should just be 'commented'
+    Commented = 'commented', // token or comment commented on - maybe should just be 'commented'
     Followed = 'followed', // address has been followed
 }
 
@@ -24,7 +24,7 @@ export const ActionSetMembers = {
         ActionTypes.Listed,
         ActionTypes.Bought,
         ActionTypes.Liked,
-        ActionTypes.CommentedOn,
+        ActionTypes.Commented,
         ActionTypes.Followed,
     ],
     [ActionSet.Feed]: [
@@ -34,7 +34,7 @@ export const ActionSetMembers = {
     [ActionSet.Notifications]: [
         ActionTypes.Bought,
         ActionTypes.Liked,
-        ActionTypes.CommentedOn,
+        ActionTypes.Commented,
         ActionTypes.Followed,
     ]
 }
@@ -54,7 +54,7 @@ export interface HodlAction {
 
     subject: string; // the wallet address that took the action. (i.e. the user)
 
-    // This is basically a pointer to what the action was on
+    // This is a pointer to what the action was on (the metadata)
     object: "token" | "comment" | "address"; // the type that was interacted with. We should change "address" to "user" to be more consistent with our terminology / allow us to share types over the app (DDD)
     objectId?: number | string; // if object is (token | comment) then it will a numeric id (e.g. liked a token); otherwise it will be a wallet address (e.g. followed an address)
 }

@@ -47,15 +47,19 @@ const CustomTick = ({ x, y, stroke, payload }) => {
         return;
     }
 
-    const formattedDate = format(fromUnixTime(payload.value), "dd/MM");
+    try {
+        const formattedDate = format(fromUnixTime(payload.value), "dd/MM");
 
-    return (
-        <g>
-            <text x={x - 18} y={y + 18}>
-                {formattedDate}
-            </text>
-        </g>
-    );
+        return (
+            <g>
+                <text x={x - 18} y={y + 18}>
+                    {formattedDate}
+                </text>
+            </g>
+        );
+    } catch (e) {
+        return payload.value;
+    }
 };
 
 export const PriceHistoryGraph = ({ nft, fallbackData }) => {

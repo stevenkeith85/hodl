@@ -69,13 +69,10 @@ export const addComment = async (comment: HodlComment) => {
   const commentAdded = client.set(`comment:${commentId}`, comment);
 
   // Store references to the comment for user, the token
-  // const userRecordAdded = await client.zadd(`commented:${comment.subject}`, { score: comment.timestamp, member: commentId });
   const userRecordAdded = await client.zadd(`user:${comment.subject}:comments`, { 
     member: commentId, 
     score: comment.timestamp 
   });
-
-  // const tokenRecordAdded = await client.zadd(`comments:${comment.object}:${comment.objectId}`, { score: comment.timestamp, member: commentId });
   
   // add the comment to to token or comment's collection
   const tokenRecordAdded = await client.zadd(`${comment.object}:${comment.objectId}:comments`, { 
@@ -91,8 +88,8 @@ export const addComment = async (comment: HodlComment) => {
   if (tokenRecordAdded) {
     const notification: HodlAction = {
       subject: comment.subject,
-      action: ActionTypes.CommentedOn,
-      object: "comment",
+      action: ActionTypes.Commented,
+      object: "comment", // the action's metadata is a comment
       objectId: comment.id
     };
 
@@ -135,7 +132,7 @@ route.post(async (req, res: NextApiResponse) => {
   const hodlComment: HodlComment = {
     subject: req.address,
     comment: comment.trim(), 
-    object,
+    object, // the comment's parent can be a token or a comment
     objectId,
     tokenId,
   };

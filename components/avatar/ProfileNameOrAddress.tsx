@@ -51,11 +51,11 @@ export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({
         }}>
         {user.nickname ?
             <Link href={`/profile/${user.nickname}`} passHref>
-                <Tooltip title={profileAddress} arrow placement="right">
+                {/* <Tooltip title={profileAddress} arrow placement="right"> */}
                     <a>
                         {truncateText(user.nickname, 20)}
                     </a>
-                </Tooltip>
+                {/* </Tooltip> */}
             </Link>
             :
             <Link href={`/profile/${user.address}`} passHref>

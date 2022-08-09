@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Badge, Box, Tab, Tabs } from '@mui/material'
+import { Badge, Box, Tab, Tabs, Tooltip, Typography } from '@mui/material'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
 import { HodlLoadingSpinner } from '../../components/HodlLoadingSpinner'
@@ -28,6 +28,10 @@ import { getUser } from '../api/user/[handle]'
 import { UserAvatarAndHandle } from '../../components/avatar/UserAvatarAndHandle'
 import { useHodlingCount } from '../../hooks/useHodlingCount'
 import { useListedCount } from '../../hooks/useListedCount'
+import Link from 'next/link'
+import { ProfileNameOrAddress } from '../../components/avatar/ProfileNameOrAddress'
+import { MaticPrice } from '../../components/MaticPrice'
+import { getShortAddress } from '../../lib/utils'
 
 
 const NftLinksList = dynamic(
@@ -140,15 +144,40 @@ const Profile = ({
             alignItems: 'center',
             marginTop: 4
           }}>
-          <UserAvatarAndHandle
-            address={owner.address}
-            fallbackData={owner}
-            size={'120px'}
-            fontSize={'24px'}
-          />
+          <Box
+            display="flex"
+            gap={4}
+            alignItems={"center"}
+          >
+            <UserAvatarAndHandle
+              address={owner.address}
+              fallbackData={owner}
+              size={'120px'}
+              fontSize={'24px'}
+              handle={false}
+            />
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 1
+              }}>
+              <ProfileNameOrAddress profileAddress={owner.address} fallbackData={owner} fontSize="30px" />
+              {owner?.nickname &&
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', cursor: 'pointer' }}>
+                  <img src="/matic.svg" width={14} height={14} alt="matic symbol" />
+                  <Tooltip title={"Copy"} arrow placement="bottom">
+                    <Typography 
+                      onClick={() => {
+                        window.prompt("Copy to clipboard: Ctrl+C, Enter", owner.address);
+                      }}
+                      sx={{ color: theme => theme.palette.text.secondary }}>{getShortAddress(owner.address)}</Typography>
+                  </Tooltip>
+                </Box>}
+            </Box>
+          </Box>
           <FollowButton profileAddress={owner.address} />
         </Box>
-
         <Box sx={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -157,77 +186,88 @@ const Profile = ({
         }}>
           <Tabs
             value={value}
-            onChange={(e, v) => {
-              setValue(v);
-
-              router.push(
-                {
-                  pathname: '/profile/[handle]',
-                  query: {
-                    handle: owner.nickname || owner.address,
-                    tab: v
-                  }
-                },
-                undefined,
-                {
-                  shallow: true
-                }
-              )
-            }}
             textColor="secondary"
             indicatorColor="secondary"
           >
-
-            <Tab
-              key={0}
-              value={0}
-              label="Hodling"
-              icon={<Badge
-                sx={{ p: '6px 3px' }}
-                showZero
-                badgeContent={humanize.compactInteger(hodlingCount, 1)}
-              >
-              </Badge>
-              }
-              iconPosition="end"
-            />
-            <Tab
-              key={1}
-              value={1}
-              label="Listed"
-              icon={<Badge
-                sx={{ p: '6px 3px' }}
-                showZero
-                badgeContent={humanize.compactInteger(listedCount, 1)}
-              >
-              </Badge>
-              }
-              iconPosition="end"
-            />
-            <Tab
-              key={2}
-              value={2}
-              label="Following"
-              icon={<Badge
-                sx={{ p: '6px 3px' }}
-                showZero
-                badgeContent={humanize.compactInteger(followingCount, 1)}
-              >
-              </Badge>}
-              iconPosition="end"
-            />
-            <Tab
-              key={3}
-              value={3}
-              label="Followers"
-              icon={<Badge
-                sx={{ p: '6px 3px' }}
-                showZero
-                badgeContent={humanize.compactInteger(followersCount, 1)}
-              >
-              </Badge>}
-              iconPosition="end"
-            />
+            <Link href={`/profile/${owner.nickname || owner.address}`} passHref>
+              <Tab
+                component="a"
+                onClick={(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+                  setValue(0);
+                }}
+                key={0}
+                value={0}
+                label="Hodling"
+                icon={<Badge
+                  sx={{ p: '6px 3px' }}
+                  showZero
+                  max={Number.MAX_SAFE_INTEGER}
+                  badgeContent={humanize.compactInteger(hodlingCount, 1)}
+                >
+                </Badge>
+                }
+                iconPosition="end"
+              />
+            </Link>
+            {/* Listed */}
+            <Link href={`/profile/${owner.nickname || owner.address}?tab=1`} passHref>
+              <Tab
+                component="a"
+                onClick={(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+                  setValue(1);
+                }}
+                key={1}
+                value={1}
+                label="Listed"
+                icon={<Badge
+                  sx={{ p: '6px 3px' }}
+                  showZero
+                  max={Number.MAX_SAFE_INTEGER}
+                  badgeContent={humanize.compactInteger(listedCount, 1)}
+                >
+                </Badge>
+                }
+                iconPosition="end"
+              />
+            </Link>
+            <Link href={`/profile/${owner.nickname || owner.address}?tab=2`} passHref>
+              <Tab
+                component="a"
+                onClick={(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+                  setValue(2);
+                }}
+                key={2}
+                value={2}
+                label="Following"
+                icon={<Badge
+                  sx={{ p: '6px 3px' }}
+                  showZero
+                  max={Number.MAX_SAFE_INTEGER}
+                  badgeContent={humanize.compactInteger(followingCount, 1)}
+                >
+                </Badge>}
+                iconPosition="end"
+              />
+            </Link>
+            <Link href={`/profile/${owner.nickname || owner.address}?tab=3`} passHref>
+              <Tab
+                component="a"
+                onClick={(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+                  setValue(3);
+                }}
+                key={3}
+                value={3}
+                label="Followers"
+                icon={<Badge
+                  sx={{ p: '6px 3px' }}
+                  showZero
+                  max={Number.MAX_SAFE_INTEGER}
+                  badgeContent={humanize.compactInteger(followersCount, 1)}
+                >
+                </Badge>}
+                iconPosition="end"
+              />
+            </Link>
           </Tabs>
         </Box>
         <div hidden={value !== 0}>
