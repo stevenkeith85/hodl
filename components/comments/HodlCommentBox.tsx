@@ -278,7 +278,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                     <UserAvatarAndHandle
                         address={comment.user.address}
                         fallbackData={comment.user}
-                        size="35px"
+                        size={35}
                         handle={false}
                     />
                     <Box

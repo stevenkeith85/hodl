@@ -3,14 +3,15 @@ import { assetType } from "../lib/utils";
 import { AssetTypes } from "../models/AssetType";
 import { Token } from "../models/Token"
 import { HodlImage } from "./HodlImage";
+import { HodlImageResponsive } from "./HodlImageResponsive";
 import { HodlVideo } from "./HodlVideo";
 
 interface AssetThumbnailProps {
     token: Token;
-    size?: string;
+    size?: number;
 }
 
-export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token, size="44px" }) => {
+export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token, size=44 }) => {
 
     return (<Box
         sx={{ cursor: 'pointer' }}
@@ -18,12 +19,13 @@ export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token, size="44p
         {
             assetType(token) === AssetTypes.Image &&
             <a>
-                <HodlImage
+                <HodlImageResponsive
                         cid={token.image}
-                        effect={token.filter}
-                        height={100}
-                        width={100}
+                        widths={[size, size * 2]}
+                        sizes={`${size}px`}
+                        aspectRatio="1:1"
                         gravity="g_face:center"
+                        round={true}
             />
             </a>
         }
@@ -34,8 +36,8 @@ export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token, size="44p
                     controls={false}
                     onlyPoster={true}
                     audio={false}
-                    height={size}
-                    width={size}
+                    height={`${size}px`}
+                    width={`${size}px`}
                     sx={{
                         video: {
                             objectFit: 'cover',
@@ -52,8 +54,8 @@ export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token, size="44p
                 <HodlVideo
                     cid={token.image}
                     gif={true}
-                    height={size}
-                    width={size}
+                    height={`${size}px`}
+                    width={`${size}px`}
                     sx={{
                         video: {
                             objectFit: 'cover',
@@ -72,8 +74,8 @@ export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token, size="44p
                     controls={false}
                     onlyPoster={true}
                     audio={true}
-                    height={size}
-                    width={size}
+                    height={`${size}px`}
+                    width={`${size}px`}
                     sx={{
                         video: {
                             objectFit: 'contain',

@@ -152,7 +152,7 @@ const Profile = ({
             <UserAvatarAndHandle
               address={owner.address}
               fallbackData={owner}
-              size={'120px'}
+              size={120}
               fontSize={'24px'}
               handle={false}
             />
@@ -162,7 +162,7 @@ const Profile = ({
                 flexDirection: "column",
                 gap: 0.5
               }}>
-              <ProfileNameOrAddress profileAddress={owner.address} fallbackData={owner} fontSize="26px" sx={{ fontWeight: 700}}/>
+              <ProfileNameOrAddress profileAddress={owner.address} fallbackData={owner} fontSize="26px" sx={{ fontWeight: 700 }} />
               <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', cursor: 'pointer' }}>
                 <img src="/matic.svg" width={14} height={14} alt="matic symbol" />
                 <Tooltip title={"Copy"} arrow placement="bottom">
@@ -170,12 +170,12 @@ const Profile = ({
                     onClick={() => {
                       window.prompt("Copy to clipboard: Ctrl+C, Enter", owner.address);
                     }}
-                    sx={{ 
+                    sx={{
                       color: theme => theme.palette.text.secondary,
                       fontSize: '16px',
                       lineHeight: 0
-                      }}>
-                        {getShortAddress(owner.address)}
+                    }}>
+                    {getShortAddress(owner.address)}
                   </Typography>
                 </Tooltip>
               </Box>
@@ -275,23 +275,25 @@ const Profile = ({
             </Link>
           </Tabs>
         </Box>
-        <div hidden={value !== 0}>
-          <NftLinksList swr={hodling} limit={limit} />
-        </div>
-        <div hidden={value !== 1}>
-          <NftLinksList swr={listed} limit={limit} />
-        </div>
-        <Box
-          hidden={value !== 2}
-          width={'max-content'}
-        >
-          <UserLinksList swr={following} limit={limit} />
-        </Box>
-        <Box
-          hidden={value !== 3}
-          width={'max-content'}
-        >
-          <UserLinksList swr={followers} limit={limit} />
+        <Box sx={{ marginBottom: 3 }}>
+          <div hidden={value !== 0}>
+            <NftLinksList swr={hodling} limit={limit} />
+          </div>
+          <div hidden={value !== 1}>
+            <NftLinksList swr={listed} limit={limit} />
+          </div>
+          <Box
+            hidden={value !== 2}
+            width={'max-content'}
+          >
+            <UserLinksList swr={following} limit={limit} />
+          </Box>
+          <Box
+            hidden={value !== 3}
+            width={'max-content'}
+          >
+            <UserLinksList swr={followers} limit={limit} />
+          </Box>
         </Box>
       </FollowingContext.Provider>
     </FollowersContext.Provider>

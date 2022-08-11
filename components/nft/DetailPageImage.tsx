@@ -49,20 +49,11 @@ export const DetailPageImage = ({ token }) => {
                         cid={token?.image} folder={'video/upload/nfts/'} />
 
                     }
-                    {assetType(token) === AssetTypes.Image && <HodlImage
-                        loading="eager"
-                        sizes="(max-width:599px) 600px, (max-width:899px) 900px, 500px"
-                        sx={{
-                            // pointerEvents: 'none',
-                            // justifyContent: 'center',
-                            // alignItems: 'center',
-                            img: {
-                                height: '80vh',
-                                width: '80vw',
-                                objectFit: 'scale-down',
-                            }
-                        }}
-                        cid={token?.image} effect={token?.filter} />}
+                    {assetType(token) === AssetTypes.Image && <HodlImageResponsive
+                    widths={[1080]}
+                        sizes="1080px"
+
+                        cid={token?.image}  />}
                 </Box>
             </Modal>
             <Box sx={{ cursor: 'pointer' }}>
@@ -77,8 +68,8 @@ export const DetailPageImage = ({ token }) => {
                         assetType(token) === AssetTypes.Image &&
                         <HodlImageResponsive
                             cid={token?.image}
-                            effect={token?.filter}
-                            sizes="(max-width:599px) 600px, (max-width:899px) 900px, 500px"
+                            widths={[500, 600, 700, 800, 900, 1000, 1080]}
+                            sizes="(min-width: 1200px) calc(1200px / 2), (min-width: 900px) calc(50vw / 2), 100vw"
                         />}
                 </Box>
                 <Box>

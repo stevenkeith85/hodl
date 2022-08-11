@@ -75,9 +75,9 @@ const NftList = ({ nfts }) => {
                 display: "grid", 
                 gridTemplateColumns: {
                     xs: `1fr 1fr`,
-                    sm: `1fr 1fr 1fr 1fr`
+                    sm: `1fr 1fr 1fr`
                 },
-                gap: 4
+                gap: 3
             }}
         >
             {
@@ -122,7 +122,7 @@ const NftList = ({ nfts }) => {
                                     />
                                 </>
                             }
-                            {/* <Overlay nft={nft} /> */}
+                            <Overlay nft={nft} />
                         </Box>
                     </Link>
                 ))

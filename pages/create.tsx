@@ -59,7 +59,7 @@ const Mint = ({ address }) => {
     tokenId: null,
   })
 
-  
+
   const [loading, setLoading] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const [stepComplete, setStepComplete] = useState(-1);
@@ -75,7 +75,7 @@ const Mint = ({ address }) => {
   ];
 
   const warning = useWarningOnExit(stepComplete !== 4 && activeStep > 0, "If you leave now, your token will not be added to Hodl My Moon. Are you sure?")
-  
+
 
   return (
     <>
@@ -98,105 +98,116 @@ const Mint = ({ address }) => {
           }
         }}
       >
-        {xs ?
-          <MintMobileStepper activeStep={activeStep} setActiveStep={setActiveStep} stepComplete={stepComplete} stepLabels={stepLabels} /> :
-          <MintStepperMemo activeStep={activeStep} stepLabels={stepLabels} />
+        {
+        // xs ?
+          // <MintMobileStepper activeStep={activeStep} setActiveStep={setActiveStep} stepComplete={stepComplete} stepLabels={stepLabels} /> 
+          // :
+          // <MintStepperMemo activeStep={activeStep} stepLabels={stepLabels} />
         }
-        <Grid
-          container
-        >
-          <Grid item xs={12} md={6}
-            sx={{
-              height: `100%`,
-              display: 'flex',
-              flexDirection: 'column',
-              paddingTop: 1,
-              paddingBottom: {
-                xs: 4,
-                md: 0
-              },
-              paddingRight: {
-                md: 1
-              }
-            }}>
-            {activeStep === 0 &&
-              <SelectAssetAction
-                formData={formData}
-                setFormData={setFormData}
-                loading={loading}
-                setLoading={setLoading}
-                setStepComplete={setStepComplete}
-              />
-            }
-            {activeStep === 1 &&
-              <CropAssetAction
-                formData={formData}
-                setFormData={setFormData}
-                setStepComplete={setStepComplete}
-              />
-            }
-            {activeStep === 2 &&
-              <FilterAssetAction
-                formData={formData}
-                setFormData={setFormData}
-                setStepComplete={setStepComplete}
-              />
-            }
-            {activeStep === 3 &&
-              <UploadToIpfsAction
-                formData={formData}
-                setFormData={setFormData}
-                loading={loading}
-                stepComplete={stepComplete}
-                setLoading={setLoading}
-                setStepComplete={setStepComplete} />
-            }
-            {activeStep === 4 &&
-              <MintTokenAction
-                formData={formData}
-                setFormData={setFormData}
-                loading={loading}
-                stepComplete={stepComplete}
-                setLoading={setLoading}
-                setStepComplete={setStepComplete} />
-            }
-            {activeStep === 5 &&
-              <AddToHodlAction
-                formData={formData}
-                setFormData={setFormData}
-                loading={loading}
-                setLoading={setLoading}
-                stepComplete={stepComplete}
-                setStepComplete={setStepComplete} />
-            }
-
-          </Grid>
-          <Grid
-            item
-            marginTop={1}
-            xs={12}
-            md={6}
-            sx={{
-              height: `100%`,
-              paddingLeft: { md: 1 }
-            }}>
-            <AssetPreview
-              loading={loading}
-              formData={formData}
-              setFormData={setFormData}
-              setLoading={setLoading}
-            />
-          </Grid>
-        </Grid>
-        <HodlLoadingSpinner
+        {/* <Typography variant='h2'>{stepLabels[activeStep]}</Typography> */}
+        <Box
           sx={{
-            padding: 0,
-            display: loading ? 'block' : 'none',
-            position: 'absolute',
-            top: 'calc(50vh - 20px)',
-            left: 'calc(50vw - 20px)'
-          }}
-        />
+            position: 'relative'
+          }}>
+
+          <Grid
+            container
+
+          >
+            <Grid item xs={12} md={6}
+              sx={{
+                height: `100%`,
+                display: 'flex',
+                flexDirection: 'column',
+                paddingTop: 1,
+                paddingBottom: {
+                  xs: 4,
+                  md: 0
+                },
+                paddingRight: {
+                  md: 1
+                }
+              }}>
+              {activeStep === 0 &&
+                <SelectAssetAction
+                  formData={formData}
+                  setFormData={setFormData}
+                  loading={loading}
+                  setLoading={setLoading}
+                  setStepComplete={setStepComplete}
+                />
+              }
+              {activeStep === 1 &&
+                <CropAssetAction
+                  formData={formData}
+                  setFormData={setFormData}
+                  setStepComplete={setStepComplete}
+                />
+              }
+              {activeStep === 2 &&
+                <FilterAssetAction
+                  formData={formData}
+                  setFormData={setFormData}
+                  setStepComplete={setStepComplete}
+                />
+              }
+              {activeStep === 3 &&
+                <UploadToIpfsAction
+                  formData={formData}
+                  setFormData={setFormData}
+                  loading={loading}
+                  stepComplete={stepComplete}
+                  setLoading={setLoading}
+                  setStepComplete={setStepComplete} />
+              }
+              {activeStep === 4 &&
+                <MintTokenAction
+                  formData={formData}
+                  setFormData={setFormData}
+                  loading={loading}
+                  stepComplete={stepComplete}
+                  setLoading={setLoading}
+                  setStepComplete={setStepComplete} />
+              }
+              {activeStep === 5 &&
+                <AddToHodlAction
+                  formData={formData}
+                  setFormData={setFormData}
+                  loading={loading}
+                  setLoading={setLoading}
+                  stepComplete={stepComplete}
+                  setStepComplete={setStepComplete} />
+              }
+
+            </Grid>
+            <Grid
+              item
+              marginTop={1}
+              xs={12}
+              md={6}
+              sx={{
+                height: `100%`,
+                paddingLeft: { md: 1 }
+              }}>
+              <AssetPreview
+                loading={loading}
+                formData={formData}
+                setFormData={setFormData}
+                setLoading={setLoading}
+              />
+            </Grid>
+          </Grid>
+          <HodlLoadingSpinner
+            sx={{
+              padding: 0,
+              display: loading ? 'block' : 'none',
+              position: 'absolute',
+              top: 'calc(50% - 20px)',
+              left: 'calc(50% - 20px)'
+            }}
+          />
+        </Box>
+
         {
           !xs && activeStep < 5 &&
           <Box >
@@ -209,8 +220,7 @@ const Mint = ({ address }) => {
             />
           </Box>
         }
-        {<pre>{JSON.stringify(formData, null , 2)}</pre>}
-        <h1>,c_crop,ar_16:9,w_iw</h1>
+        {/* {<pre>{JSON.stringify(formData, null , 2)}</pre>} */}
       </Box>
     </>
   )

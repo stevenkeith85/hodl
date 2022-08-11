@@ -73,7 +73,7 @@ export const HodlProfileBadge: React.FC<HodlProfileBadgeProps> = ({ user }) => {
                 <UserAvatarAndHandle 
                     address={user.address} 
                     fallbackData={user} 
-                    size="55px" 
+                    size={44}
                     fontSize='18px' 
                 />
             </Box>

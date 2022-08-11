@@ -26,7 +26,7 @@ export const AssetPreview: FC<MintProps> = ({
       display="flex"
       // flexDirection={"column"}
       sx={{
-        height: '400px',
+        height: '550px',
         width: `100%`,
       }}>
       {!fileName && <Typography sx={{ margin: `auto` }}>Preview Will Appear Here</Typography>}
@@ -60,6 +60,6 @@ export const AssetPreview: FC<MintProps> = ({
         />
       }
     </Box>
-    // </HodlBorderedBox>
+    //  </HodlBorderedBox>
   )
 }

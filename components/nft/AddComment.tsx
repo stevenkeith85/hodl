@@ -95,19 +95,18 @@ export const AddComment: FC<AddCommentProps> = ({
                     {/* {JSON.stringify(errors)}
                                 {JSON.stringify(values)} */}
                     <Form>
-                        <Box display="flex" alignItems="center" marginTop={2}>
+                        <Box display="flex" alignItems="center" marginTop={0}>
 
                             <Box display="flex" flexDirection="column" position="relative" flexGrow={1} gap={1}>
                                 <Tooltip title={errors?.comment || ''} >
                                     <Box
                                         display="flex"
                                         flexDirection="column"
-                                        gap={1}
+                                        gap={0}
                                         sx={{
-
-                                            border: values.comment && errors.comment ? theme => `1px solid ${theme.palette.error.main}` : `1px solid #ccc`,
-                                            borderRadius: 1,
-                                            padding: 1,
+                                            paddingTop: 2,
+                                            marginTop: 2,
+                                            borderTop: `1px solid #ddd`
                                         }}
                                     >
                                         {
@@ -120,7 +119,6 @@ export const AddComment: FC<AddCommentProps> = ({
                                             inputRef={newTagRef}
                                             component={InputBase}
                                             multiline
-                                            minRows={2}
                                             sx={{
                                                 flexGrow: 1,
                                                 paddingX: 0.5,

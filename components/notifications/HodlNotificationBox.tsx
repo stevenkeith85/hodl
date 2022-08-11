@@ -30,7 +30,7 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
                 {/* <div><pre style={{ width:`400px`}}>{ JSON.stringify(item, null, 2)}</pre></div> */}
                     <UserAvatarAndHandle
                         address={item.subject}
-                        size="44px"
+                        size={44}
                         handle={false}
                         fallbackData={item.user}
                     />

@@ -4,6 +4,7 @@ import { assetType } from '../../lib/utils';
 import { AssetTypes } from '../../models/AssetType';
 import { Token } from '../../models/Token';
 import { HodlImage } from '../HodlImage';
+import { HodlImageResponsive } from '../HodlImageResponsive';
 import { HodlVideo } from '../HodlVideo';
 
 
@@ -29,12 +30,12 @@ export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = "40px", font
                 >
                     {token?.image && <Box>
                         {assetType(token) === AssetTypes.Image &&
-                            <HodlImage
+                            <HodlImageResponsive
                                 cid={token.image}
                                 effect={token.filter}
-                                height={size}
-                                width={size}
-                                sx={{ img: { borderRadius: 0 } }}
+                                aspectRatio="1:1"
+                                widths={[44, 88]}
+                                sizes="44px"
                             />
                         }
                         {assetType(token) === AssetTypes.Video &&

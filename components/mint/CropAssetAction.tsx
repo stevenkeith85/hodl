@@ -21,7 +21,7 @@ export const CropAssetAction = ({
       alignItems="center"
       justifyContent="center"
       textAlign="center"
-      height="400px"
+      height="550px"
       gap={4}
     >
       <Crop sx={{ fontSize: 82, color: grey[400] }} />
@@ -30,12 +30,12 @@ export const CropAssetAction = ({
           fontSize: '18px',
           color: grey[600],
           span: { fontWeight: 600 }
-        }}>Crop Your Asset</Typography>
+        }}>Crop</Typography>
       <div>
         <Box
           sx={{
             display: 'flex',
-            flexDirection: 'column',
+            // flexDirection: 'column',
             gap: 2
           }}>
           <div>

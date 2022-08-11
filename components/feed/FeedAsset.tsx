@@ -18,7 +18,7 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
                 cid={item.token.image}
                 aspectRatio="1:1"
                 gravity="g_face"
-                widths={[575, 1080]}
+                widths={[575, 700, 800, 900, 1000, 1080]}
                 sizes="575w"
             />
         }

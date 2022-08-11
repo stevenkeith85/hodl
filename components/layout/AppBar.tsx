@@ -194,7 +194,7 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                     {
                                         desktopMenuOpen ?
                                             <Box
-                                                width={40}
+                                                width={44}
                                                 display="flex"
                                                 alignItems="center"
                                                 justifyContent="center">
@@ -207,7 +207,7 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                                     handle={false}
                                                 /> :
                                                 <Box
-                                                    width={40}
+                                                    width={44}
                                                     display="flex"
                                                     alignItems="center"
                                                     justifyContent="center">

@@ -53,7 +53,7 @@ export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit, follow
                 <UserAvatarAndHandle
                   address={user?.address}
                   fallbackData={user}
-                  size="40px"
+                  size={44}
                   fontSize="14px"
                 />
               </Box>

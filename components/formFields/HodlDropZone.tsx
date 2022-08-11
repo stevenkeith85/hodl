@@ -29,7 +29,7 @@ export const HodlDropzone = ({ onDrop, progress }) => {
     return (
         <Box
         sx={{
-            border: `1px solid #d0d0d0`,
+            // border: `1px solid #d0d0d0`,
             borderRadius: 1,
             display: 'flex',
             flexDirection: 'column',
@@ -39,7 +39,7 @@ export const HodlDropzone = ({ onDrop, progress }) => {
             padding: 0,
             margin: 0,
             cursor: 'pointer',
-            height:'400px'
+            height:'550px'
         }}
         >
             <Box

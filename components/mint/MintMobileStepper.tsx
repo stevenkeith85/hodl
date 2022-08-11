@@ -24,7 +24,9 @@ export const MintMobileStepper = ({ activeStep, stepLabels, stepComplete, setAct
                     endIcon={<KeyboardArrowRight />}
                     disabled={stepComplete < activeStep}
                     variant="outlined"
-                    onClick={() => stepComplete === activeStep && setActiveStep(activeStep => activeStep + 1)}>
+                    onClick={() => {
+                        console.log(stepComplete, activeStep)
+                        stepComplete === activeStep && setActiveStep(activeStep => activeStep + 1)}}>
                         Next
                 </Button>
             }

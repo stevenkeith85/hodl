@@ -6,7 +6,7 @@ import { HodlImageResponsive } from "../HodlImageResponsive";
 
 interface UserAvatarProps {
     user: User;
-    size: string;
+    size: number;
 }
 
 export const UserAvatar: React.FC<UserAvatarProps> = ({ user, size }) => {
@@ -19,6 +19,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({ user, size }) => {
         >
                 <HodlImageResponsive
                     cid={user.avatar.image} 
+                    widths={[size, size*2]}
                     sizes={size}
                     aspectRatio="1:1"
                     round={true}

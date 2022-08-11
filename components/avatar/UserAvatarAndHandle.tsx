@@ -32,7 +32,7 @@ const UserAvatarAndHandleBody = ({ user, size, fontSize, handle, color }) => (<B
 interface UserAvatarProps {
     address: string;
     fallbackData?: User;
-    size?: string;
+    size?: number;
     fontSize?: string;
     handle?: boolean;
     withLink?: boolean;
@@ -42,7 +42,7 @@ interface UserAvatarProps {
 export const UserAvatarAndHandle: React.FC<UserAvatarProps> = ({
     address,
     fallbackData=null,
-    size = "40px",
+    size = 44,
     fontSize = "14px",
     handle = true,
     withLink = true,

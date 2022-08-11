@@ -38,6 +38,7 @@ import { FollowButton } from "../../components/profile/FollowButton";
 import { UserAvatarAndHandle } from "../../components/avatar/UserAvatarAndHandle";
 import { getUser } from "../api/user/[handle]";
 import { NftContext } from "../../contexts/NftContext";
+import { HodlBorderedBox } from "../../components/HodlBorderedBox";
 
 
 export async function getServerSideProps({ params, query, req, res }) {
@@ -123,7 +124,7 @@ const NftDetail = ({
                 <UserAvatarAndHandle
                   address={owner.address}
                   fallbackData={owner}
-                  size={'50px'}
+                  size={50}
                   fontSize={'18px'}
                 />
                 <div>
@@ -195,20 +196,16 @@ const NftDetail = ({
             paddingLeft={{ md: 1 }}
           >
             <div hidden={value !== 0}>
-              <Stack spacing={2}>
-                <Card variant="outlined">
-                  <CardContent>
-                    <Box
-                      paddingBottom={3}
-                      mb={3}
-                      sx={{ borderBottom: `1px solid #ddd` }}>
-                      <Typography variant="h1" mb={3} sx={{ fontWeight: 600 }}>{nft.name}</Typography>
-                      <Box sx={{ whiteSpace: 'pre-line' }}>{insertTagLinks(nft.description)}</Box>
-                    </Box>
-                    <HodlCommentsBox limit={limit} header={false} fallbackData={prefetchedComments}/>
-                  </CardContent>
-                </Card>
-              </Stack>
+                <HodlBorderedBox>
+                  <Box
+                    paddingBottom={2}
+                    mb={2}
+                    sx={{ borderBottom: `1px solid #ddd` }}>
+                    <Typography variant="h1" mb={3} sx={{ fontWeight: 600 }}>{nft.name}</Typography>
+                    <Box sx={{ whiteSpace: 'pre-line' }}>{insertTagLinks(nft.description)}</Box>
+                  </Box>
+                  <HodlCommentsBox limit={limit} header={false} fallbackData={prefetchedComments} />
+                </HodlBorderedBox>
             </div>
             <div hidden={value !== 1}>
               <Box display="grid" gap={2}>
