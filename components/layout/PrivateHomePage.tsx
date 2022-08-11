@@ -6,11 +6,11 @@ import { TopUsers } from '../rankings/TopUsers';
 import { TopTokens } from '../rankings/TopTokens';
 import { NewUsers } from '../rankings/NewUsers';
 import { HodlBorderedBox } from '../HodlBorderedBox';
-import { User } from '../../models/User';
+import { User, UserViewModel } from '../../models/User';
 
 
 interface PrivateHomePageProps {
-    user: User;
+    user: UserViewModel;
     address: string;
 }
 

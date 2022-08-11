@@ -4,7 +4,7 @@ import dotenv from 'dotenv'
 import axios from 'axios'
 import apiRoute from "../../handler";
 import { ActionSet, HodlAction } from "../../../../models/HodlAction";
-import { User } from "../../../../models/User";
+import { User, UserViewModel } from "../../../../models/User";
 import { getUser } from "../../user/[handle]";
 import { getAsString } from "../../../../lib/utils";
 
@@ -28,10 +28,11 @@ const route = apiRoute();
 // ZSET (rankings:token:comments) <id> and comment count of a token
 export const getMostFollowedUsers = async (
   offset: number = 0,
-  limit: number = 10
+  limit: number = 10,
+  viewer: string = null
 ): Promise<
   {
-    items: User[],
+    items: UserViewModel[],
     next: number,
     total: number
   }> => {
@@ -53,8 +54,8 @@ export const getMostFollowedUsers = async (
   })
 
   const addresses: string[] = r.data.result;
-  const promises = addresses.map(address => getUser(address));
-  const users: User[] = await Promise.all(promises);
+  const promises = addresses.map(address => getUser(address, viewer));
+  const users: UserViewModel[] = await Promise.all(promises);
   
   return {
     items: users,
@@ -72,7 +73,7 @@ route.get(async (req, res: NextApiResponse) => {
       return res.status(400).json({ message: 'Bad Request' });
   }
 
-  const addresses = await getMostFollowedUsers(+offset, +limit);
+  const addresses = await getMostFollowedUsers(+offset, +limit, req?.address);
 
   res.status(200).json(addresses);
 

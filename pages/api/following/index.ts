@@ -4,7 +4,7 @@ import dotenv from 'dotenv'
 import apiRoute from "../handler";
 import axios from 'axios'
 import { getAsString } from "../../../lib/utils";
-import { User } from "../../../models/User";
+import { User, UserViewModel } from "../../../models/User";
 import { getUser } from "../user/[handle]";
 
 
@@ -16,9 +16,9 @@ const route = apiRoute();
 // TODO: getFollowers and getFollowing are almost the same pattern. 
 // Seems like getting a list of users could be a shared
 // function that a few API endpoints could make use of
-export const getFollowing = async (address: string, offset: number = 0, limit: number = 10) => {
+export const getFollowing = async (address: string, offset: number = 0, limit: number = 10, viewer=null) => {
   try {
-    let users: User[] = [];
+    let users: UserViewModel[] = [];
     const total = await client.zcard(`user:${address}:following`);
 
     if (offset >= total) {
@@ -36,7 +36,7 @@ export const getFollowing = async (address: string, offset: number = 0, limit: n
     })
 
     const addresses: string[] = r.data.result;
-    const promises = addresses.map(address => getUser(address));
+    const promises = addresses.map(address => getUser(address, viewer));
     users = await Promise.all(promises);
 
     return { items: users, next: Number(offset) + Number(users.length), total: Number(total) };
@@ -45,7 +45,7 @@ export const getFollowing = async (address: string, offset: number = 0, limit: n
   }
 }
 
-route.get(async (req: NextApiRequest, res: NextApiResponse) => {  
+route.get(async (req, res: NextApiResponse) => {  
   const address = getAsString(req.query.address);
   const offset = getAsString(req.query.offset);
   const limit = getAsString(req.query.limit);
@@ -54,7 +54,7 @@ route.get(async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(400).json({ message: 'Bad Request' });
   }
   
-  const following = await getFollowing(address, +offset, +limit);
+  const following = await getFollowing(address, +offset, +limit, req?.address);
   res.status(200).json(following);
 });
 

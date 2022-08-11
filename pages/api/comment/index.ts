@@ -13,27 +13,7 @@ dotenv.config({ path: '../.env' })
 const client = Redis.fromEnv()
 const route = apiRoute();
 
-// const comment: HodlComment = await client.get(`comment:${id}`);
-
-// if (comment) {
-//   const vm: HodlCommentViewModel = {
-//     id: comment.id,
-//     user: await getUser(comment.subject),
-//     comment: comment.comment,
-//     timestamp: comment.timestamp,
-//     // likes: await getCommentLikeCount(comment.id) TODO: We should really just return this here and mutate comments (rather than the likes/replies etc)
-//   }
-
-// export const getComment = memoize(async (id) => {
-//   const comment = await client.get(`comment:${id}`);
-//   return comment;
-// }, { 
-//   async: true,
-//   primitive: true,
-//   max: 10000, 
-// });
-
-export const getComment = async (id, withUser: boolean = true) : Promise<HodlCommentViewModel | null> => {
+export const getComment = async (id, withUser: boolean = true, viewer:string = null) : Promise<HodlCommentViewModel | null> => {
   if (!id) {
     return null;
   }
@@ -43,7 +23,7 @@ export const getComment = async (id, withUser: boolean = true) : Promise<HodlCom
   if (comment) {
     const vm: HodlCommentViewModel = {
       id: comment.id,
-      user: withUser ? await getUser(comment.subject): null,
+      user: withUser ? await getUser(comment.subject, viewer): null,
       comment: comment.comment,
       timestamp: comment.timestamp,
       object: comment.object,
@@ -56,14 +36,14 @@ export const getComment = async (id, withUser: boolean = true) : Promise<HodlCom
   return null;
 }
 
-route.get(async (req: NextApiRequest, res: NextApiResponse) => {
+route.get(async (req, res: NextApiResponse) => {
   const { id } = req.query;
 
   if (!id) {
     return res.status(400).json({message: 'Bad Request'});
   }
 
-  const comment = await getComment(id);
+  const comment = await getComment(id, true, req?.address);
   res.status(200).json(comment)
 });
 

@@ -209,13 +209,13 @@ export const addAction = async (action: HodlAction) => {
       const owner = await getOwnerOrSellerAddress(comment.tokenId);
 
       // TODO: perhaps we should start logging this sort of thing?
-      console.log(`adding a notification for ${(await getUser(owner)).nickname}, as someone commented on their token`)
+      console.log(`adding a notification for ${(await getUser(owner, null)).nickname}, as someone commented on their token`)
       return await addNotification(owner, action);
     } else if (comment?.object === "comment") { // the comment was a reply, tell the comment author. 
       const commentThatWasRepliedTo: HodlComment = await client.get(`comment:${comment.objectId}`);
 
       // TODO: perhaps we should start logging this sort of thing?
-      console.log(`adding a notification for ${(await getUser(commentThatWasRepliedTo.subject)).nickname}, as someone replied to their comment`)
+      console.log(`adding a notification for ${(await getUser(commentThatWasRepliedTo.subject, null)).nickname}, as someone replied to their comment`)
       return await addNotification(commentThatWasRepliedTo.subject, action);
     }
   }

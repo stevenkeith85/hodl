@@ -32,7 +32,6 @@ export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = "40px", font
                         {assetType(token) === AssetTypes.Image &&
                             <HodlImageResponsive
                                 cid={token.image}
-                                effect={token.filter}
                                 aspectRatio="1:1"
                                 widths={[44, 88]}
                                 sizes="44px"

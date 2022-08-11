@@ -32,7 +32,7 @@ const SelectProfileNFT = ({ nfts, onClick, selectedTokenId }: SelectProfileNFTPr
                         onClick(nft.id);
                     }}
                 >
-                    <AssetThumbnail token={nft} size="90px" />
+                    <AssetThumbnail token={nft} size={90} />
                 </ImageListItem>
             )
             )}

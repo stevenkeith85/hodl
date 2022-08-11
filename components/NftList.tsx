@@ -82,7 +82,7 @@ const NftList = ({ nfts }) => {
         >
             {
                 nfts.map((nft: Nft) => (
-                    <Link href={`/nft/${nft.id}`} passHref>
+                    <Link key={nft.id} href={`/nft/${nft.id}`} passHref>
                         <Box
                             component="a"
                             sx={{

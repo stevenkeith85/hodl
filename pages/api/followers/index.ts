@@ -4,7 +4,7 @@ import dotenv from 'dotenv'
 import apiRoute from "../handler";
 import axios from 'axios';
 import { getAsString } from "../../../lib/utils";
-import { User } from "../../../models/User";
+import { User, UserViewModel } from "../../../models/User";
 import { getUser } from "../user/[handle]";
 
 dotenv.config({ path: '../.env' })
@@ -13,10 +13,10 @@ const client = Redis.fromEnv()
 const route = apiRoute();
 
 
-export const getFollowers = async (address: string, offset: number = 0, limit: number = 10)
-  : Promise<{ items: User[], next: number, total: number } | null> => {
+export const getFollowers = async (address: string, offset: number = 0, limit: number = 10, viewer: string =null)
+  : Promise<{ items: UserViewModel[], next: number, total: number } | null> => {
   try {
-    let users: User[] = [];
+    let users: UserViewModel[] = [];
     const total = await client.zcard(`user:${address}:followers`);
 
     if (offset >= total) {
@@ -35,9 +35,8 @@ export const getFollowers = async (address: string, offset: number = 0, limit: n
 
     const addresses: string[] = r.data.result;
 
-    console.log('followers', addresses)
-    const promises = addresses.map(address => getUser(address));
-    console.log('promises', promises)
+    const promises = addresses.map(address => getUser(address, viewer));
+    
     users = await Promise.all(promises);
     console.log('bar')
     console.log('USERS', users)
@@ -48,7 +47,7 @@ export const getFollowers = async (address: string, offset: number = 0, limit: n
   }
 }
 
-route.get(async (req: NextApiRequest, res: NextApiResponse) => {
+route.get(async (req, res: NextApiResponse) => {
   const address = getAsString(req.query.address);
   const offset = getAsString(req.query.offset);
   const limit = getAsString(req.query.limit);
@@ -57,7 +56,7 @@ route.get(async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
-  const followers = await getFollowers(address, +offset, +limit);
+  const followers = await getFollowers(address, +offset, +limit, req.address);
   res.status(200).json(followers);
 });
 

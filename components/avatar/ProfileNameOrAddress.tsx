@@ -4,7 +4,7 @@ import { FC } from 'react';
 import useSWR, { Fetcher } from 'swr';
 import { getShortAddress, truncateText } from '../../lib/utils';
 import Link from 'next/link';
-import { User } from '../../models/User';
+import { User, UserViewModel } from '../../models/User';
 import { useUser } from '../../hooks/useUser';
 import theme from '../../theme';
 
@@ -13,7 +13,7 @@ interface ProfileNameOrAddressProps {
     fontSize?: string;
     color?: "primary" | "secondary" | "inherit";
     sx?: object | null;
-    fallbackData?: User | null;
+    fallbackData?: UserViewModel | null;
 }
 
 export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({ 

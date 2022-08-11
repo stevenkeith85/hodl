@@ -49,7 +49,7 @@ const makeCloudinaryImageUrl = (cid, filter, aspectRatio) => {
     cloudinaryUrl = `${cloudinaryUrl},${filter}`;
   }
 
-  return `${cloudinaryUrl}/${environment}/${folder}/${cid}`
+  return `${cloudinaryUrl}/${environment}/${folder}/${cid}.jpg`
 }
 
 // https://community.infura.io/t/ipfs-api-rate-limit/4995

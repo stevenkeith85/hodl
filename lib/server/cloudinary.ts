@@ -39,10 +39,10 @@ const storage = new CloudinaryStorage({
         public_id: public_id,
         resource_type: isVideo ? 'video' : 'auto',
         // TODO: Test if we still want this
-        eager: [ // doing too many of these seems to get us rate limited... even though cloudinary say there are no limits
-            { fetch_format: "avif", format: "", quality: "auto"}
-        ],                                   
-        eager_async: true,
+        // eager: [ // doing too many of these seems to get us rate limited... even though cloudinary say there are no limits
+        //     { fetch_format: "avif", format: "", quality: "auto"}
+        // ],                                   
+        // eager_async: true,
         timeout: 60000
       };
     },

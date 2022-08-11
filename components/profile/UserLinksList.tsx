@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import InfiniteScroll from "react-swr-infinite-scroll";
 import { SWRInfiniteResponse } from "swr/infinite/dist/infinite";
-import { User } from "../../models/User";
+import { User, UserViewModel } from "../../models/User";
 import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 import { FollowButton } from "./FollowButton";
@@ -38,7 +38,7 @@ export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit, follow
         }
       >
         {
-          ({ items }) => items.map((user: User) =>
+          ({ items }) => items.map((user: UserViewModel) =>
             <Box
               display="flex"
               width={`100%`}

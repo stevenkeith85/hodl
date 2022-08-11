@@ -4,7 +4,7 @@
 
 import { Nft } from "./Nft";
 import { Token } from "./Token";
-import { User } from "./User";
+import { User, UserViewModel } from "./User";
 
 // We store this in redis
 export interface HodlComment {
@@ -27,7 +27,7 @@ export interface HodlComment {
 export interface HodlCommentViewModel {
     id: number; // the id that the comment was stored against
 
-    user?: User; // the user that made the comment. optional so that we can skip it, if we already know the user. i.e. with actions
+    user?: UserViewModel; // the user that made the comment. optional so that we can skip it, if we already know the user. i.e. with actions
 
     comment: string; // the comment string
 

@@ -1,11 +1,11 @@
 import { Avatar } from "@mui/material";
 import { ipfsUriToCid } from "../../lib/utils";
-import { User } from "../../models/User";
+import { User, UserViewModel } from "../../models/User";
 import { HodlImage } from "../HodlImage";
 import { HodlImageResponsive } from "../HodlImageResponsive";
 
 interface UserAvatarProps {
-    user: User;
+    user: UserViewModel;
     size: number;
 }
 

@@ -50,7 +50,7 @@ const UserLinksList = dynamic(
 export async function getServerSideProps({ params, query, req, res }) {
   await authenticate(req, res);
 
-  const owner = await getUser(params.handle);
+  const owner = await getUser(params.handle, req?.address);
 
   if (!owner) {
     return {

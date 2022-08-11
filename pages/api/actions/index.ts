@@ -15,7 +15,7 @@ const route = apiRoute();
 
 // Gets the HodlAction  and adds the user, token and comment to it to create the HodlActionViewModel
 // We can get some data in parallel, like the user and token as they don't rely on each other
-const actionIdToViewModel = async (id): Promise<HodlActionViewModel | null> => {
+const actionIdToViewModel = async (id, viewer): Promise<HodlActionViewModel | null> => {
   const hodlAction: HodlAction = await client.get(`action:${id}`);
 
   if (!hodlAction) {
@@ -26,7 +26,7 @@ const actionIdToViewModel = async (id): Promise<HodlActionViewModel | null> => {
     ...hodlAction,
   };
 
-  const userPromise = getUser(hodlAction.subject);
+  const userPromise = getUser(hodlAction.subject, viewer);
 
   let tokenPromise = null;
 
@@ -88,7 +88,7 @@ export const getActions = async (
   const actionIds: string[] = r.data.result.map(item => JSON.parse(item));
 
   // The actions don't depend on each other, so we can do this async
-  const actionPromises = actionIds.map(id => actionIdToViewModel(id));
+  const actionPromises = actionIds.map(id => actionIdToViewModel(id, address));
 
   const actions: HodlActionViewModel[] = await Promise.all(actionPromises);
 

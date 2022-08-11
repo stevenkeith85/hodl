@@ -1,5 +1,5 @@
 import { Box, Tooltip, Typography } from "@mui/material";
-import { User } from "../../models/User";
+import { User, UserViewModel } from "../../models/User";
 import { UserHandle } from "./UserHandle";
 import { UserDefaultAvatar } from "./UserDefaultAvatar";
 import Link from "next/link";
@@ -31,7 +31,7 @@ const UserAvatarAndHandleBody = ({ user, size, fontSize, handle, color }) => (<B
 
 interface UserAvatarProps {
     address: string;
-    fallbackData?: User;
+    fallbackData?: UserViewModel;
     size?: number;
     fontSize?: string;
     handle?: boolean;

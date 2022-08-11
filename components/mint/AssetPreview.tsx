@@ -52,7 +52,6 @@ export const AssetPreview: FC<MintProps> = ({
             name: "",
             description: "",
             image: "",
-            filter: "",
             privilege: "",
             forSale: false,
             price: ""

@@ -37,9 +37,6 @@ export const DetailPageImage = ({ token }) => {
                         cid={token?.image} transformations={token?.filter} gif={true} />}
                     {(assetType(token) === AssetTypes.Video || assetType(token) === AssetTypes.Audio) && <HodlVideo
                         sx={{
-                            // pointerEvents: 'none',
-                            // justifyContent: 'center',
-                            // alignItems: 'center',
                             video: {
                                 height: '80vh',
                                 width: '80vw',
@@ -50,10 +47,9 @@ export const DetailPageImage = ({ token }) => {
 
                     }
                     {assetType(token) === AssetTypes.Image && <HodlImageResponsive
-                    widths={[1080]}
+                        widths={[1080]}
                         sizes="1080px"
-
-                        cid={token?.image}  />}
+                        cid={token?.image} />}
                 </Box>
             </Modal>
             <Box sx={{ cursor: 'pointer' }}>

@@ -3,7 +3,7 @@ import apiRoute from '../handler';
 import { Redis } from '@upstash/redis';
 
 import axios from 'axios';
-import { User } from '../../../models/User';
+import { User, UserViewModel } from '../../../models/User';
 import { getUser } from '../user/[handle]';
 import { getAsString } from '../../../lib/utils';
 
@@ -14,7 +14,7 @@ dotenv.config({ path: '../.env' })
 
 // Pretty basic at the moment. We'll just return the newest users.
 // We should at least allow a lookup by nickname/address though. ideally a partial match
-export const getUserSearchResults = async (q: string | null, offset: number, limit: number) => {
+export const getUserSearchResults = async (q: string | null, offset: number, limit: number, viewer=null) => {
     try {
         const total = await client.zcard(`users`);
 
@@ -35,8 +35,8 @@ export const getUserSearchResults = async (q: string | null, offset: number, lim
         })
 
         const addresses: string[] = r.data.result;
-        const promises = addresses.map(address => getUser(address));
-        const users: User[] = await Promise.all(promises);
+        const promises = addresses.map(address => getUser(address, viewer));
+        const users: UserViewModel[] = await Promise.all(promises);
 
         return { items: users, next: Number(offset) + Number(addresses.length), total: Number(total) };
     } catch (e) {
@@ -55,7 +55,7 @@ route.get(async (req, res) => {
         return res.status(400).json({ message: 'Bad Request' });
     }
 
-    const data = await getUserSearchResults(q, +offset, +limit);
+    const data = await getUserSearchResults(q, +offset, +limit, req?.address);
     return res.status(200).json(data);
 });
 

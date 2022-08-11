@@ -19,9 +19,9 @@ export const HodlImageResponsive = ({
 
         let cloudinaryUrl = '';
         if (aspectRatio) {
-            cloudinaryUrl = `https://res.cloudinary.com/dyobirj7r/image/upload/f_auto,q_auto,c_fill,ar_${aspectRatio},w_${width}`;
+            cloudinaryUrl = `https://res.cloudinary.com/dyobirj7r/image/upload/q_auto,c_fill,ar_${aspectRatio},w_${width}`;
         } else {
-            cloudinaryUrl = `https://res.cloudinary.com/dyobirj7r/image/upload/f_auto,q_auto,c_fit,w_${width}`;
+            cloudinaryUrl = `https://res.cloudinary.com/dyobirj7r/image/upload/q_auto,c_fit,w_${width}`;
         }
 
         if (effect) {
@@ -36,7 +36,7 @@ export const HodlImageResponsive = ({
             cloudinaryUrl = `${cloudinaryUrl}/r_max`;
         }
 
-        return `${cloudinaryUrl}/${environment}/${folder}/${cid}`
+        return `${cloudinaryUrl}/${environment}/${folder}/${cid}.jpg`
     }
 
     const srcSet = widths.map(width => `${makeCloudinaryUrl(width)} ${width}w`).join(',');

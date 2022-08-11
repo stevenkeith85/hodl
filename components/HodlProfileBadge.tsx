@@ -2,7 +2,7 @@ import { Box, Typography } from '@mui/material';
 import humanize from "humanize-plus";
 import Link from 'next/link';
 import { grey } from '@mui/material/colors';
-import { User } from '../models/User';
+import { User, UserViewModel } from '../models/User';
 import { UserAvatarAndHandle } from './avatar/UserAvatarAndHandle';
 import { useContext } from 'react';
 import { UserContext } from '../contexts/UserContext';
@@ -10,7 +10,7 @@ import { UserContext } from '../contexts/UserContext';
 
 interface CountAndLinkProps {
     count: number;
-    user: User;
+    user: UserViewModel;
     label: string;
     tab: number;
 }
@@ -42,7 +42,7 @@ const CountAndLink: React.FC<CountAndLinkProps> = ({ count, user, label, tab }) 
 }
 
 interface HodlProfileBadgeProps {
-    user: User;
+    user: UserViewModel;
 }
 
 export const HodlProfileBadge: React.FC<HodlProfileBadgeProps> = ({ user }) => {
