@@ -59,7 +59,7 @@ export const UserAvatarAndHandle: React.FC<UserAvatarProps> = ({
     //     return null;
     // }
 
-    const user = useUser(address, fallbackData);
+    const {data: user} = useUser(address, fallbackData);
     if (!user) {
         return null;
     }

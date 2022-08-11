@@ -36,12 +36,11 @@ export const getMostFollowedUsers = async (
     total: number
   }> => {
 
-  const users : User[] = [];
   const total = await client.zcard(`rankings:user:followers`);
 
   if (offset >= total) {
     return {
-      items: users,
+      items: [],
       next: Number(total),
       total: Number(total)
     };
@@ -54,16 +53,8 @@ export const getMostFollowedUsers = async (
   })
 
   const addresses: string[] = r.data.result;
-
-  if (addresses.length) {
-    for (const address of addresses) {
-      const data = await getUser(address);
-
-      if (data) {
-        users.push(data);
-      }
-    }
-  }
+  const promises = addresses.map(address => getUser(address));
+  const users: User[] = await Promise.all(promises);
   
   return {
     items: users,

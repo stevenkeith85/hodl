@@ -105,13 +105,13 @@ export const HodlNotifications = ({
             overflowY: 'auto',
             border: `1px solid #ddd`,
             margin: 0,
-            padding: 2,
+            padding: 1,
             borderRadius: xs ? 0 : 1,
             boxShadow: '0 0 2px 1px #eee',
         }}
         display="flex"
         flexDirection="column"
-        gap={2}
+        // gap={2}
     >
         {
             notifications?.data && !notifications?.data?.[0]?.items?.length &&

@@ -20,9 +20,8 @@ export const TokenLinksList: React.FC<TokenLinksListProps> = ({ swr, limit, show
       {swr.data &&
         <Box
           display="flex"
-          gap={2}
+          // gap={2}
           flexDirection={"column"}
-          marginBottom={-2}
         >
           <InfiniteScroll
             swr={swr}
@@ -35,7 +34,15 @@ export const TokenLinksList: React.FC<TokenLinksListProps> = ({ swr, limit, show
           >
             {
               ({ items }) => items.map((token : Token) => 
-                <Box display="flex" width={`100%`} alignItems="center" key={token.id}>
+                <Box 
+                  display="flex" 
+                  width={`100%`} 
+                  alignItems="center" 
+                  key={token.id}
+                  sx={{
+                    marginY: 1
+                  }}
+                >
                   <Box flexGrow={1}>
                     <TokenLink token={token} />
                   </Box>

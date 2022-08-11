@@ -10,14 +10,18 @@ dotenv.config({ path: '../.env' })
 
 const route = apiRoute();
 
-// TODO: Memoize / Cache
+// TODO: Memoize / Cache ?
 export const getHodlingCount = async address => {
+  if (!address) {
+    return null;
+  }
+
   try {
     const provider = await getProvider();
     const tokenContract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
     const result = await tokenContract.balanceOf(address);
     return Number(result);
-  } catch(e) {
+  } catch (e) {
     return 0;
   }
 };
@@ -26,7 +30,7 @@ route.get(async (req, res) => {
   const { address } = req.query;
 
   if (!address) {
-    return res.status(400).json({message: 'Bad Request'});
+    return res.status(400).json({ message: 'Bad Request' });
   }
 
   const count = await getHodlingCount(address);

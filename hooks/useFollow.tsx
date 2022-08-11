@@ -6,10 +6,13 @@ import { FeedContext } from '../contexts/FeedContext';
 import { FollowersContext } from '../contexts/FollowersContext';
 import { FollowingContext } from '../contexts/FollowingContext';
 import { RankingsContext } from '../contexts/RankingsContext';
+import { useUser } from './useUser';
 
-
+// profileUser is the user SWR for the profileAddress. We want to mutate it when someone follows/unfollows them so that the UI updates in real time
 export const useFollow = (profileAddress) => {
-  const { address } = useContext(WalletContext);
+  // const { address } = useContext(WalletContext);
+
+  const {data: profileUser, mutate: mutateProfileUser} = useUser(profileAddress);
   
   const { feed } = useContext(FeedContext);
 
@@ -17,46 +20,56 @@ export const useFollow = (profileAddress) => {
 
   const { mostFollowed } = useContext(RankingsContext);
 
-  const fetcher = (url, address, profileAddress) => axios.get(`${url}?address1=${address}&address2=${profileAddress}`).then(r => Boolean(r.data.follows));
+  // const fetcher = (url, address, profileAddress) => axios.get(`${url}?address1=${address}&address2=${profileAddress}`).then(r => Boolean(r.data.follows));
 
-  const {
-    data: isFollowing,
-    mutate: mutateIsFollowing } = useSWR(
-      address && address !== profileAddress ? [`/api/follows`, address, profileAddress] : null,
-      fetcher
-    );
+  // TODO: We can maybe simplify this now
+  // const {
+  //   data: isFollowing,
+  //   mutate: mutateIsFollowing } = useSWR(
+  //     address && address !== profileAddress ? [`/api/follows`, address, profileAddress] : null,
+  //     fetcher
+  //   );
 
   const follow = async () => {
 
     // This is on the profile page
-    mutate([`/api/followers/count`, profileAddress],
+    mutate([`/api/followers/count`, profileUser.address],
       (data) => {
         if (data === undefined) { // we've not fetched this yet, so no need to mutate. i.e. its not on screen
           return data
         }
 
-        return isFollowing ? data - 1 : data + 1;
+        return profileUser.followedByViewer ? data - 1 : data + 1;
       },
       {
         revalidate: false
       });
 
+      mutateProfileUser(old => ({
+        ...old,
+        followedByViewer: !old.followedByViewer
+      }),
+      {
+        revalidate: false
+      });
 
+      
     // This is on the feed page
-    mutate([`/api/following/count`, address],
-      (data) => {
-        if (data === undefined) { // we've not fetched this yet, so no need to mutate. i.e. its not on screen
-          return data
-        }
+    // mutate([`/api/following/count`, address],
+    //   (data) => {
+    //     if (data === undefined) { // we've not fetched this yet, so no need to mutate. i.e. its not on screen
+    //       return data
+    //     }
 
-        return isFollowing ? data - 1 : data + 1;
-      },
-      {
-        revalidate: false
-      });
+    //     return isFollowing ? data - 1 : data + 1;
+    //   },
+    //   {
+    //     revalidate: false
+    //   });
 
 
-    mutateIsFollowing(old => !old, { revalidate: false });
+      // TODO: This can go at some point. Migrating the behaviour to the UserViewModel
+    // mutateIsFollowing(old => !old, { revalidate: false });
 
     try {
       const r = await axios.post(
@@ -69,15 +82,14 @@ export const useFollow = (profileAddress) => {
         }
       )
 
-      // This is on the feed page
       if (feed) {
         feed.mutate();
       }
 
-      // This is on the feed page
-      if (mostFollowed) {
-        mostFollowed.mutate();
-      }
+      // // This is on the feed page
+      // if (mostFollowed) {
+      //   mostFollowed.mutate();
+      // }
 
       // This is on the profile page
       if (followers) {
@@ -88,26 +100,26 @@ export const useFollow = (profileAddress) => {
 
     } catch (error) {
       if (error.response.status === 429) {
-        mutate([`/api/followers/count`, profileAddress]);
-        mutate([`/api/following/count`, address]);
-        mutateIsFollowing();
+        // mutate([`/api/followers/count`, profileAddress]);
+        // mutate([`/api/following/count`, address]);
+        // mutateIsFollowing();
 
-        if (followers) {
-          followers.mutate();
-        }
+        // if (followers) {
+        //   followers.mutate();
+        // }
 
         // if (following) {
         //   following.mutate();
         // }
 
-        if (feed) {
-          feed.mutate();
-        }
+        // if (feed) {
+        //   feed.mutate();
+        // }
 
         return false;
       }
     }
   }
 
-  return [follow, isFollowing];
+  return [follow];
 }

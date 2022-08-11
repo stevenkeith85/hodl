@@ -2,6 +2,8 @@ import { Button } from "@mui/material";
 import { useContext } from "react";
 import { WalletContext } from "../../contexts/WalletContext";
 import { useFollow } from "../../hooks/useFollow";
+import { useUser } from "../../hooks/useUser";
+import { User, UserViewModel } from "../../models/User";
 
 interface FollowButtonProps {
     profileAddress: string;
@@ -9,17 +11,18 @@ interface FollowButtonProps {
 }
 
 export const FollowButton : React.FC<FollowButtonProps> = ({ profileAddress, variant ="contained" }) => {
-    const { address } = useContext(WalletContext);
+    const { address } = useContext(WalletContext); // TODO: We probably just want to store the logged in UserViewModal in the context
+    const profileUserSWR = useUser(profileAddress);
+
     
-    const [follow, isFollowing] = useFollow(profileAddress);
+    const [
+        follow, 
+    ] = useFollow(profileAddress);
 
-    const ownProfile = address === profileAddress;
-
-    if (!address) {
-        return null;
+    if (address === profileAddress) {
+        return null; // we 
     }
-
-    if (ownProfile) {
+    if (!profileUserSWR.data) {
         return null;
     }
     
@@ -31,7 +34,7 @@ export const FollowButton : React.FC<FollowButtonProps> = ({ profileAddress, var
                 async () => await follow()
             }
         >
-            {isFollowing ? 'following' : 'follow'}
+            {profileUserSWR.data.followedByViewer ? 'following' : 'follow'}
         </Button>
     )
 }

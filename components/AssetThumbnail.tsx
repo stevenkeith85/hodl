@@ -19,12 +19,12 @@ export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token, size="44p
             assetType(token) === AssetTypes.Image &&
             <a>
                 <HodlImage
-                    cid={token.image}
-                    effect={token.filter}
-                    height={size}
-                    width={size}
-                    sx={{ img: { borderRadius: 0 } }}
-                />
+                        cid={token.image}
+                        effect={token.filter}
+                        height={100}
+                        width={100}
+                        gravity="g_face:center"
+            />
             </a>
         }
         {assetType(token) === AssetTypes.Video &&

@@ -1,16 +1,16 @@
-import useSWR, { Fetcher } from 'swr';
+import useSWR, { Fetcher, SWRResponse } from 'swr';
 import axios from 'axios'
-import { User } from '../models/User';
+import { User, UserViewModel } from '../models/User';
 
-export const useUser = (address, fallbackData) : User | null => {
+export const useUser = (address, fallbackData=null) : SWRResponse<UserViewModel, any> => {
 
-    const fetcher: Fetcher<User, [string, string]> = (url, query)  => axios.get(`${url}/${query}`).then(r => r.data.user);
+    const fetcher: Fetcher<UserViewModel, [string, string]> = (url, query)  => axios.get(`${url}/${query}`).then(r => r.data.user);
 
-    const { data: user } = useSWR(
+    const swr = useSWR(
         [`/api/user`, address],
         fetcher,
         { fallbackData }
     )
 
-    return user;
+    return swr;
 }

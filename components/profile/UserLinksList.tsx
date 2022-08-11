@@ -26,7 +26,6 @@ export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit, follow
   return (
     <Box
       display="flex"
-      gap={2}
       flexDirection={"column"}
     >
       <InfiniteScroll
@@ -46,6 +45,9 @@ export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit, follow
               alignItems="center"
               key={user?.address}
               gap={4}
+              sx={{
+                marginY: 1
+              }}
             >
               <Box flexGrow={1}>
                 <UserAvatarAndHandle

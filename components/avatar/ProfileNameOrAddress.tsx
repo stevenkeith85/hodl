@@ -24,7 +24,7 @@ export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({
     fallbackData=null
 }) => {
 
-    const user: User = useUser(profileAddress, fallbackData);
+    const {data: user } = useUser(profileAddress, fallbackData);
     if (!user) {
         return null;
     }

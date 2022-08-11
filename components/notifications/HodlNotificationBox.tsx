@@ -9,7 +9,7 @@ import { formatDistanceStrict } from "date-fns";
 import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
 import { AssetThumbnail } from "../AssetThumbnail";
 import { FollowButton } from "../profile/FollowButton";
-import { blue, indigo, lightBlue } from "@mui/material/colors";
+
 
 interface HodlNotificationBoxProps {
     item: HodlActionViewModel;
@@ -22,7 +22,8 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
     return (
         <Box key={item?.id} sx={{
             background: lastRead < item.timestamp ? "#ECF3FF": "none",
-            padding: 1
+            padding: 1,
+            marginY: 1
         }}>
             <Box display="flex" alignItems="center" gap={2} >
                 <Box display="flex" alignItems="center" onClick={() => setShowNotifications(false)} gap={1.5} flexGrow={1}>

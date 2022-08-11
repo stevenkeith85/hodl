@@ -2,6 +2,7 @@ import { Avatar } from "@mui/material";
 import { ipfsUriToCid } from "../../lib/utils";
 import { User } from "../../models/User";
 import { HodlImage } from "../HodlImage";
+import { HodlImageResponsive } from "../HodlImageResponsive";
 
 interface UserAvatarProps {
     user: User;
@@ -16,12 +17,12 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({ user, size }) => {
                 height: size
             }}
         >
-                <HodlImage 
+                <HodlImageResponsive
                     cid={user.avatar.image} 
-                    width={size}
-                    height={size}
                     sizes={size}
-                    effect={user.avatar.filter}
+                    aspectRatio="1:1"
+                    round={true}
+                    gravity="g_face"
                 />
         </Avatar>
     )

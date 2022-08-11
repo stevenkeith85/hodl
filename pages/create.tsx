@@ -11,13 +11,15 @@ import Head from 'next/head'
 import { authenticate } from '../lib/jwt'
 import router, { Router, useRouter } from 'next/router'
 import { useWarningOnExit } from '../hooks/useWarningOnExit'
+import { CropAssetAction } from '../components/mint/CropAssetAction'
+import { FilterAssetAction } from '../components/mint/FilterAssetAction'
 
 const SelectAssetAction = dynamic(
   () => import('../components/mint/SelectAssetAction').then((module) => module.SelectAssetAction),
   { loading: () => <HodlLoadingSpinner /> }
 );
 const ApplyFilterAction = dynamic(
-  () => import('../components/mint/ApplyFilterAction').then((module) => module.ApplyFilterAction),
+  () => import('../components/mint/FilterAssetAction').then((module) => module.FilterAssetAction),
   { loading: () => <HodlLoadingSpinner /> }
 );
 const UploadToIpfsAction = dynamic(
@@ -48,6 +50,7 @@ const Mint = ({ address }) => {
   const [formData, setFormData] = useState<any>({
     fileName: null,
     mimeType: null,
+    aspectRatio: null,
     filter: null,
     name: null,
     description: null,
@@ -64,6 +67,7 @@ const Mint = ({ address }) => {
   const xs = useMediaQuery(theme.breakpoints.only('xs'));
   const stepLabels = [
     'Select',
+    'Crop',
     'Filter',
     'Upload',
     'Mint',
@@ -76,7 +80,7 @@ const Mint = ({ address }) => {
   return (
     <>
       <Head>
-        <title>Create NFTs | HodlMyMoon</title>
+        <title>Create new token | HodlMyMoon</title>
       </Head>
       <Box
         display={"flex"}
@@ -125,13 +129,20 @@ const Mint = ({ address }) => {
               />
             }
             {activeStep === 1 &&
-              <ApplyFilterAction
+              <CropAssetAction
                 formData={formData}
                 setFormData={setFormData}
                 setStepComplete={setStepComplete}
               />
             }
             {activeStep === 2 &&
+              <FilterAssetAction
+                formData={formData}
+                setFormData={setFormData}
+                setStepComplete={setStepComplete}
+              />
+            }
+            {activeStep === 3 &&
               <UploadToIpfsAction
                 formData={formData}
                 setFormData={setFormData}
@@ -140,7 +151,7 @@ const Mint = ({ address }) => {
                 setLoading={setLoading}
                 setStepComplete={setStepComplete} />
             }
-            {activeStep === 3 &&
+            {activeStep === 4 &&
               <MintTokenAction
                 formData={formData}
                 setFormData={setFormData}
@@ -149,7 +160,7 @@ const Mint = ({ address }) => {
                 setLoading={setLoading}
                 setStepComplete={setStepComplete} />
             }
-            {activeStep === 4 &&
+            {activeStep === 5 &&
               <AddToHodlAction
                 formData={formData}
                 setFormData={setFormData}
@@ -187,7 +198,7 @@ const Mint = ({ address }) => {
           }}
         />
         {
-          !xs && activeStep < 4 &&
+          !xs && activeStep < 5 &&
           <Box >
             <MintProgressButtons
               loading={loading}
@@ -198,6 +209,8 @@ const Mint = ({ address }) => {
             />
           </Box>
         }
+        {<pre>{JSON.stringify(formData, null , 2)}</pre>}
+        <h1>,c_crop,ar_16:9,w_iw</h1>
       </Box>
     </>
   )

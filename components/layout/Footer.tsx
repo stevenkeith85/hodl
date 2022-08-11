@@ -1,8 +1,5 @@
-import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import { Stack, Box, Container, Typography } from "@mui/material";
 import { grey } from '@mui/material/colors';
-import TwitterIcon from '@mui/icons-material/Twitter';
-import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import { HodlLink } from "../HodlLink";
 import { useContext } from "react";
 import { WalletContext } from '../../contexts/WalletContext';
@@ -59,13 +56,13 @@ const Footer = ({ showFooter = true }) => {
                         >
                             <Stack spacing={0.5}>
                                 <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>Hodl My Moon</Typography>
-                                <HodlLink href="/about">About</HodlLink>
-                                <HodlLink href="/contact">Contact</HodlLink>
+                                <HodlLink href="/about">about</HodlLink>
+                                <HodlLink href="/contact">contact</HodlLink>
                             </Stack>
                             {address && <Stack spacing={0.5}>
                                 <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>NFTs</Typography>
-                                <HodlLink href="/explore">Explore</HodlLink>
-                                <HodlLink href="/create">Create</HodlLink>
+                                <HodlLink href="/explore">explore</HodlLink>
+                                <HodlLink href="/create">create</HodlLink>
                             </Stack>}
                         </Stack>
                         <Box display="flex" justifyContent="center" alignItems="center" textAlign="center" gap={1}>

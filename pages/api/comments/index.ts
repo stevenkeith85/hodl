@@ -1,7 +1,6 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
-import axios from 'axios';
 
 import apiRoute from "../handler";
 import { GetCommentsValidationSchema } from "../../../validationSchema/comments/getComments";
@@ -11,16 +10,11 @@ import { getProvider } from "../../../lib/server/connections";
 import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import { HodlCommentViewModel } from "../../../models/HodlComment";
 import { getComment } from "../comment";
-import https from "https";
-import http from "http";
+import { instance } from "../../../lib/axios";
 
 dotenv.config({ path: '../.env' })
 
-const httpAgent = new http.Agent({ keepAlive: true });
-const httpsAgent = new https.Agent({ keepAlive: true });
-
 const client = Redis.fromEnv();
-
 
 const route = apiRoute();
 
@@ -46,12 +40,10 @@ export const getCommentsForToken = async (object: "token" | "comment", objectId:
     let url = `${process.env.UPSTASH_REDIS_REST_URL}/zrange/${object}:${objectId}:comments/${offset}/${offset + limit - 1}/`;
     url = reverse ? url + 'rev' : url
 
-    const r = await axios.get(url, {
+    const r = await instance.get(url, {
       headers: {
         Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
       },
-      httpAgent, // https://github.com/axios/axios/issues/1846
-      httpsAgent
     })
     const commentIds = r.data.result.map(item => JSON.parse(item));
 

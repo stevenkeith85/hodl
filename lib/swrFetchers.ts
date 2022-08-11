@@ -5,7 +5,6 @@ export const fetchWithAuth = url => axios.get(
     {
         headers: {
             'Accept': 'application/json',
-            'Authorization': localStorage.getItem('jwt')
         }
     }).then(r => r.data);
 

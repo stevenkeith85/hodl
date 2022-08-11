@@ -16,32 +16,27 @@ dotenv.config({ path: '../.env' })
 // We should at least allow a lookup by nickname/address though. ideally a partial match
 export const getUserSearchResults = async (q: string | null, offset: number, limit: number) => {
     try {
-        const users: User[] = [];
-        let addresses = [];
-        let total = 0;
+        const total = await client.zcard(`users`);
+
+        if (offset >= total) {
+            return {
+                items: [],
+                next: Number(total),
+                total: Number(total)
+            };
+        }
 
         const url = `${process.env.UPSTASH_REDIS_REST_URL}/zrange/users/${offset}/${offset + limit - 1}/rev`;
-        console.log("FOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO URL", url)
+
         const r = await axios.get(url, {
             headers: {
                 Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
             }
         })
-        addresses = r.data.result
 
-        console.log('addresses', addresses)
-
-        total = await client.zcard(`users`);
-
-        if (addresses.length) {
-            for (const address of addresses) {
-                const data = await getUser(address);
-
-                if (data) {
-                    users.push(data);
-                }
-            }
-        }
+        const addresses: string[] = r.data.result;
+        const promises = addresses.map(address => getUser(address));
+        const users: User[] = await Promise.all(promises);
 
         return { items: users, next: Number(offset) + Number(addresses.length), total: Number(total) };
     } catch (e) {

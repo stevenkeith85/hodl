@@ -15,37 +15,49 @@ const route = apiRoute();
 
 export const getCommentCount = async (object, id) => {
   if (object === "comment") {
-    // const count = await client.zcard(`comments:${object}:${id}`);
     const count = await client.zcard(`comment:${id}:comments`);
     return count;
   } else {
-    // const count = await client.zscore("commentCount", id);
     const count = await client.get(`token:${id}:comments:count`);
     return count || 0;
-  }  
+  }
 };
 
 route.get(async (req, res) => {
-  const object = Array.isArray(req.query.object) ? req.query.object[0] : req.query.object;
-  const id = Array.isArray(req.query.id) ? req.query.id[0] : req.query.id;
+  try {
+    const object = Array.isArray(req.query.object) ? req.query.object[0] : req.query.object;
+    const id = Array.isArray(req.query.id) ? req.query.id[0] : req.query.id;
 
-  const isValid = await CommentCountValidationSchema.isValid(req.query)
-  if (!isValid) {
-    return res.status(400).json({ message: 'Bad Request' });
-  }
-
-  if (object === "token") {
-    const provider = await getProvider();
-    const contract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
-    const tokenExists = await contract.exists(id);
-
-    if (!tokenExists) {
+    const isValid = await CommentCountValidationSchema.isValid(req.query)
+    if (!isValid) {
       return res.status(400).json({ message: 'Bad Request' });
     }
-  }
 
-  const count = await getCommentCount(object, id);
-  res.status(200).json(count);
+    // TODO: Is it even worth checking the token still exists here? We could perhaps do that
+    // sort of thing in a cron job, and flag tokens to be removed from our database?
+    //
+    // It just slows down the endpoint at the moment, and wastes a call to Infura
+
+    // if (object === "token") {
+    //   const provider = await getProvider();
+    //   const contract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
+    //   const tokenExists = await contract.exists(id);
+
+    //   if (!tokenExists) {
+    //     return res.status(400).json({ message: 'Bad Request' });
+    //   }
+    // }
+
+    const count = await getCommentCount(object, id);
+    res.status(200).json(count);
+  } catch (e) {
+    // We likely had a problem talking to the blockchain. 
+    // We'll just send back a 200 to the UI though, with a 0 comment count 
+    // as there's nothing that can be done.
+    //
+    console.log(e); 
+    return res.status(200).json(0)
+  }
 });
 
 

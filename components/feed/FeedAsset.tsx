@@ -3,6 +3,7 @@ import { HodlImage } from "../HodlImage";
 import { assetType } from "../../lib/utils";
 import { AssetTypes } from "../../models/AssetType";
 import { HodlVideo } from "../HodlVideo";
+import { HodlImageResponsive } from "../HodlImageResponsive";
 
 
 interface FeedAssetProps {
@@ -13,12 +14,12 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
     return (<>
         {
             (assetType(item.token) === AssetTypes.Image) &&
-            <HodlImage
+            <HodlImageResponsive
                 cid={item.token.image}
-                effect={item.token.filter}
-                sx={{ img: { borderRadius: 0, verticalAlign: 'middle' } }}
-                loading="eager"
-                sizes="(max-width:599px) 600px, (max-width:899px) 900px, 700px"
+                aspectRatio="1:1"
+                gravity="g_face"
+                widths={[575, 1080]}
+                sizes="575w"
             />
         }
         {

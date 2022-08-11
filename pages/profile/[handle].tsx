@@ -160,20 +160,25 @@ const Profile = ({
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                gap: 1
+                gap: 0.5
               }}>
-              <ProfileNameOrAddress profileAddress={owner.address} fallbackData={owner} fontSize="30px" />
-              {owner?.nickname &&
-                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', cursor: 'pointer' }}>
-                  <img src="/matic.svg" width={14} height={14} alt="matic symbol" />
-                  <Tooltip title={"Copy"} arrow placement="bottom">
-                    <Typography 
-                      onClick={() => {
-                        window.prompt("Copy to clipboard: Ctrl+C, Enter", owner.address);
-                      }}
-                      sx={{ color: theme => theme.palette.text.secondary }}>{getShortAddress(owner.address)}</Typography>
-                  </Tooltip>
-                </Box>}
+              <ProfileNameOrAddress profileAddress={owner.address} fallbackData={owner} fontSize="26px" sx={{ fontWeight: 700}}/>
+              <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', cursor: 'pointer' }}>
+                <img src="/matic.svg" width={14} height={14} alt="matic symbol" />
+                <Tooltip title={"Copy"} arrow placement="bottom">
+                  <Typography
+                    onClick={() => {
+                      window.prompt("Copy to clipboard: Ctrl+C, Enter", owner.address);
+                    }}
+                    sx={{ 
+                      color: theme => theme.palette.text.secondary,
+                      fontSize: '16px',
+                      lineHeight: 0
+                      }}>
+                        {getShortAddress(owner.address)}
+                  </Typography>
+                </Tooltip>
+              </Box>
             </Box>
           </Box>
           <FollowButton profileAddress={owner.address} />

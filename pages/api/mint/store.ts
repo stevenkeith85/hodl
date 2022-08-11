@@ -1,11 +1,10 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
-import { ipfsUriToGatewayUrl, sleep, TAG_PATTERN } from "../../../lib/utils";
+import { ipfsUriToCid, ipfsUriToGatewayUrl, TAG_PATTERN } from "../../../lib/utils";
 import memoize from 'memoizee';
 import apiRoute from "../handler";
 import { getTokenUriAndOwner } from "../nft/[tokenId]";
-import { getToken } from "../token/[tokenId]";
 import axios from 'axios'
 import { HodlAction, ActionTypes } from "../../../models/HodlAction";
 import { addAction } from "../actions/add";
@@ -52,15 +51,16 @@ route.post(async (req, res: NextApiResponse) => {
     {
       headers: getInfuraIPFSAuth()
     });
+
   const { name, description, privilege, image } = await r.data;
 
-
+  // NB: We just store the cid as its simpler to construct the relevant urls from it
   const token: Token = {
     id,
     name,
     description,
-    image,
-    metadata,
+    image: ipfsUriToCid(image), 
+    metadata: ipfsUriToCid(metadata),
     mimeType,
     filter,
     privilege,

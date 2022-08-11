@@ -9,7 +9,7 @@ export const TopUsers = ({ limit = 10, followButton=true}) => {
     const { mostFollowed: rankings } = useContext(RankingsContext);
 
     return (
-        <HodlScrollBox title="Top Users">
+        <HodlScrollBox title="top users">
             <UserLinksList swr={rankings} limit={limit} width={`100%`} followButton={followButton}/>
         </HodlScrollBox>
     )

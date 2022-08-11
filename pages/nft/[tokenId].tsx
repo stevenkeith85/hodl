@@ -51,7 +51,7 @@ export async function getServerSideProps({ params, query, req, res }) {
     }
 
     // To populate their avatar
-    const owner = await getUser(nft.owner);
+    const owner = await getUser(nft.owner, req.address);
 
     const comment = params.comment;
     const limit = 10;

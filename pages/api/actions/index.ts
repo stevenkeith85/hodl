@@ -1,20 +1,14 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
-import axios from 'axios'
 import apiRoute from "../handler";
 import { ActionSet, HodlAction, HodlActionViewModel } from "../../../models/HodlAction";
 import { getToken } from "../token/[tokenId]";
 import { getComment } from "../comment";
 import { getUser } from "../user/[handle]";
-
-import https from "https";
-import http from "http";
+import { instance } from "../../../lib/axios";
 
 dotenv.config({ path: '../.env' })
-
-const httpAgent = new http.Agent({ keepAlive: true });
-const httpsAgent = new https.Agent({ keepAlive: true });
 
 const client = Redis.fromEnv()
 const route = apiRoute();
@@ -71,6 +65,10 @@ export const getActions = async (
     total: number
   }> => {
 
+  if (!address) {
+    return null;
+  }
+  
   const total = await client.zcard(`user:${address}:${set}`);
 
   if (offset >= total) {
@@ -81,12 +79,10 @@ export const getActions = async (
     };
   }
 
-  const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/user:${address}:${set}/${offset}/${offset + limit - 1}/rev`, {
+  const r = await instance.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/user:${address}:${set}/${offset}/${offset + limit - 1}/rev`, {
     headers: {
       Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
     },
-    httpAgent, // https://github.com/axios/axios/issues/1846
-    httpsAgent
   })
 
   const actionIds: string[] = r.data.result.map(item => JSON.parse(item));

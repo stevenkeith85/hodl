@@ -342,14 +342,17 @@ route.post(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
-  // Ensure the token actually exists
-  const provider = await getProvider();
-  const contract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
-  const tokenExists = await contract.exists(id);
+  // TODO: Is it even worth checking the token still exists here? We could perhaps do that
+  // sort of thing in a cron job, and flag tokens to be removed from our database?
+  //
+  // It just slows down the endpoint at the moment, and wastes a call to Infura
+  // const provider = await getProvider();
+  // const contract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
+  // const tokenExists = await contract.exists(id);
 
-  if (!tokenExists) {
-    return res.status(400).json({ message: 'Bad Request' });
-  }
+  // if (!tokenExists) {
+  //   return res.status(400).json({ message: 'Bad Request' });
+  // }
 
   const notification: HodlAction = {
     subject: req.address,

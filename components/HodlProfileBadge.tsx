@@ -87,10 +87,10 @@ export const HodlProfileBadge: React.FC<HodlProfileBadgeProps> = ({ user }) => {
                     gap: 2
                 }}
             >
-                <CountAndLink count={hodlingCount} label="Hodling" user={user} tab={0} />
-                <CountAndLink count={listedCount} label="Listed" user={user} tab={1} />
-                <CountAndLink count={followingCount} label="Following" user={user} tab={2} />
-                <CountAndLink count={followersCount} label="Followers" user={user} tab={3} />
+                <CountAndLink count={hodlingCount} label="hodling" user={user} tab={0} />
+                <CountAndLink count={listedCount} label="listed" user={user} tab={1} />
+                <CountAndLink count={followingCount} label="following" user={user} tab={2} />
+                <CountAndLink count={followersCount} label="followers" user={user} tab={3} />
             </Box>
         </Box>
     )

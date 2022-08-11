@@ -38,6 +38,7 @@ const storage = new CloudinaryStorage({
         folder: process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER + '/uploads',
         public_id: public_id,
         resource_type: isVideo ? 'video' : 'auto',
+        // TODO: Test if we still want this
         eager: [ // doing too many of these seems to get us rate limited... even though cloudinary say there are no limits
             { fetch_format: "avif", format: "", quality: "auto"}
         ],                                   

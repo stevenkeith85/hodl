@@ -4,6 +4,7 @@ import { assetType } from "../../lib/utils";
 import { HodlImage } from "../HodlImage";
 import { useState } from "react";
 import { AssetTypes } from "../../models/AssetType";
+import { HodlImageResponsive } from "../HodlImageResponsive";
 
 
 export const DetailPageImage = ({ token }) => {
@@ -74,7 +75,7 @@ export const DetailPageImage = ({ token }) => {
                 <Box onClick={() => setAssetModalOpen(true)}>
                     {
                         assetType(token) === AssetTypes.Image &&
-                        <HodlImage
+                        <HodlImageResponsive
                             cid={token?.image}
                             effect={token?.filter}
                             sizes="(max-width:599px) 600px, (max-width:899px) 900px, 500px"

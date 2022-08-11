@@ -1,6 +1,7 @@
 import { Box, Button, Skeleton, Typography } from '@mui/material';
 import { imageFilters } from '../../lib/utils';
 import { HodlImage } from '../HodlImage';
+import { HodlImageResponsive } from '../HodlImageResponsive';
 
 export const FilterButtons = ({ formData, setFormData }) => (
   <Box
@@ -28,15 +29,12 @@ export const FilterButtons = ({ formData, setFormData }) => (
         }}
       >
         {formData.fileName &&
-          // We are deliberately using the same dimensions as the preview pane as we don't want to fetch a new image here
-          <HodlImage
+          // We are deliberately using the same 'sizes' as the preview pane as we don't want to fetch a new image here
+          <HodlImageResponsive
             cid={formData.fileName.split('/')[2]}
             folder="uploads"
             effect={code}
-            sizes="(max-width:899px) 100vw, (max-width:1199px) 50vw"
-            fit='scale-down'
-            height={'155px'}
-            sx={{ img:{borderRadius: 0}}}
+            sizes="(min-width: 900px) 50vw, (min-width: 1200px) calc(1200px / 2)"
           />}
         {!formData.fileName &&
           <Skeleton

@@ -136,7 +136,7 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                         href={page.url}
                                         passHref
                                     >
-                                        <Tooltip title={page.label} >
+                                        {/* <Tooltip title={page.label} > */}
                                             <Typography
                                                 component="a"
                                                 key={page.label}
@@ -156,12 +156,11 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                             >
                                                 {i > 0 && !xs ? page.label : page.icon}
                                             </Typography>
-                                        </Tooltip>
+                                        {/* </Tooltip> */}
                                     </Link>
                                 ))}
                             </Box>
                             <Box
-                                
                                 sx={{
                                     position: { sm: 'relative' },
                                     display: 'flex',

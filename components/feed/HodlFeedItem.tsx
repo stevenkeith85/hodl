@@ -29,7 +29,9 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                     borderRadius: 1,
                     padding: 2,
                     border: `1px solid #ddd`,
-                    width: `100%`,
+                    // width: `100%`,
+                    width: "575px",
+                    maxWidth: "100%",
                     overflow: 'hidden'
                 }
                 }
@@ -79,7 +81,12 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                     {
                         item.token?.image &&
                         <Link href={`/nft/${item.token.id}`} passHref>
-                            <Box sx={{ cursor: 'pointer', marginX: -2, background: '#ddd' }}>
+                            <Box 
+                                sx={{ 
+                                    cursor: 'pointer', 
+                                    marginX: -2, 
+                                    background: '#ddd',
+                                }}>
                                 <FeedAsset item={item} />
                             </Box>
                         </Link>

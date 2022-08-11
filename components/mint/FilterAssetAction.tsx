@@ -2,20 +2,20 @@ import { FC, useEffect } from "react";
 import { FilterButtons } from "./FilterButtons";
 import { MintProps } from "./models";
 
-interface ApplyFilterActionProps {
+interface FilterAssetActionProps {
   formData: any;
   setFormData?: Function;
   setStepComplete?: Function;
 };
 
-export const ApplyFilterAction: FC<ApplyFilterActionProps> = ({
+export const FilterAssetAction: FC<FilterAssetActionProps> = ({
   formData,
   setFormData,
   setStepComplete
 }: MintProps) => {
 
   useEffect(() => {
-    setStepComplete(1);
+    setStepComplete(2);
   }, [setStepComplete])
 
   return (

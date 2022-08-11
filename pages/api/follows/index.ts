@@ -21,6 +21,11 @@ const route = apiRoute();
 // });
 
 export const isFollowing = async (address1, address2) => {
+
+  if (!address1 || !address2) {
+    return 0;
+  }
+
   const follows = await client.zscore(`user:${address1}:following`, address2);
   return follows;
 }

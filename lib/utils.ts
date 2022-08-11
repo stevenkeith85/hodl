@@ -6,28 +6,12 @@ import { commercial, nonCommercial, token } from "./copyright";
 export const TAG_PATTERN = /#([\d\w_]+)/g;
 export const MAX_TAGS_PER_TOKEN = 6;
 
-export const addLinksToTags = text => {
-   return text.replace(TAG_PATTERN, (a, b) => {
-    return `<Link href="/search?q=${b}"><a>${a}</a></Link>`
-  });
-}
-
-
 export const getAsString = (param) : string | null => Array.isArray(param) ? param[0] : param;
 
-export function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-export const hasExpired = jwt => {
-  if (!jwt) {
-    return true;
-  }
-  
-  return Date.now() >= (JSON.parse(atob(jwt.split('.')[1]))).exp * 1000
-}
-
-export const imageFilters = [
+export const imageFilters: {
+  code: "e_improve" | "e_art:athena" | "e_art:aurora" | "e_art:hairspray" | "e_grayscale"
+  name: string;
+} [] = [
   { code: null, name: 'original' },
   { code: "e_improve", name: 'improve' },
   { code: "e_art:athena", name: 'athena' },
@@ -40,6 +24,17 @@ export const validFilter = (filter) => {
   const codes = imageFilters.map(f => f.code);
 
   return codes.find(code => code === filter);
+}
+
+export const aspectRatios = [
+  null,
+  "1:1",
+  "4:5",
+  "16:9"
+]
+
+export const validAspectRatio = (aspectRatio) => {
+  return aspectRatios.indexOf(aspectRatio) !== -1;
 }
 
 export const validPrivilegeValue = (value) => {
@@ -60,7 +55,8 @@ export const createCloudinaryUrl = (assetType = "image", deliveryType = "upload"
   return `https://res.cloudinary.com/${cloudName}/${assetType}/${deliveryType}/${transformations ? transformations + '/' : ''}${environment}/${folder}/${cid}${ext ? '.' + ext : ''}`;
 }
 
-export const imageSizes = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1400, 1500];
+// the sizes available across the site
+export const srcSet = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1400, 1500];
 
 export const getShortAddress = address => {
   return (address?.slice(0, 5) + '...' + address?.slice(-4)).toLowerCase();
@@ -86,11 +82,12 @@ export const ipfsUriToGatewayUrl = ipfsUri => {
   const [_protocol, uri] = ipfsUri.split('//');
   const [cid, path] = uri.split('/');
 
+  
   if (path) {
-    return `https://${cid}.ipfs.infura-ipfs.io/${path}`;
+    return `https://hodlmymoon.infura-ipfs.io/ipfs/${cid}/${path}`
   }
 
-  return `https://${cid}.ipfs.infura-ipfs.io`;
+  return `https://hodlmymoon.infura-ipfs.io/ipfs/${cid}/`;
 };
 
 export const ipfsUriToCid = ipfsUri => {
@@ -108,7 +105,7 @@ export const cidToGatewayUrl = cid => {
     return '#';
   }
 
-  return `https://${cid}.ipfs.infura-ipfs.io`;
+  return `https://hodlmymoon.infura-ipfs.io/ipfs/${cid}/`;
 };
 
 export const trim = str => {

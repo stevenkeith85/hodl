@@ -12,12 +12,15 @@ const route = apiRoute();
 
 // TODO: Memoize / Cache
 export const getListedCount = async address => {
+  if (!address) {
+    return null;
+  }
   try {
     const provider = await getProvider();
     const contract = new ethers.Contract(nftmarketaddress, HodlMarket.abi, provider);
     const result = await contract.balanceOf(address);
     return Number(result);
-  } catch(e) {
+  } catch (e) {
     return 0;
   }
 }
@@ -27,7 +30,7 @@ route.get(async (req, res) => {
   const { address } = req.query;
 
   if (!address) {
-    return res.status(400).json({message: 'Bad Request'});
+    return res.status(400).json({ message: 'Bad Request' });
   }
 
   const count = await getListedCount(address);

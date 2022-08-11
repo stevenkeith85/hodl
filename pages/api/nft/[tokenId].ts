@@ -26,29 +26,34 @@ const route = apiRoute();
 
 // Does address/user 'own' the token.
 export const isOwnerOrSeller = async (address, tokenId) => {
-  const provider = await getProvider();
+  try {
+    const provider = await getProvider();
 
-  const tokenContract = new ethers.Contract(nftaddress, NFT.abi, provider);
-  const tokenExists = await tokenContract.exists(tokenId);
+    const tokenContract = new ethers.Contract(nftaddress, NFT.abi, provider);
+    const tokenExists = await tokenContract.exists(tokenId);
 
-  if (!tokenExists) {
+    if (!tokenExists) {
+      return false;
+    }
+
+    const owner = await tokenContract.ownerOf(tokenId);
+
+    if (address === owner) { // address owns token. (i.e. hodling it)
+      return true;
+    }
+
+    const marketContract = new ethers.Contract(nftmarketaddress, Market.abi, provider);
+    const marketItem = await marketContract.getListing(tokenId);
+
+    if (address === marketItem.seller) { // address is the seller (i.e. listing it)
+      return true;
+    }
+
+    return false;
+  } catch (e) {
+    console.log(e);
     return false;
   }
-
-  const owner = await tokenContract.ownerOf(tokenId);
-
-  if (address === owner) { // address owns token. (i.e. hodling it)
-    return true;
-  }
-
-  const marketContract = new ethers.Contract(nftmarketaddress, Market.abi, provider);
-  const marketItem = await marketContract.getListing(tokenId);
-
-  if (address === marketItem.seller) { // address is the seller (i.e. listing it)
-    return true;
-  }
-
-  return false;
 }
 
 // Returns the address of the owner (if hodling) or the seller (if listed). 
@@ -102,18 +107,22 @@ export const fetchNFT = async (id: number): Promise<Nft> => {
 
   // if its for sale, technically the 'owner' will be the marketplace contract. 
   // We set it to the seller though; who is the 'actual owner'.
-  if (forSale) { 
+  if (forSale) {
     owner = marketItem.seller;
     price = ethers.utils.formatUnits(marketItem.price.toString(), 'ether');
-  } else { 
-    // we'll have to consult the token contract to get the owner
-    const tokenContract = new ethers.Contract(nftaddress, NFT.abi, provider);
-    const tokenExists = await tokenContract.exists(id);
+  } else {
+    try {
+      // we'll have to consult the token contract to get the owner
+      const tokenContract = new ethers.Contract(nftaddress, NFT.abi, provider);
+      const tokenExists = await tokenContract.exists(id);
 
-    if (!tokenExists) { // it was never minted on the blockchain. TODO: We could tell the user the token hasn't been minted
-      throw new Error('token does not exist');
+      if (!tokenExists) { // it was never minted on the blockchain. TODO: We could tell the user the token hasn't been minted
+        throw new Error('token does not exist');
+      }
+      owner = await tokenContract.ownerOf(id);
+    } catch (e) {
+      throw new Error('Cannot talk to the blockchain at the moment');
     }
-    owner = await tokenContract.ownerOf(id);
   }
 
   // Look up our immutable data from Redis

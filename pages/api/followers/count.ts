@@ -18,6 +18,9 @@ const route = apiRoute();
 // });
 
 export const getFollowersCount = async (address) => {
+  if (!address) {
+    return 0;
+  }
   const count = await client.zcard(`user:${address}:followers`);
   return (count || 0);
 }

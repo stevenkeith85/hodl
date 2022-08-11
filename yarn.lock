@@ -1795,12 +1795,11 @@
   resolved "https://registry.yarnpkg.com/@ungap/promise-all-settled/-/promise-all-settled-1.1.2.tgz#aa58042711d6e3275dd37dc597e5d31e8c290a44"
   integrity sha512-sL/cEvJWAnClXw0wHk85/2L0G6Sj8UB0Ctc1TEMbKSsmpRosqhwj9gWgFRZSrBr2f9tiXISwNhCPmlfqUqyb9Q==
 
-"@upstash/redis@^1.1.0":
-  version "1.3.4"
-  resolved "https://registry.yarnpkg.com/@upstash/redis/-/redis-1.3.4.tgz#1a776c81dc969ee1d9f6b2b390b82e0e07c5e51b"
-  integrity sha512-IOmFBM9yp8kYzaTqnw2tZvzY7rLjM9qvsjzKWvN7JQXtntkSQBhIGe8AnhMm+y7IAshfg2gLdWizRnGV0VWOmA==
+"@upstash/redis@^1.11.0":
+  version "1.11.0"
+  resolved "https://registry.yarnpkg.com/@upstash/redis/-/redis-1.11.0.tgz#10bcf269304b37461c8c85dda31bf4f3eb245690"
+  integrity sha512-Wwfv3UWCP+6GQ7HP+lFTgmT+vzSF+SUbU+rmjRAkQFIyExv0rogCpKPp/WVSBjMHW8iqRR9hV21bjVt8KMCfiQ==
   dependencies:
-    encoding latest
     isomorphic-fetch "^3.0.0"
 
 "@yarnpkg/lockfile@^1.1.0":
@@ -4229,7 +4228,7 @@ encoding-down@^6.3.0:
     level-codec "^9.0.0"
     level-errors "^2.0.0"
 
-encoding@^0.1.11, encoding@^0.1.13, encoding@latest:
+encoding@^0.1.11, encoding@^0.1.13:
   version "0.1.13"
   resolved "https://registry.yarnpkg.com/encoding/-/encoding-0.1.13.tgz#56574afdd791f54a8e9b2785c0582a2d26210fa9"
   integrity sha512-ETBauow1T35Y/WZMkio9jiM0Z5xjHHmJ4XmjZOq1l/dXz3lr2sRn87nJy20RupqSh1F2m3HHPSp8ShIPQJrJ3A==
@@ -10886,7 +10885,7 @@ tough-cookie@~2.5.0:
 tr46@~0.0.3:
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/tr46/-/tr46-0.0.3.tgz#8184fd347dac9cdc185992f3a6622e14b9d9ab6a"
-  integrity sha1-gYT9NH2snNwYWZLzpmIuFLnZq2o=
+  integrity sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==
 
 trim-right@^1.0.1:
   version "1.0.1"
@@ -11852,7 +11851,7 @@ web3@1.5.3:
 webidl-conversions@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-3.0.1.tgz#24534275e2a7bc6be7bc86611cc16ae0a5654871"
-  integrity sha1-JFNCdeKnvGvnvIZhHMFq4KVlSHE=
+  integrity sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==
 
 webpack-bundle-analyzer@^4.5.0:
   version "4.5.0"
@@ -11906,7 +11905,7 @@ whatwg-fetch@^3.4.1:
 whatwg-url@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/whatwg-url/-/whatwg-url-5.0.0.tgz#966454e8765462e37644d3626f6742ce8b70965d"
-  integrity sha1-lmRU6HZUYuN2RNNib2dCzotwll0=
+  integrity sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==
   dependencies:
     tr46 "~0.0.3"
     webidl-conversions "^3.0.0"

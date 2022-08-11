@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import useSWR, { SWRResponse } from 'swr';
 import { WalletContext } from '../contexts/WalletContext';
 import axios from 'axios'
+import { RankingsContext } from '../contexts/RankingsContext';
 
 export const useLike = (
   id: number,
@@ -10,6 +11,8 @@ export const useLike = (
 ) : [boolean, Function]=> {
   const { address } = useContext(WalletContext);
 
+  const { mostLiked } = useContext(RankingsContext);
+  
   const baseUrl = `/api/like/${object}/`;
 
   const { data: userLikesThisToken, mutate: mutateUserLikesThisToken } = useSWR(
@@ -35,6 +38,10 @@ export const useLike = (
         }
       )
 
+      if (mostLiked) {
+        mostLiked.mutate()
+      }
+      
       likeCount.mutate();
 
     } catch (error) {

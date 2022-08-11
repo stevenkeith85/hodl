@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 
 export const useIpfsUpload = (): [
-  (name: string, description: string, privilege: string, fileName: string, mimeType: string, filter: string) => any,
+  (name: string, description: string, privilege: string, fileName: string, mimeType: string, filter: string, aspectRatio?: "1:1" | "4:5" |"16:9") => any,
   number,
   string,
   Function
@@ -11,7 +11,14 @@ export const useIpfsUpload = (): [
   const [error, setError] = useState('');
   const [progress, setProgress] = useState(0);
 
-  const uploadToIpfs = async (name: string, description: string, privilege: string, fileName: string, mimeType: string, filter: string) => {
+  const uploadToIpfs = async (
+      name: string, 
+      description: string, 
+      privilege: string, 
+      fileName: string, 
+      mimeType: string, 
+      filter: string, 
+      aspectRatio?: "1:1" | "4:5" |"16:9") => {
     setProgress(0);
 
     try {
@@ -23,13 +30,13 @@ export const useIpfsUpload = (): [
           privilege,
           fileName,
           mimeType,
-          filter
+          filter,
+          aspectRatio
         },
         {
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'Authorization': localStorage.getItem('jwt')
           },
           onUploadProgress: progress => {
             if (!progress.lenthComputable) {

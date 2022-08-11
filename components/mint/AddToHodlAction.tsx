@@ -75,7 +75,7 @@ export const AddToHodlAction: FC<MintProps> = ({
         <Button
         
           color="secondary"
-          disabled={stepComplete === 4 || loading}
+          disabled={stepComplete === 5 || loading}
           onClick={hodl}
         >
           Hodl

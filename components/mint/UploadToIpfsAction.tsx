@@ -56,6 +56,7 @@ export const UploadToIpfsAction: FC<MintProps> = ({
       values.fileName,
       values.mimeType,
       values.filter,
+      values.aspectRatio,
     );
 
     if (success) {
@@ -67,7 +68,7 @@ export const UploadToIpfsAction: FC<MintProps> = ({
         metadataUrl
       }))
       enqueueSnackbar('IPFS Upload Success', { variant: "success" });
-      setStepComplete(2);
+      setStepComplete(3);
     }
 
     setSubmitting(false);
@@ -82,7 +83,8 @@ export const UploadToIpfsAction: FC<MintProps> = ({
         privilege: formData.privilege,
         fileName: formData.fileName,
         mimeType: formData.mimeType,
-        filter: formData.filter
+        filter: formData.filter,
+        aspectRatio: formData.aspectRatio
       }}
       validationSchema={uploadToIPFSValidationSchema}
       onSubmit={ipfsUpload}
@@ -96,7 +98,7 @@ export const UploadToIpfsAction: FC<MintProps> = ({
             <Stack spacing={2}>
               <FormControl>
                 <Field
-                  disabled={stepComplete >= 2}
+                  disabled={stepComplete >= 3}
                   component={TextField}
                   name="name"
                   label="Name"
@@ -106,7 +108,7 @@ export const UploadToIpfsAction: FC<MintProps> = ({
               </FormControl>
               <FormControl>
               <Field
-                  disabled={stepComplete >= 2}
+                  disabled={stepComplete >= 3}
                   multiline
                   minRows={4}
                   component={TextField}
@@ -118,7 +120,7 @@ export const UploadToIpfsAction: FC<MintProps> = ({
                 
               </FormControl>
               <Box>
-                <FormControl disabled={stepComplete >= 2}>
+                <FormControl disabled={stepComplete >= 3}>
                   <Tooltip
                     title={<HodlerPrivilegeTooltip />}
                     placement="right-start"
@@ -174,7 +176,7 @@ export const UploadToIpfsAction: FC<MintProps> = ({
                       paddingX: 2
                     }}
                     type="submit"
-                    disabled={isSubmitting || stepComplete === 2 || !isValid || !dirty}
+                    disabled={isSubmitting || stepComplete === 3 || !isValid || !dirty}
                   >
                     Upload
                   </Button>

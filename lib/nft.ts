@@ -13,15 +13,8 @@ import { Nft } from '../models/Nft.js';
 
 export const listNftOnMarket = async (tokenId, tokenPrice) => {
   const signer = await getMetaMaskSigner();
-
-  console.log('address', await signer.getAddress())
   const contract = new ethers.Contract(nftmarketaddress, Market.abi, signer);
-
-  console.log(nftmarketaddress, Market.abi, signer);
   const price = ethers.utils.parseUnits(tokenPrice, 'ether');
-
-  console.log("nftaddress, tokenId, price", nftaddress, tokenId, price)
-
   const tokenContract = new ethers.Contract(nftaddress, NFT.abi, signer);
 
   // If we aren't approved, then ask for approval.
@@ -58,10 +51,8 @@ export const buyNft = async (nft: Nft) => {
   const signer = await getMetaMaskSigner();
   const contract = new ethers.Contract(nftmarketaddress, Market.abi, signer);
 
-  console.log("nft.price", nft.price)
   const price = ethers.utils.parseUnits(nft.price.toString(), 'ether')
 
-  console.log("price", price)
   const tx = await contract.buyToken(nftaddress, nft.id, { value: price })
   await tx.wait();
 

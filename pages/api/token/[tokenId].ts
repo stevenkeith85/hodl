@@ -27,11 +27,7 @@ export const getToken = async (tokenId) => {
   if (!token) {
     return null;
   }
-  // TODO - Don't bother storing the 'ipfs://' prefix in Redis. 
-  // It will make it easier to construct URLs without it
-  // We WILL store it in the metadata though
-  token.image = ipfsUriToCid(token.image);
-  token.metadata = ipfsUriToCid(token.metadata);
+  
   return token;
 }
 

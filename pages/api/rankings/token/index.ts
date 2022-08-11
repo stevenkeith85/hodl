@@ -6,6 +6,7 @@ import apiRoute from "../../handler";
 import { ActionSet, HodlAction } from "../../../../models/HodlAction";
 import { getToken } from "../../token/[tokenId]";
 import { getAsString } from "../../../../lib/utils";
+import { Token } from "../../../../models/Token";
 
 dotenv.config({ path: '../.env' })
 
@@ -30,7 +31,7 @@ export const getMostLikedTokens = async (
   limit: number = 10
 ): Promise<
   {
-    items: string[],
+    items: Token[],
     next: number,
     total: number
   }> => {
@@ -52,16 +53,8 @@ export const getMostLikedTokens = async (
   })
 
   const ids: string [] = r.data.result;
-
-  const tokens = [];
-
-  for (const id of ids) {
-    const data = await getToken(id);
-
-    if (data) {
-      tokens.push(data);
-    }
-  }
+  const promises = ids.map(address => getToken(address));
+  const tokens: Token[] = await Promise.all(promises);
   
   
   return {

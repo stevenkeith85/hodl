@@ -26,63 +26,88 @@ import { getHodlingCount } from './api/profile/hodlingCount';
 import { getListedCount } from './api/profile/listedCount';
 import { getFollowingCount } from './api/following/count';
 import { getFollowersCount } from './api/followers/count';
+import { UserViewModel } from '../models/User';
 
 
 export async function getServerSideProps({ req, res }) {
   await authenticate(req, res);
 
-  let user = null;
+  let user: UserViewModel = null;
 
   if (req.address) {
-    user = await getUser(req.address)
+    user = await getUser(req.address, req.address)
   }
 
   const limit = 10;
 
-  const prefetchedFeed = user?.address ? [await getActions(user.address, ActionSet.Feed, 0, limit)] : null;
-  const prefetchedTopUsers = [await getMostFollowedUsers(0, limit)];
-  const prefetchedTopTokens = [await getMostLikedTokens(0, limit)];
-  const prefetchedNewUsers = [await getUserSearchResults('', 0, limit)];
-  const prefetchedNewTokens = [await getTokenSearchResults('', 0, limit)];
+  const feed = getActions(user?.address, ActionSet.Feed, 0, limit);
 
-  const prefetchedHodlingCount = user?.address ? await getHodlingCount(user.address): null;
-  const prefetchedListedCount = user?.address ? await getListedCount(user.address): null;
-  const prefetchedFollowingCount = user?.address ? await getFollowingCount(user.address): null;
-  const prefetchedFollowersCount = user?.address ? await getFollowersCount(user.address): null;
+  const topUsers = getMostFollowedUsers(0, limit);
+  const topTokens = getMostLikedTokens(0, limit);
+  const newUsers = getUserSearchResults('', 0, limit);
+  const newTokens = getTokenSearchResults('', 0, limit);
+
+  const hodlingCount = getHodlingCount(user?.address);
+  const listedCount = getListedCount(user?.address);
+  const followingCount = getFollowingCount(user?.address);
+  const followersCount = getFollowersCount(user?.address);
+
+  const [
+    pfeed,
+    ptopUsers,
+    ptopTokens,
+    pnewUsers,
+    pnewTokens,
+    phodlingCount,
+    plistedCount,
+    pfollowingCount,
+    pfollowersCount
+  ] = await Promise.all([
+    feed,
+    topUsers,
+    topTokens,
+    newUsers,
+    newTokens,
+    hodlingCount,
+    listedCount,
+    followingCount,
+    followersCount
+  ]);
 
   return {
     props: {
       address: req.address || null,
       user,
       limit,
-      prefetchedFeed,
-      prefetchedTopUsers,
-      prefetchedTopTokens,
-      prefetchedNewUsers,
-      prefetchedNewTokens,
-      prefetchedHodlingCount,
-      prefetchedListedCount,
-      prefetchedFollowingCount,
-      prefetchedFollowersCount
+      prefetchedFeed: [pfeed],
+      prefetchedTopUsers: [ptopUsers],
+      prefetchedTopTokens: [ptopTokens],
+      prefetchedNewUsers: [pnewUsers],
+      prefetchedNewTokens: [pnewTokens],
+      prefetchedHodlingCount: phodlingCount,
+      prefetchedListedCount: plistedCount,
+      prefetchedFollowingCount: pfollowingCount,
+      prefetchedFollowersCount: pfollowersCount
     }
   }
 }
 
-export default function Home({ 
-  address, 
-  user, 
-  limit, 
-  prefetchedFeed, 
-  prefetchedTopUsers, 
-  prefetchedTopTokens, 
-  prefetchedNewUsers, 
-  prefetchedNewTokens, 
+export default function Home({
+  address,
+  user,
+  limit,
+  prefetchedFeed,
+  prefetchedTopUsers,
+  prefetchedTopTokens,
+  prefetchedNewUsers,
+  prefetchedNewTokens,
   prefetchedHodlingCount,
   prefetchedListedCount,
   prefetchedFollowingCount,
   prefetchedFollowersCount
 }) {
-  
+
+  // return (<><h1>{JSON.stringify(user)}</h1></>)
   const { rankings: mostFollowed } = useRankings(true, limit, prefetchedTopUsers);
   const { rankings: mostLiked } = useRankings(true, limit, prefetchedTopTokens, "token");
   const { results: newUsers } = useSearchUsers('', limit, prefetchedNewUsers);

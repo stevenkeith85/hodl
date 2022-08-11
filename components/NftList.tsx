@@ -12,6 +12,7 @@ import { AssetTypes } from '../models/AssetType';
 import { MaticPrice } from './MaticPrice';
 import { Token } from '../models/Token';
 import { Nft } from '../models/Nft';
+import { HodlImageResponsive } from './HodlImageResponsive';
 
 const Overlay = ({ nft }) => {
     const theme = useTheme();
@@ -64,81 +65,71 @@ const Overlay = ({ nft }) => {
         </Box>)
 }
 
-const NftList = ({
-    nfts,
-}) => {
+const NftList = ({ nfts }) => {
     const theme = useTheme();
     const matches = useMediaQuery(theme.breakpoints.up('sm'));
 
     return (
         <Box
-            sx={{
-                display: "grid",
+            sx={{ 
+                display: "grid", 
                 gridTemplateColumns: {
-                    xs: "repeat(1, 1fr)",
-                    sm: "repeat(2, 1fr)",
-                    md: "repeat(3, 1fr)",
-                    lg: "repeat(4, 1fr)",
+                    xs: `1fr 1fr`,
+                    sm: `1fr 1fr 1fr 1fr`
                 },
-                gridGap: 16,
-                [`& .${imageListItemClasses.root}`]: {
-                    display: "flex",
-                    flexDirection: "column"
-                }
+                gap: 4
             }}
         >
-            {(nfts || []).filter(nft => nft).map((nft: Nft) => (
-                <ImageListItem key={nft.id}>
-                    <Link href={nft?.forSale ? `/nft/${nft?.id}?tab=1` : `/nft/${nft?.id}`} passHref>
+            {
+                nfts.map((nft: Nft) => (
+                    <Link href={`/nft/${nft.id}`} passHref>
                         <Box
                             component="a"
                             sx={{
                                 position: 'relative',
-                                borderRadius: 1,
-                                overflow: 'hidden',
-                                cursor: 'pointer',
+
                                 '&:hover': {
-                                    '.nftItemOverlay': {
-                                        opacity: 1
-                                    },
+                                    '.nftItemOverlay': { opacity: 1 }
                                 }
                             }}>
-                            <Box>
-                                {assetType(nft) === AssetTypes.Gif &&
+                            {assetType(nft) === AssetTypes.Gif &&
+                                <HodlVideo
+                                    cid={nft?.image}
+                                    transformations={nft?.filter}
+                                    gif={true}
+                                    height={matches ? '400px' : '500px'}
+                                />}
+                            {(assetType(nft) === AssetTypes.Video || assetType(nft) === AssetTypes.Audio) &&
+                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+                                    {assetType(nft) === AssetTypes.Video && <Videocam fontSize="large" sx={{ position: 'absolute' }} />}
                                     <HodlVideo
                                         cid={nft?.image}
-                                        transformations={nft?.filter}
-                                        gif={true}
-                                        height={matches ? '400px' : '500px'}
-                                    />}
-                                {(assetType(nft) === AssetTypes.Video || assetType(nft) === AssetTypes.Audio) &&
-                                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
-                                        {assetType(nft) === AssetTypes.Video && <Videocam fontSize="large" sx={{ position: 'absolute' }} />}
-                                        <HodlVideo
-                                            cid={nft?.image}
-                                            controls={false}
-                                            onlyPoster={true}
-                                            audio={assetType(nft) === AssetTypes.Audio}
-                                            height={matches ? '400px' : '500px'}
-                                        />
-                                    </Box>
-                                }
-                                {assetType(nft) === AssetTypes.Image &&
-                                    <HodlImage
-                                        cid={nft?.image}
-                                        effect={nft?.filter}
+                                        controls={false}
+                                        onlyPoster={true}
+                                        audio={assetType(nft) === AssetTypes.Audio}
                                         height={matches ? '400px' : '500px'}
                                     />
-                                }
-                            </Box>
-                            <Overlay nft={nft} />
+                                </Box>
+                            }
+                            {assetType(nft) === AssetTypes.Image &&
+                                <>
+                                    <HodlImageResponsive
+                                        aspectRatio="1:1"
+                                        sizes="(min-width: 900px) 25vw, (min-width: 1200px) calc(1200px / 4), 50vw"
+                                        cid={nft?.image}
+                                        widths={[400, 800, 1000]}
+                                        gravity="g_face"
+                                    />
+                                </>
+                            }
+                            {/* <Overlay nft={nft} /> */}
                         </Box>
                     </Link>
-                </ImageListItem>
-            )
-            )}
+                ))
+            }
         </Box>
-    )
+    );
 }
+
 
 export default NftList

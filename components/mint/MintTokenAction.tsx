@@ -37,7 +37,7 @@ export const MintTokenAction: FC<MintProps> = ({
       }));
 
       enqueueSnackbar(`NFT minted on the blockchain with token id ${tokenId}`, { variant: "success" });
-      setStepComplete(3);
+      setStepComplete(4);
     } catch (e) {
       console.log(e)
       enqueueSnackbar('Unable to mint at the moment. Please try again', { variant: "warning" });
@@ -65,7 +65,7 @@ export const MintTokenAction: FC<MintProps> = ({
         <Button
         
           color="secondary"
-          disabled={stepComplete === 3 || loading}
+          disabled={stepComplete === 4 || loading}
           onClick={mint}
         >
           Mint

@@ -18,6 +18,10 @@ const route = apiRoute();
 // });
 
 export const getFollowingCount = async (address) => {
+  if (!address) {
+    return 0;
+  }
+
   const count = await client.zcard(`user:${address}:following`);
   return (count || 0);
 }
