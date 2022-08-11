@@ -4,6 +4,8 @@ import { assetType } from "../../lib/utils";
 import { AssetTypes } from "../../models/AssetType";
 import { HodlVideo } from "../HodlVideo";
 import { HodlImageResponsive } from "../HodlImageResponsive";
+import { Box, Skeleton } from "@mui/material";
+import { useState } from "react";
 
 
 interface FeedAssetProps {
@@ -11,7 +13,9 @@ interface FeedAssetProps {
 }
 
 export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
-    return (<>
+    return (<Box
+        sx={{ position: 'relative', height: 575 }}>
+        <Skeleton width={575} height={575} variant="rectangular" sx={{ zIndex: -1, position: 'absolute', top: 0, left: 0 }} />
         {
             (assetType(item.token) === AssetTypes.Image) &&
             <HodlImageResponsive
@@ -67,5 +71,5 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
                 }}
             />
         }
-    </>)
+    </Box>)
 }

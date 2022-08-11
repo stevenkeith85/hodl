@@ -115,7 +115,7 @@ export const HodlNotifications = ({
     >
         {
             notifications?.data && !notifications?.data?.[0]?.items?.length &&
-            <Typography marginTop={2}>No notifications at the moment</Typography>
+            <Typography padding={2}>No notifications at the moment</Typography>
         }
         <InfiniteScroll
             swr={notifications}
