@@ -1,6 +1,5 @@
 import { Box, Skeleton, useTheme } from "@mui/material";
 import Head from "next/head";
-import { callbackify } from "util";
 
 // https://css-tricks.com/a-guide-to-the-responsive-images-syntax-in-html/#using-srcset
 export const HodlImageResponsive = ({
@@ -13,7 +12,7 @@ export const HodlImageResponsive = ({
     widths = [900, 1000, 1100, 1200, 1300, 1400], // You should do some experimentation and pick 6 or so
     sizes, // e.g. sizes="(min-width: 900px) 50vw, (min-width: 1200px) calc(1200px / 2)"
     round = false,
-    callback = () => {}
+    onLoad = null
 }) => {
 
     const makeCloudinaryUrl = (width) => {
@@ -48,7 +47,6 @@ export const HodlImageResponsive = ({
             <Head>
                 {
                     <link
-                        
                         key={cid}
                         rel="preload"
                         as="image"
@@ -72,7 +70,11 @@ export const HodlImageResponsive = ({
                     }
                 }}>
                 <img
-                    onLoad={callback}
+                    onLoad={() => {
+                        if (onLoad) {
+                            onLoad();
+                        }
+                    }}
                     src={src}
                     srcSet={srcSet}
                     alt=""
