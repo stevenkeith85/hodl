@@ -44,7 +44,8 @@ const Timestamp = ({ item }) => {
 }
 
 const MessageWithAvatarAndTime = ({ item, children }) => {
-    return (<>{
+    return (<>
+        {/* {
         item?.subject &&
         <ProfileNameOrAddress
             color={"primary"}
@@ -52,7 +53,7 @@ const MessageWithAvatarAndTime = ({ item, children }) => {
             fallbackData={item.user}
             sx={{ fontWeight: 600 }}
         />
-    }
+    } */}
         {' '}
         {children}
         <Timestamp item={item} />
@@ -62,12 +63,25 @@ const MessageWithAvatarAndTime = ({ item, children }) => {
 const NotificationLink = ({ item }) => {
     return (<Box
         sx={{
+            // display: 'flex',
+            // gap: '4px',
             width: `100%`,
             "& > a": {
                 display: 'block',
                 width: `100%`
             }
         }}>
+
+        <Box component="span" sx={{ float: 'left', marginRight: '4px' }}>
+            {item?.subject &&
+                <ProfileNameOrAddress
+                    color={"primary"}
+                    profileAddress={item.subject}
+                    fallbackData={item.user}
+                    sx={{ fontWeight: 600 }}
+                />}
+        </Box>
+
         {
             likedToken(item) &&
             <Link href={`/nft/${item?.token?.id}`} passHref>
@@ -150,6 +164,10 @@ interface HodlNotificationBoxProps {
 
 export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setShowNotifications, lastRead }) => {
 
+    if (!item) {
+        return null;
+    }
+    
     return (
         <Box key={item?.id} sx={{
             background: lastRead < item.timestamp ? "#ECF3FF" : "none",

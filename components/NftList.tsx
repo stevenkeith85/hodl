@@ -44,13 +44,23 @@ const Overlay = ({ nft }) => {
                         height: '44px'
                     }}
                 >
-                    <Box display="flex"
-                        gap={3}>
+                    <Box 
+                        display="flex"
+                        gap={3}
+                        sx={{
+                            color: 'white'
+                        }}
+                        >
                         <Likes
                             id={nft?.id}
                             object="token"
                             color='inherit'
                             fontSize='26px'
+                            sx={{
+                                cursor: 'pointer',
+                                color: 'white',
+                                
+                            }}
                         />
                         <Comments
                             nft={nft}

@@ -18,7 +18,6 @@ export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token, size = 44
     >
         {
             assetType(token) === AssetTypes.Image &&
-            <a>
                 <HodlImageResponsive
                     cid={token.image}
                     widths={[size, size * 2]}
@@ -26,10 +25,8 @@ export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token, size = 44
                     aspectRatio="1:1"
                     gravity="g_face:center"
                 />
-            </a>
         }
         {assetType(token) === AssetTypes.Video &&
-            <a>
                 <HodlVideo
                     cid={token.image}
                     controls={false}
@@ -46,10 +43,8 @@ export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token, size = 44
                         }
                     }}
                 />
-            </a>
         }
         {assetType(token) === AssetTypes.Gif &&
-            <a>
                 <HodlVideo
                     cid={token.image}
                     gif={true}
@@ -64,10 +59,8 @@ export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token, size = 44
                         }
                     }}
                 />
-            </a>
         }
         {assetType(token) === AssetTypes.Audio &&
-            <a>
                 <HodlVideo
                     cid={token.image}
                     controls={false}
@@ -84,7 +77,6 @@ export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token, size = 44
                         }
                     }}
                 />
-            </a>
         }
     </Box>)
 }

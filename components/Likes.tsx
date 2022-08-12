@@ -25,8 +25,8 @@ export const Likes: FC<LikesProps> = ({
     fontSize = '20px',
     showCount = true,
     prefetchedLikeCount = null,
-    likeTooltip = "Like this",
-    unlikeTooltip = "Unlike this",
+    likeTooltip = "like",
+    unlikeTooltip = "unlike",
     sx = {}
 }) => {
     const {swr: likeCount} = useLikeCount(id, object, prefetchedLikeCount);
@@ -38,13 +38,14 @@ export const Likes: FC<LikesProps> = ({
                 display="flex"
                 gap={0.75}
                 sx={{
-                    color: color,
+                    color,
                     alignItems: "center",
                     cursor: 'pointer',
                     position: 'relative',
                     ...sx
                 }}
                 onClick={e => {
+                    e.preventDefault();
                     e.stopPropagation();
                     toggleLike();
                 }}
@@ -71,8 +72,11 @@ export const Likes: FC<LikesProps> = ({
                 }
                 {showCount && (likeCount != undefined) &&
                     <Typography sx={{ 
-                        fontSize: `calc(${fontSize} - 8px)`
-                    }}>{humanize.compactInteger(likeCount.data || 0, 1)}</Typography>
+                        fontSize: `calc(${fontSize} - 8px)`,
+                        color
+                    }}>{
+                        humanize.compactInteger(likeCount.data || 0, 1)
+                        }</Typography>
                 }
             </Box>
         </>

@@ -60,7 +60,7 @@ export const HodlCommentActionButtons: React.FC<HodlCommentActionButtonsProps> =
 
     return (<Box display="flex" alignItems="start" gap={1.5} marginX={1}>
         {address &&
-            <Tooltip title="Reply to this Comment">
+            <Tooltip title="reply">
                 <Reply
                     sx={{
                         cursor: 'pointer',
@@ -135,45 +135,28 @@ export const HodlCommentActionButtons: React.FC<HodlCommentActionButtonsProps> =
                             padding: 0
                         }}
                     >
-                        <MenuItem onClick={async () => {
-                            alert('do delete here')
-                            // await deleteComment(comment);
-                            // parentMutateList();
-                            // parentMutateCount();
-                            // mutateCount();
-                        }
-                        }>
-                            <ListItemIcon>
+                        <MenuItem
+                            onClick={async () => {
+                                await deleteComment(comment);
+                                parentMutateList();
+                                parentMutateCount();
+                                mutateCount();
+                            }
+                            }>
+                            <ListItemIcon
+                                sx={{
+                                    '&.MuiListItemIcon-root': { 
+                                        minWidth: 0,
+                                        marginRight: `8px`
+                                    }
+                                }}>
                                 <DeleteOutlineSharp sx={{ fontSize: '14px' }} />
                             </ListItemIcon>
                             <ListItemText>delete</ListItemText>
-
-
                         </MenuItem>
                     </MenuList>
-
                 </Menu>
             </>)
-            // <Tooltip title="Delete this Comment">
-            //     <HighlightOffOutlined
-            //         sx={{
-            //             cursor: 'pointer',
-            //             color: theme => theme.palette.text.secondary,
-            //             '&:hover': {
-            //                 color: theme => theme.palette.text.primary,
-            //             },
-            //             fontSize: `14px`
-            //         }}
-            //         fontSize="inherit"
-            //         onClick={async () => {
-            //             await deleteComment(comment);
-            //             parentMutateList();
-            //             parentMutateCount();
-            //             mutateCount();
-            //         }
-            //         }
-            //     />
-            // </Tooltip>
         }
     </Box>)
 }
@@ -459,7 +442,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
 
                                                 }}
                                             >
-                                                {level < 4 ? pluralize(countSWR.data, 'reply') : 'View thread'}
+                                                {level < 4 ? pluralize(countSWR.data, 'reply') : 'view thread'}
                                             </Typography>
                                     }
                                     <Typography

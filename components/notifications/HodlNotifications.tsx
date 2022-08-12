@@ -34,7 +34,7 @@ export const HodlNotifications = ({
 
     const { data: lastRead, mutate: mutateLastRead } = useSWR(address ? ['/api/notifications/read', address] : null,
         (url, address) => axios.get(url).then(r => r.data),
-        { 
+        {
             revalidateOnFocus: false // we don't need to revalidate unless we actually read the messages. we call mutate when we do that
         }
     );
@@ -45,7 +45,7 @@ export const HodlNotifications = ({
             mutateLastRead();
         }
     }, [showNotifications])
-    
+
 
     const toggleNotifications = async () => {
         setShowNotifications(prev => !prev);
@@ -62,7 +62,7 @@ export const HodlNotifications = ({
                 );
 
                 mutateUnread();
-                
+
             } catch (error) {
             }
         }, 1000)
@@ -72,7 +72,7 @@ export const HodlNotifications = ({
         if (showNotifications) {
             setShowNotifications(false)
         }
-    },[showNotifications, setShowNotifications]);
+    }, [showNotifications, setShowNotifications]);
 
     useEffect(() => {
         router.events.on('routeChangeComplete', handleRouteChange)
@@ -94,8 +94,8 @@ export const HodlNotifications = ({
             color: 'black',
             top: 56,
             right: 0,
-            minWidth: {sm: '525px'},
-            maxHeight: {sm: '425px'},
+            minWidth: { sm: '525px' },
+            maxHeight: { sm: '425px' },
             height: { xs: 'calc(100vh - 56px)', sm: 'auto' },
             width: { xs: '100%', sm: 'auto' },
             overflowY: 'auto',
@@ -117,18 +117,21 @@ export const HodlNotifications = ({
             loadingIndicator={<HodlLoadingSpinner />}
             isReachingEnd={
                 swr => {
-                    return swr.data?.[0]?.items?.length == 0 || 
-                            swr.data?.[swr.data?.length - 1]?.items?.length < limit
-                  }
+                    return swr.data?.[0]?.items?.length == 0 ||
+                        swr.data?.[swr.data?.length - 1]?.items?.length < limit
+                }
             }
         >
             {
-                ({ items }) => {
-                    return (items || []).map((item: HodlAction) => <>
-                        {item && <HodlNotificationBox key={item.id} item={item} setShowNotifications={setShowNotifications} lastRead={lastRead}/>}
-                    </>
-                    )
-                }
+                ({ items }) => (items || []).map((item: HodlAction) =>
+                    <HodlNotificationBox 
+                        key={item.id} 
+                        item={item} 
+                        setShowNotifications={setShowNotifications} 
+                        lastRead={lastRead} 
+                    />
+                )
+
             }
         </InfiniteScroll>
     </Box>

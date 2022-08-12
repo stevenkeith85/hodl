@@ -90,7 +90,7 @@ export const AddComment: FC<AddCommentProps> = ({
                 setLoading(false);
             }}
         >
-            {({ errors, values, setFieldValue, isValid }) => (
+            {({ errors, values, setFieldValue, isValid, submitForm, }) => (
                 <>
                     {/* {JSON.stringify(errors)}
                                 {JSON.stringify(values)} */}
@@ -123,6 +123,13 @@ export const AddComment: FC<AddCommentProps> = ({
                                             <QuoteComment id={commentingOn.objectId} color={commentingOn.color} reset={reset} />
                                         }
                                         <TextareaAutosize
+                                            onKeyDown={async e => {
+                                                if (e.ctrlKey && e.code === "Enter") {
+                                                    await submitForm();
+                                                    setFieldValue("comment", "");
+                                                    newTagRef.current.value = "";
+                                                }
+                                            }}
                                             onChange={(e) => {
                                                 setFieldValue('comment', e.target.value)
                                             }}
@@ -139,13 +146,15 @@ export const AddComment: FC<AddCommentProps> = ({
                                     </Box>
                                 </Tooltip>
                                 <Box display="flex" justifyContent="right" alignItems="center" gap={2}>
-                                    <Typography 
-                                        sx={{ 
-                                            fontSize: 10, 
+                                    <Typography
+                                        sx={{
+                                            fontSize: 10,
                                             paddingLeft: 0.75,
                                             color: isValid ? green : red
-                                             }}>{values?.comment?.length} / 400</Typography>
-                                    <Button disabled={!isValid} type="submit">{commentingOn.object === "comment" ? "reply" : "comment"}</Button>
+                                        }}>{values?.comment?.length} / 400</Typography>
+                                    <Tooltip title="ctrl + enter">
+                                        <Button disabled={!isValid} type="submit">{commentingOn.object === "comment" ? "reply" : "comment"}</Button>
+                                    </Tooltip>
                                 </Box>
                             </Box>
                         </Box>
