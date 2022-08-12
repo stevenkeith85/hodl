@@ -1,13 +1,13 @@
-import { Typography, Box, Tooltip, Button } from "@mui/material";
+import { Typography, Box, Tooltip, Button, TextareaAutosize } from "@mui/material";
 import { FC, useContext } from "react";
 import { WalletContext } from "../../contexts/WalletContext";
 import { Formik, Form, Field } from "formik";
-import { InputBase } from 'formik-mui';
 import { AddCommentValidationSchema } from "../../validationSchema/comments/addComments";
 import { useAddComment } from "../../hooks/useComments";
 import { HodlComment } from "../../models/HodlComment";
 import { QuoteComment } from "./QuoteComment";
 import { NftContext } from "../../contexts/NftContext";
+import { green, red } from "@mui/material/colors";
 
 
 interface AddCommentProps {
@@ -90,7 +90,7 @@ export const AddComment: FC<AddCommentProps> = ({
                 setLoading(false);
             }}
         >
-            {({ errors, values }) => (
+            {({ errors, values, setFieldValue, isValid }) => (
                 <>
                     {/* {JSON.stringify(errors)}
                                 {JSON.stringify(values)} */}
@@ -106,36 +106,46 @@ export const AddComment: FC<AddCommentProps> = ({
                                         sx={{
                                             paddingTop: 2,
                                             marginTop: 2,
-                                            borderTop: `1px solid #ddd`
+                                            borderTop: `1px solid #ddd`,
+
+                                            '#hodl-comments-add': {
+                                                border: 'none',
+                                                outline: 'none',
+                                                fontFamily: theme => theme.typography.fontFamily,
+                                                fontSize: theme => theme.typography.fontSize,
+                                                resize: 'none'
+                                            }
+
                                         }}
                                     >
                                         {
                                             commentingOn.object === "comment" &&
                                             <QuoteComment id={commentingOn.objectId} color={commentingOn.color} reset={reset} />
                                         }
-                                        <Field
-                                            validateOnChange
-                                            autoComplete='off'
-                                            inputRef={newTagRef}
-                                            component={InputBase}
-                                            multiline
-                                            sx={{
-                                                flexGrow: 1,
-                                                paddingX: 0.5,
+                                        <TextareaAutosize
+                                            onChange={(e) => {
+                                                setFieldValue('comment', e.target.value)
                                             }}
+                                            autoComplete='off'
+                                            ref={newTagRef}
                                             placeholder={
-                                                commentingOn.object === "comment" ? "Add Reply" : "Add Comment"
+                                                commentingOn.object === "comment" ? "Your reply?" : "Your comment?"
                                             }
+                                            minRows={2}
                                             name="comment"
                                             id="hodl-comments-add"
-                                            type="text"
                                         />
 
                                     </Box>
                                 </Tooltip>
                                 <Box display="flex" justifyContent="right" alignItems="center" gap={2}>
-                                    <Typography sx={{ fontSize: 10, paddingLeft: 0.75 }}>{values?.comment?.length} / 400</Typography>
-                                    <Button type="submit">{commentingOn.object === "comment" ? "Reply": "Comment"}</Button>
+                                    <Typography 
+                                        sx={{ 
+                                            fontSize: 10, 
+                                            paddingLeft: 0.75,
+                                            color: isValid ? green : red
+                                             }}>{values?.comment?.length} / 400</Typography>
+                                    <Button disabled={!isValid} type="submit">{commentingOn.object === "comment" ? "reply" : "comment"}</Button>
                                 </Box>
                             </Box>
                         </Box>

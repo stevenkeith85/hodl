@@ -1,4 +1,4 @@
-import { Stack, Button } from '@mui/material';
+import { Stack, Button, Box } from '@mui/material';
 
 export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, loading, formData }) => {
 
@@ -6,32 +6,38 @@ export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, l
   const isGif = mimeType => mimeType && mimeType.indexOf('gif') !== -1;
 
   return (
-    <Stack
-      direction="row"
+    <Box
       sx={{
-        justifyContent: "space-between",
+        display: 'flex',
+        // justifyContent: "space-between",
         width: '100%'
-      }}      
+      }}
     >
-      <Button
-        color="primary"
-        sx={{ paddingX: 3, }}
-        disabled={loading || activeStep === 0 || stepComplete >= 3}
-        variant="outlined"
-        onClick={
-          () => {
-            if ((isVideo(formData?.mimeType) || isGif(formData?.mimeType)) && activeStep == 3) {
-              setActiveStep(activeStep => activeStep - 3);
-            } else {
-              setActiveStep(activeStep => activeStep - 1)
+      {activeStep !== 0 &&
+        <Button
+          color="primary"
+          sx={{
+            paddingX: 3,
+          }}
+          disabled={loading || activeStep === 0 || stepComplete >= 3}
+          variant="outlined"
+          onClick={
+            () => {
+              if ((isVideo(formData?.mimeType) || isGif(formData?.mimeType)) && activeStep == 3) {
+                setActiveStep(activeStep => activeStep - 3);
+              } else {
+                setActiveStep(activeStep => activeStep - 1)
+              }
             }
-          }
-        }>
-        Back
-      </Button>
+          }>
+          Back
+        </Button>}
       <Button
         color="secondary"
-        sx={{ paddingX: 3, }}
+        sx={{ 
+          paddingX: 3, 
+          marginLeft:  `auto`
+        }}
         disabled={loading || stepComplete < activeStep}
         variant="outlined"
         onClick={() => {
@@ -43,6 +49,6 @@ export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, l
         }}>
         Next
       </Button>
-    </Stack>
+    </Box>
   )
 };

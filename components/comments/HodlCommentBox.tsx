@@ -1,7 +1,7 @@
-import { Typography, Box, Tooltip } from "@mui/material";
+import { Typography, Box, Tooltip, IconButton, Menu, MenuList, MenuItem, ListItemIcon, ListItemText, Paper } from "@mui/material";
 import { useRouter } from "next/router";
 import { Likes } from "../Likes";
-import { HighlightOffOutlined, Message, Reply } from "@mui/icons-material";
+import { DeleteForeverOutlined, DeleteOutlined, DeleteOutlineSharp, HighlightOffOutlined, Message, Reply } from "@mui/icons-material";
 import { useComments, useCommentCount, useDeleteComment } from "../../hooks/useComments";
 import React, { FC, useContext, useState } from "react";
 import { HodlCommentViewModel } from "../../models/HodlComment";
@@ -14,7 +14,7 @@ import { useLikeCount } from "../../hooks/useLikeCount";
 import { pluralize } from "../../lib/utils";
 import { SWRInfiniteResponse } from "swr/infinite/dist/infinite";
 import { SWRResponse } from "swr";
-
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 interface HodlCommentActionButtonsProps {
     comment: HodlCommentViewModel;
@@ -47,6 +47,16 @@ export const HodlCommentActionButtons: React.FC<HodlCommentActionButtonsProps> =
 
     const canDeleteComment = (comment: HodlCommentViewModel) => comment.user.address === address || nft?.owner === address;
     const [deleteComment] = useDeleteComment();
+
+    // Comment Menu
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
     return (<Box display="flex" alignItems="start" gap={1.5} marginX={1}>
         {address &&
@@ -93,27 +103,77 @@ export const HodlCommentActionButtons: React.FC<HodlCommentActionButtonsProps> =
             />
         }
         {
-            address && canDeleteComment(comment) &&
-            <Tooltip title="Delete this Comment">
-                <HighlightOffOutlined
+            address && canDeleteComment(comment) && (<>
+                <IconButton
+                    onClick={handleClick}
+                    size="small"
                     sx={{
-                        cursor: 'pointer',
-                        color: theme => theme.palette.text.secondary,
-                        '&:hover': {
-                            color: theme => theme.palette.text.primary,
-                        },
-                        fontSize: `14px`
+                        padding: 0
                     }}
-                    fontSize="inherit"
-                    onClick={async () => {
-                        await deleteComment(comment);
-                        parentMutateList();
-                        parentMutateCount();
-                        mutateCount();
-                    }
-                    }
-                />
-            </Tooltip>
+                >
+                    <MoreVertIcon
+                        sx={{
+                            cursor: 'pointer',
+                            color: theme => theme.palette.text.secondary,
+                            '&:hover': {
+                                color: theme => theme.palette.text.primary,
+                            },
+                            fontSize: `14px`
+                        }}
+                    />
+                </IconButton>
+                <Menu
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleClose}
+
+                >
+
+                    <MenuList
+                        dense
+                        sx={{
+                            padding: 0
+                        }}
+                    >
+                        <MenuItem onClick={async () => {
+                            alert('do delete here')
+                            // await deleteComment(comment);
+                            // parentMutateList();
+                            // parentMutateCount();
+                            // mutateCount();
+                        }
+                        }>
+                            <ListItemIcon>
+                                <DeleteOutlineSharp sx={{ fontSize: '14px' }} />
+                            </ListItemIcon>
+                            <ListItemText>delete</ListItemText>
+
+
+                        </MenuItem>
+                    </MenuList>
+
+                </Menu>
+            </>)
+            // <Tooltip title="Delete this Comment">
+            //     <HighlightOffOutlined
+            //         sx={{
+            //             cursor: 'pointer',
+            //             color: theme => theme.palette.text.secondary,
+            //             '&:hover': {
+            //                 color: theme => theme.palette.text.primary,
+            //             },
+            //             fontSize: `14px`
+            //         }}
+            //         fontSize="inherit"
+            //         onClick={async () => {
+            //             await deleteComment(comment);
+            //             parentMutateList();
+            //             parentMutateCount();
+            //             mutateCount();
+            //         }
+            //         }
+            //     />
+            // </Tooltip>
         }
     </Box>)
 }

@@ -98,13 +98,6 @@ const Mint = ({ address }) => {
           }
         }}
       >
-        {
-        // xs ?
-          // <MintMobileStepper activeStep={activeStep} setActiveStep={setActiveStep} stepComplete={stepComplete} stepLabels={stepLabels} /> 
-          // :
-          // <MintStepperMemo activeStep={activeStep} stepLabels={stepLabels} />
-        }
-        {/* <Typography variant='h2'>{stepLabels[activeStep]}</Typography> */}
         <Box
           sx={{
             position: 'relative'
