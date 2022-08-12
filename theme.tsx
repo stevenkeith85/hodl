@@ -51,6 +51,9 @@ let theme = createTheme({
     body2: {
       fontSize: 14,
     },
+    // a: {
+    //   textDecoration: 'none'
+    // }
   },
   breakpoints: {
     values: {
@@ -62,6 +65,14 @@ let theme = createTheme({
     },
   },
   components: {
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          textDecoration: 'none',
+          color: 'rgba(0,0,0,0.87);'
+        }
+      }
+    },
     MuiButton: {
       defaultProps: {
         disableRipple: true,

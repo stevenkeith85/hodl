@@ -93,6 +93,7 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
         { expiresIn: refreshTokenExpiresIn }
       );
 
+      console.log('AUTH: setting login cookies')
       res.setHeader('Set-Cookie', [
         cookie.serialize('accessToken', accessToken, { httpOnly: true, path: '/' }),
         cookie.serialize('refreshToken', refreshToken, { httpOnly: true, path: '/' })

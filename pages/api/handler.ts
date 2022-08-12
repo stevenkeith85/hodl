@@ -90,9 +90,7 @@ const ratelimit = async (req, res, next) => {
     if (limited) {
       return res.status(429).json({ message: `Slow down a little - ${routeKey}` })
     }
-  } else {
-    console.log('no limit', routeKey)
-  }
+  } 
   
   next();
 }

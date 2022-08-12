@@ -11,22 +11,21 @@ interface AssetThumbnailProps {
     size?: number;
 }
 
-export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token, size=44 }) => {
+export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token, size = 44 }) => {
 
     return (<Box
-        sx={{ cursor: 'pointer' }}
+        sx={{ cursor: 'pointer', width: `${size}px` }}
     >
         {
             assetType(token) === AssetTypes.Image &&
             <a>
                 <HodlImageResponsive
-                        cid={token.image}
-                        widths={[size, size * 2]}
-                        sizes={`${size}px`}
-                        aspectRatio="1:1"
-                        gravity="g_face:center"
-                        round={true}
-            />
+                    cid={token.image}
+                    widths={[size, size * 2]}
+                    sizes={`${size}px`}
+                    aspectRatio="1:1"
+                    gravity="g_face:center"
+                />
             </a>
         }
         {assetType(token) === AssetTypes.Video &&

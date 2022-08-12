@@ -38,7 +38,7 @@ export async function getServerSideProps({ req, res }) {
     user = await getUser(req.address, req.address)
   }
 
-  const limit = 10;
+  const limit = 8;
 
   const feed = getActions(user?.address, ActionSet.Feed, 0, limit);
 

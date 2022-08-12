@@ -62,10 +62,6 @@ export const HodlNotifications = ({
                 );
 
                 mutateUnread();
-
-                // setTimeout(async () => {
-                //     mutateLastRead(); // we wait 5 seconds before updating the last read time; so that the UI highlights the new notifications for a little bit
-                // }, 5000);
                 
             } catch (error) {
             }
@@ -111,7 +107,6 @@ export const HodlNotifications = ({
         }}
         display="flex"
         flexDirection="column"
-        // gap={2}
     >
         {
             notifications?.data && !notifications?.data?.[0]?.items?.length &&

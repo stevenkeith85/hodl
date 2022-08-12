@@ -90,11 +90,13 @@ export const authenticate = async (req, res): Promise<boolean> => {
   const { accessToken, refreshToken } = req.cookies;
 
   if (!accessToken || !refreshToken) {
+    console.log('AUTH: access or refresh token missing')
     return false;
   }
 
   try {
     const { address } = jwt.verify(accessToken, process.env.JWT_SECRET);
+    console.log('AUTH: successfully verified access token, setting req.address')
     req.address = address;
     return true;
   } catch (e) {
@@ -110,6 +112,7 @@ export const authenticate = async (req, res): Promise<boolean> => {
         if (sessionId == storedSessionId) {
           const accessToken = jwt.sign({ address, sessionId }, process.env.JWT_SECRET, { expiresIn: accessTokenExpiresIn });
 
+          console.log(`AUTH: new access token issued for ${address}`)
           res.setHeader('Set-Cookie', [
             cookie.serialize('accessToken', accessToken, { httpOnly: true, path: '/' }),
           ])
@@ -120,10 +123,12 @@ export const authenticate = async (req, res): Promise<boolean> => {
         // the sessionId does not match the storedSessionId
         // the user has been logged out; by themselves - or us
         // user will need to re-login
+        console.log(`AUTH: the sessionId does not match the storedSessionId for ${address}`)
         return false;
       } catch (e) {
         // the verify call has failed, i.e. the refreshToken has expired. 
         // the user will need to re-login
+        console.log(`AUTH: the refreshToken has expired`)
         return false;
       }
     }
@@ -131,9 +136,11 @@ export const authenticate = async (req, res): Promise<boolean> => {
     // This is unlikely to happen in the wild; but if it does; just log the user out
     // WE usually see it when switching from dev to prod mode (as we have a different jwt secret for both); 
     if (e instanceof jwt.JsonWebTokenError) {
+      console.log(`AUTH: secrets dont match, have switched from dev to prod or vice versa`)
       return false;
     }
 
+    console.log(`AUTH: something has gone wrong with the auth`, e);
     // just log them out if there's any issue we aren't handling
     return false;
   }

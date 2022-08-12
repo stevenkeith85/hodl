@@ -52,7 +52,7 @@ export const HodlImageResponsive = ({
                         as="image"
                         href={src}
                         //@ts-ignore
-                        imageSrcSet={srcSet}
+                        imagesrcset={srcSet}
                         //@ts-ignore
                         imagesizes={sizes}
                     />}

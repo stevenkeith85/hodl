@@ -1,75 +1,35 @@
 import { useContext } from 'react';
-import useSWR, { mutate } from 'swr';
+import { mutate } from 'swr';
 import { WalletContext } from '../contexts/WalletContext';
 import axios from 'axios';
 import { FeedContext } from '../contexts/FeedContext';
 import { FollowersContext } from '../contexts/FollowersContext';
-import { FollowingContext } from '../contexts/FollowingContext';
 import { RankingsContext } from '../contexts/RankingsContext';
 import { useUser } from './useUser';
 
 // profileUser is the user SWR for the profileAddress. We want to mutate it when someone follows/unfollows them so that the UI updates in real time
 export const useFollow = (profileAddress) => {
-  // const { address } = useContext(WalletContext);
+  const { address } = useContext(WalletContext);
 
-  const {data: profileUser, mutate: mutateProfileUser} = useUser(profileAddress);
-  
+  // Logged in user values. TODO: Migrate this to the user view model
+  // const { followingCount} = useContext(UserContext)
+  const user = useUser(address); // TODO: Once we add the counts to the UserViewModel, we can just mutate that. (simpler)
+
+  // The profile owner needs mutated as we use their info to determine if the user follows them
+  const profileOwner = useUser(profileAddress);
+
+  // If the user starts to follow the profile owner, the user's feed should be refreshed (as it will have new content)
   const { feed } = useContext(FeedContext);
 
+  // If the user starts to follow the profile owner, the profile owners follower count will change
   const { followers } = useContext(FollowersContext);
 
+  // The most followed users list will change
   const { mostFollowed } = useContext(RankingsContext);
 
-  // const fetcher = (url, address, profileAddress) => axios.get(`${url}?address1=${address}&address2=${profileAddress}`).then(r => Boolean(r.data.follows));
 
-  // TODO: We can maybe simplify this now
-  // const {
-  //   data: isFollowing,
-  //   mutate: mutateIsFollowing } = useSWR(
-  //     address && address !== profileAddress ? [`/api/follows`, address, profileAddress] : null,
-  //     fetcher
-  //   );
-
+  // TODO: We'll likely consolidate a few things into the UserViewModel, which should make updates simpler
   const follow = async () => {
-
-    // This is on the profile page
-    mutate([`/api/followers/count`, profileUser.address],
-      (data) => {
-        if (data === undefined) { // we've not fetched this yet, so no need to mutate. i.e. its not on screen
-          return data
-        }
-
-        return profileUser.followedByViewer ? data - 1 : data + 1;
-      },
-      {
-        revalidate: false
-      });
-
-      mutateProfileUser(old => ({
-        ...old,
-        followedByViewer: !old.followedByViewer
-      }),
-      {
-        revalidate: false
-      });
-
-      
-    // This is on the feed page
-    // mutate([`/api/following/count`, address],
-    //   (data) => {
-    //     if (data === undefined) { // we've not fetched this yet, so no need to mutate. i.e. its not on screen
-    //       return data
-    //     }
-
-    //     return isFollowing ? data - 1 : data + 1;
-    //   },
-    //   {
-    //     revalidate: false
-    //   });
-
-
-      // TODO: This can go at some point. Migrating the behaviour to the UserViewModel
-    // mutateIsFollowing(old => !old, { revalidate: false });
 
     try {
       const r = await axios.post(
@@ -82,40 +42,35 @@ export const useFollow = (profileAddress) => {
         }
       )
 
+      // The profile owners data needs updated
+      if (profileOwner) {
+        profileOwner.mutate();
+        mutate(['/api/followers/count', profileOwner.data.address])
+      }
+      
+      if (followers) {
+        followers.mutate();
+      }
+
+      // The users data needs updated
+      if (user) {
+        mutate([`/api/following/count`, user.data.address])
+      }
+
       if (feed) {
         feed.mutate();
       }
 
-      // // This is on the feed page
-      // if (mostFollowed) {
-      //   mostFollowed.mutate();
-      // }
-
-      // This is on the profile page
-      if (followers) {
-        followers.mutate();
+      // The rankings need updated
+      if (mostFollowed) {
+        mostFollowed.mutate();
       }
 
       return true;
 
     } catch (error) {
       if (error.response.status === 429) {
-        // mutate([`/api/followers/count`, profileAddress]);
-        // mutate([`/api/following/count`, address]);
-        // mutateIsFollowing();
-
-        // if (followers) {
-        //   followers.mutate();
-        // }
-
-        // if (following) {
-        //   following.mutate();
-        // }
-
-        // if (feed) {
-        //   feed.mutate();
-        // }
-
+        // TODO: If we preemptively mutate anything, we should undo it here
         return false;
       }
     }
