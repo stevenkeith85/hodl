@@ -34,7 +34,7 @@ export const AddToHodlAction: FC<MintProps> = ({
 
     if (success) {
       enqueueSnackbar('Successfully added your token to HodlMyMoon', { variant: "success" });
-      setStepComplete(4);
+      setStepComplete(5);
       setSuccessModalOpen(true);
     } else {
       setUnableToSaveModalOpen(true);

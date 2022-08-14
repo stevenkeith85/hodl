@@ -75,7 +75,7 @@ export const Likes: FC<LikesProps> = ({
                         fontSize: `calc(${fontSize} - 8px)`,
                         color
                     }}>{
-                        humanize.compactInteger(likeCount.data || 0, 1)
+                        humanize.compactInteger(likeCount?.data || 0, 1)
                         }</Typography>
                 }
             </Box>

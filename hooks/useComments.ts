@@ -53,7 +53,7 @@ export const useCommentCount = (
     fallbackData = null,
 ) => {
     const swr = useSWR(
-         [`/api/comments/count`, object, id],
+         id ? [`/api/comments/count`, object, id] : null,
         fetchWithObjectAndId,
         { fallbackData }
     );

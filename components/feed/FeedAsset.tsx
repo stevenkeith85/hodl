@@ -14,8 +14,13 @@ interface FeedAssetProps {
 
 export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
     return (<Box
-        sx={{ position: 'relative', height: 575 }}>
-        <Skeleton width={575} height={575} variant="rectangular" sx={{ zIndex: -1, position: 'absolute', top: 0, left: 0 }} />
+        sx={{ 
+            position: 'relative', 
+            // height: 575 
+        }}>
+        {/* <Skeleton 
+            width={575} 
+            height={575} variant="rectangular" sx={{ zIndex: -1, position: 'absolute', top: 0, left: 0 }} /> */}
         {
             (assetType(item.token) === AssetTypes.Image) &&
             <HodlImageResponsive

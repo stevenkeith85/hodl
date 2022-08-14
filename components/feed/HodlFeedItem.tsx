@@ -29,8 +29,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                     borderRadius: 1,
                     padding: 2,
                     border: `1px solid #ddd`,
-                    // width: `100%`,
-                    width: "575px",
+                    width: "min(575px, 100vw)",
                     maxWidth: "100%",
                     overflow: 'hidden'
                 }

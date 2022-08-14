@@ -173,7 +173,6 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
         <Box key={item?.id} sx={{
             background: lastRead < item.timestamp ? "#ECF3FF" : "white",
             padding: 1,
-            marginY: 1,
             width: `100%`,
             ...sx
         }}>

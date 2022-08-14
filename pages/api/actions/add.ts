@@ -1,6 +1,6 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
+// import dotenv from 'dotenv'
 import axios from 'axios';
 import apiRoute from "../handler";
 import { ActionSet, ActionSetMembers, ActionTypes, HodlAction } from '../../../models/HodlAction';
@@ -18,7 +18,7 @@ import { getUser } from "../user/[handle]";
 import Pusher from "pusher";
 import { getAction } from ".";
 
-dotenv.config({ path: '../.env' })
+// dotenv.config({ path: '../.env' })
 
 const pusher = new Pusher({
   appId: process.env.PUSHER_APP_ID,
@@ -89,6 +89,9 @@ const addToFeed = async (address: string, action: HodlAction): Promise<number> =
     }
   );
 
+  if (added) {
+    pusher.trigger(address, "feed", null);
+  }
   return added;
 }
 

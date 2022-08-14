@@ -59,6 +59,7 @@ export default function MyApp(props: MyAppProps) {
 
               <SnackbarProvider
                 Components={{
+                  // @ts-ignore
                   notification: NotificationSnackbar
                 }}
                 // maxSnack={3}

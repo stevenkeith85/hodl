@@ -22,7 +22,6 @@ export const useLike = (
 
   const toggleLike = async () => {
     if (!address) {
-      console.log("no address set!")
       return;
     }
     

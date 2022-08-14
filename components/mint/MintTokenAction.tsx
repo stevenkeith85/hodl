@@ -15,7 +15,6 @@ export const MintTokenAction: FC<MintProps> = ({
   formData,
   setFormData
  }: MintProps) => {
-  const { enqueueSnackbar } = useSnackbar();
 
   async function mint() {
     setLoading(true);

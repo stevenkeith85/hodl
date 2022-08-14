@@ -7,6 +7,8 @@ import { UserAvatar } from "./UserAvatar";
 import useSWR from "swr";
 import axios from 'axios';
 import { useUser } from "../../hooks/useUser";
+import { ProfileNameOrAddress } from "./ProfileNameOrAddress";
+import { getShortAddress } from "../../lib/utils";
 
 
 const UserAvatarAndHandleBody = ({ user, size, fontSize, handle, color }) => (<Box
@@ -15,7 +17,9 @@ const UserAvatarAndHandleBody = ({ user, size, fontSize, handle, color }) => (<B
         cursor: 'pointer'
     }}
 >
-    <Tooltip title={user.address} arrow placement="right">
+    <Tooltip title={
+        user.nickname || getShortAddress(user.address)
+    } arrow placement="right">
         <Box
             sx={{
                 display: 'flex',
@@ -41,7 +45,7 @@ interface UserAvatarProps {
 
 export const UserAvatarAndHandle: React.FC<UserAvatarProps> = ({
     address,
-    fallbackData=null,
+    fallbackData = null,
     size = 44,
     fontSize = "14px",
     handle = true,
@@ -59,7 +63,7 @@ export const UserAvatarAndHandle: React.FC<UserAvatarProps> = ({
     //     return null;
     // }
 
-    const {data: user} = useUser(address, fallbackData);
+    const { data: user } = useUser(address, fallbackData);
     if (!user) {
         return null;
     }
@@ -72,21 +76,21 @@ export const UserAvatarAndHandle: React.FC<UserAvatarProps> = ({
                         textDecoration: 'none',
                         color: '#333'
                     }}>
-                        <UserAvatarAndHandleBody 
-                            user={user} 
-                            size={size} 
-                            fontSize={fontSize} 
-                            handle={handle} 
-                            color={color} 
+                        <UserAvatarAndHandleBody
+                            user={user}
+                            size={size}
+                            fontSize={fontSize}
+                            handle={handle}
+                            color={color}
                         />
                     </Typography>
                 </Link > :
-                <UserAvatarAndHandleBody 
-                    user={user} 
-                    size={size} 
-                    fontSize={fontSize} 
-                    handle={handle} 
-                    color={color} 
+                <UserAvatarAndHandleBody
+                    user={user}
+                    size={size}
+                    fontSize={fontSize}
+                    handle={handle}
+                    color={color}
                 />
         }
     </>)

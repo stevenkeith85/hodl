@@ -14,8 +14,11 @@ export const NotificationSnackbar = React.forwardRef<HTMLDivElement, Notificatio
   } = props
 
   return (
+    // @ts-ignore
     <SnackbarContent ref={ref} role="alert" {...other}>
-      <HodlNotificationBox item={action} setShowNotifications={() => {}} lastRead={0} sx={{ margin: 0, width: '400px'}}/>
+      <HodlNotificationBox item={action} setShowNotifications={() => {}} lastRead={0} sx={{ width: '400px'}}/>
     </SnackbarContent>
   )
 })
+
+NotificationSnackbar.displayName="NotificationSnackbar"

@@ -11,7 +11,6 @@ export const SelectAssetAction: FC<MintProps> = ({
   setFormData,
   setStepComplete
 }: MintProps) => {
-  const { enqueueSnackbar } = useSnackbar();
   const [uploadToCloudinary, progress] = useCloudinaryUpload();
 
   const cloudinaryUpload = useCallback(async (file) => {

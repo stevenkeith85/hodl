@@ -24,7 +24,7 @@ export const Comments: FC<CommentsProps> = ({
     sx = {},
     fallbackData = null
 }) => {
-    const { data: count } = useCommentCount(nft.id, "token", fallbackData)
+    const { data: count } = useCommentCount(nft?.id, "token", fallbackData)
 
     const [open, setOpen] = useState(false);
 

@@ -23,7 +23,7 @@ export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address 
                 item xs={12}
                 md={7}
             >
-                <HodlFeed />
+                <HodlFeed address={address}/>
             </Grid>
             <Grid
                 item
