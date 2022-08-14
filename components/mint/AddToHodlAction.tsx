@@ -2,13 +2,14 @@ import { Typography, Stack, Button, Box } from '@mui/material';
 import { SuccessModal } from '../index';
 import { CloudSyncOutlined, NightsStayOutlined, Rocket } from '@mui/icons-material';
 import { FC, useState } from 'react';
-import { useSnackbar } from 'notistack';
+// import { useSnackbar } from 'notistack';
 
 import { UnableToStoreModal } from '../modals/UnableToStoreModal';
 import { useStoreToken } from '../../hooks/useStoreToken';
 import { MintProps } from './models';
 import { grey } from '@mui/material/colors';
 
+import { enqueueSnackbar, closeSnackbar } from 'notistack'
 
 export const AddToHodlAction: FC<MintProps> = ({ 
   stepComplete, 
@@ -18,7 +19,6 @@ export const AddToHodlAction: FC<MintProps> = ({
   setFormData,
   setLoading
 }: MintProps) => {
-  const { enqueueSnackbar } = useSnackbar();
   const [store] = useStoreToken();
 
   const [unableToSaveModalOpen, setUnableToSaveModalOpen] = useState(false);

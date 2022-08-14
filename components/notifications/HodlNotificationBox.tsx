@@ -160,9 +160,10 @@ interface HodlNotificationBoxProps {
     item: HodlActionViewModel;
     setShowNotifications: Function;
     lastRead: number;
+    sx?: object;
 }
 
-export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setShowNotifications, lastRead }) => {
+export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setShowNotifications, lastRead, sx={} }) => {
 
     if (!item) {
         return null;
@@ -170,9 +171,11 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setSho
     
     return (
         <Box key={item?.id} sx={{
-            background: lastRead < item.timestamp ? "#ECF3FF" : "none",
+            background: lastRead < item.timestamp ? "#ECF3FF" : "white",
             padding: 1,
-            marginY: 1
+            marginY: 1,
+            width: `100%`,
+            ...sx
         }}>
             <Box
                 display="flex"

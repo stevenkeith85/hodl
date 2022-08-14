@@ -2,7 +2,7 @@ import { Box, ClickAwayListener, Fade, Typography, useMediaQuery, useTheme } fro
 import CloseIcon from '@mui/icons-material/Close';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect, useRef } from "react";
 import { WalletContext } from "../../contexts/WalletContext";
 import { useRouter } from "next/router";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
@@ -12,6 +12,8 @@ import { ActionSet, HodlAction } from "../../models/HodlAction";
 import InfiniteScroll from "react-swr-infinite-scroll";
 import useSWR from "swr";
 import axios from "axios";
+import Pusher from 'pusher-js';
+
 
 export const HodlNotifications = ({
     setHoverMenuOpen,
@@ -19,6 +21,9 @@ export const HodlNotifications = ({
     setShowNotifications,
     limit = 10
 }) => {
+
+    // React strict mode calls useEffect twice now :( . This fixes it - TODO - Investigate
+    const effectCalled = useRef(false);
 
     const router = useRouter();
     const theme = useTheme();
@@ -38,6 +43,26 @@ export const HodlNotifications = ({
             revalidateOnFocus: false // we don't need to revalidate unless we actually read the messages. we call mutate when we do that
         }
     );
+
+    // Get real time updates about notifications! :)
+    useEffect(() => {
+        if (effectCalled.current) {
+            return;
+        }
+
+        const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY, {
+            cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER
+        });
+
+        const channel = pusher.subscribe(address);
+
+        channel.bind('notification', () => {
+            mutateUnread(true, { revalidate: false });
+        });
+
+        effectCalled.current = true;
+    }, []);
+
 
     // when the user closes the notifications, we'll update the last read on the UI so that they don't get the highlight effect next time
     useEffect(() => {
@@ -124,11 +149,11 @@ export const HodlNotifications = ({
         >
             {
                 ({ items }) => (items || []).map((item: HodlAction) =>
-                    <HodlNotificationBox 
-                        key={item.id} 
-                        item={item} 
-                        setShowNotifications={setShowNotifications} 
-                        lastRead={lastRead} 
+                    <HodlNotificationBox
+                        key={item.id}
+                        item={item}
+                        setShowNotifications={setShowNotifications}
+                        lastRead={lastRead}
                     />
                 )
 

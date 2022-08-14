@@ -1,15 +1,13 @@
 import { Button, Stack } from "@mui/material";
 import { useContext, useState } from "react";
-import { buyNft, delistNft } from "../../lib/nft";
 import { WalletContext } from '../../contexts/WalletContext';
-import { SuccessModal } from "../index";
-import { useSnackbar } from 'notistack';
+import { enqueueSnackbar } from 'notistack';
+import { buyNft, delistNft } from "../../lib/nft";
 import { ListModal } from "../modals/ListModal";
-
+import { SuccessModal } from "../modals/SuccessModal";
 
 
 export const NftActionButtons = ({ nft }) => {
-    const { enqueueSnackbar } = useSnackbar();
     const { address } = useContext(WalletContext);
 
     const [listModalOpen, setListModalOpen] = useState(false);

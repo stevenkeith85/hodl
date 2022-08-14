@@ -2,12 +2,10 @@ import { Box, Button, TextField, Typography } from "@mui/material";
 import { listNftOnMarket } from "../../lib/nft";
 import { HodlModal } from "../index";
 import { useRouter } from "next/router";
-import { useSnackbar } from 'notistack';
+import { enqueueSnackbar } from 'notistack';
 
 
 export const ListModal = ({ listModalOpen, setListModalOpen, setListedModalOpen, price, setPrice }) => {
-
-    const { enqueueSnackbar } = useSnackbar();
     const router = useRouter();
 
     // Possibly extract a hook (or something) for this

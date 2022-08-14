@@ -1,7 +1,7 @@
 import { Typography, Stack, Button, Box } from '@mui/material';
 import { Build, CloudSyncOutlined, SatelliteAlt } from '@mui/icons-material';
 import { FC } from 'react';
-import { useSnackbar } from 'notistack';
+import { enqueueSnackbar } from 'notistack';
 import { mintToken } from '../../lib/mint';
 import { MintProps } from './models';
 import { grey } from '@mui/material/colors';

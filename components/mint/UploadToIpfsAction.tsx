@@ -78,11 +78,8 @@ export const UploadToIpfsAction: FC<MintProps> = ({
     <Box
       display="flex"
       flexDirection={"column"}
-      // alignItems="center"
       justifyContent="center"
-      // textAlign="center"
       height="550px"
-    // gap={4}
     >
       <Formik
         initialValues={{

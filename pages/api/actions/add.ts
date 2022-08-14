@@ -11,19 +11,24 @@ import { isFollowing } from "../follows";
 import { likesComment } from "../like/comment/likes";
 import { fetchNFT, getOwnerOrSellerAddress } from "../nft/[tokenId]";
 import { HodlComment } from "../../../models/HodlComment";
-import { ethers } from "ethers";
-import { nftaddress } from "../../../config";
-import { getProvider } from "../../../lib/server/connections";
-import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 
 import { Nft } from "../../../models/Nft";
-import { Token } from "../../../models/Token";
 import { getUser } from "../user/[handle]";
-import { getComment } from "../comment";
+
+import Pusher from "pusher";
+import { getAction } from ".";
 
 dotenv.config({ path: '../.env' })
-const route = apiRoute();
 
+const pusher = new Pusher({
+  appId: process.env.PUSHER_APP_ID,
+  key: process.env.NEXT_PUBLIC_PUSHER_APP_KEY,
+  secret: process.env.PUSHER_APP_SECRET,
+  cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER,
+  useTLS: true
+});
+
+const route = apiRoute();
 const client = Redis.fromEnv()
 
 // Data Structures:
@@ -57,6 +62,16 @@ const addNotification = async (address: string, action: HodlAction): Promise<num
       member: action.id
     }
   );
+
+  if (added) {
+    // TODO - We can send the actual notification so that it immedialy appears on the users screen
+    // but we need to figure out the authentications stuff first
+    // https://pusher.com/docs/channels/using_channels/connection/
+    // https://pusher.com/docs/channels/using_channels/user-authentication/
+    // pusher.trigger("notifications", "notification", await getAction(action.id));
+
+    pusher.trigger(address, "notification", null);
+  }
 
   return added;
 }

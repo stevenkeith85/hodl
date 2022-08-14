@@ -9,7 +9,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import Container from '@mui/material/Container';
 import { useState, useContext, useEffect } from 'react';
 import Link from 'next/link';
-import { Logo } from '../Logo';
 
 import { Stack, Tooltip, useMediaQuery, useTheme } from '@mui/material';
 import { useRouter } from 'next/router';
@@ -19,7 +18,7 @@ import { WalletContext } from '../../contexts/WalletContext';
 import { useNickname } from '../../hooks/useNickname';
 import { HodlNotifications } from '../notifications/HodlNotifications';
 import axios from 'axios'
-import { useSnackbar } from 'notistack';
+import { enqueueSnackbar, closeSnackbar } from 'notistack'
 import { SearchBox } from '../Search';
 import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
 import { WalletMenuPage } from '../menu/WalletMenuPage';
@@ -35,7 +34,6 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
     const [showMobileNotifications, setShowMobileNotifications] = useState(false);
     const [showDesktopNotifications, setShowDesktopNotifications] = useState(false);
 
-    const { enqueueSnackbar } = useSnackbar();
     const [error, setError] = useState('');
 
     const theme = useTheme();

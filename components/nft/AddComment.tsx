@@ -80,11 +80,12 @@ export const AddComment: FC<AddCommentProps> = ({
                 commentingOn.setShowThread(true);
                 commentingOn.mutateList();
                 commentingOn.mutateCount();
+                
 
                 mutateCount();
                 // TODO: NEED TO MUTATE THE TOP LEVEL COUNT
 
-                values.comment = '';
+                newTagRef.current.value = "";
                 reset();
 
                 setLoading(false);
@@ -126,12 +127,10 @@ export const AddComment: FC<AddCommentProps> = ({
                                             onKeyDown={async e => {
                                                 if (e.ctrlKey && e.code === "Enter") {
                                                     await submitForm();
-                                                    setFieldValue("comment", "");
-                                                    newTagRef.current.value = "";
                                                 }
                                             }}
                                             onChange={(e) => {
-                                                setFieldValue('comment', e.target.value)
+                                                setFieldValue('comment', e.target.value);
                                             }}
                                             autoComplete='off'
                                             ref={newTagRef}

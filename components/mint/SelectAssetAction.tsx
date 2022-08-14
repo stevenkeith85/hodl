@@ -1,5 +1,5 @@
 import { FC, useCallback } from "react";
-import { useSnackbar } from 'notistack';
+import { enqueueSnackbar } from 'notistack';
 import { useCloudinaryUpload } from "../../hooks/useCloudinaryUpload";
 import { MintProps } from "./models";
 import { Form, Formik } from "formik";
