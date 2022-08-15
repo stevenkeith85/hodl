@@ -99,7 +99,7 @@ const NftDetail = ({
   const [value, setValue] = useState(Number(tab)); // tab
 
   const { query } = useRouter();
-  const comment = Array.isArray(query?.comment) ? query.comment[0] : query?.comment;
+  // const comment = Array.isArray(query?.comment) ? query.comment[0] : query?.comment;
 
   return (
     <>
@@ -109,7 +109,7 @@ const NftDetail = ({
         }}
       >
         <Head>
-          <title>{nft.name} | HodlMyMoon</title>
+          <title>{nft.name} · Hodl My Moon</title>
         </Head>
         <Grid container>
           <Grid item xs={12} marginY={4}>
@@ -120,7 +120,7 @@ const NftDetail = ({
                 justifyContent: 'space-between',
                 alignItems: 'center'
               }}>
-              <Box display="flex" gap={2} alignItems="center">
+              <Box display="flex" gap={1} alignItems="center">
                 <UserAvatarAndHandle
                   address={owner.address}
                   fallbackData={owner}
@@ -157,8 +157,8 @@ const NftDetail = ({
                   textColor="secondary"
                   indicatorColor="secondary"
                 >
-                  <Tab key={0} value={0} icon={<Forum />} />
-                  <Tab key={1} value={1} icon={<Insights />} />
+                  <Tab key={0} value={0} icon={<Forum fontSize="small" />} sx={{ padding: 1.5, minWidth: '60px' }} />
+                  <Tab key={1} value={1} icon={<Insights fontSize="small"/>} sx={{ padding: 1.5, minWidth: '60px' }}  />
                 </Tabs>
               </Box>
 

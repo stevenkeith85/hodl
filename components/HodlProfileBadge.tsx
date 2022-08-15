@@ -60,6 +60,7 @@ export const HodlProfileBadge: React.FC<HodlProfileBadgeProps> = ({ user }) => {
                 paddingY: 2,
                 border: '1px solid #ddd',
                 borderRadius: 1,
+                background: 'white'
             }}
         >
             <Box

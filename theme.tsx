@@ -1,5 +1,5 @@
 import { createTheme, responsiveFontSizes } from '@mui/material/styles';
-import { indigo, pink } from '@mui/material/colors';
+import { blueGrey, indigo, pink, purple, yellow } from '@mui/material/colors';
 
 declare module '@mui/material/styles' {
   interface Theme {
@@ -22,9 +22,11 @@ declare module '@mui/material/styles' {
 let theme = createTheme({
   palette: {
     primary: {
-      main: indigo[500],
+      main: "#05778A",
+      // main: indigo[500]
     },
     secondary: {
+      // main: "#C51162"
       main: '#ec4899',
     },
   },
@@ -69,7 +71,7 @@ let theme = createTheme({
       styleOverrides: {
         root: {
           textDecoration: 'none',
-          color: 'rgba(0,0,0,0.87);'
+          // color: 'rgba(0,0,0,0.87);'
         }
       }
     },

@@ -1,15 +1,33 @@
 import { Box } from "@mui/material"
 import Head from "next/head"
-import { useEffect, useRef } from "react"
+import { useContext, useEffect, useRef } from "react"
 import Pusher from 'pusher-js';
 import { HodlAction } from "../models/HodlAction";
 import { enqueueSnackbar } from "notistack";
+import { WalletContext } from "../contexts/WalletContext";
+import { authenticate } from "../lib/jwt";
 
 
-export default function Test() {
+export async function getServerSideProps({ req, res }) {
+    await authenticate(req, res);
+  
+    return {
+      props: {
+        address: req.address || null,
+      }
+    }
+  }
+
+export default function Test({address}) {
+    // const { address } = useContext(WalletContext);
+
     const effectCalled = useRef(false)
 
     useEffect(() => {
+        if (!address) {
+            return;
+        }
+
         if (effectCalled.current) {
             return;
         }
@@ -18,9 +36,9 @@ export default function Test() {
             cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER
         });
 
-        const channel = pusher.subscribe('notifications');
+        const channel = pusher.subscribe(address);
 
-        channel.bind('notification', (action: HodlAction) => {
+        channel.bind('notification-hover', (action: HodlAction) => {
             enqueueSnackbar(
                 "",
                 { 
@@ -32,18 +50,17 @@ export default function Test() {
         });
 
         effectCalled.current = true;
-    }, [])
+    }, [address])
 
 
     return (<>
         <Head>
-            <title>Pusher Test</title>
+            <title>Test</title>
         </Head>
         <Box>
-            <h1>Pusher Test</h1>
+            <h1>Test</h1>
             <p>
-                Try publishing an event to channel <code>my-channel</code>
-                with event name <code>my-event</code>.
+                Test Bed
             </p>
 
         </Box>

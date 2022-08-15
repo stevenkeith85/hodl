@@ -22,6 +22,7 @@ export const TokenLinksList: React.FC<TokenLinksListProps> = ({ swr, limit, show
           display="flex"
           // gap={2}
           flexDirection={"column"}
+          sx={{width: '100%'}}
         >
           <InfiniteScroll
             swr={swr}

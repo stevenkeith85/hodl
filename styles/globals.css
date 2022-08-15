@@ -3,7 +3,7 @@
 }
 
 body {
-    overflow-x: 'hidden',
+  overflow-x: 'hidden';
 }
 
 :focus {
@@ -14,4 +14,37 @@ body {
 @keyframes shake {
   25% {transform: rotate(30deg);}
   75% {transform: rotate(-30deg);}
+}
+
+/* customize body scrollbars */
+/* firefox */
+body {
+  scrollbar-width: 14px;
+}
+/* chrome, edge, safari */
+body::-webkit-scrollbar {
+  width: 14px;
+}
+
+
+/* customize other scrollbars */
+/* firefox */
+* {
+  scrollbar-width: 10px;
+  scrollbar-color: #ddd #eee;
+}
+
+/* chrome, edge, safari */
+*::-webkit-scrollbar {
+  width: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #eee;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #ddd;
+  border-radius: 8px;
+  border: 1px solid #bbb;
 }

@@ -16,7 +16,6 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
     return (<Box
         sx={{ 
             position: 'relative', 
-            // height: 575 
         }}>
         {/* <Skeleton 
             width={575} 
@@ -25,7 +24,7 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
             (assetType(item.token) === AssetTypes.Image) &&
             <HodlImageResponsive
                 cid={item.token.image}
-                aspectRatio="1:1"
+                aspectRatio={item?.token?.aspectRatio || "1:1"}
                 gravity="g_face"
                 widths={[575, 700, 800, 900, 1000, 1080]}
                 sizes="575w"

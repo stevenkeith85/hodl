@@ -1,13 +1,10 @@
 import { Box, Tooltip, Typography } from "@mui/material";
-import { User, UserViewModel } from "../../models/User";
+import { UserViewModel } from "../../models/User";
 import { UserHandle } from "./UserHandle";
 import { UserDefaultAvatar } from "./UserDefaultAvatar";
 import Link from "next/link";
 import { UserAvatar } from "./UserAvatar";
-import useSWR from "swr";
-import axios from 'axios';
 import { useUser } from "../../hooks/useUser";
-import { ProfileNameOrAddress } from "./ProfileNameOrAddress";
 import { getShortAddress } from "../../lib/utils";
 
 
@@ -24,7 +21,7 @@ const UserAvatarAndHandleBody = ({ user, size, fontSize, handle, color }) => (<B
             sx={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 2,
+                gap: 1.5,
             }}
         >
             {user.avatar ? <UserAvatar user={user} size={size} /> : <UserDefaultAvatar size={size} color={color} />}
@@ -52,18 +49,8 @@ export const UserAvatarAndHandle: React.FC<UserAvatarProps> = ({
     withLink = true,
     color = "secondary"
 }) => {
-
-    // const { data: user } = useSWR(
-    //     [`/api/user`, address],
-    //     (url, query) => axios.get(`${url}/${query}`).then(r => r.data.user),
-    //     { fallbackData }
-    // )
-
-    // if (!user) {
-    //     return null;
-    // }
-
     const { data: user } = useUser(address, fallbackData);
+
     if (!user) {
         return null;
     }

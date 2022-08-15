@@ -74,13 +74,13 @@ const Mint = ({ address }) => {
     'Hodl'
   ];
 
-  const warning = useWarningOnExit(stepComplete !== 4 && activeStep > 0, "If you leave now, your token will not be added to Hodl My Moon. Are you sure?")
+  const warning = useWarningOnExit(stepComplete !== 5 && activeStep > 0, "If you leave now, your token will not be added to Hodl My Moon. Are you sure?")
 
 
   return (
     <>
       <Head>
-        <title>Create new token | HodlMyMoon</title>
+        <title>Create · Hodl My Moon</title>
       </Head>
       <Box
         display={"flex"}

@@ -15,24 +15,22 @@ export const PublicHomePage = ({ }) => {
             <Box display="flex">
                 <HomePagePitch />
             </Box>
-            <Grid
-                spacing={4}
-                container
-                paddingBottom={4}
-            >
-                <Grid item xs={12} sm={6} md={3}>
+            <Box
+                sx={{
+                    display: 'grid',
+                    gridTemplateColumns: {
+                        xs:`1fr`,
+                        sm:`1fr 1fr`,
+                        lg: `1fr 1fr 1fr 1fr`
+                    },
+                    gap: 4,
+                    marginBottom: '50px'
+                }}>
                     <TopUsers followButton={false} />
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
                     <TopTokens showLikes={false} />
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
                     <NewUsers followButton={false} />
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
                     <NewTokens showLikes={false} />
-                </Grid>
-            </Grid>
+            </Box>
         </Box >
     )
 }

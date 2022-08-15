@@ -31,7 +31,7 @@ route.post(async (req, res: NextApiResponse) => {
 
   // If the user were to POST a different filter to what the image on IPFS used; it 'could' be a little misleading.
   // i.e. we use the filter to do the transformation on the fly. Perhaps we should transform the source image instead.
-  const { tokenId: id, mimeType, filter } = req.body;
+  const { tokenId: id, mimeType, filter, aspectRatio } = req.body;
 
   const { tokenUri: metadata, owner } = await getTokenUriAndOwner(id);
 
@@ -63,6 +63,7 @@ route.post(async (req, res: NextApiResponse) => {
     metadata: ipfsUriToCid(metadata),
     mimeType,
     filter,
+    aspectRatio,
     privilege,
     creator: req.address
   };

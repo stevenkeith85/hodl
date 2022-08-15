@@ -5,13 +5,6 @@ export const ContactPagePitch = ({ }) => {
     return (
         <Grid
             container
-            sx={{
-                padding: {
-                    'xs': 6,
-                    'sm': 8,
-                    'xl': 12,
-                }
-            }}
         >
             <Grid
                 item
@@ -28,7 +21,7 @@ export const ContactPagePitch = ({ }) => {
                     gap={0}
                     height="100%"
                     sx={{
-                        paddingY: 4,
+                        paddingY: `70px`,
                     }}
                 >
                     <Box

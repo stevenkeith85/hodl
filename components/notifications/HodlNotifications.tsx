@@ -46,6 +46,10 @@ export const HodlNotifications = ({
 
     // Get real time updates about notifications! :)
     useEffect(() => {
+        if (!address) {
+            return;
+        }
+
         if (effectCalled.current) {
             return;
         }
@@ -61,7 +65,7 @@ export const HodlNotifications = ({
         });
 
         effectCalled.current = true;
-    }, []);
+    }, [address]);
 
 
     // when the user closes the notifications, we'll update the last read on the UI so that they don't get the highlight effect next time
@@ -123,6 +127,7 @@ export const HodlNotifications = ({
             maxHeight: { sm: '425px' },
             height: { xs: 'calc(100vh - 56px)', sm: 'auto' },
             width: { xs: '100%', sm: 'auto' },
+            overflowX: 'hidden',
             overflowY: 'auto',
             border: `1px solid #ddd`,
             margin: 0,
@@ -163,9 +168,10 @@ export const HodlNotifications = ({
 
     return (
         <>
-            {showNotifications ? <CloseIcon /> :
+            {showNotifications ? <CloseIcon  color="primary" /> :
                 (unread ?
                     <NotificationsIcon
+                        color="primary"
                         sx={{
                             cursor: 'pointer',
                             animation: `shake 0.75s`,
@@ -179,6 +185,7 @@ export const HodlNotifications = ({
                         }
                         } /> :
                     <NotificationsNoneIcon
+                        color="primary"
                         sx={{
                             cursor: 'pointer',
                         }}

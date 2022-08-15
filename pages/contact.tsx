@@ -17,7 +17,7 @@ export async function getServerSideProps({ req, res }) {
 
 export default function Contact({ address}) {
     return (
-        <Box marginY={4} textAlign="center">
+        <Box marginY={0} textAlign="center">
             <ContactPagePitch />
             <Stack direction="column" spacing={4} sx={{ color: grey[600], alignItems: "center" }}>
                 <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>

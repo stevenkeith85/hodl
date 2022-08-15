@@ -27,6 +27,7 @@ export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit, follow
     <Box
       display="flex"
       flexDirection={"column"}
+      sx={{width: '100%'}}
     >
       <InfiniteScroll
         swr={swr}

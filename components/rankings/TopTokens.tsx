@@ -8,7 +8,7 @@ export const TopTokens = ({ limit = 10, showLikes = true }) => {
     const { mostLiked } = useContext(RankingsContext);
 
     return (
-        <HodlScrollBox title="top tokens">
+        <HodlScrollBox title="Top tokens">
             <TokenLinksList limit={limit} swr={mostLiked}  width={`100%`} showLikes={showLikes}/>
         </HodlScrollBox>
     )

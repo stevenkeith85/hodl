@@ -102,10 +102,14 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
     return (
         <>
             <AppBar
+
                 position="fixed"
                 sx={{
+                    background: 'white',
                     maxWidth: `100vw`,
-                    left: 0
+                    left: 0,
+                    boxShadow: 'none',
+                    borderBottom: `1px solid #ddd`
                 }}>
                 <Container
                     maxWidth="xl"
@@ -123,7 +127,7 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                         }}>
                             <Box sx={{
                                 display: 'flex',
-                                gap: {xs: 4, md: 6},
+                                gap: { xs: 4, md: 6 },
                                 alignItems: 'center',
                                 justifyContent: 'center',
                             }}>
@@ -135,25 +139,26 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                         passHref
                                     >
                                         {/* <Tooltip title={page.label} > */}
-                                            <Typography
-                                                component="a"
-                                                key={page.label}
-                                                sx={{
-                                                    margin: 0,
-                                                    padding: 0,
-                                                    lineHeight: 0,
-                                                    fontFamily: theme => theme.logo.fontFamily,
-                                                    cursor: 'pointer',
-                                                    color: 'white',
-                                                    textTransform: 'none',
-                                                    textDecoration: 'none',
-                                                    fontSize: {
-                                                        md: 16,
-                                                    },
-                                                }}
-                                            >
-                                                {i > 0 && !xs ? page.label : page.icon}
-                                            </Typography>
+                                        <Typography
+                                            component="a"
+                                            key={page.label}
+                                            sx={{
+                                                color: theme => theme.palette.primary.main,
+                                                margin: 0,
+                                                padding: 0,
+                                                lineHeight: 0,
+                                                fontFamily: theme => theme.logo.fontFamily,
+                                                cursor: 'pointer',
+                                                // color: 'white',
+                                                textTransform: 'none',
+                                                textDecoration: 'none',
+                                                fontSize: {
+                                                    md: 16,
+                                                },
+                                            }}
+                                        >
+                                            {i > 0 && !xs ? page.label : page.icon}
+                                        </Typography>
                                         {/* </Tooltip> */}
                                     </Link>
                                 ))}
@@ -163,7 +168,7 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                     position: { sm: 'relative' },
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: {xs: 2, md: 4},
+                                    gap: { xs: 2, md: 4 },
                                 }}
                             >
                                 {!xs && <SearchBox setHoverMenuOpen={null} />}
@@ -193,10 +198,11 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                         desktopMenuOpen ?
                                             <Box
                                                 width={44}
+                                                height={44}
                                                 display="flex"
                                                 alignItems="center"
                                                 justifyContent="center">
-                                                <CloseIcon />
+                                                <CloseIcon color="primary" />
                                             </Box> :
                                             address ?
                                                 <UserAvatarAndHandle
@@ -206,10 +212,11 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                                 /> :
                                                 <Box
                                                     width={44}
+                                                    height={44}
                                                     display="flex"
                                                     alignItems="center"
                                                     justifyContent="center">
-                                                    <AccountBalanceWallet />
+                                                    <AccountBalanceWallet color="primary" />
                                                 </Box>
                                     }
                                 </IconButton>

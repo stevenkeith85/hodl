@@ -14,7 +14,11 @@ const Footer = ({ showFooter = true }) => {
 
     return (
         <Box>
-            <Box sx={{ backgroundColor: grey[200] }}>
+            <Box sx={{
+                backgroundColor: '#efefef',
+                borderTop: `1px solid #ddd`
+            }}
+            >
                 <Container maxWidth="xl" sx={{
                     paddingTop: {
                         xs: 4,
@@ -55,21 +59,28 @@ const Footer = ({ showFooter = true }) => {
                             }}
                         >
                             <Stack spacing={0.5}>
-                                <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>Hodl My Moon</Typography>
+                                <Typography
+                                    sx={{
+                                        fontWeight: 600,
+                                        marginBottom: 0.5,
+                                    }}>
+                                    hodl
+                                </Typography>
                                 <HodlLink href="/about">about</HodlLink>
                                 <HodlLink href="/contact">contact</HodlLink>
                             </Stack>
-                            {address && <Stack spacing={0.5}>
-                                <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>NFTs</Typography>
+                            <Stack spacing={0.5}>
+                                <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>tokens</Typography>
                                 <HodlLink href="/explore">explore</HodlLink>
-                                <HodlLink href="/create">create</HodlLink>
-                            </Stack>}
+                                {address && <HodlLink href="/create">create</HodlLink>}
+                            </Stack>
                         </Stack>
                         <Box display="flex" justifyContent="center" alignItems="center" textAlign="center" gap={1}>
                             <Typography
                                 sx={{
                                     fontFamily: theme => theme.logo.fontFamily,
-                                    fontSize: theme => theme.logo.fontSize
+                                    fontSize: theme => theme.logo.fontSize,
+                                    color: theme => theme.palette.primary.main
                                 }}>
                                 Hodl My Moon
                             </Typography>
@@ -77,7 +88,7 @@ const Footer = ({ showFooter = true }) => {
                     </Stack>
                 </Container>
             </Box>
-            <Box sx={{ backgroundColor: grey[300] }}>
+            <Box sx={{ backgroundColor: 'white' }}>
                 <Container
                     maxWidth="xl"
                     sx={{

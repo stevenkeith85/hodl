@@ -17,6 +17,10 @@ export const HodlFeed = ({ address, limit = 4 }) => {
 
     // Get real time updates about your feed! :)
     useEffect(() => {
+        if (!address) {
+            return;
+        }
+        
         if (effectCalled.current) {
             return;
         }
@@ -32,7 +36,7 @@ export const HodlFeed = ({ address, limit = 4 }) => {
         });
 
         effectCalled.current = true;
-    }, []);
+    }, [address]);
 
     return (
         <Box

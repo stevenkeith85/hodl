@@ -98,8 +98,6 @@ export const HodlCommentActionButtons: React.FC<HodlCommentActionButtonsProps> =
                 id={comment.id}
                 object="comment"
                 showCount={false}
-                likeTooltip={'Like this Comment'}
-                unlikeTooltip={'Stop liking this Comment'}
             />
         }
         {
@@ -295,16 +293,14 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
         <Box
             display="flex"
             flexDirection="column"
-            gap={1}
+            // gap={1}
             width={`100%`}
         >
-            {/* {level} */}
             <Box
                 display="flex"
                 flexDirection="column"
-                gap={0.5}
+                // gap={0.5}
                 sx={{
-                    // padding: 1,
                     paddingLeft: 0,
                     width: `100%`
                 }}
@@ -312,7 +308,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                 <Box
                     display="flex"
                     alignItems="start"
-                    gap={2}
+                    gap={1.5}
                     sx={{
                         // background: 'green',
                         width: `100%`
@@ -346,18 +342,18 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                 display="flex"
                                 flexDirection="column"
                                 flexWrap="wrap"
-                                gap={1}
+                                // gap={0.5}
                                 width={`100%`}
                             >
                                 <Box
                                     display="flex"
                                     flexDirection="column"
                                     flexWrap="wrap"
-                                    gap={1}
+                                    // gap={1}
                                 >
                                     <Box sx={{
                                         display: 'flex',
-                                        gap: 1,
+                                        // gap: 1,
                                         alignItems: 'center',
                                         // background: 'yellow',
                                         justifyContent: 'space-between',
@@ -375,7 +371,6 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                             />
                                             <Typography
                                                 sx={{
-                                                    // fontSize: "12px",
                                                     fontWeight: 600,
                                                     color: theme => theme.palette.text.secondary
                                                 }}>
@@ -402,7 +397,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                         />
 
                                     </Box>
-                                    <Typography sx={{ whiteSpace: 'pre-line' }}>{comment.comment}</Typography>
+                                    <Typography sx={{ whiteSpace: 'pre-line', marginY: 0.25 }}>{comment.comment}</Typography>
                                 </Box>
                                 <Box
                                     display="flex"
@@ -423,7 +418,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                             <Typography
                                                 sx={{
                                                     fontSize: "12px",
-                                                    color: countSWR.data ? theme => theme.palette.secondary.dark : theme => theme.palette.text.secondary,
+                                                    color: theme => theme.palette.text.secondary,
                                                     cursor: countSWR.data ? 'pointer' : 'unset',
                                                     '&:hover': {
                                                         color: countSWR.data ? theme => theme.palette.text.primary : theme => theme.palette.text.secondary

@@ -2,14 +2,15 @@ import axios from 'axios'
 
 export const useStoreToken = () => {
 
-  const store = async (tokenId, mimeType, filter) => {
+  const store = async (tokenId, mimeType, filter, aspectRatio) => {
     try {
       const r = await axios.post(
         '/api/mint/store',
         {
           tokenId,
           mimeType,
-          filter
+          filter,
+          aspectRatio
         },
         {
           headers: {

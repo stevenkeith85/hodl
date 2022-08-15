@@ -4,12 +4,11 @@ import { useContext } from 'react';
 import { UserLinksList } from '../profile/UserLinksList';
 import { HodlScrollBox } from '../HodlScrollBox';
 
-
 export const TopUsers = ({ limit = 10, followButton=true}) => {
     const { mostFollowed: rankings } = useContext(RankingsContext);
 
     return (
-        <HodlScrollBox title="top users">
+        <HodlScrollBox title="Top users">
             <UserLinksList swr={rankings} limit={limit} width={`100%`} followButton={followButton}/>
         </HodlScrollBox>
     )

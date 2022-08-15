@@ -18,5 +18,7 @@ export interface Token {
 
     image: string; // <cid>
     mimeType: string; // image might be a video. mimeType tells us what it actually is. TODO - Rename image to asset. (This technically would be off-spec though as ERC721 uses 'image')
+    
     filter?: "e_improve" | "e_art:athena" | "e_art:aurora" | "e_art:hairspray" | "e_grayscale"; // we apply the filter dynamically. TODO - We should PROBABLY transform the actual asset as upload time. (unless its very slow to do so)
+    aspectRatio?: "1:1" | "4:5" | "16:9"
   };

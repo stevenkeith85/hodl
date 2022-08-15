@@ -5,7 +5,6 @@ import theme from '../theme';
 import { SnackbarProvider } from 'notistack';
 import { SWRConfig } from 'swr';
 import { WalletContext } from '../contexts/WalletContext';
-import '../styles/globals.css'
 import { ConfirmProvider } from 'material-ui-confirm';
 
 import Layout from '../components/layout/Layout';
@@ -13,6 +12,8 @@ import { CacheProvider, EmotionCache } from '@emotion/react';
 import createEmotionCache from '../createEmotionCache';
 import { AppProps } from 'next/app';
 import { NotificationSnackbar } from '../components/snackbars/NotificationSnackbar';
+
+import '../styles/globals.css'
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -62,7 +63,7 @@ export default function MyApp(props: MyAppProps) {
                   // @ts-ignore
                   notification: NotificationSnackbar
                 }}
-                // maxSnack={3}
+              // maxSnack={3}
               >
                 <Layout>
                   <Component {...pageProps} />

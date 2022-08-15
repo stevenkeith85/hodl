@@ -33,7 +33,10 @@ export default function Layout({ children }) {
                 <header>
                     <ResponsiveAppBar />
                 </header>
-                <main>
+                <main
+                    style={{
+                            background: "#fcfcfc"
+                        }}>
                     {router.asPath !== '/' && <Container maxWidth="xl">
                         {children}
                     </Container>

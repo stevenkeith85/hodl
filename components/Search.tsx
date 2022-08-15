@@ -31,7 +31,7 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    color: 'inherit',
+    // color: 'inherit',
     '& .MuiInputBase-input': {
         padding: theme.spacing(1, 1, 1, 0),
         // vertical padding + font size from searchIcon
@@ -68,7 +68,7 @@ export const SearchBox = ({ setHoverMenuOpen = null, sx = null }) => {
                 <Form>
                     <Search>
                         <SearchIconWrapper>
-                            <SearchIcon />
+                            <SearchIcon color="primary" />
                         </SearchIconWrapper>
                         <Field
                             sx={{ 

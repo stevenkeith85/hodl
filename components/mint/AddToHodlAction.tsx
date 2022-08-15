@@ -27,8 +27,8 @@ export const AddToHodlAction: FC<MintProps> = ({
   async function hodl() {
     setLoading(true);
     
-    const { tokenId, mimeType, filter } = formData;
-    const success = await store(tokenId, mimeType, filter);
+    const { tokenId, mimeType, filter, aspectRatio } = formData;
+    const success = await store(tokenId, mimeType, filter, aspectRatio);
     
     setLoading(false);
 

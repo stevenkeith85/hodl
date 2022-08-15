@@ -30,15 +30,9 @@ import { useHodlingCount } from '../../hooks/useHodlingCount'
 import { useListedCount } from '../../hooks/useListedCount'
 import Link from 'next/link'
 import { ProfileNameOrAddress } from '../../components/avatar/ProfileNameOrAddress'
-import { MaticPrice } from '../../components/MaticPrice'
 import { getShortAddress } from '../../lib/utils'
+import { InfiniteScrollNftWindows } from '../../components/InfiniteScrollNftWindows'
 
-
-const NftLinksList = dynamic(
-  // @ts-ignore
-  () => import('../../components/profile/NftLinksList').then((module) => module.NftLinksList),
-  { loading: () => <HodlLoadingSpinner /> }
-);
 
 const UserLinksList = dynamic(
   // @ts-ignore
@@ -134,7 +128,7 @@ const Profile = ({
     <FollowersContext.Provider value={{ followers }}>
       <FollowingContext.Provider value={{ following }}>
         <Head>
-          <title>{owner.nickname || owner.address} | NFT Market | HodlMyMoon</title>
+          <title>{owner.nickname || owner.address} · Hodl My Moon</title>
         </Head>
         <Box
           sx={{
@@ -277,10 +271,10 @@ const Profile = ({
         </Box>
         <Box sx={{ marginBottom: 3 }}>
           <div hidden={value !== 0}>
-            <NftLinksList swr={hodling} limit={limit} />
+            <InfiniteScrollNftWindows swr={hodling} limit={limit} />
           </div>
           <div hidden={value !== 1}>
-            <NftLinksList swr={listed} limit={limit} />
+            <InfiniteScrollNftWindows swr={listed} limit={limit} />
           </div>
           <Box
             hidden={value !== 2}

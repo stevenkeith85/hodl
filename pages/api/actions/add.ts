@@ -64,11 +64,12 @@ const addNotification = async (address: string, action: HodlAction): Promise<num
   );
 
   if (added) {
+    console.log(`Added a notification for ${address}, sending them a push now`);
     // TODO - We can send the actual notification so that it immedialy appears on the users screen
     // but we need to figure out the authentications stuff first
     // https://pusher.com/docs/channels/using_channels/connection/
     // https://pusher.com/docs/channels/using_channels/user-authentication/
-    // pusher.trigger("notifications", "notification", await getAction(action.id));
+    pusher.trigger(address, "notification-hover", await getAction(action.id, null));
 
     pusher.trigger(address, "notification", null);
   }
@@ -200,8 +201,9 @@ export const addAction = async (action: HodlAction) => {
 
       const owner = await getOwnerOrSellerAddress(action.objectId);
 
-      // THIS IS TEMP. MAKES IT EASIER TO DEBUG
-      // await addNotification(action.subject, action);
+      if (owner === action.subject) {
+        return; // We've liked our own token. No need for a notification.
+      }
 
       return await addNotification(owner, action);
 
@@ -213,6 +215,10 @@ export const addAction = async (action: HodlAction) => {
       }
 
       const comment: HodlComment = await client.get(`comment:${action.objectId}`);
+
+      if (action.subject === comment.subject) {
+        return; // We've liked our own comment. No need for a notification.
+      }
 
       return await addNotification(comment.subject, action);
     }
@@ -226,11 +232,19 @@ export const addAction = async (action: HodlAction) => {
     if (comment?.object === "token") { // the comment was about a token, tell the token owner.
       const owner = await getOwnerOrSellerAddress(comment.tokenId);
 
+      if (owner === action.subject) {
+        return; // We've commented on our own token. No need for a notification.
+      }
+
       // TODO: perhaps we should start logging this sort of thing?
       console.log(`adding a notification for ${(await getUser(owner, null)).nickname}, as someone commented on their token`)
       return await addNotification(owner, action);
     } else if (comment?.object === "comment") { // the comment was a reply, tell the comment author. 
       const commentThatWasRepliedTo: HodlComment = await client.get(`comment:${comment.objectId}`);
+
+      if (action.subject === commentThatWasRepliedTo.subject) {
+        return; // We've replied to our own comment. No need for a notification.
+      }
 
       // TODO: perhaps we should start logging this sort of thing?
       console.log(`adding a notification for ${(await getUser(commentThatWasRepliedTo.subject, null)).nickname}, as someone replied to their comment`)

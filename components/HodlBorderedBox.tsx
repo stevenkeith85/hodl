@@ -10,6 +10,7 @@ export const HodlBorderedBox: React.FC<HodlBorderedBoxProps> = ({ sx=null, child
             border: `1px solid #ddd`,
             borderRadius: 1,
             padding: 2,
+            background: 'white',
             ...sx
         }}
     >

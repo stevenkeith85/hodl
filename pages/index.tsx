@@ -124,8 +124,7 @@ export default function Home({
   return (
     <>
       <Head>
-        <title>HodlMyMoon</title>
-        <meta name="description" content="Mint, Showcase, and Trade NFTs at HodlMyMoon"></meta>
+        <title>Hodl My Moon</title>
       </Head>
 
       <RankingsContext.Provider value={{
