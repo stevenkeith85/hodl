@@ -31,19 +31,18 @@ export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address 
                 md={5}
             >
                 <Box
-                    display="grid"
-                    gridTemplateColumns="1fr"
+                    display="flex"
+                    flexDirection="column"
                     sx={{
-                        paddingBottom: 4,
-                        paddingY: {
-                            sm: 4
-                        },
-                        paddingX: {
-                            xs: 4,
-                            sm: 8
+                        marginY: 4,
+                        marginX: {
+                            lg: 8
                         },
                         gap: {
-                            xs: 2,
+                            xs: 4,
+                        },
+                        alignItems: {
+                            xs: 'center'
                         }
                     }}
                 >

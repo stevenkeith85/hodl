@@ -4,16 +4,17 @@ interface HodlBorderedBoxProps {
     sx?: object,
 }
 
-export const HodlBorderedBox: React.FC<HodlBorderedBoxProps> = ({ sx=null, children }) => (
+export const HodlBorderedBox: React.FC<HodlBorderedBoxProps> = ({ sx = null, children }) => (
     <Box
-        sx = {{
+        sx={{
             border: `1px solid #ddd`,
             borderRadius: 1,
             padding: 2,
             background: 'white',
-            ...sx
+            ...sx,
+            
         }}
     >
-        { children }
+        {children}
     </Box>
 )

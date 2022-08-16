@@ -55,7 +55,7 @@ export const Comments: FC<CommentsProps> = ({
                 </HodlModal>
                 <Box
                     display="flex"
-                    gap={0.75}
+                    gap={0.5}
                     sx={{
                         color: color,
                         alignItems: "center",
@@ -79,7 +79,7 @@ export const Comments: FC<CommentsProps> = ({
                         sx={{ fontSize }} />
                         <Typography
                             sx={{
-                                fontSize: `calc(${fontSize} - 8px)`,
+                                fontSize: `calc(${fontSize} - 10px)`,
                                 color
                             }}>
                             {humanize.compactInteger(count || 0, 1)}

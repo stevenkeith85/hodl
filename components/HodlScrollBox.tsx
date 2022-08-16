@@ -3,7 +3,11 @@ import { HodlBorderedBox } from './HodlBorderedBox';
 
 export const HodlScrollBox = ({ title, children }) => {
     return (<>
-        <HodlBorderedBox>
+        <HodlBorderedBox
+            sx={{
+                width: '100%'
+            }}
+        >
             <Box
                 display={"grid"}
                 sx={{
@@ -14,7 +18,8 @@ export const HodlScrollBox = ({ title, children }) => {
                     variant='h2' 
                     sx={{ 
                         fontFamily: theme => theme.logo.fontFamily ,
-                        textAlign: {xs:'center', md: 'left'}
+                        textAlign: {xs:'center', md: 'left'},
+                        padding: 0.75
                     }}>
                         {title}
                 </Typography>
@@ -24,8 +29,8 @@ export const HodlScrollBox = ({ title, children }) => {
                         display: 'flex',
                         flexDirection: 'column',
                         overflowY: 'auto', 
-                        paddingRight: 2,
-                        width: '100%'
+                        width: '100%',
+                        paddingX: 0.75
                     }}>
                     {children}
                 </Box>

@@ -83,4 +83,23 @@ export const delistNft = async (nft: Nft) => {
 
   const tx = await contract.delistToken(nftaddress, nft.id);
   await tx.wait();
+
+  try {
+    const r = await axios.post(
+      '/api/actions/add',
+      {
+        action: ActionTypes.Delisted,
+        object: "token",
+        id: Number(nft.id)
+      },
+      {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+  } catch (e) {
+    console.log(e)
+  }
 }

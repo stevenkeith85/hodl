@@ -32,13 +32,18 @@ export default function Test({address}) {
             return;
         }
 
-        const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY, {
-            cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER
+        // This only needs done once. Perhaps do it in _app
+        const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY, { 
+            cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER,
+            userAuthentication: { 
+                endpoint: "/api/pusher/user-auth",
+                transport: "ajax"
+            }
         });
 
-        const channel = pusher.subscribe(address);
+        pusher.signin();
 
-        channel.bind('notification-hover', (action: HodlAction) => {
+        pusher.user.bind('notification-hover', (action: HodlAction) => {
             enqueueSnackbar(
                 "",
                 { 

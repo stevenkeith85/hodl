@@ -109,7 +109,7 @@ export default function Home({
 
   // return (<><h1>{JSON.stringify(user)}</h1></>)
   const { rankings: mostFollowed } = useRankings(true, limit, prefetchedTopUsers);
-  const { rankings: mostLiked } = useRankings(true, limit, prefetchedTopTokens, "token");
+  const { rankings: mostLiked } = useRankings(true, limit, null, "token");
   const { results: newUsers } = useSearchUsers('', limit, prefetchedNewUsers);
   const { results: newTokens } = useSearchTokens('', limit, prefetchedNewTokens);
 
@@ -128,6 +128,7 @@ export default function Home({
       </Head>
 
       <RankingsContext.Provider value={{
+        limit,
         mostFollowed,
         mostLiked,
         newUsers,

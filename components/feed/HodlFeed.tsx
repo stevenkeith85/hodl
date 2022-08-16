@@ -6,43 +6,30 @@ import { HodlAction } from "../../models/HodlAction";
 import InfiniteScroll from "react-swr-infinite-scroll";
 import { HodlImpactAlert } from "../HodlImpactAlert";
 import { FeedContext } from "../../contexts/FeedContext";
-import Pusher from 'pusher-js';
+import { PusherContext } from "../../contexts/PusherContext";
 
 
 export const HodlFeed = ({ address, limit = 4 }) => {
     const { feed } = useContext(FeedContext);
-
-    // React strict mode calls useEffect twice now :( . This fixes it - TODO - Investigate
-    const effectCalled = useRef(false);
+    const { pusher } = useContext(PusherContext);
 
     // Get real time updates about your feed! :)
     useEffect(() => {
-        if (!address) {
-            return;
-        }
-        
-        if (effectCalled.current) {
+        if (!pusher) {
             return;
         }
 
-        const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY, {
-            cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER
+        pusher.user.bind('feed', () => {
+            feed.mutate()
         });
 
-        const channel = pusher.subscribe(address);
-
-        channel.bind('feed', () => {
-            feed.mutate();
-        });
-
-        effectCalled.current = true;
-    }, [address]);
+    }, [pusher]);
 
     return (
         <Box
             sx={{
                 paddingX: {
-                    xs: 4
+                    // xs: 4
                 },
 
                 paddingY: {
@@ -77,13 +64,13 @@ export const HodlFeed = ({ address, limit = 4 }) => {
                 swr={feed}
                 loadingIndicator={<HodlLoadingSpinner />}
                 isReachingEnd={swr => {
-                    return swr.data?.[0]?.items?.length == 0 || 
-                            swr.data?.[swr.data?.length - 1]?.items?.length < limit
-                  }
+                    return swr.data?.[0]?.items?.length == 0 ||
+                        swr.data?.[swr.data?.length - 1]?.items?.length < limit
+                }
                 }
             >
                 {
-                    ({ items }) => 
+                    ({ items }) =>
                         (items || []).map((item: HodlAction) => <HodlFeedItem key={item.id} item={item} />)
                 }
             </InfiniteScroll>

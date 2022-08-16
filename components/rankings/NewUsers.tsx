@@ -4,8 +4,8 @@ import { RankingsContext } from '../../contexts/RankingsContext';
 import { HodlScrollBox } from '../HodlScrollBox';
 
 
-export const NewUsers = ({ limit = 10, followButton=true }) => {
-    const { newUsers } = useContext(RankingsContext);
+export const NewUsers = ({ followButton=true }) => {
+    const { limit, newUsers } = useContext(RankingsContext);
 
     return (
         <HodlScrollBox title="New users">

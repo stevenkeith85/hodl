@@ -68,7 +68,10 @@ const NotificationLink = ({ item }) => {
             width: `100%`,
             "& > a": {
                 display: 'block',
-                width: `100%`
+                width: `100%`,
+            },
+            a: {
+                color: theme => theme.palette.text.primary
             }
         }}>
 

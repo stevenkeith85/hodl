@@ -32,6 +32,7 @@ export const useActions = (
     fetcher,
     {
       fallbackData,
+      revalidateOnMount: true,
       dedupingInterval: 2000, // default is 2000 - TODO: LOWERED THIS AS IM WORKING ON IT. IT CAN GO UP WHEN WORK IS DONE
       focusThrottleInterval: 5000, // default is 5000
     }

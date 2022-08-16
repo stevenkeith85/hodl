@@ -1,4 +1,4 @@
-import { Box, Chip, Typography } from "@mui/material";
+import { Box, Chip, NoSsr, Typography } from "@mui/material";
 import Link from "next/link";
 import { FC, useContext } from "react";
 import { WalletContext } from "../../contexts/WalletContext";
@@ -10,6 +10,7 @@ import { Comments } from "../comments/Comments";
 import { insertTagLinks } from "../../lib/templateUtils";
 import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
 import { FeedAsset } from "./FeedAsset";
+import { MaticPrice } from "../MaticPrice";
 
 
 interface HodlFeedItemProps {
@@ -29,8 +30,8 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                     borderRadius: 1,
                     padding: 2,
                     border: `1px solid #ddd`,
-                    width: "min(575px, 100vw)",
-                    maxWidth: "100%",
+                    width: "min(575px, 90vw)",
+                    maxWidth: "90%",
                     overflow: 'hidden',
                     background: 'white'
                 }
@@ -70,21 +71,24 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                     {item?.subject && item?.subject === address &&
                                         <Typography component="span" sx={{ fontWeight: 600 }}>You</Typography>
                                     }
-                                    <Typography component="span" sx={{ fontSize: 10, color: "#999" }}>
-                                        {item.timestamp && formatDistanceStrict(new Date(item.timestamp), new Date(), { addSuffix: true })}
-                                    </Typography>
+                                    <NoSsr>
+                                        <Typography component="span" sx={{ fontSize: 10, color: "#999" }}>
+                                            {item.timestamp && formatDistanceStrict(new Date(item.timestamp), new Date(), { addSuffix: true })}
+                                        </Typography>
+                                    </NoSsr>
                                 </Box>
-                                {item.action === ActionTypes.Listed && <Box component="span"><Chip label="Listed" variant="outlined" color="secondary" /></Box>}
+                                {item.action === ActionTypes.Listed && item?.metadata?.price && <MaticPrice price={item?.metadata?.price} color="black" />}
+                                {item.action === ActionTypes.Delisted && <Typography sx={{ fontSize: `18px`}}>Delisted</Typography>}
                             </Box>
                         </Box>
                     </Box>
                     {
                         item.token?.image &&
                         <Link href={`/nft/${item.token.id}`} passHref>
-                            <Box 
-                                sx={{ 
-                                    cursor: 'pointer', 
-                                    marginX: -2, 
+                            <Box
+                                sx={{
+                                    cursor: 'pointer',
+                                    marginX: -2,
                                     background: '#ddd',
                                 }}>
                                 <FeedAsset item={item} />
@@ -95,7 +99,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                 <Box
                     display="flex"
                 >
-                    {item.token && <Box display="flex" gap={2}>
+                    {item.token && <Box display="flex" gap={1.5}>
                         <Likes
                             id={item.token?.id}
                             object="token"

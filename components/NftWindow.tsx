@@ -66,7 +66,7 @@ const Overlay = ({ nft }) => {
                             fontSize='26px'
                             sx={{ paddingRight: 0 }}
                         />
-                        {nft?.price && <MaticPrice nft={nft} />}
+                        {nft?.price && <MaticPrice price={nft?.price} />}
                     </Box>
                 </Box>
             </Box>
@@ -76,6 +76,10 @@ const Overlay = ({ nft }) => {
 export const NftWindow = ({ nft }) => {
     const theme = useTheme();
     const matches = useMediaQuery(theme.breakpoints.up('sm'));
+
+    if (!nft) {
+        return null;
+    }
 
     return (
         <Link key={nft.id} href={`/nft/${nft.id}`} passHref>

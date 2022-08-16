@@ -1,9 +1,9 @@
-import { Card, CardContent, Typography, Stack, Tooltip, Button, Chip, Box } from "@mui/material";
+import { Typography, Tooltip, Chip, Box } from "@mui/material";
 import { token, nonCommercial, commercial } from "../../lib/copyright";
-import { CommercialTooltip } from "../tooltips/CommercialTooltip";
+import { CommercialText } from "../tooltips/CommercialTooltip";
 import { HodlerPrivilegeTooltip } from "../tooltips/HodlerPrivilegeTooltip";
-import { NonCommercialTooltip } from "../tooltips/NonCommercialTooltip";
-import { TokenOnlyTooltip } from "../tooltips/TokenOnlyTooltip";
+import { NonCommercialText } from "../tooltips/NonCommercialTooltip";
+import { TokenOnlyText } from "../tooltips/TokenOnlyTooltip";
 
 export const HodlerPrivilege = ({ nft }) => {
     if (!nft.privilege) {
@@ -18,54 +18,55 @@ export const HodlerPrivilege = ({ nft }) => {
                 borderRadius: 1
             }}
         >
-            <Typography variant="h2" sx={{ marginBottom: 2 }}>
-                <Tooltip
-                    title={<HodlerPrivilegeTooltip />}
-                    placement="right-start"
-                    arrow>
-                    <span>Hodler Privilege</span></Tooltip>
-            </Typography>
-            <Box>
-                {nft.privilege === token &&
+            <Box display="flex" justifyContent="space-between">
+                <Typography variant="h2" sx={{ marginBottom: 2 }}>
                     <Tooltip
-                        title={<TokenOnlyTooltip />}
+                        title={<HodlerPrivilegeTooltip />}
                         placement="right-start"
                         arrow>
+                        <span>Privilege</span></Tooltip>
+                </Typography>
+                <Box>
+                    {nft.privilege === token && <>
                         <Chip
                             label="Token Only"
                             color={nft.privilege === token ? "success" : "default"}
                             variant="outlined"
                         />
-                    </Tooltip>
-                }
-                {nft.privilege === nonCommercial &&
-                    <Tooltip
-                        title={<NonCommercialTooltip />}
-                        placement="right-start"
-                        arrow>
+                    </>
+                    }
+                    {nft.privilege === nonCommercial &&
                         <Chip
                             disabled={nft.privilege !== nonCommercial}
                             label="Non Commercial"
                             color={nft.privilege === nonCommercial ? "success" : "default"}
                             variant="outlined"
                         />
-                    </Tooltip>
-                }
-                {nft.privilege === commercial &&
-                    <Tooltip
-                        title={<CommercialTooltip />}
-                        placement="right-start"
-                        arrow>
+                    }
+                    {nft.privilege === commercial &&
                         <Chip
                             disabled={nft.privilege !== commercial}
                             label="Commercial"
                             color={nft.privilege === commercial ? "success" : "default"}
                             variant="outlined"
                         />
-
-                    </Tooltip>
-                }
+                    }
+                </Box>
             </Box>
-        </Box>
+            <Box>
+                <Box>
+                    {nft.privilege === token &&
+                        <TokenOnlyText />
+
+                    }
+                    {nft.privilege === nonCommercial &&
+                        <NonCommercialText />
+                    }
+                    {nft.privilege === commercial &&
+                        <CommercialText />
+                    }
+                </Box>
+            </Box>
+        </Box >
     )
 }

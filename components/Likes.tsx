@@ -36,7 +36,7 @@ export const Likes: FC<LikesProps> = ({
         <>
             <Box
                 display="flex"
-                gap={0.75}
+                gap={0.5}
                 sx={{
                     color,
                     alignItems: "center",
@@ -72,7 +72,7 @@ export const Likes: FC<LikesProps> = ({
                 }
                 {showCount && (likeCount != undefined) &&
                     <Typography sx={{ 
-                        fontSize: `calc(${fontSize} - 8px)`,
+                        fontSize: `calc(${fontSize} - 10px)`,
                         color
                     }}>{
                         humanize.compactInteger(likeCount?.data || 0, 1)

@@ -4,8 +4,8 @@ import { useContext } from 'react';
 import { UserLinksList } from '../profile/UserLinksList';
 import { HodlScrollBox } from '../HodlScrollBox';
 
-export const TopUsers = ({ limit = 10, followButton=true}) => {
-    const { mostFollowed: rankings } = useContext(RankingsContext);
+export const TopUsers = ({ followButton=true}) => {
+    const { limit, mostFollowed: rankings } = useContext(RankingsContext);
 
     return (
         <HodlScrollBox title="Top users">

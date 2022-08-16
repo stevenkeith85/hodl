@@ -4,8 +4,8 @@ import { RankingsContext } from '../../contexts/RankingsContext';
 import { HodlScrollBox } from '../HodlScrollBox';
 
 
-export const NewTokens = ({ limit = 10, showLikes = true }) => {
-    const { newTokens } = useContext(RankingsContext);
+export const NewTokens = ({ showLikes = true }) => {
+    const { limit, newTokens } = useContext(RankingsContext);
 
     return (
         <HodlScrollBox title="New tokens">

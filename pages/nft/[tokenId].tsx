@@ -1,7 +1,5 @@
 import {
   Box,
-  Card,
-  CardContent,
   Grid,
   Stack,
   Tab,
@@ -28,7 +26,7 @@ import { getCommentCount } from "../api/comments/count";
 import { useState } from "react";
 import { Forum, Insights } from "@mui/icons-material";
 
-import router, { useRouter } from "next/router";
+import router from "next/router";
 import { getLikeCount } from "../api/like/token/count";
 import { MaticPrice } from "../../components/MaticPrice";
 import { indigo } from "@mui/material/colors";
@@ -97,9 +95,6 @@ const NftDetail = ({
   tab
 }) => {
   const [value, setValue] = useState(Number(tab)); // tab
-
-  const { query } = useRouter();
-  // const comment = Array.isArray(query?.comment) ? query.comment[0] : query?.comment;
 
   return (
     <>
@@ -216,7 +211,7 @@ const NftDetail = ({
                   borderRadius: 1
                 }}>
                   <Typography variant="h2">Price</Typography>
-                  <MaticPrice nft={nft} color="black" />
+                  <MaticPrice price={nft?.price} color="black" />
                   <NftActionButtons nft={nft} />
                 </Box>
                 <PriceHistoryGraph fallbackData={priceHistory} nft={nft} />

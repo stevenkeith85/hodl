@@ -4,12 +4,16 @@ import { TokenLinksList } from '../profile/TokenLinksList';
 import { HodlScrollBox } from '../HodlScrollBox';
 
 
-export const TopTokens = ({ limit = 10, showLikes = true }) => {
-    const { mostLiked } = useContext(RankingsContext);
+export const TopTokens = ({ showLikes = true }) => {
+    const { limit, mostLiked } = useContext(RankingsContext);
 
     return (
         <HodlScrollBox title="Top tokens">
-            <TokenLinksList limit={limit} swr={mostLiked}  width={`100%`} showLikes={showLikes}/>
+            <TokenLinksList 
+                limit={limit} 
+                swr={mostLiked}  
+                showLikes={showLikes}
+        />
         </HodlScrollBox>
     )
 }

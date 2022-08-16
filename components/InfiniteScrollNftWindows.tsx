@@ -1,5 +1,4 @@
 import { Box } from "@mui/material";
-import NftList from "./NftList";
 import InfiniteScroll from 'react-swr-infinite-scroll'
 import { HodlLoadingSpinner } from "./HodlLoadingSpinner";
 import { NftWindow } from "./NftWindow";
@@ -19,7 +18,6 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
           xs:`1fr`,
           sm:`1fr 1fr`,
           md: `1fr 1fr 1fr`,
-          // lg: `1fr 1fr 1fr 1fr`
       },
         gap: 4
       }}
@@ -35,7 +33,7 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
         }
       >
         {
-          ({ items, next, total }) => items.map((nft: Nft) => <NftWindow nft={nft} />)
+          ({ items, next, total }) => items.map((nft: Nft) => <NftWindow nft={nft} key={nft.id}/>)
         }
       </InfiniteScroll>
     </Box>

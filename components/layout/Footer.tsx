@@ -16,7 +16,8 @@ const Footer = ({ showFooter = true }) => {
         <Box>
             <Box sx={{
                 backgroundColor: '#efefef',
-                borderTop: `1px solid #ddd`
+                borderTop: `1px solid #ddd`,
+                borderBottom: `1px solid #ddd`
             }}
             >
                 <Container maxWidth="xl" sx={{

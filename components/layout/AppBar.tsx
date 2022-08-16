@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import Container from '@mui/material/Container';
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 import { Stack, Tooltip, useMediaQuery, useTheme } from '@mui/material';
@@ -22,9 +22,14 @@ import { enqueueSnackbar, closeSnackbar } from 'notistack'
 import { SearchBox } from '../Search';
 import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
 import { WalletMenuPage } from '../menu/WalletMenuPage';
+import { HodlAction } from '../../models/HodlAction';
+import Pusher from 'pusher-js';
+import { UserContext } from '../../contexts/UserContext';
+import { PusherContext } from '../../contexts/PusherContext';
 
 const ResponsiveAppBar = ({ showAppBar = true }) => {
     const { address, setSigner } = useContext(WalletContext);
+    const { pusher } = useContext(PusherContext);
 
     const router = useRouter();
 
@@ -35,6 +40,8 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
     const [showDesktopNotifications, setShowDesktopNotifications] = useState(false);
 
     const [error, setError] = useState('');
+
+    // const pusherSetUp = useRef(false);
 
     const theme = useTheme();
     const xs = useMediaQuery(theme.breakpoints.only('xs'));
@@ -94,6 +101,26 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
             return Promise.reject(error);
         });
     }, [setSigner]);
+
+    
+    // const effectCalled = useRef(false)
+
+    useEffect(() => {
+        if (!pusher) {
+            return;
+        }
+
+        pusher.user.bind('notification-hover', (action: HodlAction) => {
+            enqueueSnackbar(
+                "",
+                { 
+                    variant: 'notification',
+                    action,
+                }
+            )
+        });
+
+    }, [pusher])
 
     if (!showAppBar) {
         return null;

@@ -3,8 +3,8 @@ import { useRouter } from "next/router";
 import { Likes } from "../Likes";
 import { DeleteForeverOutlined, DeleteOutlined, DeleteOutlineSharp, HighlightOffOutlined, Message, Reply } from "@mui/icons-material";
 import { useComments, useCommentCount, useDeleteComment } from "../../hooks/useComments";
-import React, { FC, useContext, useState } from "react";
-import { HodlCommentViewModel } from "../../models/HodlComment";
+import React, { FC, useContext, useEffect, useState } from "react";
+import { HodlComment, HodlCommentViewModel } from "../../models/HodlComment";
 import { WalletContext } from "../../contexts/WalletContext";
 import { formatDistanceStrict } from "date-fns";
 import { ProfileNameOrAddress } from "../avatar/ProfileNameOrAddress";
@@ -15,6 +15,7 @@ import { pluralize } from "../../lib/utils";
 import { SWRInfiniteResponse } from "swr/infinite/dist/infinite";
 import { SWRResponse } from "swr";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { PusherContext } from "../../contexts/PusherContext";
 
 interface HodlCommentActionButtonsProps {
     comment: HodlCommentViewModel;
@@ -143,7 +144,7 @@ export const HodlCommentActionButtons: React.FC<HodlCommentActionButtonsProps> =
                             }>
                             <ListItemIcon
                                 sx={{
-                                    '&.MuiListItemIcon-root': { 
+                                    '&.MuiListItemIcon-root': {
                                         minWidth: 0,
                                         marginRight: `8px`
                                     }
@@ -268,6 +269,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
     mutateCount = null,
     level = 0
 }) => {
+    const { pusher } = useContext(PusherContext);
 
     const { swr: likesCount } = useLikeCount(comment.id, "comment");
 
@@ -288,6 +290,23 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
     const countSWR = replyCountSWR || internalCountSWR;
 
     const router = useRouter();
+
+    useEffect(() => {
+        if (!pusher) {
+            return;
+        }
+
+        // We will update the thread in real time ONLY for the user who wrote the comment.
+        // We may update it for all users in the future; but we want to be careful about usage limits at the moment
+        pusher.user.bind('comment-reply', (repliedTo: HodlComment) => {
+            if(comment.id === repliedTo.id) {
+                setShowThread(true);
+                swr.mutate()
+                countSWR.mutate()
+            }
+        });
+
+    }, [pusher])
 
     return (
         <Box
@@ -349,7 +368,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                     display="flex"
                                     flexDirection="column"
                                     flexWrap="wrap"
-                                    // gap={1}
+                                // gap={1}
                                 >
                                     <Box sx={{
                                         display: 'flex',
@@ -419,9 +438,9 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                                 sx={{
                                                     fontSize: "12px",
                                                     color: theme => theme.palette.text.secondary,
-                                                    cursor: countSWR.data ? 'pointer' : 'unset',
+                                                    cursor: 'pointer',
                                                     '&:hover': {
-                                                        color: countSWR.data ? theme => theme.palette.text.primary : theme => theme.palette.text.secondary
+                                                        color: theme => theme.palette.text.primary
                                                     }
                                                 }}
                                                 onClick={() => {

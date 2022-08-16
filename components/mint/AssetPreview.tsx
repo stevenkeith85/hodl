@@ -1,11 +1,9 @@
-import { Box, Skeleton, Stack, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { FC } from "react";
 import { assetType } from "../../lib/utils";
 import { AssetTypes } from "../../models/AssetType";
-import { HodlBorderedBox } from "../HodlBorderedBox";
 import { HodlVideo } from "../HodlVideo";
 import { FilteredImageMemo } from "./FilteredImage";
-import { FilteredVideoMemo } from "./FilteredVideo";
 import { MintProps } from './models';
 
 
@@ -21,10 +19,8 @@ export const AssetPreview: FC<MintProps> = ({
   const isAudio = () => mimeType && mimeType.indexOf('audio') !== -1;
 
   return (
-    // <HodlBorderedBox sx={{ padding: 0 }}>
     <Box
       display="flex"
-      // flexDirection={"column"}
       sx={{
         height: '550px',
         width: `100%`,
@@ -59,6 +55,5 @@ export const AssetPreview: FC<MintProps> = ({
         />
       }
     </Box>
-    //  </HodlBorderedBox>
   )
 }

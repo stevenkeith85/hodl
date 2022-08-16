@@ -13,6 +13,7 @@ import InfiniteScroll from "react-swr-infinite-scroll";
 import useSWR from "swr";
 import axios from "axios";
 import Pusher from 'pusher-js';
+import { PusherContext } from "../../contexts/PusherContext";
 
 
 export const HodlNotifications = ({
@@ -21,9 +22,7 @@ export const HodlNotifications = ({
     setShowNotifications,
     limit = 10
 }) => {
-
-    // React strict mode calls useEffect twice now :( . This fixes it - TODO - Investigate
-    const effectCalled = useRef(false);
+    const { pusher } = useContext(PusherContext);
 
     const router = useRouter();
     const theme = useTheme();
@@ -46,27 +45,15 @@ export const HodlNotifications = ({
 
     // Get real time updates about notifications! :)
     useEffect(() => {
-        if (!address) {
+        if (!pusher) {
             return;
         }
 
-        if (effectCalled.current) {
-            return;
-        }
-
-        const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY, {
-            cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER
-        });
-
-        const channel = pusher.subscribe(address);
-
-        channel.bind('notification', () => {
+        pusher.user.bind('notification', () => {
             mutateUnread(true, { revalidate: false });
         });
 
-        effectCalled.current = true;
-    }, [address]);
-
+    }, [pusher]);
 
     // when the user closes the notifications, we'll update the last read on the UI so that they don't get the highlight effect next time
     useEffect(() => {

@@ -13,10 +13,21 @@ export const NotificationSnackbar = React.forwardRef<HTMLDivElement, Notificatio
     ...other
   } = props
 
+  // TODO: We could get the last read time and update it if the user clicks on the snackbar here?
   return (
     // @ts-ignore
-    <SnackbarContent ref={ref} role="alert" {...other}>
-      <HodlNotificationBox item={action} setShowNotifications={() => {}} lastRead={0} sx={{ width: '400px'}}/>
+    <SnackbarContent 
+        ref={ref} 
+        role="alert" 
+        {...other}
+    >
+      <HodlNotificationBox 
+        item={action} 
+        setShowNotifications={() => {}} 
+        lastRead={0} 
+        sx={{ 
+            width: '400px'
+        }}/>
     </SnackbarContent>
   )
 })

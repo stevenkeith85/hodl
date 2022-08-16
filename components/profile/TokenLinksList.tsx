@@ -20,7 +20,6 @@ export const TokenLinksList: React.FC<TokenLinksListProps> = ({ swr, limit, show
       {swr.data &&
         <Box
           display="flex"
-          // gap={2}
           flexDirection={"column"}
           sx={{width: '100%'}}
         >

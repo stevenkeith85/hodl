@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Badge, Box, Tab, Tabs, Tooltip, Typography } from '@mui/material'
+import { Badge, Box, Tab, Tabs } from '@mui/material'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
 import { HodlLoadingSpinner } from '../../components/HodlLoadingSpinner'
@@ -30,8 +30,8 @@ import { useHodlingCount } from '../../hooks/useHodlingCount'
 import { useListedCount } from '../../hooks/useListedCount'
 import Link from 'next/link'
 import { ProfileNameOrAddress } from '../../components/avatar/ProfileNameOrAddress'
-import { getShortAddress } from '../../lib/utils'
 import { InfiniteScrollNftWindows } from '../../components/InfiniteScrollNftWindows'
+import { CopyAddress } from '../../components/CopyAddress'
 
 
 const UserLinksList = dynamic(
@@ -157,22 +157,7 @@ const Profile = ({
                 gap: 0.5
               }}>
               <ProfileNameOrAddress profileAddress={owner.address} fallbackData={owner} fontSize="26px" sx={{ fontWeight: 700 }} />
-              <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', cursor: 'pointer' }}>
-                <img src="/matic.svg" width={14} height={14} alt="matic symbol" />
-                <Tooltip title={"Copy"} arrow placement="bottom">
-                  <Typography
-                    onClick={() => {
-                      window.prompt("Copy to clipboard: Ctrl+C, Enter", owner.address);
-                    }}
-                    sx={{
-                      color: theme => theme.palette.text.secondary,
-                      fontSize: '16px',
-                      lineHeight: 0
-                    }}>
-                    {getShortAddress(owner.address)}
-                  </Typography>
-                </Tooltip>
-              </Box>
+              <CopyAddress owner={owner}/>
             </Box>
           </Box>
           <FollowButton profileAddress={owner.address} />

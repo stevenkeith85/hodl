@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Head from 'next/head';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import theme from '../theme';
@@ -14,6 +14,9 @@ import { AppProps } from 'next/app';
 import { NotificationSnackbar } from '../components/snackbars/NotificationSnackbar';
 
 import '../styles/globals.css'
+
+import { PusherContext } from '../contexts/PusherContext';
+import Pusher from 'pusher-js';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -36,6 +39,34 @@ export default function MyApp(props: MyAppProps) {
   const [address, setAddress] = useState(props.pageProps.address || '');
   const [nickname, setNickname] = useState(''); // This will be getting removed
 
+  const [pusher, setPusher] = useState(null);
+  const pusherSetUp = useRef(false);
+  
+  useEffect(() => {
+    if (!props.pageProps.address) {
+        return;
+    }
+
+    if (pusherSetUp.current) {
+        return;
+    }
+
+    // This only needs done once.
+    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY, { 
+        cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER,
+        userAuthentication: { 
+            endpoint: "/api/pusher/user-auth",
+            transport: "ajax"
+        }
+    });
+
+    pusher.signin();
+
+    setPusher(pusher);
+
+    pusherSetUp.current = true;
+}, [props.pageProps.address])
+
   return (
     <CacheProvider value={emotionCache}>
       <ConfirmProvider>
@@ -57,18 +88,22 @@ export default function MyApp(props: MyAppProps) {
               nickname,
               setNickname
             }}>
-
-              <SnackbarProvider
-                Components={{
-                  // @ts-ignore
-                  notification: NotificationSnackbar
-                }}
-              // maxSnack={3}
-              >
-                <Layout>
-                  <Component {...pageProps} />
-                </Layout>
-              </SnackbarProvider>
+              <PusherContext.Provider value={{
+                pusher,
+                setPusher
+              }}>
+                <SnackbarProvider
+                  Components={{
+                    // @ts-ignore
+                    notification: NotificationSnackbar
+                  }}
+                // maxSnack={3}
+                >
+                  <Layout>
+                    <Component {...pageProps} />
+                  </Layout>
+                </SnackbarProvider>
+              </PusherContext.Provider>
             </WalletContext.Provider>
           </SWRConfig>
         </ThemeProvider>
