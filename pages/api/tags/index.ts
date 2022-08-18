@@ -7,20 +7,15 @@ import { getProvider } from "../../../lib/server/connections";
 import { ethers } from "ethers";
 import { nftaddress } from "../../../config";
 import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
-import memoize from 'memoizee';
 dotenv.config({ path: '../.env' })
 
 const client = Redis.fromEnv()
 const route = apiRoute();
 
-export const getTagsForToken = memoize(async token => {
-  const tags = await client.zrange(`tags:${token}`, 0, -1);
+export const getTagsForToken = async token => {
+  const tags = await client.smembers(`token:${token}:tags`); // O(n) but n can only be 6 items or less
   return tags;
-}, { 
-  async: true,
-  primitive: true,
-  max: 10000, 
-});
+}
 
 route.get(async (req: NextApiRequest, res: NextApiResponse) => {
   const token = Array.isArray(req.query.token) ? req.query.token[0] : req.query.token;

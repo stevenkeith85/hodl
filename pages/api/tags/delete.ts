@@ -10,21 +10,18 @@ import HodlMarket from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.j
 
 const client = Redis.fromEnv()
 import apiRoute from "../handler";
-import { getTagsForToken } from ".";
+
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
 
+// TODO: We don' actually let user's remove tags anymore, as they are added to the metadata
+// in the description field.
+//
+// We may allow them to 'deindex' their tokens from search (i guess); so leaving for now
 const removeTokenFromTag = async (tag, token) => {
-  const result1 = await client.zrem(
-    `tag:${tag}`, token
-  );
-
-  const result2 = await client.zrem(
-    `tags:${token}`, tag
-  );
-
-  getTagsForToken.delete(token);
+  const result1 = await client.zrem(`tag:${tag}`, token);
+  const result2 = await client.srem(`token:${token}:tags`, tag);
   
   return result1 + result2;
 }

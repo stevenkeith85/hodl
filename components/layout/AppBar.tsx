@@ -119,6 +119,7 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
             enqueueSnackbar(
                 "",
                 {
+                    // @ts-ignore
                     variant: 'notification',
                     action,
                 }

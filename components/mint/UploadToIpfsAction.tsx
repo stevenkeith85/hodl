@@ -123,6 +123,7 @@ export const UploadToIpfsAction: FC<MintProps> = ({
                     multiline
                     minRows={4}
                     component={TextField}
+                    helperText="You can add #tags here to help hodlers discover your token. Only the first 6 are indexed."
                     name="description"
                     label="Description"
                     type="text"

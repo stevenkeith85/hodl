@@ -12,31 +12,50 @@ const client = Redis.fromEnv()
 dotenv.config({ path: '../.env' })
 
 
-export const getTokenSearchResults = async (q: string, offset: number, limit: number) => {
+export const getTokenSearchResults = async (q: string, offset: number, limit: number, forSale: boolean = false) => {
     try {
         let ids = []
         let total = 0;
 
         const tag = q;
 
-        if (tag) {
-            const r = await instance.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/tag:${tag}/${offset}/${offset + limit - 1}/rev`, {
-                headers: {
-                    Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-                }
-            })
-            ids = r.data.result
-            total = await client.zcard(`tag:${tag}`);
-        } else {
-            const r = await instance.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/tokens/${offset}/${offset + limit - 1}/rev`, {
-                headers: {
-                    Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-                }
-            })
-            ids = r.data.result
-            total = await client.zcard(`tokens`);
+        if (forSale) {
+            // TODO: We will add tokens to the market ZSET when the user lists them
+            // and remove them when bought/delisted.
+
+            // initially we'll call this behaviour from the webapp; but potentially we'll need 
+            // qStash or something to do this as a batch job. (even if its just to find items that have been missed)
+
+
+            if (tag) {
+                // should the interstare happen in a batch job? qStash?
+                // or perhaps we just update it when things are listed/delisted
+                // leaving here for development at the moment
+                await client.zinterstore(`market:tag:${tag}`, 2, ["market", `tag:${tag}`], {
+                    aggregate: 'max'
+                })
+
+                ids = await client.zrange(`market:tag:${tag}`, offset, offset + limit - 1, { rev: true });
+                total = await client.zcard(`market:tag:${tag}`);
+            } else {
+                ids = await client.zrange("market", offset, offset + limit - 1, { rev: true });
+                total = await client.zcard(`market`);
+            }
         }
-        
+        else {
+            if (tag) {
+                ids = await client.zrange(`tag:${tag}`, offset, offset + limit - 1, { rev: true });
+                total = await client.zcard(`tag:${tag}`);
+            } else {
+                ids = await client.zrange("tokens", offset, offset + limit - 1, { rev: true });
+                total = await client.zcard(`tokens`);
+            }
+        }
+
+
+
+
+
         const promises = ids.map(address => getToken(address));
         const tokens: Token[] = await Promise.all(promises);
 
@@ -49,7 +68,11 @@ export const getTokenSearchResults = async (q: string, offset: number, limit: nu
 
 const route = apiRoute();
 route.get(async (req, res) => {
+    console.log('req.query', req.query)
     const q = getAsString(req.query.q);
+    console.log('req.query.forSale', req.query.forSale);
+    const forSale = getAsString(req.query.forSale); // true, false ? TODO: Determine what we want to support
+    console.log('forSale', forSale);
     const offset = getAsString(req.query.offset);
     const limit = getAsString(req.query.limit);
 
@@ -57,7 +80,9 @@ route.get(async (req, res) => {
         return res.status(400).json({ message: 'Bad Request' });
     }
 
-    const data = await getTokenSearchResults(q, +offset, +limit);
+    // TODO: Add in some yup validation
+
+    const data = await getTokenSearchResults(q, +offset, +limit, JSON.parse(forSale || "false"));
     return res.status(200).json(data);
 });
 

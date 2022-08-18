@@ -75,10 +75,6 @@ export const SearchBox = ({ setHoverMenuOpen = null, sx = null }) => {
                                 width: '100%', 
                                 border: errors.q && values.q ? theme => `1px solid ${theme.palette.secondary.main}` : theme => `1px solid #ccc`, 
                                 borderRadius: 1, 
-                                input: {
-                                    caretColor: setHoverMenuOpen ? 'black' : 'white',
-                                    cursor: 'pointer'
-                                },
                                 ...sx 
                             }}
                             component={StyledInputBase}

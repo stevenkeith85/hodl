@@ -25,31 +25,18 @@ export const addTokenToTag = async (tag, token) => {
     return 0;
   }
 
-  const total = await client.zcount(`tags:${token}`, '-inf', '+inf');
+  const total = await client.scard(`token:${token}:tags`);
 
   if (total >= MAX_TAGS_PER_TOKEN) {
     return 0;
   }
 
-  const timestamp = Date.now();
+  const result1 = await client.zadd(`tag:${tag}`, {
+    score: Date.now(),
+    member: token
+  });
 
-  const result1 = await client.zadd(
-    `tag:${tag}`,
-    {
-      score: timestamp,
-      member: token
-    }
-  );
-
-  const result2 = await client.zadd(
-    `tags:${token}`,
-    {
-      score: timestamp,
-      member: tag
-    }
-  );
-
-  getTagsForToken.delete(token);
+  const result2 = await client.sadd(`token:${token}:tags`, tag);
   
   return result1 + result2;
 }
