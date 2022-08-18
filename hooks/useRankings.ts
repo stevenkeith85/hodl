@@ -26,7 +26,6 @@ export const useRankings = (
 
 
   const getKey = (index, _previous) => {
-    console.log('index, _previous', index, _previous)
     return getData ? [`/api/rankings/${object}`, index * limit, limit] : null;
   }
 

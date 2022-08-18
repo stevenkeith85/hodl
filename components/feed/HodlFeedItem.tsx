@@ -59,7 +59,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                 cursor: 'pointer',
                                 textDecoration: 'none'
                             }}>
-                            <Box display="flex" justifyContent="space-between" width="100%">
+                            <Box display="flex" justifyContent="space-between" width="100%" alignItems="center">
                                 <Box display="flex" flexDirection="column" component="span">
                                     {item?.subject && item?.subject !== address &&
                                         <ProfileNameOrAddress
@@ -77,8 +77,52 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                         </Typography>
                                     </NoSsr>
                                 </Box>
-                                {item.action === ActionTypes.Listed && item?.metadata?.price && <MaticPrice price={item?.metadata?.price} color="black" />}
-                                {item.action === ActionTypes.Delisted && <Typography sx={{ fontSize: `18px`}}>Delisted</Typography>}
+                                {item.action === ActionTypes.Listed &&
+                                    <Box
+                                    sx={{
+                                        textAlign: 'right',
+                                        fontFamily: theme => theme.logo.fontFamily,
+                                        color: theme => theme.palette.text.secondary
+                                    }}>
+                                        listed
+                                        {
+                                            item?.metadata?.price && <MaticPrice price={item?.metadata?.price} color="black" />
+                                        }
+                                    </Box>
+                                }
+                                {item.action === ActionTypes.Bought &&
+                                    <Box
+                                    sx={{
+                                        textAlign: 'right',
+                                        fontFamily: theme => theme.logo.fontFamily,
+                                        color: theme => theme.palette.text.secondary
+                                    }}>
+                                        sold
+                                        {
+                                            item?.metadata?.price && <MaticPrice price={item?.metadata?.price} color="black" />
+                                        }
+                                    </Box>
+                                }
+                                {item.action === ActionTypes.Delisted &&
+                                    <Box
+                                    sx={{
+                                        textAlign: 'right',
+                                        fontFamily: theme => theme.logo.fontFamily,
+                                        color: theme => theme.palette.text.secondary
+                                    }}>
+                                        delisted
+                                    </Box>
+                                }
+                                {item.action === ActionTypes.Added &&
+                                    <Box
+                                        sx={{
+                                            textAlign: 'right',
+                                            fontFamily: theme => theme.logo.fontFamily,
+                                            color: theme => theme.palette.text.secondary
+                                        }}>
+                                        new
+                                    </Box>
+                                }
                             </Box>
                         </Box>
                     </Box>
@@ -89,7 +133,6 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                 sx={{
                                     cursor: 'pointer',
                                     marginX: -2,
-                                    background: '#ddd',
                                 }}>
                                 <FeedAsset item={item} />
                             </Box>

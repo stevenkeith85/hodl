@@ -55,15 +55,23 @@ export async function getServerSideProps({ params, query, req, res }) {
     const comment = params.comment;
     const limit = 10;
     const tab = Number(query.tab) || 0;
-
-    // TODO: We might not prefetch this; to speed up the initial load
-    const prefetchedComments = await getCommentsForToken(comment ? "comment" : "token", comment ? comment : params.tokenId, 0, limit, !comment);
-    const prefetchedCommentCount = await getCommentCount(comment ? "comment" : "token", comment ? comment : params.tokenId);
-
-    // TODO: We might not prefetch this; to speed up the initial load
-    const priceHistory = await getPriceHistory(params.tokenId);
-
-    const prefetchedLikeCount = await getLikeCount(params.tokenId);
+    
+    const pprefetchedCommentCount = getCommentCount(comment ? "comment" : "token", comment ? comment : params.tokenId);
+    const pprefetchedLikeCount = getLikeCount(params.tokenId);
+    
+    // TODO: We might not prefetch these?; to speed up the initial load
+    const pprefetchedComments = getCommentsForToken(comment ? "comment" : "token", comment ? comment : params.tokenId, 0, limit, !comment);
+    const ppriceHistory = getPriceHistory(params.tokenId);
+    
+    const [
+      prefetchedComments,
+      prefetchedCommentCount,
+      priceHistory,
+      prefetchedLikeCount] = await Promise.all([
+        pprefetchedComments,
+        pprefetchedCommentCount,
+        ppriceHistory,
+        pprefetchedLikeCount]);
 
     return {
       props: {
@@ -153,7 +161,7 @@ const NftDetail = ({
                   indicatorColor="secondary"
                 >
                   <Tab key={0} value={0} icon={<Forum fontSize="small" />} sx={{ padding: 1.5, minWidth: '60px' }} />
-                  <Tab key={1} value={1} icon={<Insights fontSize="small"/>} sx={{ padding: 1.5, minWidth: '60px' }}  />
+                  <Tab key={1} value={1} icon={<Insights fontSize="small" />} sx={{ padding: 1.5, minWidth: '60px' }} />
                 </Tabs>
               </Box>
 
@@ -191,16 +199,16 @@ const NftDetail = ({
             paddingLeft={{ md: 1 }}
           >
             <div hidden={value !== 0}>
-                <HodlBorderedBox>
-                  <Box
-                    paddingBottom={2}
-                    mb={2}
-                    sx={{ borderBottom: `1px solid #ddd` }}>
-                    <Typography variant="h1" mb={3} sx={{ fontWeight: 600 }}>{nft.name}</Typography>
-                    <Box sx={{ whiteSpace: 'pre-line' }}>{insertTagLinks(nft.description)}</Box>
-                  </Box>
-                  <HodlCommentsBox limit={limit} header={false} fallbackData={prefetchedComments} />
-                </HodlBorderedBox>
+              <HodlBorderedBox>
+                <Box
+                  paddingBottom={2}
+                  mb={2}
+                  sx={{ borderBottom: `1px solid #ddd` }}>
+                  <Typography variant="h1" mb={3} sx={{ fontWeight: 600 }}>{nft.name}</Typography>
+                  <Box sx={{ whiteSpace: 'pre-line' }}>{insertTagLinks(nft.description)}</Box>
+                </Box>
+                <HodlCommentsBox limit={limit} header={false} fallbackData={prefetchedComments} />
+              </HodlBorderedBox>
             </div>
             <div hidden={value !== 1}>
               <Box display="grid" gap={2}>

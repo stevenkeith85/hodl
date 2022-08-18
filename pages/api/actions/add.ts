@@ -238,6 +238,8 @@ export const addAction = async (action: HodlAction) => {
     } else if (comment?.object === "comment") { // the comment was a reply, tell the comment author. 
       const commentThatWasRepliedTo: HodlComment = await client.get(`comment:${comment.objectId}`);
 
+      pusher.trigger('comments', 'reply', commentThatWasRepliedTo);
+
       if (action.subject === commentThatWasRepliedTo.subject) {
         return; // We've replied to our own comment. No need for a notification.
       }
@@ -246,7 +248,8 @@ export const addAction = async (action: HodlAction) => {
 
       // TODO: Potentially we could just do this for all users? 
       // This might eat up an allowance of some sort though, so we'd need to check the pusher limits
-      pusher.sendToUser(commentThatWasRepliedTo.subject, "comment-reply", commentThatWasRepliedTo);
+      // pusher.sendToUser(commentThatWasRepliedTo.subject, "comment-reply", commentThatWasRepliedTo);
+      
 
       // TODO: perhaps we should start logging this sort of thing?
       console.log(`adding a notification for ${(await getUser(commentThatWasRepliedTo.subject, null)).nickname}, as someone replied to their comment`)
@@ -380,7 +383,7 @@ export const addAction = async (action: HodlAction) => {
     action.metadata = {
       price: history[0].price
     }
-    
+
     await client.set(`action:${action.id}`, JSON.stringify(action));
 
     // const first = await addNotification(`${buyer}`, action);

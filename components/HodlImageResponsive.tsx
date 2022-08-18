@@ -1,5 +1,6 @@
 import { Box, Skeleton, useTheme } from "@mui/material";
 import Head from "next/head";
+import { useEffect, useLayoutEffect, useRef } from "react";
 
 // https://css-tricks.com/a-guide-to-the-responsive-images-syntax-in-html/#using-srcset
 export const HodlImageResponsive = ({
@@ -12,7 +13,7 @@ export const HodlImageResponsive = ({
     widths = [900, 1000, 1100, 1200, 1300, 1400], // You should do some experimentation and pick 6 or so
     sizes, // e.g. sizes="(min-width: 900px) 50vw, (min-width: 1200px) calc(1200px / 2)"
     round = false,
-    onLoad = null
+    onLoad = null,
 }) => {
 
     const makeCloudinaryUrl = (width) => {
@@ -42,6 +43,18 @@ export const HodlImageResponsive = ({
     const srcSet = widths.map(width => `${makeCloudinaryUrl(width)} ${width}w`).join(',');
 
     const src = makeCloudinaryUrl(widths[0]);
+
+    const imgRef  = useRef(null);
+    
+    // onload doesn't fire if the image is being loaded from cache. You can use the complete property to check for this case.
+    useEffect(() => {
+        if(imgRef.current) {
+            if (imgRef.current.complete && onLoad) {
+                onLoad();
+            }
+        }
+    }, []);
+
     return (
         <>
             <Head>
@@ -81,6 +94,7 @@ export const HodlImageResponsive = ({
                     sizes={sizes}
                     // loading="eager"
                     decoding="auto"
+                    ref={imgRef}
                 />
             </Box>
         </>

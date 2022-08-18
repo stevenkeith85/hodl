@@ -27,17 +27,21 @@ export const HodlCommentsBoxHeader : React.FC<HodlCommentsBoxHeaderProps> = ({
         <Box
             display="flex"
             justifyContent="space-between"
+            sx={{ marginBottom: 3, marginX: 1 }}
         >
 
                 <Typography
                     variant="h3"
-                    sx={{ marginBottom: 2 }}
+                    
                 >
-                    Single Comment Thread
+                    Single comment thread
                 </Typography>
                     <Tooltip title="View All Comments">
                         <Forum
-                            sx={{ cursor: 'pointer', color: '#999' }}
+                            sx={{ 
+                                cursor: 'pointer', 
+                                color: '#999',
+                            }}
                             fontSize="inherit"
                             onClick={() => {
                                 setTopLevel({ objectId: nft.id, object: "token" });

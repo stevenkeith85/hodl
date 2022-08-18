@@ -102,23 +102,30 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
         });
     }, [setSigner]);
 
-    
-    // const effectCalled = useRef(false)
+
+    const notificationsHover = useRef(false);
 
     useEffect(() => {
         if (!pusher) {
             return;
         }
 
+        // This only needs done once. React is calling useEffects twice in strict mode in dev. :(
+        if (notificationsHover.current) {
+            return;
+        }
+
         pusher.user.bind('notification-hover', (action: HodlAction) => {
             enqueueSnackbar(
                 "",
-                { 
+                {
                     variant: 'notification',
                     action,
                 }
             )
         });
+
+        notificationsHover.current = true;
 
     }, [pusher])
 

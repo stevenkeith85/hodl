@@ -40,32 +40,39 @@ export default function MyApp(props: MyAppProps) {
   const [nickname, setNickname] = useState(''); // This will be getting removed
 
   const [pusher, setPusher] = useState(null);
-  const pusherSetUp = useRef(false);
   
-  useEffect(() => {
-    if (!props.pageProps.address) {
-        return;
-    }
-
-    if (pusherSetUp.current) {
-        return;
-    }
-
+  const pusherSetUp = useRef(false);
+  const setupPusher = () => {
     // This only needs done once.
-    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY, { 
-        cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER,
-        userAuthentication: { 
-            endpoint: "/api/pusher/user-auth",
-            transport: "ajax"
-        }
-    });
+    if (pusherSetUp.current) {
+      return;
+    }
 
-    pusher.signin();
+    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY, {
+      cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER,
+      userAuthentication: {
+        endpoint: "/api/pusher/user-auth",
+        transport: "ajax"
+      }
+    });
 
     setPusher(pusher);
 
     pusherSetUp.current = true;
-}, [props.pageProps.address])
+  }
+
+  useEffect(() => {
+    setupPusher();
+  }, [])
+
+
+  useEffect(() => {
+    if (pusher === null) {
+      return;
+    }
+    
+    pusher.signin();
+  }, [pusher])
 
   return (
     <CacheProvider value={emotionCache}>

@@ -96,8 +96,6 @@ export const addComment = async (comment: HodlComment) => {
     notificationAdded = await addAction(notification);
   }
 
-  // getCommentCount.delete(comment.objectId);
-
   return [commentAdded, userRecordAdded, tokenRecordAdded, commentCountUpdated, notificationAdded]
 }
 

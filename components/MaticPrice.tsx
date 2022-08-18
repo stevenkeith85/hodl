@@ -2,10 +2,11 @@ import { Box, Typography } from '@mui/material'
 
 interface MaticPriceProps {
     price: any,
-    color?: "white" | "black"
+    color?: "white" | "black",
+    size?: number
 }
 
-export const MaticPrice: React.FC<MaticPriceProps> = ({price, color="white"}) => {
+export const MaticPrice: React.FC<MaticPriceProps> = ({price, color="white", size=14}) => {
 
     if (price === null) {
         return;
@@ -15,7 +16,7 @@ export const MaticPrice: React.FC<MaticPriceProps> = ({price, color="white"}) =>
         <Box
             display="flex"
             alignItems="center"
-            gap={1}
+            gap={0.5}
             sx={{
                 'img': {
                     filter: color === 'white' ? 
@@ -24,10 +25,10 @@ export const MaticPrice: React.FC<MaticPriceProps> = ({price, color="white"}) =>
                 }
             }}
         >
-            <img src="/matic.svg" width={18} height={18} alt="matic symbol" />
+            <img src="/matic.svg" width={size} height={size} alt="matic symbol" />
             {/* TODO - We are trying to make the NFT data structures as consistent as possible; so we can likely switch this to .forSale before going to prod. i.e. data issue at the moment */}
-            {price > 0 && <Typography sx={{ fontSize: '18px' }}>{price}</Typography>} 
-            {price == 0 && <Typography sx={{ fontSize: '18px' }}>Not for sale</Typography>}
+            {price > 0 && <Typography sx={{ fontSize: `${size}px` }}>{price}</Typography>} 
+            {price == 0 && <Typography sx={{ fontSize: `${size}px` }}>Not for sale</Typography>}
         </Box>
     )
 }
