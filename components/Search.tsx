@@ -73,7 +73,7 @@ export const SearchBox = ({ setHoverMenuOpen = null, sx = null }) => {
                         <Field
                             sx={{ 
                                 width: '100%', 
-                                border: errors.q && values.q ? theme => `1px solid ${theme.palette.secondary.main}` : theme => `1px solid #ccc`, 
+                                border: errors.q && values.q ? theme => `1px solid ${theme.palette.secondary.main}` : `1px solid #ccc`, 
                                 borderRadius: 1, 
                                 ...sx 
                             }}

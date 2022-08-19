@@ -14,6 +14,7 @@ export const HodlImageResponsive = ({
     sizes, // e.g. sizes="(min-width: 900px) 50vw, (min-width: 1200px) calc(1200px / 2)"
     round = false,
     onLoad = null,
+    objectFit = 'scale-down'
 }) => {
 
     const makeCloudinaryUrl = (width) => {
@@ -78,8 +79,7 @@ export const HodlImageResponsive = ({
                     img: {
                         width: `100%`,
                         height: `100%`,
-                        objectFit: 'scale-down',
-
+                        objectFit
                     }
                 }}>
                 <img

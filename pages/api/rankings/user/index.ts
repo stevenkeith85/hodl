@@ -13,19 +13,10 @@ dotenv.config({ path: '../.env' })
 const client = Redis.fromEnv()
 const route = apiRoute();
 
-
 // data structures:
 //
-// ZSET (rankings:address:followers) <address> and follower count
+// ZSET (rankings:user:followers) <address> and their follower count -> TODO: Change to rankings:user:followers:count
 
-// The general rankings namespace could look something like (just ideas):
-//
-// ZSET (rankings:user:followers) <address> and their follower count
-// ZSET (rankings:user:likes) <address> and their token like count
-// ZSET (rankings:user:score) <address> and a score that factors in their follower count and token like count (perhaps with some recency bias)
-
-// ZSET (rankings:token:likes) <id> and like count of a token
-// ZSET (rankings:token:comments) <id> and comment count of a token
 export const getMostFollowedUsers = async (
   offset: number = 0,
   limit: number = 10,

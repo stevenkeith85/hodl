@@ -6,7 +6,7 @@ export const useRankings = (
   getData: boolean,
   limit: number,
   fallbackData?: any,
-  object: "token" | "user" = "user"
+  object: "token" | "user" | "tag" = "user"
 ) => {
 
   const fetcher = (

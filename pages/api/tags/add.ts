@@ -12,7 +12,6 @@ const client = Redis.fromEnv()
 import apiRoute from "../handler";
 import { AddTagValidationSchema } from "../../../validationSchema/addTag";
 import { MAX_TAGS_PER_TOKEN } from "../../../lib/utils";
-import { getTagsForToken } from ".";
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
@@ -25,20 +24,19 @@ export const addTokenToTag = async (tag, token) => {
     return 0;
   }
 
-  const total = await client.scard(`token:${token}:tags`);
-
-  if (total >= MAX_TAGS_PER_TOKEN) {
+  const numberOfTagsOnToken = await client.scard(`token:${token}:tags`);
+  if (numberOfTagsOnToken >= MAX_TAGS_PER_TOKEN) {
     return 0;
   }
 
-  const result1 = await client.zadd(`tag:${tag}`, {
-    score: Date.now(),
-    member: token
-  });
-
-  const result2 = await client.sadd(`token:${token}:tags`, tag);
+  const tagTimeSet = await client.zadd(`tag:${tag}`, {score: Date.now(), member: token});
   
-  return result1 + result2;
+  // update our top tags list
+  const tagCount = await client.zincrby('rankings:tag:count', 1, tag);
+
+  const tokensTags = await client.sadd(`token:${token}:tags`, tag);
+  
+  return tagTimeSet + tokensTags;
 }
 
 

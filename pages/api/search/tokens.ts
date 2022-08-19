@@ -35,26 +35,57 @@ export const getTokenSearchResults = async (q: string, offset: number, limit: nu
                     aggregate: 'max'
                 })
 
-                ids = await client.zrange(`market:tag:${tag}`, offset, offset + limit - 1, { rev: true });
                 total = await client.zcard(`market:tag:${tag}`);
+
+
             } else {
-                ids = await client.zrange("market", offset, offset + limit - 1, { rev: true });
                 total = await client.zcard(`market`);
             }
         }
         else {
             if (tag) {
-                ids = await client.zrange(`tag:${tag}`, offset, offset + limit - 1, { rev: true });
                 total = await client.zcard(`tag:${tag}`);
             } else {
-                ids = await client.zrange("tokens", offset, offset + limit - 1, { rev: true });
                 total = await client.zcard(`tokens`);
             }
         }
 
+        if (offset >= total) {
+            return {
+                items: [],
+                next: Number(total),
+                total: Number(total)
+            };
+        }
+
+        if (forSale) {
+            // TODO: We will add tokens to the market ZSET when the user lists them
+            // and remove them when bought/delisted.
+
+            // initially we'll call this behaviour from the webapp; but potentially we'll need 
+            // qStash or something to do this as a batch job. (even if its just to find items that have been missed)
 
 
+            if (tag) {
+                // should the interstare happen in a batch job? qStash?
+                // or perhaps we just update it when things are listed/delisted
+                // leaving here for development at the moment
+                await client.zinterstore(`market:tag:${tag}`, 2, ["market", `tag:${tag}`], {
+                    aggregate: 'max'
+                })
 
+                ids = await client.zrange(`market:tag:${tag}`, offset, offset + limit - 1, { rev: true });
+            } else {
+                ids = await client.zrange("market", offset, offset + limit - 1, { rev: true });
+            }
+        }
+        else {
+            if (tag) {
+                ids = await client.zrange(`tag:${tag}`, offset, offset + limit - 1, { rev: true });
+            } else {
+                ids = await client.zrange("tokens", offset, offset + limit - 1, { rev: true });
+            }
+        }
 
         const promises = ids.map(address => getToken(address));
         const tokens: Token[] = await Promise.all(promises);

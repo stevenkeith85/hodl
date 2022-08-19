@@ -110,6 +110,7 @@ export default function Home({
   // return (<><h1>{JSON.stringify(user)}</h1></>)
   const { rankings: mostFollowed } = useRankings(true, limit, prefetchedTopUsers);
   const { rankings: mostLiked } = useRankings(true, limit, null, "token");
+  const { rankings: mostUsedTags } = useRankings(true, limit, null, "tag");
   const { results: newUsers } = useSearchUsers('', limit, prefetchedNewUsers);
   const { results: newTokens } = useSearchTokens('', limit, prefetchedNewTokens);
 
@@ -131,6 +132,7 @@ export default function Home({
         limit,
         mostFollowed,
         mostLiked,
+        mostUsedTags,
         newUsers,
         newTokens
       }}>

@@ -73,7 +73,7 @@ const Overlay = ({ nft }) => {
         </Box>)
 }
 
-export const NftWindow = ({ nft }) => {
+export const NftWindow = ({ nft, aspectRatio = "1:1" }) => {
     const theme = useTheme();
     const matches = useMediaQuery(theme.breakpoints.up('sm'));
 
@@ -87,6 +87,7 @@ export const NftWindow = ({ nft }) => {
                 component="a"
                 sx={{
                     position: 'relative',
+                    width: `100%`,
 
                     '&:hover': {
                         '.nftItemOverlay': { opacity: 1 }
@@ -97,7 +98,7 @@ export const NftWindow = ({ nft }) => {
                         cid={nft?.image}
                         transformations={nft?.filter}
                         gif={true}
-                        height={matches ? '400px' : '500px'}
+                        // height={matches ? '400px' : '500px'}
                     />}
                 {(assetType(nft) === AssetTypes.Video || assetType(nft) === AssetTypes.Audio) &&
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
@@ -107,7 +108,7 @@ export const NftWindow = ({ nft }) => {
                             controls={false}
                             onlyPoster={true}
                             audio={assetType(nft) === AssetTypes.Audio}
-                            height={matches ? '400px' : '500px'}
+                            // height={matches ? '400px' : '500px'}
                         />
                     </Box>
                 }
@@ -115,10 +116,11 @@ export const NftWindow = ({ nft }) => {
                     <>
                         <HodlImageResponsive
                             aspectRatio="1:1"
-                            sizes="(min-width: 900px) 25vw, (min-width: 1200px) calc(1200px / 4), 50vw"
+                            sizes="(min-width: 900px) 25vw, (min-width: 1200px) calc(1200px / 5 * 2), 50vw"
                             cid={nft?.image}
                             widths={[400, 800, 1000]}
                             gravity="g_face"
+                            objectFit="cover"
                         />
                     </>
                 }

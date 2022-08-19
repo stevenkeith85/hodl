@@ -45,9 +45,10 @@ export const HodlCommentsBoxHeader : React.FC<HodlCommentsBoxHeaderProps> = ({
                             fontSize="inherit"
                             onClick={() => {
                                 setTopLevel({ objectId: nft.id, object: "token" });
-                                    router.push({
-                                        pathname: window.location.pathname,
-                                    }, undefined, { shallow: true });
+                                
+                                router.push({
+                                    pathname: window.location.pathname,
+                                }, undefined, { shallow: true });
 
                             }} />
                     </Tooltip>
