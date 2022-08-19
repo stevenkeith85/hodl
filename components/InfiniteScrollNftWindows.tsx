@@ -17,18 +17,18 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
 
   // TODO: Extract this logic to a hook.
   const getImageNumber = (i, next) => {
-    const page = Math.ceil(+next / +limit) - 1; 
+    const page = Math.ceil(+next / +limit) - 1;
     return page * limit + i + 1;
   }
 
   // We just count the number of images between large ones.
   // This varies depending on the number of columns
   const numberOfImagesUntilNextLargeOne = matches ? [7, 3] : [10, 4];
-  
+
   let index = 0;
   let lastDoubleSizedNumber = 1;
   const result = {};
-  
+
   const isDoubleSize = (i, next) => {
     const number = getImageNumber(i, next);
 
@@ -54,6 +54,7 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
   }
   // end TODO
 
+
   return (
     <Box
       sx={{
@@ -62,7 +63,7 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
           xs: `1fr 1fr 1fr 1fr`,
           md: `1fr 1fr 1fr 1fr 1fr`,
         },
-        gap: 4,  
+        gap: 4,
       }}
     >
 
@@ -83,15 +84,40 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
             <Box
               key={nft.id}
               sx={{
+                position: 'relative',
                 display: 'flex',
-                background: '#ddd',
+                // background: '#ddd',
                 gridColumn: isDoubleSize(i, next) ? `span 2` : `auto`,
                 gridRow: isDoubleSize(i, next) ? `span 2` : `auto`,
-                padding: isDoubleSize(i, next) ? 2 : 0
               }}
-            >{
-                <NftWindow nft={nft} key={nft.id}/>
-              }
+            >
+              {/* Responsive skeleton */}
+              < Box
+                sx={{
+                  position: 'relative',
+                  zIndex: 0,
+
+                  width: '100%',
+                  paddingTop: `100%`,
+                  height: 0,
+                  background: '#ccc',
+                  animation: 'flicker 3s ease',
+                  animationIterationCount: 'infinite',
+                  animationFillMode: 'forwards',
+                  opacity: 0,
+                }}>
+              </Box>
+              <Box
+                sx={{
+                  position: "absolute",
+                  zIndex: 1,
+                  width: `100%`,
+                  height: `100%`,
+                  padding: isDoubleSize(i, next) ? 2 : 0,
+                  background: '#ddd'
+                }}>
+                <NftWindow nft={nft} key={nft.id} />
+              </Box>
             </Box>
           </>)
         }

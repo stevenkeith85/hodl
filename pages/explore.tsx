@@ -19,7 +19,7 @@ export async function getServerSideProps({ query, req, res }) {
 
   await authenticate(req, res);
 
-  const limit = 21;
+  const limit = 14;
   const prefetchedResults = await getTokenSearchResults(q, 0, limit, JSON.parse(forSale || "false"));
 
   console.log('JSON.parse(forSale || "false")', JSON.parse(forSale || "false"))
