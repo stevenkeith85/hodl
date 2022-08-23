@@ -2,9 +2,9 @@ import { NextApiResponse } from "next"
 import dotenv from 'dotenv'
 import { ethers } from "ethers"
 import apiRoute from "../handler";
-import { nftaddress, nftmarketaddress } from "../../../config"
-import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
-import HodlMarket from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
+import { nftaddress, nftmarketaddress } from "../../../../config"
+import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
+import HodlMarket from '../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 import { getProvider } from "../../../lib/server/connections"
 import memoize from 'memoizee';
 import { Redis } from '@upstash/redis';

@@ -4,9 +4,9 @@
 
 import { ethers } from 'ethers'
 
-import { nftmarketaddress, nftaddress } from '../config.js'
-import Market from '../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
-import NFT from '../artifacts/contracts/HodlNFT.sol/HodlNFT.json'
+import { nftmarketaddress, nftaddress } from '../../config.js'
+import Market from '../../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
+import NFT from '../../artifacts/contracts/HodlNFT.sol/HodlNFT.json'
 
 import { getMetaMaskSigner } from "./connections";
 import { ActionTypes } from '../models/HodlAction';

@@ -1,9 +1,9 @@
 import { ethers, BigNumber } from 'ethers'
 import dotenv from 'dotenv'
 import { getNickname } from "../profile/nickname";
-import { nftmarketaddress } from "../../../config";
+import { nftmarketaddress } from "../../../../config";
 import { getProvider } from "../../../lib/server/connections";
-import Market from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
+import Market from '../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 dotenv.config({ path: '../.env' })
 
 

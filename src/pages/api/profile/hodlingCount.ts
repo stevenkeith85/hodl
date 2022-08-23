@@ -2,9 +2,9 @@ import dotenv from 'dotenv'
 import apiRoute from "../handler";
 import memoize from 'memoizee';
 import { ethers } from 'ethers';
-import { nftaddress } from '../../../config';
+import { nftaddress } from '../../../../config';
 import { getProvider } from '../../../lib/server/connections';
-import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
+import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 
 dotenv.config({ path: '../.env' })
 

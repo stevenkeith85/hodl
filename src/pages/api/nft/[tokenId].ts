@@ -4,13 +4,13 @@
 //
 // See also api/token, which is used to just get token data from our redis database
 
-import NFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json'
-import Market from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
+import NFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json'
+import Market from '../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
 
 import { ipfsUriToCid, ipfsUriToGatewayUrl } from '../../../lib/utils';
 import { getProvider } from '../../../lib/server/connections'
 import { ethers } from 'ethers'
-import { nftmarketaddress, nftaddress } from '../../../config.js'
+import { nftmarketaddress, nftaddress } from '../../../../config.js'
 
 import { NextApiRequest, NextApiResponse } from "next";
 

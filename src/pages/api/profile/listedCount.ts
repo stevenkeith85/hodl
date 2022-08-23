@@ -2,9 +2,9 @@ import dotenv from 'dotenv'
 import apiRoute from "../handler";
 
 import { ethers } from 'ethers';
-import { nftmarketaddress } from '../../../config';
+import { nftmarketaddress } from '../../../../config';
 import { getProvider } from '../../../lib/server/connections';
-import HodlMarket from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
+import HodlMarket from '../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 
 dotenv.config({ path: '../.env' })
 

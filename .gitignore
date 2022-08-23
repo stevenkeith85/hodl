@@ -42,10 +42,6 @@ typechain
 cache
 artifacts
 
-# local artifacts
-/public/uploads
-/public/hashed
-/nft-assets
 
 config.js
 generateNfts/config.js

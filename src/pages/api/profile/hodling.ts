@@ -1,34 +1,34 @@
 import dotenv from 'dotenv'
 import { ethers } from 'ethers';
 import { getProvider } from '../../../lib/server/connections';
-import { nftmarketaddress } from '../../../config';
-import HodlMarket from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
+import { nftaddress } from '../../../../config';
+import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import apiRoute from '../handler';
 import { getToken } from '../token/[tokenId]';
-import { Token } from '../../../models/Token';
 import { Nft } from '../../../models/Nft';
+import { Token } from '../../../models/Token';
 
 dotenv.config({ path: '../.env' })
 
 // The get hodling / get listed functionality should work fairly similar
 // TODO: We may read more data from Redis in future if we can set up a decent blockchain/redis cache mechanism
-const addressToListings = async (address, offset, limit) => {
+const addressToTokenIds = async (address, offset, limit) => {
     const provider = await getProvider();
-    const market = new ethers.Contract(nftmarketaddress, HodlMarket.abi, provider);
-    const result = await market.getListingsForAddress(address, offset, limit);
+    const tokenContract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
+    const result = await tokenContract.addressToTokenIds(address, offset, limit);
     return result;
 }
 
-export const getListed = async (address, offset, limit) => {
+export const getHodling = async (address, offset, limit) => {
     try {
-        const [listings, next, total] = await addressToListings(address, offset, limit);
+        const [tokenIds, next, total] = await addressToTokenIds(address, offset, limit);
 
-        if (!listings.length) {
+        if (!tokenIds.length) {
             return { items: [], next: 0, total: 0 };
         }
 
-        const nfts: Nft [] = await Promise.all(listings.map(async listing => {
-            const token: Token = await getToken(listing.tokenId);
+        const items : Nft [] = await Promise.all(tokenIds.map(async id => {
+            const token: Token = await getToken(id);
 
             // If the token is present on the blockchain, 
             // but not in our database
@@ -37,23 +37,24 @@ export const getListed = async (address, offset, limit) => {
                 return null;
             }
 
-            const nft: Nft = {
+            const nft : Nft = {
                 ...token,
                 owner: address,
-                forSale: true,
-                price: ethers.utils.formatEther(listing.price)
-            }
+                forSale: false,
+                price: null
+            };
 
             return nft;
         }));
 
-        return { items: nfts, next: Number(next), total: Number(total) };
+        return { items, next: Number(next), total: Number(total) };
     } catch (e) {
         return { items: [], next: 0, total: 0 };
     }
 }
 
 const route = apiRoute();
+
 route.get(async (req, res) => {
     const { address, offset, limit } = req.query;
 
@@ -61,7 +62,8 @@ route.get(async (req, res) => {
         return res.status(400).json({ message: 'Bad Request' });
     }
 
-    const data = await getListed(address, offset, limit);
+    const data = await getHodling(address, offset, limit)
+
     return res.status(200).json(data);
 });
 

@@ -1,8 +1,8 @@
 import { ethers } from 'ethers'
 
-import { nftaddress } from '../config.js'
+import { nftaddress } from '../../config.js'
 
-import NFT from '../artifacts/contracts/HodlNFT.sol/HodlNFT.json'
+import NFT from '../../artifacts/contracts/HodlNFT.sol/HodlNFT.json'
 import { getMetaMaskSigner } from './connections';
 
 // TODO: This is client side. Should be moved there

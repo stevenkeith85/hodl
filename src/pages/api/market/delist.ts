@@ -5,9 +5,9 @@ import apiRoute from "../handler";
 import { HodlAction, ActionTypes } from "../../../models/HodlAction";
 import { ethers } from "ethers";
 import { getProvider } from "../../../lib/server/connections";
-import { nftmarketaddress } from "../../../config";
+import { nftmarketaddress } from "../../../../config";
 
-import Market from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
+import Market from '../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 import { addAction } from "../actions/add";
 import { Redis } from '@upstash/redis';
 import { NUMBER_OF_CONFIRMATIONS_TO_WAIT_FOR } from "../../../lib/utils";

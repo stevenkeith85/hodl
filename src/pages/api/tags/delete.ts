@@ -4,9 +4,9 @@ import dotenv from 'dotenv'
 
 import { getProvider } from "../../../lib/server/connections";
 import { ethers } from "ethers";
-import { nftaddress, nftmarketaddress } from "../../../config";
-import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
-import HodlMarket from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
+import { nftaddress, nftmarketaddress } from "../../../../config";
+import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
+import HodlMarket from '../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 
 const client = Redis.fromEnv()
 import apiRoute from "../handler";

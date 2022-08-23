@@ -5,9 +5,9 @@ import dotenv from 'dotenv'
 import apiRoute from "../handler";
 import { GetCommentsValidationSchema } from "../../../validationSchema/comments/getComments";
 import { ethers } from "ethers";
-import { nftaddress } from "../../../config";
+import { nftaddress } from "../../../../config";
 import { getProvider } from "../../../lib/server/connections";
-import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
+import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import { HodlCommentViewModel } from "../../../models/HodlComment";
 import { getComment } from "../comment";
 import { instance } from "../../../lib/axios";

@@ -9,9 +9,9 @@ import { HodlAction, ActionTypes } from "../../../models/HodlAction";
 import { addAction } from "../actions/add";
 import { AddCommentValidationSchema } from "../../../validationSchema/comments/addComments";
 import { ethers } from "ethers";
-import { nftaddress } from "../../../config";
+import { nftaddress } from "../../../../config";
 import { getProvider } from "../../../lib/server/connections";
-import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
+import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import { HodlComment } from "../../../models/HodlComment";
 
 dotenv.config({ path: '../.env' })

@@ -1,8 +1,8 @@
 import dotenv from 'dotenv'
 import { ethers } from 'ethers';
 import { getProvider } from '../../../lib/server/connections';
-import { nftmarketaddress } from '../../../config';
-import HodlMarket from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
+import { nftmarketaddress } from '../../../../config';
+import HodlMarket from '../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
 import { ipfsUriToCid } from '../../../lib/utils';
 import apiRoute from '../handler';
 import { getToken } from '../token/[tokenId]';

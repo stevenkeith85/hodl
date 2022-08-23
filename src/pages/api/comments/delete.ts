@@ -5,13 +5,13 @@ import dotenv from 'dotenv'
 import { getProvider } from "../../../lib/server/connections";
 import { ethers } from "ethers";
 
-import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
-import HodlMarket from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
+import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
+import HodlMarket from '../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 import apiRoute from "../handler";
 
 import { DeleteCommentValidationSchema } from "../../../validationSchema/comments/deleteComment";
 import { HodlComment } from "../../../models/HodlComment";
-import { nftaddress, nftmarketaddress } from "../../../config";
+import { nftaddress, nftmarketaddress } from "../../../../config";
 
 const client = Redis.fromEnv()
 

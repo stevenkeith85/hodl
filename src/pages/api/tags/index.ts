@@ -5,8 +5,8 @@ import apiRoute from '../handler';
 import { Redis } from '@upstash/redis';
 import { getProvider } from "../../../lib/server/connections";
 import { ethers } from "ethers";
-import { nftaddress } from "../../../config";
-import HodlNFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
+import { nftaddress } from "../../../../config";
+import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 dotenv.config({ path: '../.env' })
 
 const client = Redis.fromEnv()
