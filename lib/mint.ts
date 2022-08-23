@@ -5,7 +5,8 @@ import { nftaddress } from '../config.js'
 import NFT from '../artifacts/contracts/HodlNFT.sol/HodlNFT.json'
 import { getMetaMaskSigner } from './connections';
 
-
+// TODO: This is client side. Should be moved there
+// We should also handle the transaction confirmation server-side
 export const mintToken = async (url) => {
     const signer = await getMetaMaskSigner();
     const tokenContract = new ethers.Contract(nftaddress, NFT.abi, signer);

@@ -23,7 +23,7 @@ export const useIpfsUpload = (): [
 
     try {
       const r = await axios.post(
-        '/api/mint/ipfs',
+        '/api/create/ipfs',
         {
           name,
           description,

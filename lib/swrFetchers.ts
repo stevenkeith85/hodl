@@ -1,5 +1,7 @@
 import axios from 'axios'
 
+// TODO: The fetchers ended up being fairly specific; so these are pretty much deprecated.
+// we are now just addid the fetchers to the react hooks file
 export const fetchWithAuth = url => axios.get(
     url,
     {

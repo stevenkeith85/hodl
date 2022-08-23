@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import Link from "next/link";
-import { FC } from "react";
+import { FC, useContext } from "react";
 import { ActionTypes, HodlActionViewModel } from "../../models/HodlAction";
 import { truncateText } from "../../lib/utils";
 import { ProfileNameOrAddress } from '../avatar/ProfileNameOrAddress';
@@ -8,24 +8,34 @@ import { formatDistanceStrict } from "date-fns";
 import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
 import { AssetThumbnail } from "../AssetThumbnail";
 import { FollowButton } from "../profile/FollowButton";
+import { WalletContext } from "../../contexts/WalletContext";
+import { MaticPrice } from "../MaticPrice";
 
 // Boolean guards
+
 const likedToken = item => item.action === ActionTypes.Liked && item.object === "token";
 const likedDeletedComment = item => item.action === ActionTypes.Liked && item.object === "comment" && item.comment === null;
 const likedComment = item => item.action === ActionTypes.Liked && item.object === "comment" && item.comment !== null;
 const madeDeletedComment = item => item.action === ActionTypes.Commented && item.object === "comment" && item.comment === null;
 const commentedOnToken = item => item.action === ActionTypes.Commented && item.object === "comment" && item.comment && item.comment.object == "token";
 const repliedToComment = item => item.action === ActionTypes.Commented && item.object === "comment" && item.comment && item.comment.object == "comment";
+
+const listedToken = item => item.action === ActionTypes.Listed;
+const delistedToken = item => item.action === ActionTypes.Delisted;
 const boughtToken = item => item.action === ActionTypes.Bought;
+
 const followed = item => item.action === ActionTypes.Followed;
 
 // Components
 const LikedToken = () => <>liked a token.</>
-const LikedDeletedComment = () => <>liked a comment, that has now been [deleted].</>
+const LikedDeletedComment = () => <>liked a comment, that has now been deleted.</>
 const LikedComment = ({ item }) => <>{`liked a comment: ${truncateText(item?.comment?.comment, 70)}.`}</>
-const MadeDeletedComment = () => <>made a comment, that has now been [deleted].</>
+const MadeDeletedComment = () => <>made a comment, that has now been deleted.</>
 const CommentedOnToken = ({ item }) => <>{`commented: ${truncateText(item?.comment?.comment, 70)}.`}</>
 const RepliedToComment = ({ item }) => <>{`replied: ${truncateText(item?.comment?.comment, 70)}.`}</>
+
+const ListedToken = ({ item }) => <>listed a token for <MaticPrice price={item?.metadata?.price} color="black" fontSize={14} size={14} sx={{ display: 'inline', marginLeft: 0.5}} /></>
+const DelistedToken = ({ item }) => <>delisted a token</>
 const BoughtToken = () => <>bought a token.</>
 const Followed = () => <>followed you.</>
 
@@ -45,15 +55,6 @@ const Timestamp = ({ item }) => {
 
 const MessageWithAvatarAndTime = ({ item, children }) => {
     return (<>
-        {/* {
-        item?.subject &&
-        <ProfileNameOrAddress
-            color={"primary"}
-            profileAddress={item.subject}
-            fallbackData={item.user}
-            sx={{ fontWeight: 600 }}
-        />
-    } */}
         {' '}
         {children}
         <Timestamp item={item} />
@@ -61,10 +62,10 @@ const MessageWithAvatarAndTime = ({ item, children }) => {
 }
 
 const NotificationLink = ({ item }) => {
+    const { address } = useContext(WalletContext);
+
     return (<Box
         sx={{
-            // display: 'flex',
-            // gap: '4px',
             width: `100%`,
             "& > a": {
                 display: 'block',
@@ -75,16 +76,17 @@ const NotificationLink = ({ item }) => {
             }
         }}>
 
-        <Box component="span" sx={{ float: 'left', marginRight: '4px' }}>
+        <Box component="span">
             {item?.subject &&
                 <ProfileNameOrAddress
                     color={"primary"}
                     profileAddress={item.subject}
                     fallbackData={item.user}
                     sx={{ fontWeight: 600 }}
+                    you={item?.subject === address}
                 />}
-        </Box>
 
+        </Box>
         {
             likedToken(item) &&
             <Link href={`/nft/${item?.token?.id}`} passHref>
@@ -97,9 +99,11 @@ const NotificationLink = ({ item }) => {
         }
         {
             likedDeletedComment(item) &&
-            <MessageWithAvatarAndTime item={item}>
-                <LikedDeletedComment />
-            </MessageWithAvatarAndTime>
+            <Typography component="a">
+                <MessageWithAvatarAndTime item={item}>
+                    <LikedDeletedComment />
+                </MessageWithAvatarAndTime>
+            </Typography>
         }
         {
             likedComment(item) &&
@@ -112,9 +116,12 @@ const NotificationLink = ({ item }) => {
             </Link>
         }
         {
-            madeDeletedComment(item) && <MessageWithAvatarAndTime item={item}>
-                <MadeDeletedComment />
-            </MessageWithAvatarAndTime>
+            madeDeletedComment(item) &&
+            <Typography component="a">
+                <MessageWithAvatarAndTime item={item}>
+                    <MadeDeletedComment />
+                </MessageWithAvatarAndTime>
+            </Typography>
         }
         {
             commentedOnToken(item) &&
@@ -147,6 +154,26 @@ const NotificationLink = ({ item }) => {
             </Link>
         }
         {
+            listedToken(item) &&
+            <Link href={`/nft/${item?.token?.id}`} passHref>
+                <Typography component="a">
+                    <MessageWithAvatarAndTime item={item}>
+                        <ListedToken item={item} />
+                    </MessageWithAvatarAndTime>
+                </Typography>
+            </Link>
+        }
+        {
+            delistedToken(item) &&
+            <Link href={`/nft/${item?.token?.id}`} passHref>
+                <Typography component="a">
+                    <MessageWithAvatarAndTime item={item}>
+                        <DelistedToken item={item} />
+                    </MessageWithAvatarAndTime>
+                </Typography>
+            </Link>
+        }
+        {
             followed(item) &&
             <Link href={`/profile/${item?.user?.nickname || item?.user?.address}`} passHref>
                 <Typography component="a">
@@ -166,12 +193,12 @@ interface HodlNotificationBoxProps {
     sx?: object;
 }
 
-export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setShowNotifications, lastRead, sx={} }) => {
+export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setShowNotifications, lastRead, sx = {} }) => {
 
     if (!item) {
         return null;
     }
-    
+
     return (
         <Box key={item?.id} sx={{
             background: lastRead < item.timestamp ? "#ECF3FF" : "white",

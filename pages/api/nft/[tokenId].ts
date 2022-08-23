@@ -95,12 +95,6 @@ export const fetchNFT = async (id: number): Promise<Nft> => {
   const marketItem = await marketContract.getListing(id);
   const forSale = isTokenForSale(marketItem);
 
-  // TEMP
-  const tokenContract = new ethers.Contract(nftaddress, NFT.abi, provider);
-  console.log("owner of token ===", await tokenContract.ownerOf(id));
-  //
-
-
   // Determine the token owner
   let owner = null;
   let price = '0';

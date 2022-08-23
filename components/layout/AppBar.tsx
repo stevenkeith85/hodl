@@ -120,13 +120,17 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                 "",
                 {
                     // @ts-ignore
-                    variant: 'notification',
+                    variant: 'hodlnotification',
                     action,
                 }
             )
         });
 
         notificationsHover.current = true;
+
+        return () => {
+            pusher.user.unbind('notification-hover');
+        }
 
     }, [pusher])
 

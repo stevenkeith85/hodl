@@ -11,12 +11,15 @@ import Layout from '../components/layout/Layout';
 import { CacheProvider, EmotionCache } from '@emotion/react';
 import createEmotionCache from '../createEmotionCache';
 import { AppProps } from 'next/app';
-import { NotificationSnackbar } from '../components/snackbars/NotificationSnackbar';
+
 
 import '../styles/globals.css'
 
 import { PusherContext } from '../contexts/PusherContext';
 import Pusher from 'pusher-js';
+
+import { HodlNotificationSnackbar } from '../components/snackbars/HodlNotificationSnackbar';
+import { HodlSnackbar } from '../components/snackbars/HodlSnackbar';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -102,9 +105,10 @@ export default function MyApp(props: MyAppProps) {
                 <SnackbarProvider
                   Components={{
                     // @ts-ignore
-                    notification: NotificationSnackbar
+                    hodlnotification: HodlNotificationSnackbar,
+                    // @ts-ignore
+                    hodlsnackbar: HodlSnackbar
                   }}
-                // maxSnack={3}
                 >
                   <Layout>
                     <Component {...pageProps} />

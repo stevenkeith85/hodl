@@ -55,14 +55,14 @@ export async function getServerSideProps({ params, query, req, res }) {
     const comment = params.comment;
     const limit = 10;
     const tab = Number(query.tab) || 0;
-    
+
     const pprefetchedCommentCount = getCommentCount(comment ? "comment" : "token", comment ? comment : params.tokenId);
     const pprefetchedLikeCount = getLikeCount(params.tokenId);
-    
+
     // TODO: We might not prefetch these?; to speed up the initial load
     const pprefetchedComments = getCommentsForToken(comment ? "comment" : "token", comment ? comment : params.tokenId, 0, limit, !comment);
     const ppriceHistory = getPriceHistory(params.tokenId);
-    
+
     const [
       prefetchedComments,
       prefetchedCommentCount,
@@ -219,7 +219,9 @@ const NftDetail = ({
                   borderRadius: 1
                 }}>
                   <Typography variant="h2">Price</Typography>
-                  <MaticPrice price={nft?.price} color="black" />
+                  {nft?.forSale ? 
+                  <MaticPrice price={nft?.price} color="black" size={22} fontSize={22}/> : 
+                  <Typography sx={{ fontSize: '18px'}}>Not for Sale</Typography>}
                   <NftActionButtons nft={nft} />
                 </Box>
                 <PriceHistoryGraph fallbackData={priceHistory} nft={nft} />

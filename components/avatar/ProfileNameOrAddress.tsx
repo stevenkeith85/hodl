@@ -14,17 +14,19 @@ interface ProfileNameOrAddressProps {
     color?: "primary" | "secondary" | "inherit";
     sx?: object | null;
     fallbackData?: UserViewModel | null;
+    you: boolean; // use the word 'you' instead of the 3rd party form (address/nickname)
 }
 
-export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({ 
-    profileAddress, 
-    fontSize="14px", 
-    color="inherit", 
+export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({
+    profileAddress,
+    fontSize = "14px",
+    color = "inherit",
     sx = null,
-    fallbackData=null
+    fallbackData = null,
+    you = false
 }) => {
 
-    const {data: user } = useUser(profileAddress, fallbackData);
+    const { data: user } = useUser(profileAddress, fallbackData);
     if (!user) {
         return null;
     }
@@ -51,11 +53,9 @@ export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({
         }}>
         {user.nickname ?
             <Link href={`/profile/${user.nickname}`} passHref>
-                {/* <Tooltip title={profileAddress} arrow placement="right"> */}
-                    <a>
-                        {truncateText(user.nickname, 20)}
-                    </a>
-                {/* </Tooltip> */}
+                {
+                    <a>{you ? 'You' : truncateText(user.nickname, 20)}</a>
+                }
             </Link>
             :
             <Link href={`/profile/${user.address}`} passHref>

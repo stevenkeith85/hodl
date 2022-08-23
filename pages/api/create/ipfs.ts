@@ -4,7 +4,6 @@ import cloudinary from 'cloudinary'
 import apiRoute from "../handler";
 import dotenv from 'dotenv'
 import { createCloudinaryUrl } from "../../../lib/utils";
-import { renameOnCloudinary } from "../../../lib/server/cloudinary";
 import { uploadToIPFSValidationSchema } from "../../../validationSchema/uploadToIPFS";
 
 dotenv.config({ path: '../.env' })
@@ -90,14 +89,6 @@ route.post(async (req, res: NextApiResponse) => {
     isVideo || isAudio,
     aspectRatio
   );
-
-  // await renameOnCloudinary(
-  //   fileName,
-  //   process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER + '/nfts/' + imageCid,
-  //   isVideo || isAudio
-  // );
-
-
 
   // Upload the IPFS image to cloudinary so that the filter/ crop becomes permanent
   await cloudinary.v2.uploader.upload(

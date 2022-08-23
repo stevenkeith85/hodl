@@ -17,7 +17,8 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
     color="secondary", 
     variant="outlined", 
     fontSize='14px', 
-    sx = null 
+    sx = null,
+
 }) => {
     const [connect, disconnect] = useConnect();
     const { address } = useContext(WalletContext);

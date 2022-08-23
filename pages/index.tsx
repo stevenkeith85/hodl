@@ -107,7 +107,6 @@ export default function Home({
   prefetchedFollowersCount
 }) {
 
-  // return (<><h1>{JSON.stringify(user)}</h1></>)
   const { rankings: mostFollowed } = useRankings(true, limit, prefetchedTopUsers);
   const { rankings: mostLiked } = useRankings(true, limit, null, "token");
   const { rankings: mostUsedTags } = useRankings(true, limit, null, "tag");

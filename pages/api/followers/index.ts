@@ -38,8 +38,6 @@ export const getFollowers = async (address: string, offset: number = 0, limit: n
     const promises = addresses.map(address => getUser(address, viewer));
     
     users = await Promise.all(promises);
-    console.log('bar')
-    console.log('USERS', users)
 
     return { items: users, next: Number(offset) + Number(users.length), total: Number(total) };
   } catch (e) {

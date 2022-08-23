@@ -1,9 +1,8 @@
-import { RocketSharp } from "@mui/icons-material";
-import { Alert, Box, Stack, Typography } from "@mui/material";
-import { grey, pink } from "@mui/material/colors";
+import { AccountBalanceWallet, CircleOutlined, Nightlife, NightlightOutlined, RocketLaunchRounded } from "@mui/icons-material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import Link from "next/link";
+import { HodlBorderedBox } from "../components/HodlBorderedBox";
 import { AboutPagePitch } from "../components/layout/AboutPagePitch";
-import { HomePagePitch } from "../components/layout/HomePagePitch";
 import { LoginLogoutButton } from "../components/menu/LoginLogoutButton";
 import { authenticate } from "../lib/jwt";
 
@@ -19,46 +18,67 @@ export async function getServerSideProps({ req, res }) {
 
 export default function About({ address }) {
     return (
-        <Box marginY={0}>
+        <Box marginY={0} mb={4}>
             <Stack spacing={4}>
                 <AboutPagePitch />
-                {/* <Box
+                <HodlBorderedBox
                     sx={{
-                        border: '1px solid #ddd',
-                        boxShadow: '0 0 2px 1px #eee',
-                        padding: 4,
-                        borderRadius: 1,
-                        background: "#fefefe"
-                    }}> */}
-                    <Box>
-                    <Typography 
-                        mb={1} 
-                        variant="h2" 
-                        >Quick Start</Typography>
-                    <Typography 
-                        // mb={2} 
-                        component="ul">
-                        <Typography mb={1} component="li">
-                            <Link href="https://metamask.io/download/">
-                                Install Metamask
-                            </Link>
-                        </Typography>
-                        <Typography mb={2} component="li">Click <Box component={"span"} sx={{ margin: 1 }}><LoginLogoutButton /></Box> and sign the message</Typography>
+                        background: 'white',
+                        padding: 2,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 2
+                    }}
+                >
+                    <Typography
+                        variant="h2"
+                        fontSize={'18px'}
+                        mb={2}
+                    >
+                        Quick Start
                     </Typography>
-                    </Box>
-                {/* </Box> */}
-                <Box>
-                    <Typography mb={1} 
-                        variant="h2" 
-                        // color="primary"
+
+                    <Link href="https://metamask.io/download/" passHref>
+                        <Typography
+                            component="a"
+                            sx={{
+                                textDecoration: 'none',
+                                color: theme => theme.palette.text.primary,
+                                '&:hover': {
+                                    color: theme => theme.palette.secondary.dark,
+                                    textDecoration: 'underline'
+                                },
+                            }}>
+                            <CircleOutlined sx={{ fontSize: '10px', marginX: 2 }} />
+                            Install Metamask
+                        </Typography>
+                    </Link>
+                    <Typography component={"span"}>
+                        <CircleOutlined sx={{ fontSize: '10px', marginX: 2 }} />
+                        Open the <AccountBalanceWallet color="primary" sx={{ fontSize: "18px", marginX: 1, padding: 0 }} /> menu
+                        and click
+                        <Button
+                            color={'secondary'}
+                            variant={'outlined'}
+                            startIcon={<AccountBalanceWallet />}
+                            sx={{ cursor: 'auto', marginX: 1, paddingX: 1 }}
                         >
-                            Wallets</Typography>
+                            connect
+                        </Button>
+                    </Typography>
+
+                </HodlBorderedBox>
+                <Box>
+                    <Typography mb={1}
+                        variant="h2"
+                    >
+                        Wallets</Typography>
                     <Typography mb={0}>
                         We officially support <Link href="https://metamask.io/">MetaMask</Link>, and recommend connecting with that.
                     </Typography>
                 </Box>
                 <Box>
-                    <Typography mb={1} variant="h2">Decentralized Storage</Typography>
+                    <Typography mb={1} variant="h2">Decentralized storage</Typography>
                     <Typography mb={0}>
                         We upload and pin your assets to the <Link href="https://ipfs.io/">Interplanatary File System</Link>. This ensures the longterm survival of your assets.
                     </Typography>
@@ -88,27 +108,27 @@ export default function About({ address }) {
                     </Typography>
                 </Box>
                 <Box>
-                    <Typography mb={1} variant="h2" >Do Your Own Research</Typography>
-                    
-                        We do encourage users to DYOR before buying an NFT.
-                        <ol>
-                            <li>Check the IPFS links </li>
-                            <li>Check the selling history of the token</li>
-                            <li>Check for social validation (likes / comments / follows)</li>
-                            <li>Do a google image search</li>
-                            <li>Check the privilege assigned to the token</li>
-                        </ol>
-                    
+                    <Typography mb={1} variant="h2" >Do your own research</Typography>
+
+                    We do encourage users to DYOR before buying an NFT.
+                    <ol>
+                        <li>Check the IPFS links </li>
+                        <li>Check the selling history of the token</li>
+                        <li>Check for social validation (likes / comments / follows)</li>
+                        <li>Do a google image search</li>
+                        <li>Check the privilege assigned to the token</li>
+                    </ol>
+
                 </Box>
                 <Box>
-                    <Typography id="copyright" mb={2} variant="h2">Hodler Privilege</Typography>
-                        When an author mints an NFT, they specify what a person gets if they hodl it.
-                        <ol>
-                            <li>Only the token</li>
-                            <li>The token and a non-commercial license for the attached asset</li>
-                            <li>The token and a commercial license for the attached asset</li>
-                        </ol>
+                    <Typography id="copyright" mb={2} variant="h2">Hodler privilege</Typography>
+                    When an author mints an NFT, they specify what a person gets if they hodl it.
+                    <ol>
+                        <li>Only the token</li>
+                        <li>The token and a non-commercial license for the attached asset</li>
+                        <li>The token and a commercial license for the attached asset</li>
+                    </ol>
                 </Box>
-            </Stack>
-        </Box>)
+            </Stack >
+        </Box >)
 }

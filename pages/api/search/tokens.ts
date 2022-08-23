@@ -3,14 +3,21 @@ import apiRoute from '../handler';
 import { getToken } from '../token/[tokenId]';
 import { Redis } from '@upstash/redis';
 
-import { getAsString } from '../../../lib/utils';
-import { Token } from '../../../models/Token';
-import { instance } from '../../../lib/axios';
+import { chunk, getAsString } from '../../../lib/utils';
+import { Nft } from '../../../models/Nft';
 
 const client = Redis.fromEnv()
 
 dotenv.config({ path: '../.env' })
 
+const getMarketItem = async ([id, price]): Promise<Nft> => {
+    console.log(`search/tokenns/getMarketItem - id: ${id}, price: ${price}`)
+    return {
+        ...(await getToken(id)),
+        forSale: true,
+        price
+    }
+}
 
 export const getTokenSearchResults = async (q: string, offset: number, limit: number, forSale: boolean = false) => {
     try {
@@ -18,6 +25,8 @@ export const getTokenSearchResults = async (q: string, offset: number, limit: nu
         let total = 0;
 
         const tag = q;
+
+        let tokens;
 
         if (forSale) {
             // TODO: We will add tokens to the market ZSET when the user lists them
@@ -59,25 +68,15 @@ export const getTokenSearchResults = async (q: string, offset: number, limit: nu
         }
 
         if (forSale) {
-            // TODO: We will add tokens to the market ZSET when the user lists them
-            // and remove them when bought/delisted.
-
-            // initially we'll call this behaviour from the webapp; but potentially we'll need 
-            // qStash or something to do this as a batch job. (even if its just to find items that have been missed)
-
-
             if (tag) {
-                // should the interstare happen in a batch job? qStash?
-                // or perhaps we just update it when things are listed/delisted
-                // leaving here for development at the moment
-                await client.zinterstore(`market:tag:${tag}`, 2, ["market", `tag:${tag}`], {
-                    aggregate: 'max'
-                })
-
-                ids = await client.zrange(`market:tag:${tag}`, offset, offset + limit - 1, { rev: true });
+                ids = await client.zrange(`market:${tag}`, offset, offset + limit - 1, { rev: true, withScores: true });
             } else {
-                ids = await client.zrange("market", offset, offset + limit - 1, { rev: true });
+                ids = await client.zrange("market", offset, offset + limit - 1, { rev: true, withScores: true });
             }
+
+            ids = chunk(ids, 2);
+            const promises = ids.map(item => getMarketItem(item));
+            tokens = await Promise.all(promises);
         }
         else {
             if (tag) {
@@ -85,10 +84,12 @@ export const getTokenSearchResults = async (q: string, offset: number, limit: nu
             } else {
                 ids = await client.zrange("tokens", offset, offset + limit - 1, { rev: true });
             }
+
+            const promises = ids.map(address => getToken(address));
+            tokens = await Promise.all(promises);
         }
 
-        const promises = ids.map(address => getToken(address));
-        const tokens: Token[] = await Promise.all(promises);
+
 
         return { items: tokens, next: Number(offset) + Number(ids.length), total: Number(total) };
     } catch (e) {

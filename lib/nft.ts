@@ -1,4 +1,6 @@
-// These functions will be called client side as they need the user to sign the transaction with a signer (MetaMask)
+// These functions are called client side 
+// as they need the user to sign the transaction with a signer (MetaMask)
+// TODO: They could be react hooks
 
 import { ethers } from 'ethers'
 
@@ -11,29 +13,27 @@ import { ActionTypes } from '../models/HodlAction';
 import axios from 'axios'
 import { Nft } from '../models/Nft.js';
 
-export const listNftOnMarket = async (tokenId, tokenPrice) => {
+export const listNft = async (tokenId, tokenPrice) => {
   const signer = await getMetaMaskSigner();
   const contract = new ethers.Contract(nftmarketaddress, Market.abi, signer);
   const price = ethers.utils.parseUnits(tokenPrice, 'ether');
   const tokenContract = new ethers.Contract(nftaddress, NFT.abi, signer);
 
   // If we aren't approved, then ask for approval.
-  // This could happen if a user hasn't ever minted a token.
+  // NB: The user will be approved if they've listed a token with us before. If not, then they'll need to pay the additional gas cost to approve us.
+  // TODO: We can probably override a method in the contract that means users won't need to do this.
   if (!await tokenContract.isApprovedForAll(await signer.getAddress(), nftmarketaddress)) {
     const approvalTx = await tokenContract.setApprovalForAll(nftmarketaddress, tokenId);
     await approvalTx.wait();
   };
 
-  const listTx = await contract.listToken(nftaddress, tokenId, price);
-  await listTx.wait();
+  const { hash } = await contract.listToken(nftaddress, tokenId, price);
 
   try {
     const r = await axios.post(
-      '/api/actions/add',
+      '/api/market/list',
       {
-        action: ActionTypes.Listed,
-        object: "token",
-        id: Number(tokenId)
+       hash
       },
       {
         headers: {
@@ -81,16 +81,13 @@ export const delistNft = async (nft: Nft) => {
   const signer = await getMetaMaskSigner();
   const contract = new ethers.Contract(nftmarketaddress, Market.abi, signer);
 
-  const tx = await contract.delistToken(nftaddress, nft.id);
-  await tx.wait();
+  const { hash } = await contract.delistToken(nftaddress, nft.id);
 
   try {
     const r = await axios.post(
-      '/api/actions/add',
+      '/api/market/delist',
       {
-        action: ActionTypes.Delisted,
-        object: "token",
-        id: Number(nft.id)
+       hash
       },
       {
         headers: {

@@ -64,10 +64,17 @@ const addNotification = async (address: string, action: HodlAction): Promise<num
   );
 
   if (added) {
-    console.log(`Added a notification for ${address}, sending them a push now`);
+    console.log(`actions/add/addNotification - sending ${address} push notifications.`);
     
-    pusher.sendToUser(address, "notification", null);
-    pusher.sendToUser(address, "notification-hover", await getAction(action.id, null));
+    const notification = await pusher.sendToUser(address, "notification", null);
+    if (!notification.ok) {
+      console.log(`actions/add/addNotification - pusher was unable to send <notification> to user`);
+    }
+
+    const notificationHover = await pusher.sendToUser(address, "notification-hover", await getAction(action.id, null));
+    if (!notificationHover.ok) {
+      console.log(`actions/add/addNotification - pusher was unable to send <notification-hover> to user`);
+    }
   }
 
   return added;
@@ -127,8 +134,9 @@ const recordAddressActivity = async (action: HodlAction): Promise<number> => {
 
 
 // actions could be referenced (by id) from several places.
-const storeAction = async (action: HodlAction): Promise<string | null> => {
-  return await client.set(`action:${action.id}`, JSON.stringify(action));
+const storeAction = async (action: HodlAction): Promise<string | HodlAction | null> => {
+  // return await client.set(`action:${action.id}`, JSON.stringify(action));
+  return await client.set(`action:${action.id}`, action);
 }
 
 // gets the last <x> actions that address took that can be used in a feed
@@ -244,13 +252,6 @@ export const addAction = async (action: HodlAction) => {
         return; // We've replied to our own comment. No need for a notification.
       }
 
-      // We'll give the comment author a real-time update. (as they might be sitting on that page when the notification arrives)
-
-      // TODO: Potentially we could just do this for all users? 
-      // This might eat up an allowance of some sort though, so we'd need to check the pusher limits
-      // pusher.sendToUser(commentThatWasRepliedTo.subject, "comment-reply", commentThatWasRepliedTo);
-      
-
       // TODO: perhaps we should start logging this sort of thing?
       console.log(`adding a notification for ${(await getUser(commentThatWasRepliedTo.subject, null)).nickname}, as someone replied to their comment`)
       return await addNotification(commentThatWasRepliedTo.subject, action);
@@ -292,13 +293,10 @@ export const addAction = async (action: HodlAction) => {
         return;
       }
 
-      // update the action with the price
-      action.metadata = {
-        price: token.price
-      }
-      await client.set(`action:${action.id}`, JSON.stringify(action));
+      // Blockchain transactions could take a little time; so we need to notify the user their token has made it onto the market
+      await addNotification(action.subject, action);
 
-      // TODO: Possibly don't need to wait here. i.e. we could prevent the UI hanging by doing this async?
+      // TODO: Possibly don't need to wait here. i.e. could we prevent the UI hanging by doing this async?
       const count = await addToFeedOfFollowers(action);
 
       return count;
@@ -309,23 +307,25 @@ export const addAction = async (action: HodlAction) => {
 
   // Who: Tell the seller's followers (via their feed) there's no longer a new token for sale
   if (action.action === ActionTypes.Delisted) {
-
-    console.log('delisted action')
     try {
       const token: Nft = await fetchNFT(+action.objectId);
 
       if (token.forSale) {
-        console.log('delisted action - token is still for sale')
+        console.log('actions/add/delisted - validation failed: token is still for sale')
         return;
       }
 
       if (token.owner !== action.subject) {
-        console.log('delisted action - token owner should be the same as the action subject')
+        console.log('actions/add/delisted - validation failed: token owner should be the same as the action subject')
         return;
       }
 
-      console.log('delisted action - adding to followers feeds')
-      // TODO: Possibly don't need to wait here. i.e. we could prevent the UI hanging by doing this async?
+      console.log('actions/add/delisted - adding to followers feeds')
+
+      // Blockchain transactions could take a little time; so we need to notify the user their token has been taken off the market
+      await addNotification(action.subject, action);
+
+      // TODO: Possibly don't need to wait here. i.e. could we prevent the UI hanging by doing this async?
       const count = await addToFeedOfFollowers(action);
 
       return count;
@@ -335,7 +335,6 @@ export const addAction = async (action: HodlAction) => {
   }
 
 
-  // TODO: Debug this. I don't think its adding it to the followers feed
   // Who: Tell the seller's followers (via their feed) there's a new token on the site
   if (action.action === ActionTypes.Added) {
     try {
@@ -344,15 +343,6 @@ export const addAction = async (action: HodlAction) => {
       if (token.owner !== action.subject) {
         return;
       }
-
-      // // might need to think about this. user could have millions of followers
-      // // just do the most recent 10,000 at the moment
-      // const {items: followers} = await getFollowers(action.subject, 0, 10000); 
-
-      // let count = 0;
-      // for (let follower of followers) {
-      //   count += await addToFeed(`${follower.address}`, action);
-      // }
 
       // TODO: Possibly don't need to wait here. i.e. we could prevent the UI hanging by doing this async?
       const count = await addToFeedOfFollowers(action);
@@ -384,7 +374,8 @@ export const addAction = async (action: HodlAction) => {
       price: history[0].price
     }
 
-    await client.set(`action:${action.id}`, JSON.stringify(action));
+    // await client.set(`action:${action.id}`, JSON.stringify(action));
+    await client.set(`action:${action.id}`, action);
 
     // const first = await addNotification(`${buyer}`, action);
     const second = await addNotification(`${seller}`, action);
@@ -412,25 +403,13 @@ route.post(async (req, res: NextApiResponse) => {
   // Block most actions in the API, as we don't need these to be directly called client-side.
   // This reduces likelihood of bots posting misleading notifications / lies).
   // We do check the validity of a notification though before adding it...
-  if (action !== ActionTypes.Listed && action !== ActionTypes.Delisted && action !== ActionTypes.Bought) {
+  if (action !== ActionTypes.Delisted && action !== ActionTypes.Bought) {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
   if (object !== "token") {
     return res.status(400).json({ message: 'Bad Request' });
   }
-
-  // TODO: Is it even worth checking the token still exists here? We could perhaps do that
-  // sort of thing in a cron job, and flag tokens to be removed from our database?
-  //
-  // It just slows down the endpoint at the moment, and wastes a call to Infura
-  // const provider = await getProvider();
-  // const contract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
-  // const tokenExists = await contract.exists(id);
-
-  // if (!tokenExists) {
-  //   return res.status(400).json({ message: 'Bad Request' });
-  // }
 
   const notification: HodlAction = {
     subject: req.address,

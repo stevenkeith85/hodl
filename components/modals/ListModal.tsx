@@ -1,5 +1,5 @@
 import { Box, Button, TextField, Typography } from "@mui/material";
-import { listNftOnMarket } from "../../lib/nft";
+import { listNft } from "../../lib/nft";
 import { HodlModal } from "../index";
 import { useRouter } from "next/router";
 import { enqueueSnackbar } from 'notistack';
@@ -38,11 +38,15 @@ export const ListModal = ({ listModalOpen, setListModalOpen, setListedModalOpen,
                         sx={{ paddingY: 1.5, paddingX: 3 }}
                         onClick={async () => {
                             try {
-                                enqueueSnackbar('Please Approve Transaction in Wallet', { variant: "info" });
+                                enqueueSnackbar(
+                                    'Please approve the transaction in Metamask', 
+                                { 
+                                    // @ts-ignore
+                                    variant: "hodlsnackbar",
+                                    type: "info"
+                                });
 
-                                await listNftOnMarket(router.query.tokenId, price);
-
-                                enqueueSnackbar('Token listed on market', { variant: "success" });
+                                await listNft(router.query.tokenId, price);
 
                                 setListModalOpen(false);
                                 setListedModalOpen(true);

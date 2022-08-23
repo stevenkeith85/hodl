@@ -2,7 +2,6 @@ import { Redis } from '@upstash/redis';
 
 import jwt from 'jsonwebtoken'
 import cookie from 'cookie'
-import { clearCookies } from '../pages/api/auth/logout';
 
 export const accessTokenExpiresIn = 60 * 30;
 export const refreshTokenExpiresIn = 60 * 60 * 4;

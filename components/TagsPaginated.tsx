@@ -2,18 +2,22 @@ import useSWRInfinite from 'swr/infinite'
 import axios from 'axios';
 import useSWR from 'swr';
 import { useState } from 'react';
-import { Box, Chip, IconButton } from '@mui/material';
+import { Box, Chip, IconButton, useMediaQuery, useTheme } from '@mui/material';
 import { NavigateBefore, NavigateNext } from '@mui/icons-material';
 
 
 interface TagsPaginatedProps {
+  selected: string;
   onClick: (value) => void
 }
 
 
-export const TagsPaginated: React.FC<TagsPaginatedProps> = ({ onClick }) => {
+export const TagsPaginated: React.FC<TagsPaginatedProps> = ({ onClick, selected }) => {
   const [offset, setOffset] = useState(0);
-  const limit = 4;
+  const theme = useTheme();
+  const xs = useMediaQuery(theme.breakpoints.only('xs'));
+
+  const limit = xs ? 3 : 4;
 
   const fetcher = (
     url: string,
@@ -40,7 +44,12 @@ export const TagsPaginated: React.FC<TagsPaginatedProps> = ({ onClick }) => {
     sx={{
       display: 'flex',
       gap: 1,
-      alignItems: 'center'
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      width: {
+        xs: `100%`,
+        sm: 'auto'
+      }
     }}
   >
     <IconButton disabled={offset === 0} onClick={() => setOffset(offset - limit)}>
@@ -50,21 +59,20 @@ export const TagsPaginated: React.FC<TagsPaginatedProps> = ({ onClick }) => {
       sx={{
         display: 'flex',
         gap: 1,
-        justifyContent: 'center',
         width: {
-          xs: '30vw',
           md: 'calc(1200px / 2.5)'
         },
-        overflow: 'hidden'
+        overflow: 'hidden',
+        justifyContent: 'center'
       }}>
-    {
-      data?.items?.map(tag =>
-        <Chip label={tag} onClick={() => onClick(tag)} key={tag}/>
-      )
-    }
+      {
+        data?.items?.map(tag =>
+          <Chip color="primary" label={tag} onClick={() => onClick(tag)} key={tag} variant={selected === tag ? 'filled': 'outlined'}/>
+        )
+      }
     </Box>
 
-    <IconButton disabled={data?.next >= data?.total}onClick={() => setOffset(offset + limit)}>
+    <IconButton disabled={data?.next >= data?.total} onClick={() => setOffset(offset + limit)}>
       <NavigateNext />
     </IconButton>
   </Box>)

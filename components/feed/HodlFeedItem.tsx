@@ -79,24 +79,23 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                 </Box>
                                 {item.action === ActionTypes.Listed &&
                                     <Box
-                                    sx={{
-                                        textAlign: 'right',
-                                        fontFamily: theme => theme.logo.fontFamily,
-                                        color: theme => theme.palette.text.secondary
-                                    }}>
-                                        listed
+                                        sx={{
+                                            textAlign: 'right',
+                                            fontFamily: theme => theme.logo.fontFamily,
+                                            color: theme => theme.palette.text.secondary
+                                        }}>
                                         {
-                                            item?.metadata?.price && <MaticPrice price={item?.metadata?.price} color="black" />
+                                            item?.metadata?.price && <MaticPrice price={item?.metadata?.price} color="black" size={14} fontSize={14} />
                                         }
                                     </Box>
                                 }
                                 {item.action === ActionTypes.Bought &&
                                     <Box
-                                    sx={{
-                                        textAlign: 'right',
-                                        fontFamily: theme => theme.logo.fontFamily,
-                                        color: theme => theme.palette.text.secondary
-                                    }}>
+                                        sx={{
+                                            textAlign: 'right',
+                                            fontFamily: theme => theme.logo.fontFamily,
+                                            color: theme => theme.palette.text.secondary
+                                        }}>
                                         sold
                                         {
                                             item?.metadata?.price && <MaticPrice price={item?.metadata?.price} color="black" />
@@ -105,11 +104,11 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                 }
                                 {item.action === ActionTypes.Delisted &&
                                     <Box
-                                    sx={{
-                                        textAlign: 'right',
-                                        fontFamily: theme => theme.logo.fontFamily,
-                                        color: theme => theme.palette.text.secondary
-                                    }}>
+                                        sx={{
+                                            textAlign: 'right',
+                                            fontFamily: theme => theme.logo.fontFamily,
+                                            color: theme => theme.palette.text.secondary
+                                        }}>
                                         delisted
                                     </Box>
                                 }

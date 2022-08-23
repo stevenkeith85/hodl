@@ -7,23 +7,35 @@ import { MintProps } from './models';
 import { grey } from '@mui/material/colors';
 
 
-export const MintTokenAction: FC<MintProps> = ({ 
+export const MintTokenAction: FC<MintProps> = ({
   stepComplete,
-  loading, 
-  setLoading, 
+  loading,
+  setLoading,
   setStepComplete,
   formData,
   setFormData
- }: MintProps) => {
+}: MintProps) => {
 
   async function mint() {
     setLoading(true);
-    enqueueSnackbar('Please approve the transaction in MetaMask', { variant: "info" });
+    enqueueSnackbar(
+      'Please approve the transaction in Metamask',
+      {
+        // @ts-ignore
+        variant: "hodlsnackbar",
+        type: "info"
+      });
 
-    const {metadataUrl} = formData;
+    const { metadataUrl } = formData;
 
     if (metadataUrl.indexOf('ipfs://') === -1) {
-      enqueueSnackbar("Expected metadata to be on IPFS. Aborting", { variant: "error" });
+      enqueueSnackbar(
+        'Expected metadata to be on IPFS. Aborting',
+        {
+          // @ts-ignore
+          variant: "hodlsnackbar",
+          type: "error"
+        });
     }
 
     try {
@@ -45,7 +57,7 @@ export const MintTokenAction: FC<MintProps> = ({
   }
 
   return (
-    <Box 
+    <Box
       display="flex"
       flexDirection={"column"}
       alignItems="center"
@@ -54,15 +66,16 @@ export const MintTokenAction: FC<MintProps> = ({
       height="400px"
       gap={4}
     >
-      <CloudSyncOutlined sx={{ fontSize: 82, color: grey[400]}} />
-      <Typography 
-        sx={{ 
+      <CloudSyncOutlined sx={{ fontSize: 82, color: grey[400] }} />
+      <Typography
+        sx={{
           fontSize: '18px',
           color: grey[600],
-          span: { fontWeight: 600 } }}>Click the button to mint your NFT <span>{formData.name}</span> on the blockchain</Typography>
+          span: { fontWeight: 600 }
+        }}>Click the button to mint your NFT <span>{formData.name}</span> on the blockchain</Typography>
       <div>
         <Button
-        
+
           color="secondary"
           disabled={stepComplete === 4 || loading}
           onClick={mint}

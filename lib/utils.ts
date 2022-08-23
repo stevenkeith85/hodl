@@ -5,6 +5,15 @@ import { commercial, nonCommercial, token } from "./copyright";
 
 export const TAG_PATTERN = /#([\d\w_]+)/g;
 export const MAX_TAGS_PER_TOKEN = 6;
+export const NUMBER_OF_CONFIRMATIONS_TO_WAIT_FOR = 1; // we only get one confirmation with our local node; so leave it at that for the moment
+
+export const chunk = (input, size) => {
+  return input.reduce((arr, item, idx) => {
+    return idx % size === 0
+      ? [...arr, [item]]
+      : [...arr.slice(0, -1), [...arr.slice(-1)[0], item]];
+  }, []);
+};
 
 export const getAsString = (param) : string | null => Array.isArray(param) ? param[0] : param;
 

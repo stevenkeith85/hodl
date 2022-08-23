@@ -18,7 +18,7 @@ export const useCloudinaryUpload = () : [Function, number, string, Function] => 
 
     try {
       const r = await axios.post(
-        '/api/mint/upload',
+        '/api/create/upload',
         data,
         {
           headers: {

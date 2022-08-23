@@ -57,7 +57,7 @@ export const HodlCommentsBoxBody = ({
                         setTopLevel={setTopLevel}
                         mutateCount={countSWR.mutate}
                     />
-                    {swr?.data && swr?.data[0]?.items?.length === 0 && <Typography>Be the first to comment</Typography>}
+                    {swr?.data && swr?.data[0]?.items?.length === 0 && <Typography>No comments</Typography>}
 
                 </Box> :
                 comment && <HodlCommentBox

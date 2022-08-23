@@ -19,17 +19,20 @@ const Overlay = ({ nft }) => {
     return (
         <Box
             className='nftItemOverlay'
-            width="100%"
-            height="100%"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            color="white"
+        
             sx={{
                 background: "rgba(0,0,0,0.35)",
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: `100%`,
                 opacity: matches ? 0 : 1, // always show on mobiles as they don't really have hover effects
                 top: 0,
-                position: 'absolute'
+                left: 0,
+                position: 'absolute',
+                zIndex: 1,
+                color: 'white'
             }}
         >
             <Box display="flex" flexDirection="column" gap={2}>
@@ -44,33 +47,40 @@ const Overlay = ({ nft }) => {
                 >
                     <Box
                         display="flex"
-                        gap={3}
+
                         sx={{
-                            color: 'white'
+                            color: 'white',
+                            gap: {
+                                xs: 1,
+                                sm: 2
+                            },
                         }}
                     >
                         <Likes
                             id={nft?.id}
                             object="token"
                             color='inherit'
-                            fontSize='26px'
+                            fontSize={matches ? '26px': '14px'}
                             sx={{
                                 cursor: 'pointer',
                                 color: 'white',
-
+                                
                             }}
                         />
                         <Comments
                             nft={nft}
                             color='inherit'
-                            fontSize='26px'
-                            sx={{ paddingRight: 0 }}
+                            fontSize={matches ? '26px': '14px'}
+                            sx={{
+                                paddingRight: 0,
+                            }}
+
                         />
-                        {nft?.price && <MaticPrice price={nft?.price} />}
+                        {nft?.forSale && <MaticPrice price={nft?.price} size={26} fontSize={16}/>}
                     </Box>
                 </Box>
             </Box>
-        </Box>)
+        </Box >)
 }
 
 export const NftWindow = ({ nft, aspectRatio = "1:1" }) => {
@@ -88,6 +98,8 @@ export const NftWindow = ({ nft, aspectRatio = "1:1" }) => {
                 sx={{
                     position: 'relative',
                     width: `100%`,
+                    height: '100%',
+                    display: 'block',
 
                     '&:hover': {
                         '.nftItemOverlay': { opacity: 1 }
@@ -98,7 +110,6 @@ export const NftWindow = ({ nft, aspectRatio = "1:1" }) => {
                         cid={nft?.image}
                         transformations={nft?.filter}
                         gif={true}
-                        // height={matches ? '400px' : '500px'}
                     />}
                 {(assetType(nft) === AssetTypes.Video || assetType(nft) === AssetTypes.Audio) &&
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
@@ -108,7 +119,6 @@ export const NftWindow = ({ nft, aspectRatio = "1:1" }) => {
                             controls={false}
                             onlyPoster={true}
                             audio={assetType(nft) === AssetTypes.Audio}
-                            // height={matches ? '400px' : '500px'}
                         />
                     </Box>
                 }

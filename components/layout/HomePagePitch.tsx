@@ -43,7 +43,8 @@ export const HomePagePitch = ({ }) => {
                                     sm: '40px',
                                 },
                                 fontWeight: 600,
-                                color: theme => theme.palette.primary.main
+                                color: theme => theme.palette.primary.main,
+                                marginBottom: 2
                             }}>
                             Hodl My Moon
 
@@ -57,7 +58,7 @@ export const HomePagePitch = ({ }) => {
                                 },
                                 color: '#999'
                             }}>
-                            a social web3 platform
+                            is a web3 social network<br/> and marketplace
                         </Typography>
                         <Box
                             sx={{

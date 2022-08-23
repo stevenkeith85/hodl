@@ -1,14 +1,11 @@
-import { Box, Chip, FormControlLabel, FormGroup, Switch } from '@mui/material';
+import { Clear } from '@mui/icons-material';
+import { Box, Chip, FormControlLabel, FormGroup, Switch, Tooltip, useMediaQuery, useTheme } from '@mui/material';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useContext, useEffect, useState } from 'react';
-import InfiniteScroll from 'react-swr-infinite-scroll';
+import { useEffect, useState } from 'react';
 import { HodlImpactAlert } from '../components/HodlImpactAlert';
-import { HodlLoadingSpinner } from '../components/HodlLoadingSpinner';
 import { InfiniteScrollNftWindows } from '../components/InfiniteScrollNftWindows';
 import { TagsPaginated } from '../components/TagsPaginated';
-import { RankingsContext } from '../contexts/RankingsContext';
-import { useRankings } from '../hooks/useRankings';
 import { useSearchTokens } from '../hooks/useSearchTokens';
 import { authenticate } from '../lib/jwt';
 import { getTokenSearchResults } from './api/search/tokens';
@@ -19,10 +16,9 @@ export async function getServerSideProps({ query, req, res }) {
 
   await authenticate(req, res);
 
-  const limit = 14;
+  const limit = 11;
   const prefetchedResults = await getTokenSearchResults(q, 0, limit, JSON.parse(forSale || "false"));
 
-  console.log('JSON.parse(forSale || "false")', JSON.parse(forSale || "false"))
   return {
     props: {
       address: req.address || null,
@@ -44,6 +40,9 @@ export default function Search({ q, limit, forSale, fallbackData }) {
   const { results } = useSearchTokens(qChip, limit, forSaleToggle, qChip === q && forSale === forSaleToggle ? fallbackData : null);
 
   const router = useRouter();
+
+  const theme = useTheme();
+  const xs = useMediaQuery(theme.breakpoints.only('xs'));
 
   useEffect(() => {
     router.push(
@@ -72,43 +71,59 @@ export default function Search({ q, limit, forSale, fallbackData }) {
       </Head>
       <Box
         sx={{
-          marginBottom: 2
+          marginBottom: 2,
         }}>
 
         <Box
           sx={{
             display: 'flex',
+            flexDirection: 'column',
             gap: 1,
-            flexGrow: 1,
-            flexWrap: 'wrap',
-            alignItems: 'center',
-            justifyContent: 'space-between',
             marginY: 4
-
           }}
         >
-          <Chip
-            color={qChip === '' ? 'secondary' : 'default'}
-            variant={qChip === '' ? 'filled' : 'outlined'}
-            label={'clear'}
-            onClick={e => {
-              setQChip('');
-              setForSaleToggle(false);
-            }} ></Chip>
-          <TagsPaginated onClick={(value) => setQChip(value)} />
+          <Box
+            sx={{
+              display: 'flex',
+              flexGrow: 1,
+              gap: 4,
+              alignItems: 'center',
+              justifyContent: { xs: 'space-between' },
+            }}
+          >
+            <Tooltip title="Clear filters">
+              <Clear
+                fontSize="small"
+                sx={{
+                  cursor: 'pointer'
+                }}
+                onClick={e => {
+                  setQChip('');
+                  setForSaleToggle(false);
+                }}
+              /></Tooltip>
+            {!xs && <TagsPaginated selected={qChip} onClick={(value) => setQChip(value)} />}
+            <FormGroup>
+              <Tooltip title="Only show for sale">
+                <Switch
+                  checked={forSaleToggle}
+                  onChange={(e) => {
+                    setForSaleToggle(old => !old);
+                  }
+                  }
+                />
+              </Tooltip>
 
-          <FormGroup>
-            <FormControlLabel sx={{ width: 'max-content', }} control={
-              <Switch
-                checked={forSaleToggle}
-                onChange={(e) => {
-                  setForSaleToggle(old => !old);
-                }
-                } />}
-              label="for sale" />
-          </FormGroup>
+            </FormGroup>
+          </Box>
 
+          {xs && <Box
+            sx={{ display: 'flex', alignItems: 'center' }}
+          >
+            <TagsPaginated selected={qChip} onClick={(value) => setQChip(value)} />
+          </Box>}
         </Box>
+
 
 
         {results?.data?.[0]?.total === 0 &&

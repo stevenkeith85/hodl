@@ -13,7 +13,8 @@ interface InfiniteScrollNftWindowsProps {
 export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> = ({ swr, limit }) => {
 
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
+  const xs = useMediaQuery(theme.breakpoints.only('xs'));
+  const sm = useMediaQuery(theme.breakpoints.only('sm'));
 
   // TODO: Extract this logic to a hook.
   const getImageNumber = (i, next) => {
@@ -23,7 +24,8 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
 
   // We just count the number of images between large ones.
   // This varies depending on the number of columns
-  const numberOfImagesUntilNextLargeOne = matches ? [7, 3] : [10, 4];
+  // const numberOfImagesUntilNextLargeOne = xs ? [4, 2] : sm ? [7, 3] : [10, 4];
+  const numberOfImagesUntilNextLargeOne = xs ? [4, 2] : [7, 3]
 
   let index = 0;
   let lastDoubleSizedNumber = 1;
@@ -60,8 +62,9 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
       sx={{
         display: "grid",
         gridTemplateColumns: {
-          xs: `1fr 1fr 1fr 1fr`,
-          md: `1fr 1fr 1fr 1fr 1fr`,
+          xs: `1fr 1fr 1fr`,
+          sm: `1fr 1fr 1fr 1fr`,
+          // md: `1fr 1fr 1fr 1fr 1fr`,
         },
         gap: 4,
       }}
@@ -100,6 +103,8 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
                   width: '100%',
                   paddingTop: `100%`,
                   height: 0,
+                  maxHeight: `100%`,
+                  overflow: 'hidden',
                   background: '#ccc',
                   animation: 'flicker 3s ease',
                   animationIterationCount: 'infinite',
@@ -112,9 +117,6 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
                   position: "absolute",
                   zIndex: 1,
                   width: `100%`,
-                  height: `100%`,
-                  padding: isDoubleSize(i, next) ? 2 : 0,
-                  background: '#ddd'
                 }}>
                 <NftWindow nft={nft} key={nft.id} />
               </Box>

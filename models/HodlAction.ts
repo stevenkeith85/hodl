@@ -7,7 +7,7 @@ export enum ActionTypes {
     Listed = 'listed', // token listed on the market
     Delisted = 'delisted', // token delisted from the market
     Bought = 'bought', // token bought from market
-    
+
     Liked = 'liked', // token or comment liked
     Commented = 'commented', // token or comment commented on - maybe should just be 'commented'
     Followed = 'followed', // address has been followed
@@ -31,13 +31,14 @@ export const ActionSetMembers = {
     ],
     [ActionSet.Feed]: [
         ActionTypes.Added, 
-        ActionTypes.Listed
+        ActionTypes.Listed // users followers may wish to buy the nft
     ],
     [ActionSet.Notifications]: [
         ActionTypes.Bought,
         ActionTypes.Liked,
         ActionTypes.Commented,
         ActionTypes.Followed,
+        ActionTypes.Listed // user needs alerted when the blockchain transaction has completed
     ]
 }
 

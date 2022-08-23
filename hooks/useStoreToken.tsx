@@ -5,7 +5,7 @@ export const useStoreToken = () => {
   const store = async (tokenId, mimeType, filter, aspectRatio) => {
     try {
       const r = await axios.post(
-        '/api/mint/store',
+        '/api/create/store',
         {
           tokenId,
           mimeType,

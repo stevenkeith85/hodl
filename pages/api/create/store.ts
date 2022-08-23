@@ -81,7 +81,7 @@ route.post(async (req, res: NextApiResponse) => {
     }
   );
 
-  // extract tags  
+  // extract tags
   const tags = [...description.matchAll(TAG_PATTERN)].map(arr => arr[1])
 
   // Add tags. (NB: only the first 6 will be added)

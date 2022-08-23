@@ -2,6 +2,10 @@ import { Typography } from "@mui/material";
 import Link from "next/link";
 
 export const insertTagLinks = (text) => {
+    if (!text) {
+        return null;
+    }
+    
     const parsed = [...text.matchAll(/#([\d\w_]+)/g)].map(x => ({
         index: x.index,
         hash: x[0],

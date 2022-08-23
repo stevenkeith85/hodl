@@ -24,7 +24,13 @@ export const NftActionButtons = ({ nft }) => {
         const matches = re.exec(e?.data?.message)
 
         if (matches) {
-            enqueueSnackbar(matches[1], { variant: "error" });
+            enqueueSnackbar(
+                matches[1],
+                {
+                    // @ts-ignore
+                    variant: "hodlsnackbar",
+                    type: "error"
+                });
         }
     }
 
@@ -34,33 +40,30 @@ export const NftActionButtons = ({ nft }) => {
             <SuccessModal
                 modalOpen={boughtModalOpen}
                 setModalOpen={setBoughtModalOpen}
-                message="You&apos;ve bought a token"
-                tab={0}
+                message="When your purchase has been confirmed on the blockchain, we'll send you a notification. This should not take long"
             />
 
             {/* List */}
-            <ListModal 
-                listModalOpen={listModalOpen} 
+            <ListModal
+                listModalOpen={listModalOpen}
                 setListModalOpen={setListModalOpen}
                 setListedModalOpen={setListedModalOpen}
-                price={price} 
-                setPrice={setPrice} 
+                price={price}
+                setPrice={setPrice}
             />
 
             {/* Listed */}
             <SuccessModal
                 modalOpen={listedModalOpen}
                 setModalOpen={setListedModalOpen}
-                message="You&apos;ve successfully listed your token on the market"
-                tab={1}
+                message="When your listing has been confirmed on the blockchain, we'll send you a notification. This should not take long"
             />
 
             {/* Delisted */}
             <SuccessModal
                 modalOpen={delistModalOpen}
                 setModalOpen={setDelistModalOpen}
-                message="You&apos;ve successfully delisted your token from the market"
-                tab={0}
+                message="When your delisting has been confirmed on the blockchain, we'll send you a notification. This should not take long"
             />
 
             <Stack
@@ -80,7 +83,14 @@ export const NftActionButtons = ({ nft }) => {
                             sx={{ paddingY: 1.5, paddingX: 3 }}
                             onClick={async () => {
                                 try {
-                                    enqueueSnackbar('Please Approve Transaction in Wallet', { variant: "info" });
+                                    enqueueSnackbar(
+                                        'Please approve the transaction in Metamask',
+                                        {
+                                            // @ts-ignore
+                                            variant: "hodlsnackbar",
+                                            type: "info"
+                                        });
+
                                     await buyNft(nft);
                                     setBoughtModalOpen(true);
                                 } catch (e) {
@@ -101,7 +111,14 @@ export const NftActionButtons = ({ nft }) => {
                                         sx={{ paddingY: 1.5, paddingX: 3 }}
                                         onClick={async () => {
                                             try {
-                                                enqueueSnackbar('Please Approve Transaction in Wallet', { variant: "info" });
+                                                enqueueSnackbar(
+                                                    'Please approve the transaction in Metamask',
+                                                    {
+                                                        // @ts-ignore
+                                                        variant: "hodlsnackbar",
+                                                        type: "info"
+                                                    });
+
                                                 await delistNft(nft);
                                                 setDelistModalOpen(true);
                                             } catch (e) {

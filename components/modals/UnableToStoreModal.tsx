@@ -1,7 +1,6 @@
 import { Alert, Button, Stack, Typography } from "@mui/material";
 import Link from "next/link";
 import { HodlModal } from "./HodlModal";
-import { RocketTitle } from "../RocketTitle";
 
 export const UnableToStoreModal = ({ unableToSaveModalOpen, setUnableToSaveModalOpen, tokenId, retry}) => (
     <HodlModal
@@ -9,7 +8,7 @@ export const UnableToStoreModal = ({ unableToSaveModalOpen, setUnableToSaveModal
         setOpen={setUnableToSaveModalOpen}
     >
         <Stack spacing={4}>
-            <RocketTitle title="Unable to Add Token..." />
+            <Typography variant="h2">Unable to Add Token...</Typography>
             <Typography sx={{ span: { fontWeight: 600 } }}>
                 Your token <span>was</span> minted on the blockchain, but we had a problem adding it to HodlMyMoon
             </Typography>

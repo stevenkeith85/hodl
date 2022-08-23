@@ -3,11 +3,16 @@ import { ethers } from 'ethers';
 import { getProvider } from '../../../lib/server/connections';
 import { nftmarketaddress } from '../../../config';
 import HodlMarket from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
-import { ipfsUriToCid, ipfsUriToGatewayUrl } from '../../../lib/utils';
+import { ipfsUriToCid } from '../../../lib/utils';
 import apiRoute from '../handler';
 import { getToken } from '../token/[tokenId]';
 
 dotenv.config({ path: '../.env' })
+
+// TODO: We don't actually read the blockchain to get the items listed for sale anymore
+// We maintain this data in redis under the 'market:' key. This should be much faster than reading the blockchain.
+// Keeping this for now as we may do a periodic check of the data using qStash or something
+
 
 // TODO: We may wish to just return full Nfts here. See fetchNft.
 // We exclude fields that we do not need at the moment.
