@@ -38,14 +38,6 @@ export const ContactPagePitch = ({ }) => {
                         Contact
 
                     </Box>
-                    <Typography
-                        sx={{
-                            fontFamily: theme => theme.logo.fontFamily,
-                            fontSize: '25px',
-                            color: '#999'
-                        }}>
-                        Hodl My Moon
-                    </Typography>
                 </Box>
             </Grid>
         </Grid>

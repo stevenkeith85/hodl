@@ -2,7 +2,7 @@ import { Box, Button, Stack, Tooltip } from "@mui/material";
 import { useNickname } from "../../hooks/useNickname";
 import { Formik, Form, Field } from 'formik';
 import { HodlFormikTextField } from "../formFields/HodlFormikTextField";
-import { nicknameValidationSchema } from "../../validationSchema/nickname";
+import { nicknameValidationSchema } from "../../validation/nickname";
 import { InputBase, TextField } from "formik-mui";
 
 

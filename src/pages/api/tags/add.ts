@@ -10,7 +10,7 @@ import HodlMarket from '../../../../artifacts/contracts/HodlMarket.sol/HodlMarke
 
 const client = Redis.fromEnv()
 import apiRoute from "../handler";
-import { AddTagValidationSchema } from "../../../validationSchema/addTag";
+import { AddTagValidationSchema } from "../../../validation/addTag";
 import { MAX_TAGS_PER_TOKEN } from "../../../lib/utils";
 
 dotenv.config({ path: '../.env' })

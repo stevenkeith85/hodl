@@ -86,10 +86,11 @@ const Mint = ({ address }) => {
         display={"flex"}
         flexDirection="column"
         sx={{
+          position: "relative",
           marginY: {
             xs: 4,
             sm: 5,
-            md: 7,
+            md: 8,
           },
           gap: {
             xs: 4,
@@ -100,12 +101,12 @@ const Mint = ({ address }) => {
       >
         <Box
           sx={{
-            position: 'relative'
+            position: 'relative',
+            marginX: 8
           }}>
 
           <Grid
             container
-
           >
             <Grid item xs={12} md={6}
               sx={{
@@ -203,7 +204,6 @@ const Mint = ({ address }) => {
 
         {
           !xs && activeStep < 5 &&
-          <Box >
             <MintProgressButtons
               loading={loading}
               activeStep={activeStep}
@@ -211,7 +211,6 @@ const Mint = ({ address }) => {
               stepComplete={stepComplete}
               formData={formData}
             />
-          </Box>
         }
         {/* {<pre>{JSON.stringify(formData, null , 2)}</pre>} */}
       </Box>

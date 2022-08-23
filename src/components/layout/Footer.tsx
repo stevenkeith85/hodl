@@ -1,8 +1,9 @@
 import { Stack, Box, Container, Typography } from "@mui/material";
-import { grey } from '@mui/material/colors';
+import { Twitter, Reddit, RocketLaunch } from '@mui/icons-material/';
 import { HodlLink } from "../HodlLink";
 import { useContext } from "react";
 import { WalletContext } from '../../contexts/WalletContext';
+import { grey } from "@mui/material/colors";
 
 
 const Footer = ({ showFooter = true }) => {
@@ -103,8 +104,8 @@ const Footer = ({ showFooter = true }) => {
                 >
                     <Stack
                         direction={{
-                            xs: 'column-reverse',
-                            md: 'row-reverse',
+                            xs: 'column',
+                            md: 'row',
                         }}
                         spacing={{
                             xs: 1,
@@ -119,7 +120,17 @@ const Footer = ({ showFooter = true }) => {
                                 xs: 'center',
                             },
                         }}>
-                        <Typography sx={{ fontSize: `12px` }}>Copyright © 2022 Pony Powered Limited.</Typography>
+                        <Box
+                        sx={{
+                            display: 'flex',
+                            gap: 3
+                        }}
+                        >
+                            <RocketLaunch sx={{ color: grey[500] }} />
+                            <Twitter sx={{ color: grey[500] }} />
+                            <Reddit sx={{ color: grey[500] }} />
+                        </Box>
+                        <Typography sx={{ color: grey[500], fontSize: '12px' }}>Copyright © 2022 Pony Powered Limited.</Typography>
                     </Stack>
                 </Container>
             </Box>

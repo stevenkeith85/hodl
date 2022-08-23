@@ -38,7 +38,8 @@ export const ActionSetMembers = {
         ActionTypes.Liked,
         ActionTypes.Commented,
         ActionTypes.Followed,
-        ActionTypes.Listed // user needs alerted when the blockchain transaction has completed
+        ActionTypes.Listed, // user needs alerted when the blockchain transaction has completed
+        ActionTypes.Delisted // user needs alerted when the blockchain transaction has completed
     ]
 }
 

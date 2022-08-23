@@ -4,7 +4,7 @@ import axios from "axios";
 import { token } from "../../lib/copyright";
 import { useNickname } from "../../hooks/useNickname";
 import { Formik, Form, Field } from 'formik';
-import { nicknameValidationSchema } from "../../validationSchema/nickname";
+import { nicknameValidationSchema } from "../../validation/nickname";
 import { InputBase } from "formik-mui";
 
 

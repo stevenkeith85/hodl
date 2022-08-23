@@ -12,13 +12,13 @@ async function main() {
   const hodlMarketAsOwner = await upgrades.deployProxy(HodlMarketFactory, [], { initializer: 'initialize' })
   await hodlMarketAsOwner.deployed();
 
-  console.log('MARKET PROXY DEPLOYED AT  ', hodlMarketAsOwner.address);
+  console.log('Market proxy deployed at  ', hodlMarketAsOwner.address);
 
   const HodlNFTFactory = await ethers.getContractFactory("HodlNFT", ownerAccount);
   const hodlNFTAsOwner = await upgrades.deployProxy(HodlNFTFactory, [hodlMarketAsOwner.address], { initializer: 'initialize' })
   await hodlNFTAsOwner.deployed();
 
-  console.log('NFT PROXY DEPLOYED AT     ', hodlNFTAsOwner.address);
+  console.log('NFT proxy deployed at     ', hodlNFTAsOwner.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

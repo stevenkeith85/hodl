@@ -3,7 +3,7 @@ import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
 
 import apiRoute from "../handler";
-import { GetCommentsValidationSchema } from "../../../validationSchema/comments/getComments";
+import { GetCommentsValidationSchema } from "../../../validation/comments/getComments";
 import { ethers } from "ethers";
 import { nftaddress } from "../../../../config";
 import { getProvider } from "../../../lib/server/connections";

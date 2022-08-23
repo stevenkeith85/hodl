@@ -4,7 +4,7 @@ import cloudinary from 'cloudinary'
 import apiRoute from "../handler";
 import dotenv from 'dotenv'
 import { createCloudinaryUrl } from "../../../lib/utils";
-import { uploadToIPFSValidationSchema } from "../../../validationSchema/uploadToIPFS";
+import { uploadToIPFSValidationSchema } from "../../../validation/uploadToIPFS";
 
 dotenv.config({ path: '../.env' })
 

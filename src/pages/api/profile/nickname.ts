@@ -3,7 +3,7 @@ import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
 import { getAddress } from "./address";
 import apiRoute from "../handler";
-import { nicknameValidationSchema } from "../../../validationSchema/nickname";
+import { nicknameValidationSchema } from "../../../validation/nickname";
 
 dotenv.config({ path: '../.env' })
 

@@ -14,7 +14,13 @@ export const ListModal = ({ listModalOpen, setListModalOpen, setListedModalOpen,
         const matches = re.exec(e?.data?.message)
 
         if (matches) {
-            enqueueSnackbar(matches[1], { variant: "error" });
+            enqueueSnackbar(
+                matches?.[1],
+                {
+                  // @ts-ignore
+                  variant: "hodlsnackbar",
+                  type: "error"
+                });
         }
     }
 

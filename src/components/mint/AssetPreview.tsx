@@ -25,7 +25,7 @@ export const AssetPreview: FC<MintProps> = ({
         height: '550px',
         width: `100%`,
       }}>
-      {!fileName && <Typography sx={{ margin: `auto` }}>Preview Will Appear Here</Typography>}
+      {!fileName && <Typography sx={{ margin: `auto` }}>[preview will appear here]</Typography>}
       {fileName && isImage() &&
         <FilteredImageMemo
           aspectRatio={aspectRatio}

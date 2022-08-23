@@ -3,7 +3,9 @@ import { Box, Button, Stack, Typography } from "@mui/material";
 import Link from "next/link";
 import { HodlBorderedBox } from "../components/HodlBorderedBox";
 import { AboutPagePitch } from "../components/layout/AboutPagePitch";
-import { LoginLogoutButton } from "../components/menu/LoginLogoutButton";
+import { CommercialText } from "../components/tooltips/CommercialTooltip";
+import { NonCommercialText } from "../components/tooltips/NonCommercialTooltip";
+import { TokenOnlyText } from "../components/tooltips/TokenOnlyTooltip";
 import { authenticate } from "../lib/jwt";
 
 export async function getServerSideProps({ req, res }) {
@@ -18,9 +20,9 @@ export async function getServerSideProps({ req, res }) {
 
 export default function About({ address }) {
     return (
-        <Box marginY={0} mb={4}>
+        <Box marginX={8} marginY={4}>
+            <AboutPagePitch />
             <Stack spacing={4}>
-                <AboutPagePitch />
                 <HodlBorderedBox
                     sx={{
                         background: 'white',
@@ -66,9 +68,8 @@ export default function About({ address }) {
                             connect
                         </Button>
                     </Typography>
-
                 </HodlBorderedBox>
-                <Box>
+                <HodlBorderedBox>
                     <Typography mb={1}
                         variant="h2"
                     >
@@ -76,41 +77,39 @@ export default function About({ address }) {
                     <Typography mb={0}>
                         We officially support <Link href="https://metamask.io/">MetaMask</Link>, and recommend connecting with that.
                     </Typography>
-                </Box>
-                <Box>
+                </HodlBorderedBox>
+                <HodlBorderedBox>
                     <Typography mb={1} variant="h2">Decentralized storage</Typography>
                     <Typography mb={0}>
                         We upload and pin your assets to the <Link href="https://ipfs.io/">Interplanatary File System</Link>. This ensures the longterm survival of your assets.
                     </Typography>
-                </Box>
-                <Box>
+                </HodlBorderedBox>
+                <HodlBorderedBox>
                     <Typography mb={1} variant="h2">Blockchain</Typography>
                     <Typography mb={0}>
                         We run on the <Link href="https://polygon.technology/">Polygon</Link> blockchain for incredibly low transaction fees and quick confirmations.
                     </Typography>
-                </Box>
-                <Box>
+                </HodlBorderedBox>
+                <HodlBorderedBox>
                     <Typography mb={1} variant="h2">Minting</Typography>
                     <Typography mb={0}>
                         Minting a token is cheap. We charge a flat rate of 1 Matic (Polygon&apos;s cryptocurrency)
                     </Typography>
-                </Box>
-                <Box>
+                </HodlBorderedBox>
+                <HodlBorderedBox>
                     <Typography mb={1} variant="h2">Trading</Typography>
                     <Typography mb={0}>
                         Trading is straight-forward. You list your token for the price you are willing to sell it for. If it sells, we charge 3% commision at the point of sale.
                     </Typography>
-                </Box>
-                <Box>
+                </HodlBorderedBox>
+                <HodlBorderedBox>
                     <Typography mb={1} variant="h2">Trust</Typography>
                     <Typography mb={0}>
                         We don&apos;t tolerate plageurism.
                     </Typography>
-                </Box>
-                <Box>
+                </HodlBorderedBox>
+                <HodlBorderedBox>
                     <Typography mb={1} variant="h2" >Do your own research</Typography>
-
-                    We do encourage users to DYOR before buying an NFT.
                     <ol>
                         <li>Check the IPFS links </li>
                         <li>Check the selling history of the token</li>
@@ -119,16 +118,18 @@ export default function About({ address }) {
                         <li>Check the privilege assigned to the token</li>
                     </ol>
 
-                </Box>
-                <Box>
+                </HodlBorderedBox>
+                <HodlBorderedBox>
                     <Typography id="copyright" mb={2} variant="h2">Hodler privilege</Typography>
-                    When an author mints an NFT, they specify what a person gets if they hodl it.
-                    <ol>
-                        <li>Only the token</li>
-                        <li>The token and a non-commercial license for the attached asset</li>
-                        <li>The token and a commercial license for the attached asset</li>
-                    </ol>
-                </Box>
+                    <Typography mb={2}>When an author mints an NFT, they must specify what the hodler can do with the attached asset.</Typography>
+                    <Typography>We give them a choice of one of the following:</Typography>
+                    <Typography sx={{ marginY: 2, color: theme => theme.palette.primary.main}} variant="h3">1. Token Only</Typography>
+                    <TokenOnlyText />
+                    <Typography sx={{ marginY: 2, color: theme => theme.palette.primary.main}} variant="h3">2. Non Commercial</Typography>
+                    <NonCommercialText />
+                    <Typography sx={{ marginY: 2, color: theme => theme.palette.primary.main}} variant="h3">3. Commercial</Typography>
+                    <CommercialText />
+                </HodlBorderedBox>
             </Stack >
         </Box >)
 }

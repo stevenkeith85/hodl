@@ -1,5 +1,4 @@
 import { Box, Grid, Typography } from "@mui/material"
-import { LoginLogoutButton } from "../menu/LoginLogoutButton"
 
 export const AboutPagePitch = ({ }) => {
     return (
@@ -38,16 +37,7 @@ export const AboutPagePitch = ({ }) => {
                             color: theme => theme.palette.primary.main
                         }}>
                         About
-
                     </Box>
-                    <Typography
-                        sx={{
-                            fontFamily: theme => theme.logo.fontFamily,
-                            fontSize: '25px',
-                            color: '#999'
-                        }}>
-                        Hodl My Moon
-                    </Typography>
                 </Box>
             </Grid>
         </Grid>

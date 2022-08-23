@@ -9,7 +9,7 @@ import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import HodlMarket from '../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 import apiRoute from "../handler";
 
-import { DeleteCommentValidationSchema } from "../../../validationSchema/comments/deleteComment";
+import { DeleteCommentValidationSchema } from "../../../validation/comments/deleteComment";
 import { HodlComment } from "../../../models/HodlComment";
 import { nftaddress, nftmarketaddress } from "../../../../config";
 

@@ -6,7 +6,7 @@ import { ethers } from "ethers";
 import { nftaddress } from "../../../../config";
 import { getProvider } from "../../../lib/server/connections";
 import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
-import { CommentCountValidationSchema } from '../../../validationSchema/comments/commentCount';
+import { CommentCountValidationSchema } from '../../../validation/comments/commentCount';
 
 dotenv.config({ path: '../.env' })
 

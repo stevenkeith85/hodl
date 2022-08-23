@@ -10,9 +10,9 @@ import { grey } from '@mui/material/colors';
 
 import { enqueueSnackbar } from 'notistack'
 
-export const AddToHodlAction: FC<MintProps> = ({ 
-  stepComplete, 
-  loading, 
+export const AddToHodlAction: FC<MintProps> = ({
+  stepComplete,
+  loading,
   setStepComplete,
   formData,
   setFormData,
@@ -25,14 +25,19 @@ export const AddToHodlAction: FC<MintProps> = ({
 
   async function hodl() {
     setLoading(true);
-    
+
     const { tokenId, mimeType, filter, aspectRatio } = formData;
     const success = await store(tokenId, mimeType, filter, aspectRatio);
-    
+
     setLoading(false);
 
     if (success) {
-      enqueueSnackbar('Successfully added your token to HodlMyMoon', { variant: "success" });
+      enqueueSnackbar('Successfully added your token to HodlMyMoon',
+        {
+          // @ts-ignore
+          variant: "hodlsnackbar",
+          type: "success"
+        });
       setStepComplete(5);
       setSuccessModalOpen(true);
     } else {
@@ -52,35 +57,36 @@ export const AddToHodlAction: FC<MintProps> = ({
         modalOpen={successModalOpen}
         setModalOpen={setSuccessModalOpen}
         message="You&apos;ve successfully minted your token and added it to HodlMyMoon"
-        tab={0}
       />
-    
-      <Box 
-      display="flex"
-      flexDirection={"column"}
-      alignItems="center"
-      justifyContent="center"
-      textAlign="center"
-      height="400px"
-      gap={4}
-    >
-      <NightsStayOutlined sx={{ fontSize: 82, color: grey[400]}} />
-      <Typography 
-        sx={{ 
-          fontSize: '18px',
-          color: grey[600],
-          span: { fontWeight: 600 } }}>Click the button to add your NFT <span>{formData.name}</span> to Hodl My Moon</Typography>
-      <div>
-        <Button
-        
-          color="secondary"
-          disabled={stepComplete === 5 || loading}
-          onClick={hodl}
-        >
-          Hodl
-        </Button>
-      </div>
-    </Box>
+
+      <Box
+        display="flex"
+        flexDirection={"column"}
+        alignItems="center"
+        justifyContent="center"
+        textAlign="center"
+        height="400px"
+        gap={4}
+        paddingLeft={8}
+      >
+        <NightsStayOutlined sx={{ fontSize: 82, color: grey[400] }} />
+        <Typography
+          sx={{
+            fontSize: '18px',
+            color: grey[600],
+            span: { fontWeight: 600 }
+          }}>Click the button to add your NFT <span>{formData.name}</span> to Hodl My Moon</Typography>
+        <div>
+          <Button
+
+            color="secondary"
+            disabled={stepComplete === 5 || loading}
+            onClick={hodl}
+          >
+            Hodl
+          </Button>
+        </div>
+      </Box>
     </>
   );
 }

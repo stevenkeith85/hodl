@@ -16,8 +16,14 @@ export const SelectAssetAction: FC<MintProps> = ({
   const cloudinaryUpload = useCallback(async (file) => {
     setLoading(true);
 
-    enqueueSnackbar('Large files may take some time', { variant: "info" });
-    
+    enqueueSnackbar(
+      `Large files may take some time`,
+      {
+        // @ts-ignore
+        variant: "hodlsnackbar",
+        type: "info"
+      });
+
     const { success, fileName, mimeType } = await uploadToCloudinary(file);
 
     if (success) {
@@ -35,7 +41,13 @@ export const SelectAssetAction: FC<MintProps> = ({
 
   const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
     if (rejectedFiles.length === 1) {
-      enqueueSnackbar(rejectedFiles[0].errors[0].message, { variant: 'error' });
+      enqueueSnackbar(
+        rejectedFiles?.[0]?.errors?.[0]?.message,
+        {
+          // @ts-ignore
+          variant: "hodlsnackbar",
+          type: "error"
+        });
     }
     else if (acceptedFiles.length === 1) {
       cloudinaryUpload(acceptedFiles[0]);

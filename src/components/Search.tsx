@@ -3,7 +3,7 @@ import { Formik, Form, Field } from 'formik';
 import { InputBase } from 'formik-mui';
 import { useRouter } from 'next/router';
 import SearchIcon from '@mui/icons-material/Search';
-import { SearchValidationSchema } from '../validationSchema/search';
+import { SearchValidationSchema } from '../validation/search';
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',

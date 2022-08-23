@@ -4,44 +4,33 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import Container from '@mui/material/Container';
 import { useState, useContext, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
-import { Stack, Tooltip, useMediaQuery, useTheme } from '@mui/material';
-import { useRouter } from 'next/router';
+import { useMediaQuery, useTheme } from '@mui/material';
 import { HoverMenu } from '../menu/HoverMenu';
-import { AccountBalanceWallet, AddCircle, Explore, RocketLaunch, Spa, Storefront } from '@mui/icons-material';
+import { AccountBalanceWallet, AddCircle, Explore, RocketLaunch } from '@mui/icons-material';
 import { WalletContext } from '../../contexts/WalletContext';
-import { useNickname } from '../../hooks/useNickname';
 import { HodlNotifications } from '../notifications/HodlNotifications';
 import axios from 'axios'
-import { enqueueSnackbar, closeSnackbar } from 'notistack'
+import { enqueueSnackbar } from 'notistack'
 import { SearchBox } from '../Search';
 import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
-import { WalletMenuPage } from '../menu/WalletMenuPage';
 import { HodlAction } from '../../models/HodlAction';
-import Pusher from 'pusher-js';
-import { UserContext } from '../../contexts/UserContext';
 import { PusherContext } from '../../contexts/PusherContext';
+import { SessionExpiredModal } from '../modals/SessionExpiredModal';
 
 const ResponsiveAppBar = ({ showAppBar = true }) => {
     const { address, setSigner } = useContext(WalletContext);
     const { pusher } = useContext(PusherContext);
 
-    const router = useRouter();
-
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [desktopMenuOpen, setDesktopMenuOpen] = useState(false);
-
-    const [showMobileNotifications, setShowMobileNotifications] = useState(false);
-    const [showDesktopNotifications, setShowDesktopNotifications] = useState(false);
-
     const [error, setError] = useState('');
 
-    // const pusherSetUp = useRef(false);
+    const [desktopMenuOpen, setDesktopMenuOpen] = useState(false);
+    const [sessionExpiredModalOpen, setSessionExpiredModalOpen] = useState(false);
+    const [showDesktopNotifications, setShowDesktopNotifications] = useState(false);
 
     const theme = useTheme();
     const xs = useMediaQuery(theme.breakpoints.only('xs'));
@@ -67,11 +56,15 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
         },
     ]);
 
-    const [_update, _apiError, _setApiError, nickname] = useNickname()
-
     useEffect(() => {
         if (error !== '') {
-            enqueueSnackbar(error, { variant: "error" });
+            enqueueSnackbar(error,
+            { 
+                // @ts-ignore
+                variant: "hodlsnackbar",
+                type: "error"
+            });
+
             setError('');
         }
     }, [error, enqueueSnackbar]) //  Warning: React Hook useEffect has a missing dependency: 'enqueueSnackbar'. Either include it or remove the dependency array.
@@ -87,8 +80,7 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                     return axios.request(error.config);
                 } else {
                     setSigner(null);
-                    // TODO: Modal dialog about the session expiring
-                    console.log('Could not refresh accessToken')
+                    setSessionExpiredModalOpen(true);
                 }
 
             } else if (error.config && error.response && error.response.status === 429) {
@@ -140,6 +132,7 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
 
     return (
         <>
+            <SessionExpiredModal modalOpen={sessionExpiredModalOpen} setModalOpen={setSessionExpiredModalOpen} />
             <AppBar
 
                 position="fixed"

@@ -2,7 +2,7 @@ import { Typography, Box, Tooltip, Button, TextareaAutosize } from "@mui/materia
 import { FC, useContext } from "react";
 import { WalletContext } from "../../contexts/WalletContext";
 import { Formik, Form, Field } from "formik";
-import { AddCommentValidationSchema } from "../../validationSchema/comments/addComments";
+import { AddCommentValidationSchema } from "../../validation/comments/addComments";
 import { useAddComment } from "../../hooks/useComments";
 import { HodlComment } from "../../models/HodlComment";
 import { QuoteComment } from "./QuoteComment";

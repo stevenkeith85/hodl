@@ -47,11 +47,23 @@ export const MintTokenAction: FC<MintProps> = ({
         tokenId
       }));
 
-      enqueueSnackbar(`NFT minted on the blockchain with token id ${tokenId}`, { variant: "success" });
+      enqueueSnackbar(
+        `NFT minted on the blockchain with token id ${tokenId}`,
+        {
+          // @ts-ignore
+          variant: "hodlsnackbar",
+          type: "success"
+        });
+      
       setStepComplete(4);
     } catch (e) {
-      console.log(e)
-      enqueueSnackbar('Unable to mint at the moment. Please try again', { variant: "warning" });
+      enqueueSnackbar(
+        `Unable to mint at the moment. Please try again`,
+        {
+          // @ts-ignore
+          variant: "hodlsnackbar",
+          type: "error"
+        });
       setLoading(false);
     }
   }
@@ -65,6 +77,7 @@ export const MintTokenAction: FC<MintProps> = ({
       textAlign="center"
       height="400px"
       gap={4}
+      paddingLeft={8}
     >
       <CloudSyncOutlined sx={{ fontSize: 82, color: grey[400] }} />
       <Typography

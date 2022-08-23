@@ -1,4 +1,5 @@
-import { Stack, Button, Box } from '@mui/material';
+import { NavigateBefore, NavigateNext } from '@mui/icons-material';
+import { Stack, Button, Box, IconButton, Fab } from '@mui/material';
 
 export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, loading, formData }) => {
 
@@ -6,40 +7,44 @@ export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, l
   const isGif = mimeType => mimeType && mimeType.indexOf('gif') !== -1;
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        // justifyContent: "space-between",
-        width: '100%'
-      }}
-    >
-      {activeStep !== 0 &&
-        <Button
-          color="primary"
-          sx={{
-            paddingX: 3,
-          }}
-          disabled={loading || activeStep === 0 || stepComplete >= 3}
-          variant="outlined"
-          onClick={
-            () => {
-              if ((isVideo(formData?.mimeType) || isGif(formData?.mimeType)) && activeStep == 3) {
-                setActiveStep(activeStep => activeStep - 3);
-              } else {
-                setActiveStep(activeStep => activeStep - 1)
-              }
-            }
-          }>
-          Back
-        </Button>}
-      <Button
+    <>
+      <Fab
+        size="small"
         color="secondary"
-        sx={{ 
-          paddingX: 3, 
-          marginLeft:  `auto`
+        sx={{
+          position: 'absolute',
+          left: 0,
+          top: `50%`,
+          opacity: 0.75,
+          '&:hover': {
+            opacity: 1
+          }
+        }}
+        disabled={loading || activeStep === 0 || stepComplete >= 3}
+        onClick={
+          () => {
+            if ((isVideo(formData?.mimeType) || isGif(formData?.mimeType)) && activeStep == 3) {
+              setActiveStep(activeStep => activeStep - 3);
+            } else {
+              setActiveStep(activeStep => activeStep - 1)
+            }
+          }
+        }>
+        <NavigateBefore />
+      </Fab>
+      <Fab
+        size="small"
+        color="secondary"
+        sx={{
+          position: 'absolute',
+          right: 0,
+          top: `50%`,
+          opacity: 0.75,
+          '&:hover': {
+            opacity: 1
+          }
         }}
         disabled={loading || stepComplete < activeStep}
-        variant="outlined"
         onClick={() => {
           if ((isVideo(formData?.mimeType) || isGif(formData?.mimeType)) && activeStep == 0) {
             setActiveStep(activeStep => activeStep + 3);
@@ -47,8 +52,8 @@ export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, l
             setActiveStep(activeStep => activeStep + 1)
           }
         }}>
-        Next
-      </Button>
-    </Box>
+        <NavigateNext />
+      </Fab>
+    </>
   )
 };

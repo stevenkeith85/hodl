@@ -4,7 +4,7 @@ import { useSnackbar } from 'notistack';
 import { useIpfsUpload } from "../../hooks/useIpfsUpload";
 import { MintProps } from "./models";
 import { Field, Form, Formik } from "formik";
-import { uploadToIPFSValidationSchema } from "../../validationSchema/uploadToIPFS";
+import { uploadToIPFSValidationSchema } from "../../validation/uploadToIPFS";
 import { commercial, nonCommercial, token } from "../../lib/copyright";
 import { TextField } from 'formik-mui';
 import { grey } from "@mui/material/colors";
@@ -12,6 +12,7 @@ import { HodlerPrivilegeTooltip } from "../tooltips/HodlerPrivilegeTooltip";
 import { CommercialTooltip } from "../tooltips/CommercialTooltip";
 import { NonCommercialTooltip } from "../tooltips/NonCommercialTooltip";
 import { TokenOnlyTooltip } from "../tooltips/TokenOnlyTooltip";
+import { HodlBorderedBox } from "../HodlBorderedBox";
 
 
 const UploadTooltip = () => (
@@ -36,17 +37,29 @@ export const UploadToIpfsAction: FC<MintProps> = ({
   setStepComplete,
 }: MintProps) => {
   const { enqueueSnackbar } = useSnackbar();
-  const [uploadToIpfs, progress, error, setError] = useIpfsUpload();
+  const [uploadToIpfs] = useIpfsUpload();
 
 
   async function ipfsUpload(values, { setSubmitting }) {
     setLoading(true);
     setSubmitting(true);
 
-    enqueueSnackbar('Transferring asset to IPFS', { variant: "info" });
+    enqueueSnackbar(
+      `Transferring asset to IPFS`,
+      {
+        // @ts-ignore
+        variant: "hodlsnackbar",
+        type: "info"
+      });
 
     if (values.mimeType.indexOf('video') !== -1) {
-      enqueueSnackbar('Large files may take some time', { variant: "info" });
+      enqueueSnackbar(
+        `Large files may take some time`,
+        {
+          // @ts-ignore
+          variant: "hodlsnackbar",
+          type: "info"
+        });
     }
 
     let { success, imageCid, metadataUrl } = await uploadToIpfs(
@@ -67,7 +80,15 @@ export const UploadToIpfsAction: FC<MintProps> = ({
         privilege: values.privilege,
         metadataUrl
       }))
-      enqueueSnackbar('IPFS Upload Success', { variant: "success" });
+
+      enqueueSnackbar(
+        `IPFS upload success`,
+        {
+          // @ts-ignore
+          variant: "hodlsnackbar",
+          type: "success"
+        });
+
       setStepComplete(3);
     }
 
@@ -79,7 +100,6 @@ export const UploadToIpfsAction: FC<MintProps> = ({
       display="flex"
       flexDirection={"column"}
       justifyContent="center"
-      height="550px"
     >
       <Formik
         initialValues={{
@@ -104,7 +124,7 @@ export const UploadToIpfsAction: FC<MintProps> = ({
                 <Typography
                   sx={{
                     fontSize: '18px',
-                    color: grey[600],
+                    color: theme => theme.palette.text.secondary,
                     span: { fontWeight: 600 }
                   }}>Metadata</Typography>
                 <FormControl>
@@ -112,9 +132,12 @@ export const UploadToIpfsAction: FC<MintProps> = ({
                     disabled={stepComplete >= 3}
                     component={TextField}
                     name="name"
-                    label="Name"
+                    label="name"
                     type="text"
                     autoComplete='off'
+                    sx={{
+                      background: 'white'
+                    }}
                   />
                 </FormControl>
                 <FormControl>
@@ -123,21 +146,24 @@ export const UploadToIpfsAction: FC<MintProps> = ({
                     multiline
                     minRows={4}
                     component={TextField}
-                    helperText="You can add #tags here to help hodlers discover your token. Only the first 6 are indexed."
+                    helperText="You can add #tags here to help hodlers discover your token. Only the first six are indexed."
                     name="description"
-                    label="Description"
+                    label="description"
                     type="text"
                     autoComplete='off'
+                    sx={{
+                      background: 'white'
+                    }}
                   />
 
                 </FormControl>
-                <Box>
+                <HodlBorderedBox>
                   <FormControl disabled={stepComplete >= 3}>
                     <Tooltip
                       title={<HodlerPrivilegeTooltip />}
                       placement="right-start"
                       arrow>
-                      <FormLabel sx={{ marginBottom: 1 }}>Hodler privilege</FormLabel>
+                      <FormLabel sx={{ marginBottom: 1 }}>hodler privilege</FormLabel>
                     </Tooltip>
                     <RadioGroup
                       name="hodler-privilege"
@@ -150,7 +176,7 @@ export const UploadToIpfsAction: FC<MintProps> = ({
                           onClick={() => setFieldValue('privilege', token)}
                           value={token}
                           control={<Radio size="small" sx={{ paddingY: 0.75 }} />}
-                          label={<Typography color={grey[700]}>Token Only</Typography>}
+                          label={<Typography color={grey[700]}>token only</Typography>}
                         />
                       </Tooltip>
                       <Tooltip
@@ -161,7 +187,7 @@ export const UploadToIpfsAction: FC<MintProps> = ({
                           onClick={() => setFieldValue('privilege', nonCommercial)}
                           value={nonCommercial}
                           control={<Radio size="small" sx={{ paddingY: 0.75 }} />}
-                          label={<Typography color={grey[700]}>Non Commercial</Typography>}
+                          label={<Typography color={grey[700]}>non commercial</Typography>}
                         />
                       </Tooltip>
                       <Tooltip
@@ -172,11 +198,11 @@ export const UploadToIpfsAction: FC<MintProps> = ({
                           onClick={() => setFieldValue('privilege', commercial)}
                           value={commercial}
                           control={<Radio size="small" sx={{ paddingY: 0.75 }} />}
-                          label={<Typography color={grey[700]}>Commercial</Typography>}
+                          label={<Typography color={grey[700]}>commercial</Typography>}
                         /></Tooltip>
                     </RadioGroup>
                   </FormControl>
-                </Box>
+                </HodlBorderedBox>
                 <div>
                   <Tooltip
                     title={<UploadTooltip />}

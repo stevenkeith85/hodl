@@ -23,7 +23,6 @@ const ipfs = create({
   },
 });
 
-console.log('process.env.CLOUDINARY_NAME', process.env.NEXT_PUBLIC_CLOUDINARY_NAME)
 // @ts-ignore
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_NAME,
@@ -58,7 +57,6 @@ async function createNFTs(dirpath) {
 
   const walletId = process.argv[2];
   const walletPrivateKey = wallets[walletId];
-  console.log('USING ACCOUNT ', walletId);
 
   const provider = new ethers.providers.JsonRpcProvider('http://localhost:8545');
   const signer = new ethers.Wallet(walletPrivateKey, provider);
@@ -75,18 +73,14 @@ async function createNFTs(dirpath) {
 
     if (mimeType.indexOf('image') !== -1) {
       const { imageCid, metadataCid } = await uploadNFT(token.name, token.description, fullPath);
-      console.log('imageCid, metadataCid', imageCid, metadataCid);
 
       const result = await uploadToCloudinary(fullPath, imageCid);
-      console.log(result);
 
       const tokenCreated = await tokenContract.createToken(`ipfs://${metadataCid}`, { value: ethers.utils.parseEther("1")});
       const tx = await tokenCreated.wait();
       const event = tx.events[0];
       const value = event.args[2];
       const tokenId = value.toNumber();
-
-      console.log('created token', tokenId);
 
       await client.set("token:" + tokenId, JSON.stringify({
         tokenId,
