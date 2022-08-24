@@ -1,10 +1,8 @@
-import { Box, Tooltip, Typography } from '@mui/material';
-import axios from 'axios';
+import { Box, Tooltip } from '@mui/material';
 import { FC } from 'react';
-import useSWR, { Fetcher } from 'swr';
 import { getShortAddress, truncateText } from '../../lib/utils';
 import Link from 'next/link';
-import { User, UserViewModel } from '../../models/User';
+import { UserViewModel } from '../../models/User';
 import { useUser } from '../../hooks/useUser';
 import theme from '../../theme';
 
@@ -14,7 +12,7 @@ interface ProfileNameOrAddressProps {
     color?: "primary" | "secondary" | "inherit";
     sx?: object | null;
     fallbackData?: UserViewModel | null;
-    you: boolean; // use the word 'you' instead of the 3rd party form (address/nickname)
+    you?: boolean; // use the word 'you' instead of the 3rd party form (address/nickname)
 }
 
 export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({

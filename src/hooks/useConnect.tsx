@@ -3,9 +3,10 @@ import { messageToSign } from "../lib/utils";
 import { getMetaMaskSigner } from '../lib/connections';
 import { WalletContext } from '../contexts/WalletContext';
 import axios from 'axios'
+import { PusherContext } from '../contexts/PusherContext';
 
 export const useConnect = () => {
-
+  const { setPusher, setUserSignedInToPusher } = useContext(PusherContext);
   const { setSigner, setAddress } = useContext(WalletContext);
 
   // we ask which account they want if they aren't a returning user (i.e. they've logged out)
@@ -16,9 +17,9 @@ export const useConnect = () => {
       const address = await signer.getAddress();
 
       if (!returningUser) {
-        const { nonce } = await axios.get(`/api/auth/nonce?address=${address}`).then(r => r.data);
+        const { uuid } = await axios.get(`/api/auth/uuid?address=${address}`).then(r => r.data);
 
-        const signature = await signer.signMessage(messageToSign + nonce);
+        const signature = await signer.signMessage(messageToSign + uuid);
 
         try {
           const r = await axios.post(
@@ -49,6 +50,8 @@ export const useConnect = () => {
   const disconnect = async () => {
     setSigner(null);
     setAddress(null);
+    setUserSignedInToPusher(null);
+    setPusher(null);
 
     try {
       const r = await axios.post(
@@ -56,7 +59,6 @@ export const useConnect = () => {
         {
           headers: {
             'Accept': 'application/json',
-            'Authorization': localStorage.getItem('jwt') // deprecated. we are switching over to all cookie solutions
           },
         }
       )

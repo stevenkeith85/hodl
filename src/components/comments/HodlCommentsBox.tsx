@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { useContext, useEffect, useRef, useState } from "react";
 import { NftContext } from "../../contexts/NftContext";
+import { PusherContext } from "../../contexts/PusherContext";
 import { useCommentCount, useComments } from "../../hooks/useComments";
 import { getAsString } from "../../lib/utils";
 import { AddComment } from "../nft/AddComment";
@@ -39,7 +40,7 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
 
     const swr = useComments(topLevel.objectId, limit, topLevel.object, fallbackData, true, (topLevel.object === "token"));
     const countSWR = useCommentCount(topLevel.objectId, topLevel.object, null);
-
+    
     // TODO: We should maybe just store a Token | HodlComment 
     const [commentingOn, setCommentingOn] = useState<{
         object: "token" | "comment",

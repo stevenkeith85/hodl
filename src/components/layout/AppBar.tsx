@@ -21,11 +21,13 @@ import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
 import { HodlAction } from '../../models/HodlAction';
 import { PusherContext } from '../../contexts/PusherContext';
 import { SessionExpiredModal } from '../modals/SessionExpiredModal';
+import { useConnect } from '../../hooks/useConnect';
 
 const ResponsiveAppBar = ({ showAppBar = true }) => {
     const { address, setSigner } = useContext(WalletContext);
-    const { pusher } = useContext(PusherContext);
+    const { pusher, userSignedInToPusher } = useContext(PusherContext);
 
+    const [connect, disconnect] = useConnect();
     const [error, setError] = useState('');
 
     const [desktopMenuOpen, setDesktopMenuOpen] = useState(false);
@@ -79,7 +81,7 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                 if (refreshed) {
                     return axios.request(error.config);
                 } else {
-                    setSigner(null);
+                    await disconnect();
                     setSessionExpiredModalOpen(true);
                 }
 
@@ -95,18 +97,16 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
     }, [setSigner]);
 
 
-    const notificationsHover = useRef(false);
+    const notificationsHover = useRef(false)
 
     useEffect(() => {
-        if (!pusher) {
+        if (!userSignedInToPusher) {
+            console.log('appbar - user not signed in to pusher')
             return;
         }
 
-        // This only needs done once. React is calling useEffects twice in strict mode in dev. :(
-        if (notificationsHover.current) {
-            return;
-        }
-
+        console.log('appbar - binding to notification hover')
+        
         pusher.user.bind('notification-hover', (action: HodlAction) => {
             enqueueSnackbar(
                 "",
@@ -118,13 +118,10 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
             )
         });
 
-        notificationsHover.current = true;
-
         return () => {
-            pusher.user.unbind('notification-hover');
         }
 
-    }, [pusher])
+    }, [userSignedInToPusher])
 
     if (!showAppBar) {
         return null;

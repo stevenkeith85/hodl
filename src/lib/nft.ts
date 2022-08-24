@@ -31,9 +31,9 @@ export const listNft = async (tokenId, tokenPrice) => {
 
   try {
     const r = await axios.post(
-      '/api/market/list',
+      '/api/market/transaction',
       {
-       hash
+       hash,
       },
       {
         headers: {
@@ -83,11 +83,28 @@ export const delistNft = async (nft: Nft) => {
 
   const { hash } = await contract.delistToken(nftaddress, nft.id);
 
+  // try {
+  //   const r = await axios.post(
+  //     '/api/market/delist',
+  //     {
+  //      hash
+  //     },
+  //     {
+  //       headers: {
+  //         'Accept': 'application/json',
+  //         'Content-Type': 'application/json',
+  //       },
+  //     }
+  //   )
+  // } catch (e) {
+  //   console.log(e)
+  // }
+
   try {
     const r = await axios.post(
-      '/api/market/delist',
+      '/api/market/transaction',
       {
-       hash
+       hash,
       },
       {
         headers: {

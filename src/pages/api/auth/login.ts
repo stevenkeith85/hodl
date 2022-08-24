@@ -5,7 +5,7 @@ import { messageToSign } from "../../../lib/utils"
 import { ethers } from "ethers"
 import jwt from 'jsonwebtoken'
 import apiRoute from "../handler";
-import { getNonceForAddress } from "./nonce"
+import { getUuidForAddress } from "./uuid"
 import cookie from 'cookie'
 import { accessTokenExpiresIn, refreshTokenExpiresIn } from "../../../lib/jwt"
 import { User } from "../../../models/User"
@@ -23,7 +23,7 @@ const route = apiRoute();
 //
 // A HASH
 // user:<address> = {
-//      nonce - a random number appended to our constant welcome message to ensure the user signs a unique string each time
+//      uuid - a random number appended to our constant welcome message to ensure the user signs a unique string each time
 //      sessionId - a random number that tells us if the refresh token is still valid. if not, the user will need to re-login
 //      picture - an NFT id to use for the users avatar. TODO - rename this to 'avatar'
 // }
@@ -45,7 +45,7 @@ const route = apiRoute();
 // <signature> - the message that's been signed with the user's metamask wallet 
 // <address> - their wallet address
 //
-// User must request a message to sign before this step. that request will generate a <nonce>
+// User must request a message to sign before this step. that request will generate a <uuid>
 //
 // When authenticating (e.g. in handler.ts), if we get a valid refreshToken, 
 // prior to issuing a new (short lived) accessToken; we'll compare the sessionId
@@ -61,10 +61,10 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(200).json({ error: 'Bad request' });
   }
 
-  const nonce = await client.hget(`user:${address}`, 'nonce');
+  const uuid = await client.hget(`user:${address}`, 'uuid');
 
-  if (nonce) {
-    const signerAddress = ethers.utils.verifyMessage(messageToSign + nonce, signature);
+  if (uuid) {
+    const signerAddress = ethers.utils.verifyMessage(messageToSign + uuid, signature);
 
     if (address == signerAddress) { 
       // User has connected
@@ -76,10 +76,10 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
 
       // Update
       const sessionId = Math.floor(Math.random() * 1000000);
-      const nonce = Math.floor(Math.random() * 1000000);
+      const uuid = Math.floor(Math.random() * 1000000);
       await client.hset(`user:${address}`, {
         sessionId,
-        nonce
+        uuid
       });
 
       // Create access and refresh tokens
@@ -119,7 +119,7 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
       return res.status(401).json({ success: false, address, msg: "You didn't provide the correct signature" });
     }
   } else {
-    return res.status(400).json({ success: false, address, msg: "You haven't requested a nonce to sign yet" });
+    return res.status(400).json({ success: false, address, msg: "You haven't requested a uuid to sign yet" });
   }
 });
 

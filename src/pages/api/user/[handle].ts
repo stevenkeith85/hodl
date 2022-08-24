@@ -52,7 +52,7 @@ export const getUser = async (handle: string, viewerAddress: string): Promise<Us
     address = await client.get(`nickname:${handle}`);
   }
 
-  // TODO - We should check the 'users' collection first; as the user may have a nonce entry; but they've not actually signed the message to connect to the site
+  // TODO - We should check the 'users' collection first; as the user may have a uuid entry; but they've not actually signed the message to connect to the site
   const user = await client.hmget<User>(`user:${address}`, 'address', 'nickname', 'avatar');
 
   // if we haven't seen this user before, then just return basic info.

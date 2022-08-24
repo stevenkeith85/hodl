@@ -20,6 +20,7 @@
     "@openzeppelin/contracts": "^4.5.0",
     "@openzeppelin/contracts-upgradeable": "^4.5.2",
     "@openzeppelin/hardhat-upgrades": "^1.16.1",
+    "@serverlessq/nextjs": "^1.0.8",
     "@types/mocha": "^9.1.0",
     "@upstash/redis": "^1.11.0",
     "async-ratelimiter": "^1.3.0",

@@ -12,7 +12,6 @@ import { ActionSet, HodlAction } from "../../models/HodlAction";
 import InfiniteScroll from "react-swr-infinite-scroll";
 import useSWR from "swr";
 import axios from "axios";
-import Pusher from 'pusher-js';
 import { PusherContext } from "../../contexts/PusherContext";
 
 
@@ -22,7 +21,7 @@ export const HodlNotifications = ({
     setShowNotifications,
     limit = 10
 }) => {
-    const { pusher } = useContext(PusherContext);
+    const { pusher, userSignedInToPusher } = useContext(PusherContext);
 
     const router = useRouter();
     const theme = useTheme();
@@ -45,7 +44,7 @@ export const HodlNotifications = ({
 
     // Get real time updates about notifications! :)
     useEffect(() => {
-        if (!pusher) {
+        if (!userSignedInToPusher) {
             return;
         }
 
@@ -53,7 +52,7 @@ export const HodlNotifications = ({
             mutateUnread(true, { revalidate: false });
         });
 
-    }, [pusher]);
+    }, [userSignedInToPusher]);
 
     // when the user closes the notifications, we'll update the last read on the UI so that they don't get the highlight effect next time
     useEffect(() => {

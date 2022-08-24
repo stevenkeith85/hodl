@@ -1,4 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { NextApiRequest, NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
@@ -11,19 +10,19 @@ const client = Redis.fromEnv()
 const route = apiRoute();
 
 // Memo cleared on login
-export const getNonceForAddress = memoize(async (address) => {
-  const exists = await client.hexists(`user:${address}`, 'nonce');
+export const getUuidForAddress = memoize(async (address) => {
+  const exists = await client.hexists(`user:${address}`, 'uuid');
 
-  let nonce = null;
+  let uuid = null;
 
   if (exists) {
-    nonce = await client.hget(`user:${address}`, 'nonce');
+    uuid = await client.hget(`user:${address}`, 'uuid');
   } else {
-    nonce = `${Math.floor(Math.random() * 1000000)}`;
-    await client.hset(`user:${address}`, {'nonce': nonce});
+    uuid = `${Math.floor(Math.random() * 1000000)}`;
+    await client.hset(`user:${address}`, {'uuid': uuid});
   }
 
-  return nonce;
+  return uuid;
 }, {  
   primitive: true, 
   max: 10000, // store 10,000 nicknames
@@ -36,9 +35,9 @@ route.get(async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(200).json({ error: 'No address supplied' });
   }
 
-  const nonce = await getNonceForAddress(address);
+  const uuid = await getUuidForAddress(address);
 
-  res.status(200).json({nonce});
+  res.status(200).json({uuid});
 });
 
 

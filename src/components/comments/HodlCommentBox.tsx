@@ -1,7 +1,7 @@
 import { Typography, Box } from "@mui/material";
 import { useRouter } from "next/router";
 import { useComments, useCommentCount } from "../../hooks/useComments";
-import React, { FC, useContext, useEffect, useState } from "react";
+import React, { FC, useContext, useEffect, useRef, useState } from "react";
 import { HodlComment, HodlCommentViewModel } from "../../models/HodlComment";
 import { formatDistanceStrict } from "date-fns";
 import { ProfileNameOrAddress } from "../avatar/ProfileNameOrAddress";
@@ -48,8 +48,6 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
     mutateCount = null,
     level = 0
 }) => {
-    const { pusher } = useContext(PusherContext);
-
     const { swr: likesCount } = useLikeCount(comment.id, "comment");
 
     const [showThread, setShowThread] = useState(shouldShowThread || level < 1);
@@ -69,26 +67,6 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
 
     const router = useRouter();
 
-    useEffect(() => {
-        if (!pusher) {
-            return;
-        }
-
-        const channel = pusher.subscribe("comments");
-        channel.bind("reply", (repliedTo: HodlComment) => {
-            if (comment.id === repliedTo.id) {
-                setShowThread(true);
-                swr.mutate()
-                countSWR.mutate()
-            }
-        });
-
-        return () => {
-
-        }
-
-    }, [pusher])
-
     return (
         <Box
             display="flex"
@@ -96,7 +74,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
             sx={{
                 // width: `100%`,
                 marginLeft: '20px',
-                borderLeft: '2px dashed #eee',
+                borderLeft: '1px dashed #ddd',
 
                 // '&:last-of-type': {
                 //     border: '2px solid transparent'

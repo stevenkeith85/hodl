@@ -5,7 +5,9 @@ import { commercial, nonCommercial, token } from "./copyright";
 
 export const TAG_PATTERN = /#([\d\w_]+)/g;
 export const MAX_TAGS_PER_TOKEN = 6;
+
 export const NUMBER_OF_CONFIRMATIONS_TO_WAIT_FOR = 1; // we only get one confirmation with our local node; so leave it at that for the moment
+export const TRANSACTION_TIMEOUT = 6000; // we will initially use the vercel plan that gives us 60 seconds to complete a serverless function. wait up to 10% of that.
 
 export const chunk = (input, size) => {
   return input.reduce((arr, item, idx) => {
@@ -155,5 +157,5 @@ To connect, please sign this message.
 
 This request will not trigger a blockchain transaction or cost any gas fees.
 
-Nonce:
+uuid:
 `

@@ -7,7 +7,10 @@ export type User = {
     avatar: number; // the token id
     
     sessionId?: string; // can be cleared to invalidate the refresh token
-    nonce?: string; // a random number to make the message to sign unique
+
+    uuid?: string; // a random number to make the message to sign unique. 
+
+    nonce?: number; // the last transaction that we processed from this user. nonce is unique to each address. you can see it in metamask, and it is logged on the blockchain
 }
 
 // For the UI
