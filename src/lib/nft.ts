@@ -53,16 +53,13 @@ export const buyNft = async (nft: Nft) => {
 
   const price = ethers.utils.parseUnits(nft.price.toString(), 'ether')
 
-  const tx = await contract.buyToken(nftaddress, nft.id, { value: price })
-  await tx.wait();
+  const { hash } = await contract.buyToken(nftaddress, nft.id, { value: price })
 
   try {
     const r = await axios.post(
-      '/api/actions/add',
+      '/api/market/transaction',
       {
-        action: ActionTypes.Bought,
-        object: "token",
-        id: nft.id
+       hash,
       },
       {
         headers: {
@@ -82,23 +79,6 @@ export const delistNft = async (nft: Nft) => {
   const contract = new ethers.Contract(nftmarketaddress, Market.abi, signer);
 
   const { hash } = await contract.delistToken(nftaddress, nft.id);
-
-  // try {
-  //   const r = await axios.post(
-  //     '/api/market/delist',
-  //     {
-  //      hash
-  //     },
-  //     {
-  //       headers: {
-  //         'Accept': 'application/json',
-  //         'Content-Type': 'application/json',
-  //       },
-  //     }
-  //   )
-  // } catch (e) {
-  //   console.log(e)
-  // }
 
   try {
     const r = await axios.post(

@@ -349,6 +349,7 @@ export const addAction = async (action: HodlAction) : Promise<number> => {
       }
 
       // TODO: Possibly don't need to wait here. i.e. we could prevent the UI hanging by doing this async?
+      await addNotification(`${action.subject}`, action);
       const count = await addToFeedOfFollowers(action);
 
       return count;
@@ -363,28 +364,26 @@ export const addAction = async (action: HodlAction) : Promise<number> => {
     const history = await getPriceHistory(action.objectId);
 
     if (history.length === 0) {
+      console.log(`actions/add/bought - cannot find price history. cannot verify`)
       return 0;
     }
 
-    const buyer = history[0].buyerAddress;
-    const seller = history[0].sellerAddress;
+    console.log(`actions/add/bought - token price history === `, history)
+
+    const buyer = history[history.length-1].buyerAddress;
+    const seller = history[history.length-1].sellerAddress;
 
     if (buyer !== action.subject) {
+      console.log(`actions/add/bought - buyer ${buyer}does not match the action subject ${action.subject}`)
       return;
     }
 
-    // update the action with the price
-    action.metadata = {
-      price: history[0].price
-    }
-
-    // await client.set(`action:${action.id}`, JSON.stringify(action));
     await client.set(`action:${action.id}`, action);
 
-    // const first = await addNotification(`${buyer}`, action);
+    const first = await addNotification(`${buyer}`, action);
     const second = await addNotification(`${seller}`, action);
 
-    return second;
+    return first + second;
   }
 
   return 0;

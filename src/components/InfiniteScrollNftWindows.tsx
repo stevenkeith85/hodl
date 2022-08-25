@@ -64,13 +64,13 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
         gridTemplateColumns: {
           xs: `1fr 1fr 1fr`,
           sm: `1fr 1fr 1fr 1fr`,
-          // md: `1fr 1fr 1fr 1fr 1fr`,
         },
-        gap: 4,
+        gap: {
+          xs: 2,
+          sm: 4,
+        }
       }}
     >
-
-
       <InfiniteScroll
         swr={swr}
         loadingIndicator={<HodlLoadingSpinner />}
@@ -89,7 +89,6 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
               sx={{
                 position: 'relative',
                 display: 'flex',
-                // background: '#ddd',
                 gridColumn: isDoubleSize(i, next) ? `span 2` : `auto`,
                 gridRow: isDoubleSize(i, next) ? `span 2` : `auto`,
               }}

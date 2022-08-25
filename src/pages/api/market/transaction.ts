@@ -3,7 +3,7 @@ import cookie from 'cookie'
 import apiRoute from "../handler";
 
 import { getProvider } from "../../../lib/server/connections";
-import { nftmarketaddress } from "../../../../config";
+import { nftaddress, nftmarketaddress } from "../../../../config";
 
 import { Redis } from '@upstash/redis';
 import { getAsString } from "../../../lib/utils";
@@ -25,25 +25,34 @@ route.post(async (req, res: NextApiResponse) => {
   const tx = await provider.getTransaction(hash);
 
   if (tx === null) {
-    console.log(`market/transaction - unknown tx`);
+    console.log(`queue/transaction - unknown tx`);
     return res.status(400).json({ message: 'bad request' });
   }
 
   if (tx.from !== req.address) {
-    console.log(`market/transaction - user trying to process a transaction they did not create`);
+    console.log(`queue/transaction - user trying to process a transaction they did not create`);
     return res.status(400).json({ message: 'bad request' });
   }
 
-  if (tx.to !== nftmarketaddress) {
-    console.log(`market/transaction - user trying to process a transaction that isn't for our contract`);
+  if (tx.to !== nftmarketaddress && tx.to !== nftaddress) {
+    console.log(`queue/transaction - user trying to process a transaction that isn't for our contract`);
     return res.status(400).json({ message: 'bad request' });
   }
 
+  // TODO: This is a little basic. We really want to ensure we do not process any user transactions out of order
+  // We might need to store which transactions we've handled (or even just the latest one), and consult the blockchain to see the expected order
+  // We could potentially just add the missing ones to the queue in the correct order, and this one at the end
+  // Given a bit of time may have passed since we 'lost' transactions; we might skip the intermediary notifications
+  //
+  // This whole scenario should hopefully never happen; but best to be correct in case it does
+
+  // We also would like 're-running' transactions to be idempotent. we could do this by consulting our log of what was handled.
+  // add to market, send notification, etc
   const user = await client.hmget<User>(`user:${req.address}`, 'nonce');
   
   if (tx.nonce  <= user.nonce) {
-    console.log(`market/transaction - tx.nonce / user.nonce`, tx.nonce, user.nonce);
-    console.log(`market/transaction - user trying to process a transaction that is the same or older than the last one we've sent for processing`);
+    console.log(`queue/transaction - tx.nonce / user.nonce`, tx.nonce, user.nonce);
+    console.log(`queue/transaction - user trying to process a transaction that is the same or older than the last one we've sent for processing`);
     return res.status(400).json({ message: 'bad request' });
   }
 
@@ -68,7 +77,7 @@ route.post(async (req, res: NextApiResponse) => {
       }
     );
   } catch (error) {
-    console.log("market/transaction", error)
+    console.log("queue/transaction", error)
   }
 
   return res.status(202).json({ message: 'accepted' });

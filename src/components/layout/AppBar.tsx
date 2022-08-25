@@ -197,7 +197,7 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                     position: { sm: 'relative' },
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: { xs: 2, md: 4 },
+                                    gap: { xs: 2, md: 3 },
                                 }}
                             >
                                 {!xs && <SearchBox setHoverMenuOpen={null} />}

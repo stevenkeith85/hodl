@@ -1,11 +1,9 @@
 import { HodlActionViewModel } from "../../models/HodlAction";
-import { HodlImage } from "../HodlImage";
 import { assetType } from "../../lib/utils";
 import { AssetTypes } from "../../models/AssetType";
 import { HodlVideo } from "../HodlVideo";
 import { HodlImageResponsive } from "../HodlImageResponsive";
-import { Box, Skeleton } from "@mui/material";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Box } from "@mui/material";
 
 
 interface FeedAssetProps {

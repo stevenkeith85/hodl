@@ -15,7 +15,11 @@ const UserAvatarAndHandleBody = ({ user, size, fontSize, handle, color }) => (<B
     }}
 >
     <Tooltip title={
-        user.nickname || getShortAddress(user.address)
+        <Box
+            sx={{ display: 'flex', flexDirection: 'column' }}>
+            <Typography sx={{ fontSize: 14}}>{user.nickname}</Typography>
+            <Typography sx={{ fontSize: 12}}>{getShortAddress(user.address)}</Typography>
+        </Box>
     } arrow placement="right">
         <Box
             sx={{

@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { assetType } from '../../lib/utils';
 import { AssetTypes } from '../../models/AssetType';
 import { Token } from '../../models/Token';
-import { HodlImage } from '../HodlImage';
 import { HodlImageResponsive } from '../HodlImageResponsive';
 import { HodlVideo } from '../HodlVideo';
 

@@ -3,11 +3,13 @@ import { Token } from "./Token";
 import { User, UserViewModel } from "./User";
 
 export enum ActionTypes {
+    // WEB 3 ACTIONS
     Added = 'added', // token added to hodlmymoon
     Listed = 'listed', // token listed on the market
     Delisted = 'delisted', // token delisted from the market
     Bought = 'bought', // token bought from market
 
+    // WEB 2 ACTIONS
     Liked = 'liked', // token or comment liked
     Commented = 'commented', // token or comment commented on - maybe should just be 'commented'
     Followed = 'followed', // address has been followed

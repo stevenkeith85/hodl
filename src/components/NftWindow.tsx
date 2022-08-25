@@ -14,12 +14,12 @@ import { HodlImageResponsive } from './HodlImageResponsive';
 
 const Overlay = ({ nft }) => {
     const theme = useTheme();
-    const matches = useMediaQuery(theme.breakpoints.up('sm'));
+    const xs = useMediaQuery(theme.breakpoints.only('xs'));
 
     return (
         <Box
             className='nftItemOverlay'
-        
+
             sx={{
                 background: "rgba(0,0,0,0.35)",
                 display: 'flex',
@@ -27,7 +27,7 @@ const Overlay = ({ nft }) => {
                 justifyContent: 'center',
                 width: '100%',
                 height: `100%`,
-                opacity: matches ? 0 : 1, // always show on mobiles as they don't really have hover effects
+                opacity: 0,
                 top: 0,
                 left: 0,
                 position: 'absolute',
@@ -35,7 +35,18 @@ const Overlay = ({ nft }) => {
                 color: 'white'
             }}
         >
-            <Box display="flex" flexDirection="column" gap={2}>
+            <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                sx={{
+                    gap: {
+                        xs: 0,
+                        sm: 1
+                    }
+                }}
+            >
+
                 <Box
                     display="flex"
                     width="100%"
@@ -51,8 +62,8 @@ const Overlay = ({ nft }) => {
                         sx={{
                             color: 'white',
                             gap: {
-                                xs: 1,
-                                sm: 2
+                                xs: 2,
+                                sm: 3
                             },
                         }}
                     >
@@ -60,23 +71,24 @@ const Overlay = ({ nft }) => {
                             id={nft?.id}
                             object="token"
                             color='inherit'
-                            fontSize={matches ? '26px': '14px'}
+                            fontSize={xs ? 14 : 18}
+                            size={xs ? 20 : 22}
                             sx={{
                                 cursor: 'pointer',
                                 color: 'white',
-                                
+
                             }}
                         />
                         <Comments
                             nft={nft}
                             color='inherit'
-                            fontSize={matches ? '26px': '14px'}
+                            fontSize={xs ? 14 : 18}
+                            size={xs ? 20 : 22}
                             sx={{
                                 paddingRight: 0,
                             }}
 
                         />
-                        {nft?.forSale && <MaticPrice price={nft?.price} size={26} fontSize={16}/>}
                     </Box>
                 </Box>
             </Box>
@@ -85,18 +97,19 @@ const Overlay = ({ nft }) => {
 
 export const NftWindow = ({ nft, aspectRatio = "1:1" }) => {
     const theme = useTheme();
-    const matches = useMediaQuery(theme.breakpoints.up('sm'));
+    const xs = useMediaQuery(theme.breakpoints.only('xs'));
 
     if (!nft) {
         return null;
     }
 
     return (
-        <Link key={nft.id} href={`/nft/${nft.id}`} passHref>
+        <Link key={nft.id} href={nft?.forSale ? `/nft/${nft.id}?tab=1` : `/nft/${nft.id}`} passHref>
             <Box
                 component="a"
                 sx={{
                     position: 'relative',
+                    overflow: 'hidden',
                     width: `100%`,
                     height: '100%',
                     display: 'block',
@@ -108,7 +121,7 @@ export const NftWindow = ({ nft, aspectRatio = "1:1" }) => {
                 {assetType(nft) === AssetTypes.Gif &&
                     <HodlVideo
                         cid={nft?.image}
-                        transformations={nft?.filter}
+                        // transformations={nft?.filter}
                         gif={true}
                     />}
                 {(assetType(nft) === AssetTypes.Video || assetType(nft) === AssetTypes.Audio) &&
@@ -135,6 +148,41 @@ export const NftWindow = ({ nft, aspectRatio = "1:1" }) => {
                     </>
                 }
                 <Overlay nft={nft} />
+
+                {nft?.forSale && <Box
+                    sx={{
+                        position: 'absolute',
+                        background: 'rgba(0,0,0,0.35)',
+                        transform: 'rotate(30deg)',
+                        top: -140,
+                        right: -70,
+                        width: `200px`,
+                        height: `200px`,
+                        zIndex: 3
+
+                    }}>
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: `100%`,
+                            height: `100%`,
+                            top: 70,
+                            left: 20,
+                            transform: 'rotate(-30deg)',
+                        }}>
+                        {
+                            <MaticPrice
+                                price={nft?.price}
+                                fontSize={xs ? 14 : 18}
+                                size={xs ? 20 : 22}
+                            />
+                        }
+                    </Box>
+                </Box>
+                }
             </Box>
         </Link>
     )

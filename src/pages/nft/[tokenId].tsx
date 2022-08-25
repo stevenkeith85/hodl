@@ -179,10 +179,10 @@ const NftDetail = ({
                   id={nft.id}
                   object="token"
                   prefetchedLikeCount={prefetchedLikeCount}
-                  fontSize="22px"
+                  size={22}
                 />
                 <Comments
-                  fontSize="22px"
+                  size={22}
                   nft={nft}
                   popUp={false}
                   sx={{ color: '#333' }}

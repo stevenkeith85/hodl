@@ -9,7 +9,6 @@ import { MintMobileStepper } from '../components/mint/MintMobileStepper'
 import dynamic from "next/dynamic";
 import Head from 'next/head'
 import { authenticate } from '../lib/jwt'
-import router, { Router, useRouter } from 'next/router'
 import { useWarningOnExit } from '../hooks/useWarningOnExit'
 import { CropAssetAction } from '../components/mint/CropAssetAction'
 import { FilterAssetAction } from '../components/mint/FilterAssetAction'
@@ -37,6 +36,10 @@ const AddToHodlAction = dynamic(
 
 export async function getServerSideProps({ req, res }) {
   await authenticate(req, res);
+
+  if (!req.address) {
+    return { notFound: true }
+  }
 
   return {
     props: {
@@ -74,8 +77,11 @@ const Mint = ({ address }) => {
     'Hodl'
   ];
 
-  const warning = useWarningOnExit(stepComplete !== 5 && activeStep > 0, "If you leave now, your token will not be added to Hodl My Moon. Are you sure?")
+  const warning = useWarningOnExit(stepComplete !== 4 && activeStep > 0, "If you leave now, your token will not be added to Hodl My Moon. Are you sure?")
 
+  if (!address) {
+    return null;
+  }
 
   return (
     <>
@@ -138,12 +144,18 @@ const Mint = ({ address }) => {
                   setStepComplete={setStepComplete}
                 />
               }
-              {activeStep === 2 &&
+              {formData.fileName && <Box
+                sx={{
+                  display: activeStep === 2 ? 'block' : 'none'
+                }}
+              >
                 <FilterAssetAction
                   formData={formData}
                   setFormData={setFormData}
                   setStepComplete={setStepComplete}
+                  activeStep={activeStep}
                 />
+              </Box>
               }
               {activeStep === 3 &&
                 <UploadToIpfsAction
@@ -204,13 +216,13 @@ const Mint = ({ address }) => {
 
         {
           !xs && activeStep < 5 &&
-            <MintProgressButtons
-              loading={loading}
-              activeStep={activeStep}
-              setActiveStep={setActiveStep}
-              stepComplete={stepComplete}
-              formData={formData}
-            />
+          <MintProgressButtons
+            loading={loading}
+            activeStep={activeStep}
+            setActiveStep={setActiveStep}
+            stepComplete={stepComplete}
+            formData={formData}
+          />
         }
         {/* {<pre>{JSON.stringify(formData, null , 2)}</pre>} */}
       </Box>

@@ -89,7 +89,7 @@ export const HodlCommentActionButtons: React.FC<HodlCommentActionButtonsProps> =
                         color: theme => theme.palette.text.primary,
                     }
                 }}
-                fontSize="14px"
+                fontSize={14}
                 id={comment.id}
                 object="comment"
                 showCount={false}

@@ -1,7 +1,6 @@
 import { Box, Modal } from "@mui/material";
 import { HodlVideo } from "../HodlVideo";
 import { assetType } from "../../lib/utils";
-import { HodlImage } from "../HodlImage";
 import { useState } from "react";
 import { AssetTypes } from "../../models/AssetType";
 import { HodlImageResponsive } from "../HodlImageResponsive";
@@ -34,7 +33,10 @@ export const DetailPageImage = ({ token }) => {
                                 objectFit: 'scale-down',
                             }
                         }}
-                        cid={token?.image} transformations={token?.filter} gif={true} />}
+                        cid={token?.image}
+                        // transformations={token?.filter} 
+                        gif={true}
+                    />}
                     {(assetType(token) === AssetTypes.Video || assetType(token) === AssetTypes.Audio) && <HodlVideo
                         sx={{
                             video: {
@@ -56,7 +58,11 @@ export const DetailPageImage = ({ token }) => {
                 <Box onClick={() => setAssetModalOpen(true)}>
                     {
                         assetType(token) === AssetTypes.Gif &&
-                        <HodlVideo cid={token?.image} transformations={token?.filter} gif={true} />
+                        <HodlVideo
+                            cid={token?.image}
+                            // transformations={token?.filter} 
+                            gif={true}
+                        />
                     }
                 </Box>
                 <Box onClick={() => setAssetModalOpen(true)}>
@@ -73,7 +79,7 @@ export const DetailPageImage = ({ token }) => {
                         cid={token?.image}
                         audio={assetType(token) === AssetTypes.Audio}
                         height={assetType(token) === AssetTypes.Audio ? '400px' : 'auto'}
-                        transformations={token?.filter}
+                        // transformations={token?.filter}
                     />}
                 </Box>
             </Box>

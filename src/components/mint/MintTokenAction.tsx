@@ -48,14 +48,14 @@ export const MintTokenAction: FC<MintProps> = ({
       }));
 
       enqueueSnackbar(
-        `NFT minted on the blockchain with token id ${tokenId}`,
+        `Once your transaction has been confirmed on the blockchain; we'll add it to the site and send you a notification.`,
         {
           // @ts-ignore
           variant: "hodlsnackbar",
           type: "success"
         });
       
-      setStepComplete(4);
+      // setStepComplete(4);
     } catch (e) {
       enqueueSnackbar(
         `Unable to mint at the moment. Please try again`,

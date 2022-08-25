@@ -80,25 +80,42 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                 {item.action === ActionTypes.Listed &&
                                     <Box
                                         sx={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
                                             textAlign: 'right',
                                             fontFamily: theme => theme.logo.fontFamily,
                                             color: theme => theme.palette.text.secondary
                                         }}>
+                                        <Typography>listed</Typography>
                                         {
-                                            item?.metadata?.price && <MaticPrice price={item?.metadata?.price} color="black" size={14} fontSize={14} />
+                                            item?.metadata?.price &&
+                                            <MaticPrice
+                                                price={item?.metadata?.price}
+                                                color="black"
+                                                size={14}
+                                                fontSize={14}
+                                            />
                                         }
                                     </Box>
                                 }
                                 {item.action === ActionTypes.Bought &&
                                     <Box
                                         sx={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
                                             textAlign: 'right',
                                             fontFamily: theme => theme.logo.fontFamily,
                                             color: theme => theme.palette.text.secondary
                                         }}>
-                                        sold
+                                        <Typography>sold</Typography>
                                         {
-                                            item?.metadata?.price && <MaticPrice price={item?.metadata?.price} color="black" />
+                                            item?.metadata?.price &&
+                                            <MaticPrice
+                                                price={item?.metadata?.price}
+                                                color="black"
+                                                size={14}
+                                                fontSize={14}
+                                            />
                                         }
                                     </Box>
                                 }
@@ -145,11 +162,11 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                         <Likes
                             id={item.token?.id}
                             object="token"
-                            fontSize='22px'
+                            fontSize={14}
                         />
                         <Comments
                             nft={item.token}
-                            fontSize='22px'
+                            fontSize={14}
                         />
                     </Box>}
                 </Box>

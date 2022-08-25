@@ -1,4 +1,4 @@
-import { Box, ClickAwayListener, Fade, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Box, ClickAwayListener, Fade, IconButton, Typography, useMediaQuery, useTheme } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import NotificationsIcon from '@mui/icons-material/Notifications';
@@ -147,42 +147,60 @@ export const HodlNotifications = ({
                         lastRead={lastRead}
                     />
                 )
-
             }
         </InfiniteScroll>
     </Box>
 
     return (
         <>
-            {showNotifications ? <CloseIcon  color="primary" /> :
-                (unread ?
-                    <NotificationsIcon
-                        color="primary"
-                        sx={{
-                            cursor: 'pointer',
-                            animation: `shake 0.75s`,
-                            animationDelay: '1s',
-                            animationTimingFunction: 'ease-in'
-                        }}
-                        onClick={e => {
-                            e.stopPropagation();
-                            setHoverMenuOpen(false);
-                            toggleNotifications()
-                        }
-                        } /> :
-                    <NotificationsNoneIcon
-                        color="primary"
-                        sx={{
-                            cursor: 'pointer',
-                        }}
-                        onClick={e => {
-                            e.stopPropagation();
-                            setHoverMenuOpen(false);
-                            toggleNotifications()
-                        }}
-                    />)
-            }
+            <IconButton
+                size="large"
+                sx={{
+                    margin: 0,
+                    padding: 0
+                }}
+                color="inherit"
+            >
+                <Box
+                    width={44}
+                    height={44}
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center">
+                    {showNotifications ?
 
+                        <CloseIcon color="primary" />
+
+                        :
+                        (unread ?
+                            <NotificationsIcon
+                                color="primary"
+                                sx={{
+                                    cursor: 'pointer',
+                                    animation: `shake 0.75s`,
+                                    animationDelay: '1s',
+                                    animationTimingFunction: 'ease-in'
+                                }}
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    setHoverMenuOpen(false);
+                                    toggleNotifications()
+                                }
+                                } /> :
+                            <NotificationsNoneIcon
+                                color="primary"
+                                sx={{
+                                    cursor: 'pointer',
+                                }}
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    setHoverMenuOpen(false);
+                                    toggleNotifications()
+                                }}
+                            />)
+                    }
+                </Box>
+            </IconButton>
             <ClickAwayListener
                 onClickAway={() => {
                     if (showNotifications) {

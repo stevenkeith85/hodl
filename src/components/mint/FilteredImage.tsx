@@ -1,6 +1,5 @@
 import { memo } from 'react';
 import { Box } from '@mui/material';
-import { HodlImage } from '../HodlImage';
 import { aspectRatios, imageFilters } from '../../lib/utils';
 import { HodlImageResponsive } from '../HodlImageResponsive';
 

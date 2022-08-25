@@ -11,7 +11,8 @@ export interface CommentsProps {
     nft: any,
     popUp?: boolean,
     color?: "inherit" | "disabled" | "action" | "secondary" | "primary" | "error" | "info" | "success" | "warning",
-    fontSize?: string,
+    size?: number,
+    fontSize?: number,
     sx?: any;
     fallbackData?: any;
 }
@@ -20,7 +21,8 @@ export const Comments: FC<CommentsProps> = ({
     nft,
     popUp = true,
     color = "primary",
-    fontSize = "20px",
+    size = 22,
+    fontSize = 14,
     sx = {},
     fallbackData = null
 }) => {
@@ -76,10 +78,13 @@ export const Comments: FC<CommentsProps> = ({
                 >
                     <CommentOutlined
                         color={color}
-                        sx={{ fontSize }} />
+                        sx={{ 
+                            fontSize: size
+                        }} 
+                    />
                         <Typography
                             sx={{
-                                fontSize: `calc(${fontSize} - 10px)`,
+                                fontSize,
                                 color
                             }}>
                             {humanize.compactInteger(count || 0, 1)}

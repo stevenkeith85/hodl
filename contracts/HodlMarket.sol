@@ -35,7 +35,10 @@ contract HodlMarket is
         uint256 price
     );
 
-    event TokenDelisted(address indexed seller, uint256 indexed tokenId);
+    event TokenDelisted(
+        address indexed seller, 
+        uint256 indexed tokenId
+    );
 
     event TokenBought(
         address indexed buyer,

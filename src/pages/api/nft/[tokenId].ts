@@ -139,8 +139,6 @@ export const fetchNFT = async (id: number): Promise<Nft> => {
     image: token.image,
     mimeType: token.mimeType,
 
-    filter: token.filter,
-
     price,
     owner,
     forSale,

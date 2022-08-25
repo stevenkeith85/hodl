@@ -83,7 +83,7 @@ export const WalletMenuPage: React.FC<WalletMenuPageProps> = ({
                                 }}
                             >
                                 <Button
-                                    color="inherit"
+                                    color="primary"
                                     startIcon={<PersonOutlined />}
                                     variant="text"
                                     fullWidth={true}
@@ -92,7 +92,7 @@ export const WalletMenuPage: React.FC<WalletMenuPageProps> = ({
                                         paddingX: 2,
                                         paddingY: 1.5
                                     }}>
-                                    <ProfileNameOrAddress profileAddress={address} />
+                                    <ProfileNameOrAddress profileAddress={address} color="primary" />
                                 </Button>
                             </Stack>
                             {walletPages.map((page, i) => (
@@ -107,7 +107,7 @@ export const WalletMenuPage: React.FC<WalletMenuPageProps> = ({
                                     }}
                                 >
                                     <Button
-                                        color="inherit"
+                                        color="primary"
                                         fullWidth={true}
                                         variant="text"
                                         startIcon={page.icon}

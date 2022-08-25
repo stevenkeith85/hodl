@@ -1,4 +1,5 @@
 import { Box, Typography } from '@mui/material'
+import humanize from "humanize-plus";
 
 interface MaticPriceProps {
     price: any,
@@ -11,8 +12,8 @@ interface MaticPriceProps {
 export const MaticPrice: React.FC<MaticPriceProps> = ({ 
     price, 
     color = "white", 
-    size = 26, 
-    fontSize = 26,
+    size = 22, 
+    fontSize = 18,
     sx={}
  }) => {
 
@@ -37,13 +38,14 @@ export const MaticPrice: React.FC<MaticPriceProps> = ({
                 sx={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    fontSize: `${fontSize}px`,
+                    fontSize,
                     gap: 1,
+                    color,
                     ...sx
                 }}>
                 <img src="/matic.svg" width={size} height={size} alt="matic symbol" />
                 {' '}
-                {price}
+                {humanize.compactInteger(price, )}
             </Typography>
         </Box>
     )

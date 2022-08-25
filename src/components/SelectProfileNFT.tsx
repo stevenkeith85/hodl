@@ -9,9 +9,9 @@ interface SelectProfileNFTProps {
 
 const SelectProfileNFT = ({ nfts, onClick, selectedTokenId }: SelectProfileNFTProps) => {
 
-    if (!nfts.length) {
-        return <Typography>You need to hodl an NFT to set a custom avatar.</Typography>
-    }
+    // if (!nfts.length) {
+    //     return <Typography>You need to hodl an NFT to set a custom avatar.</Typography>
+    // }
 
     return (
         <Box
@@ -32,7 +32,15 @@ const SelectProfileNFT = ({ nfts, onClick, selectedTokenId }: SelectProfileNFTPr
                         onClick(nft.id);
                     }}
                 >
-                    <AssetThumbnail token={nft} size={90} />
+                    <Box
+                        sx={{
+                            lineHeight: 0,
+                            border: selectedTokenId === nft?.id ? theme => `2px solid ${theme.palette.secondary.main}` : "2px solid transparent"
+                        }}
+                    >
+                        <AssetThumbnail token={nft} size={90} />
+
+                    </Box>
                 </ImageListItem>
             )
             )}

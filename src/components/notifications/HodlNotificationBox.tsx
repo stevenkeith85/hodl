@@ -20,6 +20,7 @@ const madeDeletedComment = item => item.action === ActionTypes.Commented && item
 const commentedOnToken = item => item.action === ActionTypes.Commented && item.object === "comment" && item.comment && item.comment.object == "token";
 const repliedToComment = item => item.action === ActionTypes.Commented && item.object === "comment" && item.comment && item.comment.object == "comment";
 
+const mintedToken = item => item.action === ActionTypes.Added;
 const listedToken = item => item.action === ActionTypes.Listed;
 const delistedToken = item => item.action === ActionTypes.Delisted;
 const boughtToken = item => item.action === ActionTypes.Bought;
@@ -34,6 +35,7 @@ const MadeDeletedComment = () => <>made a comment, that has now been deleted.</>
 const CommentedOnToken = ({ item }) => <>{`commented: ${truncateText(item?.comment?.comment, 70)}.`}</>
 const RepliedToComment = ({ item }) => <>{`replied: ${truncateText(item?.comment?.comment, 70)}.`}</>
 
+const MintedToken = () => <>minted a token on the blockchain</>
 const ListedToken = ({ item }) => <>listed a token for <MaticPrice price={item?.metadata?.price} color="black" fontSize={14} size={14} sx={{ display: 'inline', marginLeft: 0.5}} /></>
 const DelistedToken = ({ item }) => <>delisted a token</>
 const BoughtToken = () => <>bought a token.</>
@@ -149,6 +151,16 @@ const NotificationLink = ({ item }) => {
                 <Typography component="a">
                     <MessageWithAvatarAndTime item={item}>
                         <BoughtToken />
+                    </MessageWithAvatarAndTime>
+                </Typography>
+            </Link>
+        }
+        {
+            mintedToken(item) &&
+            <Link href={`/nft/${item?.token?.id}`} passHref>
+                <Typography component="a">
+                    <MessageWithAvatarAndTime item={item}>
+                        <MintedToken />
                     </MessageWithAvatarAndTime>
                 </Typography>
             </Link>

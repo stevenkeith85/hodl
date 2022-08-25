@@ -10,7 +10,8 @@ export interface LikesProps {
     id: number;
     object: "token" | "comment";
     color?: "inherit" | "disabled" | "action" | "secondary" | "primary" | "error" | "info" | "success" | "warning";
-    fontSize?: string;
+    size?: number;
+    fontSize?: number;
     showCount?: boolean;
     prefetchedLikeCount?: number | null;
     likeTooltip?: string;
@@ -22,7 +23,8 @@ export const Likes: FC<LikesProps> = ({
     id,
     object,
     color = "secondary",
-    fontSize = '20px',
+    size = 22,
+    fontSize = 14,
     showCount = true,
     prefetchedLikeCount = null,
     likeTooltip = "like",
@@ -56,7 +58,7 @@ export const Likes: FC<LikesProps> = ({
                             <FavoriteBorderIcon
                                 color={color}
                                 sx={{
-                                    fontSize
+                                    fontSize: size
                                 }}
                             />
                         </Tooltip>
@@ -65,14 +67,14 @@ export const Likes: FC<LikesProps> = ({
                             <FavoriteIcon
                                 color={color}
                                 sx={{
-                                    fontSize
+                                    fontSize: size
                                 }}
                             />
                         </Tooltip>
                 }
                 {showCount && (likeCount != undefined) &&
                     <Typography sx={{ 
-                        fontSize: `calc(${fontSize} - 10px)`,
+                        fontSize,
                         color
                     }}>{
                         humanize.compactInteger(likeCount?.data || 0, 1)
