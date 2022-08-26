@@ -26,6 +26,7 @@ export const FilteredImage = ({
               folder="uploads"
               aspectRatio={ratio}
               effect={code}
+              objectPosition="top"
               onLoad={onLoad}
               sizes="(min-width: 900px) 50vw, (min-width: 1200px) calc(1200px / 2)"
             />

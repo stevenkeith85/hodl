@@ -1,4 +1,3 @@
-import useSWRInfinite from 'swr/infinite'
 import axios from 'axios';
 import useSWR from 'swr';
 import { useState } from 'react';
@@ -7,17 +6,48 @@ import { NavigateBefore, NavigateNext } from '@mui/icons-material';
 
 
 interface TagsPaginatedProps {
+  limit: number;
   selected: string;
-  onClick: (value) => void
+  onClick: (value) => void,
+  fallbackData: any
 }
 
+// https://swr.vercel.app/docs/pagination#advanced-cases
+const Page = ({ offset, limit, onClick, selected, fetcher, fallbackData }) => {
+  const { data } = useSWR([`/api/rankings/tag`, offset, limit], fetcher, { fallbackData });
 
-export const TagsPaginated: React.FC<TagsPaginatedProps> = ({ onClick, selected }) => {
+  if (!data) {
+    return null;
+  }
+
+  return (<Box
+    sx={{
+      display: 'flex',
+      gap: 1,
+      width: {
+        md: 'calc(1200px / 2.5)'
+      },
+      overflow: 'hidden',
+      justifyContent: 'center'
+    }}>
+    {
+      data?.items?.map(tag =>
+        <Chip
+          color="primary"
+          label={tag}
+          onClick={() => onClick(tag)}
+          key={tag}
+          variant={selected === tag ? 'filled' : 'outlined'}
+        />
+      )
+    }
+  </Box>
+  );
+}
+
+export const TagsPaginated: React.FC<TagsPaginatedProps> = ({ limit, onClick, selected, fallbackData }) => {
+  
   const [offset, setOffset] = useState(0);
-  const theme = useTheme();
-  const xs = useMediaQuery(theme.breakpoints.only('xs'));
-
-  const limit = xs ? 3 : 4;
 
   const fetcher = (
     url: string,
@@ -34,11 +64,7 @@ export const TagsPaginated: React.FC<TagsPaginatedProps> = ({ onClick, selected 
         }
       }).then(r => r.data);
 
-  const { data } = useSWR([`/api/rankings/tag`, offset, limit], fetcher);
-
-  if (!data) {
-    return null;
-  }
+  const { data } = useSWR([`/api/rankings/tag`, offset, limit], fetcher, {fallbackData});
 
   return (<Box
     sx={{
@@ -52,27 +78,18 @@ export const TagsPaginated: React.FC<TagsPaginatedProps> = ({ onClick, selected 
       }
     }}
   >
-    <IconButton disabled={offset === 0} onClick={() => setOffset(offset - limit)}>
+    <IconButton
+      disabled={offset === 0}
+      onClick={() => setOffset(offset - limit)}>
       <NavigateBefore />
     </IconButton>
-    <Box
-      sx={{
-        display: 'flex',
-        gap: 1,
-        width: {
-          md: 'calc(1200px / 2.5)'
-        },
-        overflow: 'hidden',
-        justifyContent: 'center'
-      }}>
-      {
-        data?.items?.map(tag =>
-          <Chip color="primary" label={tag} onClick={() => onClick(tag)} key={tag} variant={selected === tag ? 'filled': 'outlined'}/>
-        )
-      }
-    </Box>
+    <Page offset={offset} limit={limit} onClick={onClick} selected={selected} fetcher={fetcher} fallbackData={offset == 0 ? fallbackData: null} />
+    <div style={{ display: 'none' }}><Page offset={offset + limit} limit={limit} onClick={onClick} selected={selected} fetcher={fetcher} fallbackData={null}/></div>
 
-    <IconButton disabled={data?.next >= data?.total} onClick={() => setOffset(offset + limit)}>
+    <IconButton
+      disabled={offset + limit >= data?.total}
+      onClick={() => setOffset(offset + limit)}
+    >
       <NavigateNext />
     </IconButton>
   </Box>)

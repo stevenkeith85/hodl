@@ -13,6 +13,8 @@ import { CommercialTooltip } from "../tooltips/CommercialTooltip";
 import { NonCommercialTooltip } from "../tooltips/NonCommercialTooltip";
 import { TokenOnlyTooltip } from "../tooltips/TokenOnlyTooltip";
 import { HodlBorderedBox } from "../HodlBorderedBox";
+import { DescriptionTooltip } from "../tooltips/DescriptionTooltip";
+import { NameTooltip } from "../tooltips/NameTooltip";
 
 
 const UploadTooltip = () => (
@@ -116,102 +118,91 @@ export const UploadToIpfsAction: FC<MintProps> = ({
       >
         {({ isSubmitting, values, setFieldValue, errors, dirty, isValid }) => (
           <>
-            {/* <pre>{JSON.stringify(formData, null, 2)}</pre>
-            <pre>{JSON.stringify(values, null, 2)}</pre>
-            <pre>{JSON.stringify(errors, null, 2)}</pre> */}
             <Form>
-              <Stack spacing={4}>
-                <Typography
-                  sx={{
-                    fontSize: '18px',
-                    color: theme => theme.palette.text.secondary,
-                    span: { fontWeight: 600 }
-                  }}>Metadata</Typography>
+              <Stack spacing={3}>
                 <FormControl>
-                  <Field
-                    disabled={stepComplete >= 3}
-                    component={TextField}
-                    name="name"
-                    label="name"
-                    type="text"
-                    autoComplete='off'
-                    sx={{
-                      background: 'white'
-                    }}
-                  />
+                  <Tooltip title={<NameTooltip />}
+                    placement="right-start"
+                    arrow>
+                    <Field
+                      disabled={stepComplete >= 3}
+                      component={TextField}
+                      name="name"
+                      label="Name"
+                      type="text"
+                      autoComplete='off'
+                      sx={{
+                        background: 'white'
+                      }}
+                    />
+                  </Tooltip>
                 </FormControl>
                 <FormControl>
-                  <Field
-                    disabled={stepComplete >= 3}
-                    multiline
-                    minRows={4}
-                    component={TextField}
-                    helperText="You can add #tags here to help hodlers discover your token. Only the first six are indexed."
-                    name="description"
-                    label="description"
-                    type="text"
-                    autoComplete='off'
-                    sx={{
-                      background: 'white'
-                    }}
-                  />
+                  <Tooltip title={<DescriptionTooltip />}
+                    placement="right-start"
+                    arrow>
+                    <Field
+                      disabled={stepComplete >= 3}
+                      multiline
+                      minRows={4}
+                      component={TextField}
+                      name="description"
+                      label="Description"
+                      type="text"
+                      autoComplete='off'
+                      sx={{
+                        background: 'white'
+                      }}
+                    />
+                  </Tooltip>
 
                 </FormControl>
-                <HodlBorderedBox>
-                  <FormControl disabled={stepComplete >= 3}>
-                    <Tooltip
-                      title={<HodlerPrivilegeTooltip />}
-                      placement="right-start"
-                      arrow>
-                      <FormLabel sx={{ marginBottom: 1 }}>hodler privilege</FormLabel>
+                
+                  <HodlBorderedBox>
+                  <Tooltip
+                  title={<HodlerPrivilegeTooltip />}
+                  placement="right-start"
+                  arrow>
+                    <FormControl disabled={stepComplete >= 3}>
+
+                      <FormLabel sx={{ marginBottom: 2 }}>Hodler Privilege</FormLabel>
+                      <RadioGroup
+                        name="hodler-privilege"
+                      >
+                          <FormControlLabel
+                            onClick={() => setFieldValue('privilege', token)}
+                            value={token}
+                            control={<Radio size="small" sx={{ paddingY: 1 }} />}
+                            label={<Typography color={grey[700]}>token only</Typography>}
+                          />
+                          <FormControlLabel
+                            onClick={() => setFieldValue('privilege', nonCommercial)}
+                            value={nonCommercial}
+                            control={<Radio size="small" sx={{ paddingY: 1 }} />}
+                            label={<Typography color={grey[700]}>non commercial</Typography>}
+                          />
+                          <FormControlLabel
+                            onClick={() => setFieldValue('privilege', commercial)}
+                            value={commercial}
+                            control={<Radio size="small" sx={{ paddingY: 1 }} />}
+                            label={<Typography color={grey[700]}>commercial</Typography>}
+                          />
+                      </RadioGroup>
+                    </FormControl>
                     </Tooltip>
-                    <RadioGroup
-                      name="hodler-privilege"
-                    >
-                      <Tooltip
-                        title={<TokenOnlyTooltip />}
-                        placement="right-start"
-                        arrow>
-                        <FormControlLabel
-                          onClick={() => setFieldValue('privilege', token)}
-                          value={token}
-                          control={<Radio size="small" sx={{ paddingY: 0.75 }} />}
-                          label={<Typography color={grey[700]}>token only</Typography>}
-                        />
-                      </Tooltip>
-                      <Tooltip
-                        title={<NonCommercialTooltip />}
-                        placement="right-start"
-                        arrow>
-                        <FormControlLabel
-                          onClick={() => setFieldValue('privilege', nonCommercial)}
-                          value={nonCommercial}
-                          control={<Radio size="small" sx={{ paddingY: 0.75 }} />}
-                          label={<Typography color={grey[700]}>non commercial</Typography>}
-                        />
-                      </Tooltip>
-                      <Tooltip
-                        title={<CommercialTooltip />}
-                        placement="right-start"
-                        arrow>
-                        <FormControlLabel
-                          onClick={() => setFieldValue('privilege', commercial)}
-                          value={commercial}
-                          control={<Radio size="small" sx={{ paddingY: 0.75 }} />}
-                          label={<Typography color={grey[700]}>commercial</Typography>}
-                        /></Tooltip>
-                    </RadioGroup>
-                  </FormControl>
-                </HodlBorderedBox>
+                  </HodlBorderedBox>
+                
                 <div>
                   <Tooltip
                     title={<UploadTooltip />}
                     placement="right-start"
                     arrow>
                     <Button
-                      color="secondary"
+                      color="primary"
+                      variant="contained"
                       sx={{
-                        paddingX: 2
+                        paddingX: 3,
+                        paddingY: 1
                       }}
                       type="submit"
                       disabled={isSubmitting || stepComplete === 3 || !isValid || !dirty}

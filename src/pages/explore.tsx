@@ -8,6 +8,7 @@ import { InfiniteScrollNftWindows } from '../components/InfiniteScrollNftWindows
 import { TagsPaginated } from '../components/TagsPaginated';
 import { useSearchTokens } from '../hooks/useSearchTokens';
 import { authenticate } from '../lib/jwt';
+import { getMostUsedTags } from './api/rankings/tag';
 import { getTokenSearchResults } from './api/search/tokens';
 
 
@@ -19,21 +20,24 @@ export async function getServerSideProps({ query, req, res }) {
   const limit = 11;
   const prefetchedResults = await getTokenSearchResults(q, 0, limit, JSON.parse(forSale || "false"));
 
+  const tagsLimit = 4;
+  const prefetchedTags = await getMostUsedTags(0, tagsLimit);
+
   return {
     props: {
       address: req.address || null,
       q: q || '',
       limit,
+      tagsLimit,
       forSale: JSON.parse(forSale || "false"),
-      fallbackData: [prefetchedResults]
+      fallbackData: [prefetchedResults],
+      prefetchedTags
     },
   }
 }
 
 
-export default function Search({ q, limit, forSale, fallbackData }) {
-
-
+export default function Search({ q, limit, tagsLimit, forSale, fallbackData, prefetchedTags }) {
   const [forSaleToggle, setForSaleToggle] = useState(forSale);
   const [qChip, setQChip] = useState(q);
 
@@ -102,7 +106,7 @@ export default function Search({ q, limit, forSale, fallbackData }) {
                   setForSaleToggle(false);
                 }}
               /></Tooltip>
-            {!xs && <TagsPaginated selected={qChip} onClick={(value) => setQChip(value)} />}
+            {!xs && <TagsPaginated limit={tagsLimit} selected={qChip} onClick={(value) => setQChip(value)} fallbackData={prefetchedTags}/>}
             <FormGroup>
               <Tooltip title="Only show for sale">
                 <Switch
@@ -120,7 +124,7 @@ export default function Search({ q, limit, forSale, fallbackData }) {
           {xs && <Box
             sx={{ display: 'flex', alignItems: 'center' }}
           >
-            <TagsPaginated selected={qChip} onClick={(value) => setQChip(value)} />
+            <TagsPaginated limit={tagsLimit} selected={qChip} onClick={(value) => setQChip(value)} fallbackData={prefetchedTags}/>
           </Box>}
         </Box>
 

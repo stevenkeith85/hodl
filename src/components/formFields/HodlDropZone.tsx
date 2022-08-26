@@ -61,7 +61,7 @@ export const HodlDropzone = ({ onDrop, progress }) => {
                         <AudiotrackOutlined color="secondary" sx={{ fontSize: '50px' }} />
                     </Box>
                     <Typography sx={{ fontSize: '20px'}}>Drag a photo, video, or audio clip here</Typography>
-                    <div><Button color="primary">Select</Button></div>
+                    <div><Button color="primary" variant="contained" sx={{ margin: 4, paddingX: 3, paddingY: 1}}>Select</Button></div>
                 </Box>
             </Box>
             

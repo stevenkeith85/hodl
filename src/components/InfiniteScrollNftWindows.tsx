@@ -66,8 +66,9 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
           sm: `1fr 1fr 1fr 1fr`,
         },
         gap: {
-          xs: 2,
-          sm: 4,
+          xs: 1,
+          sm: 2,
+          md: 3
         }
       }}
     >

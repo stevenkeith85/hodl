@@ -6,9 +6,13 @@ export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, l
   const isVideo = mimeType => mimeType && mimeType.indexOf('video') !== -1;
   const isGif = mimeType => mimeType && mimeType.indexOf('gif') !== -1;
 
+  if (stepComplete < 0 || stepComplete > 2) {
+    return null;
+  }
+
   return (
     <>
-      <Fab
+      {stepComplete > 0 && activeStep > 0 && <Fab
         size="small"
         color="secondary"
         sx={{
@@ -31,7 +35,7 @@ export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, l
           }
         }>
         <NavigateBefore />
-      </Fab>
+      </Fab>}
       <Fab
         size="small"
         color="secondary"

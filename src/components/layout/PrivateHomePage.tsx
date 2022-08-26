@@ -39,7 +39,7 @@ export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address 
                             lg: 8
                         },
                         gap: {
-                            xs: 4,
+                            xs: 6,
                         },
                         alignItems: {
                             xs: 'center'

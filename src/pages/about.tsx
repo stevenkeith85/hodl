@@ -120,15 +120,9 @@ export default function About({ address }) {
 
                 </HodlBorderedBox>
                 <HodlBorderedBox>
-                    <Typography id="copyright" mb={2} variant="h2">Hodler privilege</Typography>
-                    <Typography mb={2}>When an author mints an NFT, they must specify what the hodler can do with the attached asset.</Typography>
-                    <Typography>We give them a choice of one of the following:</Typography>
-                    <Typography sx={{ marginY: 2, color: theme => theme.palette.primary.main}} variant="h3">1. Token Only</Typography>
-                    <TokenOnlyText />
-                    <Typography sx={{ marginY: 2, color: theme => theme.palette.primary.main}} variant="h3">2. Non Commercial</Typography>
-                    <NonCommercialText />
-                    <Typography sx={{ marginY: 2, color: theme => theme.palette.primary.main}} variant="h3">3. Commercial</Typography>
-                    <CommercialText />
+                    <Typography id="hodler-privilege" mb={2} variant="h2">Hodler privilege</Typography>
+                    <Typography mb={2} sx={{ span: { fontWeight: 600 }}}>When an author mints an NFT, they <span>must</span> specify what any future hodler can do with the attached asset.</Typography>
+                    <Link href="/hodler-privilege">Read More</Link>
                 </HodlBorderedBox>
             </Stack >
         </Box >)

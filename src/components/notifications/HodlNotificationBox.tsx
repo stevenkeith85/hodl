@@ -28,7 +28,7 @@ const boughtToken = item => item.action === ActionTypes.Bought;
 const followed = item => item.action === ActionTypes.Followed;
 
 // Components
-const LikedToken = () => <>liked a token.</>
+const LikedToken = () => <>liked your token.</>
 const LikedDeletedComment = () => <>liked a comment, that has now been deleted.</>
 const LikedComment = ({ item }) => <>{`liked a comment: ${truncateText(item?.comment?.comment, 70)}.`}</>
 const MadeDeletedComment = () => <>made a comment, that has now been deleted.</>
@@ -36,7 +36,7 @@ const CommentedOnToken = ({ item }) => <>{`commented: ${truncateText(item?.comme
 const RepliedToComment = ({ item }) => <>{`replied: ${truncateText(item?.comment?.comment, 70)}.`}</>
 
 const MintedToken = () => <>minted a token on the blockchain</>
-const ListedToken = ({ item }) => <>listed a token for <MaticPrice price={item?.metadata?.price} color="black" fontSize={14} size={14} sx={{ display: 'inline', marginLeft: 0.5}} /></>
+const ListedToken = ({ item }) => <>listed a token for <MaticPrice price={item?.metadata?.price} color="black" fontSize={14} size={14} sx={{ marginLeft: 0.5}} /></>
 const DelistedToken = ({ item }) => <>delisted a token</>
 const BoughtToken = () => <>bought a token.</>
 const Followed = () => <>followed you.</>

@@ -149,39 +149,32 @@ export const NftWindow = ({ nft, aspectRatio = "1:1" }) => {
                 }
                 <Overlay nft={nft} />
 
-                {nft?.forSale && <Box
-                    sx={{
-                        position: 'absolute',
-                        background: 'rgba(0,0,0,0.35)',
-                        transform: 'rotate(30deg)',
-                        top: -140,
-                        right: -70,
-                        width: `200px`,
-                        height: `200px`,
-                        zIndex: 3
+                {nft?.forSale &&
 
-                    }}>
-                    <Box
-                        sx={{
-                            position: 'absolute',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: `100%`,
-                            height: `100%`,
-                            top: 70,
-                            left: 20,
-                            transform: 'rotate(-30deg)',
-                        }}>
-                        {
-                            <MaticPrice
-                                price={nft?.price}
-                                fontSize={xs ? 14 : 18}
-                                size={xs ? 20 : 22}
-                            />
-                        }
-                    </Box>
-                </Box>
+                        <Box
+                            sx={{
+                                position: 'absolute',
+                                top: 0,
+                                right: 0,
+                                width: `auto`,
+                                height: `auto`,
+                                padding: 1.5,
+                                paddingY: 0.75,
+                                background: `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.225), rgba(0,0,0,0.25), rgba(0,0,0,0.225), rgba(0,0,0,0.2))`,
+                            }}
+                        >
+                            <Box
+                                sx={{
+                                    textAlign: 'right'
+                                }}>
+                                <MaticPrice
+                                    price={nft?.price}
+                                    fontSize={xs ? 14 : 16}
+                                    size={xs ? 14 : 16}
+                                    humanizeNumber={true}
+                                />
+                            </Box>
+                        </Box>
                 }
             </Box>
         </Link>
