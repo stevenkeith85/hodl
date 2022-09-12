@@ -28,7 +28,7 @@ const UserAvatarAndHandleBody = ({ user, size, fontSize, handle, color }) => (<B
                 gap: 1.5,
             }}
         >
-            {user.avatar ? <UserAvatar user={user} size={size} /> : <UserDefaultAvatar size={size} color={color} />}
+            {user.avatar ? <UserAvatar user={user} size={size} /> : <UserDefaultAvatar size={size} fontSize={size - 15} color={color} />}
             {handle ? <UserHandle user={user} fontSize={fontSize} /> : null}
         </Box>
     </Tooltip>
@@ -38,7 +38,7 @@ interface UserAvatarProps {
     address: string;
     fallbackData?: UserViewModel;
     size?: number;
-    fontSize?: string;
+    fontSize?: number;
     handle?: boolean;
     withLink?: boolean;
     color?: "primary" | "secondary" | "greyscale";
@@ -48,7 +48,7 @@ export const UserAvatarAndHandle: React.FC<UserAvatarProps> = ({
     address,
     fallbackData = null,
     size = 44,
-    fontSize = "14px",
+    fontSize = 14,
     handle = true,
     withLink = true,
     color = "secondary"
@@ -65,7 +65,7 @@ export const UserAvatarAndHandle: React.FC<UserAvatarProps> = ({
                 <Link href={`/profile/${user.nickname || user.address}`} passHref>
                     <Typography component="a" sx={{
                         textDecoration: 'none',
-                        color: '#333'
+                        color: theme => theme.palette.text.secondary
                     }}>
                         <UserAvatarAndHandleBody
                             user={user}

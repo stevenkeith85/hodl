@@ -5,11 +5,12 @@ import {
 
 
 interface UserDefaultAvatarProps {
-    size: string;
+    size: number;
+    fontSize: number;
     color?: "primary" | "secondary" | "greyscale";
 }
 
-export const UserDefaultAvatar: React.FC<UserDefaultAvatarProps> = ({ size, color="secondary" }) => {
+export const UserDefaultAvatar: React.FC<UserDefaultAvatarProps> = ({ size, fontSize, color="secondary" }) => {
     const getColor = theme => {
         const mappings = {
             primary: theme.palette.primary.light,
@@ -26,15 +27,10 @@ export const UserDefaultAvatar: React.FC<UserDefaultAvatarProps> = ({ size, colo
             sx={{
                 width: size,
                 height: size,
-                // bgcolor: theme => theme.palette.secondary.light
                 bgcolor: (theme) => getColor(theme),
             }}
         >
-            <PersonIcon 
-                sx={{
-                    fontSize: `calc(${size} - 10px)`
-                }}
-            />
+            <PersonIcon  sx={{ fontSize }} />
         </Avatar>
     )
 }

@@ -66,6 +66,10 @@ export const TagsPaginated: React.FC<TagsPaginatedProps> = ({ limit, onClick, se
 
   const { data } = useSWR([`/api/rankings/tag`, offset, limit], fetcher, {fallbackData});
 
+  if (!data || data.total === 0) {
+    return null;
+  }
+
   return (<Box
     sx={{
       display: 'flex',

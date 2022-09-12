@@ -146,8 +146,8 @@ const Profile = ({
             <UserAvatarAndHandle
               address={owner.address}
               fallbackData={owner}
-              size={120}
-              fontSize={'24px'}
+              size={100}
+              fontSize={24}
               handle={false}
             />
             <Box
