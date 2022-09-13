@@ -1,6 +1,6 @@
-import { Typography, Box } from "@mui/material";
+import { Typography, Box, Tooltip, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, MenuList } from "@mui/material";
 import { useRouter } from "next/router";
-import { useComments, useCommentCount } from "../../hooks/useComments";
+import { useComments, useCommentCount, useDeleteComment } from "../../hooks/useComments";
 import React, { FC, useContext, useEffect, useRef, useState } from "react";
 import { HodlComment, HodlCommentViewModel } from "../../models/HodlComment";
 import { formatDistanceStrict } from "date-fns";
@@ -11,7 +11,10 @@ import { pluralize } from "../../lib/utils";
 import { PusherContext } from "../../contexts/PusherContext";
 import { HodlCommentActionButtons } from "./HodlCommentActionButtons";
 import { Replies } from "./Replies";
-
+import { ArrowDownwardRounded, DeleteOutlineSharp, ExpandLess, ExpandMore, Reply } from "@mui/icons-material";
+import { NftContext } from "../../contexts/NftContext";
+import { WalletContext } from "../../contexts/WalletContext";
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 interface HodlCommentBoxProps {
     comment: HodlCommentViewModel;
@@ -67,6 +70,22 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
 
     const router = useRouter();
 
+    const { address } = useContext(WalletContext);
+    const { nft } = useContext(NftContext);
+
+    const canDeleteComment = (comment: HodlCommentViewModel) => comment.user.address === address || nft?.owner === address;
+    const [deleteComment] = useDeleteComment();
+
+    // Comment Menu
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
     return (
         <Box
             display="flex"
@@ -74,10 +93,16 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
             sx={{
                 // width: `100%`,
                 marginLeft: '20px',
-                borderLeft: '1px dashed #ddd',
+                // borderLeft: '1px dashed #ddd',
 
                 // '&:last-of-type': {
                 //     border: '2px solid transparent'
+                // }
+                // '&:hover': {
+                //     '& .moreMenu': {
+                //         visibility: 'visible'
+                //     }
+
                 // }
             }}
         >
@@ -97,7 +122,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                 <Box
                     display="flex"
                     alignItems="start"
-                    gap={2}
+                    gap={1.75}
                     sx={{
                         // background: 'green',
                         width: `100%`
@@ -152,86 +177,201 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                                 profileAddress={comment.user.address}
                                                 fallbackData={comment.user}
                                                 color={color}
+                                                fontSize="16px"
                                             />
-                                            <Typography
+                                            {/* <Typography
                                                 sx={{
                                                     fontWeight: 600,
                                                     color: theme => theme.palette.text.secondary
                                                 }}>
                                                 ·
-                                            </Typography>
-                                            <Typography
+                                            </Typography> */}
+                                            {/* <Typography
                                                 sx={{
-                                                    fontSize: "12px",
                                                     color: theme => theme.palette.text.secondary
                                                 }}>
                                                 {comment.timestamp && formatDistanceStrict(new Date(comment.timestamp), new Date(), { addSuffix: false })}
-                                            </Typography></Box>
-                                        <HodlCommentActionButtons
-                                            comment={comment}
-                                            setCommentingOn={setCommentingOn}
-                                            swr={swr}
-                                            countSWR={countSWR}
-                                            setShowThread={setShowThread}
-                                            color={color}
-                                            addCommentInput={addCommentInput}
-                                            parentMutateList={parentMutateList}
-                                            parentMutateCount={parentMutateCount}
-                                            mutateCount={mutateCount}
-                                        />
+                                            </Typography> */}
+                                        </Box>
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'center'
+                                            }}>
+                                            {
+                                                address && canDeleteComment(comment) && (<>
+                                                    <IconButton
+                                                        className="moreMenu"
+                                                        onClick={handleClick}
+                                                        size="small"
+                                                        sx={{
+                                                            padding: 0,
+                                                            // visibility: 'hidden'
+                                                        }}
+                                                    >
+                                                        <MoreVertIcon
+                                                            sx={{
+                                                                cursor: 'pointer',
+                                                                color: theme => theme.palette.text.secondary,
+                                                                '&:hover': {
+                                                                    color: theme => theme.palette.text.primary,
+                                                                },
+                                                                fontSize: `14px`
+                                                            }}
+                                                        />
+                                                    </IconButton>
+                                                    <Menu
+                                                        anchorEl={anchorEl}
+                                                        open={open}
+                                                        onClose={handleClose}
 
+                                                    >
+
+                                                        <MenuList
+                                                            dense
+                                                            sx={{
+                                                                padding: 0
+                                                            }}
+                                                        >
+                                                            <MenuItem
+                                                                onClick={async () => {
+                                                                    await deleteComment(comment);
+                                                                    parentMutateList();
+                                                                    parentMutateCount();
+                                                                    mutateCount();
+                                                                }
+                                                                }>
+                                                                <ListItemIcon
+                                                                    sx={{
+                                                                        '&.MuiListItemIcon-root': {
+                                                                            minWidth: 0,
+                                                                            marginRight: `8px`
+                                                                        }
+                                                                    }}>
+                                                                    <DeleteOutlineSharp sx={{ fontSize: '14px' }} />
+                                                                </ListItemIcon>
+                                                                <ListItemText>delete</ListItemText>
+                                                            </MenuItem>
+                                                        </MenuList>
+                                                    </Menu>
+                                                </>)
+                                            }
+                                            <HodlCommentActionButtons
+                                                comment={comment}
+                                                setCommentingOn={setCommentingOn}
+                                                swr={swr}
+                                                countSWR={countSWR}
+                                                setShowThread={setShowThread}
+                                                color={color}
+                                                addCommentInput={addCommentInput}
+                                                parentMutateList={parentMutateList}
+                                                parentMutateCount={parentMutateCount}
+                                                mutateCount={mutateCount}
+                                            />
+                                        </Box>
                                     </Box>
-                                    <Typography sx={{ whiteSpace: 'pre-line', marginY: 1 }}>{comment.comment}</Typography>
+                                    <Typography sx={{ whiteSpace: 'pre-line', marginBottom: 0 }}>{comment.comment}</Typography>
                                 </Box>
                                 <Box
+                                    sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 2,
+                                        marginY: 0.5
+                                    }}>
+                                    <Typography
+                                        sx={{
+                                            color: theme => theme.palette.text.secondary
+                                        }}>
+                                        {comment.timestamp && formatDistanceStrict(new Date(comment.timestamp), new Date(), { addSuffix: true })}
+                                    </Typography>
+                                    {address &&
+                                            <Box
+                                                sx={{
+                                                    cursor: 'pointer',
+                                                    color: theme => theme.palette.text.secondary,
+                                                    '&:hover': {
+                                                        color: theme => theme.palette.text.primary,
+                                                    },
+                                                    fontSize: `14px`
+                                                }}
+                                                onClick={() => {
+                                                    setCommentingOn({
+                                                        object: "comment",
+                                                        objectId: comment.id,
+                                                        mutateList: swr.mutate,
+                                                        mutateCount: countSWR.mutate,
+                                                        setShowThread,
+                                                        color
+                                                    })
+                                                    addCommentInput?.focus();
+                                                }
+                                                }>
+                                                reply
+                                            </Box>
+                                    }
+                                </Box>
+                                {Boolean(countSWR?.data) && <Box
                                     display="flex"
-                                    gap={1}
-                                //    sx={{ background: 'orange' }}
+                                    alignItems={"center"}
+                                    gap={0.5}
+                                    onClick={() => {
+                                        if (level < 4) {
+                                            setShowThread(old => !old);
+                                        } else {
+                                            setTopLevel({ objectId: comment.id, object: "comment" });
+                                            router.push({
+                                                pathname: window.location.pathname,
+                                                query: { comment: comment.id }
+                                            }, undefined, { shallow: true });
+                                        }
+
+                                    }}
+                                    //    sx={{ background: 'orange' }}
+                                    sx={{
+                                        color: theme => theme.palette.text.secondary,
+                                        cursor: 'pointer',
+                                        '&:hover': {
+                                            color: theme => theme.palette.text.primary
+                                        }
+                                    }}
                                 >
+                                    {showThread ?
+
+                                        <ExpandLess sx={{ fontSize: 14 }} /> :
+                                        <ExpandMore sx={{ fontSize: 14 }} />
+                                    }
                                     {
                                         countSWR.data && showThread && !swr.error && !swr.data ?
                                             <Typography
-                                                sx={{
-                                                    fontSize: "12px",
-                                                    color: theme => theme.palette.text.secondary,
-                                                    cursor: 'pointer'
-                                                }}
+                                            // sx={{
+                                            //     color: theme => theme.palette.text.secondary,
+                                            //     cursor: 'pointer'
+                                            // }}
                                             >
                                                 loading
                                             </Typography> :
                                             <Typography
-                                                sx={{
-                                                    fontSize: "12px",
-                                                    color: theme => theme.palette.text.secondary,
-                                                    cursor: 'pointer',
-                                                    '&:hover': {
-                                                        color: theme => theme.palette.text.primary
-                                                    }
-                                                }}
-                                                onClick={() => {
-                                                    if (level < 4) {
-                                                        setShowThread(old => !old);
-                                                    } else {
-                                                        setTopLevel({ objectId: comment.id, object: "comment" });
-                                                        router.push({
-                                                            pathname: window.location.pathname,
-                                                            query: { comment: comment.id }
-                                                        }, undefined, { shallow: true });
-                                                    }
+                                            // sx={{
+                                            //     color: theme => theme.palette.text.secondary,
+                                            //     cursor: 'pointer',
+                                            //     '&:hover': {
+                                            //         color: theme => theme.palette.text.primary
+                                            //     }
+                                            // }}
 
-                                                }}
                                             >
-                                                {level < 4 ? pluralize(countSWR.data, 'reply') : 'view thread'}
+                                                {level < 4 ? pluralize(countSWR.data, 'reply') : 'thread'}
                                             </Typography>
                                     }
-                                    <Typography
+                                    {/* <Typography
                                         sx={{
-                                            fontSize: "12px",
                                             color: theme => theme.palette.text.secondary
                                         }}>
                                         {pluralize(likesCount?.data, 'like')}
-                                    </Typography>
-                                </Box>
+                                    </Typography> */}
+                                </Box>}
+
                             </Box>
                         </Box>
                         <Replies

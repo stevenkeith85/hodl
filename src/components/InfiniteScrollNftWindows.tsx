@@ -8,9 +8,10 @@ import { useRef } from "react";
 interface InfiniteScrollNftWindowsProps {
   swr: any,
   limit: number,
+  pattern?: boolean
 }
 
-export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> = ({ swr, limit }) => {
+export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> = ({ swr, limit, pattern=true }) => {
 
   const theme = useTheme();
   const xs = useMediaQuery(theme.breakpoints.only('xs'));
@@ -86,12 +87,12 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
         {
           ({ items, next, total }) => items.map((nft: Nft, i) => <>
             <Box
-              key={nft.id}
+              key={nft?.id}
               sx={{
                 position: 'relative',
                 display: 'flex',
-                gridColumn: isDoubleSize(i, next) ? `span 2` : `auto`,
-                gridRow: isDoubleSize(i, next) ? `span 2` : `auto`,
+                gridColumn: pattern && isDoubleSize(i, next) ? `span 2` : `auto`,
+                gridRow: pattern && isDoubleSize(i, next) ? `span 2` : `auto`,
               }}
             >
               {/* Responsive skeleton */}
@@ -118,7 +119,7 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
                   zIndex: 1,
                   width: `100%`,
                 }}>
-                <NftWindow nft={nft} key={nft.id} />
+                {nft && <NftWindow nft={nft} key={nft.id} />}
               </Box>
             </Box>
           </>)

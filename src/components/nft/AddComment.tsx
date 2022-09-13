@@ -1,5 +1,5 @@
-import { Typography, Box, Tooltip, Button, TextareaAutosize } from "@mui/material";
-import { FC, useContext } from "react";
+import { Typography, Box, Tooltip, Button, TextareaAutosize, NoSsr, Popper, Popover, IconButton, ClickAwayListener } from "@mui/material";
+import { FC, useContext, useState } from "react";
 import { WalletContext } from "../../contexts/WalletContext";
 import { Formik, Form, Field } from "formik";
 import { AddCommentValidationSchema } from "../../validation/comments/addComments";
@@ -8,7 +8,18 @@ import { HodlComment } from "../../models/HodlComment";
 import { QuoteComment } from "./QuoteComment";
 import { NftContext } from "../../contexts/NftContext";
 import { green, red } from "@mui/material/colors";
+// import Picker from 'emoji-picker-react';
+import { EmojiEmotions, EmojiEmotionsOutlined } from "@mui/icons-material";
+import { id } from "date-fns/locale";
 
+import dynamic from "next/dynamic";
+
+const Picker = dynamic(
+    () => {
+        return import("emoji-picker-react");
+    },
+    { ssr: false }
+);
 
 interface AddCommentProps {
     tokenId?: number, // we always store the tokenId this comment was made against to allow us to link to it; give the token owner permission to delete, etc
@@ -36,6 +47,8 @@ export const AddComment: FC<AddCommentProps> = ({
     const { address } = useContext(WalletContext);
     const [addComment] = useAddComment();
     const { nft } = useContext(NftContext);
+
+    const [open, setOpen] = useState(false);
 
     const reset = () => {
         setCommentingOn({
@@ -80,7 +93,7 @@ export const AddComment: FC<AddCommentProps> = ({
                 commentingOn.setShowThread(true);
                 commentingOn.mutateList();
                 commentingOn.mutateCount();
-                
+
 
                 mutateCount();
                 // TODO: NEED TO MUTATE THE TOP LEVEL COUNT
@@ -93,6 +106,25 @@ export const AddComment: FC<AddCommentProps> = ({
         >
             {({ errors, values, setFieldValue, isValid, submitForm, }) => (
                 <>
+
+                    {/* <Popover
+                        id={id}
+                        open={open}
+                        anchorEl={anchorEl}
+                        onClose={handleClose}
+                        anchorReference="anchorEl"
+                        anchorOrigin={{
+                            vertical: 'top',
+                            horizontal: 'left',
+                        }}
+                        // transformOrigin={{
+                        //     vertical: 'bottom',
+                        //     horizontal: 'right',
+                        // }}
+                    > */}
+
+                    {/* </Popover> */}
+
                     {/* {JSON.stringify(errors)}
                                 {JSON.stringify(values)} */}
                     <Form>
@@ -108,6 +140,7 @@ export const AddComment: FC<AddCommentProps> = ({
                                             paddingTop: 2,
                                             marginTop: 2,
                                             borderTop: `1px solid #ddd`,
+                                            // position: 'relative',
 
                                             '#hodl-comments-add': {
                                                 border: 'none',
@@ -142,6 +175,7 @@ export const AddComment: FC<AddCommentProps> = ({
                                             id="hodl-comments-add"
                                         />
 
+                                        
                                     </Box>
                                 </Tooltip>
                                 <Box display="flex" justifyContent="right" alignItems="center" gap={2}>
@@ -151,6 +185,38 @@ export const AddComment: FC<AddCommentProps> = ({
                                             paddingLeft: 0.75,
                                             color: isValid ? green : red
                                         }}>{values?.comment?.length} / 400</Typography>
+                                        <ClickAwayListener onClickAway={() => setOpen(false)}>
+                                            <Box
+                                                // sx={{ position: 'absolute', right: 0, top: 20 }}
+                                            >
+
+                                                <Box
+                                                    sx={{
+                                                        position: 'absolute',
+                                                        bottom: 50,
+                                                        right: 0,
+                                                        display: open ? 'block' : 'none'
+                                                    }}
+                                                >
+                                                    <Picker
+                                                        preload={true}
+                                                        native={true}
+                                                        onEmojiClick={(e, emojiObject) => {
+
+                                                            setFieldValue('comment', newTagRef.current.value + emojiObject.emoji);
+                                                            newTagRef.current.value += emojiObject.emoji;
+                                                            setOpen(false);
+                                                        }}
+                                                    />
+                                                </Box>
+
+
+                                                <IconButton onClick={() => setOpen(old => !old)}>
+                                                    <EmojiEmotionsOutlined color="primary" />
+                                                </IconButton>
+
+                                            </Box>
+                                        </ClickAwayListener>
                                     <Tooltip title="ctrl + enter">
                                         <Button disabled={!isValid} type="submit">{commentingOn.object === "comment" ? "reply" : "comment"}</Button>
                                     </Tooltip>

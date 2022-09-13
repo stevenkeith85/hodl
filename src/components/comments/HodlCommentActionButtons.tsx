@@ -1,6 +1,6 @@
 import { Box, Tooltip, IconButton, Menu, MenuList, MenuItem, ListItemIcon, ListItemText } from "@mui/material";
 import { Likes } from "../Likes";
-import { DeleteOutlineSharp, Reply } from "@mui/icons-material";
+import { DeleteOutlineSharp, MoreHorizOutlined, MoreOutlined, Reply } from "@mui/icons-material";
 import { useDeleteComment } from "../../hooks/useComments";
 import React, { useContext } from "react";
 import { HodlCommentViewModel } from "../../models/HodlComment";
@@ -53,8 +53,9 @@ export const HodlCommentActionButtons: React.FC<HodlCommentActionButtonsProps> =
         setAnchorEl(null);
     };
 
-    return (<Box display="flex" alignItems="start" gap={1.5} marginX={1}>
-        {address &&
+    return (<Box display="flex" alignItems="center" gap={1} marginX={1}>
+        
+        {/* {address &&
             <Tooltip title="reply">
                 <Reply
                     sx={{
@@ -78,30 +79,14 @@ export const HodlCommentActionButtons: React.FC<HodlCommentActionButtonsProps> =
                     }
                     } />
             </Tooltip>
-        }
-        {address &&
-            <Likes
-                color="inherit"
-                sx={{
-                    cursor: 'pointer',
-                    color: theme => theme.palette.text.secondary,
-                    '&:hover': {
-                        color: theme => theme.palette.text.primary,
-                    }
-                }}
-                fontSize={14}
-                id={comment.id}
-                object="comment"
-                showCount={false}
-            />
-        }
-        {
+        } */}
+        {/* {
             address && canDeleteComment(comment) && (<>
                 <IconButton
                     onClick={handleClick}
                     size="small"
                     sx={{
-                        padding: 0
+                        padding: 0,
                     }}
                 >
                     <MoreVertIcon
@@ -150,6 +135,26 @@ export const HodlCommentActionButtons: React.FC<HodlCommentActionButtonsProps> =
                     </MenuList>
                 </Menu>
             </>)
+        } */}
+        
+        {address &&
+            <Likes
+                color="inherit"
+                sx={{
+                    cursor: 'pointer',
+                    color: theme => theme.palette.text.secondary,
+                    '&:hover': {
+                        color: theme => theme.palette.text.primary,
+                    }
+                }}
+                size={16}
+                fontSize={12}
+                id={comment.id}
+                object="comment"
+                showCount={true}
+                // flexDirection="column"
+            />
         }
+        
     </Box>)
 }

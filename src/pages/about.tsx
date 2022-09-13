@@ -103,13 +103,12 @@ export default function About({ address }) {
                         <li>Check the selling history of the token</li>
                         <li>Check for social validation (likes / comments / follows)</li>
                         <li>Do a google image search</li>
-                        <li>Check the privilege assigned to the token</li>
+                        <li>Check the license (if any) assigned to the asset attached to the token</li>
                     </ol>
                 </Box>
                 <Box marginY={4}>
-                    <Typography id="hodler-privilege" mb={2} variant="h2">Hodler privilege</Typography>
-                    <Typography mb={2} sx={{ span: { fontWeight: 600 } }}>When an author mints an NFT, they <span>must</span> specify what any future hodler can do with the attached asset. <Link href="/hodler-privilege">read more</Link></Typography>
-                    
+                    <Typography id="hodler-privilege" mb={2} variant="h2">Asset License</Typography>
+                    <Typography mb={2} sx={{ span: { fontWeight: 600 } }}>When an author mints an NFT, they <span>must</span> specify what any future hodler can do with the attached asset. <Link href="/asset-license">read more</Link></Typography>                   
                 </Box>
             </HodlBorderedBox>
         </Box >)

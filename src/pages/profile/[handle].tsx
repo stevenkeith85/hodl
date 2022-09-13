@@ -256,10 +256,10 @@ const Profile = ({
         </Box>
         <Box sx={{ marginBottom: 3 }}>
           <div hidden={value !== 0}>
-            <InfiniteScrollNftWindows swr={hodling} limit={limit} />
+            <InfiniteScrollNftWindows swr={hodling} limit={limit} pattern={false} />
           </div>
           <div hidden={value !== 1}>
-            <InfiniteScrollNftWindows swr={listed} limit={limit} />
+            <InfiniteScrollNftWindows swr={listed} limit={limit} pattern={false} />
           </div>
           <Box
             hidden={value !== 2}

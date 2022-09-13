@@ -8,10 +8,10 @@ import { uploadToIPFSValidationSchema } from "../../validation/uploadToIPFS";
 import { commercial, nonCommercial, token } from "../../lib/copyright";
 import { TextField } from 'formik-mui';
 import { grey } from "@mui/material/colors";
-import { HodlerPrivilegeTooltip } from "../tooltips/HodlerPrivilegeTooltip";
+import { AssetLicenseTooltip } from "../tooltips/HodlerPrivilegeTooltip";
 import { CommercialTooltip } from "../tooltips/CommercialTooltip";
 import { NonCommercialTooltip } from "../tooltips/NonCommercialTooltip";
-import { TokenOnlyTooltip } from "../tooltips/TokenOnlyTooltip";
+import { NoLicenseTooltip } from "../tooltips/TokenOnlyTooltip";
 import { HodlBorderedBox } from "../HodlBorderedBox";
 import { DescriptionTooltip } from "../tooltips/DescriptionTooltip";
 import { NameTooltip } from "../tooltips/NameTooltip";
@@ -99,9 +99,7 @@ export const UploadToIpfsAction: FC<MintProps> = ({
   }
   return (
     <Box
-      display="flex"
-      flexDirection={"column"}
-      justifyContent="center"
+      width="90%"
     >
       <Formik
         initialValues={{
@@ -119,7 +117,7 @@ export const UploadToIpfsAction: FC<MintProps> = ({
         {({ isSubmitting, values, setFieldValue, errors, dirty, isValid }) => (
           <>
             <Form>
-              <Stack spacing={3}>
+              <Stack spacing={2}>
                 <FormControl>
                   <Tooltip title={<NameTooltip />}
                     placement="right-start"
@@ -159,33 +157,34 @@ export const UploadToIpfsAction: FC<MintProps> = ({
                 </FormControl>
                 
                   <HodlBorderedBox>
+                          
                   <Tooltip
-                  title={<HodlerPrivilegeTooltip />}
+                  title={<AssetLicenseTooltip />}
                   placement="right-start"
                   arrow>
                     <FormControl disabled={stepComplete >= 3}>
 
-                      <FormLabel sx={{ marginBottom: 2 }}>Hodler Privilege</FormLabel>
+                      <FormLabel sx={{ marginBottom: 2 }}>Asset</FormLabel>
                       <RadioGroup
-                        name="hodler-privilege"
+                        name="asset-license"
                       >
                           <FormControlLabel
                             onClick={() => setFieldValue('privilege', token)}
                             value={token}
                             control={<Radio size="small" sx={{ paddingY: 1 }} />}
-                            label={<Typography color={grey[700]}>token only</Typography>}
+                            label={<Typography color={grey[700]}>No License</Typography>}
                           />
                           <FormControlLabel
                             onClick={() => setFieldValue('privilege', nonCommercial)}
                             value={nonCommercial}
                             control={<Radio size="small" sx={{ paddingY: 1 }} />}
-                            label={<Typography color={grey[700]}>non commercial</Typography>}
+                            label={<Typography color={grey[700]}>Non Commercial License</Typography>}
                           />
                           <FormControlLabel
                             onClick={() => setFieldValue('privilege', commercial)}
                             value={commercial}
                             control={<Radio size="small" sx={{ paddingY: 1 }} />}
-                            label={<Typography color={grey[700]}>commercial</Typography>}
+                            label={<Typography color={grey[700]}>Commercial License</Typography>}
                           />
                       </RadioGroup>
                     </FormControl>

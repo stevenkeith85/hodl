@@ -19,8 +19,8 @@ export const FollowButton : React.FC<FollowButtonProps> = ({ profileAddress, var
         follow, 
     ] = useFollow(profileAddress);
 
-    if (address === profileAddress) {
-        return null; // we 
+    if (!address || address === profileAddress) {
+        return null;
     }
     if (!profileUserSWR.data) {
         return null;

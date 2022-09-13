@@ -42,30 +42,18 @@ export default function License({ address }) {
                 <Box marginY={4}>
                     <Typography
                         sx={{
-                            // fontSize: 18,
                             span: {
                                 fontWeight: 600
                             }
                         }}
                         mb={1}
                     >
-                        This is a license agreement between
-                        the Token Author
+                        This is a license agreement between the Token Author
                         and the Token Hodler that explains how the Token Hodler
                         can use any assets attached to a token they hodl; such as photos, illustrations, videos and music;
                         that they license from the Token Author.
                     </Typography>
-                    <Typography
-                        sx={{
-                            // fontSize: 18,
-                            span: {
-                                fontWeight: 600
-                            }
-                        }}
-                        mb={1}
-                    >
-                        The Token Author must hold the intellectual property rights of the attached asset(s). Plageurism is not tolerated.
-                    </Typography>
+
 
                     <Typography
                         sx={{
@@ -77,6 +65,16 @@ export default function License({ address }) {
                         mb={1}
                     >
                         By minting or trading tokens on Hodl My Moon, you accept the terms of this agreement.
+                    </Typography>
+                </Box>
+                <Box marginY={4}>
+                    <Typography
+                        sx={{
+                            fontWeight: 600
+                        }}
+                        mb={1}
+                    >
+                        The Token Author must hold the intellectual property rights of the attached asset(s).
                     </Typography>
                 </Box>
                 <Box marginY={4}>
@@ -124,7 +122,7 @@ export default function License({ address }) {
                                 fontWeight: 600
                             }
                         }}
-                    marginY={1}
+                        marginY={1}
                     >
                         <span>Commercial</span> means something is primarily intended for or directed toward commercial advantage or monetary compensation.
                     </Typography>
@@ -135,7 +133,7 @@ export default function License({ address }) {
                                 fontWeight: 600
                             }
                         }}
-                    marginY={1}
+                        marginY={1}
                     >
                         <span>Non Commercial</span> means something is not primarily intended for, or directed towards, commercial advantage or monetary compensation.
                     </Typography>
@@ -146,7 +144,7 @@ export default function License({ address }) {
                                 fontWeight: 600
                             }
                         }}
-                    marginY={1}
+                        marginY={1}
                     >
                         A <span>Non Commercial</span> license indicates that the Token Author primarily intends the asset to be used in a non commercial manner.
                     </Typography>
@@ -191,7 +189,7 @@ export default function License({ address }) {
                     >
                         When the token is transferred, the license moves with the token.
                         That is, previous Token Hodlers do not retain a license.
-                        Only the current hodler of a Token is granted a license.
+                        Only the current hodler of a token is granted a license.
                     </Typography>
                 </Box>
 
@@ -215,7 +213,7 @@ export default function License({ address }) {
                                 fontWeight: 600
                             }
                         }}
-                    marginY={1}
+                        marginY={1}
                     >
                         A Token Hodler can use the asset in any way that is not restricted (see Restricted Uses below)
                     </Typography>
@@ -226,7 +224,7 @@ export default function License({ address }) {
                                 fontWeight: 600
                             }
                         }}
-                    marginY={1}
+                        marginY={1}
                     >
                         Subject to those restrictions and the rest of the terms of this agreement, the rights granted to a Token Hodler by the Token Author are:
                     </Typography>
@@ -304,7 +302,7 @@ export default function License({ address }) {
                                 fontWeight: 600
                             }
                         }}
-                        // marginY={4}
+                    // marginY={4}
                     >
                         In addition to the above, the following applies to Music assets:
                     </Typography>
@@ -342,7 +340,7 @@ export default function License({ address }) {
                                 fontWeight: 600
                             }
                         }}
-                        // marginY={4}
+                    // marginY={4}
                     >
                         <ul>
                             <li>websites</li>
@@ -363,7 +361,7 @@ export default function License({ address }) {
                                 fontWeight: 600
                             }
                         }}
-                        // marginY={4}
+                    // marginY={4}
                     >
                         Ensure you read the Restricted Uses section below for exceptions.
                     </Typography>
@@ -444,7 +442,127 @@ export default function License({ address }) {
                         The Token Hodler may not use the asset in a political campaign without obtaining explicit consent from the Token Author.
                     </Typography>
                 </Box>
-
+                <Box id="intellectual-property" marginY={4}>
+                    <Typography
+                        variant="h2"
+                        sx={{
+                            // fontSize: 18,
+                            span: {
+                                fontWeight: 600
+                            }
+                        }}
+                        marginY={1}
+                    >
+                        5. Intellectual Property</Typography>
+                    <Typography
+                        sx={{
+                            // fontSize: 18,
+                            span: {
+                                fontWeight: 600
+                            }
+                        }}
+                        marginY={1}
+                    >
+                        The Token Author must own the intellectual property of the attached asset. Licensing the use of their asset to the Token Hodler does not transfer
+                        the intellectual property of the asset.
+                    </Typography>
+                </Box>
+                <Box id="termination" marginY={4}>
+                    <Typography
+                        variant="h2"
+                        sx={{
+                            // fontSize: 18,
+                            span: {
+                                fontWeight: 600
+                            }
+                        }}
+                        marginY={1}
+                    >
+                        6. Termination</Typography>
+                    <Typography
+                        sx={{
+                            // fontSize: 18,
+                            span: {
+                                fontWeight: 600
+                            }
+                        }}
+                        marginY={1}
+                    >
+                        This license agreemnent is only in effect for the Token Hodler whilst they hodl the token.
+                        <ul>
+                            <li>If the token is transferred, the license moves with the token; and the ex-hodler of the token should cease their usage of the attached asset. </li>
+                            <li>If the token is burned the license is null and void.</li>
+                        </ul>
+                    </Typography>
+                </Box>
+                <Box id="Indemnification" marginY={4}>
+                    <Typography
+                        variant="h2"
+                        sx={{
+                            // fontSize: 18,
+                            span: {
+                                fontWeight: 600
+                            }
+                        }}
+                        marginY={1}
+                    >
+                        7. Indemnification</Typography>
+                    <Typography
+                        sx={{
+                            // fontSize: 18,
+                            span: {
+                                fontWeight: 600
+                            }
+                        }}
+                        marginY={1}
+                    >
+                        The Token Hodler (past and present),
+                        and the Token Author agree to defend, indemnity and hold harmless Hodl My Moon (the brand), Pony Powered Limited (the company), its staff and directors from all damages, liabilities and expenses
+                        including reasonable legal costs including attorney fees) arising out of or in connection with any breach or alleged breach by you (or anyone acting on your behalf) of any of the terms of this agreement.
+                    </Typography>
+                </Box>
+                <Box id="General Provisions" marginY={4}>
+                    <Typography
+                        variant="h2"
+                        sx={{
+                            // fontSize: 18,
+                            span: {
+                                fontWeight: 600
+                            }
+                        }}
+                        marginY={1}
+                    >
+                        8. General Provisions</Typography>
+                    <Typography
+                        sx={{
+                            // fontSize: 18,
+                            span: {
+                                fontWeight: 600
+                            }
+                        }}
+                        marginY={1}
+                    >
+                        
+                            <span>Hodl My Moon Fair Usage</span> - The Token Author grants Hodl My Moon a commercial license for the asset. Usage will be limited to activities concerned with Hodl My Moon. (the website, apps, etc)
+                            
+                        
+                    </Typography>
+                    <Typography
+                        sx={{
+                            // fontSize: 18,
+                            span: {
+                                fontWeight: 600
+                            }
+                        }}
+                        marginY={1}
+                    >
+                        
+                            
+                            <span>Taxes</span> - The Token Author and Token Hodler agree to pay and be responsible for any and all taxes
+                                imposed by any jurisdiction as the result of trading tokens or crypto assets.
+                        
+                    </Typography>
+                </Box>
                 <Box id="glossary" marginY={4}>
                     <Typography
                         variant="h2"
@@ -456,7 +574,7 @@ export default function License({ address }) {
                         }}
                         marginY={1}
                     >
-                        5. Glossary of Crypto Terms</Typography>
+                        9. Glossary of Crypto Terms</Typography>
                     <Typography
                         sx={{
                             // fontSize: 18,

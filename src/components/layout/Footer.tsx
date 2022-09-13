@@ -66,7 +66,7 @@ const Footer = ({ showFooter = true }) => {
                                         fontWeight: 600,
                                         marginBottom: 0.5,
                                     }}>
-                                    hodl
+                                    hodl my moon
                                 </Typography>
                                 <HodlLink href="/contact">contact</HodlLink>
                                 
@@ -79,9 +79,8 @@ const Footer = ({ showFooter = true }) => {
                                     }}>
                                     learn
                                 </Typography>
-                                <HodlLink href="/about">about hodl</HodlLink>
-                                <HodlLink href="/hodler-privilege">hodler privilege</HodlLink>
-                                <HodlLink href="/legal/license">asset license</HodlLink>
+                                <HodlLink href="/about">about</HodlLink>
+                                <HodlLink href="/asset-license">asset license</HodlLink>
                             </Stack>
                             <Stack spacing={0.5}>
                                 <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>tokens</Typography>

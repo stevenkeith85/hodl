@@ -1,9 +1,9 @@
 import { Typography, Tooltip, Chip, Box } from "@mui/material";
 import { token, nonCommercial, commercial } from "../../lib/copyright";
 import { CommercialText } from "../tooltips/CommercialTooltip";
-import { HodlerPrivilegeTooltip } from "../tooltips/HodlerPrivilegeTooltip";
+import { AssetLicenseTooltip } from "../tooltips/HodlerPrivilegeTooltip";
 import { NonCommercialText } from "../tooltips/NonCommercialTooltip";
-import { TokenOnlyText } from "../tooltips/TokenOnlyTooltip";
+import { NoLicenseText } from "../tooltips/TokenOnlyTooltip";
 
 export const HodlerPrivilege = ({ nft }) => {
     if (!nft.privilege) {
@@ -21,10 +21,10 @@ export const HodlerPrivilege = ({ nft }) => {
             <Box display="flex" justifyContent="space-between">
                 <Typography variant="h2" sx={{ marginBottom: 2 }}>
                     <Tooltip
-                        title={<HodlerPrivilegeTooltip />}
+                        title={<AssetLicenseTooltip />}
                         placement="right-start"
                         arrow>
-                        <span>Privilege</span></Tooltip>
+                        <span>Asset License</span></Tooltip>
                 </Typography>
                 <Box>
                     {nft.privilege === token && <>
@@ -56,7 +56,7 @@ export const HodlerPrivilege = ({ nft }) => {
             <Box>
                 <Box>
                     {nft.privilege === token &&
-                        <TokenOnlyText />
+                        <NoLicenseText />
 
                     }
                     {nft.privilege === nonCommercial &&

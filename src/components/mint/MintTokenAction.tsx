@@ -70,7 +70,7 @@ export const MintTokenAction: FC<MintProps> = ({
        <SuccessModal
         modalOpen={successModalOpen}
         setModalOpen={setSuccessModalOpen}
-        message="Once your token has been confirmed on the blockchain, we'll send you a notification and it will be added to HodlMyMoon. This should not take long"
+        message="Once your token has been confirmed on the blockchain, it will be added to HodlMyMoon and we'll send you a notification"
       />
     <Box
       display="flex"

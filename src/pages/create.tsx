@@ -114,20 +114,16 @@ const Mint = ({ address }) => {
           <Grid
             container
           >
-            <Grid item xs={12} md={6}
-              sx={{
-                height: `100%`,
-                display: 'flex',
-                flexDirection: 'column',
-                paddingTop: 1,
-                paddingBottom: {
-                  xs: 4,
-                  md: 0
-                },
-                paddingRight: {
-                  md: 1
-                }
-              }}>
+            <Grid item xs={12} md={6}>
+                <Box
+                sx={{
+                  height: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+
+                }}
+                >
               {activeStep === 0 &&
                 <SelectAssetAction
                   formData={formData}
@@ -184,7 +180,7 @@ const Mint = ({ address }) => {
                   stepComplete={stepComplete}
                   setStepComplete={setStepComplete} />
               }
-
+            </Box>
             </Grid>
             <Grid
               item

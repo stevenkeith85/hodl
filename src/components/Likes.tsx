@@ -16,6 +16,7 @@ export interface LikesProps {
     prefetchedLikeCount?: number | null;
     likeTooltip?: string;
     unlikeTooltip?: string;
+    flexDirection?: "row" | "column";
     sx?: any;
 }
 
@@ -29,6 +30,7 @@ export const Likes: FC<LikesProps> = ({
     prefetchedLikeCount = null,
     likeTooltip = "like",
     unlikeTooltip = "unlike",
+    flexDirection="row",
     sx = {}
 }) => {
     const {swr: likeCount} = useLikeCount(id, object, prefetchedLikeCount);
@@ -38,6 +40,7 @@ export const Likes: FC<LikesProps> = ({
         <>
             <Box
                 display="flex"
+                flexDirection={flexDirection}
                 gap={0.5}
                 sx={{
                     color,

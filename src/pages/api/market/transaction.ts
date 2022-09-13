@@ -50,9 +50,12 @@ route.post(async (req, res: NextApiResponse) => {
   // add to market, send notification, etc
   const user = await client.hmget<User>(`user:${req.address}`, 'nonce');
   
-  if (tx.nonce  <= user.nonce) {
+  console.log("market/transaction - user nonce is ", user?.nonce);
+  console.log("market/transaction - tx nonce is ", tx?.nonce);
+
+  if (tx.nonce  < user.nonce) {
     console.log(`queue/transaction - tx.nonce / user.nonce`, tx.nonce, user.nonce);
-    console.log(`queue/transaction - user trying to process a transaction that is the same or older than the last one we've sent for processing`);
+    console.log(`queue/transaction - user trying to process a transaction that is older than the last one we've sent for processing`);
     return res.status(400).json({ message: 'bad request' });
   }
 

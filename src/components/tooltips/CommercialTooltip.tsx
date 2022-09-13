@@ -7,7 +7,7 @@ export const CommercialText = () => (<>
     </Typography>
     <Typography component="ul" sx={{ paddingY: 1, paddingX: 2, margin: 1 }}>
       <Typography component="li" mb={2}>own the token</Typography>
-      <Typography component="li">be granted a commercial <Link href="/legal/license">license</Link> by the token author for the attached asset</Typography>
+      <Typography component="li">be granted a commercial <Link href="/asset-license">license</Link> by the token author for the attached asset</Typography>
     </Typography>
     </>)
 
