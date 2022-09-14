@@ -16,6 +16,9 @@ import { MAX_TAGS_PER_TOKEN } from "../../../lib/utils";
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
 
+// TODO: Use setnx etc where possible, and return the value
+// We can use that information in the caller to early abort things if need be
+// Useful for idempotence etc
 export const addTokenToTag = async (tag, token) => {
   // Just checking this here, in case we call this from another endpoint that doesn't properly validate input
   const isValid = await AddTagValidationSchema.isValid({tag, token});
@@ -29,7 +32,10 @@ export const addTokenToTag = async (tag, token) => {
     return 0;
   }
 
-  const tagTimeSet = await client.zadd(`tag:${tag}`, {score: Date.now(), member: token});
+  const tagTimeSet = await client.zadd(`tag:${tag}`, {
+    score: Date.now(), 
+    member: token
+  });
   
   // update our top tags list
   const tagCount = await client.zincrby('rankings:tag:count', 1, tag);

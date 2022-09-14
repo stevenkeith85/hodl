@@ -122,7 +122,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                 <Box
                     display="flex"
                     alignItems="start"
-                    gap={1.75}
+                    gap={2}
                     sx={{
                         // background: 'green',
                         width: `100%`
@@ -179,19 +179,6 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                                 color={color}
                                                 fontSize="16px"
                                             />
-                                            {/* <Typography
-                                                sx={{
-                                                    fontWeight: 600,
-                                                    color: theme => theme.palette.text.secondary
-                                                }}>
-                                                ·
-                                            </Typography> */}
-                                            {/* <Typography
-                                                sx={{
-                                                    color: theme => theme.palette.text.secondary
-                                                }}>
-                                                {comment.timestamp && formatDistanceStrict(new Date(comment.timestamp), new Date(), { addSuffix: false })}
-                                            </Typography> */}
                                         </Box>
                                         <Box
                                             sx={{
@@ -216,7 +203,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                                                 '&:hover': {
                                                                     color: theme => theme.palette.text.primary,
                                                                 },
-                                                                fontSize: `14px`
+                                                                fontSize: 12
                                                             }}
                                                         />
                                                     </IconButton>
@@ -270,18 +257,21 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                             />
                                         </Box>
                                     </Box>
-                                    <Typography sx={{ whiteSpace: 'pre-line', marginBottom: 0 }}>{comment.comment}</Typography>
+                                    <Typography sx={{ whiteSpace: 'pre-line', marginTop: 0.5, marginBottom: 1 }}>{comment.comment}</Typography>
                                 </Box>
                                 <Box
                                     sx={{
                                         display: 'flex',
                                         alignItems: 'center',
                                         gap: 2,
-                                        marginY: 0.5
+                                        marginTop: 0,
+                                        marginBottom: 1
+                                        
                                     }}>
                                     <Typography
                                         sx={{
-                                            color: theme => theme.palette.text.secondary
+                                            color: theme => theme.palette.text.secondary,
+                                            fontSize: 12
                                         }}>
                                         {comment.timestamp && formatDistanceStrict(new Date(comment.timestamp), new Date(), { addSuffix: true })}
                                     </Typography>
@@ -293,7 +283,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                                     '&:hover': {
                                                         color: theme => theme.palette.text.primary,
                                                     },
-                                                    fontSize: `14px`
+                                                    fontSize: 12
                                                 }}
                                                 onClick={() => {
                                                     setCommentingOn({
@@ -338,40 +328,28 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                 >
                                     {showThread ?
 
-                                        <ExpandLess sx={{ fontSize: 14 }} /> :
-                                        <ExpandMore sx={{ fontSize: 14 }} />
+                                        <ExpandLess sx={{ fontSize: 12 }} /> :
+                                        <ExpandMore sx={{ fontSize: 12 }} />
                                     }
                                     {
                                         countSWR.data && showThread && !swr.error && !swr.data ?
                                             <Typography
-                                            // sx={{
-                                            //     color: theme => theme.palette.text.secondary,
-                                            //     cursor: 'pointer'
-                                            // }}
+                                            sx={{
+                                                fontSize: 12
+                                            }}
                                             >
                                                 loading
                                             </Typography> :
                                             <Typography
-                                            // sx={{
-                                            //     color: theme => theme.palette.text.secondary,
-                                            //     cursor: 'pointer',
-                                            //     '&:hover': {
-                                            //         color: theme => theme.palette.text.primary
-                                            //     }
-                                            // }}
+                                            sx={{
+                                                fontSize: 12
+                                            }}
 
                                             >
                                                 {level < 4 ? pluralize(countSWR.data, 'reply') : 'thread'}
                                             </Typography>
                                     }
-                                    {/* <Typography
-                                        sx={{
-                                            color: theme => theme.palette.text.secondary
-                                        }}>
-                                        {pluralize(likesCount?.data, 'like')}
-                                    </Typography> */}
                                 </Box>}
-
                             </Box>
                         </Box>
                         <Replies

@@ -24,9 +24,6 @@ export const DetailPageImage = ({ token }) => {
                 >
                     {assetType(token) === AssetTypes.Gif && <HodlVideo
                         sx={{
-                            // pointerEvents: 'none',
-                            // justifyContent: 'center',
-                            // alignItems: 'center',
                             video: {
                                 height: '80vh',
                                 width: '80vw',
@@ -34,7 +31,6 @@ export const DetailPageImage = ({ token }) => {
                             }
                         }}
                         cid={token?.image}
-                        // transformations={token?.filter} 
                         gif={true}
                     />}
                     {(assetType(token) === AssetTypes.Video || assetType(token) === AssetTypes.Audio) && <HodlVideo

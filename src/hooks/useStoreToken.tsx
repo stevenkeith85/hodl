@@ -1,30 +1,30 @@
-import axios from 'axios'
+// import axios from 'axios'
 
-export const useStoreToken = () => {
+// export const useStoreToken = () => {
 
-  const store = async (tokenId, mimeType, filter, aspectRatio) => {
-    try {
-      const r = await axios.post(
-        '/api/create/store',
-        {
-          tokenId,
-          mimeType,
-          filter,
-          aspectRatio
-        },
-        {
-          headers: {
-            'Accept': 'application/json',
-          },
-        }
-      );
+//   const store = async (tokenId, mimeType, filter, aspectRatio) => {
+//     try {
+//       const r = await axios.post(
+//         '/api/create/store',
+//         {
+//           tokenId,
+//           mimeType,
+//           filter,
+//           aspectRatio
+//         },
+//         {
+//           headers: {
+//             'Accept': 'application/json',
+//           },
+//         }
+//       );
 
-      return true;
+//       return true;
 
-    } catch (error) {
-      return false;
-    }
-  }
+//     } catch (error) {
+//       return false;
+//     }
+//   }
 
-  return [store];
-}
+//   return [store];
+// }

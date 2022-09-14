@@ -17,6 +17,8 @@ import NFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import axios from 'axios';
 import { Token } from "../../../models/Token";
 import { addTokenToTag } from "../tags/add";
+import { format, fromUnixTime } from "date-fns";
+import { tokenMinted } from "../../../lib/transactions/tokenMinted";
 
 const route = apiRoute();
 const client = Redis.fromEnv()
@@ -177,86 +179,6 @@ const tokenListed = async (log): Promise<boolean> => {
     return true;
 }
 
-
-// event Transfer(address from, address to, uint256 tokenId)
-const tokenMinted = async (log): Promise<boolean> => {
-    console.log(`${log.name} - processing log`);
-
-    const { from, to, tokenId } = log.args;
-
-    if (from !== ethers.constants.AddressZero) { // not minted!
-        return true; // we've sort of succeeded; as there's nothing more to do. We should really stop this getting so far to begin with
-    }
-
-    // const tokenId = tokenIdBN.toNumber();
-
-    const provider = getProvider();
-    const contract = new ethers.Contract(nftaddress, NFT.abi, provider);
-
-    const metadata: string = await contract.tokenURI(tokenId);
-
-    if (!metadata) {
-        return true; // cannot get the metadata. something has gone wrong. returning true, as there's no chance we can retry this
-    }
-
-    const r = await axios.get(
-        ipfsUriToGatewayUrl(metadata),
-        {
-            headers: getInfuraIPFSAuth()
-        });
-
-    const { name, description, privilege, image } = await r.data;
-
-    // NB: We just store the cid as its simpler to construct the relevant urls from it
-    const token: Token = {
-        id: tokenId.toNumber(),
-        name,
-        description,
-        image: ipfsUriToCid(image),
-        metadata: ipfsUriToCid(metadata),
-        mimeType: "image/jpg", // TODO: We either store this before the mint, or we store it in the tokens metadata. (leaning towards storing in the metadata)
-        aspectRatio: "1:1", // TODO: We either store this before the mint, or we store it in the tokens metadata. (leaning towards storing in the metadata)
-        privilege,
-        creator: to
-    };
-
-    const timestamp = Date.now();
-
-    // store token, and add to sorted set with timestamp
-    await client.set(`token:${token.id}`, token);
-
-    await client.zadd(
-        `tokens`,
-        {
-            score: timestamp,
-            member: token.id
-        }
-    );
-
-    // extract tags
-    const tags = [...description.matchAll(TAG_PATTERN)].map(arr => arr[1])
-
-    // Add tags. (NB: only the first 6 will be added)
-    for (const tag of tags) {
-        await addTokenToTag(tag, token.id);
-    }
-
-    // getToken.delete(id);
-
-    // TODO
-    const notification: HodlAction = {
-        subject: to,
-        action: ActionTypes.Added,
-        object: "token",
-        objectId: token.id
-    };
-
-    const success = addAction(notification);
-
-
-
-}
-
 // event TokenDelisted(
 //     address indexed seller, 
 //     uint256 indexed tokenId
@@ -306,6 +228,30 @@ const tokenDelisted = async (log): Promise<boolean> => {
 }
 
 
+const transactionDetails = async (hash,
+    provider: ethers.providers.BaseProvider, 
+    txReceipt: ethers.providers.TransactionReceipt,
+    tx: ethers.providers.TransactionResponse) => {
+    console.log('hash', hash);
+    console.log('status', txReceipt.byzantium && txReceipt.status === 1 ? 'success' : 'reverted');
+    console.log('block', txReceipt.blockNumber);
+    console.log('confirmations', txReceipt.confirmations);
+    
+    console.log('from', txReceipt.from);
+    console.log('to', txReceipt.to);
+    
+    console.log('value', ethers.utils.formatEther(tx.value));
+    console.log('total gas fee', ethers.utils.formatEther(txReceipt.gasUsed.mul(txReceipt.effectiveGasPrice)));
+
+    console.log('total cost to sender', ethers.utils.formatEther(txReceipt.gasUsed.mul(txReceipt.effectiveGasPrice).add(tx.value)));
+    
+    console.log('transaction nonce', tx.nonce);
+
+    const block = await provider.getBlock(tx.blockHash);
+    console.log('timestamp', fromUnixTime(block.timestamp));
+
+}
+
 // TODO: We should delay in calling this to give the blockchain a chance to confirm the transaction first.
 // TODO: Determine how long 5 confirmations will take. (infura suggests every 15 seconds on so)
 
@@ -314,24 +260,35 @@ const tokenDelisted = async (log): Promise<boolean> => {
 
 // TODO: We need to lock this down as much as possible. ideally only the queue should be able to call it
 
-
+// This route should process transactions added to our queue.
+// We want things to be idempotent, and to always leave the system in a good state.
+// Even though we will only send the correct transactions, that would not
+// stop a user sending one directly to the queue (at the moment); so we need to safeguard against that
+// perhaps we can do something to ensure only our 'add to queue' endpoint can call this
+//
 // have I processed this transaction before?
 // did i manage to update the market
 route.post(async (req, res: NextApiResponse) => {
-    const { hash } = req.body;
-
     console.log('TRANSACTION HANDLER CALLED');
+
+    const { hash } = req.body;
 
     if (!req.address) {
         console.log(`blockchain/transaction - endpoint called without credentials`);
         return res.status(503).json({ message: 'unable to process the transaction' });
     }
 
-    const provider = await getProvider();
+    const provider: ethers.providers.BaseProvider = await getProvider();
+
+    
 
     // We can't wait very long at all, as this is a serverless function. 
     // There's no point in failing the request if we ARE able to wait though.
-    const txReceipt: ethers.providers.TransactionReceipt = await provider.waitForTransaction(hash, NUMBER_OF_CONFIRMATIONS_TO_WAIT_FOR, TRANSACTION_TIMEOUT);
+    const txReceipt: ethers.providers.TransactionReceipt = await provider.waitForTransaction(
+        hash, 
+        NUMBER_OF_CONFIRMATIONS_TO_WAIT_FOR, 
+        TRANSACTION_TIMEOUT
+    );
 
     if (txReceipt === null) {
         // TODO: We should (probably) increase the retry interval on each failure.
@@ -340,13 +297,19 @@ route.post(async (req, res: NextApiResponse) => {
         return res.status(503);
     }
 
+    if (txReceipt.byzantium && txReceipt.status === 0) {
+        console.log('blockchain/transaction - The transaction was reverted');
+        return res.status(503);
+    }
+
     if (txReceipt.from !== req.address) {
         console.log(`blockchain/transaction - endpoint called with credentials that don't match the transaction`);
         return res.status(400).json({ message: 'bad request' });
     }
 
-    if (txReceipt.to !== nftmarketaddress && txReceipt.to !== nftaddress) {
-        console.log(`blockchain/transaction - endpoint called with a transaction that isn't for our contract`);
+    if (txReceipt.to !== nftmarketaddress &&
+        txReceipt.to !== nftaddress) {
+        console.log(`blockchain/transaction - endpoint called with a transaction that isn't for our contracts`);
         return res.status(400).json({ message: 'bad request' });
     }
 
@@ -355,18 +318,24 @@ route.post(async (req, res: NextApiResponse) => {
         return res.status(503);
     }
 
+    const tx: ethers.providers.TransactionResponse = await provider.getTransaction(hash);
+
+    console.log('blockchain/transaction - transaction details');
+    await transactionDetails(hash, provider, txReceipt, tx);
+
+    // TODO: Review / improve the dispatcher code
     let contract = null;
     if (txReceipt.to === nftmarketaddress) {
-         contract = new ethers.Contract(nftmarketaddress, Market.abi, provider);
+        contract = new ethers.Contract(nftmarketaddress, Market.abi, provider);
     } else if (txReceipt.to === nftaddress) {
-        contract = new ethers.Contract(nftaddress, NFT.abi, provider);        
+        contract = new ethers.Contract(nftaddress, NFT.abi, provider);
     }
-    
+
     const log: LogDescription = contract.interface.parseLog(txReceipt.logs?.[0]);
 
     let success = false;
 
-    console.log('blockchain/transaction - log name === ', log.name)
+    // TODO: Split these into their own files
     if (log.name === 'TokenListed') {
         success = await tokenListed(log);
     } else if (log.name === 'TokenDelisted') {
@@ -374,7 +343,7 @@ route.post(async (req, res: NextApiResponse) => {
     } else if (log.name === 'TokenBought') {
         success = await tokenBought(log);
     } else if (log.name === 'Transfer') {
-        success = await tokenMinted(log);
+        success = await tokenMinted(hash, provider, txReceipt, tx);
     }
 
     if (success) {

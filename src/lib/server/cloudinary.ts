@@ -81,6 +81,19 @@ export const removeFromCloudinary = (req, res): Promise<any> => {
     });
 }
 
+export const removePublicIdFromCloudinary = (public_id: string): Promise<any> => {
+    return new Promise((resolve, reject) => {
+        cloudinary.v2.uploader.destroy(public_id, (error: any, result: any)  => { 
+            if (error) {
+                reject(error);
+            } else {
+                resolve(result);
+            }
+          })
+    });
+}
+
+
 export const renameOnCloudinary = (from, to, isVideo) : Promise<any> => {
     return new Promise((resolve, reject) => {
         cloudinary.v2.uploader.rename(

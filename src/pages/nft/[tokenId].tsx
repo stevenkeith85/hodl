@@ -18,7 +18,7 @@ import { PriceHistoryGraph } from "../../components/nft/PriceHistory";
 import { Likes } from "../../components/Likes";
 import Head from "next/head";
 import { getPriceHistory } from "../api/token-bought/[tokenId]";
-import { HodlerPrivilege } from "../../components/nft/HodlerPrivilege";
+import { AssetLicense } from "../../components/nft/AssetLicense";
 import { getCommentsForToken } from "../api/comments";
 import { HodlCommentsBox } from "../../components/comments/HodlCommentsBox";
 import { Comments } from "../../components/comments/Comments";
@@ -225,7 +225,7 @@ const NftDetail = ({
                   <NftActionButtons nft={nft} />
                 </Box>
                 <PriceHistoryGraph fallbackData={priceHistory} nft={nft} />
-                <HodlerPrivilege nft={nft} />
+                <AssetLicense nft={nft} />
                 <IpfsCard nft={nft} />
               </Box>
             </div>

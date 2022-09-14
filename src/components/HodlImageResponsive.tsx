@@ -15,7 +15,8 @@ export const HodlImageResponsive = ({
     round = false,
     onLoad = null,
     objectFit = 'scale-down',
-    objectPosition = 'center'
+    objectPosition = 'center',
+    zoom=null
 }) => {
 
     const makeCloudinaryUrl = (width) => {
@@ -27,6 +28,9 @@ export const HodlImageResponsive = ({
             cloudinaryUrl = `https://res.cloudinary.com/dyobirj7r/image/upload/q_auto,c_fit,w_${width}`;
         }
 
+        if (zoom) {
+            cloudinaryUrl = `${cloudinaryUrl},${zoom}`;
+        }
         if (effect) {
             cloudinaryUrl = `${cloudinaryUrl},${effect}`;
         }

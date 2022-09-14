@@ -29,10 +29,10 @@ const MintTokenAction = dynamic(
   () => import('../components/mint/MintTokenAction').then((module) => module.MintTokenAction),
   { loading: () => <HodlLoadingSpinner /> }
 );
-const AddToHodlAction = dynamic(
-  () => import('../components/mint/AddToHodlAction').then((module) => module.AddToHodlAction),
-  { loading: () => <HodlLoadingSpinner /> }
-);
+// const AddToHodlAction = dynamic(
+//   () => import('../components/mint/AddToHodlAction').then((module) => module.AddToHodlAction),
+//   { loading: () => <HodlLoadingSpinner /> }
+// );
 
 export async function getServerSideProps({ req, res }) {
   await authenticate(req, res);
@@ -57,7 +57,7 @@ const Mint = ({ address }) => {
     filter: null,
     name: null,
     description: null,
-    privilege: null,
+    license: null,
     metadataUrl: null,
     tokenId: null,
   })
@@ -169,15 +169,6 @@ const Mint = ({ address }) => {
                   loading={loading}
                   stepComplete={stepComplete}
                   setLoading={setLoading}
-                  setStepComplete={setStepComplete} />
-              }
-              {activeStep === 5 &&
-                <AddToHodlAction
-                  formData={formData}
-                  setFormData={setFormData}
-                  loading={loading}
-                  setLoading={setLoading}
-                  stepComplete={stepComplete}
                   setStepComplete={setStepComplete} />
               }
             </Box>

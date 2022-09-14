@@ -127,21 +127,20 @@ export const fetchNFT = async (id: number): Promise<Nft> => {
   }
 
   const result: Nft = {
-    id: token.id,
+    // id: token.id,
+    // creator: token.creator,
+    // metadata: token.metadata,
 
-    creator: token.creator,
-
-    name: token.name,
-    description: token.description,
-    privilege: token.privilege,
-
-    metadata: token.metadata,
-    image: token.image,
-    mimeType: token.mimeType,
+    // name: token.name,
+    // description: token.description,
+    // image: token.image,
 
     price,
     owner,
     forSale,
+
+    ...token
+    // properties: token.properties
   }
 
   return result;

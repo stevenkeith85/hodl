@@ -14,7 +14,10 @@ import { User } from "../../../models/User";
 const route = apiRoute();
 const client = Redis.fromEnv()
 
+// This route should decide if we add something to the queue
 route.post(async (req, res: NextApiResponse) => {
+  console.log('TRANSACTION QUEUER CALLED');
+
   if (!req.address) {
     return res.status(403).json({ message: "Not Authenticated" });
   }
@@ -50,8 +53,8 @@ route.post(async (req, res: NextApiResponse) => {
   // add to market, send notification, etc
   const user = await client.hmget<User>(`user:${req.address}`, 'nonce');
   
-  console.log("market/transaction - user nonce is ", user?.nonce);
-  console.log("market/transaction - tx nonce is ", tx?.nonce);
+  console.log("queue/transaction - user nonce is ", user?.nonce);
+  console.log("queue/transaction - tx nonce is ", tx?.nonce);
 
   if (tx.nonce  < user.nonce) {
     console.log(`queue/transaction - tx.nonce / user.nonce`, tx.nonce, user.nonce);

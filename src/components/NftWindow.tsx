@@ -142,7 +142,6 @@ export const NftWindow = ({ nft, aspectRatio = "1:1" }) => {
                             sizes="(min-width: 900px) 25vw, (min-width: 1200px) calc(1200px / 5 * 2), 50vw"
                             cid={nft?.image}
                             widths={[400, 800, 1000]}
-                            gravity="g_face"
                             objectFit="cover"
                         />
                     </>

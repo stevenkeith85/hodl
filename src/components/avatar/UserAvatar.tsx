@@ -21,7 +21,8 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({ user, size }) => {
                     sizes={size}
                     aspectRatio="1:1"
                     round={true}
-                    gravity="g_face"
+                    // gravity="g_face"
+                    // zoom="z_0.5"
                 />
         </Avatar>
     )

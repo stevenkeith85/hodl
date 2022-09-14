@@ -60,6 +60,8 @@ export const HodlFeed = ({ address, limit = 4 }) => {
                     </Box>
                 )
             }
+
+            
             <InfiniteScroll
                 swr={feed}
                 loadingIndicator={<HodlLoadingSpinner />}

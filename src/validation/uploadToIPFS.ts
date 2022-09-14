@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import { validAspectRatio, validFilter, validPrivilegeValue } from '../lib/utils';
+import { validAspectRatio, validFilter, validLicenseDeclaration } from '../lib/utils';
 
 export const uploadToIPFSValidationSchema = yup.object({
   name: yup
@@ -14,14 +14,14 @@ export const uploadToIPFSValidationSchema = yup.object({
     .min(1)
     .max(1000)
     .required(),
-  privilege: yup
+  license: yup
     .string()
     .ensure()
     .required()
     .test(
-      'isValidPrivilegeValue',
-      'Unsupported privilege declaration',
-      (value, context) => Boolean(value === null || validPrivilegeValue(value)),
+      'isValidLicenseValue',
+      'Unsupported license declaration',
+      (value, context) => Boolean(value === null || validLicenseDeclaration(value)),
     ),
   fileName: yup
     .string()

@@ -4,21 +4,10 @@
 // We will likely cache the MUTABLE data at some point thoughh
 // to minimise our blockchain calls (cost), speed things up (UX)
 
-export interface Token {
-    id: number;
+import { HodlMetadata } from "./Metadata";
 
-    creator: string;
-
-    name: string;
-    description: string;
-
-    metadata: string; // <cid>
-
-    privilege: string;
-
-    image: string; // <cid>  TODO - Rename image to asset. (This technically would be off-spec though as ERC721 uses 'image')
-    mimeType: string; // image might be a video. mimeType tells us what it actually is.
-    
-    filter?: "e_improve" | "e_art:athena" | "e_art:aurora" | "e_art:hairspray" | "e_grayscale"; // we apply the filter dynamically. TODO - We should PROBABLY transform the actual asset as upload time. (unless its very slow to do so)
-    aspectRatio?: "1:1" | "4:5" | "16:9"
+export interface Token extends HodlMetadata{
+    id: number; // This is the tokenId on the blockchain
+    creator: string; // This is the address that minted the token
+    metadata: string; // This is the tokenUri (the metadata url)
   };

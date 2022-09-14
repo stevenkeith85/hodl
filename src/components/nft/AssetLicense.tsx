@@ -5,8 +5,8 @@ import { AssetLicenseTooltip } from "../tooltips/HodlerPrivilegeTooltip";
 import { NonCommercialText } from "../tooltips/NonCommercialTooltip";
 import { NoLicenseText } from "../tooltips/TokenOnlyTooltip";
 
-export const HodlerPrivilege = ({ nft }) => {
-    if (!nft.privilege) {
+export const AssetLicense = ({ nft }) => {
+    if (!nft?.properties?.asset?.license) {
         return null;
     }
 
@@ -27,7 +27,7 @@ export const HodlerPrivilege = ({ nft }) => {
                         <span>Asset License</span></Tooltip>
                 </Typography>
                 <Box>
-                    {nft.privilege === token && <>
+                    {nft.properties.asset.license === token && <>
                         <Chip
                             label="Token Only"
                             color={nft.privilege === token ? "success" : "default"}
@@ -35,7 +35,7 @@ export const HodlerPrivilege = ({ nft }) => {
                         />
                     </>
                     }
-                    {nft.privilege === nonCommercial &&
+                    {nft.properties.asset.license === nonCommercial &&
                         <Chip
                             disabled={nft.privilege !== nonCommercial}
                             label="Non Commercial"
@@ -43,7 +43,7 @@ export const HodlerPrivilege = ({ nft }) => {
                             variant="outlined"
                         />
                     }
-                    {nft.privilege === commercial &&
+                    {nft.properties.asset.license === commercial &&
                         <Chip
                             disabled={nft.privilege !== commercial}
                             label="Commercial"
@@ -55,14 +55,14 @@ export const HodlerPrivilege = ({ nft }) => {
             </Box>
             <Box>
                 <Box>
-                    {nft.privilege === token &&
+                    {nft.properties.asset.license === token &&
                         <NoLicenseText />
 
                     }
-                    {nft.privilege === nonCommercial &&
+                    {nft.properties.asset.license === nonCommercial &&
                         <NonCommercialText />
                     }
-                    {nft.privilege === commercial &&
+                    {nft.properties.asset.license === commercial &&
                         <CommercialText />
                     }
                 </Box>

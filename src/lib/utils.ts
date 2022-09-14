@@ -6,8 +6,15 @@ import { commercial, nonCommercial, token } from "./copyright";
 export const TAG_PATTERN = /#([\d\w_]+)/g;
 export const MAX_TAGS_PER_TOKEN = 6;
 
-export const NUMBER_OF_CONFIRMATIONS_TO_WAIT_FOR = 1; // we only get one confirmation with our local node; so leave it at that for the moment
-export const TRANSACTION_TIMEOUT = 6000; // we will initially use the vercel plan that gives us 60 seconds to complete a serverless function. wait up to 10% of that.
+
+// We only get one confirmation with our local node;
+// In prod, we should set this higher. 
+// This post:
+// https://www.reddit.com/r/0xPolygon/comments/qm0td1/what_number_of_confirmations_is_considered_secure/
+// Suggests 10 confirmations is fairly secure and should take around 20 seconds, so we can 'guestimate' 2 seconds per confirmation
+// Given we are really just caching stuff, we could perhaps wait a little less time, maybe 5 confirmations
+export const NUMBER_OF_CONFIRMATIONS_TO_WAIT_FOR = 1; 
+export const TRANSACTION_TIMEOUT = 6000; // we will initially use the vercel plan that gives us 60 seconds to complete a serverless function. wait up to 10% of that before getting started. We could probably wait more if we get the transaction handling very robust
 
 export const chunk = (input, size) => {
   return input.reduce((arr, item, idx) => {
@@ -48,7 +55,7 @@ export const validAspectRatio = (aspectRatio) => {
   return aspectRatios.indexOf(aspectRatio) !== -1;
 }
 
-export const validPrivilegeValue = (value) => {
+export const validLicenseDeclaration = (value) => {
   const values = [
     token,
     nonCommercial,
@@ -59,7 +66,14 @@ export const validPrivilegeValue = (value) => {
 }
 
 // TODO: Add a type for CloudinaryAssetType ('image' | 'video')
-export const createCloudinaryUrl = (assetType = "image", deliveryType = "upload", transformations = null, folder, cid, ext = null) => {
+export const createCloudinaryUrl = (
+  assetType = "image", 
+  deliveryType = "upload", 
+  transformations = null, 
+  folder, 
+  cid, 
+  ext = null
+) => {
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_NAME;
   const environment = process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER; // dev, staging, or prod
 
@@ -130,26 +144,32 @@ export const pluralize = (n: number, item: string) => {
 }
 
 export const assetType = (nft: Token | Nft) : AssetTypes => {
-  if (!nft.mimeType) {
+  if (!nft.properties.asset.mimeType) {
     return AssetTypes.Image;
   }
 
-  if (nft.mimeType === 'image/gif') {
+  if (nft.properties.asset.mimeType === 'image/gif') {
     return AssetTypes.Gif;
   }
 
-  if (nft.mimeType.indexOf('video') !== -1) {
+  if (nft.properties.asset.mimeType.indexOf('video') !== -1) {
     return AssetTypes.Video;
   }
 
-  if (nft.mimeType.indexOf('image') !== -1) {
+  if (nft.properties.asset.mimeType.indexOf('image') !== -1) {
     return AssetTypes.Image;
   }
 
-  if (nft.mimeType.indexOf('audio') !== -1) {
+  if (nft.properties.asset.mimeType.indexOf('audio') !== -1) {
     return AssetTypes.Audio;
   }
 }
+
+export const getInfuraIPFSAuth = () => {
+  const credentials = Buffer.from(process.env.INFURA_IPFS_PROJECT_ID + ':' + process.env.INFURA_IPFS_PROJECT_SECRET).toString('base64');
+  var auth = { "Authorization": `Basic ${credentials}` };
+  return auth;
+};
 
 export const messageToSign = `Welcome to HodlMyMoon!
 

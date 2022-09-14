@@ -1,9 +1,10 @@
 import axios from 'axios'
 import { useState } from 'react';
+import { HodlMetadata } from '../models/Metadata';
 
 
 export const useIpfsUpload = (): [
-  (name: string, description: string, privilege: string, fileName: string, mimeType: string, filter: string, aspectRatio?: "1:1" | "4:5" |"16:9") => any,
+  (string, HodlMetadata) => any,
   number,
   string,
   Function
@@ -12,13 +13,22 @@ export const useIpfsUpload = (): [
   const [progress, setProgress] = useState(0);
 
   const uploadToIpfs = async (
-      name: string, 
-      description: string, 
-      privilege: string, 
-      fileName: string, 
-      mimeType: string, 
-      filter: string, 
-      aspectRatio?: "1:1" | "4:5" |"16:9") => {
+    fileName: string,
+    { 
+      name, 
+      description, 
+      image, 
+      properties: { 
+        asset: { 
+          license, 
+          mimeType, 
+          uri
+        }, 
+        filter, 
+        aspectRatio 
+      } 
+    }: HodlMetadata
+  ) => {
     setProgress(0);
 
     try {
@@ -27,7 +37,7 @@ export const useIpfsUpload = (): [
         {
           name,
           description,
-          privilege,
+          license,
           fileName,
           mimeType,
           filter,

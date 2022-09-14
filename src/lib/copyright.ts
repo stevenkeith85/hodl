@@ -1,3 +1,5 @@
-export const token = "The token only";
-export const nonCommercial = "The token and non-commercial usage of the attached asset";
-export const commercial = "The token and commercial usage of the attached asset";
+// TODO: Should this be a type alias instead?
+
+export const token = "no license";
+export const nonCommercial = "non-commercial license";
+export const commercial = "commercial license";

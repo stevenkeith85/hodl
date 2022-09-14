@@ -9,12 +9,10 @@ import { commercial, nonCommercial, token } from "../../lib/copyright";
 import { TextField } from 'formik-mui';
 import { grey } from "@mui/material/colors";
 import { AssetLicenseTooltip } from "../tooltips/HodlerPrivilegeTooltip";
-import { CommercialTooltip } from "../tooltips/CommercialTooltip";
-import { NonCommercialTooltip } from "../tooltips/NonCommercialTooltip";
-import { NoLicenseTooltip } from "../tooltips/TokenOnlyTooltip";
 import { HodlBorderedBox } from "../HodlBorderedBox";
 import { DescriptionTooltip } from "../tooltips/DescriptionTooltip";
 import { NameTooltip } from "../tooltips/NameTooltip";
+import { HodlMetadata } from "../../models/Metadata";
 
 
 const UploadTooltip = () => (
@@ -64,14 +62,22 @@ export const UploadToIpfsAction: FC<MintProps> = ({
         });
     }
 
-    let { success, imageCid, metadataUrl } = await uploadToIpfs(
-      values.name,
-      values.description,
-      values.privilege,
-      values.fileName,
-      values.mimeType,
-      values.filter,
-      values.aspectRatio,
+    let { success, imageCid, metadataUrl } = await uploadToIpfs(values.fileName,
+      {
+        name: values.name,
+        description: values.description,
+        // image is set on the server
+
+        properties: {
+          asset: {
+            license: values.license,
+            mimeType: values.mimeType,
+            // uri is set on the server
+          },
+          filter: values.filter,
+          aspectRatio: values.aspectRatio,
+        }
+      } as HodlMetadata
     );
 
     if (success) {
@@ -101,6 +107,7 @@ export const UploadToIpfsAction: FC<MintProps> = ({
     <Box
       width="90%"
     >
+      {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
       <Formik
         initialValues={{
           name: formData.name,
@@ -155,42 +162,42 @@ export const UploadToIpfsAction: FC<MintProps> = ({
                   </Tooltip>
 
                 </FormControl>
-                
-                  <HodlBorderedBox>
-                          
+
+                <HodlBorderedBox>
+
                   <Tooltip
-                  title={<AssetLicenseTooltip />}
-                  placement="right-start"
-                  arrow>
+                    title={<AssetLicenseTooltip />}
+                    placement="right-start"
+                    arrow>
                     <FormControl disabled={stepComplete >= 3}>
 
                       <FormLabel sx={{ marginBottom: 2 }}>Asset</FormLabel>
                       <RadioGroup
                         name="asset-license"
                       >
-                          <FormControlLabel
-                            onClick={() => setFieldValue('privilege', token)}
-                            value={token}
-                            control={<Radio size="small" sx={{ paddingY: 1 }} />}
-                            label={<Typography color={grey[700]}>No License</Typography>}
-                          />
-                          <FormControlLabel
-                            onClick={() => setFieldValue('privilege', nonCommercial)}
-                            value={nonCommercial}
-                            control={<Radio size="small" sx={{ paddingY: 1 }} />}
-                            label={<Typography color={grey[700]}>Non Commercial License</Typography>}
-                          />
-                          <FormControlLabel
-                            onClick={() => setFieldValue('privilege', commercial)}
-                            value={commercial}
-                            control={<Radio size="small" sx={{ paddingY: 1 }} />}
-                            label={<Typography color={grey[700]}>Commercial License</Typography>}
-                          />
+                        <FormControlLabel
+                          onClick={() => setFieldValue('license', token)}
+                          value={token}
+                          control={<Radio size="small" sx={{ paddingY: 1 }} />}
+                          label={<Typography color={grey[700]}>No License</Typography>}
+                        />
+                        <FormControlLabel
+                          onClick={() => setFieldValue('license', nonCommercial)}
+                          value={nonCommercial}
+                          control={<Radio size="small" sx={{ paddingY: 1 }} />}
+                          label={<Typography color={grey[700]}>Non Commercial License</Typography>}
+                        />
+                        <FormControlLabel
+                          onClick={() => setFieldValue('license', commercial)}
+                          value={commercial}
+                          control={<Radio size="small" sx={{ paddingY: 1 }} />}
+                          label={<Typography color={grey[700]}>Commercial License</Typography>}
+                        />
                       </RadioGroup>
                     </FormControl>
-                    </Tooltip>
-                  </HodlBorderedBox>
-                
+                  </Tooltip>
+                </HodlBorderedBox>
+
                 <div>
                   <Tooltip
                     title={<UploadTooltip />}

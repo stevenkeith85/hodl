@@ -28,7 +28,7 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
     return (<Box
         sx={{
             position: 'relative',
-            height: getHeightForAspectRatio(575, item?.token?.aspectRatio)
+            height: getHeightForAspectRatio(575, item?.token?.properties?.aspectRatio)
         }}>
 
         {/* Responsive skeleton */}
@@ -37,7 +37,7 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
             zIndex: 0,
             
             width: 'min(575px, 90vw)',
-            height: getHeightForAspectRatio(575, item?.token?.aspectRatio),
+            height: getHeightForAspectRatio(575, item?.token?.properties?.aspectRatio),
 
             background: '#ddd',
             animation: 'flicker 3s ease',
@@ -55,7 +55,7 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
                 (assetType(item.token) === AssetTypes.Image) &&
                 <HodlImageResponsive
                     cid={item.token.image}
-                    aspectRatio={item?.token?.aspectRatio || "1:1"}
+                    aspectRatio={item?.token?.properties?.aspectRatio || "1:1"}
                     gravity="g_face"
                     widths={[575, 700, 800, 900, 1000, 1080]}
                     sizes="575w"

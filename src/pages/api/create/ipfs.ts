@@ -1,10 +1,12 @@
 import { NextApiResponse } from "next";
 import { create, urlSource } from 'ipfs-http-client'
-import cloudinary from 'cloudinary'
+import cloudinary, { UploadApiResponse } from 'cloudinary'
 import apiRoute from "../handler";
 import dotenv from 'dotenv'
 import { createCloudinaryUrl } from "../../../lib/utils";
 import { uploadToIPFSValidationSchema } from "../../../validation/uploadToIPFS";
+import { HodlMetadata } from "../../../models/Metadata";
+import { removeFromCloudinary, removePublicIdFromCloudinary } from "../../../lib/server/cloudinary";
 
 dotenv.config({ path: '../.env' })
 
@@ -52,17 +54,46 @@ const makeCloudinaryImageUrl = (cid, filter, aspectRatio) => {
 }
 
 // https://community.infura.io/t/ipfs-api-rate-limit/4995
-const uploadNFT = async (name, description, privilege, path, filter, isVideo, aspectRatio) => {
-  const url = !isVideo ?
-    makeCloudinaryImageUrl(path.split('/')[2], filter, aspectRatio) :
-    createCloudinaryUrl('video', 'upload', filter, 'uploads', path.split('/')[2])
+// TODO: Separate image and asset to allow cover art for music etc
+const uploadNFT = async (
+  name,
+  description,
+  fileName,
+  license,
+  filter,
+  mimeType,
+  aspectRatio
+) => {
+  const isImage = mimeType.indexOf('image') !== -1;
 
-  // @ts-ignore
-  const image = await ipfs.add(urlSource(url), { cidVersion: 1 });
-  const data = JSON.stringify({ name, description, privilege, image: `ipfs://${image.cid}` });
-  const metadata = await ipfs.add(data, { cidVersion: 1 });
+  const assetUrl: string = isImage ?
+    makeCloudinaryImageUrl(fileName.split('/')[2], filter, aspectRatio) :
+    createCloudinaryUrl('video', 'upload', filter, 'uploads', fileName.split('/')[2]);
 
-  return { imageCid: image.cid.toString(), metadataCid: metadata.cid.toString() };
+  const { path, content } = urlSource(assetUrl);
+  const asset = await ipfs.add(content, { cidVersion: 1 });
+
+  const hodlMetadata: HodlMetadata = {
+    name,
+    description,
+    image: `ipfs://${asset.cid}`,
+    properties: {
+      aspectRatio,
+      filter,
+      asset: {
+        uri: `ipfs://${asset.cid}`,
+        license,
+        mimeType
+      }
+    }
+  };
+
+  const metadata = await ipfs.add(JSON.stringify(hodlMetadata), { cidVersion: 1 });
+
+  return {
+    imageCid: asset.cid.toString(),
+    metadataCid: metadata.cid.toString()
+  };
 }
 
 // TODO: Check for any XSS attacks here
@@ -76,37 +107,50 @@ route.post(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'Invalid data supplied' });
   }
 
-  const { name, description, privilege, fileName, mimeType, filter, aspectRatio } = req.body;
-  const isVideo = mimeType.indexOf('video') !== -1;
-  const isAudio = mimeType && mimeType.indexOf('audio') !== -1;
+  const {
+    name,
+    description,
+    fileName,
+    license,
+    filter,
+    mimeType,
+    aspectRatio
+  } = req.body;
 
   const { imageCid, metadataCid } = await uploadNFT(
     name,
     description,
-    privilege,
     fileName,
+    license,
     filter,
-    isVideo || isAudio,
+    mimeType,
     aspectRatio
   );
 
   // Upload the IPFS image to cloudinary so that the filter/ crop becomes permanent
-  await cloudinary.v2.uploader.upload(
-    makeCloudinaryImageUrl(fileName.split('/')[2], filter, aspectRatio),
-    {
-      public_id: imageCid,
-      folder: process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER + '/nfts/'
-    });
+  const processedImg = makeCloudinaryImageUrl(fileName.split('/')[2], filter, aspectRatio);
+  console.log('create/ipfs - processedImg - ', processedImg)
+
+  const response : UploadApiResponse = await cloudinary.v2.uploader.upload(processedImg, {
+    public_id: imageCid,
+    folder: process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER + '/nfts/'
+  });
+
+  console.log('create/ipfs - cloudinary upload response', JSON.stringify(response))
 
   // delete the upload folder item
-  await cloudinary.v2.uploader.destroy(fileName);
+  // await cloudinary.v2.uploader.destroy(fileName);
 
-  const response = {
+  const deleted = await removePublicIdFromCloudinary(fileName)
+
+  console.log('create/ipfs - cloudinary deleted response', JSON.stringify(deleted))
+
+  const result = {
     imageCid,
     metadataUrl: `ipfs://${metadataCid}`
   };
 
-  res.status(200).json(response);
+  res.status(200).json(result);
 });
 
 
