@@ -29,7 +29,7 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
     };
 
     const connectMobile = () => {
-        router.push("https://metamask.app.link/dapp/192.168.1.242:3001/");
+        // router.push("https://metamask.app.link/dapp/hodlmymoon.com/");
     };
 
     return (

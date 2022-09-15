@@ -11,6 +11,7 @@ import { insertTagLinks } from "../../lib/templateUtils";
 import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
 import { FeedAsset } from "./FeedAsset";
 import { MaticPrice } from "../MaticPrice";
+import { green } from "@mui/material/colors";
 
 
 interface HodlFeedItemProps {
@@ -84,7 +85,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                             flexDirection: 'column',
                                             textAlign: 'right',
                                             fontFamily: theme => theme.logo.fontFamily,
-                                            color: theme => theme.palette.text.secondary
+                                            color: theme => theme.palette.secondary.main
                                         }}>
                                         <Typography>listed</Typography>
                                         {
@@ -105,7 +106,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                             flexDirection: 'column',
                                             textAlign: 'right',
                                             fontFamily: theme => theme.logo.fontFamily,
-                                            color: theme => theme.palette.text.secondary
+                                            color: theme => theme.palette.secondary.main
                                         }}>
                                         <Typography>sold</Typography>
                                         {
@@ -124,7 +125,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                         sx={{
                                             textAlign: 'right',
                                             fontFamily: theme => theme.logo.fontFamily,
-                                            color: theme => theme.palette.text.secondary
+                                            color: theme => theme.palette.secondary.main
                                         }}>
                                         delisted
                                     </Box>
@@ -134,7 +135,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                         sx={{
                                             textAlign: 'right',
                                             fontFamily: theme => theme.logo.fontFamily,
-                                            color: theme => theme.palette.text.secondary
+                                            color: theme => theme.palette.primary.main
                                         }}>
                                         new
                                     </Box>

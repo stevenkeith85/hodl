@@ -1,6 +1,5 @@
 import { AccountBalanceWallet } from "@mui/icons-material";
-import { Box, Button, Typography } from "@mui/material";
-import Link from "next/link";
+import { Box, Button, Link, Typography } from "@mui/material";
 import { HodlBorderedBox } from "../components/HodlBorderedBox";
 import { authenticate } from "../lib/jwt";
 
@@ -16,46 +15,37 @@ export async function getServerSideProps({ req, res }) {
 
 export default function About({ address }) {
     return (
-        <Box marginX={8} marginY={4}>
+        <Box marginX={4} marginY={4}>
             <HodlBorderedBox>
                 <Box mb={4}>
                     <Typography variant="h1" mb={1} sx={{ fontSize: 20 }}>
                         About
+                    </Typography>
+                    <Typography mb={1}>
+                        Hodl My Moon is a web3 social network and marketplace.
                     </Typography>
                 </Box>
                 <Box marginY={4}>
                     <Typography variant="h2">
                         Quick Start
                     </Typography>
-                    <ul>
-                        <Link href="https://metamask.io/download/" passHref>
-                            <Typography
-                                component="a"
-                                sx={{
-                                    textDecoration: 'none',
-                                    color: theme => theme.palette.text.primary,
-                                    '&:hover': {
-                                        color: theme => theme.palette.secondary.dark,
-                                        textDecoration: 'underline'
-                                    },
-                                }}>
-                                <li>Install Metamask</li>
-                            </Typography>
-                        </Link>
-                        <Typography component={"span"}>
-                            <li>   Open the <AccountBalanceWallet color="primary" sx={{ fontSize: "18px", marginX: 1, padding: 0 }} /> menu
-                                and click
-                                <Button
-                                    color={'secondary'}
-                                    variant={'outlined'}
-                                    startIcon={<AccountBalanceWallet />}
-                                    sx={{ cursor: 'auto', marginX: 1, paddingX: 1 }}
-                                >
-                                    connect
-                                </Button>
-                            </li>
-                        </Typography>
-                    </ul>
+                    <Typography component="ul">
+                        <li>
+                            <Link target="_blank" href="https://metamask.io/download/">
+                                Install Metamask
+                            </Link>
+                        </li>
+                        <li>Click
+                            <Button
+                                color={'secondary'}
+                                variant={'outlined'}
+                                startIcon={<AccountBalanceWallet />}
+                                sx={{ cursor: 'auto', marginX: 1, paddingX: 1 }}
+                            >
+                                connect
+                            </Button> on the homepage
+                        </li>
+                    </Typography>
                 </Box>
                 <Box marginY={4}>
                     <Typography mb={1}
@@ -108,7 +98,7 @@ export default function About({ address }) {
                 </Box>
                 <Box marginY={4}>
                     <Typography id="hodler-privilege" mb={2} variant="h2">Asset License</Typography>
-                    <Typography mb={2} sx={{ span: { fontWeight: 600 } }}>When an author mints an NFT, they <span>must</span> specify what any future hodler can do with the attached asset. <Link href="/asset-license">read more</Link></Typography>                   
+                    <Typography mb={2} sx={{ span: { fontWeight: 600 } }}>When an author mints an NFT, they <span>must</span> specify what any future hodler can do with the attached asset. <Link href="/asset-license">read more</Link></Typography>
                 </Box>
             </HodlBorderedBox>
         </Box >)

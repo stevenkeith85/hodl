@@ -32,10 +32,11 @@ route.post(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'bad request' });
   }
 
-  if (tx.from !== req.address) {
-    console.log(`queue/transaction - user trying to process a transaction they did not create`);
-    return res.status(400).json({ message: 'bad request' });
-  }
+  // TODO: Add this back in; we've just commented it out for testing the robustness of the other endpoint at the moment
+  // if (tx.from !== req.address) {
+  //   console.log(`queue/transaction - user trying to process a transaction they did not create`);
+  //   return res.status(400).json({ message: 'bad request' });
+  // }
 
   if (tx.to !== nftmarketaddress && tx.to !== nftaddress) {
     console.log(`queue/transaction - user trying to process a transaction that isn't for our contract`);

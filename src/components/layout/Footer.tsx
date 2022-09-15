@@ -68,19 +68,9 @@ const Footer = ({ showFooter = true }) => {
                                     }}>
                                     hodl my moon
                                 </Typography>
-                                <HodlLink href="/contact">contact</HodlLink>
-                                
-                            </Stack>
-                            <Stack spacing={0.5}>
-                                <Typography
-                                    sx={{
-                                        fontWeight: 600,
-                                        marginBottom: 0.5,
-                                    }}>
-                                    learn
-                                </Typography>
                                 <HodlLink href="/about">about</HodlLink>
-                                <HodlLink href="/asset-license">asset license</HodlLink>
+                                <HodlLink href="/contact">contact</HodlLink>
+
                             </Stack>
                             <Stack spacing={0.5}>
                                 <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>tokens</Typography>
@@ -132,10 +122,10 @@ const Footer = ({ showFooter = true }) => {
                             },
                         }}>
                         <Box
-                        sx={{
-                            display: 'flex',
-                            gap: 3
-                        }}
+                            sx={{
+                                display: 'flex',
+                                gap: 3
+                            }}
                         >
                             <RocketLaunch sx={{ color: grey[500] }} />
                             <Twitter sx={{ color: grey[500] }} />

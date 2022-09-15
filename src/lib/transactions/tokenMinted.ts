@@ -19,26 +19,33 @@ import { Token } from "../../models/Token";
 import { addTokenToTag } from "../../pages/api/tags/add";
 import { addAction } from "../../pages/api/actions/add";
 import { HodlMetadata } from "../../models/Metadata";
-import { fromUnixTime } from "date-fns";
 
 const client = Redis.fromEnv()
 
-// event Transfer(address from, address to, uint256 tokenId)
-// TODO: EVERYTHING ON THIS ENDPOINT SHOULD BE IDEMPOTENT (IN PROGRESS)
+
+// This endpoint is pretty much idempotent now. There's always a chance some redis call fails that isn't wrapped
+// in a multi / exec... but that's on the TODO list
 export const tokenMinted = async (
     hash: string, // check valid address?
     provider: ethers.providers.BaseProvider,
     txReceipt: ethers.providers.TransactionReceipt,
     tx: ethers.providers.TransactionResponse
 ): Promise<boolean> => {
+    console.log(`tokenMinted - processing tx`);
+
     const contract = new ethers.Contract(nftaddress, NFT.abi, provider);
 
+    // event Transfer(address from, address to, uint256 tokenId)
     const log: ethers.utils.LogDescription = contract.interface.parseLog(txReceipt.logs?.[0]);
-    console.log(`tokenMinted - processing tx`);
 
     const { from, to, tokenId } = log.args;
 
     // some basic sanity checks
+    if (log.name !== 'Transfer') {
+        console.log('tokenMinted - called with a non transfer transaction');
+        return false;
+    }
+
     if (from !== ethers.constants.AddressZero) {
         console.log('tokenMinted - this is not a mint - not adding');
         return false;
@@ -86,11 +93,11 @@ export const tokenMinted = async (
         }
     };
 
-    // use the block timestamp for idempotence
+    // use the block timestamp for accuracy
     const block = await provider.getBlock(tx.blockHash);
 
     // store token, and add to sorted set with timestamp
-    // TODO: Make this a transaction in redis
+    // TODO: Make this a multi/exec in redis
     const tokenAdded = await client.setnx(`token:${token.id}`, token);
 
     if (!tokenAdded) {
@@ -115,13 +122,21 @@ export const tokenMinted = async (
         await addTokenToTag(tag, token.id);
     }
 
-    const success = addAction({
+    const minted : HodlAction = {
         subject: to,
         action: ActionTypes.Added,
         object: "token",
         objectId: token.id
-    });
+    }
+
+    const success = addAction(minted);
+
+    if (!success) {
+        console.log(`tokenMinted - unable to add the action`);
+        return false;
+    }
 
     // TODO: If we successfully process this transaction, we should probably record that in our database 
     // and stop users re-running old / out of order transactions
+    return true;    
 }

@@ -10,25 +10,17 @@ import { nftaddress, nftmarketaddress } from "../../../../config";
 import Market from '../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 import { addAction } from "../actions/add";
 import { Redis } from '@upstash/redis';
-import { ipfsUriToCid, ipfsUriToGatewayUrl, NUMBER_OF_CONFIRMATIONS_TO_WAIT_FOR, TAG_PATTERN, TRANSACTION_TIMEOUT } from "../../../lib/utils";
+import { NUMBER_OF_CONFIRMATIONS_TO_WAIT_FOR, TRANSACTION_TIMEOUT } from "../../../lib/utils";
 import { getTagsForToken } from "../tags";
 import { LogDescription } from "ethers/lib/utils";
 import NFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
-import axios from 'axios';
-import { Token } from "../../../models/Token";
-import { addTokenToTag } from "../tags/add";
-import { format, fromUnixTime } from "date-fns";
+import { fromUnixTime } from "date-fns";
 import { tokenMinted } from "../../../lib/transactions/tokenMinted";
+import { tokenListed } from "../../../lib/transactions/tokenListed";
+import { tokenDelisted } from "../../../lib/transactions/tokenDelisted";
 
 const route = apiRoute();
 const client = Redis.fromEnv()
-
-
-const getInfuraIPFSAuth = () => {
-    const credentials = Buffer.from(process.env.INFURA_IPFS_PROJECT_ID + ':' + process.env.INFURA_IPFS_PROJECT_SECRET).toString('base64');
-    var auth = { "Authorization": `Basic ${credentials}` };
-    return auth;
-};
 
 
 // TODO: At the moment, we have an all or unknown state system. We want this to be more reliable, and potentially able to run
@@ -113,119 +105,6 @@ const tokenBought = async (log: LogDescription): Promise<boolean> => {
 }
 
 
-// event TokenListed(
-//     address indexed seller,
-//     uint256 indexed tokenId,
-//     uint256 price
-// );
-const tokenListed = async (log): Promise<boolean> => {
-    console.log(`${log.name} - processing log`);
-
-    const { tokenId: tokenIdBN, seller, price: priceInWei } = log.args;
-
-    const price = ethers.utils.formatEther(priceInWei);
-    const tokenId = tokenIdBN.toNumber();
-
-    // UPDATE THE MARKET (MAIN)
-    const added = await client.zadd(`market`,
-        {
-            score: +price,
-            member: tokenId
-        }
-    );
-
-    if (!added) {
-        console.log(`${log.name} - unable to add token to market zset, added ===`, added);
-        return false;
-    }
-
-    // UPDATE THE MARKET (TAGS)
-    const tags = await getTagsForToken(tokenId);
-
-    for (const tag of tags) {
-        const added = await client.zadd(`market:${tag}`,
-            {
-                score: +price,
-                member: tokenId
-            }
-        );
-
-        if (!added) {
-            console.log(`${log.name} - unable to add token to market:${tag} zset, added ===`, added);
-
-            return false;
-        }
-    }
-
-    // ADD THE ACTION
-    const listed: HodlAction = {
-        timestamp: Date.now(), // TODO: perhaps we can get the timestamp from the transaction confirmation?
-        action: ActionTypes.Listed,
-        subject: seller,
-        object: "token",
-        objectId: tokenId,
-        metadata: {
-            price
-        }
-    };
-
-    const success = await addAction(listed);
-
-    if (!success) {
-        console.log(`${log.name} - unable to add the action`);
-        return false;
-    }
-
-    return true;
-}
-
-// event TokenDelisted(
-//     address indexed seller, 
-//     uint256 indexed tokenId
-// );
-const tokenDelisted = async (log): Promise<boolean> => {
-    console.log(`${log.name} - processing log`);
-    const { tokenId: tokenIdBN, seller, name } = log.args;
-    const tokenId = tokenIdBN.toNumber();
-
-    const removed = await client.zrem(`market`, tokenId);
-
-    if (!removed) {
-        console.log(`${log.name} - unable to remove the token from the  market zset`);
-        return false;
-    }
-
-    console.log(`${log.name} - getting tags for token`);
-    const tags = await getTagsForToken(tokenId);
-    console.log(`${log.name} - tags === `, tags);
-
-    for (const tag of tags) {
-        const removed = await client.zrem(`market:${tag}`, tokenId);
-
-        if (!removed) {
-            console.log(`${log.name} - unable to remove token from market:${tag} zset`);
-            return false;
-        }
-    }
-
-    // TODO: Perhaps we just add the notifications to another queue, and let that happen async
-    const delisted: HodlAction = {
-        timestamp: Date.now(), // TODO: perhaps we can get the timestamp of the transaction confirmation?
-        action: ActionTypes.Delisted,
-        subject: seller,
-        object: "token",
-        objectId: tokenId,
-    };
-
-    const success = await addAction(delisted);
-
-    if (!success) {
-        console.log(`${log.name} - unable to add the action`);
-        return false;
-    }
-
-    return true;
-}
 
 
 const transactionDetails = async (hash,
@@ -280,8 +159,6 @@ route.post(async (req, res: NextApiResponse) => {
 
     const provider: ethers.providers.BaseProvider = await getProvider();
 
-    
-
     // We can't wait very long at all, as this is a serverless function. 
     // There's no point in failing the request if we ARE able to wait though.
     const txReceipt: ethers.providers.TransactionReceipt = await provider.waitForTransaction(
@@ -290,6 +167,7 @@ route.post(async (req, res: NextApiResponse) => {
         TRANSACTION_TIMEOUT
     );
 
+    // TODO: We might repeat these checks in the handler's as well
     if (txReceipt === null) {
         // TODO: We should (probably) increase the retry interval on each failure.
         // We would (probably) have to record how many attempts we've tried though. (in Redis)
@@ -303,7 +181,7 @@ route.post(async (req, res: NextApiResponse) => {
     }
 
     if (txReceipt.from !== req.address) {
-        console.log(`blockchain/transaction - endpoint called with credentials that don't match the transaction`);
+        console.log(`blockchain/transaction - user trying to process a transaction they did not create`);
         return res.status(400).json({ message: 'bad request' });
     }
 
@@ -320,6 +198,7 @@ route.post(async (req, res: NextApiResponse) => {
 
     const tx: ethers.providers.TransactionResponse = await provider.getTransaction(hash);
 
+    // TODO: This is just useful for development. We can remove for prod
     console.log('blockchain/transaction - transaction details');
     await transactionDetails(hash, provider, txReceipt, tx);
 
@@ -335,11 +214,11 @@ route.post(async (req, res: NextApiResponse) => {
 
     let success = false;
 
-    // TODO: Split these into their own files
+    // TODO: Split these into their own files (in progress)
     if (log.name === 'TokenListed') {
-        success = await tokenListed(log);
+        success = await tokenListed(hash, provider, txReceipt, tx);
     } else if (log.name === 'TokenDelisted') {
-        success = await tokenDelisted(log);
+        success = await tokenDelisted(hash, provider, txReceipt, tx);
     } else if (log.name === 'TokenBought') {
         success = await tokenBought(log);
     } else if (log.name === 'Transfer') {

@@ -159,7 +159,7 @@ export const NftWindow = ({ nft, aspectRatio = "1:1" }) => {
                                 height: `auto`,
                                 padding: 1.5,
                                 paddingY: 0.75,
-                                background: `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.225), rgba(0,0,0,0.25), rgba(0,0,0,0.225), rgba(0,0,0,0.2))`,
+                                background: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.4), rgba(0,0,0,0.5), rgba(0,0,0,0.4), rgba(0,0,0,0.3))`,
                             }}
                         >
                             <Box

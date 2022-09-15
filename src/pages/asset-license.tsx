@@ -1,8 +1,6 @@
-import { AccountBalanceWallet, CircleOutlined, Nightlife, NightlightOutlined, RocketLaunchRounded } from "@mui/icons-material";
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import Link from "next/link";
 import { HodlBorderedBox } from "../components/HodlBorderedBox";
-import { AboutPagePitch } from "../components/layout/AboutPagePitch";
 import { CommercialText } from "../components/tooltips/CommercialTooltip";
 import { NonCommercialText } from "../components/tooltips/NonCommercialTooltip";
 import { NoLicenseText } from "../components/tooltips/TokenOnlyTooltip";
@@ -18,9 +16,9 @@ export async function getServerSideProps({ req, res }) {
     }
 }
 
-export default function HodlerPrivilege({ address }) {
+export default function AssetLicense({ address }) {
     return (
-        <Box marginX={8} marginY={4}>
+        <Box marginX={4} marginY={4}>
             <HodlBorderedBox>
                 <Typography
                     variant="h1"
