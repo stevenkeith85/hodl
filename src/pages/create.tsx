@@ -89,105 +89,125 @@ const Mint = ({ address }) => {
         <title>Create · Hodl My Moon</title>
       </Head>
       <Box
-        display={"flex"}
-        flexDirection="column"
+        // display={"flex"}
+        // flexDirection="column"
         sx={{
           position: "relative",
-          marginY: {
-            xs: 4,
-            sm: 5,
-            md: 8,
-          },
-          gap: {
-            xs: 4,
-            sm: 5,
-            md: 7,
-          }
+          border: `1px solid blue`,
+          marginY: 4
+          // marginY: {
+          //   xs: 4,
+          //   sm: 5,
+          //   md: 8,
+          // },
+          // gap: {
+          //   xs: 4,
+          //   sm: 5,
+          //   md: 7,
+          // }
         }}
       >
         <Box
           sx={{
             position: 'relative',
-            marginX: 8
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: 5,
+            // padding: 2,
+            border: '1px solid green',
+            minHeight: '60vh'
           }}>
 
           <Grid
             container
           >
             <Grid item xs={12} md={6}>
-                <Box
+              <Box
                 sx={{
                   height: '100%',
+                  width: `100%`,
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center'
-
-                }}
-                >
-              {activeStep === 0 &&
-                <SelectAssetAction
-                  formData={formData}
-                  setFormData={setFormData}
-                  loading={loading}
-                  setLoading={setLoading}
-                  setStepComplete={setStepComplete}
-                />
-              }
-              {activeStep === 1 &&
-                <CropAssetAction
-                  formData={formData}
-                  setFormData={setFormData}
-                  setStepComplete={setStepComplete}
-                />
-              }
-              {formData.fileName && <Box
-                sx={{
-                  display: activeStep === 2 ? 'block' : 'none'
+                  justifyContent: 'center',
+                  margin: 0,
+                  padding: 0,
+                  background: 'yellow'
                 }}
               >
-                <FilterAssetAction
-                  formData={formData}
-                  setFormData={setFormData}
-                  setStepComplete={setStepComplete}
-                  activeStep={activeStep}
-                />
+                {activeStep === 0 &&
+                  <SelectAssetAction
+                    formData={formData}
+                    setFormData={setFormData}
+                    loading={loading}
+                    setLoading={setLoading}
+                    setStepComplete={setStepComplete}
+                  />
+                }
+                {activeStep === 1 &&
+                  <CropAssetAction
+                    formData={formData}
+                    setFormData={setFormData}
+                    setStepComplete={setStepComplete}
+                  />
+                }
+                {formData.fileName && <Box
+                  sx={{
+                    display: activeStep === 2 ? 'block' : 'none'
+                  }}
+                >
+                  <FilterAssetAction
+                    formData={formData}
+                    setFormData={setFormData}
+                    setStepComplete={setStepComplete}
+                    activeStep={activeStep}
+                  />
+                </Box>
+                }
+                {activeStep === 3 &&
+                  <UploadToIpfsAction
+                    formData={formData}
+                    setFormData={setFormData}
+                    loading={loading}
+                    stepComplete={stepComplete}
+                    setLoading={setLoading}
+                    setStepComplete={setStepComplete} />
+                }
+                {activeStep === 4 &&
+                  <MintTokenAction
+                    formData={formData}
+                    setFormData={setFormData}
+                    loading={loading}
+                    stepComplete={stepComplete}
+                    setLoading={setLoading}
+                    setStepComplete={setStepComplete} />
+                }
               </Box>
-              }
-              {activeStep === 3 &&
-                <UploadToIpfsAction
-                  formData={formData}
-                  setFormData={setFormData}
-                  loading={loading}
-                  stepComplete={stepComplete}
-                  setLoading={setLoading}
-                  setStepComplete={setStepComplete} />
-              }
-              {activeStep === 4 &&
-                <MintTokenAction
-                  formData={formData}
-                  setFormData={setFormData}
-                  loading={loading}
-                  stepComplete={stepComplete}
-                  setLoading={setLoading}
-                  setStepComplete={setStepComplete} />
-              }
-            </Box>
             </Grid>
             <Grid
               item
               marginTop={1}
               xs={12}
-              md={6}
-              sx={{
-                height: `100%`,
-                paddingLeft: { md: 1 }
-              }}>
-              <AssetPreview
-                loading={loading}
-                formData={formData}
-                setFormData={setFormData}
-                setLoading={setLoading}
-              />
+              md={6}>
+              <Box
+                sx={{
+                  height: '100%',
+                  width: `100%`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: 0,
+                  padding: 0,
+                  background: 'green'
+                }}
+              >
+                <AssetPreview
+                  loading={loading}
+                  formData={formData}
+                  setFormData={setFormData}
+                  setLoading={setLoading}
+                />
+              </Box>
             </Grid>
           </Grid>
           <HodlLoadingSpinner

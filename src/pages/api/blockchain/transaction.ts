@@ -2,109 +2,24 @@ import { NextApiResponse } from "next";
 
 import apiRoute from "../handler";
 
-import { HodlAction, ActionTypes } from "../../../models/HodlAction";
 import { ethers } from "ethers";
 import { getProvider } from "../../../lib/server/connections";
 import { nftaddress, nftmarketaddress } from "../../../../config";
 
 import Market from '../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
-import { addAction } from "../actions/add";
 import { Redis } from '@upstash/redis';
-import { NUMBER_OF_CONFIRMATIONS_TO_WAIT_FOR, TRANSACTION_TIMEOUT } from "../../../lib/utils";
-import { getTagsForToken } from "../tags";
+import { NUMBER_OF_CONFIRMATIONS_TO_WAIT_FOR, TRANSACTION_TIMEOUT, validTxHashFormat } from "../../../lib/utils";
 import { LogDescription } from "ethers/lib/utils";
 import NFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import { fromUnixTime } from "date-fns";
 import { tokenMinted } from "../../../lib/transactions/tokenMinted";
 import { tokenListed } from "../../../lib/transactions/tokenListed";
 import { tokenDelisted } from "../../../lib/transactions/tokenDelisted";
+import { tokenBought } from "../../../lib/transactions/tokenBought";
+import { User } from "../../../models/User";
 
 const route = apiRoute();
 const client = Redis.fromEnv()
-
-
-// TODO: At the moment, we have an all or unknown state system. We want this to be more reliable, and potentially able to run
-// independently from each other
-
-// event TokenBought(
-//     address indexed buyer,
-//     address indexed seller,
-//     uint256 indexed tokenId,
-//     uint256 price
-// );
-const addActionWhenTokenBought = async (log: LogDescription): Promise<boolean> => {
-    console.log(`${log.name} - logging action`);
-    const { buyer, seller, tokenId: tokenIdBN, price: priceInWei } = log.args;
-
-    const price = ethers.utils.formatEther(priceInWei);
-    const tokenId = tokenIdBN.toNumber();
-
-    const bought: HodlAction = {
-        timestamp: Date.now(), // TODO: perhaps we can get the timestamp of the transaction confirmation?
-        action: ActionTypes.Bought,
-        subject: buyer,
-        object: "token",
-        objectId: tokenId,
-        metadata: {
-            price
-        }
-    };
-
-    console.log(`${log.name} - adding action `, bought);
-    const success = await addAction(bought);
-
-    if (!success) {
-        console.log(`${log.name} - unable to add the action`);
-        return false;
-    }
-
-    return true;
-}
-
-const updateMarketWhenTokenBought = async (log: LogDescription) => {
-    console.log(`${log.name} - updating market`);
-    const { buyer, seller, tokenId: tokenIdBN, price: priceInWei } = log.args;
-
-    const price = ethers.utils.formatEther(priceInWei);
-    const tokenId = tokenIdBN.toNumber();
-
-    const removed = await client.zrem(`market`, tokenId);
-
-    if (!removed) {
-        console.log(`${log.name} - unable to remove the token from the market zset`);
-        return false;
-    }
-
-    console.log(`${log.name} - getting tags for token`);
-    const tags = await getTagsForToken(tokenId);
-    console.log(`${log.name} - tags === `, tags);
-
-    for (const tag of tags) {
-        const removed = await client.zrem(`market:${tag}`, tokenId);
-
-        if (!removed) {
-            console.log(`${log.name} - unable to remove token from market:${tag} zset`);
-            return false;
-        }
-    }
-}
-
-// event TokenBought(
-//     address indexed buyer,
-//     address indexed seller,
-//     uint256 indexed tokenId,
-//     uint256 price
-// );
-const tokenBought = async (log: LogDescription): Promise<boolean> => {
-
-    const marketUpdated = await updateMarketWhenTokenBought(log)
-    console.log(`${log.name} - market updated === ${marketUpdated}`);
-    const actionAdded = await addActionWhenTokenBought(log);
-
-    return marketUpdated && actionAdded;
-}
-
-
 
 
 const transactionDetails = async (hash,
@@ -128,29 +43,37 @@ const transactionDetails = async (hash,
 
     const block = await provider.getBlock(tx.blockHash);
     console.log('timestamp', fromUnixTime(block.timestamp));
-
 }
 
-// TODO: We should delay in calling this to give the blockchain a chance to confirm the transaction first.
-// TODO: Determine how long 5 confirmations will take. (infura suggests every 15 seconds on so)
 
+// This route processes a transaction that was added to the queue. 
+// It must do validation; as things could be added to the queue outside our system. (potentially)
+//
+// Currently;
+// Only authenticated users can call it
+// The caller must be the transaction author
+// The contract must be one of ours
+// The transaction nonce must be higher than the last on we successfully processed
+// It must be a valid transaction
+//
+// We should delay calling this to give the blockchain a chance to update first
+//
+// The handlers should be as idempotent as possible. 
+// Things should be as robust as possible. (we are mostly there; but in some very unlikely scenarios things might not get updated.)
+//
 // TODO: Potentially we might split up some of this into separate 'sub-systems'. 
 // i.e. it would be nice if the notifications were separate; as we could then retry JUST them if anything went wrong.
-
-// TODO: We need to lock this down as much as possible. ideally only the queue should be able to call it
-
-// This route should process transactions added to our queue.
-// We want things to be idempotent, and to always leave the system in a good state.
-// Even though we will only send the correct transactions, that would not
-// stop a user sending one directly to the queue (at the moment); so we need to safeguard against that
-// perhaps we can do something to ensure only our 'add to queue' endpoint can call this
 //
-// have I processed this transaction before?
-// did i manage to update the market
+// TODO: If we could lock this down to only the queue dispatcher calling it, that would be nice
 route.post(async (req, res: NextApiResponse) => {
-    console.log('TRANSACTION HANDLER CALLED');
+    console.log('blockchain/transaction - transaction handler called');
 
     const { hash } = req.body;
+    console.log(`blockchain/transaction - processing ${hash} at ${Date.now()}`);
+
+    if (!validTxHashFormat(hash)) {
+        return res.status(400).json({ message: 'bad request' });
+      }
 
     if (!req.address) {
         console.log(`blockchain/transaction - endpoint called without credentials`);
@@ -198,9 +121,20 @@ route.post(async (req, res: NextApiResponse) => {
 
     const tx: ethers.providers.TransactionResponse = await provider.getTransaction(hash);
 
+    const user = await client.hmget<User>(`user:${req.address}`, 'nonce');
+  
+    console.log("blockchain/transaction - user nonce is ", user?.nonce);
+    console.log("blockchain/transaction - tx nonce is ", tx?.nonce);
+  
+    if (tx.nonce  < user.nonce) {
+      console.log(`blockchain/transaction - tx.nonce / user.nonce`, tx.nonce, user.nonce);
+      console.log(`blockchain/transaction - user trying to process a transaction that is older than the last one we've sucessfully processed`);
+      return res.status(400).json({ message: 'bad request' });
+    }
+
     // TODO: This is just useful for development. We can remove for prod
-    console.log('blockchain/transaction - transaction details');
-    await transactionDetails(hash, provider, txReceipt, tx);
+    // console.log('blockchain/transaction - transaction details');
+    // await transactionDetails(hash, provider, txReceipt, tx);
 
     // TODO: Review / improve the dispatcher code
     let contract = null;
@@ -214,21 +148,28 @@ route.post(async (req, res: NextApiResponse) => {
 
     let success = false;
 
-    // TODO: Split these into their own files (in progress)
     if (log.name === 'TokenListed') {
         success = await tokenListed(hash, provider, txReceipt, tx);
     } else if (log.name === 'TokenDelisted') {
         success = await tokenDelisted(hash, provider, txReceipt, tx);
     } else if (log.name === 'TokenBought') {
-        success = await tokenBought(log);
+        success = await tokenBought(hash, provider, txReceipt, tx);
     } else if (log.name === 'Transfer') {
         success = await tokenMinted(hash, provider, txReceipt, tx);
     }
 
+    // TODO: Perhaps we should log what transactions were processed, at what time and whether they were successful
+    // Should be helpful if we get support requests
     if (success) {
+        console.log('blockchain/transaction - successfully processed transaction - updating nonce');
+        await client.hmset<string>(`user:${req.address}`, {
+            nonce: `${tx.nonce}`
+        });
+        
         return res.status(201).json({ message: 'successfully processed the transaction' });
     }
 
+    console.log('blockchain/transaction - unable to process transaction - not updating nonce');
     return res.status(503).json({ message: 'unable to process the transaction' });
 });
 

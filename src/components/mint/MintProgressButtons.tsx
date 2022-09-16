@@ -12,7 +12,9 @@ export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, l
 
   return (
     <>
-      {stepComplete > 0 && activeStep > 0 && <Fab
+    {/* active { activeStep }<br></br>
+    complete { stepComplete } */}
+      {stepComplete >= 0 && activeStep > 0 && <Fab
         size="small"
         color="secondary"
         sx={{

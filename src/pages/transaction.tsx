@@ -1,13 +1,14 @@
-import { Box, Button, FormControl, FormHelperText, Input, InputLabel, Link, Stack, TextField, Typography } from "@mui/material";
-import TwitterIcon from '@mui/icons-material/Twitter';
-import { grey } from '@mui/material/colors';
-import { Reddit, RocketLaunch } from "@mui/icons-material";
+import { Alert, AlertTitle, Box, Button, FormControl, Link, TextField, Typography } from "@mui/material";
 import { authenticate } from "../lib/jwt";
 import axios from 'axios';
 
 import { useState } from "react";
 import { HodlBorderedBox } from "../components/HodlBorderedBox";
 import Head from "next/head";
+import { SuccessModal } from "../components/modals/SuccessModal";
+import { FailureModal } from "../components/modals/FailureModal";
+import { validTxHashFormat } from "../lib/utils";
+
 
 export async function getServerSideProps({ req, res }) {
     await authenticate(req, res);
@@ -26,11 +27,18 @@ export async function getServerSideProps({ req, res }) {
 export default function Transaction({ address }) {
     const [hash, setHash] = useState('');
 
+    const [successModalOpen, setSuccessModalOpen] = useState(false);
+    const [failureModalOpen, setFailureModalOpen] = useState(false);
+
     if (!address) {
         return null;
     }
 
     const sendTransaction = async () => {
+        if (!validTxHashFormat(hash)) {
+            return;
+        }
+
         try {
             const r = await axios.post(
                 '/api/market/transaction',
@@ -45,64 +53,95 @@ export default function Transaction({ address }) {
                 }
             )
 
-            alert('Successfully queued the transaction');
+            setSuccessModalOpen(true);
         } catch (e) {
-            alert('Sorry, we could not queue that transaction');
+            setFailureModalOpen(true);
             console.log(e)
         }
     }
     return (
         <>
+            <SuccessModal
+                modalOpen={successModalOpen}
+                setModalOpen={setSuccessModalOpen}
+                message="Successfully queued the transaction. It may take some time to process. Please contact support if this does not resolve your issue."
+            />
+            <FailureModal
+                modalOpen={failureModalOpen}
+                setModalOpen={setFailureModalOpen}
+                message="The transaction was not queued. Please contact support if you need help"
+            />
             <Head>
                 <meta name="robots" content="noindex" />
             </Head>
-            <Box
-                sx={{
-                    margin: 4,
-                    padding: 4,
-                    textAlign: 'center'
-                }}
-            >
-                <HodlBorderedBox>
-                    <Typography variant="h1" mb={2} sx={{ fontSize: '18px' }}>Retry Transaction</Typography>
-                    <Typography mb={2} sx={{ fontSize: 20, textTransform: 'uppercase', color: theme => theme.palette.error.main }}>Do not use this form unless instructed to by support!</Typography>
-                    <Typography mb={2}>
-                        Occassionally your transaction succeeds on the blockchain,
-                        but the service to update our website fails.
-                    </Typography>
-                    {/* 
-                    TODO: We should allow the user to run any transaction that has been missed. (or block them running transactions that would get us out of sync with the blockchain)
-                    We need to think of ways of doing this...
-                */}
-                    <Typography mb={2}>
-                        If that happens, you can re-queue your transaction with this form</Typography>
-                    <Typography mb={2}>
-                        <Link target={"_blank"} href="https://metamask.zendesk.com/hc/en-us/articles/4413442094235-How-to-find-a-transaction-ID">How do I find my transaction hash</Link>
-                    </Typography>
-                    <Box
-                        component="form"
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: 2,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            margin: 4
-                        }}
-                    >
-                        <FormControl>
-                            <TextField
-                                id="tx"
-                                value={hash}
-                                onChange={e => setHash(e.target.value)}
-                                label="hash"
-                            />
-                        </FormControl>
-                        <Box>
-                            <Button
-                                onClick={sendTransaction}>
-                                Submit
-                            </Button>
+            <Box margin={4}>
+                <HodlBorderedBox
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        textAlign: 'center'
+                    }}
+                >
+                    <Box mb={4}>
+                        <Alert
+                            severity="error"
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                textAlign: 'center',
+                                margin: 4,
+                                fontWeight: 600,
+                                fontSize: 18,
+                                padding: 1,
+                            }}
+                        >
+                            Do not use this form unless instructed to by support
+                        </Alert>
+                        <Typography mb={2} sx={{ fontSize: 20, fontWeight: 600 }}>
+                            Re-Queue Transaction
+                        </Typography>
+                        <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16, span: { fontStyle: 'italic' } }}>
+                            <span>Occassionally</span> your transaction succeeds on the blockchain, but the service to update our website fails.
+                        </Typography>
+                        <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
+                            If that happens, you can re-queue your transaction with this form
+                        </Typography>
+                        <Box
+                            component="form"
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                textAlign: 'center'
+                            }}
+                        >
+                            <Box display="flex" alignItems="center" gap={2} sx={{ marginY: 4 }}>
+                                <Box>
+                                    <TextField
+                                        id="tx"
+                                        value={hash}
+                                        onChange={e => setHash(e.target.value)}
+                                        label="Tx Hash"
+                                    />
+                                </Box>
+                                <Box>
+                                    <Button
+                                        sx={{ paddingY: 1.5, paddingX: 2.5, fontWeight: 600 }}
+                                        variant="contained"
+                                        onClick={sendTransaction}>
+                                        Submit
+                                    </Button>
+                                </Box>
+                            </Box>
+                            <Link target={"_blank"} href="https://metamask.zendesk.com/hc/en-us/articles/4413442094235-How-to-find-a-transaction-ID">
+                                <Typography color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
+                                    How do I find my transaction hash?
+                                </Typography>
+                            </Link>
                         </Box>
                     </Box>
                 </HodlBorderedBox>

@@ -18,24 +18,25 @@ export default function About({ address }) {
         <Box marginX={4} marginY={4}>
             <HodlBorderedBox>
                 <Box mb={4}>
-                    <Typography variant="h1" mb={1} sx={{ fontSize: 20 }}>
+                    <Typography mb={1} sx={{ fontSize: 20, fontWeight: 600 }}>
                         About
                     </Typography>
-                    <Typography mb={1}>
-                        Hodl My Moon is a web3 social network and marketplace.
+                    <Typography mb={1} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
+                        Hodl My Moon is a web3 social network and nft marketplace.
                     </Typography>
                 </Box>
                 <Box marginY={4}>
-                    <Typography variant="h2">
+                    <Typography variant="h2" mb={2}>
                         Quick Start
                     </Typography>
                     <Typography component="ul">
-                        <li>
+                    <Typography component="li" mb={1}>
                             <Link target="_blank" href="https://metamask.io/download/">
                                 Install Metamask
                             </Link>
-                        </li>
-                        <li>Click
+                        </Typography>
+                        <Typography component="li" mb={1}>
+                            Click
                             <Button
                                 color={'secondary'}
                                 variant={'outlined'}
@@ -44,7 +45,7 @@ export default function About({ address }) {
                             >
                                 connect
                             </Button> on the homepage
-                        </li>
+                        </Typography>
                     </Typography>
                 </Box>
                 <Box marginY={4}>
@@ -91,13 +92,12 @@ export default function About({ address }) {
                     <ol>
                         <li>Check the IPFS links </li>
                         <li>Check the selling history of the token</li>
-                        <li>Check for social validation (likes / comments / follows)</li>
-                        <li>Do a google image search</li>
+                        <li>Check for social validation (likes / comments)</li>
                         <li>Check the license (if any) assigned to the asset attached to the token</li>
                     </ol>
                 </Box>
                 <Box marginY={4}>
-                    <Typography id="hodler-privilege" mb={2} variant="h2">Asset License</Typography>
+                    <Typography id="hodler-privilege" mb={1} variant="h2">Asset License</Typography>
                     <Typography mb={2} sx={{ span: { fontWeight: 600 } }}>When an author mints an NFT, they <span>must</span> specify what any future hodler can do with the attached asset. <Link href="/asset-license">read more</Link></Typography>
                 </Box>
             </HodlBorderedBox>

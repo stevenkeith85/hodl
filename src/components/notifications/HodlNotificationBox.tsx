@@ -36,9 +36,25 @@ const CommentedOnToken = ({ item }) => <>{`commented: ${truncateText(item?.comme
 const RepliedToComment = ({ item }) => <>{`replied: ${truncateText(item?.comment?.comment, 70)}.`}</>
 
 const MintedToken = () => <>minted a token on the blockchain</>
-const ListedToken = ({ item }) => <>listed a token for <MaticPrice price={item?.metadata?.price} color="black" fontSize={14} size={14} sx={{ marginLeft: 0.5}} /></>
+const ListedToken = ({ item }) => <>listed a token for <MaticPrice price={item?.metadata?.price} color="black" fontSize={14} size={14} sx={{ marginLeft: 0.5 }} /></>
 const DelistedToken = ({ item }) => <>delisted a token</>
-const BoughtToken = () => <>bought a token.</>
+const BoughtToken = ({ item }) => {
+    const { address } = useContext(WalletContext);
+
+    if (address === item?.metadata?.seller) {
+        return <Typography component={"span"}>
+            bought your token for
+            <MaticPrice price={item?.metadata?.price} color="black" fontSize={14} size={14} sx={{ marginLeft: 0.5 }} />
+        </Typography>
+    }
+    return (
+        <Typography component={"span"}>
+            bought a token for
+            <MaticPrice price={item?.metadata?.price} color="black" fontSize={14} size={14} sx={{ marginLeft: 0.5 }} />&nbsp;
+            from <ProfileNameOrAddress profileAddress={item?.metadata?.seller} />
+        </Typography>
+    )
+}
 const Followed = () => <>followed you.</>
 
 
@@ -63,7 +79,10 @@ const MessageWithAvatarAndTime = ({ item, children }) => {
     </>)
 }
 
-const NotificationLink = ({ item }) => {
+interface NotificationLinkProps {
+    item: HodlActionViewModel;
+}
+const NotificationLink: React.FC<NotificationLinkProps> = ({ item }) => {
     const { address } = useContext(WalletContext);
 
     return (<Box
@@ -150,7 +169,7 @@ const NotificationLink = ({ item }) => {
             <Link href={`/nft/${item.token.id}`} passHref>
                 <Typography component="a">
                     <MessageWithAvatarAndTime item={item}>
-                        <BoughtToken />
+                        <BoughtToken item={item} />
                     </MessageWithAvatarAndTime>
                 </Typography>
             </Link>
@@ -204,8 +223,12 @@ interface HodlNotificationBoxProps {
     lastRead: number;
     sx?: object;
 }
-
-export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({ item, setShowNotifications, lastRead, sx = {} }) => {
+export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({
+    item,
+    setShowNotifications,
+    lastRead,
+    sx = {}
+}) => {
 
     if (!item) {
         return null;

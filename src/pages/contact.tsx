@@ -1,9 +1,8 @@
-import { Box, NoSsr, Stack, Typography } from "@mui/material";
+import { Box, NoSsr, Typography } from "@mui/material";
 import TwitterIcon from '@mui/icons-material/Twitter';
 import { grey } from '@mui/material/colors';
-import { Reddit, RocketLaunch } from "@mui/icons-material";
+import { RocketLaunch } from "@mui/icons-material";
 import { authenticate } from "../lib/jwt";
-import { ContactPagePitch } from "../components/layout/ContactPagePitch";
 import { HodlBorderedBox } from "../components/HodlBorderedBox";
 
 export async function getServerSideProps({ req, res }) {
@@ -35,35 +34,45 @@ export default function Contact({ address }) {
         <Box marginX={4} marginY={4}>
             <HodlBorderedBox>
                 <Box mb={4}>
-                    <Typography variant="h1" mb={1} sx={{ fontSize: 20 }}>
-                        Contact
+                    <Typography mb={1} sx={{ fontSize: 20, fontWeight: 600 }}>
+                        Contact Us
                     </Typography>
-                    <Typography>
-                        We will get back to you as soon as possible.
+                    <Typography mb={1} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
+                        We&apos;ll get back to you as soon as possible.
                     </Typography>
                 </Box>
                 <Box mb={4}>
-                    <Typography variant="h2" mb={1}>
+                    <Typography 
+                        variant="h2" 
+                        mb={2}
+                        >
                         Socials
                     </Typography>
-
-                    <Box sx={{ marginY: 2, gap: 2, display: 'flex', alignItems: 'center' }}>
-                        <RocketLaunch sx={{ color: theme => theme.palette.text.secondary }} />
-                        <Typography>hodlmymoon</Typography>
-                    </Box>
-                    <Box sx={{ marginY: 2, gap: 2, display: 'flex', alignItems: 'center' }}>
-                        <TwitterIcon sx={{ color: theme => theme.palette.text.secondary }} />
-                        <Typography>hodlmymoon</Typography>
-                    </Box>
-                    <Box sx={{ marginY: 2, gap: 2, display: 'flex', alignItems: 'center' }}>
-                        <Box sx={{ color: theme => theme.palette.text.secondary, width: 24, height: 24 }}>
-                            <TikTokIcon color="rgba(0,0,0,0.67)" />
+                    <Box sx={{ 
+                        display: 'grid', 
+                        gap: 2
+                         }}>
+                        <Box sx={{ gap: 1.5, display: 'flex', alignItems: 'center' }}>
+                            <RocketLaunch sx={{ color: grey[500] }} />
+                            <Typography color={theme => theme.palette.text.secondary}>hodlmymoon</Typography>
                         </Box>
-                        <Typography>hodlmymoon</Typography>
+                        <Box sx={{ gap: 1.5, display: 'flex', alignItems: 'center' }}>
+                            <TwitterIcon sx={{ color: grey[500] }}  />
+                            <Typography color={theme => theme.palette.text.secondary}>hodlmymoon</Typography>
+                        </Box>
+                        <Box sx={{ gap: 1.5, display: 'flex', alignItems: 'center' }}>
+                            <Box sx={{ width: 24, height: 24 }}>
+                                <TikTokIcon color={grey[500]} />
+                            </Box>
+                            <Typography color={theme => theme.palette.text.secondary}>hodlmymoon</Typography>
+                        </Box>
                     </Box>
                 </Box>
                 <Box mb={4}>
-                    <Typography variant="h2" mb={1}>
+                    <Typography 
+                        variant="h2" 
+                        mb={1}
+                    >
                         Support
                     </Typography>
                     <Typography>
@@ -71,7 +80,10 @@ export default function Contact({ address }) {
                     </Typography>
                 </Box>
                 <Box mb={4}>
-                    <Typography variant="h2" mb={1}>
+                    <Typography 
+                        variant="h2" 
+                        mb={1}
+                        >
                         Other
                     </Typography>
                     <Typography>

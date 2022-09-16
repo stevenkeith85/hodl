@@ -31,15 +31,15 @@ export const HodlDropzone = ({ onDrop, progress }) => {
         sx={{
             // border: `1px solid #d0d0d0`,
             borderRadius: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
+            // display: 'flex',
+            // flexDirection: 'column',
+            // alignItems: 'center',
+            // justifyContent: 'center',
             overflow: 'hidden',
-            padding: 0,
+            padding: 10,
             margin: 0,
             cursor: 'pointer',
-            height:'550px',
+            // height:'550px',
         }}
         >
             <Box
@@ -61,7 +61,7 @@ export const HodlDropzone = ({ onDrop, progress }) => {
                         <AudiotrackOutlined color="secondary" sx={{ fontSize: '50px' }} />
                     </Box>
                     <Typography sx={{ fontSize: '20px'}}>Drag a photo, video, or audio clip here</Typography>
-                    <div><Button color="primary" variant="contained" sx={{ margin: 4, paddingX: 3, paddingY: 1}}>Select</Button></div>
+                    <div><Button color="primary" variant="contained" sx={{ paddingX: 3, paddingY: 1}}>Select</Button></div>
                 </Box>
             </Box>
             

@@ -5,6 +5,7 @@ export const HodlLink = ({ href, children }) => (
     <Link href={href} passHref>
         <Typography
             component="a"
+            mb={0}
             sx={{
                 textDecoration: 'none',
                 color: `#333`,

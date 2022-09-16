@@ -143,6 +143,10 @@ export const pluralize = (n: number, item: string) => {
   return v !== 1 ? `${v} ${endsWithY ? item.slice(0, -1) + 'ies' : item + 's'}`: `1 ${item}`
 }
 
+export const validTxHashFormat = (addr) => {
+  return /^0x([A-Fa-f0-9]{64})$/.test(addr);
+}
+
 export const assetType = (nft: Token | Nft) : AssetTypes => {
   if (!nft.properties.asset.mimeType) {
     return AssetTypes.Image;

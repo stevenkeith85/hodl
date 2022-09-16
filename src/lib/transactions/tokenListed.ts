@@ -19,6 +19,8 @@ export const tokenListed = async (
     txReceipt: ethers.providers.TransactionReceipt,
     tx: ethers.providers.TransactionResponse
 ): Promise<boolean> => {
+    console.log(`tokenListed - processing tx`);
+
     const contract = new ethers.Contract(nftmarketaddress, Market.abi, provider);
 
     // event TokenListed(
@@ -27,7 +29,6 @@ export const tokenListed = async (
     //     uint256 price
     // );
     const log: ethers.utils.LogDescription = contract.interface.parseLog(txReceipt.logs?.[0]);
-    console.log(`tokenListed - processing tx`);
 
     const { tokenId: tokenIdBN, seller, price: priceInWei } = log.args;
 

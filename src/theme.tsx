@@ -36,15 +36,15 @@ let theme = createTheme({
   typography: {
     fontFamily: "Nunito Sans, sans-serif",
     h1: {
+      fontSize: 18,
+      fontWeight: 600
+    },
+    h2: {
       fontSize: 16,
       fontWeight: 500
     },
-    h2: {
-      fontSize: 15,
-      fontWeight: 500
-    },
     h3: {
-      fontSize: 14,
+      fontSize: 15,
       fontWeight: 500
     },
     body1: {

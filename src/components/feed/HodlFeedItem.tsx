@@ -145,7 +145,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                     </Box>
                     {
                         item.token?.image &&
-                        <Link href={`/nft/${item.token.id}`} passHref>
+                        <Link href={item.action === ActionTypes.Listed ? `/nft/${item.token.id}?tab=1` : `/nft/${item.token.id}`} passHref>
                             <Box
                                 sx={{
                                     cursor: 'pointer',

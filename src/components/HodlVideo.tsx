@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, NoSsr } from "@mui/material";
 import { useCallback, useEffect, useRef } from "react";
 import { createCloudinaryUrl } from "../lib/utils";
 
@@ -38,7 +38,7 @@ export const HodlVideo = ({
         if (gif) {
             return;
         }
-        
+
         let observer = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.intersectionRatio !== 1) {
@@ -56,7 +56,7 @@ export const HodlVideo = ({
     useEffect(() => {
         try {
             pauseVideoOffscreen();
-            
+
             video?.current?.addEventListener('volumechange', (event) => {
                 localStorage.setItem('muted', video?.current?.muted);
             });
@@ -91,28 +91,30 @@ export const HodlVideo = ({
                 },
                 ...sx
             }}>
-                <video
-                    onLoadedData={() => {
-                        if (onLoad) {
-                            onLoad()
+                <NoSsr>
+                    <video
+                        onLoadedData={() => {
+                            if (onLoad) {
+                                onLoad()
+                            }
                         }
-                    }
-                    }
-                    width={width}
-                    ref={video}
-                    autoPlay={true}
-                    loop={gif}
-                    muted={JSON.parse(localStorage.getItem('muted'))}
-                    controls={!gif && controls}
-                    controlsList="nodownload"
-                    poster={getPoster()}>
-                    {!onlyPoster && (<>
-                        <source type="video/mp4" src={`${asset}.mp4`} />
-                        <source type="video/webm" src={`${asset}.webm`} />
-                        Your browser does not support HTML5 video tag.
-                        {gif && <a href={`${asset}.gif`} >Click here to view original GIF</a>}
-                    </>)}
-                </video>
+                        }
+                        width={width}
+                        ref={video}
+                        autoPlay={true}
+                        loop={gif}
+                        muted={typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('muted')): false}
+                        controls={!gif && controls}
+                        controlsList="nodownload"
+                        poster={getPoster()}>
+                        {!onlyPoster && (<>
+                            <source type="video/mp4" src={`${asset}.mp4`} />
+                            <source type="video/webm" src={`${asset}.webm`} />
+                            Your browser does not support HTML5 video tag.
+                            {gif && <a href={`${asset}.gif`} >Click here to view original GIF</a>}
+                        </>)}
+                    </video>
+                </NoSsr>
             </Box>
         </>
     )

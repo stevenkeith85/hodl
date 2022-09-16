@@ -49,14 +49,6 @@ export const MintTokenAction: FC<MintProps> = ({
         ...prev,
         tokenId
       }));
-
-      // enqueueSnackbar(
-      //   `Once your transaction has been confirmed on the blockchain; we'll add it to the site and send you a notification.`,
-      //   {
-      //     // @ts-ignore
-      //     variant: "hodlsnackbar",
-      //     type: "success"
-      //   });
       
       setStepComplete(4);
       setSuccessModalOpen(true);

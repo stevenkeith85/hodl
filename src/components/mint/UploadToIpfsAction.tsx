@@ -105,7 +105,8 @@ export const UploadToIpfsAction: FC<MintProps> = ({
   }
   return (
     <Box
-      width="90%"
+      width="100%"
+      marginRight={4}
     >
       {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
       <Formik

@@ -14,7 +14,12 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
 
     const getHeightForAspectRatio = (width: number, aspectRatio: string = "1:1") => {
 
+        // TODO: Videos do not have their aspect ratio stored, so we don't really know how tall 
+        // to make the skeleton for the feed item
+
+        // TODO: Perhaps we can calculate and store arbitrary aspect ratios at upload time?
         if (aspectRatio === null) {
+            return `100%`;
             aspectRatio = "1:1";
         }
 

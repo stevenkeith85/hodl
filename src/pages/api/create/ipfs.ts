@@ -73,6 +73,11 @@ const uploadNFT = async (
   const { path, content } = urlSource(assetUrl);
   const asset = await ipfs.add(content, { cidVersion: 1 });
 
+  // Get an image representation for a video
+  // const imageUrl: string = assetUrl + '.jpg';
+  // const { path, content } = urlSource(assetUrl);
+  // const asset = await ipfs.add(content, { cidVersion: 1 });
+
   const hodlMetadata: HodlMetadata = {
     name,
     description,
@@ -127,20 +132,23 @@ route.post(async (req, res: NextApiResponse) => {
     aspectRatio
   );
 
-  // Upload the IPFS image to cloudinary so that the filter/ crop becomes permanent
-  const processedImg = makeCloudinaryImageUrl(fileName.split('/')[2], filter, aspectRatio);
-  console.log('create/ipfs - processedImg - ', processedImg)
+  const isImage = mimeType.indexOf('image') !== -1;
 
-  const response : UploadApiResponse = await cloudinary.v2.uploader.upload(processedImg, {
-    public_id: imageCid,
-    folder: process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER + '/nfts/'
-  });
+  if (isImage) {
+    // Upload the IPFS image to cloudinary so that the filter/ crop becomes permanent
+    const processedImg = makeCloudinaryImageUrl(fileName.split('/')[2], filter, aspectRatio);
+    console.log('create/ipfs - processedImg - ', processedImg)
 
-  console.log('create/ipfs - cloudinary upload response', JSON.stringify(response))
+    const response: UploadApiResponse = await cloudinary.v2.uploader.upload(processedImg, {
+      public_id: imageCid,
+      folder: process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER + '/nfts/'
+    });
+
+    console.log('create/ipfs - cloudinary upload response', JSON.stringify(response))
+  }
+
 
   // delete the upload folder item
-  // await cloudinary.v2.uploader.destroy(fileName);
-
   const deleted = await removePublicIdFromCloudinary(fileName)
 
   console.log('create/ipfs - cloudinary deleted response', JSON.stringify(deleted))

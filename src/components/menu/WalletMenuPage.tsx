@@ -130,8 +130,11 @@ export const WalletMenuPage: React.FC<WalletMenuPageProps> = ({
                             flexDirection="column"
                             gap={3}
                         >
-                            <Typography variant="h1">Connect with Metamask</Typography>
-                            <Typography sx={{ color: '#666' }}>Don&apos;t have metamask? Get it <Link href="https://metamask.io/download/">here</Link></Typography>
+                            <Typography sx={{ fontSize: 16 }}>Connect with Metamask</Typography>
+                            <Typography sx={{ color: theme => theme.palette.text.secondary }}>
+                                Don&apos;t have Metamask? Get it <Link href="https://metamask.io/download/">here</Link>
+                            </Typography>
+                            
                             <Box>
                                 <LoginLogoutButton
                                     sx={{
@@ -153,6 +156,6 @@ export const WalletMenuPage: React.FC<WalletMenuPageProps> = ({
                         textTransform: 'lowercase'
                     }} />}
             </Box>
-        </ClickAwayListener>
+        </ClickAwayListener >
     )
 }

@@ -136,7 +136,5 @@ export const tokenMinted = async (
         return false;
     }
 
-    // TODO: If we successfully process this transaction, we should probably record that in our database 
-    // and stop users re-running old / out of order transactions
     return true;    
 }

@@ -18,11 +18,7 @@ export default function License({ address }) {
         <Box marginX={8} marginY={4}>
             <HodlBorderedBox>
                 <Box mb={4}>
-                    <Typography
-                        variant="h1"
-                        mb={1}
-                        sx={{ fontSize: 20 }}
-                    >
+                    <Typography mb={1} sx={{ fontSize: 20, fontWeight: 600 }}>
                         Token Author License Agreement
                     </Typography>
                     <Typography
@@ -33,93 +29,41 @@ export default function License({ address }) {
                     </Typography>
                 </Box>
                 <Box marginY={4}>
-                    <Link href="#glossary" passHref>
-                        <Typography component="a" mb={1}>
-                            Skip to Glossary of Crypto Terms
-                        </Typography>
-                    </Link>
-                </Box>
-                <Box marginY={4}>
-                    <Typography
-                        sx={{
-                            span: {
-                                fontWeight: 600
-                            }
-                        }}
-                        mb={1}
-                    >
+                    <Typography mb={1} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
                         This is a license agreement between the Token Author
                         and the Token Hodler that explains how the Token Hodler
                         can use any assets attached to a token they hodl; such as photos, illustrations, videos and music;
                         that they license from the Token Author.
                     </Typography>
-
-
-                    <Typography
-                        sx={{
-                            // fontSize: 18,
-                            span: {
-                                fontWeight: 600
-                            }
-                        }}
-                        mb={1}
-                    >
+                    <Typography mb={1} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
                         By minting or trading tokens on Hodl My Moon, you accept the terms of this agreement.
                     </Typography>
                 </Box>
                 <Box marginY={4}>
-                    <Typography
-                        sx={{
-                            fontWeight: 600
-                        }}
-                        mb={1}
-                    >
+                    <Typography mb={1} color={theme => theme.palette.primary.main} sx={{ fontSize: 16 }}>
                         The Token Author must hold the intellectual property rights of the attached asset(s).
                     </Typography>
                 </Box>
                 <Box marginY={4}>
                     <Typography
                         variant="h2"
-                        sx={{
-                            // fontSize: 18,
-                            span: {
-                                fontWeight: 600
-                            }
-                        }}
-                        mb={1}
+                        mb={2}
                     >
                         1. What types of licenses can Token Authors provide?
                     </Typography>
-                    <Typography
-                        sx={{
-                            // fontSize: 18,
-                            span: {
-                                fontWeight: 600
-                            }
-                        }}
-                    // marginY={4}
-                    >
+                    <Typography>
                         Token Authors can offer a Commercial or Non Commercial license for the asset attached to a token they mint.
                     </Typography>
                 </Box>
                 <Box marginY={4}>
-                    <Typography
-                        variant="h2"
-                        sx={{
-                            // fontSize: 18,
-                            span: {
-                                fontWeight: 600
-                            }
-                        }}
-                        mb={1}
-                    >
+                    <Typography variant="h2" mb={2}>
                         2. Commercial vs Non Commercial
                     </Typography>
                     <Typography
                         sx={{
                             // fontSize: 18,
                             span: {
-                                fontWeight: 600
+                                color: theme => theme.palette.primary.main
                             }
                         }}
                         marginY={1}
@@ -130,7 +74,7 @@ export default function License({ address }) {
                         sx={{
                             // fontSize: 18,
                             span: {
-                                fontWeight: 600
+                                color: theme => theme.palette.primary.main
                             }
                         }}
                         marginY={1}
@@ -139,9 +83,8 @@ export default function License({ address }) {
                     </Typography>
                     <Typography
                         sx={{
-                            // fontSize: 18,
                             span: {
-                                fontWeight: 600
+                                color: theme => theme.palette.primary.main
                             }
                         }}
                         marginY={1}
@@ -155,28 +98,29 @@ export default function License({ address }) {
                                 fontWeight: 600
                             }
                         }}
-                        marginY={1}
+                        marginTop={2}
+                        marginBottom={1}
                     >
                         Examples of how you can use Non Commercially licensed assets include:
-                        <ul>
-                            <li>Use in free educational lectures and classes</li>
-                            <li>Use on an individual or group's website discussing the artwork in question</li>
-                            <li>Use on websites that are primarily information-led, research-oriented and obviously non-commercial in nature</li>
-                        </ul>
+                    </Typography>
+                    <Typography component="ul">
+                        <Typography component="li" mb={1}>
+                            Use in free educational lectures and classes
+                        </Typography>
+                        <Typography component="li" mb={1}>
+                            Use on an individual or group's website discussing the artwork in question
+                        </Typography>
+                        <Typography component="li" mb={1}>
+                            Use on websites that are primarily information-led, research-oriented and obviously non-commercial in nature
+                        </Typography>
                     </Typography>
                 </Box>
                 <Box marginY={4}>
                     <Typography
                         variant="h2"
-                        sx={{
-                            // fontSize: 18,
-                            span: {
-                                fontWeight: 600
-                            }
-                        }}
-                        mb={1}
+                        mb={2}
                     >
-                        2. Expiration of the license
+                        3. Expiration of the license
                     </Typography>
                     <Typography
                         sx={{
@@ -192,19 +136,12 @@ export default function License({ address }) {
                         Only the current hodler of a token is granted a license.
                     </Typography>
                 </Box>
-
                 <Box marginY={4}>
                     <Typography
                         variant="h2"
-                        sx={{
-                            // fontSize: 18,
-                            span: {
-                                fontWeight: 600
-                            }
-                        }}
-                        mb={1}
+                        mb={2}
                     >
-                        3. How can a Token Hodler use licensed content?
+                        4. How can a Token Hodler use licensed content?
                     </Typography>
                     <Typography
                         sx={{
@@ -230,9 +167,8 @@ export default function License({ address }) {
                     </Typography>
                     <Typography
                         sx={{
-                            // fontSize: 18,
                             span: {
-                                fontWeight: 600
+                                color: theme => theme.palette.primary.main
                             }
                         }}
                         marginY={1}
@@ -241,9 +177,8 @@ export default function License({ address }) {
                     </Typography>
                     <Typography
                         sx={{
-                            // fontSize: 18,
                             span: {
-                                fontWeight: 600
+                                color: theme => theme.palette.primary.main
                             }
                         }}
                         marginY={1}
@@ -252,9 +187,8 @@ export default function License({ address }) {
                     </Typography>
                     <Typography
                         sx={{
-                            // fontSize: 18,
                             span: {
-                                fontWeight: 600
+                                color: theme => theme.palette.primary.main
                             }
                         }}
                         marginY={1}
@@ -264,9 +198,8 @@ export default function License({ address }) {
                     </Typography>
                     <Typography
                         sx={{
-                            // fontSize: 18,
                             span: {
-                                fontWeight: 600
+                                color: theme => theme.palette.primary.main
                             }
                         }}
                         marginY={1}
@@ -275,9 +208,8 @@ export default function License({ address }) {
                     </Typography>
                     <Typography
                         sx={{
-                            // fontSize: 18,
                             span: {
-                                fontWeight: 600
+                                color: theme => theme.palette.primary.main
                             }
                         }}
                         marginY={1}
@@ -355,13 +287,6 @@ export default function License({ address }) {
                         </ul>
                     </Typography>
                     <Typography
-                        sx={{
-                            // fontSize: 18,
-                            span: {
-                                fontWeight: 600
-                            }
-                        }}
-                    // marginY={4}
                     >
                         Ensure you read the Restricted Uses section below for exceptions.
                     </Typography>
@@ -369,22 +294,14 @@ export default function License({ address }) {
                 <Box marginY={4}>
                     <Typography
                         variant="h2"
-                        sx={{
-                            // fontSize: 18,
-                            span: {
-                                fontWeight: 600
-                            }
-                        }}
-                        // marginY={4}
-                        mb={1}
+                        mb={2}
                     >
-                        4. Restricted Uses
+                        5. Restricted Uses
                     </Typography>
                     <Typography
                         sx={{
-                            // fontSize: 18,
                             span: {
-                                fontWeight: 600
+                                color: theme => theme.palette.primary.main
                             }
                         }}
                         marginY={1}
@@ -394,9 +311,8 @@ export default function License({ address }) {
                     </Typography>
                     <Typography
                         sx={{
-                            // fontSize: 18,
                             span: {
-                                fontWeight: 600
+                                color: theme => theme.palette.primary.main
                             }
                         }}
                         marginY={1}
@@ -406,9 +322,8 @@ export default function License({ address }) {
                     </Typography>
                     <Typography
                         sx={{
-                            // fontSize: 18,
                             span: {
-                                fontWeight: 600
+                                color: theme => theme.palette.primary.main
                             }
                         }}
                         marginY={1}
@@ -418,9 +333,8 @@ export default function License({ address }) {
                     </Typography>
                     <Typography
                         sx={{
-                            // fontSize: 18,
                             span: {
-                                fontWeight: 600
+                                color: theme => theme.palette.primary.main
                             }
                         }}
                         marginY={1}
@@ -431,9 +345,8 @@ export default function License({ address }) {
                     </Typography>
                     <Typography
                         sx={{
-                            // fontSize: 18,
                             span: {
-                                fontWeight: 600
+                                color: theme => theme.palette.primary.main
                             }
                         }}
                         marginY={1}
@@ -445,15 +358,9 @@ export default function License({ address }) {
                 <Box id="intellectual-property" marginY={4}>
                     <Typography
                         variant="h2"
-                        sx={{
-                            // fontSize: 18,
-                            span: {
-                                fontWeight: 600
-                            }
-                        }}
-                        marginY={1}
+                        marginY={2}
                     >
-                        5. Intellectual Property</Typography>
+                        6. Intellectual Property</Typography>
                     <Typography
                         sx={{
                             // fontSize: 18,
@@ -470,15 +377,9 @@ export default function License({ address }) {
                 <Box id="termination" marginY={4}>
                     <Typography
                         variant="h2"
-                        sx={{
-                            // fontSize: 18,
-                            span: {
-                                fontWeight: 600
-                            }
-                        }}
-                        marginY={1}
+                        marginY={2}
                     >
-                        6. Termination</Typography>
+                        7. Termination</Typography>
                     <Typography
                         sx={{
                             // fontSize: 18,
@@ -498,24 +399,10 @@ export default function License({ address }) {
                 <Box id="Indemnification" marginY={4}>
                     <Typography
                         variant="h2"
-                        sx={{
-                            // fontSize: 18,
-                            span: {
-                                fontWeight: 600
-                            }
-                        }}
-                        marginY={1}
+                        marginY={2}
                     >
-                        7. Indemnification</Typography>
-                    <Typography
-                        sx={{
-                            // fontSize: 18,
-                            span: {
-                                fontWeight: 600
-                            }
-                        }}
-                        marginY={1}
-                    >
+                        8. Indemnification</Typography>
+                    <Typography>
                         The Token Hodler (past and present),
                         and the Token Author agree to defend, indemnity and hold harmless Hodl My Moon (the brand), Pony Powered Limited (the company), its staff and directors from all damages, liabilities and expenses
                         including reasonable legal costs including attorney fees) arising out of or in connection with any breach or alleged breach by you (or anyone acting on your behalf) of any of the terms of this agreement.
@@ -524,62 +411,41 @@ export default function License({ address }) {
                 <Box id="General Provisions" marginY={4}>
                     <Typography
                         variant="h2"
-                        sx={{
-                            // fontSize: 18,
-                            span: {
-                                fontWeight: 600
-                            }
-                        }}
-                        marginY={1}
+                        marginY={2}
                     >
-                        8. General Provisions</Typography>
+                        9. General Provisions</Typography>
                     <Typography
                         sx={{
-                            // fontSize: 18,
                             span: {
-                                fontWeight: 600
+                                color: theme => theme.palette.primary.main
                             }
                         }}
                         marginY={1}
                     >
-                        
-                            <span>Hodl My Moon Fair Usage</span> - The Token Author grants Hodl My Moon a commercial license for the asset. Usage will be limited to activities concerned with Hodl My Moon. (the website, apps, etc)
-                            
-                        
+                        <span>Hodl My Moon Fair Usage</span> - The Token Author grants Hodl My Moon a commercial license for the asset. Usage will be limited to activities concerned with Hodl My Moon. (the website, apps, etc)
                     </Typography>
                     <Typography
                         sx={{
-                            // fontSize: 18,
                             span: {
-                                fontWeight: 600
+                                color: theme => theme.palette.primary.main
                             }
                         }}
                         marginY={1}
                     >
-                        
-                            
-                            <span>Taxes</span> - The Token Author and Token Hodler agree to pay and be responsible for any and all taxes
-                                imposed by any jurisdiction as the result of trading tokens or crypto assets.
-                        
+                        <span>Taxes</span> - The Token Author and Token Hodler agree to pay and be responsible for any and all taxes
+                        imposed by any jurisdiction as the result of trading tokens or crypto assets.
                     </Typography>
                 </Box>
                 <Box id="glossary" marginY={4}>
                     <Typography
                         variant="h2"
-                        sx={{
-                            // fontSize: 18,
-                            span: {
-                                fontWeight: 600
-                            }
-                        }}
-                        marginY={1}
+                        marginY={2}
                     >
-                        9. Glossary of Crypto Terms</Typography>
-                    <Typography
+                        10. Glossary of Crypto Terms</Typography>
+                        <Typography
                         sx={{
-                            // fontSize: 18,
                             span: {
-                                fontWeight: 600
+                                color: theme => theme.palette.primary.main
                             }
                         }}
                         marginY={1}
@@ -589,22 +455,20 @@ export default function License({ address }) {
                     </Typography>
                     <Typography
                         sx={{
-                            // fontSize: 18,
                             span: {
-                                fontWeight: 600
+                                color: theme => theme.palette.primary.main
                             }
                         }}
                         marginY={1}
                     >
                         A <span>token</span> is a representation of something in the blockchain.
-                        This something can be anything. By reprenting things as tokens, we can allow smart contracts to interact with them.
+                        This something can be anything. By representing things as tokens, we can allow smart contracts to interact with them.
                         Tokens often link to assets such as images, illustractions, videos, or music that do not reside on the blockchain.
                     </Typography>
                     <Typography
                         sx={{
-                            // fontSize: 18,
                             span: {
-                                fontWeight: 600
+                                color: theme => theme.palette.primary.main
                             }
                         }}
                         marginY={1}
@@ -613,9 +477,8 @@ export default function License({ address }) {
                     </Typography>
                     <Typography
                         sx={{
-                            // fontSize: 18,
                             span: {
-                                fontWeight: 600
+                                color: theme => theme.palette.primary.main
                             }
                         }}
                         marginY={1}
@@ -624,9 +487,8 @@ export default function License({ address }) {
                     </Typography>
                     <Typography
                         sx={{
-                            // fontSize: 18,
                             span: {
-                                fontWeight: 600
+                                color: theme => theme.palette.primary.main
                             }
                         }}
                         marginY={1}
@@ -635,9 +497,8 @@ export default function License({ address }) {
                     </Typography>
                     <Typography
                         sx={{
-                            // fontSize: 18,
                             span: {
-                                fontWeight: 600
+                                color: theme => theme.palette.primary.main
                             }
                         }}
                         marginY={1}
@@ -646,9 +507,8 @@ export default function License({ address }) {
                     </Typography>
                     <Typography
                         sx={{
-                            // fontSize: 18,
                             span: {
-                                fontWeight: 600
+                                color: theme => theme.palette.primary.main
                             }
                         }}
                         marginY={1}

@@ -1,7 +1,5 @@
 import { Box, Typography } from "@mui/material";
 import { FC } from "react";
-import { assetType } from "../../lib/utils";
-import { AssetTypes } from "../../models/AssetType";
 import { HodlVideo } from "../HodlVideo";
 import { FilteredImageMemo } from "./FilteredImage";
 import { MintProps } from './models';
@@ -19,13 +17,10 @@ export const AssetPreview: FC<MintProps> = ({
   const isAudio = () => mimeType && mimeType.indexOf('audio') !== -1;
 
   return (
-    <Box
-      display="flex"
-      sx={{
-        height: '550px',
-        width: `100%`,
-      }}>
-      {!fileName && <Typography sx={{ margin: `auto`, color: theme => theme.palette.text.secondary }}>preview will appear here</Typography>}
+    <Box>
+      {!fileName &&
+        <Typography sx={{ margin: `auto`, color: theme => theme.palette.text.secondary }}>Asset preview will appear here</Typography>
+      }
       {fileName && isImage() &&
         <FilteredImageMemo
           aspectRatio={aspectRatio}
@@ -33,31 +28,20 @@ export const AssetPreview: FC<MintProps> = ({
           fileName={fileName}
           onLoad={setLoading}
         />}
-      {fileName && (isVideo() || isAudio()) &&
+      {fileName && isVideo() &&
         <HodlVideo
           cid={fileName.split('/')[2]}
           folder="uploads"
           onLoad={setLoading}
-          height={'400px'}
-          audio={assetType({
-            id: 0,
-            creator: "",
-            metadata: "",
-            owner: "",
-            forSale: false,
-            price: "",
-            name: "",
-            image: "",
-            description: "",
-            properties: {
-              aspectRatio: "1:1",
-              filter: "e_improve",
-              asset: {
-                license: "no license",
-                mimeType: formData.mimeType,
-              }
-            }
-          }) === AssetTypes.Audio}
+          audio={false}
+        />
+      }
+      {fileName && isAudio() &&
+        <HodlVideo
+          cid={fileName.split('/')[2]}
+          folder="uploads"
+          onLoad={setLoading}
+          audio={true}
         />
       }
     </Box>

@@ -60,7 +60,7 @@ const Footer = ({ showFooter = true }) => {
                                 md: 12
                             }}
                         >
-                            <Stack spacing={0.5}>
+                            <Stack spacing={1}>
                                 <Typography
                                     sx={{
                                         fontWeight: 600,
@@ -72,7 +72,7 @@ const Footer = ({ showFooter = true }) => {
                                 <HodlLink href="/contact">contact</HodlLink>
 
                             </Stack>
-                            <Stack spacing={0.5}>
+                            <Stack spacing={1}>
                                 <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>tokens</Typography>
                                 <HodlLink href="/explore">explore</HodlLink>
                                 {address && <HodlLink href="/create">create</HodlLink>}
@@ -127,9 +127,10 @@ const Footer = ({ showFooter = true }) => {
                                 gap: 3
                             }}
                         >
-                            <RocketLaunch sx={{ color: grey[500] }} />
+                            {/* <RocketLaunch sx={{ color: grey[500] }} />
                             <Twitter sx={{ color: grey[500] }} />
-                            <Reddit sx={{ color: grey[500] }} />
+                            <Reddit sx={{ color: grey[500] }} /> */}
+                            <RocketLaunch sx={{ fontSize: 16, color: grey[500] }} />
                         </Box>
                         <Typography sx={{ color: grey[500], fontSize: '12px' }}>Copyright © 2022 Pony Powered Limited.</Typography>
                     </Stack>

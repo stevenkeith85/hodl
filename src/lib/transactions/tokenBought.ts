@@ -12,43 +12,49 @@ import { fetchNFT } from "../../pages/api/nft/[tokenId]";
 
 const client = Redis.fromEnv()
 
-// event TokenDelisted(
-//     address indexed seller, 
-//     uint256 indexed tokenId
-// );
-export const tokenDelisted = async (
+
+export const tokenBought = async (
     hash: string, // check valid address?
     provider: ethers.providers.BaseProvider,
     txReceipt: ethers.providers.TransactionReceipt,
     tx: ethers.providers.TransactionResponse
 ): Promise<boolean> => {
-    console.log(`tokenDelisted - processing tx`);
+    console.log(`tokenBought - processing tx`);
 
     const contract = new ethers.Contract(nftmarketaddress, Market.abi, provider);
 
+    // event TokenBought(
+    //     address indexed buyer,
+    //     address indexed seller,
+    //     uint256 indexed tokenId,
+    //     uint256 price
+    // );
     const log: ethers.utils.LogDescription = contract.interface.parseLog(txReceipt.logs?.[0]);
-    
-    const { tokenId: tokenIdBN, seller } = log.args;
-    const tokenId = tokenIdBN.toNumber();
 
-    // Some basic sanity checks
-    if (log.name !== 'TokenDelisted') {
-        console.log('tokenDelisted - called with a non delisting transaction');
+    if (log.name !== 'TokenBought') {
+        console.log('tokenBought - called with a non buying transaction');
         return false;
     }
+
+    const { buyer, seller, tokenId: tokenIdBN, price: priceInWei } = log.args;
+
+    const price = ethers.utils.formatEther(priceInWei);
+    const tokenId = tokenIdBN.toNumber();
 
     // Read the blockchain to ensure what we are about to do is correct
     const token: Nft = await fetchNFT(tokenId);
 
     if (token.forSale) {
-        console.log('tokenDelisted - token is still for sale according to the blockchain - not delisting from market');
+        console.log('tokenBought - token is still for sale according to the blockchain - not delisting from market');
         return;
     }
 
-    const removed = await client.zrem(`market`, tokenId);
+    const removed = await client.zrem(`market`,
+        tokenId
+    );
 
     if (!removed) {
-        console.log('tokenDelisted - token is not listed on market, aborting');
+        console.log(`tokenBought - token is not on the market`);
         return false;
     }
 
@@ -58,25 +64,31 @@ export const tokenDelisted = async (
         const removed = await client.zrem(`market:${tag}`, tokenId);
 
         if (!removed) {
-            console.log(`tokenDeListed - unable to remove token from market:${tag} zset`);
+            console.log(`tokenBought - unable to remove token from market:${tag} zset`);
             // we do not abort here as we might as well try adding the other tags
             // TODO: Better fault tolerance here
         }
     }
 
-    // TODO: Perhaps we just add the notifications to another queue, and let that happen async
-    const delisted: HodlAction = {
-        timestamp: Date.now(), // TODO: perhaps we can get the timestamp of the transaction confirmation?
-        action: ActionTypes.Delisted,
-        subject: seller,
+    // use the block timestamp for accuracy
+    const block = await provider.getBlock(tx.blockHash);
+
+    const bought: HodlAction = {
+        timestamp: block.timestamp,
+        action: ActionTypes.Bought,
+        subject: buyer,
         object: "token",
         objectId: tokenId,
+        metadata: {
+            price,
+            seller
+        }
     };
 
-    const success = await addAction(delisted);
+    const success = await addAction(bought);
 
     if (!success) {
-        console.log(`tokenDelisted - unable to add the action`);
+        console.log(`tokenBought - unable to add the action`);
         return false;
     }
 
