@@ -29,10 +29,6 @@ const MintTokenAction = dynamic(
   () => import('../components/mint/MintTokenAction').then((module) => module.MintTokenAction),
   { loading: () => <HodlLoadingSpinner /> }
 );
-// const AddToHodlAction = dynamic(
-//   () => import('../components/mint/AddToHodlAction').then((module) => module.AddToHodlAction),
-//   { loading: () => <HodlLoadingSpinner /> }
-// );
 
 export async function getServerSideProps({ req, res }) {
   await authenticate(req, res);
@@ -93,7 +89,6 @@ const Mint = ({ address }) => {
         // flexDirection="column"
         sx={{
           position: "relative",
-          border: `1px solid blue`,
           marginY: 4
           // marginY: {
           //   xs: 4,
@@ -113,10 +108,9 @@ const Mint = ({ address }) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            margin: 5,
+            margin: 6,
             // padding: 2,
-            border: '1px solid green',
-            minHeight: '60vh'
+            minHeight: '60vh',
           }}>
 
           <Grid
@@ -131,8 +125,7 @@ const Mint = ({ address }) => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   margin: 0,
-                  padding: 0,
-                  background: 'yellow'
+                  padding: 1,
                 }}
               >
                 {activeStep === 0 &&
@@ -186,7 +179,6 @@ const Mint = ({ address }) => {
             </Grid>
             <Grid
               item
-              marginTop={1}
               xs={12}
               md={6}>
               <Box
@@ -197,12 +189,10 @@ const Mint = ({ address }) => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   margin: 0,
-                  padding: 0,
-                  background: 'green'
+                  padding: 1,
                 }}
               >
                 <AssetPreview
-                  loading={loading}
                   formData={formData}
                   setFormData={setFormData}
                   setLoading={setLoading}
@@ -222,7 +212,7 @@ const Mint = ({ address }) => {
         </Box>
 
         {
-          !xs && activeStep < 5 &&
+          activeStep < 5 &&
           <MintProgressButtons
             loading={loading}
             activeStep={activeStep}

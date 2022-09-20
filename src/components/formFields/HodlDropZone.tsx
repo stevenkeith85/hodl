@@ -1,5 +1,5 @@
-import { AudiotrackOutlined, Photo, PhotoOutlined, Videocam, VideocamOffOutlined, VideocamOutlined } from '@mui/icons-material'
-import { Box, Button, LinearProgress, Stack, Tooltip, Typography } from '@mui/material'
+import { AudiotrackOutlined, PhotoOutlined, VideocamOutlined } from '@mui/icons-material'
+import { Box, Button, Typography } from '@mui/material'
 import React from 'react'
 import { useDropzone } from 'react-dropzone'
 
@@ -29,23 +29,14 @@ export const HodlDropzone = ({ onDrop, progress }) => {
     return (
         <Box
         sx={{
-            // border: `1px solid #d0d0d0`,
             borderRadius: 1,
-            // display: 'flex',
-            // flexDirection: 'column',
-            // alignItems: 'center',
-            // justifyContent: 'center',
             overflow: 'hidden',
             padding: 10,
             margin: 0,
             cursor: 'pointer',
-            // height:'550px',
         }}
         >
-            <Box
-                {...getRootProps()}
-                
-                >
+            <Box {...getRootProps()}>
                 <input {...getInputProps()} />
                 <Box 
                     display="flex" 

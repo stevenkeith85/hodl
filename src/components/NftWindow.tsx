@@ -121,7 +121,6 @@ export const NftWindow = ({ nft, aspectRatio = "1:1" }) => {
                 {assetType(nft) === AssetTypes.Gif &&
                     <HodlVideo
                         cid={nft?.image}
-                        // transformations={nft?.filter}
                         gif={true}
                     />}
                 {(assetType(nft) === AssetTypes.Video || assetType(nft) === AssetTypes.Audio) &&

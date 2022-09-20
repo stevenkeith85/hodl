@@ -1,33 +1,33 @@
 import { memo } from 'react';
 import { Box } from '@mui/material';
 
-import { imageFilters } from '../../lib/utils';
+import { aspectRatios, imageFilters } from '../../lib/utils';
 import { HodlVideo } from '../HodlVideo';
 
-// We load all the filter variations and hide with css
+// We load all the aspect ratio variations and hide with css
 export const FilteredVideo = ({ 
-  filter, 
+  aspectRatio,
   fileName, 
   onLoad
 }) => {
 
   return (
     <>
-      {imageFilters.map(({ code, name }, index) => (
+      {aspectRatios.map((ratio, index) =>
         <Box
           key={index}
           sx={{
-            display: filter === code ? 'flex' : 'none'
+            display: aspectRatio === ratio ? 'flex' : 'none'
           }}
         >
           <HodlVideo 
             cid={fileName.split('/')[2]} 
             folder="uploads" 
-            transformations={code}
+            aspectRatio={ratio}
             onLoad={onLoad}
           />
         </Box>
-      ))}
+      )}
     </>
   );
 };

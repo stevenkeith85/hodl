@@ -24,6 +24,7 @@ export const CropAssetAction = ({
       height="550px"
       gap={4}
     >
+      { JSON.stringify(formData) }
       <Crop sx={{ fontSize: 82, color: grey[400] }} />
       <Typography
         sx={{

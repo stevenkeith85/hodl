@@ -1,7 +1,14 @@
 import { Box, Modal } from "@mui/material";
 
-// Start simple
-export const HodlModal = ({ open, setOpen, children, ref = null, sx = {} }) => {
+
+export const HodlModal = ({ 
+    open, 
+    setOpen, 
+    children, 
+    onClose = null,
+    ref = null, 
+    sx = {} 
+}) => {
     return (
         <Modal
             disableRestoreFocus={true}
@@ -12,6 +19,10 @@ export const HodlModal = ({ open, setOpen, children, ref = null, sx = {} }) => {
                 // @ts-ignore
                 e.preventDefault();
                 setOpen(false);
+
+                if (onClose) {
+                    onClose();
+                }
             }}
             ref={ref}
         >

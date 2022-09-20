@@ -8,7 +8,7 @@ export const HodlImageResponsive = ({
     effect = null,
     aspectRatio = null,
     gravity = null,
-    environment = "dev",
+    environment = "dev", // const environment = process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER;
     cid,
     widths = [900, 1000, 1100, 1200, 1300, 1400], // You should do some experimentation and pick 6 or so
     sizes, // e.g. sizes="(min-width: 900px) 50vw, (min-width: 1200px) calc(1200px / 2)"
@@ -20,12 +20,12 @@ export const HodlImageResponsive = ({
 }) => {
 
     const makeCloudinaryUrl = (width) => {
-
+        const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_NAME;
         let cloudinaryUrl = '';
         if (aspectRatio) {
-            cloudinaryUrl = `https://res.cloudinary.com/dyobirj7r/image/upload/q_auto,c_fill,ar_${aspectRatio},w_${width}`;
+            cloudinaryUrl = `https://res.cloudinary.com/${cloudName}/image/upload/q_auto,c_fill,ar_${aspectRatio},w_${width}`;
         } else {
-            cloudinaryUrl = `https://res.cloudinary.com/dyobirj7r/image/upload/q_auto,c_fit,w_${width}`;
+            cloudinaryUrl = `https://res.cloudinary.com/${cloudName}/image/upload/q_auto,c_fit,w_${width}`;
         }
 
         if (zoom) {

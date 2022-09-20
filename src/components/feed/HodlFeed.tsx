@@ -27,6 +27,7 @@ export const HodlFeed = ({ address, limit = 4 }) => {
 
     return (
         <Box
+            id="hodlfeed"
             sx={{
                 paddingX: {
                     // xs: 4
@@ -73,7 +74,7 @@ export const HodlFeed = ({ address, limit = 4 }) => {
             >
                 {
                     ({ items }) =>
-                        (items || []).map((item: HodlAction) => <HodlFeedItem key={item.id} item={item} />)
+                        (items || []).map((item: HodlAction, index) => <HodlFeedItem key={item.id} item={item} index={index}/>)
                 }
             </InfiniteScroll>
         </Box>

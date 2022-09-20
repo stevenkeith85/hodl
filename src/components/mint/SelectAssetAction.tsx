@@ -4,6 +4,7 @@ import { useCloudinaryUpload } from "../../hooks/useCloudinaryUpload";
 import { MintProps } from "./models";
 import { Form, Formik } from "formik";
 import { HodlDropzone } from "../formFields/HodlDropZone";
+import calculateAspectRatios from 'calculate-aspect-ratio';
 
 export const SelectAssetAction: FC<MintProps> = ({
   setLoading,

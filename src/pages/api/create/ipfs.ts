@@ -53,6 +53,17 @@ const makeCloudinaryImageUrl = (cid, filter, aspectRatio) => {
   return `${cloudinaryUrl}/${environment}/${folder}/${cid}.jpg`
 }
 
+// We do not do any transformations on video, as they are really expensive :(
+const makeCloudinaryVideoUrl = (cid) => {
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_NAME;
+  const environment = process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER; // dev, staging, or prod
+  const folder = 'uploads'
+
+  let cloudinaryUrl = `https://res.cloudinary.com/${cloudName}/video/upload`;
+
+  return `${cloudinaryUrl}/${environment}/${folder}/${cid}`
+}
+
 // https://community.infura.io/t/ipfs-api-rate-limit/4995
 // TODO: Separate image and asset to allow cover art for music etc
 const uploadNFT = async (
@@ -68,7 +79,7 @@ const uploadNFT = async (
 
   const assetUrl: string = isImage ?
     makeCloudinaryImageUrl(fileName.split('/')[2], filter, aspectRatio) :
-    createCloudinaryUrl('video', 'upload', filter, 'uploads', fileName.split('/')[2]);
+    makeCloudinaryVideoUrl(fileName.split('/')[2]);
 
   const { path, content } = urlSource(assetUrl);
   const asset = await ipfs.add(content, { cidVersion: 1 });
@@ -134,23 +145,25 @@ route.post(async (req, res: NextApiResponse) => {
 
   const isImage = mimeType.indexOf('image') !== -1;
 
-  if (isImage) {
-    // Upload the IPFS image to cloudinary so that the filter/ crop becomes permanent
-    const processedImg = makeCloudinaryImageUrl(fileName.split('/')[2], filter, aspectRatio);
-    console.log('create/ipfs - processedImg - ', processedImg)
+  // Upload the IPFS image to cloudinary so that any user selected transformations / aspect rations become permanent
+  const processedAsset = isImage ?
+    makeCloudinaryImageUrl(fileName.split('/')[2], filter, aspectRatio) :
+    makeCloudinaryVideoUrl(fileName.split('/')[2]);
 
-    const response: UploadApiResponse = await cloudinary.v2.uploader.upload(processedImg, {
-      public_id: imageCid,
-      folder: process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER + '/nfts/'
-    });
+  console.log('create/ipfs - processedAsset - ', processedAsset);
 
-    console.log('create/ipfs - cloudinary upload response', JSON.stringify(response))
-  }
+  // TODO: This is sort of duplicate code. We should extract something to lib/server/cloudinary
+  const response: UploadApiResponse = await cloudinary.v2.uploader.upload(processedAsset, {
+    public_id: imageCid,
+    folder: process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER + '/nfts/',
+    resource_type: isImage ? 'auto' : 'video'
+  });
 
+  console.log('create/ipfs - cloudinary upload response', JSON.stringify(response))
 
-  // delete the upload folder item
+  // Delete the upload folder item
+  console.log('create/ipfs - file to delete - ', fileName)
   const deleted = await removePublicIdFromCloudinary(fileName)
-
   console.log('create/ipfs - cloudinary deleted response', JSON.stringify(deleted))
 
   const result = {

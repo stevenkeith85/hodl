@@ -156,9 +156,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                         </Link>
                     }
                 </Box>
-                <Box
-                    display="flex"
-                >
+                <Box display="flex">
                     {item.token && <Box display="flex" gap={1.5}>
                         <Likes
                             id={item.token?.id}

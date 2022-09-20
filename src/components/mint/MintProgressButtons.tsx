@@ -52,7 +52,10 @@ export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, l
         }}
         disabled={loading || stepComplete < activeStep}
         onClick={() => {
-          if ((isVideo(formData?.mimeType) || isGif(formData?.mimeType)) && activeStep == 0) {
+          if (
+            (isVideo(formData?.mimeType) || 
+            isGif(formData?.mimeType)) && 
+            activeStep == 0) {
             setActiveStep(activeStep => activeStep + 3);
           } else {
             setActiveStep(activeStep => activeStep + 1)

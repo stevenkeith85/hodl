@@ -6,6 +6,7 @@ import { mintToken } from '../../lib/mint';
 import { MintProps } from './models';
 import { grey } from '@mui/material/colors';
 import { SuccessModal } from '../modals/SuccessModal';
+import { useRouter } from 'next/router';
 
 
 export const MintTokenAction: FC<MintProps> = ({
@@ -17,8 +18,9 @@ export const MintTokenAction: FC<MintProps> = ({
   setFormData
 }: MintProps) => {
 
+  const router = useRouter();
   const [successModalOpen, setSuccessModalOpen] = useState(false);
-  
+
   async function mint() {
     setLoading(true);
     enqueueSnackbar(
@@ -49,7 +51,7 @@ export const MintTokenAction: FC<MintProps> = ({
         ...prev,
         tokenId
       }));
-      
+
       setStepComplete(4);
       setSuccessModalOpen(true);
     } catch (e) {
@@ -59,39 +61,43 @@ export const MintTokenAction: FC<MintProps> = ({
 
   return (
     <>
-       <SuccessModal
+      <SuccessModal
         modalOpen={successModalOpen}
+        onClose={() => {
+          router.push('/')
+        }
+        }
         setModalOpen={setSuccessModalOpen}
         message="Once your token has been confirmed on the blockchain, it will be added to HodlMyMoon and we'll send you a notification"
       />
-    <Box
-      display="flex"
-      flexDirection={"column"}
-      alignItems="center"
-      justifyContent="center"
-      textAlign="center"
-      height="400px"
-      gap={4}
-    >
-      <CloudSyncOutlined sx={{ fontSize: 82, color: grey[400] }} />
-      <Typography
-        sx={{
-          fontSize: '18px',
-          color: grey[600],
-          span: { fontWeight: 600 }
-        }}>Click the button to mint your NFT <span>{formData.name}</span> on the blockchain</Typography>
-      <div>
-        <Button
-          color="primary"
-          disabled={stepComplete === 4 || loading}
-          onClick={mint}
-          sx={{ paddingY: 1, paddingX: 3}}
-          variant="contained"
-        >
-          Mint
-        </Button>
-      </div>
-    </Box>
+      <Box
+        display="flex"
+        flexDirection={"column"}
+        alignItems="center"
+        justifyContent="center"
+        textAlign="center"
+        height="400px"
+        gap={4}
+      >
+        <CloudSyncOutlined sx={{ fontSize: 82, color: grey[400] }} />
+        <Typography
+          sx={{
+            fontSize: '18px',
+            color: grey[600],
+            span: { fontWeight: 600 }
+          }}>Click the button to mint your NFT <span>{formData.name}</span> on the blockchain</Typography>
+        <div>
+          <Button
+            color="primary"
+            disabled={stepComplete === 4 || loading}
+            onClick={mint}
+            sx={{ paddingY: 1, paddingX: 3 }}
+            variant="contained"
+          >
+            Mint
+          </Button>
+        </div>
+      </Box>
     </>
   );
 

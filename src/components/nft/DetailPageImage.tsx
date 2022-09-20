@@ -56,7 +56,6 @@ export const DetailPageImage = ({ token }) => {
                         assetType(token) === AssetTypes.Gif &&
                         <HodlVideo
                             cid={token?.image}
-                            // transformations={token?.filter} 
                             gif={true}
                         />
                     }

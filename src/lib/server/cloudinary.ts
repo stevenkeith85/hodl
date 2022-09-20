@@ -32,18 +32,39 @@ const storage = new CloudinaryStorage({
     params: async (req, file) => {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
       const public_id = file.fieldname + '-' + uniqueSuffix;
+      
       const isVideo = file.mimetype.indexOf('video') !== -1;
+      const isAudio = file.mimetype.indexOf('audio') !== -1;
   
+      if (isVideo) {
+        return {
+            folder: process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER + '/uploads',
+            public_id: public_id,
+            resource_type: 'video',
+            timeout: 60000,
+            transformation: {
+                // TODO: THIS IS SET TO 10 FOR DEV/TESTING. SHOULD BE CHANGED TO 60
+                duration: 10 // video clips can be up to a minute. (cloudinary transforms are v. expensive for videos)
+            } 
+          };  
+      } else if (isAudio) {
+        return {
+            folder: process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER + '/uploads',
+            public_id: public_id,
+            resource_type: 'video', // Note: Use the video resource type for all video assets as well as for audio files, such as .mp3. (from cloudinary)
+            timeout: 60000,
+            transformation: {
+                // TODO: THIS IS SET TO 10 FOR DEV/TESTING. SHOULD BE CHANGED TO 600
+                duration: 10 // audio clips can be up to 10 mins
+            }
+          };  
+      } 
+
       return {
         folder: process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER + '/uploads',
         public_id: public_id,
-        resource_type: isVideo ? 'video' : 'auto',
-        // TODO: Test if we still want this
-        // eager: [ // doing too many of these seems to get us rate limited... even though cloudinary say there are no limits
-        //     { fetch_format: "avif", format: "", quality: "auto"}
-        // ],                                   
-        // eager_async: true,
-        timeout: 60000
+        resource_type: 'auto',
+        timeout: 60000,
       };
     },
   });
@@ -57,6 +78,8 @@ const upload = multer({
     }
 }).single('asset');
 
+
+// Multer uses these
 export const uploadToCloudinary = (req, res) : Promise<any> => {
     return new Promise((resolve, reject) => {
         upload(req, res, error => {
@@ -92,7 +115,6 @@ export const removePublicIdFromCloudinary = (public_id: string): Promise<any> =>
           })
     });
 }
-
 
 export const renameOnCloudinary = (from, to, isVideo) : Promise<any> => {
     return new Promise((resolve, reject) => {

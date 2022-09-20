@@ -7,19 +7,13 @@ import { Box } from "@mui/material";
 
 
 interface FeedAssetProps {
-    item: HodlActionViewModel
+    item: HodlActionViewModel;
 }
 
 export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
 
     const getHeightForAspectRatio = (width: number, aspectRatio: string = "1:1") => {
-
-        // TODO: Videos do not have their aspect ratio stored, so we don't really know how tall 
-        // to make the skeleton for the feed item
-
-        // TODO: Perhaps we can calculate and store arbitrary aspect ratios at upload time?
         if (aspectRatio === null) {
-            return `100%`;
             aspectRatio = "1:1";
         }
 
@@ -35,12 +29,11 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
             position: 'relative',
             height: getHeightForAspectRatio(575, item?.token?.properties?.aspectRatio)
         }}>
-
         {/* Responsive skeleton */}
         <Box sx={{
             position: 'absolute',
             zIndex: 0,
-            
+
             width: 'min(575px, 90vw)',
             height: getHeightForAspectRatio(575, item?.token?.properties?.aspectRatio),
 
@@ -51,8 +44,8 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
             opacity: 0,
         }}>
         </Box>
-        
-        <Box sx={{ 
+
+        <Box sx={{
             position: 'relative',
             zIndex: 1
         }}>

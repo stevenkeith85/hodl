@@ -1,11 +1,11 @@
 import { Box, NoSsr } from "@mui/material";
-import { useCallback, useEffect, useRef } from "react";
-import { createCloudinaryUrl } from "../lib/utils";
+import { useEffect, useRef } from "react";
+//import { useInView } from 'react-intersection-observer'; // TODO: Probably remove this; don't think we'll need it
 
 interface HodlVideoProps {
     cid: string;
     folder?: string;
-    transformations?: string;
+    environment?: "dev" | "staging" | "prod";
     sx?: object;
     controls?: boolean;
     onlyPoster?: boolean;
@@ -19,7 +19,7 @@ interface HodlVideoProps {
 export const HodlVideo = ({
     cid,
     folder = 'nfts',
-    transformations = null,
+    environment = 'dev', // const environment = process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER;
     sx = {},
     controls = true,
     onlyPoster = false,
@@ -29,40 +29,25 @@ export const HodlVideo = ({
     width = '100%',
     onLoad = null,
 }: HodlVideoProps) => {
-    const asset = `${createCloudinaryUrl(gif ? 'image' : 'video', 'upload', transformations, folder, cid)}`
+    const makeCloudinaryVideoUrl = () => {
+        const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_NAME;
+        let cloudinaryUrl = `https://res.cloudinary.com/${cloudName}/video/upload`;
+
+        return `${cloudinaryUrl}/${environment}/${folder}/${cid}`
+    }
+
+    const asset = makeCloudinaryVideoUrl();
     const video = useRef(null);
 
-    // If the video is brought onscreen, play it (if the user hasn't already watched it).
-    // If it goes offscreen pause it.
-    const pauseVideoOffscreen = useCallback(() => {
-        if (gif) {
-            return;
-        }
-
-        let observer = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.intersectionRatio !== 1) {
-                    video?.current?.pause();
-                } else if (!video?.current?.ended) {
-                    ((video.current) as HTMLMediaElement).muted = JSON.parse(localStorage.getItem('muted'));
-                    video?.current?.play();
-                }
-            });
-        }, { threshold: 1 });
-
-        observer.observe(video.current);
-    }, [gif]);
 
     useEffect(() => {
         try {
-            pauseVideoOffscreen();
-
             video?.current?.addEventListener('volumechange', (event) => {
                 localStorage.setItem('muted', video?.current?.muted);
             });
         } catch (e) {
         }
-    }, [pauseVideoOffscreen])
+    }, [])
 
 
     const getPoster = () => {
@@ -95,15 +80,15 @@ export const HodlVideo = ({
                     <video
                         onLoadedData={() => {
                             if (onLoad) {
-                                onLoad()
+                                onLoad(video.current)
                             }
                         }
                         }
                         width={width}
                         ref={video}
-                        autoPlay={true}
+                        autoPlay={false}
                         loop={gif}
-                        muted={typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('muted')): false}
+                        muted={typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('muted')) : false}
                         controls={!gif && controls}
                         controlsList="nodownload"
                         poster={getPoster()}>
