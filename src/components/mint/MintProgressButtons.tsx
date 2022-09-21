@@ -1,8 +1,9 @@
 import { NavigateBefore, NavigateNext } from '@mui/icons-material';
-import { Stack, Button, Box, IconButton, Fab } from '@mui/material';
+import { Fab } from '@mui/material';
 
 export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, loading, formData }) => {
 
+  const isAudio = mimeType => mimeType && mimeType.indexOf('audio') !== -1;
   const isVideo = mimeType => mimeType && mimeType.indexOf('video') !== -1;
   const isGif = mimeType => mimeType && mimeType.indexOf('gif') !== -1;
 
@@ -29,7 +30,12 @@ export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, l
         disabled={loading || activeStep === 0 || stepComplete >= 3}
         onClick={
           () => {
-            if ((isVideo(formData?.mimeType) || isGif(formData?.mimeType)) && activeStep == 3) {
+            if (
+              (
+                isAudio(formData?.mimeType) || 
+                isVideo(formData?.mimeType) || 
+                isGif(formData?.mimeType)
+              ) && activeStep == 3) {
               setActiveStep(activeStep => activeStep - 3);
             } else {
               setActiveStep(activeStep => activeStep - 1)
@@ -53,8 +59,11 @@ export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, l
         disabled={loading || stepComplete < activeStep}
         onClick={() => {
           if (
-            (isVideo(formData?.mimeType) || 
-            isGif(formData?.mimeType)) && 
+            (
+              isAudio(formData?.mimeType) || 
+              isVideo(formData?.mimeType) || 
+              isGif(formData?.mimeType)
+              ) && 
             activeStep == 0) {
             setActiveStep(activeStep => activeStep + 3);
           } else {

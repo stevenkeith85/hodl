@@ -1,13 +1,8 @@
 import { Box, Button, Stack, Typography } from "@mui/material"
-import {
-  HodlModal}
-  from "../index"
+import { HodlModal } from "./HodlModal";
 
-import { useRouter } from "next/router";
 
 export const SessionExpiredModal = ({ modalOpen, setModalOpen }) => {
-  const router = useRouter();
-
   return (
     <HodlModal
       open={modalOpen}
@@ -31,7 +26,6 @@ export const SessionExpiredModal = ({ modalOpen, setModalOpen }) => {
             }}
             onClick={() => {
               setModalOpen(false);
-              router.push(router.asPath);
             }}
           >
             Close

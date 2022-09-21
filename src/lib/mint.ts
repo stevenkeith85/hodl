@@ -29,11 +29,4 @@ export const mintToken = async (url) => {
   } catch (e) {
     console.log(e)
   }
-  // const receipt = await tx.wait();
-
-  // const event = receipt.events[0];
-  // const value = event.args[2];
-  // const tokenId = value.toNumber();
-
-  // return tokenId;
 }

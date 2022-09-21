@@ -4,6 +4,7 @@ import { AssetTypes } from "../../models/AssetType";
 import { HodlVideo } from "../HodlVideo";
 import { HodlImageResponsive } from "../HodlImageResponsive";
 import { Box } from "@mui/material";
+import { HodlAudioBox } from "../HodlAudioBox";
 
 
 interface FeedAssetProps {
@@ -27,15 +28,16 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
     return (<Box
         sx={{
             position: 'relative',
-            height: getHeightForAspectRatio(575, item?.token?.properties?.aspectRatio)
+            height: (assetType(item.token) === AssetTypes.Audio) ? '324px' : getHeightForAspectRatio(575, item?.token?.properties?.aspectRatio)
         }}>
+            
         {/* Responsive skeleton */}
         <Box sx={{
             position: 'absolute',
             zIndex: 0,
 
             width: 'min(575px, 90vw)',
-            height: getHeightForAspectRatio(575, item?.token?.properties?.aspectRatio),
+            height: (assetType(item.token) === AssetTypes.Audio) ? 324 : getHeightForAspectRatio(575, item?.token?.properties?.aspectRatio),
 
             background: '#ddd',
             animation: 'flicker 3s ease',
@@ -89,20 +91,7 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
             }
             {
                 (assetType(item.token) === AssetTypes.Audio) &&
-                <HodlVideo
-                    cid={item.token.image}
-                    controls={true}
-                    onlyPoster={false}
-                    height="280px"
-                    audio={true}
-                    sx={{
-                        video: {
-                            objectPosition: 'top',
-                            borderRadius: 0,
-                            maxHeight: '500px'
-                        }
-                    }}
-                />
+                <HodlAudioBox token={item.token} audio={false} size={80}/>
             }
         </Box>
     </Box >)

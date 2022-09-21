@@ -1,17 +1,26 @@
-import { Box, Modal } from "@mui/material";
+import { Box, Modal, Typography } from "@mui/material";
 import { HodlVideo } from "../HodlVideo";
 import { assetType } from "../../lib/utils";
 import { useState } from "react";
 import { AssetTypes } from "../../models/AssetType";
 import { HodlImageResponsive } from "../HodlImageResponsive";
+import { HodlAudio } from "../HodlAudio";
+import { ProfileNameOrAddress } from "../avatar/ProfileNameOrAddress";
+import { UserAvatar } from "../avatar/UserAvatar";
+import { UserDefaultAvatar } from "../avatar/UserDefaultAvatar";
+import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
+import { HodlAudioBox } from "../HodlAudioBox";
 
 
-export const DetailPageImage = ({ token }) => {
+export const DetailPageAsset = ({ token }) => {
     const [assetModalOpen, setAssetModalOpen] = useState(false);
 
     return (token &&
         <>
-            <Modal open={assetModalOpen} onClose={() => { setAssetModalOpen(false) }}>
+            <Modal
+                open={assetModalOpen}
+                onClose={() => { setAssetModalOpen(false) }}
+            >
                 <Box
                     display="flex"
                     flexDirection="column"
@@ -33,7 +42,7 @@ export const DetailPageImage = ({ token }) => {
                         cid={token?.image}
                         gif={true}
                     />}
-                    {(assetType(token) === AssetTypes.Video || assetType(token) === AssetTypes.Audio) && <HodlVideo
+                    {assetType(token) === AssetTypes.Video && <HodlVideo
                         sx={{
                             video: {
                                 height: '80vh',
@@ -41,8 +50,14 @@ export const DetailPageImage = ({ token }) => {
                                 objectFit: 'scale-down',
                             }
                         }}
-                        cid={token?.image} folder={'video/upload/nfts/'} />
-
+                        cid={token?.image}
+                        folder={'video/upload/nfts/'}
+                    />
+                    }
+                    {assetType(token) === AssetTypes.Audio && <HodlAudio
+                        cid={token?.image}
+                        folder={'video/upload/nfts/'}
+                    />
                     }
                     {assetType(token) === AssetTypes.Image && <HodlImageResponsive
                         widths={[1080]}
@@ -70,13 +85,13 @@ export const DetailPageImage = ({ token }) => {
                         />}
                 </Box>
                 <Box>
-                    {(assetType(token) === AssetTypes.Video || assetType(token) === AssetTypes.Audio) && <HodlVideo
+                    {assetType(token) === AssetTypes.Video && <HodlVideo
                         cid={token?.image}
-                        audio={assetType(token) === AssetTypes.Audio}
-                        height={assetType(token) === AssetTypes.Audio ? '400px' : 'auto'}
-                        // transformations={token?.filter}
+                        height={'auto'}
                     />}
                 </Box>
+                {assetType(token) === AssetTypes.Audio && <HodlAudioBox token={token} size={80}/>
+                }
             </Box>
         </>
     )

@@ -74,7 +74,7 @@ export const HodlFeed = ({ address, limit = 4 }) => {
             >
                 {
                     ({ items }) =>
-                        (items || []).map((item: HodlAction, index) => <HodlFeedItem key={item.id} item={item} index={index}/>)
+                        (items || []).map((item: HodlAction) => <HodlFeedItem key={item.id} item={item} />)
                 }
             </InfiniteScroll>
         </Box>

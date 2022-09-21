@@ -7,7 +7,7 @@ import { TopTokens } from '../rankings/TopTokens';
 import { NewUsers } from '../rankings/NewUsers';
 import { HodlBorderedBox } from '../HodlBorderedBox';
 import { User, UserViewModel } from '../../models/User';
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 
 
 interface PrivateHomePageProps {
@@ -16,11 +16,16 @@ interface PrivateHomePageProps {
 }
 
 export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
+
     const previousNearestVideoToTop = useRef(null);
     const nearestVideoToTop = useRef(null);
 
     function isInViewport(el) {
-        const rect = el.getBoundingClientRect();
+        if (!el) {
+            return false;
+        }
+
+        const rect = el?.getBoundingClientRect();
         return (
             rect.top >= 0 &&
             rect.left >= 0 &&
@@ -30,7 +35,17 @@ export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address 
         );
     }
 
-    // TODO: Review and optimise this. 
+    function throttle(func, timeFrame) {
+        var lastTime = 0;
+        return function (...args) {
+            var now = new Date();
+            if (now - lastTime >= timeFrame) {
+                func(...args);
+                lastTime = now;
+            }
+        };
+      }
+
     // We get the closest video to the top of the screen 
     // pause the old closest video; and set the new one to play
     // if we haven't watched it before.
@@ -39,40 +54,56 @@ export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address 
     //
     // TODO: We could probably skip this if the user disables video autoplay (still to do this)
     // TODO: We also need to consider the muted state
+    const playVideoNearestTopOfViewport = () => {
+        previousNearestVideoToTop.current = nearestVideoToTop.current;
 
-    useEffect(() => {
-        const handleScroll = event => {
-            console.log('window.scrollY', window.scrollY);
+        const allVideos = Array.from(document.querySelectorAll('video'));
+        allVideos.sort(
+            (a, b) => {
+                const aPosition = Math.abs(a.getBoundingClientRect().top);
+                const bPosition = Math.abs(b.getBoundingClientRect().top);
 
-            previousNearestVideoToTop.current = nearestVideoToTop.current;
-
-            nearestVideoToTop.current = [
-                ...document.querySelectorAll('video').values()
-            ].map(e => ({
-                e,
-                distance: e.getBoundingClientRect().top
-            })
-            ).sort(
-                (a, b) => Math.abs(a.distance) < Math.abs(b.distance) ? -1 : 1
-            )[0];
-
-            if (nearestVideoToTop.current !== previousNearestVideoToTop) {
-                previousNearestVideoToTop?.current?.e?.pause();
-
-                if (!nearestVideoToTop?.current?.e?.ended) {
-                    nearestVideoToTop?.current?.e?.play();
+                if ( aPosition < bPosition ){
+                    return -1;
+                }
+                else {
+                    return 1;
                 }
             }
+        )[0];
 
-            if (!isInViewport(nearestVideoToTop.current.e)) {
-                nearestVideoToTop?.current?.e?.pause();
+        nearestVideoToTop.current = allVideos[0];
+        const topVideoIsInViewport = isInViewport(nearestVideoToTop.current);
+
+        // we have a new top video
+        if (nearestVideoToTop.current !== previousNearestVideoToTop) {
+            // pause the previous
+            previousNearestVideoToTop?.current?.pause();
+
+            // start the new one if we haven't already watched it and its 
+            // in view
+            if (!nearestVideoToTop?.current?.ended && topVideoIsInViewport) {
+                ((nearestVideoToTop?.current) as HTMLMediaElement).muted = JSON.parse(localStorage.getItem('muted'));
+                let playPromise = nearestVideoToTop?.current?.play();
+
+                playPromise.then(() => {
+                    console.log('playing ', nearestVideoToTop?.current)
+                })
             }
-        };
+        }
 
-        window.addEventListener('scroll', handleScroll);
+        // if the top video is no longer visible; pause it
+        if (!topVideoIsInViewport) {
+            nearestVideoToTop?.current?.pause();
+        }
+    };
+
+    useEffect(() => {
+        const fn = throttle(playVideoNearestTopOfViewport, 500);
+        window.addEventListener('scroll', fn);
 
         return () => {
-            window.removeEventListener('scroll', handleScroll);
+            window.removeEventListener('scroll', fn);
         };
     }, []);
 

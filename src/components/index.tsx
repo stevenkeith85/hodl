@@ -2,7 +2,7 @@
 export { HodlModal } from "./modals/HodlModal";
 export { HodlLink } from "./HodlLink";
 export { SuccessModal } from "./modals/SuccessModal";
-export { DetailPageImage } from "./nft/DetailPageImage";
+export { DetailPageAsset as DetailPageImage } from "./nft/DetailPageAsset";
 export { IpfsCard } from './nft/IpfsCard';
 export { PriceCard } from './nft/PriceCard';
 export { NftActionButtons } from './nft/NftActionButtons';

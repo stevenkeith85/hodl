@@ -31,7 +31,7 @@ export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({
 
     const getColor = (color) => {
         if (color === "inherit") {
-            return theme.palette.text.primary;
+            return 'inherit';
         }
 
         return theme.palette[color].main;

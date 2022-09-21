@@ -133,7 +133,7 @@ export default function Search({ q, limit, tagsLimit, forSale, fallbackData, pre
         {results?.data?.[0]?.total === 0 &&
           <HodlImpactAlert message={"We can't find anything at the moment"} title="Sorry" />
         }
-        <InfiniteScrollNftWindows swr={results} limit={limit} />
+        <InfiniteScrollNftWindows swr={results} limit={limit} pattern={false}/>
       </Box>
     </>
   )

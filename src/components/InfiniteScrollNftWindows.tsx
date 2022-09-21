@@ -93,6 +93,7 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
                 display: 'flex',
                 gridColumn: pattern && isDoubleSize(i, next) ? `span 2` : `auto`,
                 gridRow: pattern && isDoubleSize(i, next) ? `span 2` : `auto`,
+                height: '100%'
               }}
             >
               {/* Responsive skeleton */}
@@ -118,6 +119,7 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
                   position: "absolute",
                   zIndex: 1,
                   width: `100%`,
+                  height: `100%`
                 }}>
                 {nft && <NftWindow nft={nft} key={nft.id} />}
               </Box>

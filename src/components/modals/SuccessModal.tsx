@@ -4,20 +4,14 @@ import {
 }
   from "../index"
 
-import { useRouter } from "next/router";
-
 export const SuccessModal = ({
   modalOpen,
   setModalOpen,
-  message,
-  onClose = null }) => {
-  const router = useRouter();
-
+  message }) => {
   return (
     <HodlModal
       open={modalOpen}
       setOpen={setModalOpen}
-      onClose={onClose}
     >
       <Stack spacing={3} textAlign="center">
         <Typography variant="h2" sx={{ fontSize: '18px', fontWeight: 600 }}>Success</Typography>
@@ -32,7 +26,6 @@ export const SuccessModal = ({
             }}
             onClick={() => {
               setModalOpen(false);
-              router.push(router.asPath);
             }}
           >
             Close

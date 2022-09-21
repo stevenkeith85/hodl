@@ -64,6 +64,7 @@ export const MintTokenAction: FC<MintProps> = ({
       <SuccessModal
         modalOpen={successModalOpen}
         onClose={() => {
+          alert('redirecting')
           router.push('/')
         }
         }
@@ -89,7 +90,8 @@ export const MintTokenAction: FC<MintProps> = ({
         <div>
           <Button
             color="primary"
-            disabled={stepComplete === 4 || loading}
+            // disabled={stepComplete === 4 || loading}
+            disabled={loading}
             onClick={mint}
             sx={{ paddingY: 1, paddingX: 3 }}
             variant="contained"

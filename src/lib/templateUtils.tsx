@@ -23,7 +23,7 @@ export const insertTagLinks = (text) => {
     for (const { index, hash, tag } of parsed) {
         jsx.push(text.slice(lastPosition, index));
         jsx.push(
-            <Link href={`/explore?q=${tag}`} passHref>
+            <Link href={`/explore?q=${tag}`} passHref key={tag}>
                 <Typography
                     color="primary"
                     component="a"

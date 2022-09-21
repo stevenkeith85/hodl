@@ -4,6 +4,7 @@ import { HodlVideo } from "../HodlVideo";
 import { FilteredImageMemo } from "./FilteredImage";
 import { MintProps } from './models';
 import calculateAspectRatios from 'calculate-aspect-ratio';
+import { HodlAudio } from "../HodlAudio";
 
 export const AssetPreview: FC<MintProps> = ({
   formData,
@@ -46,11 +47,12 @@ export const AssetPreview: FC<MintProps> = ({
         />
       }
       {fileName && isAudio() &&
-        <HodlVideo
+        <HodlAudio
           cid={fileName.split('/')[2]}
           folder="uploads"
-          onLoad={setLoading}
-          audio={true}
+          onLoad={(audio) => {
+            setLoading();
+          }}
         />
       }
     </Box>

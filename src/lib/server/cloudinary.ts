@@ -43,8 +43,7 @@ const storage = new CloudinaryStorage({
             resource_type: 'video',
             timeout: 60000,
             transformation: {
-                // TODO: THIS IS SET TO 10 FOR DEV/TESTING. SHOULD BE CHANGED TO 60
-                duration: 10 // video clips can be up to a minute. (cloudinary transforms are v. expensive for videos)
+                duration: 60 // video clips can be up to a minute. (cloudinary transforms are v. expensive for videos)
             } 
           };  
       } else if (isAudio) {
@@ -54,8 +53,7 @@ const storage = new CloudinaryStorage({
             resource_type: 'video', // Note: Use the video resource type for all video assets as well as for audio files, such as .mp3. (from cloudinary)
             timeout: 60000,
             transformation: {
-                // TODO: THIS IS SET TO 10 FOR DEV/TESTING. SHOULD BE CHANGED TO 600
-                duration: 10 // audio clips can be up to 10 mins
+                duration: 600 // audio clips can be up to 10 mins
             }
           };  
       } 

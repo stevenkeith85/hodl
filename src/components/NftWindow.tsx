@@ -6,10 +6,11 @@ import { Likes } from './Likes';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Comments } from './comments/Comments';
-import { Videocam } from '@mui/icons-material'
+import { MusicNote, Videocam } from '@mui/icons-material'
 import { AssetTypes } from '../models/AssetType';
 import { MaticPrice } from './MaticPrice';
 import { HodlImageResponsive } from './HodlImageResponsive';
+import { HodlAudioBox } from './HodlAudioBox';
 
 
 const Overlay = ({ nft }) => {
@@ -21,7 +22,7 @@ const Overlay = ({ nft }) => {
             className='nftItemOverlay'
 
             sx={{
-                background: "rgba(0,0,0,0.35)",
+                background: "rgba(0,0,0,0.6)",
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -123,15 +124,32 @@ export const NftWindow = ({ nft, aspectRatio = "1:1" }) => {
                         cid={nft?.image}
                         gif={true}
                     />}
-                {(assetType(nft) === AssetTypes.Video || assetType(nft) === AssetTypes.Audio) &&
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
-                        {assetType(nft) === AssetTypes.Video && <Videocam fontSize="large" sx={{ position: 'absolute' }} />}
+                {(assetType(nft) === AssetTypes.Video) &&
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'white',
+                            height: '100%',
+                            position: 'relative'
+                        }}>
+                        <Videocam sx={{ position: 'absolute', top: 8, left: 8 }} />
                         <HodlVideo
                             cid={nft?.image}
                             controls={false}
                             onlyPoster={true}
-                            audio={assetType(nft) === AssetTypes.Audio}
+                            height="100%"
                         />
+                    </Box>
+                }
+                {(assetType(nft) === AssetTypes.Audio) &&
+                    <Box
+                        sx={{
+                          position: 'relative'
+                        }}>
+                        <MusicNote sx={{ position: 'absolute', top: 8, left: 8, zIndex: 1, color: 'white' }} />
+                        <HodlAudioBox token={nft} audio={false} minHeight={1000} size={80}/>
                     </Box>
                 }
                 {assetType(nft) === AssetTypes.Image &&
@@ -149,30 +167,30 @@ export const NftWindow = ({ nft, aspectRatio = "1:1" }) => {
 
                 {nft?.forSale &&
 
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            top: 0,
+                            right: 0,
+                            width: `auto`,
+                            height: `auto`,
+                            padding: 1.5,
+                            paddingY: 0.75,
+                            background: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.4), rgba(0,0,0,0.5), rgba(0,0,0,0.4), rgba(0,0,0,0.3))`,
+                        }}
+                    >
                         <Box
                             sx={{
-                                position: 'absolute',
-                                top: 0,
-                                right: 0,
-                                width: `auto`,
-                                height: `auto`,
-                                padding: 1.5,
-                                paddingY: 0.75,
-                                background: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.4), rgba(0,0,0,0.5), rgba(0,0,0,0.4), rgba(0,0,0,0.3))`,
-                            }}
-                        >
-                            <Box
-                                sx={{
-                                    textAlign: 'right'
-                                }}>
-                                <MaticPrice
-                                    price={nft?.price}
-                                    fontSize={xs ? 14 : 16}
-                                    size={xs ? 14 : 16}
-                                    humanizeNumber={true}
-                                />
-                            </Box>
+                                textAlign: 'right'
+                            }}>
+                            <MaticPrice
+                                price={nft?.price}
+                                fontSize={xs ? 14 : 16}
+                                size={xs ? 14 : 16}
+                                humanizeNumber={true}
+                            />
                         </Box>
+                    </Box>
                 }
             </Box>
         </Link>

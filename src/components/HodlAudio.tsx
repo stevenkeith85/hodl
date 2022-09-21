@@ -2,65 +2,46 @@ import { Box, NoSsr } from "@mui/material";
 import { useEffect, useRef } from "react";
 //import { useInView } from 'react-intersection-observer'; // TODO: Probably remove this; don't think we'll need it
 
-interface HodlVideoProps {
+interface HodlAudioProps {
     cid: string;
     folder?: string;
     environment?: "dev" | "staging" | "prod";
     sx?: object;
     controls?: boolean;
-    onlyPoster?: boolean;
-    gif?: boolean;
-    audio?: boolean;
     height?: string;
     width?: string;
     onLoad?: Function;
 }
 
-export const HodlVideo = ({
+export const HodlAudio = ({
     cid,
     folder = 'nfts',
     environment = 'dev', // const environment = process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER;
     sx = {},
     controls = true,
-    onlyPoster = false,
-    gif = false,
-    audio = false,
     height = 'auto',
     width = '100%',
     onLoad = null,
-}: HodlVideoProps) => {
-    const makeCloudinaryVideoUrl = () => {
+}: HodlAudioProps) => {
+    const makeCloudinaryAudioUrl = () => {
         const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_NAME;
-        let cloudinaryUrl = `https://res.cloudinary.com/${cloudName}/video/upload`;
+        let cloudinaryUrl = `https://res.cloudinary.com/${cloudName}/video/upload`; // cloudinary stores audio under the video folder
 
         return `${cloudinaryUrl}/${environment}/${folder}/${cid}`
     }
 
-    const asset = makeCloudinaryVideoUrl();
-    const video = useRef(null);
+    const asset = makeCloudinaryAudioUrl();
+    const audio = useRef(null);
 
     useEffect(() => {
         try {
             // user does this
-            video?.current?.addEventListener('volumechange', (event) => {
-                localStorage.setItem('muted', video?.current?.muted);
+            audio?.current?.addEventListener('volumechange', (event) => {
+                localStorage.setItem('muted', audio?.current?.muted);
             });
         } catch (e) {
         }
-    }, [video?.current])
-
-
-    const getPoster = () => {
-        if (gif) {
-            return null;
-        }
-
-        if (audio) {
-            return '/hodlmymoonmusic.png'
-        }
-
-        return `${asset}.jpg`;
-    }
+    }, [audio?.current])
 
     return (
         <>
@@ -68,36 +49,29 @@ export const HodlVideo = ({
                 display: 'flex',
                 height,
                 width,
-                video: {
-                    objectFit: audio ? 'scale-down' : 'cover',
-                    objectPosition: 'center',
-                    background: '#fafafa',
+                audio: {
+                    width: '100%'
                 },
                 ...sx
             }}>
                 <NoSsr>
-                    <video
+                    <audio
                         onLoadedData={() => {
                             if (onLoad) {
-                                onLoad(video.current)
+                                onLoad(audio.current)
                             }
                         }
                         }
-                        width={width}
-                        ref={video}
+                        ref={audio}
                         autoPlay={false} // https://developer.chrome.com/blog/autoplay/
-                        loop={gif}
                         muted={typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('muted')) : false} // TODO: Not confident this works tbh
-                        controls={!gif && controls}
-                        controlsList="nodownload"
-                        poster={getPoster()}>
-                        {!onlyPoster && (<>
+                        controls={controls}
+                        controlsList="nodownload">
+                        <>
                             <source type="video/mp4" src={`${asset}.mp4`} />
                             <source type="video/webm" src={`${asset}.webm`} />
-                            Your browser does not support HTML5 video tag.
-                            {gif && <a href={`${asset}.gif`} >Click here to view original GIF</a>}
-                        </>)}
-                    </video>
+                        </>
+                    </audio>
                 </NoSsr>
             </Box>
         </>

@@ -4,8 +4,7 @@ import { Box, Modal } from "@mui/material";
 export const HodlModal = ({ 
     open, 
     setOpen, 
-    children, 
-    onClose = null,
+    children,
     ref = null, 
     sx = {} 
 }) => {
@@ -15,14 +14,12 @@ export const HodlModal = ({
             open={open}
             onClose={(e) => { 
                 // @ts-ignore
-                e.stopPropagation(); 
+                e.stopPropagation();
+
                 // @ts-ignore
                 e.preventDefault();
-                setOpen(false);
 
-                if (onClose) {
-                    onClose();
-                }
+                setOpen(false);
             }}
             ref={ref}
         >

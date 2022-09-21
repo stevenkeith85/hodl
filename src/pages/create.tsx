@@ -109,7 +109,6 @@ const Mint = ({ address }) => {
             alignItems: 'center',
             justifyContent: 'center',
             margin: 6,
-            // padding: 2,
             minHeight: '60vh',
           }}>
 

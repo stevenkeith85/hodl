@@ -20,8 +20,9 @@ import { SearchBox } from '../Search';
 import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
 import { HodlAction } from '../../models/HodlAction';
 import { PusherContext } from '../../contexts/PusherContext';
-import { SessionExpiredModal } from '../modals/SessionExpiredModal';
+
 import { useConnect } from '../../hooks/useConnect';
+import { SessionExpiredModal } from '../modals/SessionExpiredModal';
 
 const ResponsiveAppBar = ({ showAppBar = true }) => {
     const { address, setSigner } = useContext(WalletContext);
@@ -131,7 +132,6 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
         <>
             <SessionExpiredModal modalOpen={sessionExpiredModalOpen} setModalOpen={setSessionExpiredModalOpen} />
             <AppBar
-
                 position="fixed"
                 sx={{
                     background: 'white',
