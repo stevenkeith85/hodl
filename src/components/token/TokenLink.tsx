@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { assetType } from '../../lib/utils';
 import { AssetTypes } from '../../models/AssetType';
 import { Token } from '../../models/Token';
+import { HodlAudioBoxMini } from '../HodlAudioBoxMini';
 import { HodlImageResponsive } from '../HodlImageResponsive';
 import { HodlVideo } from '../HodlVideo';
 
@@ -27,10 +28,10 @@ export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = "40px", font
                     gap={2}
                     sx={{ cursor: 'pointer', width: `100%` }}
                 >
-                    {token?.image && <Box>
+                    {token?.properties?.asset?.uri && <Box>
                         {assetType(token) === AssetTypes.Image &&
                             <HodlImageResponsive
-                                cid={token.image}
+                                cid={token?.properties?.asset?.uri}
                                 aspectRatio="1:1"
                                 widths={[44, 88]}
                                 sizes="44px"
@@ -38,7 +39,7 @@ export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = "40px", font
                         }
                         {assetType(token) === AssetTypes.Video &&
                             <HodlVideo
-                                cid={token.image}
+                                cid={token?.properties?.asset?.uri}
                                 controls={false}
                                 onlyPoster={true}
                                 audio={false}
@@ -56,7 +57,7 @@ export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = "40px", font
                         }
                         {assetType(token) === AssetTypes.Gif &&
                             <HodlVideo
-                                cid={token.image}
+                                cid={token?.properties?.asset?.uri}
                                 gif={true}
                                 height={size}
                                 width={size}
@@ -71,22 +72,7 @@ export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = "40px", font
                             />
                         }
                         {assetType(token) === AssetTypes.Audio &&
-                            <HodlVideo
-                                cid={token.image}
-                                controls={false}
-                                onlyPoster={true}
-                                audio={true}
-                                height={size}
-                                width={size}
-                                sx={{
-                                    video: {
-                                        objectFit: 'contain',
-                                        objectPosition: 'center',
-                                        borderRadius: 0,
-                                        background: '#fafafa',
-                                    }
-                                }}
-                            />
+                            <HodlAudioBoxMini size={size} />
                         }
                     </Box>
                     }

@@ -8,13 +8,17 @@ export const HodlAudioBox = ({
     token,
     audio = true, // show the audioplayer
     size = 60,
+    width = "100%",
     minHeight = 324 // we use 575 as the feed width, so 324 makes this 16:9 (roughly). We can override for other places if we want
 }) => {
     return (
-        <Box>
+        <Box
+            className="hodlAudioBox"
+            sx={{ width: '100%' }}
+        >
             <Box sx={{
                 position: "relative",
-                width: "100%",
+                width,
                 height: 0,
                 paddingTop: `calc(min(100%, ${minHeight}px))`,
                 boxSizing: 'border-box',
@@ -53,14 +57,13 @@ export const HodlAudioBox = ({
                                 gap: 0.5
                             }}
                         >
-                            <Typography sx={{ fontSize: 20 }} >{truncateText(token.name, 50)}</Typography>
-                            <Typography sx={{ fontSize: 18, color: 'black' }} >
+                            <Typography sx={{ fontSize: 20 }} >"{truncateText(token.name, 50)}"</Typography>
+                            <Typography sx={{ fontSize: 18, color: 'white' }} >
                                 <ProfileNameOrAddress
                                     profileAddress={token.creator}
                                     fontSize="18px"
                                     color="inherit"
                                 />
-
                             </Typography>
 
                         </Box>

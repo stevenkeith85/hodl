@@ -27,20 +27,22 @@ export const addTokenToTag = async (tag, token) => {
     return 0;
   }
 
+  const lowerCaseTag = tag.toLowerCase()
+
   const numberOfTagsOnToken = await client.scard(`token:${token}:tags`);
   if (numberOfTagsOnToken >= MAX_TAGS_PER_TOKEN) {
     return 0;
   }
 
-  const tagTimeSet = await client.zadd(`tag:${tag}`, {
+  const tagTimeSet = await client.zadd(`tag:${lowerCaseTag}`, {
     score: Date.now(), 
     member: token
   });
   
   // update our top tags list
-  const tagCount = await client.zincrby('rankings:tag:count', 1, tag);
+  const tagCount = await client.zincrby('rankings:tag:count', 1, lowerCaseTag);
 
-  const tokensTags = await client.sadd(`token:${token}:tags`, tag);
+  const tokensTags = await client.sadd(`token:${token}:tags`, lowerCaseTag);
   
   return tagTimeSet + tokensTags;
 }

@@ -82,7 +82,6 @@ export const getUser = async (handle: string, viewerAddress: string): Promise<Us
   const [avatar, followedByViewer, followsViewer] = await Promise.all([avatarPromise, followedByViewerPromise, followsViewerPromise]);
 
   vm.avatar = avatar;
-  // vm.avatar.image = ipfsUriToCid(vm.avatar?.image); // TODO - Just store the cid
   vm.followedByViewer = Boolean(followedByViewer);
   vm.followsViewer = Boolean(followsViewer);
 

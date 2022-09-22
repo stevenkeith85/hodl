@@ -47,7 +47,12 @@ export const TokenLinksList: React.FC<TokenLinksListProps> = ({ swr, limit, show
                     <TokenLink token={token} />
                   </Box>
                   {showLikes && <Box flexShrink={1}>
-                    <Likes id={token.id} object="token" />
+                    <Likes 
+                      id={token.id} 
+                      object="token" 
+                      size={18}  
+                      fontSize={12}
+                    />
                   </Box>
                   }
                 </Box>

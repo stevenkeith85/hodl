@@ -86,7 +86,7 @@ export const tokenMinted = async (
             aspectRatio,
             filter,
             asset: {
-                uri,
+                uri: ipfsUriToCid(uri),
                 license,
                 mimeType
             }

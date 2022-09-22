@@ -1,4 +1,5 @@
 import { Box, Button, Stack, Typography } from "@mui/material"
+import { useRouter } from "next/router";
 import {
   HodlModal
 }
@@ -8,6 +9,8 @@ export const SuccessModal = ({
   modalOpen,
   setModalOpen,
   message }) => {
+  const router = useRouter();
+
   return (
     <HodlModal
       open={modalOpen}
@@ -26,6 +29,7 @@ export const SuccessModal = ({
             }}
             onClick={() => {
               setModalOpen(false);
+              router.push(router.asPath);
             }}
           >
             Close

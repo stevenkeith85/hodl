@@ -37,7 +37,7 @@ const Page = ({ offset, limit, onClick, selected, fetcher, fallbackData }) => {
           label={tag}
           onClick={() => onClick(tag)}
           key={tag}
-          variant={selected === tag ? 'filled' : 'outlined'}
+          variant={selected.toLowerCase() === tag.toLowerCase() ? 'filled' : 'outlined'}
         />
       )
     }

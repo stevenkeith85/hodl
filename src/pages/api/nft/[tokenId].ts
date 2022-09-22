@@ -86,7 +86,8 @@ const isTokenForSale = ({ price, seller, tokenId }) => {
 // if the item is for sale, then we only consult Redis in O(1) and a blockchain call to 'getListed' (Market contract)
 // it its not for sale, then we do Redis O(1), getListed (Market contract), and exists / ownerOf (Token contract)
 
-// TODO: We read the blockchain here. We could (in future) just read from cached data in Redis. (once we've implemented a robust caching strategy)
+// TODO: We read the blockchain here. 
+// We could (in future) just read from cached data in Redis. (once we've implemented a robust caching strategy)
 export const fetchNFT = async (id: number): Promise<Nft> => {
   const provider = await getProvider();
 
@@ -123,24 +124,18 @@ export const fetchNFT = async (id: number): Promise<Nft> => {
   const token = await getToken(id);
 
   if (!token) {
-    throw new Error('Error retrieving token'); // it's gone missing from our database! (TODO: We could probably read the data from the blockchain here, and repopulate (or schedule that to happen in a task))
+    // it's gone missing from our database! 
+    // TODO: We could probably read the data from the blockchain here, and repopulate 
+    // probably via a queue
+    throw new Error('Error retrieving token'); 
   }
 
   const result: Nft = {
-    // id: token.id,
-    // creator: token.creator,
-    // metadata: token.metadata,
-
-    // name: token.name,
-    // description: token.description,
-    // image: token.image,
-
     price,
     owner,
     forSale,
 
     ...token
-    // properties: token.properties
   }
 
   return result;

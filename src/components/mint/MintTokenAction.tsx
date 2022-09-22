@@ -63,11 +63,6 @@ export const MintTokenAction: FC<MintProps> = ({
     <>
       <SuccessModal
         modalOpen={successModalOpen}
-        onClose={() => {
-          alert('redirecting')
-          router.push('/')
-        }
-        }
         setModalOpen={setSuccessModalOpen}
         message="Once your token has been confirmed on the blockchain, it will be added to HodlMyMoon and we'll send you a notification"
       />

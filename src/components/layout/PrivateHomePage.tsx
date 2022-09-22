@@ -17,8 +17,8 @@ interface PrivateHomePageProps {
 
 export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
 
-    const previousNearestVideoToTop = useRef(null);
-    const nearestVideoToTop = useRef(null);
+    const previousNearestToTop = useRef(null);
+    const nearestToTop = useRef(null);
 
     function isInViewport(el) {
         if (!el) {
@@ -44,26 +44,18 @@ export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address 
                 lastTime = now;
             }
         };
-      }
+    }
 
-    // We get the closest video to the top of the screen 
-    // pause the old closest video; and set the new one to play
-    // if we haven't watched it before.
-    //
-    // if the video playing moves offscreen, we pause it
-    //
-    // TODO: We could probably skip this if the user disables video autoplay (still to do this)
-    // TODO: We also need to consider the muted state
-    const playVideoNearestTopOfViewport = () => {
-        previousNearestVideoToTop.current = nearestVideoToTop.current;
+    const updateNearestToTop = () => {
+        previousNearestToTop.current = nearestToTop.current;
 
-        const allVideos = Array.from(document.querySelectorAll('video'));
-        allVideos.sort(
+        const feedItems = Array.from(document.querySelectorAll('.feedItem'));
+        feedItems.sort(
             (a, b) => {
                 const aPosition = Math.abs(a.getBoundingClientRect().top);
                 const bPosition = Math.abs(b.getBoundingClientRect().top);
 
-                if ( aPosition < bPosition ){
+                if (aPosition < bPosition) {
                     return -1;
                 }
                 else {
@@ -72,34 +64,36 @@ export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address 
             }
         )[0];
 
-        nearestVideoToTop.current = allVideos[0];
-        const topVideoIsInViewport = isInViewport(nearestVideoToTop.current);
+        nearestToTop.current = feedItems[0];
+        console.log('nearest to top', nearestToTop.current)
+    }
+    // We record the feed item at the top of the screen
+    //
+    // if there's a new item at the top of the screen, we
+    // pause the old items media (if it had any playing)
+    //
+    // and start the new items media playing (if it has any)
+    const playMediaAssetNearestTopOfViewport = () => {
+        updateNearestToTop();
 
-        // we have a new top video
-        if (nearestVideoToTop.current !== previousNearestVideoToTop) {
+        // if we have a new top video
+        if (nearestToTop.current !== previousNearestToTop.current) {
             // pause the previous
-            previousNearestVideoToTop?.current?.pause();
+            const previousMedia = previousNearestToTop?.current?.querySelector('video,audio');
+            previousMedia?.pause();
 
-            // start the new one if we haven't already watched it and its 
-            // in view
-            if (!nearestVideoToTop?.current?.ended && topVideoIsInViewport) {
-                ((nearestVideoToTop?.current) as HTMLMediaElement).muted = JSON.parse(localStorage.getItem('muted'));
-                let playPromise = nearestVideoToTop?.current?.play();
 
-                playPromise.then(() => {
-                    console.log('playing ', nearestVideoToTop?.current)
-                })
+            // start the new one
+            const nearestToTopAsset = nearestToTop?.current?.querySelector('video,audio');
+            if (nearestToTopAsset) {
+                ((nearestToTopAsset) as HTMLMediaElement).muted = JSON.parse(localStorage.getItem('muted'));
+                nearestToTopAsset?.play();
             }
-        }
-
-        // if the top video is no longer visible; pause it
-        if (!topVideoIsInViewport) {
-            nearestVideoToTop?.current?.pause();
         }
     };
 
     useEffect(() => {
-        const fn = throttle(playVideoNearestTopOfViewport, 500);
+        const fn = throttle(playMediaAssetNearestTopOfViewport, 500);
         window.addEventListener('scroll', fn);
 
         return () => {

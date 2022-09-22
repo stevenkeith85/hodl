@@ -179,10 +179,12 @@ const NftDetail = ({
                   id={nft.id}
                   object="token"
                   prefetchedLikeCount={prefetchedLikeCount}
-                  size={22}
+                  fontSize={12}
+                  size={18}
                 />
                 <Comments
-                  size={22}
+                  fontSize={12}
+                  size={18}
                   nft={nft}
                   popUp={false}
                   sx={{ color: '#333' }}
@@ -219,14 +221,14 @@ const NftDetail = ({
                   borderRadius: 1
                 }}>
                   <Typography variant="h2">Price</Typography>
-                  {nft?.forSale ? 
-                  <MaticPrice price={nft?.price} color="black" size={22} fontSize={22}/> : 
-                  <Typography sx={{ fontSize: '18px'}}>Not for Sale</Typography>}
+                  {nft?.forSale ?
+                    <MaticPrice price={nft?.price} color="black" size={22} fontSize={22} /> :
+                    <Typography sx={{ fontSize: '18px' }}>Not for Sale</Typography>}
                   <NftActionButtons nft={nft} />
                 </Box>
                 <PriceHistoryGraph fallbackData={priceHistory} nft={nft} />
                 <AssetLicense nft={nft} />
-                <IpfsCard nft={nft} />
+                <IpfsCard token={nft} />
               </Box>
             </div>
           </Grid>

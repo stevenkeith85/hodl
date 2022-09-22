@@ -148,7 +148,7 @@ export const validTxHashFormat = (addr) => {
 }
 
 export const assetType = (nft: Token | Nft) : AssetTypes => {
-  if (!nft.properties.asset.mimeType) {
+  if (!nft.properties.asset.mimeType) { 
     return AssetTypes.Image;
   }
 

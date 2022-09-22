@@ -1,18 +1,17 @@
-import { Box, Modal, Typography } from "@mui/material";
+import { Box, Modal } from "@mui/material";
 import { HodlVideo } from "../HodlVideo";
 import { assetType } from "../../lib/utils";
 import { useState } from "react";
 import { AssetTypes } from "../../models/AssetType";
 import { HodlImageResponsive } from "../HodlImageResponsive";
 import { HodlAudio } from "../HodlAudio";
-import { ProfileNameOrAddress } from "../avatar/ProfileNameOrAddress";
-import { UserAvatar } from "../avatar/UserAvatar";
-import { UserDefaultAvatar } from "../avatar/UserDefaultAvatar";
-import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
 import { HodlAudioBox } from "../HodlAudioBox";
+import { Token } from "../../models/Token";
 
-
-export const DetailPageAsset = ({ token }) => {
+interface DetailPageAssetProps {
+    token: Token;
+}
+export const DetailPageAsset: React.FC<DetailPageAssetProps> = ({ token }) => {
     const [assetModalOpen, setAssetModalOpen] = useState(false);
 
     return (token &&
@@ -82,15 +81,21 @@ export const DetailPageAsset = ({ token }) => {
                             cid={token?.image}
                             widths={[500, 600, 700, 800, 900, 1000, 1080]}
                             sizes="(min-width: 1200px) calc(1200px / 2), (min-width: 900px) calc(50vw / 2), 100vw"
-                        />}
+                        />
+                    }
                 </Box>
                 <Box>
-                    {assetType(token) === AssetTypes.Video && <HodlVideo
-                        cid={token?.image}
-                        height={'auto'}
-                    />}
+                    {
+                        assetType(token) === AssetTypes.Video &&
+                        <HodlVideo
+                            cid={token?.image}
+                            height={'auto'}
+                        />
+                    }
                 </Box>
-                {assetType(token) === AssetTypes.Audio && <HodlAudioBox token={token} size={80}/>
+                {
+                    assetType(token) === AssetTypes.Audio &&
+                    <HodlAudioBox token={token} size={80} />
                 }
             </Box>
         </>

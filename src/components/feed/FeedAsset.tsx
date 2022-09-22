@@ -28,16 +28,20 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
     return (<Box
         sx={{
             position: 'relative',
-            height: (assetType(item.token) === AssetTypes.Audio) ? '324px' : getHeightForAspectRatio(575, item?.token?.properties?.aspectRatio)
+            height: (assetType(item.token) === AssetTypes.Audio) ?
+                324 + 54 + 16 : // audio 'image' is 324, the controls are 54, and we want 16 additional pixels of spacing
+                getHeightForAspectRatio(575, item?.token?.properties?.aspectRatio)
         }}>
-            
+
         {/* Responsive skeleton */}
         <Box sx={{
             position: 'absolute',
             zIndex: 0,
 
             width: 'min(575px, 90vw)',
-            height: (assetType(item.token) === AssetTypes.Audio) ? 324 : getHeightForAspectRatio(575, item?.token?.properties?.aspectRatio),
+            height: (assetType(item.token) === AssetTypes.Audio) ? 
+            324 : // audio 'image' is 324
+            getHeightForAspectRatio(575, item?.token?.properties?.aspectRatio),
 
             background: '#ddd',
             animation: 'flicker 3s ease',
@@ -91,7 +95,7 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
             }
             {
                 (assetType(item.token) === AssetTypes.Audio) &&
-                <HodlAudioBox token={item.token} audio={false} size={80}/>
+                <HodlAudioBox token={item.token} audio={true} size={80} />
             }
         </Box>
     </Box >)

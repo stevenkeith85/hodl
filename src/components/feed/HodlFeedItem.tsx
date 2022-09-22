@@ -12,6 +12,8 @@ import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
 import { FeedAsset } from "./FeedAsset";
 import { MaticPrice } from "../MaticPrice";
 import { green } from "@mui/material/colors";
+import { assetType } from "../../lib/utils";
+import { AssetTypes } from "../../models/AssetType";
 
 
 interface HodlFeedItemProps {
@@ -25,6 +27,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
         <>
             {
                 <Box
+                    className={'feedItem'}
                     display="flex"
                     flexDirection="column"
                     gap={2}
@@ -158,20 +161,22 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                         }
                     </Box>
                     <Box display="flex">
-                        {item.token && <Box display="flex" gap={1.5}>
+                        {item.token && <Box display="flex" gap={1}>
                             <Likes
                                 id={item.token?.id}
                                 object="token"
-                                fontSize={14}
+                                size={18}
+                                fontSize={12}
                             />
                             <Comments
                                 nft={item.token}
-                                fontSize={14}
+                                size={18}
+                                fontSize={12}
                             />
                         </Box>}
                     </Box>
                     <Box>
-                        <Typography marginY={1} component="h2" sx={{ fontWeight: 600 }}>{item.token?.name}</Typography>
+                        <Typography marginBottom={1} component="h2" sx={{ fontWeight: 600 }}>{item.token?.name}</Typography>
                         <Box sx={{ whiteSpace: 'pre-line' }}>{insertTagLinks(item.token?.description)}</Box>
                     </Box>
                 </Box>}

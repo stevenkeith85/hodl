@@ -31,13 +31,13 @@ const followed = item => item.action === ActionTypes.Followed;
 const LikedToken = () => <>liked your token.</>
 const LikedDeletedComment = () => <>liked a comment, that has now been deleted.</>
 const LikedComment = ({ item }) => <>{`liked a comment: ${truncateText(item?.comment?.comment, 70)}.`}</>
-const MadeDeletedComment = () => <>made a comment, that has now been deleted.</>
-const CommentedOnToken = ({ item }) => <>{`commented: ${truncateText(item?.comment?.comment, 70)}.`}</>
+const MadeDeletedComment = () => <>commented on your token: [deleted]</>
+const CommentedOnToken = ({ item }) => <>{`commented on your token: ${truncateText(item?.comment?.comment, 70)}.`}</>
 const RepliedToComment = ({ item }) => <>{`replied: ${truncateText(item?.comment?.comment, 70)}.`}</>
 
 const MintedToken = () => <>minted a token on the blockchain</>
-const ListedToken = ({ item }) => <>listed a token for <MaticPrice price={item?.metadata?.price} color="black" fontSize={14} size={14} sx={{ marginLeft: 0.5 }} /></>
-const DelistedToken = ({ item }) => <>delisted a token</>
+const ListedToken = ({ item }) => <>listed a token on the market for <MaticPrice price={item?.metadata?.price} color="black" fontSize={14} size={14} sx={{ marginLeft: 0.5 }} /></>
+const DelistedToken = ({ item }) => <>delisted a token from the market</>
 const BoughtToken = ({ item }) => {
     const { address } = useContext(WalletContext);
 
@@ -267,9 +267,9 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({
                 {
                     item.token && item.token &&
                     <Link href={`/nft/${item.token.id}`} passHref>
-                        <a>
+                        <Typography component="a" sx={{ display: 'block'}}>
                             <AssetThumbnail token={item.token} />
-                        </a>
+                        </Typography>
                     </Link>
                 }
                 {
