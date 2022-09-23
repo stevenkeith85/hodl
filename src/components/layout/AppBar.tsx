@@ -98,31 +98,35 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
     }, [setSigner]);
 
 
-    const notificationsHover = useRef(false)
+    // const notificationsHoverBound = useRef(false)
+
+    const showPopUpNotification = (action: HodlAction) => {
+        enqueueSnackbar(
+            "",
+            {
+                // @ts-ignore
+                variant: 'hodlnotification',
+                action,
+            }
+        )
+    }
 
     useEffect(() => {
-        if (!userSignedInToPusher) {
-            console.log('appbar - user not signed in to pusher')
+        console.log('Pusher - setting up notification hover updates');
+        console.log('Pusher - pusher / user ', pusher, userSignedInToPusher);
+
+        if (!pusher || !userSignedInToPusher) {
             return;
         }
 
-        console.log('appbar - binding to notification hover')
-        
-        pusher.user.bind('notification-hover', (action: HodlAction) => {
-            enqueueSnackbar(
-                "",
-                {
-                    // @ts-ignore
-                    variant: 'hodlnotification',
-                    action,
-                }
-            )
-        });
+        pusher.user.bind('notification-hover', showPopUpNotification);
 
         return () => {
+            console.log('Pusher - cleaning up notification hover updates');
+            pusher.user.unbind('notification-hover', showPopUpNotification);
         }
 
-    }, [userSignedInToPusher])
+    }, [pusher, userSignedInToPusher]);
 
     if (!showAppBar) {
         return null;

@@ -1,6 +1,5 @@
 import { Box, NoSsr } from "@mui/material";
 import { useEffect, useRef } from "react";
-//import { useInView } from 'react-intersection-observer'; // TODO: Probably remove this; don't think we'll need it
 
 interface HodlVideoProps {
     cid: string;
@@ -10,7 +9,6 @@ interface HodlVideoProps {
     controls?: boolean;
     onlyPoster?: boolean;
     gif?: boolean;
-    audio?: boolean;
     height?: string;
     width?: string;
     onLoad?: Function;
@@ -24,7 +22,6 @@ export const HodlVideo = ({
     controls = true,
     onlyPoster = false,
     gif = false,
-    audio = false,
     height = 'auto',
     width = '100%',
     onLoad = null,
@@ -41,7 +38,6 @@ export const HodlVideo = ({
 
     useEffect(() => {
         try {
-            // user does this
             video?.current?.addEventListener('volumechange', (event) => {
                 localStorage.setItem('muted', video?.current?.muted);
             });
@@ -55,10 +51,6 @@ export const HodlVideo = ({
             return null;
         }
 
-        if (audio) {
-            return '/hodlmymoonmusic.png'
-        }
-
         return `${asset}.jpg`;
     }
 
@@ -69,7 +61,7 @@ export const HodlVideo = ({
                 height,
                 width,
                 video: {
-                    objectFit: audio ? 'scale-down' : 'cover',
+                    objectFit: 'cover',
                     objectPosition: 'center',
                     background: '#fafafa',
                 },

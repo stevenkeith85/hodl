@@ -74,6 +74,7 @@ export async function getServerSideProps({ req, res }) {
     followersCount
   ]);
 
+  console.log('newTokens', pnewTokens)
   return {
     props: {
       address: req.address || null,
@@ -111,7 +112,15 @@ export default function Home({
   const { rankings: mostLiked } = useRankings(true, limit, null, "token");
   const { rankings: mostUsedTags } = useRankings(true, limit, null, "tag");
   const { results: newUsers } = useSearchUsers('', limit, prefetchedNewUsers);
-  const { results: newTokens } = useSearchTokens('', limit, prefetchedNewTokens);
+  const { results: newTokens } = useSearchTokens({
+    q: '',
+    limit,
+    forSale: false,
+    minPrice: null,
+    maxPrice: null
+  },
+    prefetchedNewTokens
+  );
 
   const { actions: feed } = useActions(user?.address, ActionSet.Feed, limit, prefetchedFeed);
 

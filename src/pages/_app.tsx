@@ -17,7 +17,6 @@ import '../styles/globals.css'
 
 import { PusherContext } from '../contexts/PusherContext';
 import Pusher from 'pusher-js';
-// import Pusher from 'pusher-js/with-encryption';
 
 import { HodlNotificationSnackbar } from '../components/snackbars/HodlNotificationSnackbar';
 import { HodlSnackbar } from '../components/snackbars/HodlSnackbar';
@@ -46,14 +45,13 @@ export default function MyApp(props: MyAppProps) {
   const [pusher, setPusher] = useState(null);
   const [userSignedInToPusher, setUserSignedInToPusher] = useState(false); // TODO
 
-  const pusherSetUp = useRef(false);
-  const setupPusher = () => {
-    // This only needs done once.
-    if (pusherSetUp.current) {
-      return;
-    }
+  const setPusherSignInSuccess = () => {
+    setUserSignedInToPusher(true);
+  };
 
-    console.log('app - setting up pusher')
+  useEffect(() => {
+    console.log('Pusher - setting up pusher');
+
     const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY, {
       cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER,
       forceTLS: true,
@@ -62,36 +60,19 @@ export default function MyApp(props: MyAppProps) {
         transport: "ajax"
       }
     });
-
-    pusher.subscribe("comments");
-
-    pusher.bind('pusher:signin_success', () => {
-      console.log('app - successfully signed in to pusher');
-      setUserSignedInToPusher(true);
-    })
-
-    pusher.bind('pusher:error', () => {
-      console.log('app - did not sign in to pusher');
-    })
-
     setPusher(pusher);
 
-    pusherSetUp.current = true;
-  }
+    pusher.bind('pusher:signin_success', setPusherSignInSuccess);
+    pusher.signin();
 
-  useEffect(() => {
-    setupPusher();
+    return () => {
+      console.log('Pusher - cleaning up pusher');
+      pusher.unbind('pusher:signin_success', setPusherSignInSuccess);
+      setPusher(null);
+      setUserSignedInToPusher(false);
+    };
+
   }, [address])
-
-  useEffect(() => {
-    if (!pusher) {
-      return;
-    }
-    if (address) {
-      console.log('app - signing in to pusher')
-      pusher.signin();
-    }
-  }, [address, pusher])
 
   return (
     <CacheProvider value={emotionCache}>

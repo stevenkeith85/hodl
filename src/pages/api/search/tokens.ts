@@ -3,15 +3,16 @@ import apiRoute from '../handler';
 import { getToken } from '../token/[tokenId]';
 import { Redis } from '@upstash/redis';
 
-import { chunk, getAsString } from '../../../lib/utils';
+import { getAsString } from '../../../lib/utils';
 import { Nft } from '../../../models/Nft';
+import { chunk } from '../../../lib/lodash';
 
 const client = Redis.fromEnv()
 
 dotenv.config({ path: '../.env' })
 
 const getMarketItem = async ([id, price]): Promise<Nft> => {
-    console.log(`search/tokenns/getMarketItem - id: ${id}, price: ${price}`)
+    console.log(`search/tokens/getMarketItem - id: ${id}, price: ${price}`)
     return {
         ...(await getToken(id)),
         forSale: true,
@@ -19,7 +20,14 @@ const getMarketItem = async ([id, price]): Promise<Nft> => {
     }
 }
 
-export const getTokenSearchResults = async (q: string, offset: number, limit: number, forSale: boolean = false) => {
+export const getTokenSearchResults = async (
+    q: string, 
+    offset: number, 
+    limit: number, 
+    forSale: boolean = false,
+    minPrice: number = null,
+    maxPrice: number = null
+) => {
     try {
         let ids = []
         let total = 0;
@@ -29,24 +37,8 @@ export const getTokenSearchResults = async (q: string, offset: number, limit: nu
         let tokens;
 
         if (forSale) {
-            // TODO: We will add tokens to the market ZSET when the user lists them
-            // and remove them when bought/delisted.
-
-            // initially we'll call this behaviour from the webapp; but potentially we'll need 
-            // qStash or something to do this as a batch job. (even if its just to find items that have been missed)
-
-
             if (tag) {
-                // should the interstare happen in a batch job? qStash?
-                // or perhaps we just update it when things are listed/delisted
-                // leaving here for development at the moment
-                await client.zinterstore(`market:tag:${tag}`, 2, ["market", `tag:${tag}`], {
-                    aggregate: 'max'
-                })
-
-                total = await client.zcard(`market:tag:${tag}`);
-
-
+                total = await client.zcard(`market:${tag}`);
             } else {
                 total = await client.zcard(`market`);
             }
@@ -69,9 +61,29 @@ export const getTokenSearchResults = async (q: string, offset: number, limit: nu
 
         if (forSale) {
             if (tag) {
-                ids = await client.zrange(`market:${tag}`, offset, offset + limit - 1, { rev: true, withScores: true });
+                ids = await client.zrange(
+                    `market:${tag}`, 
+                    minPrice || '-inf', 
+                    maxPrice || '+inf', 
+                    { 
+                        withScores: true,
+                        byScore: true,
+                        offset,
+                        count: limit
+                    }
+                );
             } else {
-                ids = await client.zrange("market", offset, offset + limit - 1, { rev: true, withScores: true });
+                ids = await client.zrange(
+                    "market", 
+                    minPrice || '-inf', 
+                    maxPrice || '+inf', 
+                    { 
+                        withScores: true,
+                        byScore: true,
+                        offset,
+                        count: limit
+                    }
+                );
             }
 
             ids = chunk(ids, 2);
@@ -87,9 +99,8 @@ export const getTokenSearchResults = async (q: string, offset: number, limit: nu
 
             const promises = ids.map(address => getToken(address));
             tokens = await Promise.all(promises);
+            console.log('search/tokens - tokens', tokens);
         }
-
-
 
         return { items: tokens, next: Number(offset) + Number(ids.length), total: Number(total) };
     } catch (e) {
@@ -100,13 +111,17 @@ export const getTokenSearchResults = async (q: string, offset: number, limit: nu
 
 const route = apiRoute();
 route.get(async (req, res) => {
-    console.log('req.query', req.query)
+
     const q = getAsString(req.query.q);
-    console.log('req.query.forSale', req.query.forSale);
     const forSale = getAsString(req.query.forSale); // true, false ? TODO: Determine what we want to support
-    console.log('forSale', forSale);
+    
     const offset = getAsString(req.query.offset);
     const limit = getAsString(req.query.limit);
+
+    const minPrice = getAsString(req.query.minPrice);
+    const maxPrice = getAsString(req.query.maxPrice);
+
+    console.log('minPrice', minPrice)
 
     if (!offset || !limit) {
         return res.status(400).json({ message: 'Bad Request' });
@@ -114,7 +129,14 @@ route.get(async (req, res) => {
 
     // TODO: Add in some yup validation
 
-    const data = await getTokenSearchResults(q, +offset, +limit, JSON.parse(forSale || "false"));
+    const data = await getTokenSearchResults(
+        q, 
+        +offset, 
+        +limit, 
+        JSON.parse(forSale || "false"),
+        +minPrice || 0,
+        +maxPrice || 1000000
+        );
     return res.status(200).json(data);
 });
 

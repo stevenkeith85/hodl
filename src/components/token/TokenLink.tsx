@@ -42,7 +42,6 @@ export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = "40px", font
                                 cid={token?.properties?.asset?.uri}
                                 controls={false}
                                 onlyPoster={true}
-                                audio={false}
                                 height={size}
                                 width={size}
                                 sx={{

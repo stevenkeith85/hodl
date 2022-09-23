@@ -39,18 +39,7 @@ export const getMostUsedTags = async (
     };
   }
 
-  // const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/rankings:token:likes/${offset}/${offset + limit - 1}/rev`, {
-  //   headers: {
-  //     Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-  //   }
-  // })
-
-  // const ids: string [] = r.data.result;
-
   const tags: string[] = await client.zrange(`rankings:tag:count`, offset, offset + limit - 1, { rev: true });
-
-  
-
 
   return {
     items: tags,

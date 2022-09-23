@@ -16,9 +16,7 @@ const route = apiRoute();
 // data structures:
 //
 
-// ZSET (rankings:token:likes) <id> and like count of a token -> TODO: Change to rankings:token:likes:count
-
-
+// ZSET (rankings:token:likes:count) <id> and like count of a token
 export const getMostLikedTokens = async (
   offset: number = 0,
   limit: number = 10
@@ -29,7 +27,7 @@ export const getMostLikedTokens = async (
     total: number
   }> => {
 
-  const total = await client.zcard(`rankings:token:likes`);
+  const total = await client.zcard(`rankings:token:likes:count`);
 
   if (offset >= total) {
     return {
@@ -39,13 +37,7 @@ export const getMostLikedTokens = async (
     };
   }
 
-  const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/rankings:token:likes/${offset}/${offset + limit - 1}/rev`, {
-    headers: {
-      Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-    }
-  })
-
-  const ids: string [] = r.data.result;
+  const ids: string[] = await client.zrange(`rankings:token:likes:count`, offset, offset + limit - 1, { rev: true });
   const promises = ids.map(address => getToken(address));
   const tokens: Token[] = await Promise.all(promises);
   

@@ -24,7 +24,7 @@ export const CropAssetAction = ({
       height="550px"
       gap={4}
     >
-      { JSON.stringify(formData) }
+      {/* { JSON.stringify(formData) } */}
       <Crop sx={{ fontSize: 82, color: grey[400] }} />
       <Typography
         sx={{
@@ -36,7 +36,6 @@ export const CropAssetAction = ({
         <Box
           sx={{
             display: 'flex',
-            // flexDirection: 'column',
             gap: 2
           }}>
           <div>

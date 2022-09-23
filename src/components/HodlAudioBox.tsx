@@ -1,16 +1,29 @@
-import { Box, Typography } from "@mui/material"
+import { Box, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { truncateText } from "../lib/utils"
+import { Token } from "../models/Token"
 import { ProfileNameOrAddress } from "./avatar/ProfileNameOrAddress"
 import { UserAvatarAndHandle } from "./avatar/UserAvatarAndHandle"
 import { HodlAudio } from "./HodlAudio"
 
-export const HodlAudioBox = ({
+
+interface HodlAudioBoxProps {
+    token: Token;
+    audio?: boolean;
+    size?: number;
+    width?: string;
+    minHeight?: number;
+}
+
+export const HodlAudioBox: React.FC<HodlAudioBoxProps> = ({
     token,
     audio = true, // show the audioplayer
-    size = 60,
+    size = 50,
     width = "100%",
     minHeight = 324 // we use 575 as the feed width, so 324 makes this 16:9 (roughly). We can override for other places if we want
 }) => {
+    const theme = useTheme();
+    const smAndBelow = useMediaQuery(theme.breakpoints.down('md'));
+
     return (
         <Box
             className="hodlAudioBox"
@@ -40,14 +53,18 @@ export const HodlAudioBox = ({
                     <Box
                         sx={{
                             display: "flex",
+                            flexDirection: {
+                                xs: "column",
+                                sm: "row"
+                            },
                             gap: 2
                         }}
                     >
-                        <UserAvatarAndHandle
+                        {!smAndBelow && <UserAvatarAndHandle
                             address={token.creator}
                             size={size}
                             handle={false}
-                        />
+                        />}
                         <Box
                             sx={{
                                 display: "flex",
@@ -57,21 +74,32 @@ export const HodlAudioBox = ({
                                 gap: 0.5
                             }}
                         >
-                            <Typography sx={{ fontSize: 20 }} >"{truncateText(token.name, 50)}"</Typography>
-                            <Typography sx={{ fontSize: 18, color: 'white' }} >
-                                <ProfileNameOrAddress
+                            <Typography sx={{
+                                fontSize: {
+                                    xs: 14,
+                                    md: 16
+                                }
+                            }} >{truncateText(token.name, 50)}</Typography>
+                            <Typography
+                                sx={{
+                                    fontSize: {
+                                        xs: 12,
+                                        md: 14
+                                    },
+                                    color: 'white'
+                                }} >
+                                @<ProfileNameOrAddress
                                     profileAddress={token.creator}
-                                    fontSize="18px"
+                                    fontSize={ smAndBelow ? '12px' : "14px" }
                                     color="inherit"
                                 />
                             </Typography>
-
                         </Box>
                     </Box>
                 </Box>
             </Box>
             {audio && <Box>
-                <HodlAudio cid={token?.image} />
+                <HodlAudio cid={token?.properties?.asset?.uri} />
             </Box>}
         </Box>
     )

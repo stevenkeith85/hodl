@@ -73,7 +73,7 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
       await client.hsetnx(`user:${address}`, 'address', address);
       await client.hsetnx(`user:${address}`, 'nickname', '');
       await client.hsetnx(`user:${address}`, 'avatar', '');
-      await client.hsetnx(`user:${address}`, 'nonce', 0); // if we've never seen them, just set their nonce to 0. when we receive their first transaction it will be 0 or higher
+      await client.hsetnx(`user:${address}`, 'nonce', -1); // if we've never seen them, just set their nonce to 0. when we receive their first transaction it will be 0 or higher
 
       // Update
       const sessionId = Math.floor(Math.random() * 1000000);

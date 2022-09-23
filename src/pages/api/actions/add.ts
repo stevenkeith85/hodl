@@ -15,20 +15,9 @@ import { HodlComment } from "../../../models/HodlComment";
 import { Nft } from "../../../models/Nft";
 import { getUser } from "../user/[handle]";
 
-import Pusher from "pusher";
 import { getAction } from ".";
 import { pusher } from "../../../lib/server/pusher";
 
-// dotenv.config({ path: '../.env' })
-
-// const pusher = new Pusher({
-//   appId: process.env.PUSHER_APP_ID,
-//   key: process.env.NEXT_PUBLIC_PUSHER_APP_KEY,
-//   secret: process.env.PUSHER_APP_SECRET,
-//   cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER,
-//   useTLS: true,
-//   encryptionMasterKeyBase64: process.env.PUSHER_ENCRYPTION_KEY,
-// });
 
 const route = apiRoute();
 const client = Redis.fromEnv()
@@ -247,8 +236,6 @@ export const addAction = async (action: HodlAction) : Promise<number> => {
       return await addNotification(owner, action);
     } else if (comment?.object === "comment") { // the comment was a reply, tell the comment author. 
       const commentThatWasRepliedTo: HodlComment = await client.get(`comment:${comment.objectId}`);
-
-      // pusher.trigger('comments', 'reply', commentThatWasRepliedTo);
 
       if (action.subject === commentThatWasRepliedTo.subject) {
         return; // We've replied to our own comment. No need for a notification.

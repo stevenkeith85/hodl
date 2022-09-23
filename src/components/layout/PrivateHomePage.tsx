@@ -5,9 +5,10 @@ import { NewTokens } from '../rankings/NewTokens';
 import { TopUsers } from '../rankings/TopUsers';
 import { TopTokens } from '../rankings/TopTokens';
 import { NewUsers } from '../rankings/NewUsers';
-import { HodlBorderedBox } from '../HodlBorderedBox';
 import { User, UserViewModel } from '../../models/User';
 import { useEffect, useLayoutEffect, useRef } from 'react';
+import { throttle } from '../../lib/lodash';
+
 
 
 interface PrivateHomePageProps {
@@ -19,32 +20,6 @@ export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address 
 
     const previousNearestToTop = useRef(null);
     const nearestToTop = useRef(null);
-
-    function isInViewport(el) {
-        if (!el) {
-            return false;
-        }
-
-        const rect = el?.getBoundingClientRect();
-        return (
-            rect.top >= 0 &&
-            rect.left >= 0 &&
-            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-
-        );
-    }
-
-    function throttle(func, timeFrame) {
-        var lastTime = 0;
-        return function (...args) {
-            var now = new Date();
-            if (now - lastTime >= timeFrame) {
-                func(...args);
-                lastTime = now;
-            }
-        };
-    }
 
     const updateNearestToTop = () => {
         previousNearestToTop.current = nearestToTop.current;

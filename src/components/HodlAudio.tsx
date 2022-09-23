@@ -47,6 +47,8 @@ export const HodlAudio = ({
         <>
             <Box sx={{
                 display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 height,
                 width,
                 audio: {

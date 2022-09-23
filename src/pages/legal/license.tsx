@@ -108,7 +108,7 @@ export default function License({ address }) {
                             Use in free educational lectures and classes
                         </Typography>
                         <Typography component="li" mb={1}>
-                            Use on an individual or group's website discussing the artwork in question
+                            Use on an individual or group&apos;s website discussing the artwork in question
                         </Typography>
                         <Typography component="li" mb={1}>
                             Use on websites that are primarily information-led, research-oriented and obviously non-commercial in nature
@@ -173,7 +173,7 @@ export default function License({ address }) {
                         }}
                         marginY={1}
                     >
-                        <span>Perpetual</span>, meaning there is no expiration or end date on the Token Hodler's rights to use the attached asset whilst they continue to hodl the token.
+                        <span>Perpetual</span>, meaning there is no expiration or end date on the Token Hodler&apos;s rights to use the attached asset whilst they continue to hodl the token.
                     </Typography>
                     <Typography
                         sx={{
@@ -225,7 +225,7 @@ export default function License({ address }) {
                         }}
                         mb={1}
                     >
-                        For purposes of this agreement, "use" means to copy, reproduce, modify, edit, synchronize, perform, display, broadcast, publish, or otherwise make use of.
+                        For purposes of this agreement, &quot;use&quot; means to copy, reproduce, modify, edit, synchronize, perform, display, broadcast, publish, or otherwise make use of.
                     </Typography>
                     <Typography
                         sx={{
@@ -306,7 +306,7 @@ export default function License({ address }) {
                         }}
                         marginY={1}
                     >
-                        <span>No Commercial Activities with a "Non Commercial" license. </span>
+                        <span>No Commercial Activities with a &quot;Non Commercial&quot; license. </span>
                         The Token Hodler may not use the asset for commercial purposes if the asset is provided under a non commercial license.
                     </Typography>
                     <Typography

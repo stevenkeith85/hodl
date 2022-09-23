@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
 import apiRoute from "../handler";
@@ -10,16 +10,6 @@ dotenv.config({ path: '../.env' })
 
 const client = Redis.fromEnv()
 const route = apiRoute();
-
-
-// const pusher = new Pusher({
-//   appId: process.env.PUSHER_APP_ID,
-//   key: process.env.NEXT_PUBLIC_PUSHER_APP_KEY,
-//   secret: process.env.PUSHER_APP_SECRET,
-//   cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER,
-//   useTLS: true,
-//   encryptionMasterKeyBase64: process.env.PUSHER_ENCRYPTION_KEY,
-// });
 
 export const clearSession = async (address) => {
   await client.hdel(`user:${address}`, 'sessionId');

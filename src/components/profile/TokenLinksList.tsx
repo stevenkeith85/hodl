@@ -14,7 +14,6 @@ interface TokenLinksListProps {
 }
 
 export const TokenLinksList: React.FC<TokenLinksListProps> = ({ swr, limit, showLikes = true }) => {
-
   return (
     <>
       {swr.data &&

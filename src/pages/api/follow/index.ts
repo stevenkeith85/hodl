@@ -32,7 +32,7 @@ export const toggleFollow = async (userAddress, targetAddress) => {
     // TODO: REDIS TRANSACITON
     await client.zrem(`user:${userAddress}:following`, targetAddress);
     await client.zrem(`user:${targetAddress}:followers`, userAddress);
-    await client.zincrby('rankings:user:followers', -1, targetAddress);
+    await client.zincrby('rankings:user:followers:count', -1, targetAddress);
     //
 
   } else { // Follow
@@ -41,7 +41,7 @@ export const toggleFollow = async (userAddress, targetAddress) => {
     // TODO: REDIS TRANSACITON
     await client.zadd(`user:${userAddress}:following`, { member: targetAddress, score: timestamp});
     await client.zadd(`user:${targetAddress}:followers`, { member: userAddress, score: timestamp});
-    await client.zincrby('rankings:user:followers', 1, targetAddress);
+    await client.zincrby('rankings:user:followers:count', 1, targetAddress);
     //
 
     followed = true;

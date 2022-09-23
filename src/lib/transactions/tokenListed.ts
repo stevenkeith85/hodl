@@ -75,6 +75,7 @@ export const tokenListed = async (
 
     // UPDATE THE MARKET (TAGS)
     const tags = await getTagsForToken(tokenId);
+    console.log("tokenListed - adding market tags", tags)
 
     for (const tag of tags) {
         const added = await client.zadd(`market:${tag}`,

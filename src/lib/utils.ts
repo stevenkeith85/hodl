@@ -16,14 +16,6 @@ export const MAX_TAGS_PER_TOKEN = 6;
 export const NUMBER_OF_CONFIRMATIONS_TO_WAIT_FOR = 1; 
 export const TRANSACTION_TIMEOUT = 6000; // we will initially use the vercel plan that gives us 60 seconds to complete a serverless function. wait up to 10% of that before getting started. We could probably wait more if we get the transaction handling very robust
 
-export const chunk = (input, size) => {
-  return input.reduce((arr, item, idx) => {
-    return idx % size === 0
-      ? [...arr, [item]]
-      : [...arr.slice(0, -1), [...arr.slice(-1)[0], item]];
-  }, []);
-};
-
 export const getAsString = (param) : string | null => Array.isArray(param) ? param[0] : param;
 
 export const imageFilters: {
@@ -180,6 +172,8 @@ export const messageToSign = `Welcome to HodlMyMoon!
 To connect, please sign this message. 
 
 This request will not trigger a blockchain transaction or cost any gas fees.
+
+Please review hodlmymoon.com/legal/license before minting or trading tokens.
 
 uuid:
 `

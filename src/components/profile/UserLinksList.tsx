@@ -55,7 +55,7 @@ export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit, follow
                   address={user?.address}
                   fallbackData={user}
                   size={44}
-                  fontSize="14px"
+                  fontSize={14}
                 />
               </Box>
               {followButton && <Box flexShrink={1}>

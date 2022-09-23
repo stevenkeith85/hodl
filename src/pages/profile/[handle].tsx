@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Badge, Box, Tab, Tabs } from '@mui/material'
+import { Badge, Box, Tab, Tabs, Typography } from '@mui/material'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
 import { HodlLoadingSpinner } from '../../components/HodlLoadingSpinner'
@@ -31,7 +31,8 @@ import { useListedCount } from '../../hooks/useListedCount'
 import Link from 'next/link'
 import { ProfileNameOrAddress } from '../../components/avatar/ProfileNameOrAddress'
 import { InfiniteScrollNftWindows } from '../../components/InfiniteScrollNftWindows'
-import { CopyAddress } from '../../components/CopyAddress'
+import { CopyText } from '../../components/CopyAddress'
+import { getShortAddress } from '../../lib/utils'
 
 
 const UserLinksList = dynamic(
@@ -146,7 +147,7 @@ const Profile = ({
             <UserAvatarAndHandle
               address={owner.address}
               fallbackData={owner}
-              size={100}
+              size={90}
               fontSize={24}
               handle={false}
             />
@@ -154,10 +155,11 @@ const Profile = ({
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                gap: 0.5
               }}>
-              <ProfileNameOrAddress profileAddress={owner.address} fallbackData={owner} fontSize="26px" sx={{ fontWeight: 700 }} />
-              <CopyAddress owner={owner}/>
+              <ProfileNameOrAddress profileAddress={owner.address} fallbackData={owner} fontSize="22px" sx={{ fontWeight: 700 }} />
+              <CopyText owner={owner}>
+                <Typography sx={{ fontSize: 16 }}>{getShortAddress(owner.address)}</Typography>
+              </CopyText>
             </Box>
           </Box>
           <FollowButton profileAddress={owner.address} />

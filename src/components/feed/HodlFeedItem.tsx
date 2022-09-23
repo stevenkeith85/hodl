@@ -92,15 +92,6 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                                 color: theme => theme.palette.secondary.main
                                             }}>
                                             <Typography>listed</Typography>
-                                            {
-                                                item?.metadata?.price &&
-                                                <MaticPrice
-                                                    price={item?.metadata?.price}
-                                                    color="black"
-                                                    size={14}
-                                                    fontSize={14}
-                                                />
-                                            }
                                         </Box>
                                     }
                                     {item.action === ActionTypes.Bought &&
@@ -148,7 +139,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                             </Box>
                         </Box>
                         {
-                            item.token?.image &&
+                            item.token?.properties?.asset?.uri &&
                             <Link href={item.action === ActionTypes.Listed ? `/nft/${item.token.id}?tab=1` : `/nft/${item.token.id}`} passHref>
                                 <Box
                                     sx={{

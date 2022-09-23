@@ -24,7 +24,6 @@ export const MaticPrice: React.FC<MaticPriceProps> = ({
     }
 
     return (
-
                 <Typography
                     component="span"
                     sx={{

@@ -7,8 +7,9 @@ import { UserAvatarAndHandle } from './avatar/UserAvatarAndHandle';
 import { useContext } from 'react';
 import { UserContext } from '../contexts/UserContext';
 import { ProfileNameOrAddress } from './avatar/ProfileNameOrAddress';
-import { CopyAddress } from './CopyAddress';
+import { CopyText } from './CopyAddress';
 import { HodlBorderedBox } from './HodlBorderedBox';
+import { getShortAddress } from '../lib/utils';
 
 
 interface CountAndLinkProps {
@@ -53,7 +54,7 @@ export const HodlProfileBadge: React.FC<HodlProfileBadgeProps> = ({ user }) => {
 
     return (
         <HodlBorderedBox
-            sx = {{
+            sx={{
                 width: `100%`,
             }}
         >
@@ -74,17 +75,18 @@ export const HodlProfileBadge: React.FC<HodlProfileBadgeProps> = ({ user }) => {
                     <UserAvatarAndHandle
                         address={user.address}
                         fallbackData={user}
-                        size={66}
+                        size={70}
                         handle={false}
                     />
                     <Box
                         sx={{
                             display: "flex",
                             flexDirection: "column",
-                            gap: 0.5
                         }}>
                         <ProfileNameOrAddress profileAddress={user.address} fallbackData={user} fontSize="20px" />
-                        <CopyAddress owner={user} />
+                        <CopyText owner={user}>
+                            <Typography sx={{ fontSize: 14 }}>{getShortAddress(user.address)}</Typography>
+                        </CopyText>
                     </Box>
 
                 </Box>

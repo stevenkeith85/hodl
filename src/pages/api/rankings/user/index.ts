@@ -3,8 +3,7 @@ import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
 import axios from 'axios'
 import apiRoute from "../../handler";
-import { ActionSet, HodlAction } from "../../../../models/HodlAction";
-import { User, UserViewModel } from "../../../../models/User";
+import { UserViewModel } from "../../../../models/User";
 import { getUser } from "../../user/[handle]";
 import { getAsString } from "../../../../lib/utils";
 
@@ -15,7 +14,7 @@ const route = apiRoute();
 
 // data structures:
 //
-// ZSET (rankings:user:followers) <address> and their follower count -> TODO: Change to rankings:user:followers:count
+// ZSET (rankings:user:followers) <address> and their follower count
 
 export const getMostFollowedUsers = async (
   offset: number = 0,
@@ -28,7 +27,7 @@ export const getMostFollowedUsers = async (
     total: number
   }> => {
 
-  const total = await client.zcard(`rankings:user:followers`);
+  const total = await client.zcard(`rankings:user:followers:count`);
 
   if (offset >= total) {
     return {
@@ -38,13 +37,7 @@ export const getMostFollowedUsers = async (
     };
   }
 
-  const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/rankings:user:followers/${offset}/${offset + limit - 1}/rev`, {
-    headers: {
-      Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-    }
-  })
-
-  const addresses: string[] = r.data.result;
+  const addresses: string[] = await client.zrange(`rankings:user:followers:count`, offset, offset + limit - 1, { rev: true });
   const promises = addresses.map(address => getUser(address, viewer));
   const users: UserViewModel[] = await Promise.all(promises);
   
@@ -54,7 +47,6 @@ export const getMostFollowedUsers = async (
     total: Number(total)
   };
 }
-
 
 route.get(async (req, res: NextApiResponse) => {
   const offset = getAsString(req.query.offset);

@@ -4,10 +4,10 @@ import { HodlAction } from '../../models/HodlAction';
 import { HodlBorderedBox } from '../HodlBorderedBox';
 import { HodlNotificationBox } from '../notifications/HodlNotificationBox';
 
+// TODO: Notistack has an error that we'd like to hide in the console (as we can't do anything about it)
 interface HodlNotificationSnackbarProps extends CustomContentProps {
     action: HodlAction
 }
-
 export const HodlNotificationSnackbar = React.forwardRef<HTMLDivElement, HodlNotificationSnackbarProps>((props, ref) => {
     const {
         action,

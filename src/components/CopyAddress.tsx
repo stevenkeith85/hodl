@@ -3,12 +3,11 @@ import { getShortAddress } from '../lib/utils';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useState } from 'react';
 
-export const CopyAddress = ({ owner }) => {
-
+export const CopyText = ({ owner, children }) => {
     const [copied, setCopied] = useState(false);
 
     return (
-        <CopyToClipboard 
+        <CopyToClipboard
             text={owner.address}
             onCopy={() => {
                 setCopied(true);
@@ -16,10 +15,12 @@ export const CopyAddress = ({ owner }) => {
                     setCopied(false);
                 }, 2000)
             }}
-            >
-                    <Tooltip title={copied ? "Copied!": "Copy"} arrow={true}>
-                    <Box component="span" sx={{ cursor: 'pointer'}}>{getShortAddress(owner.address)}</Box>
-                    </Tooltip>
-                </CopyToClipboard>
+        >
+            <Tooltip title={copied ? "Copied!" : "Copy"} arrow={true}>
+                <Box component="span" sx={{ cursor: 'pointer' }}>
+                    { children }
+                </Box>
+            </Tooltip>
+        </CopyToClipboard>
     )
 }

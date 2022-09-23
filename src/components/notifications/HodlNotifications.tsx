@@ -42,17 +42,27 @@ export const HodlNotifications = ({
         }
     );
 
+    const ringNotificationBell =  () => {
+        mutateUnread(true, { revalidate: false });
+    }
+
     // Get real time updates about notifications! :)
     useEffect(() => {
-        if (!userSignedInToPusher) {
+        console.log('Pusher - setting up notification bell updates');
+        console.log('Pusher - pusher / user ', pusher, userSignedInToPusher);
+
+        if (!pusher || !userSignedInToPusher) {    
             return;
         }
 
-        pusher.user.bind('notification', () => {
-            mutateUnread(true, { revalidate: false });
-        });
+        pusher.user.bind('notification', ringNotificationBell);
 
-    }, [userSignedInToPusher]);
+        return () => {
+            console.log('Pusher - cleaning up notification bell updates');
+            pusher.user.unbind('notification', ringNotificationBell);
+        }
+
+    }, [pusher, userSignedInToPusher]);
 
     // when the user closes the notifications, we'll update the last read on the UI so that they don't get the highlight effect next time
     useEffect(() => {

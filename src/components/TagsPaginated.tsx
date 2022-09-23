@@ -37,7 +37,7 @@ const Page = ({ offset, limit, onClick, selected, fetcher, fallbackData }) => {
           label={tag}
           onClick={() => onClick(tag)}
           key={tag}
-          variant={selected.toLowerCase() === tag.toLowerCase() ? 'filled' : 'outlined'}
+          variant={selected?.toLowerCase() === tag?.toLowerCase() ? 'filled' : 'outlined'}
         />
       )
     }
@@ -85,7 +85,7 @@ export const TagsPaginated: React.FC<TagsPaginatedProps> = ({ limit, onClick, se
     <IconButton
       disabled={offset === 0}
       onClick={() => setOffset(offset - limit)}>
-      <NavigateBefore />
+      <NavigateBefore fontSize='small'/>
     </IconButton>
     <Page offset={offset} limit={limit} onClick={onClick} selected={selected} fetcher={fetcher} fallbackData={offset == 0 ? fallbackData: null} />
     <div style={{ display: 'none' }}><Page offset={offset + limit} limit={limit} onClick={onClick} selected={selected} fetcher={fetcher} fallbackData={null}/></div>
@@ -94,7 +94,7 @@ export const TagsPaginated: React.FC<TagsPaginatedProps> = ({ limit, onClick, se
       disabled={offset + limit >= data?.total}
       onClick={() => setOffset(offset + limit)}
     >
-      <NavigateNext />
+      <NavigateNext fontSize='small'/>
     </IconButton>
   </Box>)
 

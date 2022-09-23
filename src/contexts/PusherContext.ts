@@ -1,7 +1,8 @@
+import Pusher from "pusher-js";
 import { createContext } from "react";
 
 export const PusherContext = createContext<{
-    pusher: any,
+    pusher: Pusher,
     setPusher: Function,
     userSignedInToPusher: boolean, 
     setUserSignedInToPusher: Function

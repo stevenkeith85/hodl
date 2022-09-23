@@ -46,23 +46,23 @@ export default function AssetLicense({ address }) {
                     <Typography variant="h2">Examples</Typography>
                     <Box marginY={4}>
                         <Typography mb={2} sx={{ fontStyle: 'italic', span: { fontWeight: 600 } }}>
-                            1. <span>I'm a photographer</span>. I want to sell a stock photograph that the future hodler can use on their commercial website.
+                            1. <span>I&apos;m a photographer</span>. I want to sell a stock photograph that the future hodler can use on their commercial website.
                         </Typography>
                         <Typography mb={2} sx={{ fontStyle: 'italic', span: { color: 'green' } }}>Select <span>Commercial</span>.</Typography>
                     </Box>
                     <Box marginY={4}>
                         <Typography mb={2} sx={{ fontStyle: 'italic', span: { fontWeight: 600 } }}>
-                            2. <span>I'm a musician</span>. I want to sell a token that will give entry to my next gig.
+                            2. <span>I&apos;m a musician</span>. I want to sell a token that will give entry to my next gig.
                         </Typography>
                         <Typography mb={2} sx={{ fontStyle: 'italic' }}>
                             I attach some artwork to the token as a collectible.
-                            I don't mind the hodler using the artwork for their own non-commercial purposes.
+                            I don&apos;t mind the hodler using the artwork for their own non-commercial purposes.
                         </Typography>
                         <Typography mb={2} sx={{ fontStyle: 'italic', span: { color: 'green' } }}>Select <span>Non-Commercial</span>.</Typography>
                     </Box>
                     <Box marginY={4}>
                         <Typography mb={2} sx={{ fontStyle: 'italic', span: { fontWeight: 600 } }}>
-                            3. <span>I'm a game designer</span>. I want to sell a token that will represent a sword in my computer game.
+                            3. <span>I&apos;m a game designer</span>. I want to sell a token that will represent a sword in my computer game.
                         </Typography>
                         <Typography mb={2} sx={{ fontStyle: 'italic' }}>
                             I do not want the future hodler to use the attached artwork in any way without consent.

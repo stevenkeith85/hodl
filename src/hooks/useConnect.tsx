@@ -6,7 +6,7 @@ import axios from 'axios'
 import { PusherContext } from '../contexts/PusherContext';
 
 export const useConnect = () => {
-  const { setPusher, setUserSignedInToPusher } = useContext(PusherContext);
+  const { pusher, setPusher, setUserSignedInToPusher } = useContext(PusherContext);
   const { setSigner, setAddress } = useContext(WalletContext);
 
   // we ask which account they want if they aren't a returning user (i.e. they've logged out)
@@ -50,6 +50,8 @@ export const useConnect = () => {
   const disconnect = async () => {
     setSigner(null);
     setAddress(null);
+
+    pusher?.disconnect();
     setUserSignedInToPusher(null);
     setPusher(null);
 

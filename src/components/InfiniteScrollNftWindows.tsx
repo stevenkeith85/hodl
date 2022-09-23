@@ -12,10 +12,8 @@ interface InfiniteScrollNftWindowsProps {
 }
 
 export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> = ({ swr, limit, pattern=true }) => {
-
   const theme = useTheme();
   const xs = useMediaQuery(theme.breakpoints.only('xs'));
-  const sm = useMediaQuery(theme.breakpoints.only('sm'));
 
   // TODO: Extract this logic to a hook.
   const getImageNumber = (i, next) => {
@@ -25,7 +23,6 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
 
   // We just count the number of images between large ones.
   // This varies depending on the number of columns
-  // const numberOfImagesUntilNextLargeOne = xs ? [4, 2] : sm ? [7, 3] : [10, 4];
   const numberOfImagesUntilNextLargeOne = xs ? [4, 2] : [7, 3]
 
   let index = 0;

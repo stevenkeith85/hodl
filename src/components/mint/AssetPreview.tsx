@@ -18,8 +18,11 @@ export const AssetPreview: FC<MintProps> = ({
   const isAudio = () => mimeType && mimeType.indexOf('audio') !== -1;
 
   return (
-    <Box>
-      {/* {JSON.stringify(formData)} */}
+    <Box
+      className="assetPreview"
+      sx={{ width: '100%'}}
+    >
+      {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
       {!fileName &&
         <Typography sx={{ margin: `auto`, color: theme => theme.palette.text.secondary }}>Asset preview will appear here</Typography>
       }
@@ -36,12 +39,12 @@ export const AssetPreview: FC<MintProps> = ({
           cid={fileName.split('/')[2]}
           onLoad={(video) => {
             const aspectRatio = calculateAspectRatios(video.videoWidth, video.videoHeight);
-            
+
             setFormData(old => ({
               ...old,
               aspectRatio
             }));
-            
+
             setLoading();
           }}
         />
@@ -50,6 +53,7 @@ export const AssetPreview: FC<MintProps> = ({
         <HodlAudio
           cid={fileName.split('/')[2]}
           folder="uploads"
+          sx={{ audio: {width: '80%'}}}
           onLoad={(audio) => {
             setLoading();
           }}

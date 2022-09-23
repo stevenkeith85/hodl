@@ -34,7 +34,7 @@ route.post(async (req, res: NextApiResponse) => {
     // TODO: REDIS TRANSACTION
     await client.zrem(`liked:tokens:${req.address}`, token);
     await client.zrem(`likes:token:${token}`, req.address);
-    await client.zincrby('rankings:token:likes', -1, token);
+    await client.zincrby('rankings:token:likes:count', -1, token);
     // 
   } else { // like
     // TODO: REDIS TRANSACTION
@@ -50,7 +50,7 @@ route.post(async (req, res: NextApiResponse) => {
         member: req.address,
         score: timestamp
       });
-      await client.zincrby('rankings:token:likes', 1, token);
+      await client.zincrby('rankings:token:likes:count', 1, token);
     liked = true;
   }
 

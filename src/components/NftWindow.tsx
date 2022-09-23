@@ -8,12 +8,17 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { Comments } from './comments/Comments';
 import { MusicNote, Videocam } from '@mui/icons-material'
 import { AssetTypes } from '../models/AssetType';
-import { MaticPrice } from './MaticPrice';
 import { HodlImageResponsive } from './HodlImageResponsive';
 import { HodlAudioBox } from './HodlAudioBox';
+import { Nft } from '../models/Nft';
+import { PriceSticker } from './PriceSticker';
 
-
-const Overlay = ({ nft }) => {
+interface OverlayProps {
+    nft: Nft;
+}
+const Overlay: React.FC<OverlayProps> = ({
+    nft
+}) => {
     const theme = useTheme();
     const xs = useMediaQuery(theme.breakpoints.only('xs'));
 
@@ -22,7 +27,7 @@ const Overlay = ({ nft }) => {
             className='nftItemOverlay'
 
             sx={{
-                background: "rgba(0,0,0,0.6)",
+                background: "rgba(0,0,0,0.5)",
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -96,10 +101,12 @@ const Overlay = ({ nft }) => {
         </Box >)
 }
 
-export const NftWindow = ({ nft, aspectRatio = "1:1" }) => {
-    const theme = useTheme();
-    const xs = useMediaQuery(theme.breakpoints.only('xs'));
-
+interface NftWindowProps {
+    nft: Nft;
+}
+export const NftWindow: React.FC<NftWindowProps> = ({
+    nft
+}) => {
     if (!nft) {
         return null;
     }
@@ -119,12 +126,15 @@ export const NftWindow = ({ nft, aspectRatio = "1:1" }) => {
                         '.nftItemOverlay': { opacity: 1 }
                     }
                 }}>
-                {assetType(nft) === AssetTypes.Gif &&
+                {
+                    assetType(nft) === AssetTypes.Gif &&
                     <HodlVideo
-                        cid={nft?.image}
+                        cid={nft?.properties?.asset?.uri}
                         gif={true}
-                    />}
-                {(assetType(nft) === AssetTypes.Video) &&
+                    />
+                }
+                {
+                    assetType(nft) === AssetTypes.Video &&
                     <Box
                         sx={{
                             display: 'flex',
@@ -136,61 +146,38 @@ export const NftWindow = ({ nft, aspectRatio = "1:1" }) => {
                         }}>
                         <Videocam sx={{ position: 'absolute', top: 8, left: 8 }} />
                         <HodlVideo
-                            cid={nft?.image}
+                            cid={nft?.properties?.asset?.uri}
                             controls={false}
                             onlyPoster={true}
                             height="100%"
                         />
                     </Box>
                 }
-                {(assetType(nft) === AssetTypes.Audio) &&
+                {
+                    assetType(nft) === AssetTypes.Audio &&
                     <Box
                         sx={{
-                          position: 'relative'
+                            position: 'relative'
                         }}>
                         <MusicNote sx={{ position: 'absolute', top: 8, left: 8, zIndex: 1, color: 'white' }} />
-                        <HodlAudioBox token={nft} audio={false} minHeight={1000} size={80}/>
+                        <HodlAudioBox token={nft} audio={false} minHeight={1000} size={50} />
                     </Box>
                 }
-                {assetType(nft) === AssetTypes.Image &&
+                {
+                    assetType(nft) === AssetTypes.Image &&
                     <>
                         <HodlImageResponsive
                             aspectRatio="1:1"
                             sizes="(min-width: 900px) 25vw, (min-width: 1200px) calc(1200px / 5 * 2), 50vw"
-                            cid={nft?.image}
+                            cid={nft?.properties?.asset?.uri}
                             widths={[400, 800, 1000]}
                             objectFit="cover"
                         />
                     </>
                 }
                 <Overlay nft={nft} />
-
-                {nft?.forSale &&
-
-                    <Box
-                        sx={{
-                            position: 'absolute',
-                            top: 0,
-                            right: 0,
-                            width: `auto`,
-                            height: `auto`,
-                            padding: 1.5,
-                            paddingY: 0.75,
-                            background: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.4), rgba(0,0,0,0.5), rgba(0,0,0,0.4), rgba(0,0,0,0.3))`,
-                        }}
-                    >
-                        <Box
-                            sx={{
-                                textAlign: 'right'
-                            }}>
-                            <MaticPrice
-                                price={nft?.price}
-                                fontSize={xs ? 14 : 16}
-                                size={xs ? 14 : 16}
-                                humanizeNumber={true}
-                            />
-                        </Box>
-                    </Box>
+                {
+                    nft?.forSale && <PriceSticker price={nft?.price} />
                 }
             </Box>
         </Link>
