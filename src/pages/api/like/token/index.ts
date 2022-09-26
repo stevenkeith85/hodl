@@ -10,6 +10,7 @@ const client = Redis.fromEnv()
 import apiRoute from "../../handler";
 import { addAction } from "../../actions/add";
 import { HodlAction, ActionTypes } from "../../../../models/HodlAction";
+import { trimZSet } from "../../../../lib/databaseUtils";
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
@@ -54,6 +55,7 @@ route.post(async (req, res: NextApiResponse) => {
     liked = true;
   }
 
+  trimZSet(client, 'rankings:token:likes:count');
   // likesToken.delete(req.address, token);
   // getLikeCount.delete(token);
 

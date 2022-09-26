@@ -3,11 +3,11 @@ import Link from "next/link";
 
 export const NoLicenseText = () => (<>
   <Typography mb={1}>
-      The current hodler will:
+      The token hodler:
     </Typography>
     <Typography component="ul" sx={{ paddingY: 1, paddingX: 2, margin: 1 }}>
-      <Typography component="li" mb={2}>own the token</Typography>
-      <Typography component="li">have no <Link href="/asset-license">license</Link> agreement with the token author for the attached asset</Typography>
+      <Typography component="li" mb={2}>owns the token</Typography>
+      <Typography component="li">has no <Link href="/asset-license">license</Link> for the attached asset</Typography>
     </Typography>
     </>)
 

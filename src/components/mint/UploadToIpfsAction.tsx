@@ -107,7 +107,7 @@ export const UploadToIpfsAction: FC<MintProps> = ({
     <Box
       width="100%"
     >
-      {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
+      <pre>{JSON.stringify(formData, null, 2)}</pre>
       <Formik
         initialValues={{
           name: formData.name,
@@ -123,6 +123,7 @@ export const UploadToIpfsAction: FC<MintProps> = ({
       >
         {({ isSubmitting, values, setFieldValue, errors, dirty, isValid }) => (
           <>
+          {<pre>{JSON.stringify(errors, null, 2)}</pre>}
             <Form>
               <Stack spacing={2}>
                 <FormControl>

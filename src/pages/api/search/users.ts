@@ -12,6 +12,7 @@ const client = Redis.fromEnv()
 dotenv.config({ path: '../.env' })
 
 
+// TODO: This isn't being used yet; but we'd like to adapt it for the search bar
 // Pretty basic at the moment. We'll just return the newest users.
 // We should at least allow a lookup by nickname/address though. ideally a partial match
 export const getUserSearchResults = async (q: string | null, offset: number, limit: number, viewer=null) => {
@@ -26,15 +27,7 @@ export const getUserSearchResults = async (q: string | null, offset: number, lim
             };
         }
 
-        const url = `${process.env.UPSTASH_REDIS_REST_URL}/zrange/users/${offset}/${offset + limit - 1}/rev`;
-
-        const r = await axios.get(url, {
-            headers: {
-                Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-            }
-        })
-
-        const addresses: string[] = r.data.result;
+        const addresses: string[] = await client.zrange(`users`, offset, offset + limit - 1, { rev: true });
         const promises = addresses.map(address => getUser(address, viewer));
         const users: UserViewModel[] = await Promise.all(promises);
 

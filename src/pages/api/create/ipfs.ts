@@ -50,7 +50,7 @@ const makeCloudinaryImageUrl = (cid, filter, aspectRatio) => {
     cloudinaryUrl = `${cloudinaryUrl},${filter}`;
   }
 
-  return `${cloudinaryUrl}/${environment}/${folder}/${cid}.jpg`
+  return `${cloudinaryUrl}/${environment}/${folder}/${cid}`
 }
 
 // We do not do any transformations on video, as they are really expensive :(

@@ -1,7 +1,8 @@
 import useSWRInfinite from 'swr/infinite'
 import axios from 'axios';
 
-
+// TODO: This relies on the endpoints being /index at the moment. Probably will want to change this
+// or split off some new hooks instead
 export const useRankings = (
   getData: boolean,
   limit: number,

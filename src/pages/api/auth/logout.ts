@@ -22,14 +22,19 @@ export const clearCookies = (res) => {
   ])
 }
 
+export const logout = async (req, res) => {
+  await clearSession(req.address);
+  pusher.terminateUserConnections(req.address);
+
+  clearCookies(res);
+}
+
 route.post(async (req, res: NextApiResponse) => {  
   if (!req.address) {
     return res.status(403).json({ message: "Not authenticated" });
   }
 
-  await clearSession(req.address);
-  clearCookies(res);
-  pusher.terminateUserConnections(req.address);
+  await logout(req, res);
 
   res.status(200).json({message: 'ok'});
 });

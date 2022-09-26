@@ -47,13 +47,19 @@ export const useConnect = () => {
     }
   }
 
-  const disconnect = async () => {
+  // Sometimes we only need to disconnect the FE, as the BE has already been disconnected
+  const disconnectFE = () => {
     setSigner(null);
     setAddress(null);
 
     pusher?.disconnect();
     setUserSignedInToPusher(null);
     setPusher(null);
+  }
+
+  const disconnect = async () => {
+    
+    disconnectFE();
 
     try {
       const r = await axios.post(
@@ -68,5 +74,5 @@ export const useConnect = () => {
     }
   }
 
-  return [connect, disconnect];
+  return [connect, disconnect, disconnectFE];
 }

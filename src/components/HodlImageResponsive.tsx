@@ -1,6 +1,6 @@
-import { Box, Skeleton, useTheme } from "@mui/material";
+import { Box } from "@mui/material";
 import Head from "next/head";
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 // https://css-tricks.com/a-guide-to-the-responsive-images-syntax-in-html/#using-srcset
 export const HodlImageResponsive = ({
@@ -43,7 +43,7 @@ export const HodlImageResponsive = ({
             cloudinaryUrl = `${cloudinaryUrl}/r_max`;
         }
 
-        return `${cloudinaryUrl}/${environment}/${folder}/${cid}.jpg`
+        return `${cloudinaryUrl}/${environment}/${folder}/${cid}`
     }
 
     const srcSet = widths.map(width => `${makeCloudinaryUrl(width)} ${width}w`).join(',');

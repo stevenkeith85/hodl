@@ -130,6 +130,7 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                     assetType(nft) === AssetTypes.Gif &&
                     <HodlVideo
                         cid={nft?.properties?.asset?.uri}
+                        assetFolder="image"
                         gif={true}
                     />
                 }

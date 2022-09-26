@@ -44,10 +44,13 @@ export const getTokenSearchResults = async (
             }
         }
         else {
+            // if the user is 'exploring', then we 
+            // use the restricted size sets 'tokens:new' and 'tags:new' rather than the larger sets 'tokens' and 'tags'
+            // as those can grow infinitely, and would eventually slow down the ui
             if (tag) {
-                total = await client.zcard(`tag:${tag}`);
-            } else {
-                total = await client.zcard(`tokens`);
+                total = await client.zcard(`tag:${tag}:new`);
+            } else { 
+                total = await client.zcard(`tokens:new`);
             }
         }
 
@@ -91,10 +94,13 @@ export const getTokenSearchResults = async (
             tokens = await Promise.all(promises);
         }
         else {
+            // if the user is 'exploring', then we 
+            // use the restricted size sets 'tokens:new' and 'tags:new' rather than the larger sets 'tokens' and 'tags'
+            // as those can grow infinitely, and would eventually slow down the ui
             if (tag) {
-                ids = await client.zrange(`tag:${tag}`, offset, offset + limit - 1, { rev: true });
+                ids = await client.zrange(`tag:${tag}:new`, offset, offset + limit - 1, { rev: true });
             } else {
-                ids = await client.zrange("tokens", offset, offset + limit - 1, { rev: true });
+                ids = await client.zrange("tokens:new", offset, offset + limit - 1, { rev: true });
             }
 
             const promises = ids.map(address => getToken(address));

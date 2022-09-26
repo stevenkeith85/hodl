@@ -19,6 +19,7 @@ import { Token } from "../../models/Token";
 import { addTokenToTag } from "../../pages/api/tags/add";
 import { addAction } from "../../pages/api/actions/add";
 import { HodlMetadata } from "../../models/Metadata";
+import { trimZSet } from "../databaseUtils";
 
 const client = Redis.fromEnv()
 
@@ -101,17 +102,29 @@ export const tokenMinted = async (
     const tokenAdded = await client.setnx(`token:${token.id}`, token);
 
     if (!tokenAdded) {
-        console.log('tokenMinted - token already exists in database, aborting');    
+        console.log('tokenMinted - token already exists in database, aborting');
         return false;
     }
 
-    await client.zadd(`tokens`,
+    const added = await client.zadd(`tokens`,
         { nx: true },
         {
             score: block.timestamp,
             member: token.id,
         }
     );
+
+    if (added) {
+        await client.zadd(`tokens:new`,
+            { nx: true },
+            {
+                score: block.timestamp,
+                member: token.id,
+            }
+        );
+
+        trimZSet(client, 'tokens:new');
+    }
 
     // extract tags
     // @ts-ignore
@@ -122,7 +135,7 @@ export const tokenMinted = async (
         await addTokenToTag(tag, token.id);
     }
 
-    const minted : HodlAction = {
+    const minted: HodlAction = {
         subject: to,
         action: ActionTypes.Added,
         object: "token",
@@ -136,5 +149,5 @@ export const tokenMinted = async (
         return false;
     }
 
-    return true;    
+    return true;
 }

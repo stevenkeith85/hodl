@@ -77,7 +77,7 @@ export default function AssetLicense({ address }) {
                 <Box marginY={4}>
                     <Typography mb={2} variant="h2">Why do we do this?</Typography>
                     <Typography mb={2}>
-                        It can help resolve any disputes on what the current hodler can do with the attached asset.
+                        It helps resolve any disputes on what the current hodler can do with the attached asset.
                     </Typography>
                 </Box>
                 <Box marginY={4}>

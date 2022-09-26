@@ -90,19 +90,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
             display="flex"
             flexDirection="column"
             sx={{
-                // width: `100%`,
                 marginLeft: '20px',
-                // borderLeft: '1px dashed #ddd',
-
-                // '&:last-of-type': {
-                //     border: '2px solid transparent'
-                // }
-                // '&:hover': {
-                //     '& .moreMenu': {
-                //         visibility: 'visible'
-                //     }
-
-                // }
             }}
         >
             <Box

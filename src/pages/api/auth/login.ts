@@ -9,6 +9,7 @@ import { getUuidForAddress } from "./uuid"
 import cookie from 'cookie'
 import { accessTokenExpiresIn, refreshTokenExpiresIn } from "../../../lib/jwt"
 import { User } from "../../../models/User"
+import { trimZSet } from "../../../lib/databaseUtils"
 
 dotenv.config({ path: '../.env' })
 
@@ -66,7 +67,7 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
   if (uuid) {
     const signerAddress = ethers.utils.verifyMessage(messageToSign + uuid, signature);
 
-    if (address == signerAddress) { 
+    if (address == signerAddress) {
       // User has connected
 
       // Create user
@@ -102,7 +103,7 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
 
       // Log when the user joined
       const timestamp = Date.now();
-      await client.zadd(
+      const added = await client.zadd(
         `users`,
         { nx: true },
         {
@@ -110,6 +111,20 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
           member: address
         }
       );
+
+      if (added) {
+        // Add to the set of new users (limited in size; used on the UI)
+        await client.zadd(
+          `users:new`,
+          { nx: true },
+          {
+            score: timestamp,
+            member: address
+          }
+        );
+
+        trimZSet(client, 'users:new');
+      }
 
       return res.status(200).json({
         success: true,

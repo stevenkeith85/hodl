@@ -12,6 +12,8 @@ interface HodlVideoProps {
     height?: string;
     width?: string;
     onLoad?: Function;
+    assetFolder?: "video" | "image" // gifs are stored in the image folder. we display them as videos though, to save bandwidth
+    objectFit?: "cover" | "scale-down"
 }
 
 export const HodlVideo = ({
@@ -25,10 +27,12 @@ export const HodlVideo = ({
     height = 'auto',
     width = '100%',
     onLoad = null,
+    assetFolder="video",
+    objectFit='cover'
 }: HodlVideoProps) => {
     const makeCloudinaryVideoUrl = () => {
         const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_NAME;
-        let cloudinaryUrl = `https://res.cloudinary.com/${cloudName}/video/upload`;
+        let cloudinaryUrl = `https://res.cloudinary.com/${cloudName}/${assetFolder}/upload`;
 
         return `${cloudinaryUrl}/${environment}/${folder}/${cid}`
     }
@@ -57,11 +61,14 @@ export const HodlVideo = ({
     return (
         <>
             <Box sx={{
+                overflow: 'hidden',
                 display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 height,
                 width,
                 video: {
-                    objectFit: 'cover',
+                    objectFit,
                     objectPosition: 'center',
                     background: '#fafafa',
                 },
@@ -77,7 +84,7 @@ export const HodlVideo = ({
                         }
                         width={width}
                         ref={video}
-                        autoPlay={false} // https://developer.chrome.com/blog/autoplay/
+                        autoPlay={gif} // we autoplay gifs. videos are played when the user scrolls past them
                         loop={gif}
                         muted={typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('muted')) : false} // TODO: Not confident this works tbh
                         controls={!gif && controls}

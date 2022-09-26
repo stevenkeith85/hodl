@@ -23,12 +23,14 @@ import { PusherContext } from '../../contexts/PusherContext';
 
 import { useConnect } from '../../hooks/useConnect';
 import { SessionExpiredModal } from '../modals/SessionExpiredModal';
+import { useRouter } from 'next/router';
 
 const ResponsiveAppBar = ({ showAppBar = true }) => {
     const { address, setSigner } = useContext(WalletContext);
     const { pusher, userSignedInToPusher } = useContext(PusherContext);
 
-    const [connect, disconnect] = useConnect();
+    const router = useRouter();
+    const [connect, disconnect, disconnectFE] = useConnect();
     const [error, setError] = useState('');
 
     const [desktopMenuOpen, setDesktopMenuOpen] = useState(false);
@@ -73,17 +75,31 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
     }, [error, enqueueSnackbar]) //  Warning: React Hook useEffect has a missing dependency: 'enqueueSnackbar'. Either include it or remove the dependency array.
 
     useEffect(() => {
+        if (router?.query?.sessionExpired) {
+            setSessionExpiredModalOpen(true);
+        }
+    }, [router?.query]
+    )
+    useEffect(() => {
         axios.interceptors.response.use(null, async (error) => {
-            if (error.config && error.response && error.response.status === 401 && !error.config.__isRetry) {
+            if (error.config && 
+                error.response && 
+                error.response.status === 401 
+                && !error.config.__isRetry) {
                 const { refreshed } = error.response.data;
 
                 error.config.__isRetry = true;
 
                 if (refreshed) {
+                    alert('refreshed')
                     return axios.request(error.config);
-                } else {
-                    await disconnect();
-                    setSessionExpiredModalOpen(true);
+                } 
+                else {
+                    // The BE is disconnected in the jwt code
+                    disconnectFE();
+
+                    // add the query param to display the 'session ended' dialog
+                    router.push(window.location.pathname + '?sessionExpired=true');
                 }
 
             } else if (error.config && error.response && error.response.status === 429) {

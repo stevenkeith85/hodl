@@ -3,8 +3,8 @@ import { Redis } from '@upstash/redis';
 import jwt from 'jsonwebtoken'
 import cookie from 'cookie'
 
-export const accessTokenExpiresIn = 60 * 30;
-export const refreshTokenExpiresIn = 60 * 60 * 4;
+export const accessTokenExpiresIn = 60 * 60; // 1 hour
+export const refreshTokenExpiresIn = 60 * 60 * 2; // 2 hours at the moment until we get things running smoothly
 
 const client = Redis.fromEnv();
 
@@ -53,30 +53,30 @@ export const apiAuthenticate = async (req, res, next) => {
 
         // user will need to re-login to re-auth
         // the next endpoint may not require auth though; so clear req.address and forward the request to it
-        // clearCookies(res);
+        
         req.address = null;
         return next();
       } catch (e) {
-        // the verify call has failed, i.e. the refreshToken has likely expired. 
-
-        // the user will need to re-login to re-auth
-        // the next endpoint may not require auth though; so clear req.address and forward the request to it
-        // clearCookies(res);
-        req.address = null;
-        return next();
+        // the verify call has failed, 
+        // the refreshToken has expired. 
+        // TODO: This doesn't do exactly the same as our logout function in api/auth - check if we need to update this
+        res.setHeader('Set-Cookie', [
+          cookie.serialize('accessToken', "", { httpOnly: true, path: '/', maxAge: -1}),
+          cookie.serialize('refreshToken', "", { httpOnly: true, path: '/', maxAge: -1})
+        ])
+        return res.status(401).json({ refreshed: false });
       }
     }
 
     // This is unlikely to happen in the wild; but if it does; just log the user out
     // WE usually see it when switching from dev to prod mode (as we have a different jwt secret for both); 
     if (e instanceof jwt.JsonWebTokenError) {
-      // clearCookies(res);
+      
       req.address = null;
       return next();
     }
 
     // just forward the call if there's anything we aren't handling
-    // clearCookies(res);
     req.address = null;
     return next();
   }
@@ -125,9 +125,13 @@ export const authenticate = async (req, res): Promise<boolean> => {
         console.log(`AUTH: the sessionId does not match the storedSessionId for ${address}`)
         return false;
       } catch (e) {
-        // the verify call has failed, i.e. the refreshToken has expired. 
-        // the user will need to re-login
-        console.log(`AUTH: the refreshToken has expired`)
+        // the verify call has failed, 
+        // the refreshToken has expired. 
+        // TODO: This doesn't do exactly the same as our logout function in api/auth - check if we need to update this
+        res.setHeader('Set-Cookie', [
+          cookie.serialize('accessToken', "", { httpOnly: true, path: '/', maxAge: -1}),
+          cookie.serialize('refreshToken', "", { httpOnly: true, path: '/', maxAge: -1})
+        ])
         return false;
       }
     }

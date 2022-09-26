@@ -1,7 +1,5 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
-// import dotenv from 'dotenv'
-import axios from 'axios';
 import apiRoute from "../handler";
 import { ActionSet, ActionSetMembers, ActionTypes, HodlAction } from '../../../models/HodlAction';
 import { getPriceHistory } from "../token-bought/[tokenId]";
@@ -17,6 +15,7 @@ import { getUser } from "../user/[handle]";
 
 import { getAction } from ".";
 import { pusher } from "../../../lib/server/pusher";
+import { trimZSet } from "../../../lib/databaseUtils";
 
 
 const route = apiRoute();
@@ -54,6 +53,8 @@ const addNotification = async (address: string, action: HodlAction): Promise<num
     }
   );
 
+  await trimZSet(client, `user:${address}:notifications`);
+
   if (added) {
     console.log(`actions/add/addNotification - sending ${address} push notifications.`);
     
@@ -73,8 +74,6 @@ const addNotification = async (address: string, action: HodlAction): Promise<num
 
 // Add the action id to <address>s feed. We'll set the feed entry's timestamp to use the action's timestamp (for now)
 // as we'd probably not want to show something at the top of a chronological feed, if it was actually listed a while ago
-
-// TODO: We may want to trim this set as it is queried from the FE. Possibly we archive the data?
 const addToFeed = async (address: string, action: HodlAction): Promise<number> => {
   const added = await client.zadd(
     `user:${address}:feed`,
@@ -83,10 +82,13 @@ const addToFeed = async (address: string, action: HodlAction): Promise<number> =
       member: action.id
     }
   );
+  
+  await trimZSet(client, `user:${address}:feed`);
 
   if (added) {
     pusher.sendToUser(address, "feed", null);
   }
+
   return added;
 }
 
@@ -126,18 +128,12 @@ const recordAddressActivity = async (action: HodlAction): Promise<number> => {
 
 // actions could be referenced (by id) from several places.
 const storeAction = async (action: HodlAction): Promise<string | HodlAction | null> => {
-  // return await client.set(`action:${action.id}`, JSON.stringify(action));
   return await client.set(`action:${action.id}`, action);
 }
 
 // gets the last <x> actions that address took that can be used in a feed
 const getLastXFeedActions = async (address: string, x: number = 5): Promise<HodlAction[]> => {
-  const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/user:${address}:actions:feed/0/${x}/rev`, {
-    headers: {
-      Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-    }
-  })
-  const actionIds = r.data.result.map(item => JSON.parse(item));
+  const actionIds = await client.zrange(`user:${address}:actions:feed`, 0, x, { rev: true });
 
   const actions: HodlAction[] = [];
 
@@ -149,7 +145,6 @@ const getLastXFeedActions = async (address: string, x: number = 5): Promise<Hodl
     if (data) {
       actions.push(data);
     }
-
   }
 
   return actions;

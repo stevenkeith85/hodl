@@ -37,6 +37,8 @@ import { UserAvatarAndHandle } from "../../components/avatar/UserAvatarAndHandle
 import { getUser } from "../api/user/[handle]";
 import { NftContext } from "../../contexts/NftContext";
 import { HodlBorderedBox } from "../../components/HodlBorderedBox";
+import { ProfileNameOrAddress } from "../../components/avatar/ProfileNameOrAddress";
+import { OwnerCreatorCard } from "../../components/nft/OwnerCreatorCard";
 
 
 export async function getServerSideProps({ params, query, req, res }) {
@@ -227,6 +229,7 @@ const NftDetail = ({
                   <NftActionButtons nft={nft} />
                 </Box>
                 <PriceHistoryGraph fallbackData={priceHistory} nft={nft} />
+                <OwnerCreatorCard token={nft} />
                 <AssetLicense nft={nft} />
                 <IpfsCard token={nft} />
               </Box>

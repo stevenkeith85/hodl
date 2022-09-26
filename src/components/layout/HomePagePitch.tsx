@@ -11,7 +11,7 @@ export const HomePagePitch = ({ }) => {
         <Box
             sx={{
                 paddingY:{ xs:`50px`, md: '100px' },
-                width: `100%`
+                width: `100%`,
             }}>
             <Grid container>
                 <Grid

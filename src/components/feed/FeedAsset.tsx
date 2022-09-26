@@ -87,10 +87,14 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
                     <HodlVideo
                         cid={item.token?.properties?.asset?.uri}
                         gif={true}
+                        assetFolder="image"
+                        height={'575px'}
                         sx={{
+                            background: '#f9f9f9',
                             video: {
+                                objectPosition: 'center',
                                 borderRadius: 0,
-                                maxHeight: '500px'
+                                width: 'auto'
                             }
                         }}
                     />

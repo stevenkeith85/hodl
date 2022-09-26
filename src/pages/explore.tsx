@@ -9,7 +9,6 @@ import { InfiniteScrollNftWindows } from '../components/InfiniteScrollNftWindows
 import { TagsPaginated } from '../components/TagsPaginated';
 import { useSearchTokens } from '../hooks/useSearchTokens';
 import { authenticate } from '../lib/jwt';
-import { debounce } from '../lib/lodash';
 import { getMostUsedTags } from './api/rankings/tag';
 import { getTokenSearchResults } from './api/search/tokens';
 

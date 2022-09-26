@@ -13,8 +13,8 @@ import { getMostFollowedUsers } from './api/rankings/user';
 import { RankingsContext } from '../contexts/RankingsContext';
 import { getUser } from './api/user/[handle]';
 import { getMostLikedTokens } from './api/rankings/token';
-import { useSearchUsers } from '../hooks/useSearchUsers';
-import { getUserSearchResults } from './api/search/users';
+import { useNewUsers } from '../hooks/useNewUsers';
+
 import { getTokenSearchResults } from './api/search/tokens';
 import { useSearchTokens } from '../hooks/useSearchTokens';
 import { UserContext } from '../contexts/UserContext';
@@ -27,6 +27,9 @@ import { getListedCount } from './api/profile/listedCount';
 import { getFollowingCount } from './api/following/count';
 import { getFollowersCount } from './api/followers/count';
 import { UserViewModel } from '../models/User';
+import { getNewUsers } from './api/rankings/user/new';
+import { getNewTokens } from './api/rankings/token/new';
+import { useNewTokens } from '../hooks/useNewTokens';
 
 
 export async function getServerSideProps({ req, res }) {
@@ -44,8 +47,9 @@ export async function getServerSideProps({ req, res }) {
 
   const topUsers = getMostFollowedUsers(0, limit);
   const topTokens = getMostLikedTokens(0, limit);
-  const newUsers = getUserSearchResults('', 0, limit);
-  const newTokens = getTokenSearchResults('', 0, limit);
+  
+  const newUsers = getNewUsers(0, limit, user?.address);
+  const newTokens = getNewTokens(0, limit);
 
   const hodlingCount = getHodlingCount(user?.address);
   const listedCount = getListedCount(user?.address);
@@ -111,16 +115,18 @@ export default function Home({
   const { rankings: mostFollowed } = useRankings(true, limit, prefetchedTopUsers);
   const { rankings: mostLiked } = useRankings(true, limit, null, "token");
   const { rankings: mostUsedTags } = useRankings(true, limit, null, "tag");
-  const { results: newUsers } = useSearchUsers('', limit, prefetchedNewUsers);
-  const { results: newTokens } = useSearchTokens({
-    q: '',
-    limit,
-    forSale: false,
-    minPrice: null,
-    maxPrice: null
-  },
-    prefetchedNewTokens
-  );
+
+  const { results: newUsers } = useNewUsers(limit, prefetchedNewUsers);
+  const { results: newTokens } = useNewTokens(limit, prefetchedNewTokens);
+  // const { results: newTokens } = useSearchTokens({
+  //   q: '',
+  //   limit,
+  //   forSale: false,
+  //   minPrice: null,
+  //   maxPrice: null
+  // },
+  //   prefetchedNewTokens
+  // );
 
   const { actions: feed } = useActions(user?.address, ActionSet.Feed, limit, prefetchedFeed);
 

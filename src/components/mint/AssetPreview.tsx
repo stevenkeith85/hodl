@@ -14,25 +14,38 @@ export const AssetPreview: FC<MintProps> = ({
   const { mimeType, fileName, aspectRatio, filter } = formData;
 
   const isImage = () => mimeType && mimeType.indexOf('image') !== -1;
+  const isGif = () => mimeType && mimeType.indexOf('gif') !== -1;
   const isVideo = () => mimeType && mimeType.indexOf('video') !== -1;
   const isAudio = () => mimeType && mimeType.indexOf('audio') !== -1;
 
   return (
     <Box
       className="assetPreview"
-      sx={{ width: '100%'}}
+      sx={{ width: '100%' }}
     >
       {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
       {!fileName &&
         <Typography sx={{ margin: `auto`, color: theme => theme.palette.text.secondary }}>Asset preview will appear here</Typography>
       }
-      {fileName && isImage() &&
+      {fileName && isImage() && !isGif() &&
         <FilteredImageMemo
           aspectRatio={aspectRatio}
           filter={filter}
           fileName={fileName}
           onLoad={setLoading}
         />}
+      {fileName && isGif() &&
+        <HodlVideo
+          objectFit="scale-down"
+          assetFolder="image"
+          gif={true}
+          folder="uploads"
+          cid={fileName.split('/')[2]}
+          onLoad={(video) => {
+            setLoading();
+          }}
+        />
+      }
       {fileName && isVideo() &&
         <HodlVideo
           folder="uploads"
@@ -53,7 +66,7 @@ export const AssetPreview: FC<MintProps> = ({
         <HodlAudio
           cid={fileName.split('/')[2]}
           folder="uploads"
-          sx={{ audio: {width: '80%'}}}
+          sx={{ audio: { width: '80%' } }}
           onLoad={(audio) => {
             setLoading();
           }}

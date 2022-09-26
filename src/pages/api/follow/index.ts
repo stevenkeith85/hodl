@@ -4,6 +4,7 @@ import apiRoute from "../handler";
 import { isValidAddress } from '../../../lib/profile';
 import { HodlAction, ActionTypes } from '../../../models/HodlAction';
 import { addAction } from '../actions/add';
+import { trimZSet } from '../../../lib/databaseUtils';
 
 dotenv.config({ path: '../.env' })
 const client = Redis.fromEnv()
@@ -47,11 +48,7 @@ export const toggleFollow = async (userAddress, targetAddress) => {
     followed = true;
   }
 
-  // isFollowing.delete(req.address, address);
-  // getFollowing.delete(req.address);
-  // getFollowingCount.delete(req.address);
-  // getFollowers.delete(address);
-  // getFollowersCount.delete(address);
+  await trimZSet(client, 'rankings:user:followers:count');
 
   if (followed) {
     const notification: HodlAction = {

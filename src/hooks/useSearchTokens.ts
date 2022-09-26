@@ -18,7 +18,6 @@ export const useSearchTokens = (
 
     const fetcher = (url, q, offset, limit, forSale, minPrice, maxPrice) => axios.get(url, { params: { q, offset, limit, forSale, minPrice, maxPrice } }).then(r => r.data);
 
-
     const swr = useSWRInfinite(
         getKey, 
         fetcher,

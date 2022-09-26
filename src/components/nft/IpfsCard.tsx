@@ -21,9 +21,9 @@ export const IpfsCard : React.FC<IpfsCardProps> = ({ token }) => {
                     title={<IpfsTooltip />}
                     placement="right-start"
                     arrow>
-                    <span>InterPlanatary File System (IPFS)</span></Tooltip>
+                    <span>IPFS</span></Tooltip>
             </Typography>
-            <Typography mb={2}>View the decentralized, immutable raw data that this token links to.</Typography>
+            <Typography mb={2}>View the raw data on the interplanatary file system.</Typography>
             <Stack direction="row" spacing={2}>
                 <Link href={cidToGatewayUrl(token?.metadata)} target="blank" sx={{ textDecoration: 'none' }}>
                     Metadata

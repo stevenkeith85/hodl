@@ -58,6 +58,7 @@ export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = "40px", font
                             <HodlVideo
                                 cid={token?.properties?.asset?.uri}
                                 gif={true}
+                                assetFolder="image"
                                 height={size}
                                 width={size}
                                 sx={{
