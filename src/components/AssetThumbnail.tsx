@@ -56,14 +56,6 @@ export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token, size = 44
                         onlyPoster={true}
                         height={`${size}px`}
                         width={`${size}px`}
-                        sx={{
-                            video: {
-                                objectFit: 'cover',
-                                objectPosition: 'center',
-                                borderRadius: 0,
-                                background: '#fafafa',
-                            }
-                        }}
                     />
                 }
                 {assetType(token) === AssetTypes.Gif &&

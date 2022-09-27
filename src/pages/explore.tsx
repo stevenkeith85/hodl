@@ -71,8 +71,12 @@ export default function Search({
     maxPrice
   });
 
-  const { results } = useSearchTokens(searchQ,
-    qChip === q && forSaleToggle === forSale ?
+  const { results } = useSearchTokens(
+    searchQ,
+    qChip === q && 
+    forSaleToggle === forSale && 
+    minPriceUI === minPrice && 
+    maxPriceUI === maxPrice ?
       fallbackData :
       null
   );
@@ -83,14 +87,21 @@ export default function Search({
   const xs = useMediaQuery(theme.breakpoints.only('xs'));
 
   useEffect(() => {
+
+    if (!router.query.q) {
+      return;
+    }
+
     setQChip(router.query.q);
     setSearchQ(old => ({
       ...old,
       q: router.query.q,
     }))
+
   }, [router.query.q]);
 
   // update the url when a search happens
+  // TODO: Check if the search query is the original search query, and early return. (to keep the url pretty)
   useEffect(() => {
     router.push(
       {
@@ -122,200 +133,283 @@ export default function Search({
       </Head>
       <Box
         sx={{
-          marginBottom: 2,
-        }}>
-
+          marginY: 4
+        }}
+      >
         <Box
           sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 4,
-            marginY: 4
-          }}
-        >
+          }}>
           <Box
             sx={{
               display: 'flex',
-              flexGrow: 1,
+              flexDirection: 'column',
               gap: 4,
-              alignItems: 'center',
-              justifyContent: { xs: 'space-between' },
+              marginY: 4
             }}
           >
-            <Tooltip title="Clear filters">
-              <Clear
-                fontSize="small"
-                sx={{
-                  cursor: 'pointer'
-                }}
-                onClick={e => {
-                  setQChip('');
-                  setMinPriceUI('');
-                  setMaxPriceUI('');
+            <Box
+              sx={{
+                display: 'flex',
+                flexGrow: 1,
+                gap: 4,
+                alignItems: 'center',
+                justifyContent: { xs: 'space-between' },
+              }}
+            >
+              <Tooltip title="Clear filters">
+                <Clear
+                  fontSize="small"
+                  sx={{
+                    cursor: 'pointer'
+                  }}
+                  onClick={e => {
+                    setQChip('');
+                    setMinPriceUI('');
+                    setMaxPriceUI('');
 
-                  setSearchQ(old => ({
-                    ...old,
-                    q: '',
-                    minPrice: null,
-                    maxPrice: null
-                  }))
-                }}
-              /></Tooltip>
-            {
-              !xs &&
-              <TagsPaginated
-                limit={tagsLimit}
-                selected={qChip}
-                onClick={
-                  (value) => {
-                    if (value == qChip) {
-                      setQChip('');
-                      setSearchQ(old => ({
-                        ...old,
-                        q: '',
-                      }))
-                    } else {
-                      setQChip(value);
-                      setSearchQ(old => ({
-                        ...old,
-                        q: value,
-                      }))
-                    }
-
-                  }
-                }
-                fallbackData={prefetchedTags}
-              />}
-            <FormGroup>
-              <Tooltip title="On The Market">
-                <Switch
-                  checked={forSaleToggle}
-                  onChange={(e) => {
-                    setForSaleToggle(old => !old);
                     setSearchQ(old => ({
                       ...old,
-                      forSale: !old.forSale
+                      q: '',
+                      minPrice: null,
+                      maxPrice: null
+                    }))
+                  }}
+                /></Tooltip>
+              {/* {
+                !xs &&
+                <TagsPaginated
+                  limit={tagsLimit}
+                  selected={qChip}
+                  onClick={
+                    (value) => {
+                      if (value == qChip) {
+                        setQChip('');
+                        setSearchQ(old => ({
+                          ...old,
+                          q: '',
+                        }))
+                      } else {
+                        setQChip(value);
+                        setSearchQ(old => ({
+                          ...old,
+                          q: value,
+                        }))
+                      }
+
+                    }
+                  }
+                  fallbackData={prefetchedTags}
+                />} */}
+                            {forSaleToggle && <Box
+              sx={{
+                display: 'flex',
+                gap: 1,
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+
+              <TextField
+                sx={{ width: 125 }}
+                onKeyPress={(e) => {
+                  if (e.key == "Enter") {
+                    setSearchQ(old => ({
+                      ...old,
+                      minPrice: minPriceUI,
                     }))
                   }
+                }}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start">
+                    <Typography
+                      component="span"
+                      sx={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        margin: 0,
+                        padding: 0,
+                        verticalAlign: 'bottom',
+                        gap: 0.5,
+                        'img': {
+                          filter: 'brightness(0) saturate(100%) invert(0) sepia(0%) saturate(0%) hue-rotate(242deg) brightness(115%) contrast(101%)'
+                        },
+                      }}>
+                      <img src="/matic.svg" width={12} height={12} alt="matic symbol" />
+                    </Typography>
+                  </InputAdornment>,
+                }}
+                size="small"
+                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                value={minPriceUI}
+                onChange={e => setMinPriceUI(e.target.value)}
+              />
+              to
+              <TextField
+                sx={{ width: 125 }}
+                onKeyPress={(e) => {
+                  if (e.key == "Enter") {
+                    setSearchQ(old => ({
+                      ...old,
+                      maxPrice: maxPriceUI,
+                    }))
                   }
-                />
-              </Tooltip>
-
-            </FormGroup>
-          </Box>
-
-          {
-            xs && <Box
-              sx={{ display: 'flex', alignItems: 'center' }}
-            >
-              <TagsPaginated
-                limit={tagsLimit}
-                selected={qChip}
-                onClick={
-                  (value) => {
-                    if (value == qChip) {
-                      setQChip('');
+                }}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start">
+                    <Typography
+                      component="span"
+                      sx={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        margin: 0,
+                        padding: 0,
+                        verticalAlign: 'bottom',
+                        gap: 0.5,
+                        'img': {
+                          filter: 'brightness(0) saturate(100%) invert(0) sepia(0%) saturate(0%) hue-rotate(242deg) brightness(115%) contrast(101%)'
+                        },
+                      }}>
+                      <img src="/matic.svg" width={12} height={12} alt="matic symbol" />
+                    </Typography>
+                  </InputAdornment>,
+                }}
+                size="small"
+                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                value={maxPriceUI}
+                onChange={e => setMaxPriceUI(e.target.value)}
+              />
+            </Box>}
+              <FormGroup>
+                <Tooltip title="On The Market">
+                  <Switch
+                    checked={forSaleToggle}
+                    onChange={(e) => {
+                      setForSaleToggle(old => !old);
                       setSearchQ(old => ({
                         ...old,
-                        q: '',
-                      }))
-                    } else {
-                      setQChip(value);
-                      setSearchQ(old => ({
-                        ...old,
-                        q: value,
+                        forSale: !old.forSale
                       }))
                     }
-
-                  }
-                }
-                fallbackData={prefetchedTags}
-              />
+                    }
+                  />
+                </Tooltip>
+              </FormGroup>
             </Box>
-          }
-          { forSaleToggle && <Box
-            sx={{
-              display: 'flex',
-              gap: 1,
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}>
 
-            <TextField
-            sx={{ width: 125}}
-              onKeyPress={(e) => {
-                if (e.key == "Enter") {
-                  setSearchQ(old => ({
-                    ...old,
-                    minPrice: minPriceUI,
-                  }))
-                }
-              }}
-              InputProps={{
-                startAdornment: <InputAdornment position="start">
-                  <Typography
-                    component="span"
-                    sx={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      margin: 0,
-                      padding: 0,
-                      verticalAlign: 'bottom',
-                      gap: 0.5,
-                      'img': {
-                        filter: 'brightness(0) saturate(100%) invert(0) sepia(0%) saturate(0%) hue-rotate(242deg) brightness(115%) contrast(101%)'
-                      },
-                    }}>
-                    <img src="/matic.svg" width={12} height={12} alt="matic symbol" />
-                  </Typography>
-                </InputAdornment>,
-              }}
-              size="small"
-              inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-              value={minPriceUI}
-              onChange={e => setMinPriceUI(e.target.value)}
-            />
-            to
-            <TextField
-            sx={{ width: 125}}
-              onKeyPress={(e) => {
-                if (e.key == "Enter") {
-                  setSearchQ(old => ({
-                    ...old,
-                    maxPrice: maxPriceUI,
-                  }))
-                }
-              }}
-              InputProps={{
-                startAdornment: <InputAdornment position="start">
-                  <Typography
-                    component="span"
-                    sx={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      margin: 0,
-                      padding: 0,
-                      verticalAlign: 'bottom',
-                      gap: 0.5,
-                      'img': {
-                        filter: 'brightness(0) saturate(100%) invert(0) sepia(0%) saturate(0%) hue-rotate(242deg) brightness(115%) contrast(101%)'
-                      },
-                    }}>
-                    <img src="/matic.svg" width={12} height={12} alt="matic symbol" />
-                  </Typography>
-                </InputAdornment>,
-              }}
-              size="small"
-              inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-              value={maxPriceUI}
-              onChange={e => setMaxPriceUI(e.target.value)}
-            />
-          </Box>}
+            {/* {
+              xs && <Box
+                sx={{ display: 'flex', alignItems: 'center' }}
+              >
+                <TagsPaginated
+                  limit={tagsLimit}
+                  selected={qChip}
+                  onClick={
+                    (value) => {
+                      if (value == qChip) {
+                        setQChip('');
+                        setSearchQ(old => ({
+                          ...old,
+                          q: '',
+                        }))
+                      } else {
+                        setQChip(value);
+                        setSearchQ(old => ({
+                          ...old,
+                          q: value,
+                        }))
+                      }
+
+                    }
+                  }
+                  fallbackData={prefetchedTags}
+                />
+              </Box>
+            } */}
+            {/* {forSaleToggle && <Box
+              sx={{
+                display: 'flex',
+                gap: 1,
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+
+              <TextField
+                sx={{ width: 125 }}
+                onKeyPress={(e) => {
+                  if (e.key == "Enter") {
+                    setSearchQ(old => ({
+                      ...old,
+                      minPrice: minPriceUI,
+                    }))
+                  }
+                }}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start">
+                    <Typography
+                      component="span"
+                      sx={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        margin: 0,
+                        padding: 0,
+                        verticalAlign: 'bottom',
+                        gap: 0.5,
+                        'img': {
+                          filter: 'brightness(0) saturate(100%) invert(0) sepia(0%) saturate(0%) hue-rotate(242deg) brightness(115%) contrast(101%)'
+                        },
+                      }}>
+                      <img src="/matic.svg" width={12} height={12} alt="matic symbol" />
+                    </Typography>
+                  </InputAdornment>,
+                }}
+                size="small"
+                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                value={minPriceUI}
+                onChange={e => setMinPriceUI(e.target.value)}
+              />
+              to
+              <TextField
+                sx={{ width: 125 }}
+                onKeyPress={(e) => {
+                  if (e.key == "Enter") {
+                    setSearchQ(old => ({
+                      ...old,
+                      maxPrice: maxPriceUI,
+                    }))
+                  }
+                }}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start">
+                    <Typography
+                      component="span"
+                      sx={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        margin: 0,
+                        padding: 0,
+                        verticalAlign: 'bottom',
+                        gap: 0.5,
+                        'img': {
+                          filter: 'brightness(0) saturate(100%) invert(0) sepia(0%) saturate(0%) hue-rotate(242deg) brightness(115%) contrast(101%)'
+                        },
+                      }}>
+                      <img src="/matic.svg" width={12} height={12} alt="matic symbol" />
+                    </Typography>
+                  </InputAdornment>,
+                }}
+                size="small"
+                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                value={maxPriceUI}
+                onChange={e => setMaxPriceUI(e.target.value)}
+              />
+            </Box>} */}
+          </Box>
         </Box>
-        {results?.data?.[0]?.total === 0 &&
-          <HodlImpactAlert message={"We can't find anything at the moment"} title="Sorry" />
-        }
-        <InfiniteScrollNftWindows swr={results} limit={limit} pattern={false} />
+        <Box>
+          {results?.data?.[0]?.total === 0 &&
+            <HodlImpactAlert message={"We can't find anything at the moment"} title="Sorry" />
+          }
+          <InfiniteScrollNftWindows swr={results} limit={limit} pattern={false} />
+        </Box>
       </Box>
     </>
   )

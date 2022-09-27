@@ -44,14 +44,6 @@ export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = "40px", font
                                 onlyPoster={true}
                                 height={size}
                                 width={size}
-                                sx={{
-                                    video: {
-                                        objectFit: 'cover',
-                                        objectPosition: 'center',
-                                        borderRadius: 0,
-                                        background: '#fafafa',
-                                    }
-                                }}
                             />
                         }
                         {assetType(token) === AssetTypes.Gif &&
@@ -61,14 +53,6 @@ export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = "40px", font
                                 assetFolder="image"
                                 height={size}
                                 width={size}
-                                sx={{
-                                    video: {
-                                        objectFit: 'cover',
-                                        objectPosition: 'center',
-                                        borderRadius: 0,
-                                        background: '#fafafa',
-                                    }
-                                }}
                             />
                         }
                         {assetType(token) === AssetTypes.Audio &&

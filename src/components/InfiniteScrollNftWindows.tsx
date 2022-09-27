@@ -60,13 +60,13 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
       sx={{
         display: "grid",
         gridTemplateColumns: {
-          xs: `1fr 1fr 1fr`,
-          sm: `1fr 1fr 1fr 1fr`,
+          xs: `1fr 1fr`,
+          sm: `1fr 1fr 1fr`,
         },
         gap: {
           xs: 1,
-          sm: 2,
-          md: 3
+          sm: 1,
+          md: 4
         }
       }}
     >
@@ -90,7 +90,7 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
                 display: 'flex',
                 gridColumn: pattern && isDoubleSize(i, next) ? `span 2` : `auto`,
                 gridRow: pattern && isDoubleSize(i, next) ? `span 2` : `auto`,
-                height: '100%'
+
               }}
             >
               {/* Responsive skeleton */}

@@ -11,6 +11,8 @@ import { getAsString, validTxHashFormat } from "../../../lib/utils";
 import axios from 'axios';
 import { User } from "../../../models/User";
 
+import { QueueClient } from "@serverlessq/nextjs/dist/queue/queue-client";
+
 const route = apiRoute();
 const client = Redis.fromEnv()
 
@@ -65,10 +67,15 @@ route.post(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'bad request' });
   }
 
-  // TODO: Switch to using ServerlessQs SDK, as it has support for overriding for localhost, etc
-  // TODO: One message queue per address (if possible). Programatically create these
+  // Create or get the users tx queue
+  // TODO: If this is a little slow, we could just do it at login and store the queue id in the user hash
+  const queueClient = new QueueClient();
+  const queue = await queueClient.createOrGetQueue(`tx:${req.address}`);
+
+  console.log('created queue', JSON.stringify(queue, null, 2))
+
   const handlerPath = `api/blockchain/transaction`;
-  const url = `https://api.serverlessq.com?id=${process.env.SERVERLESSQ_ID}&target=${process.env.NGROK_TUNNEL}/${handlerPath}`;
+  const url = `https://api.serverlessq.com?id=${queue.id}&target=${process.env.NGROK_TUNNEL}/${handlerPath}`;
 
   const { accessToken, refreshToken } = req.cookies;
   try {

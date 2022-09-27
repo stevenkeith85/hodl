@@ -91,7 +91,6 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                 error.config.__isRetry = true;
 
                 if (refreshed) {
-                    alert('refreshed')
                     return axios.request(error.config);
                 } 
                 else {

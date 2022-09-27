@@ -1,5 +1,7 @@
 import { Box, NoSsr } from "@mui/material";
 import { useEffect, useRef } from "react";
+import calculateAspectRatios from 'calculate-aspect-ratio';
+import { grey } from "@mui/material/colors";
 
 interface HodlVideoProps {
     cid: string;
@@ -11,9 +13,11 @@ interface HodlVideoProps {
     gif?: boolean;
     height?: string;
     width?: string;
+    videoWidth?: string;
+    videoHeight?: string;
     onLoad?: Function;
     assetFolder?: "video" | "image" // gifs are stored in the image folder. we display them as videos though, to save bandwidth
-    objectFit?: "cover" | "scale-down"
+    // objectFit?: "cover" | "scale-down"
 }
 
 export const HodlVideo = ({
@@ -24,11 +28,13 @@ export const HodlVideo = ({
     controls = true,
     onlyPoster = false,
     gif = false,
-    height = 'auto',
+    height = '100%',
     width = '100%',
+    videoWidth = '100%',
+    videoHeight="auto",
     onLoad = null,
     assetFolder="video",
-    objectFit='cover'
+    // objectFit='cover'
 }: HodlVideoProps) => {
     const makeCloudinaryVideoUrl = () => {
         const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_NAME;
@@ -42,6 +48,8 @@ export const HodlVideo = ({
 
     useEffect(() => {
         try {
+            const aspectRatio = calculateAspectRatios(video?.current?.videoWidth, video?.current?.videoHeight);
+
             video?.current?.addEventListener('volumechange', (event) => {
                 localStorage.setItem('muted', video?.current?.muted);
             });
@@ -67,10 +75,13 @@ export const HodlVideo = ({
                 justifyContent: 'center',
                 height,
                 width,
+                background: grey[200],
                 video: {
-                    objectFit,
-                    objectPosition: 'center',
-                    background: '#fafafa',
+                    width: 'auto',
+                    height: 'auto',
+                    maxWidth: '100%',
+                    maxHeight: '100%',
+                    objectFit: 'scale-down'
                 },
                 ...sx
             }}>
@@ -82,7 +93,6 @@ export const HodlVideo = ({
                             }
                         }
                         }
-                        width={width}
                         ref={video}
                         autoPlay={gif} // we autoplay gifs. videos are played when the user scrolls past them
                         loop={gif}

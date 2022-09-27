@@ -10,6 +10,7 @@ import cookie from 'cookie'
 import { accessTokenExpiresIn, refreshTokenExpiresIn } from "../../../lib/jwt"
 import { User } from "../../../models/User"
 import { trimZSet } from "../../../lib/databaseUtils"
+import { createQueue } from "../queue"
 
 dotenv.config({ path: '../.env' })
 
@@ -112,7 +113,8 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
         }
       );
 
-      if (added) {
+
+      if (added) { // user has 'joined' the site
         // Add to the set of new users (limited in size; used on the UI)
         await client.zadd(
           `users:new`,
@@ -124,6 +126,8 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
         );
 
         trimZSet(client, 'users:new');
+
+        
       }
 
       return res.status(200).json({

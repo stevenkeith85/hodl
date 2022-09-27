@@ -10,7 +10,7 @@ export const HomePagePitch = ({ }) => {
     return (
         <Box
             sx={{
-                paddingY:{ xs:`50px`, md: '100px' },
+                paddingY:{ xs:`50px`, md: '80px' },
                 width: `100%`,
             }}>
             <Grid container>
@@ -58,7 +58,7 @@ export const HomePagePitch = ({ }) => {
                                 },
                                 color: '#999'
                             }}>
-                            is a web3 social network<br/> and nft marketplace
+                            is a web3 social network<br/> and marketplace
                         </Typography>
                         <Box
                             sx={{

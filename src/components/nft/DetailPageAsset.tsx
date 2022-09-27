@@ -78,16 +78,9 @@ export const DetailPageAsset: React.FC<DetailPageAssetProps> = ({ token }) => {
                         assetType(token) === AssetTypes.Gif &&
                         <HodlVideo
                             cid={token?.properties?.asset?.uri}
-                            objectFit="scale-down"
                             assetFolder="image"
                             gif={true}
-                            sx={{
-                                video: {
-                                    width: 'fit-content',
-                                    height: 'fit-content',
-                                    objectFit: 'scale-down'
-                                }
-                            }}
+                            videoWidth="auto"
                         />
                     }
                 </Box>
@@ -107,6 +100,7 @@ export const DetailPageAsset: React.FC<DetailPageAssetProps> = ({ token }) => {
                         <HodlVideo
                             cid={token?.properties?.asset?.uri}
                             height={'auto'}
+                            videoWidth="auto"
                         />
                     }
                 </Box>

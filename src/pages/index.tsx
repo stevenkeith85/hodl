@@ -118,16 +118,7 @@ export default function Home({
 
   const { results: newUsers } = useNewUsers(limit, prefetchedNewUsers);
   const { results: newTokens } = useNewTokens(limit, prefetchedNewTokens);
-  // const { results: newTokens } = useSearchTokens({
-  //   q: '',
-  //   limit,
-  //   forSale: false,
-  //   minPrice: null,
-  //   maxPrice: null
-  // },
-  //   prefetchedNewTokens
-  // );
-
+  
   const { actions: feed } = useActions(user?.address, ActionSet.Feed, limit, prefetchedFeed);
 
   const [hodlingCount] = useHodlingCount(user?.address, prefetchedHodlingCount);

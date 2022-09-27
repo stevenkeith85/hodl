@@ -74,12 +74,6 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
                         cid={item.token?.properties?.asset?.uri}
                         controls={true}
                         onlyPoster={false}
-                        sx={{
-                            video: {
-                                borderRadius: 0,
-                                maxHeight: '500px'
-                            }
-                        }}
                     />
                 }
                 {
@@ -89,14 +83,6 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
                         gif={true}
                         assetFolder="image"
                         height={'575px'}
-                        sx={{
-                            background: '#f9f9f9',
-                            video: {
-                                objectPosition: 'center',
-                                borderRadius: 0,
-                                width: 'auto'
-                            }
-                        }}
                     />
                 }
                 {

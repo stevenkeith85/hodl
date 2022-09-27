@@ -36,7 +36,6 @@ export const AssetPreview: FC<MintProps> = ({
         />}
       {fileName && isGif() &&
         <HodlVideo
-          objectFit="scale-down"
           assetFolder="image"
           gif={true}
           folder="uploads"

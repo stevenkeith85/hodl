@@ -6,7 +6,7 @@ import { Likes } from './Likes';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Comments } from './comments/Comments';
-import { MusicNote, Videocam } from '@mui/icons-material'
+import { GifBoxOutlined, Image, ImageOutlined, MusicNote, MusicNoteOutlined, Videocam, VideocamOffOutlined, VideocamOutlined } from '@mui/icons-material'
 import { AssetTypes } from '../models/AssetType';
 import { HodlImageResponsive } from './HodlImageResponsive';
 import { HodlAudioBox } from './HodlAudioBox';
@@ -128,11 +128,24 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                 }}>
                 {
                     assetType(nft) === AssetTypes.Gif &&
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: theme => theme.palette.text.secondary,
+                            height: '100%',
+                            position: 'relative'
+                        }}>
+                        <GifBoxOutlined sx={{ position: 'absolute', top: 8, left: 8 }} />
                     <HodlVideo
                         cid={nft?.properties?.asset?.uri}
                         assetFolder="image"
                         gif={true}
+                        videoWidth="auto"
+                        videoHeight="100%"
                     />
+                    </Box>
                 }
                 {
                     assetType(nft) === AssetTypes.Video &&
@@ -141,16 +154,15 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            color: 'white',
+                            color: theme => theme.palette.text.secondary,
                             height: '100%',
                             position: 'relative'
                         }}>
-                        <Videocam sx={{ position: 'absolute', top: 8, left: 8 }} />
+                        <VideocamOutlined sx={{ position: 'absolute', top: 8, left: 8 }} />
                         <HodlVideo
                             cid={nft?.properties?.asset?.uri}
                             controls={false}
                             onlyPoster={true}
-                            height="100%"
                         />
                     </Box>
                 }
@@ -158,15 +170,25 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                     assetType(nft) === AssetTypes.Audio &&
                     <Box
                         sx={{
-                            position: 'relative'
+                            position: 'relative',
+                            color: 'white',
                         }}>
-                        <MusicNote sx={{ position: 'absolute', top: 8, left: 8, zIndex: 1, color: 'white' }} />
+                        <MusicNoteOutlined sx={{ position: 'absolute', top: 8, left: 8, zIndex: 1 }} />
                         <HodlAudioBox token={nft} audio={false} minHeight={1000} size={50} />
                     </Box>
                 }
                 {
                     assetType(nft) === AssetTypes.Image &&
-                    <>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: theme => theme.palette.text.secondary,
+                            height: '100%',
+                            position: 'relative'
+                        }}>
+                        <ImageOutlined sx={{ position: 'absolute', top: 8, left: 8 }} />
                         <HodlImageResponsive
                             aspectRatio="1:1"
                             sizes="(min-width: 900px) 25vw, (min-width: 1200px) calc(1200px / 5 * 2), 50vw"
@@ -174,7 +196,7 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                             widths={[400, 800, 1000]}
                             objectFit="cover"
                         />
-                    </>
+                    </Box>
                 }
                 <Overlay nft={nft} />
                 {
