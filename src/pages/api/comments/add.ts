@@ -65,7 +65,6 @@ export const addComment = async (comment: HodlComment) => {
   comment.id = commentId;
 
   // Store the comment
-  // const commentAdded = client.hset("comment", { [commentId]: JSON.stringify(comment) });
   const commentAdded = client.set(`comment:${commentId}`, comment);
 
   // Store references to the comment for user, the token

@@ -107,7 +107,6 @@ export const UploadToIpfsAction: FC<MintProps> = ({
     <Box
       width="100%"
     >
-      <pre>{JSON.stringify(formData, null, 2)}</pre>
       <Formik
         initialValues={{
           name: formData.name,
@@ -123,7 +122,6 @@ export const UploadToIpfsAction: FC<MintProps> = ({
       >
         {({ isSubmitting, values, setFieldValue, errors, dirty, isValid }) => (
           <>
-          {<pre>{JSON.stringify(errors, null, 2)}</pre>}
             <Form>
               <Stack spacing={2}>
                 <FormControl>
@@ -161,11 +159,8 @@ export const UploadToIpfsAction: FC<MintProps> = ({
                       }}
                     />
                   </Tooltip>
-
                 </FormControl>
-
                 <HodlBorderedBox>
-
                   <Tooltip
                     title={<AssetLicenseTooltip />}
                     placement="right-start"
@@ -198,7 +193,6 @@ export const UploadToIpfsAction: FC<MintProps> = ({
                     </FormControl>
                   </Tooltip>
                 </HodlBorderedBox>
-
                 <div>
                   <Tooltip
                     title={<UploadTooltip />}

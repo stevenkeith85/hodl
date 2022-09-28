@@ -43,7 +43,6 @@ const client = Redis.fromEnv()
 //
 
 // Add the action id to <address>s notifications
-// TODO: We may want to trim this set as it is queried from the FE. Possibly we archive the data?
 const addNotification = async (address: string, action: HodlAction): Promise<number> => {
   const added = await client.zadd(
     `user:${address}:notifications`,
@@ -57,7 +56,7 @@ const addNotification = async (address: string, action: HodlAction): Promise<num
 
   if (added) {
     console.log(`actions/add/addNotification - sending ${address} push notifications.`);
-    
+
     const notification = await pusher.sendToUser(address, "notification", null);
     if (!notification.ok) {
       console.log(`actions/add/addNotification - pusher was unable to send <notification> to user`);
@@ -82,7 +81,7 @@ const addToFeed = async (address: string, action: HodlAction): Promise<number> =
       member: action.id
     }
   );
-  
+
   await trimZSet(client, `user:${address}:feed`);
 
   if (added) {
@@ -152,18 +151,39 @@ const getLastXFeedActions = async (address: string, x: number = 5): Promise<Hodl
 
 
 const addToFeedOfFollowers = async (action: HodlAction) => {
-  // TODO: Optimise this as user could have millions of followers
-  // TEMP FIX: Only tell the first X followers :(
-  // We actually want this to happen in parallel if possibly. Otherwise one follower
-  // might get notified way ahead of another, which could be an advantage for them
-  const { items: followers } = await getFollowers(action.subject, 0, 10000);
+  // TODO: Optimise this as the user could have millions of followers.
+  // and our serverless function would time out
 
-  let count = 0;
-  for (let follower of followers) {
-    count += await addToFeed(`${follower.address}`, action);
-  }
 
-  return count;
+  // We want followers to be notified as close together as possible.
+  // We'll probably switch to doing the add to feed via the user's message queue.
+  // The have one for transactions; but perhaps an alternative one for web2 stuff
+
+  let limit = 1;
+
+  let { items: followers, next, total } = await getFollowers(action.subject, 0, limit);
+
+  console.log('actions/add/addToFeedOfFollowers - first batch - followers, next, total', followers, next, total);
+
+  do {
+    let promises = [];
+
+    for (let follower of followers) {
+      const promise = addToFeed(`${follower.address}`, action);
+      promises.push(promise);
+    }
+
+    await Promise.all(promises);
+
+    let { items, next: n, total: t } = await getFollowers(action.subject, next, limit);
+
+    followers = items;
+    next = n;
+    total = t;
+    console.log('actions/add/addToFeedOfFollowers - end of batch - followers, next, total', followers, next, total);
+  } while (next < total);
+
+  return 1; // TODO: We want to return how many followers were notified here
 }
 
 
@@ -171,7 +191,7 @@ const addToFeedOfFollowers = async (action: HodlAction) => {
 //
 // TODO: Handle 'near duplicates' better.
 // i.e user toggles the like button a few times === steven liked token 2 (2 mins ago). steven liked token 2 (1 min ago)
-export const addAction = async (action: HodlAction) : Promise<number> => {
+export const addAction = async (action: HodlAction): Promise<number> => {
   action.timestamp = Date.now();
 
   // TODO: REDIS TRANSACTION
@@ -226,8 +246,7 @@ export const addAction = async (action: HodlAction) : Promise<number> => {
         return; // We've commented on our own token. No need for a notification.
       }
 
-      // TODO: perhaps we should start logging this sort of thing?
-      console.log(`adding a notification for ${(await getUser(owner, null)).nickname}, as someone commented on their token`)
+      console.log(`actions/add - adding a notification for ${(await getUser(owner, null)).nickname}, as someone commented on their token`)
       return await addNotification(owner, action);
     } else if (comment?.object === "comment") { // the comment was a reply, tell the comment author. 
       const commentThatWasRepliedTo: HodlComment = await client.get(`comment:${comment.objectId}`);
@@ -236,8 +255,7 @@ export const addAction = async (action: HodlAction) : Promise<number> => {
         return; // We've replied to our own comment. No need for a notification.
       }
 
-      // TODO: perhaps we should start logging this sort of thing?
-      console.log(`adding a notification for ${(await getUser(commentThatWasRepliedTo.subject, null)).nickname}, as someone replied to their comment`)
+      console.log(`actions/add - adding a notification for ${(await getUser(commentThatWasRepliedTo.subject, null)).nickname}, as someone replied to their comment`)
       return await addNotification(commentThatWasRepliedTo.subject, action);
     }
 
@@ -282,7 +300,6 @@ export const addAction = async (action: HodlAction) : Promise<number> => {
       // Blockchain transactions could take a little time; so we need to notify the user their token has made it onto the market
       await addNotification(action.subject, action);
 
-      // TODO: Possibly don't need to wait here. i.e. could we prevent the UI hanging by doing this async?
       const count = await addToFeedOfFollowers(action);
 
       return count;
@@ -311,7 +328,6 @@ export const addAction = async (action: HodlAction) : Promise<number> => {
       // Blockchain transactions could take a little time; so we need to notify the user their token has been taken off the market
       await addNotification(action.subject, action);
 
-      // TODO: Possibly don't need to wait here. i.e. could we prevent the UI hanging by doing this async?
       const count = await addToFeedOfFollowers(action);
 
       return count;
@@ -352,8 +368,8 @@ export const addAction = async (action: HodlAction) : Promise<number> => {
 
     console.log(`actions/add/bought - token price history === `, history)
 
-    const buyer = history[history.length-1].buyerAddress;
-    const seller = history[history.length-1].sellerAddress;
+    const buyer = history[history.length - 1].buyerAddress;
+    const seller = history[history.length - 1].sellerAddress;
 
     if (buyer !== action.subject) {
       console.log(`actions/add/bought - buyer ${buyer}does not match the action subject ${action.subject}`)
@@ -371,45 +387,12 @@ export const addAction = async (action: HodlAction) : Promise<number> => {
   return 0;
 }
 
-// TODO: We may need to revisit how these notifications get added. (depends how fast the blockchain confirms things I guess?)
-// Perhaps a standalone service that monitors blockchain events; rather than the user's browser informing us.
-// Maybe qStash ?
+
+// TODO: Actions are now added by our tx handlers. 
+// So, the code could probably be moved into a lib and this route can probably go; 
+// ...potentially we might need some locked down public api endpoint though if we add a queue in somewhere
 route.post(async (req, res: NextApiResponse) => {
-  if (!req.address) {
-    return res.status(403).json({ message: "Not Authenticated" });
-  }
-
-  const { action, object, id } = req.body;
-
-  if (!action || !object || !id) {
-    return res.status(400).json({ message: 'Bad Request' });
-  }
-
-  // Block most actions in the API, as we don't need these to be directly called client-side.
-  // This reduces likelihood of bots posting misleading notifications / lies).
-  // We do check the validity of a notification though before adding it...
-  if (action !== ActionTypes.Delisted && action !== ActionTypes.Bought) {
-    return res.status(400).json({ message: 'Bad Request' });
-  }
-
-  if (object !== "token") {
-    return res.status(400).json({ message: 'Bad Request' });
-  }
-
-  const notification: HodlAction = {
-    subject: req.address,
-    action,
-    objectId: id,
-    object
-  };
-
-  const success = await addAction(notification);
-
-  if (success) {
-    return res.status(200).json({ message: 'success' });
-  } else {
-    res.status(200).json({ message: 'notification not added' });
-  }
+  return res.status(400).json({ message: 'Bad Request' });
 });
 
 

@@ -142,8 +142,6 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                         cid={nft?.properties?.asset?.uri}
                         assetFolder="image"
                         gif={true}
-                        videoWidth="auto"
-                        videoHeight="100%"
                     />
                     </Box>
                 }

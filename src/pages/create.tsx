@@ -220,7 +220,6 @@ const Mint = ({ address }) => {
             formData={formData}
           />
         }
-        {/* {<pre>{JSON.stringify(formData, null , 2)}</pre>} */}
       </Box>
     </>
   )

@@ -4,7 +4,6 @@ import dotenv from 'dotenv'
 import apiRoute from '../handler';
 
 import { Redis } from '@upstash/redis';
-import axios from 'axios';
 
 dotenv.config({ path: '../.env' })
 
@@ -18,13 +17,7 @@ const route = apiRoute();
 export const checkForNewNotifications = async (address) => {
   const lastRead: string = await client.get(`user:${address}:notifications:lastRead`);
   
-  const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/user:${address}:notifications/0/0/rev/withscores`, {
-    headers: {
-      Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-    }
-  })
-
-  const [notification, timestamp] = r.data.result;
+  const [notification, timestamp] = await client.zrange(`user:${address}:notifications`, 0, 0, { rev: true, withScores: true });
 
   // check if last notification time is newer than user's last read time
   if (timestamp) {

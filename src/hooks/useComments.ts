@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 import useSWRInfinite from 'swr/infinite'
-import { fetchWithObjectAndId, fetchWithObjectObjectIdOffsetLimit } from '../lib/swrFetchers';
+import { fetchWithObjectAndId } from '../lib/swrFetchers';
 import axios from 'axios';
 import { HodlComment, HodlCommentViewModel } from '../models/HodlComment';
 

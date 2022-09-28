@@ -2,8 +2,7 @@ import dotenv from 'dotenv'
 import apiRoute from '../handler';
 import { Redis } from '@upstash/redis';
 
-import axios from 'axios';
-import { User, UserViewModel } from '../../../models/User';
+import { UserViewModel } from '../../../models/User';
 import { getUser } from '../user/[handle]';
 import { getAsString } from '../../../lib/utils';
 

@@ -106,27 +106,6 @@ export const AddComment: FC<AddCommentProps> = ({
         >
             {({ errors, values, setFieldValue, isValid, submitForm, }) => (
                 <>
-
-                    {/* <Popover
-                        id={id}
-                        open={open}
-                        anchorEl={anchorEl}
-                        onClose={handleClose}
-                        anchorReference="anchorEl"
-                        anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'left',
-                        }}
-                        // transformOrigin={{
-                        //     vertical: 'bottom',
-                        //     horizontal: 'right',
-                        // }}
-                    > */}
-
-                    {/* </Popover> */}
-
-                    {/* {JSON.stringify(errors)}
-                                {JSON.stringify(values)} */}
                     <Form>
                         <Box display="flex" alignItems="center" marginTop={0}>
 

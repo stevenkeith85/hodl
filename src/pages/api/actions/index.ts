@@ -6,7 +6,6 @@ import { ActionSet, HodlAction, HodlActionViewModel } from "../../../models/Hodl
 import { getToken } from "../token/[tokenId]";
 import { getComment } from "../comment";
 import { getUser } from "../user/[handle]";
-import { instance } from "../../../lib/axios";
 
 dotenv.config({ path: '../.env' })
 
@@ -51,8 +50,8 @@ export const getAction = async (id, viewer): Promise<HodlActionViewModel | null>
 
 // TODO: Set a max limit of 10 or something as we get the actions in parallel - so we don't want to hammer the db?
 
-// TODO: ZRANGE is O(log(N)+M), with N being the number of elements in the set. 
-// We should consider trimming this set size somehow. Possibly we trim it when we add actions. i.e. if it hits 100 or 1000 or something we add the leftover stuff to an archive
+// ZRANGE is O(log(N)+M), with N being the number of elements in the set. 
+// We trim the sets accessed via the UI. We may wish to trim the other sets at some point though. (and possibly archive the data)
 export const getActions = async (
   address: string,
   set: ActionSet = ActionSet.Notifications,
@@ -79,13 +78,7 @@ export const getActions = async (
     };
   }
 
-  const r = await instance.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/user:${address}:${set}/${offset}/${offset + limit - 1}/rev`, {
-    headers: {
-      Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-    },
-  })
-
-  const actionIds: string[] = r.data.result.map(item => JSON.parse(item));
+  const actionIds : string [] = await client.zrange(`user:${address}:${set}`, offset, offset + limit - 1, { rev: true });
 
   // The actions don't depend on each other, so we can do this async
   const actionPromises = actionIds.map(id => getAction(id, address));

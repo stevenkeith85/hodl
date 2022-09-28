@@ -123,7 +123,7 @@ export const tokenMinted = async (
             }
         );
 
-        trimZSet(client, 'tokens:new');
+        trimZSet(client, 'tokens:new', 1000);
     }
 
     // extract tags

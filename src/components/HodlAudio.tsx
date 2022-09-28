@@ -1,11 +1,10 @@
 import { Box, NoSsr } from "@mui/material";
 import { useEffect, useRef } from "react";
-//import { useInView } from 'react-intersection-observer'; // TODO: Probably remove this; don't think we'll need it
 
 interface HodlAudioProps {
     cid: string;
     folder?: string;
-    environment?: "dev" | "staging" | "prod";
+    environment?: string;
     sx?: object;
     controls?: boolean;
     height?: string;
@@ -16,7 +15,7 @@ interface HodlAudioProps {
 export const HodlAudio = ({
     cid,
     folder = 'nfts',
-    environment = 'dev', // const environment = process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER;
+    environment = process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER,
     sx = {},
     controls = true,
     height = 'auto',
@@ -24,8 +23,7 @@ export const HodlAudio = ({
     onLoad = null,
 }: HodlAudioProps) => {
     const makeCloudinaryAudioUrl = () => {
-        const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_NAME;
-        let cloudinaryUrl = `https://res.cloudinary.com/${cloudName}/video/upload`; // cloudinary stores audio under the video folder
+        let cloudinaryUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_NAME}/video/upload`; // cloudinary stores audio under the video folder
 
         return `${cloudinaryUrl}/${environment}/${folder}/${cid}`
     }

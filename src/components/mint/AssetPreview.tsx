@@ -23,7 +23,6 @@ export const AssetPreview: FC<MintProps> = ({
       className="assetPreview"
       sx={{ width: '100%' }}
     >
-      {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
       {!fileName &&
         <Typography sx={{ margin: `auto`, color: theme => theme.palette.text.secondary }}>Asset preview will appear here</Typography>
       }

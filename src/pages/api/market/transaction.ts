@@ -22,7 +22,7 @@ const client = Redis.fromEnv()
 // Only authenticated users can call it
 // The caller must be the transaction author
 // The contract must be one of ours
-// The transaction nonce must be higher than the last on we successfully processed
+// The transaction nonce must be higher than the last one we successfully processed
 // It must be a valid transaction
 
 route.post(async (req, res: NextApiResponse) => {
@@ -56,7 +56,7 @@ route.post(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'bad request' });
   }
 
-  const user = await client.hmget<User>(`user:${req.address}`, 'nonce');
+  const user = await client.hmget<User>(`user:${req.address}`, 'nonce', 'txQueueId');
 
   console.log("queue/transaction - user nonce is ", user?.nonce);
   console.log("queue/transaction - tx nonce is ", tx?.nonce);
@@ -67,15 +67,16 @@ route.post(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'bad request' });
   }
 
-  // Create or get the users tx queue
-  // TODO: If this is a little slow, we could just do it at login and store the queue id in the user hash
-  const queueClient = new QueueClient();
-  const queue = await queueClient.createOrGetQueue(`tx:${req.address}`);
+  // // Create or get the users tx queue
+  // // TODO: If this is a little slow, we could just do it at login and store the queue id in the user hash
+  // const queueClient = new QueueClient();
+  // const queue = await queueClient.createOrGetQueue(`tx:${req.address}`);
 
-  console.log('created queue', JSON.stringify(queue, null, 2))
+  // console.log('market/transaction - created queue', JSON.stringify(queue, null, 2))
+
 
   const handlerPath = `api/blockchain/transaction`;
-  const url = `https://api.serverlessq.com?id=${queue.id}&target=${process.env.NGROK_TUNNEL}/${handlerPath}`;
+  const url = `https://api.serverlessq.com?id=${user?.txQueueId}&target=${process.env.MESSAGE_HANDLER_HOST}/${handlerPath}`;
 
   const { accessToken, refreshToken } = req.cookies;
   try {
@@ -86,7 +87,7 @@ route.post(async (req, res: NextApiResponse) => {
         withCredentials: true,
         headers: {
           "Accept": "application/json",
-          "x-api-key": process.env.SERVERLESSQ_API_KEY,
+          "x-api-key": process.env.SERVERLESSQ_API_TOKEN,
           "Content-Type": "application/json",
           "Cookie": `refreshToken=${refreshToken}; accessToken=${accessToken}`
         }

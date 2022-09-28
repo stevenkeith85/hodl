@@ -1,9 +1,7 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
-import axios from 'axios'
 import apiRoute from "../../handler";
-import { ActionSet, HodlAction } from "../../../../models/HodlAction";
 import { getToken } from "../../token/[tokenId]";
 import { getAsString } from "../../../../lib/utils";
 import { Token } from "../../../../models/Token";

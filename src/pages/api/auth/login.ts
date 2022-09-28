@@ -11,6 +11,7 @@ import { accessTokenExpiresIn, refreshTokenExpiresIn } from "../../../lib/jwt"
 import { User } from "../../../models/User"
 import { trimZSet } from "../../../lib/databaseUtils"
 import { createQueue } from "../queue"
+import { QueueClient } from "@serverlessq/nextjs/dist/queue/queue-client"
 
 dotenv.config({ path: '../.env' })
 
@@ -126,8 +127,23 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
         );
 
         trimZSet(client, 'users:new');
+      }
 
-        
+      // Create a tx queue for user if they don't have one
+      const txQueueId = await client.hget(`user:${address}`, 'txQueueId');
+
+      if (!txQueueId) {
+        const queueClient = new QueueClient();
+        const { id } = await queueClient.createOrGetQueue(`tx:${address}`);
+        console.log('auth/login - created queue for user with id', id);
+
+        const txQueueIdAdded = await client.hsetnx(`user:${address}`, 'txQueueId', id);
+
+        if (txQueueIdAdded) {
+          console.log(`auth/login - assigned the queue with id ${id} to ${address}`);
+        } else {
+          console.log(`auth/login - unable to assign the queue with id ${id} to ${address}`);
+        }
       }
 
       return res.status(200).json({

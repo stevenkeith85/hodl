@@ -1,7 +1,6 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
-import axios from 'axios'
 import apiRoute from "../../handler";
 import { UserViewModel } from "../../../../models/User";
 import { getUser } from "../../user/[handle]";

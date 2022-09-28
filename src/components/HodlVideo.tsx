@@ -1,44 +1,36 @@
 import { Box, NoSsr } from "@mui/material";
 import { useEffect, useRef } from "react";
-import calculateAspectRatios from 'calculate-aspect-ratio';
 import { grey } from "@mui/material/colors";
 
 interface HodlVideoProps {
     cid: string;
     folder?: string;
-    environment?: "dev" | "staging" | "prod";
+    environment?: string;
     sx?: object;
     controls?: boolean;
     onlyPoster?: boolean;
     gif?: boolean;
     height?: string;
     width?: string;
-    videoWidth?: string;
-    videoHeight?: string;
     onLoad?: Function;
     assetFolder?: "video" | "image" // gifs are stored in the image folder. we display them as videos though, to save bandwidth
-    // objectFit?: "cover" | "scale-down"
 }
 
 export const HodlVideo = ({
     cid,
     folder = 'nfts',
-    environment = 'dev', // const environment = process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER;
+    environment = process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER,
     sx = {},
     controls = true,
     onlyPoster = false,
     gif = false,
     height = '100%',
     width = '100%',
-    videoWidth = '100%',
-    videoHeight="auto",
     onLoad = null,
     assetFolder="video",
-    // objectFit='cover'
 }: HodlVideoProps) => {
     const makeCloudinaryVideoUrl = () => {
-        const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_NAME;
-        let cloudinaryUrl = `https://res.cloudinary.com/${cloudName}/${assetFolder}/upload`;
+        let cloudinaryUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_NAME}/${assetFolder}/upload`;
 
         return `${cloudinaryUrl}/${environment}/${folder}/${cid}`
     }
@@ -48,8 +40,6 @@ export const HodlVideo = ({
 
     useEffect(() => {
         try {
-            const aspectRatio = calculateAspectRatios(video?.current?.videoWidth, video?.current?.videoHeight);
-
             video?.current?.addEventListener('volumechange', (event) => {
                 localStorage.setItem('muted', video?.current?.muted);
             });

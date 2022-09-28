@@ -5,6 +5,7 @@ import {
 }
   from "../index"
 
+  // TODO: Switch message to be 'children' so that we can pass react nodes
 export const SuccessModal = ({
   modalOpen,
   setModalOpen,

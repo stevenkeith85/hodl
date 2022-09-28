@@ -36,7 +36,7 @@ import { getShortAddress } from '../../lib/utils'
 
 
 const UserLinksList = dynamic(
-  // @ts-ignore
+  
   () => import('../../components/profile/UserLinksList').then((module) => module.UserLinksList),
   { loading: () => <HodlLoadingSpinner /> }
 );

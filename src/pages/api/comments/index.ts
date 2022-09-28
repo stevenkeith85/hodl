@@ -10,7 +10,6 @@ import { getProvider } from "../../../lib/server/connections";
 import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import { HodlCommentViewModel } from "../../../models/HodlComment";
 import { getComment } from "../comment";
-import { instance } from "../../../lib/axios";
 
 dotenv.config({ path: '../.env' })
 
@@ -37,15 +36,7 @@ export const getCommentsForToken = async (object: "token" | "comment", objectId:
       return { items: [], next: Number(total), total: Number(total) };
     }
 
-    let url = `${process.env.UPSTASH_REDIS_REST_URL}/zrange/${object}:${objectId}:comments/${offset}/${offset + limit - 1}/`;
-    url = reverse ? url + 'rev' : url
-
-    const r = await instance.get(url, {
-      headers: {
-        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-      },
-    })
-    const commentIds = r.data.result.map(item => JSON.parse(item));
+    const commentIds : string [] = await client.zrange(`${object}:${objectId}:comments`, offset, offset + limit - 1, { rev: reverse });
 
     // The comments don't depend on each other, so we can do this async
     const commentPromises = commentIds.map(id => commentIdToViewModel(id));

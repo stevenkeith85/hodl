@@ -1,8 +1,7 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
 import apiRoute from "../handler";
-import axios from 'axios'
 import { getAsString } from "../../../lib/utils";
 import { User, UserViewModel } from "../../../models/User";
 import { getUser } from "../user/[handle]";
@@ -29,13 +28,7 @@ export const getFollowing = async (address: string, offset: number = 0, limit: n
       };
     }
 
-    const r = await axios.get(`${process.env.UPSTASH_REDIS_REST_URL}/zrange/user:${address}:following/${offset}/${offset + limit - 1}/rev`, {
-      headers: {
-        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-      }
-    })
-
-    const addresses: string[] = r.data.result;
+    const addresses : string [] = await client.zrange(`user:${address}:following`, offset, offset + limit - 1, { rev: true });
     const promises = addresses.map(address => getUser(address, viewer));
     users = await Promise.all(promises);
 
