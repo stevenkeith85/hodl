@@ -32,20 +32,34 @@ export const getCommentsForToken = async (object: "token" | "comment", objectId:
   try {
     const total = await client.zcard(`${object}:${objectId}:comments`);
 
+    // ZRANGE: Out of range indexes do not produce an error.
+    // So we need to check here and return if we are about to do an out of range search
     if (offset >= total) {
-      return { items: [], next: Number(total), total: Number(total) };
+      return { 
+        items: [], 
+        next: Number(offset) + Number(limit),
+        total: Number(total) 
+      };
     }
 
-    const commentIds : string [] = await client.zrange(`${object}:${objectId}:comments`, offset, offset + limit - 1, { rev: reverse });
+    const start = offset;
+    const stop = offset + limit - 1;
 
-    // The comments don't depend on each other, so we can do this async
-    const commentPromises = commentIds.map(id => commentIdToViewModel(id));
+    const commentIds : string [] = await client.zrange(`${object}:${objectId}:comments`, start, stop, { rev: reverse });
+    const promises = commentIds.map(id => commentIdToViewModel(id));
+    const comments: HodlCommentViewModel[] = await Promise.all(promises);
 
-    const comments: HodlCommentViewModel[] = await Promise.all(commentPromises);
-
-    return { items: comments, next: Number(offset) + Number(comments.length), total: Number(total) };
+    return { 
+      items: comments, 
+      next: Number(offset) + Number(limit), 
+      total: Number(total) 
+    };
   } catch (e) {
-    return { items: [], next: 0, total: 0 };
+    return { 
+      items: [], 
+      next: 1, 
+      total: 0 
+    };
   }
 }
 

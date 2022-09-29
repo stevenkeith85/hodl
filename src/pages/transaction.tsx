@@ -63,9 +63,15 @@ export default function Transaction({ address }) {
         <>
             <SuccessModal
                 modalOpen={successModalOpen}
-                setModalOpen={setSuccessModalOpen}
-                message="Successfully queued the transaction. It may take some time to process. Please contact support if this does not resolve your issue."
-            />
+                setModalOpen={setSuccessModalOpen}>
+                <Typography
+                    sx={{
+                        fontSize: 16,
+                        color: theme => theme.palette.text.secondary
+                    }}>
+                    When your transaction has been confirmed on the blockchain, we'll update our database and send you a notification.
+                </Typography>
+            </SuccessModal>
             <FailureModal
                 modalOpen={failureModalOpen}
                 setModalOpen={setFailureModalOpen}

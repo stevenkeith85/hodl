@@ -1,17 +1,13 @@
 import { HodlAction, ActionTypes } from "../../models/HodlAction";
-import { BigNumber, ethers } from "ethers";
-import { getProvider } from "../server/connections";
-import { nftaddress, nftmarketaddress } from "../../../config";
+import { ethers } from "ethers";
+import { nftaddress } from "../../../config";
 import { Redis } from '@upstash/redis';
 
 import {
     getInfuraIPFSAuth,
     ipfsUriToCid,
     ipfsUriToGatewayUrl,
-    NUMBER_OF_CONFIRMATIONS_TO_WAIT_FOR,
-    TAG_PATTERN,
-    TRANSACTION_TIMEOUT
-} from "../utils";
+    TAG_PATTERN} from "../utils";
 
 import NFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import axios from 'axios';

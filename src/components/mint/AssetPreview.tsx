@@ -24,7 +24,13 @@ export const AssetPreview: FC<MintProps> = ({
       sx={{ width: '100%' }}
     >
       {!fileName &&
-        <Typography sx={{ margin: `auto`, color: theme => theme.palette.text.secondary }}>Asset preview will appear here</Typography>
+        <Typography sx={{
+          margin: `auto`,
+          color: theme => theme.palette.text.secondary,
+          textAlign: 'center'
+        }}>
+          Asset preview will appear here
+        </Typography>
       }
       {fileName && isImage() && !isGif() &&
         <FilteredImageMemo

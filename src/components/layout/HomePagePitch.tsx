@@ -30,8 +30,9 @@ export const HomePagePitch = ({ }) => {
                         gap={0}
                         height="100%"
                         sx={{
-                            paddingY: { xs: '50px', md:`100px`},
-                            paddingTop: {xs: 0, md: '50px'}
+                            paddingTop: {xs: 0, sm: '25px', md: '50px', lg: '75px', xl: '100px'},
+                            paddingBottom: { xs: '50px', sm: '75px', md:`100px`, lg: '125px', xl: '150px'},
+                            
                         }}
                     >
                         <Box
@@ -39,8 +40,9 @@ export const HomePagePitch = ({ }) => {
                             sx={{
                                 fontFamily: theme => theme.logo.fontFamily,
                                 fontSize: {
-                                    xs: '30px',
-                                    sm: '40px',
+                                    xs: 30,
+                                    sm: 35,
+                                    md: 40
                                 },
                                 fontWeight: 600,
                                 color: theme => theme.palette.primary.main,
@@ -53,8 +55,9 @@ export const HomePagePitch = ({ }) => {
                             sx={{
                                 fontFamily: theme => theme.logo.fontFamily,
                                 fontSize: {
-                                    xs: '20px',
-                                    sm: '30px',
+                                    xs: 20,
+                                    sm: 25,
+                                    md: 30
                                 },
                                 color: '#999'
                             }}>

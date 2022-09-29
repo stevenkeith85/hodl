@@ -9,7 +9,7 @@ import {
 export const SuccessModal = ({
   modalOpen,
   setModalOpen,
-  message }) => {
+  children }) => {
   const router = useRouter();
 
   return (
@@ -19,7 +19,7 @@ export const SuccessModal = ({
     >
       <Stack spacing={3} textAlign="center">
         <Typography variant="h2" sx={{ fontSize: '18px', fontWeight: 600 }}>Success</Typography>
-        <Typography sx={{ fontSize: '18px', color: theme => theme.palette.text.secondary }}>{message}</Typography>
+        { children }
         <Box>
           <Button
             variant="contained"

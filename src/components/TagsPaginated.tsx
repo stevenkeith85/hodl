@@ -87,9 +87,24 @@ export const TagsPaginated: React.FC<TagsPaginatedProps> = ({ limit, onClick, se
       onClick={() => setOffset(offset - limit)}>
       <NavigateBefore fontSize='small'/>
     </IconButton>
-    <Page offset={offset} limit={limit} onClick={onClick} selected={selected} fetcher={fetcher} fallbackData={offset == 0 ? fallbackData: null} />
-    <div style={{ display: 'none' }}><Page offset={offset + limit} limit={limit} onClick={onClick} selected={selected} fetcher={fetcher} fallbackData={null}/></div>
-
+    <Page 
+      offset={offset} 
+      limit={limit} 
+      onClick={onClick} 
+      selected={selected} 
+      fetcher={fetcher} 
+      fallbackData={offset == 0 ? fallbackData: null} 
+    />
+    <div 
+      style={{ display: 'none' }}>
+        <Page 
+          offset={offset + limit} 
+          limit={limit} 
+          onClick={onClick} 
+          selected={selected} 
+          fetcher={fetcher} 
+          fallbackData={null}/>
+        </div>
     <IconButton
       disabled={offset + limit >= data?.total}
       onClick={() => setOffset(offset + limit)}

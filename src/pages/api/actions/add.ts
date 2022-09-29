@@ -159,29 +159,35 @@ const addToFeedOfFollowers = async (action: HodlAction) => {
   // We'll probably switch to doing the add to feed via the user's message queue.
   // The have one for transactions; but perhaps an alternative one for web2 stuff
 
-  let limit = 1;
+  const offset = 0
+  const limit = 1;
 
-  let { items: followers, next, total } = await getFollowers(action.subject, 0, limit);
-
-  console.log('actions/add/addToFeedOfFollowers - first batch - followers, next, total', followers, next, total);
+  // get initial page
+  let {items, next, total} = await getFollowers(action.subject, offset, limit);
 
   do {
     let promises = [];
 
-    for (let follower of followers) {
+    for (let follower of items) {
+      console.log('adding to feed of', follower)
       const promise = addToFeed(`${follower.address}`, action);
       promises.push(promise);
     }
 
     await Promise.all(promises);
 
-    let { items, next: n, total: t } = await getFollowers(action.subject, next, limit);
+    // update page
+    let followers = await getFollowers(action.subject, next, limit);
+    items = followers.items;
+    next = followers.next;
+    total = followers.total;
 
-    followers = items;
-    next = n;
-    total = t;
-    console.log('actions/add/addToFeedOfFollowers - end of batch - followers, next, total', followers, next, total);
-  } while (next < total);
+  } while (next <= total); // if next exceeds total, then we've reached the end
+
+
+
+  // console.log('actions/add/addToFeedOfFollowers - end of batch - followers, next, total', followers, next, total);
+
 
   return 1; // TODO: We want to return how many followers were notified here
 }

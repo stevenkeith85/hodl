@@ -1,8 +1,9 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, InputAdornment, TextField, Typography } from "@mui/material";
 import { listNft } from "../../lib/nft";
 import { HodlModal } from "../index";
 import { useRouter } from "next/router";
 import { enqueueSnackbar } from 'notistack';
+import { MaticSymbol } from "../MaticSymbol";
 
 
 export const ListModal = ({ listModalOpen, setListModalOpen, setListedModalOpen, price, setPrice }) => {
@@ -31,12 +32,15 @@ export const ListModal = ({ listModalOpen, setListModalOpen, setListedModalOpen,
         >
             <Box display="grid" gap={3} textAlign="center">
                 <Typography variant="h2" sx={{ fontSize: '18px', fontWeight: 600 }}>List your NFT</Typography>
-                <Typography sx={{ fontSize: '18px', color: '#999' }}>Enter a price in Matic</Typography>
                 <TextField
-                    label="Price"
-                    placeholder="e.g. 10"
+                    label="Price (in Matic)"
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
+                    InputProps={{
+                        startAdornment: <InputAdornment position="start">
+                          <MaticSymbol />
+                        </InputAdornment>,
+                      }}
                 />
                 <Box display="grid" gridTemplateColumns={"1fr 1fr"} gap={4}>
                     <Button

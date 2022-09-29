@@ -11,9 +11,11 @@ interface UserLinksListProps {
   limit: number;
   width?: string;
   followButton?: boolean;
+  size?: number;
+  fontSize?: number;
 }
 
-export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit, followButton = true }) => {
+export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit, followButton = true, size=44, fontSize=14 }) => {
 
   if (!swr) {
     return null;
@@ -47,15 +49,15 @@ export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit, follow
               key={user?.address}
               gap={4}
               sx={{
-                marginY: 1
+                marginY: 2
               }}
             >
               <Box flexGrow={1}>
                 <UserAvatarAndHandle
                   address={user?.address}
                   fallbackData={user}
-                  size={44}
-                  fontSize={14}
+                  size={size}
+                  fontSize={fontSize}
                 />
               </Box>
               {followButton && <Box flexShrink={1}>

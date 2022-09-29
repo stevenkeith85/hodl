@@ -11,9 +11,11 @@ interface TokenLinksListProps {
   limit: number;
   width?: string
   showLikes?: boolean;
+  size?: number;
+  fontSize?: number;
 }
 
-export const TokenLinksList: React.FC<TokenLinksListProps> = ({ swr, limit, showLikes = true }) => {
+export const TokenLinksList: React.FC<TokenLinksListProps> = ({ swr, limit, showLikes = true, size=44, fontSize=14 }) => {
   return (
     <>
       {swr.data &&
@@ -39,11 +41,11 @@ export const TokenLinksList: React.FC<TokenLinksListProps> = ({ swr, limit, show
                   alignItems="center" 
                   key={token.id}
                   sx={{
-                    marginY: 1
+                    marginY: 2
                   }}
                 >
                   <Box flexGrow={1}>
-                    <TokenLink token={token} />
+                    <TokenLink token={token} size={size} fontSize={fontSize}/>
                   </Box>
                   {showLikes && <Box flexShrink={1}>
                     <Likes 

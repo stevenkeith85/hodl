@@ -1,4 +1,4 @@
-import { Button, Stack } from "@mui/material";
+import { Button, Stack, Typography } from "@mui/material";
 import { useContext, useState } from "react";
 import { WalletContext } from '../../contexts/WalletContext';
 import { enqueueSnackbar } from 'notistack';
@@ -39,9 +39,15 @@ export const NftActionButtons = ({ nft }) => {
             {/* Bought */}
             <SuccessModal
                 modalOpen={boughtModalOpen}
-                setModalOpen={setBoughtModalOpen}
-                message="When your purchase has been confirmed on the blockchain, we'll send you a notification. This should not take long"
-            />
+                setModalOpen={setBoughtModalOpen}>
+                <Typography
+                    sx={{
+                        fontSize: 16,
+                        color: theme => theme.palette.text.secondary
+                    }}>
+                    When your transaction has been confirmed on the blockchain, we'll update our database and send you a notification.
+                </Typography>
+            </SuccessModal>
 
             {/* List */}
             <ListModal
@@ -55,16 +61,29 @@ export const NftActionButtons = ({ nft }) => {
             {/* Listed */}
             <SuccessModal
                 modalOpen={listedModalOpen}
-                setModalOpen={setListedModalOpen}
-                message="When your listing has been confirmed on the blockchain, we'll send you a notification. This should not take long"
-            />
+                setModalOpen={setListedModalOpen}>
+                <Typography
+                    sx={{
+                        fontSize: 16,
+                        color: theme => theme.palette.text.secondary
+                    }}>
+                    When your transaction has been confirmed on the blockchain, we'll update our database and send you a notification.
+                </Typography>
+            </SuccessModal>
+
 
             {/* Delisted */}
             <SuccessModal
                 modalOpen={delistModalOpen}
-                setModalOpen={setDelistModalOpen}
-                message="When your delisting has been confirmed on the blockchain, we'll send you a notification. This should not take long"
-            />
+                setModalOpen={setDelistModalOpen}>
+                <Typography
+                    sx={{
+                        fontSize: 16,
+                        color: theme => theme.palette.text.secondary
+                    }}>
+                    When your transaction has been confirmed on the blockchain, we'll update our database and send you a notification.
+                </Typography>
+            </SuccessModal>
 
             <Stack
                 direction="row"

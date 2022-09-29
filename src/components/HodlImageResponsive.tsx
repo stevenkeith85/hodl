@@ -16,16 +16,18 @@ export const HodlImageResponsive = ({
     onLoad = null,
     objectFit = 'scale-down',
     objectPosition = 'center',
-    zoom=null
+    zoom=null,
+    suffix=null,
+    assetFolder="image" // we sometimes want to display a video as an image. to do so, pass 'video' here
 }) => {
 
     const makeCloudinaryUrl = (width) => {
         const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_NAME;
         let cloudinaryUrl = '';
         if (aspectRatio) {
-            cloudinaryUrl = `https://res.cloudinary.com/${cloudName}/image/upload/q_auto,c_fill,ar_${aspectRatio},w_${width}`;
+            cloudinaryUrl = `https://res.cloudinary.com/${cloudName}/${assetFolder}/upload/q_auto,c_fill,ar_${aspectRatio},w_${width}`;
         } else {
-            cloudinaryUrl = `https://res.cloudinary.com/${cloudName}/image/upload/q_auto,c_fit,w_${width}`;
+            cloudinaryUrl = `https://res.cloudinary.com/${cloudName}/${assetFolder}/upload/q_auto,c_fit,w_${width}`;
         }
 
         if (zoom) {
@@ -41,6 +43,11 @@ export const HodlImageResponsive = ({
 
         if (round) {
             cloudinaryUrl = `${cloudinaryUrl}/r_max`;
+        }
+
+        if (suffix) {
+            // e.g. We can use this to get an image representation of a video
+            return `${cloudinaryUrl}/${environment}/${folder}/${cid}.${suffix}`    
         }
 
         return `${cloudinaryUrl}/${environment}/${folder}/${cid}`

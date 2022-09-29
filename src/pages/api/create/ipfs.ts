@@ -65,7 +65,7 @@ const makeCloudinaryVideoUrl = (cid) => {
 }
 
 // https://community.infura.io/t/ipfs-api-rate-limit/4995
-// TODO: Separate image and asset to allow cover art for music etc
+// TODO: Separate image and asset to allow cover art for music, still frame for the video, etc
 const uploadNFT = async (
   name,
   description,
@@ -76,33 +76,53 @@ const uploadNFT = async (
   aspectRatio
 ) => {
   const isImage = mimeType.indexOf('image') !== -1;
+  const isVideo = mimeType.indexOf('video') !== -1;
 
   const assetUrl: string = isImage ?
     makeCloudinaryImageUrl(fileName.split('/')[2], filter, aspectRatio) :
     makeCloudinaryVideoUrl(fileName.split('/')[2]);
 
-  const { path, content } = urlSource(assetUrl);
+  const { content } = urlSource(assetUrl);
   const asset = await ipfs.add(content, { cidVersion: 1 });
 
-  // Get an image representation for a video
-  // const imageUrl: string = assetUrl + '.jpg';
-  // const { path, content } = urlSource(assetUrl);
-  // const asset = await ipfs.add(content, { cidVersion: 1 });
+  let hodlMetadata: HodlMetadata = null;
 
-  const hodlMetadata: HodlMetadata = {
-    name,
-    description,
-    image: `ipfs://${asset.cid}`,
-    properties: {
-      aspectRatio,
-      filter,
-      asset: {
-        uri: `ipfs://${asset.cid}`,
-        license,
-        mimeType
+  if (isVideo) {
+    const { content: contentAsJpg } = urlSource(assetUrl + '.jpg');
+    const videoImg = await ipfs.add(contentAsJpg, { cidVersion: 1 });
+
+    hodlMetadata = {
+      name,
+      description,
+      image: `ipfs://${videoImg.cid}`,
+      properties: {
+        aspectRatio,
+        filter,
+        asset: {
+          uri: `ipfs://${asset.cid}`,
+          license,
+          mimeType
+        }
       }
-    }
-  };
+    };
+  } else {
+    hodlMetadata = {
+      name,
+      description,
+      image: `ipfs://${asset.cid}`,
+      properties: {
+        aspectRatio,
+        filter,
+        asset: {
+          uri: `ipfs://${asset.cid}`,
+          license,
+          mimeType
+        }
+      }
+    };
+  }
+
+  
 
   const metadata = await ipfs.add(JSON.stringify(hodlMetadata), { cidVersion: 1 });
 

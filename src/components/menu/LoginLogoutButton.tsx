@@ -48,6 +48,7 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
                         if (isMobileDevice()) {
                             connectMobile();
                         } else {
+                            
                             await connect(false);
                             router.push(router.asPath);
                         }

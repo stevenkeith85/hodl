@@ -133,7 +133,7 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            color: theme => theme.palette.text.secondary,
+                            color: 'white',
                             height: '100%',
                             position: 'relative'
                         }}>
@@ -152,15 +152,19 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            color: theme => theme.palette.text.secondary,
+                            color: 'white',
                             height: '100%',
                             position: 'relative'
                         }}>
                         <VideocamOutlined sx={{ position: 'absolute', top: 8, left: 8 }} />
-                        <HodlVideo
+                        <HodlImageResponsive
+                            sizes="(min-width: 900px) 25vw, (min-width: 1200px) calc(1200px / 5 * 2), 50vw"
                             cid={nft?.properties?.asset?.uri}
-                            controls={false}
-                            onlyPoster={true}
+                            widths={[400, 800, 1000]}
+                            aspectRatio="1:1"
+                            assetFolder="video"
+                            suffix="jpg"
+                            objectFit='cover'
                         />
                     </Box>
                 }
@@ -182,7 +186,7 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            color: theme => theme.palette.text.secondary,
+                            color: 'white',
                             height: '100%',
                             position: 'relative'
                         }}>

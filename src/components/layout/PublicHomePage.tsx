@@ -1,10 +1,9 @@
-import { Box, Grid } from "@mui/material"
+import { Box } from "@mui/material"
 import { HomePagePitch } from "./HomePagePitch"
 import { TopUsers } from "../rankings/TopUsers"
 import { TopTokens } from "../rankings/TopTokens"
 import { NewTokens } from "../rankings/NewTokens"
 import { NewUsers } from "../rankings/NewUsers"
-import { HodlBorderedBox } from "../HodlBorderedBox"
 
 export const PublicHomePage = ({ }) => {
     return (
@@ -21,15 +20,15 @@ export const PublicHomePage = ({ }) => {
                     gridTemplateColumns: {
                         xs:`1fr`,
                         sm:`1fr 1fr`,
-                        lg: `1fr 1fr 1fr 1fr`
+                        // lg: `1fr 1fr 1fr 1fr`
                     },
-                    gap: 4,
-                    marginBottom: '50px'
+                    gap: 8,
+                    marginBottom: 10
                 }}>
-                    <TopUsers followButton={false} />
-                    <TopTokens showLikes={false} />
-                    <NewUsers followButton={false} />
-                    <NewTokens showLikes={false} />
+                    <TopUsers followButton={false} titleSize={18} height={380} size={54} fontSize={14} titleMargin={3}/>
+                    <TopTokens showLikes={false} titleSize={18} height={380} size={54} fontSize={14} titleMargin={3} />
+                    <NewUsers followButton={false} titleSize={18} height={380} size={54} fontSize={14} titleMargin={3} />
+                    <NewTokens showLikes={false} titleSize={18} height={380} size={54} fontSize={14} titleMargin={3} />
             </Box>
         </Box >
     )

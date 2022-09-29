@@ -94,7 +94,6 @@ export const HodlVideo = ({
                             <source type="video/mp4" src={`${asset}.mp4`} />
                             <source type="video/webm" src={`${asset}.webm`} />
                             Your browser does not support HTML5 video tag.
-                            {gif && <a href={`${asset}.gif`} >Click here to view original GIF</a>}
                         </>)}
                     </video>
                 </NoSsr>

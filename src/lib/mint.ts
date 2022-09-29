@@ -1,14 +1,12 @@
 import { ethers } from 'ethers'
 
-import { nftaddress } from '../../config.js'
-
 import NFT from '../../artifacts/contracts/HodlNFT.sol/HodlNFT.json'
 import { getMetaMaskSigner } from './connections';
 import axios from 'axios';
 
 export const mintToken = async (url) => {
   const signer = await getMetaMaskSigner();
-  const tokenContract = new ethers.Contract(nftaddress, NFT.abi, signer);
+  const tokenContract = new ethers.Contract(process.env.HODL_NFT_ADDRESS, NFT.abi, signer);
 
   const mintFee = await tokenContract.mintFee();
   const { hash } = await tokenContract.createToken(url, { value: mintFee });

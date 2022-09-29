@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { HodlImpactAlert } from '../components/HodlImpactAlert';
 import { InfiniteScrollNftWindows } from '../components/InfiniteScrollNftWindows';
+import { MaticSymbol } from '../components/MaticSymbol';
 import { TagsPaginated } from '../components/TagsPaginated';
 import { useSearchTokens } from '../hooks/useSearchTokens';
 import { authenticate } from '../lib/jwt';
@@ -73,10 +74,10 @@ export default function Search({
 
   const { results } = useSearchTokens(
     searchQ,
-    qChip === q && 
-    forSaleToggle === forSale && 
-    minPriceUI === minPrice && 
-    maxPriceUI === maxPrice ?
+    qChip === q &&
+      forSaleToggle === forSale &&
+      minPriceUI === minPrice &&
+      maxPriceUI === maxPrice ?
       fallbackData :
       null
   );
@@ -175,109 +176,56 @@ export default function Search({
                     }))
                   }}
                 /></Tooltip>
-              {/* {
-                !xs &&
-                <TagsPaginated
-                  limit={tagsLimit}
-                  selected={qChip}
-                  onClick={
-                    (value) => {
-                      if (value == qChip) {
-                        setQChip('');
-                        setSearchQ(old => ({
-                          ...old,
-                          q: '',
-                        }))
-                      } else {
-                        setQChip(value);
-                        setSearchQ(old => ({
-                          ...old,
-                          q: value,
-                        }))
-                      }
+              {forSaleToggle && <Box
+                sx={{
+                  display: 'flex',
+                  gap: 1,
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
 
+                <TextField
+                  sx={{ width: 125 }}
+                  onKeyPress={(e) => {
+                    if (e.key == "Enter") {
+                      setSearchQ(old => ({
+                        ...old,
+                        minPrice: minPriceUI,
+                      }))
                     }
-                  }
-                  fallbackData={prefetchedTags}
-                />} */}
-                            {forSaleToggle && <Box
-              sx={{
-                display: 'flex',
-                gap: 1,
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-
-              <TextField
-                sx={{ width: 125 }}
-                onKeyPress={(e) => {
-                  if (e.key == "Enter") {
-                    setSearchQ(old => ({
-                      ...old,
-                      minPrice: minPriceUI,
-                    }))
-                  }
-                }}
-                InputProps={{
-                  startAdornment: <InputAdornment position="start">
-                    <Typography
-                      component="span"
-                      sx={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        margin: 0,
-                        padding: 0,
-                        verticalAlign: 'bottom',
-                        gap: 0.5,
-                        'img': {
-                          filter: 'brightness(0) saturate(100%) invert(0) sepia(0%) saturate(0%) hue-rotate(242deg) brightness(115%) contrast(101%)'
-                        },
-                      }}>
-                      <img src="/matic.svg" width={12} height={12} alt="matic symbol" />
-                    </Typography>
-                  </InputAdornment>,
-                }}
-                size="small"
-                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                value={minPriceUI}
-                onChange={e => setMinPriceUI(e.target.value)}
-              />
-              to
-              <TextField
-                sx={{ width: 125 }}
-                onKeyPress={(e) => {
-                  if (e.key == "Enter") {
-                    setSearchQ(old => ({
-                      ...old,
-                      maxPrice: maxPriceUI,
-                    }))
-                  }
-                }}
-                InputProps={{
-                  startAdornment: <InputAdornment position="start">
-                    <Typography
-                      component="span"
-                      sx={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        margin: 0,
-                        padding: 0,
-                        verticalAlign: 'bottom',
-                        gap: 0.5,
-                        'img': {
-                          filter: 'brightness(0) saturate(100%) invert(0) sepia(0%) saturate(0%) hue-rotate(242deg) brightness(115%) contrast(101%)'
-                        },
-                      }}>
-                      <img src="/matic.svg" width={12} height={12} alt="matic symbol" />
-                    </Typography>
-                  </InputAdornment>,
-                }}
-                size="small"
-                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                value={maxPriceUI}
-                onChange={e => setMaxPriceUI(e.target.value)}
-              />
-            </Box>}
+                  }}
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start">
+                      <MaticSymbol />
+                    </InputAdornment>,
+                  }}
+                  size="small"
+                  inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                  value={minPriceUI}
+                  onChange={e => setMinPriceUI(e.target.value)}
+                />
+                to
+                <TextField
+                  sx={{ width: 125 }}
+                  onKeyPress={(e) => {
+                    if (e.key == "Enter") {
+                      setSearchQ(old => ({
+                        ...old,
+                        maxPrice: maxPriceUI,
+                      }))
+                    }
+                  }}
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start">
+                      <MaticSymbol />
+                    </InputAdornment>,
+                  }}
+                  size="small"
+                  inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                  value={maxPriceUI}
+                  onChange={e => setMaxPriceUI(e.target.value)}
+                />
+              </Box>}
               <FormGroup>
                 <Tooltip title="On The Market">
                   <Switch
@@ -294,114 +242,6 @@ export default function Search({
                 </Tooltip>
               </FormGroup>
             </Box>
-
-            {/* {
-              xs && <Box
-                sx={{ display: 'flex', alignItems: 'center' }}
-              >
-                <TagsPaginated
-                  limit={tagsLimit}
-                  selected={qChip}
-                  onClick={
-                    (value) => {
-                      if (value == qChip) {
-                        setQChip('');
-                        setSearchQ(old => ({
-                          ...old,
-                          q: '',
-                        }))
-                      } else {
-                        setQChip(value);
-                        setSearchQ(old => ({
-                          ...old,
-                          q: value,
-                        }))
-                      }
-
-                    }
-                  }
-                  fallbackData={prefetchedTags}
-                />
-              </Box>
-            } */}
-            {/* {forSaleToggle && <Box
-              sx={{
-                display: 'flex',
-                gap: 1,
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-
-              <TextField
-                sx={{ width: 125 }}
-                onKeyPress={(e) => {
-                  if (e.key == "Enter") {
-                    setSearchQ(old => ({
-                      ...old,
-                      minPrice: minPriceUI,
-                    }))
-                  }
-                }}
-                InputProps={{
-                  startAdornment: <InputAdornment position="start">
-                    <Typography
-                      component="span"
-                      sx={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        margin: 0,
-                        padding: 0,
-                        verticalAlign: 'bottom',
-                        gap: 0.5,
-                        'img': {
-                          filter: 'brightness(0) saturate(100%) invert(0) sepia(0%) saturate(0%) hue-rotate(242deg) brightness(115%) contrast(101%)'
-                        },
-                      }}>
-                      <img src="/matic.svg" width={12} height={12} alt="matic symbol" />
-                    </Typography>
-                  </InputAdornment>,
-                }}
-                size="small"
-                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                value={minPriceUI}
-                onChange={e => setMinPriceUI(e.target.value)}
-              />
-              to
-              <TextField
-                sx={{ width: 125 }}
-                onKeyPress={(e) => {
-                  if (e.key == "Enter") {
-                    setSearchQ(old => ({
-                      ...old,
-                      maxPrice: maxPriceUI,
-                    }))
-                  }
-                }}
-                InputProps={{
-                  startAdornment: <InputAdornment position="start">
-                    <Typography
-                      component="span"
-                      sx={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        margin: 0,
-                        padding: 0,
-                        verticalAlign: 'bottom',
-                        gap: 0.5,
-                        'img': {
-                          filter: 'brightness(0) saturate(100%) invert(0) sepia(0%) saturate(0%) hue-rotate(242deg) brightness(115%) contrast(101%)'
-                        },
-                      }}>
-                      <img src="/matic.svg" width={12} height={12} alt="matic symbol" />
-                    </Typography>
-                  </InputAdornment>,
-                }}
-                size="small"
-                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                value={maxPriceUI}
-                onChange={e => setMaxPriceUI(e.target.value)}
-              />
-            </Box>} */}
           </Box>
         </Box>
         <Box>

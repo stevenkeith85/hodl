@@ -21,9 +21,9 @@ const getMarketItem = async ([id, price]): Promise<Nft> => {
 }
 
 export const getTokenSearchResults = async (
-    q: string, 
-    offset: number, 
-    limit: number, 
+    q: string,
+    offset: number,
+    limit: number,
     forSale: boolean = false,
     minPrice: number = null,
     maxPrice: number = null
@@ -37,10 +37,18 @@ export const getTokenSearchResults = async (
         let tokens;
 
         if (forSale) {
-            if (tag) {
-                total = await client.zcard(`market:${tag}`);
+            if (tag) {                
+                total = await client.zcount(
+                    `market:${tag}`,
+                    minPrice || '-inf',
+                    maxPrice || '+inf',
+                )
             } else {
-                total = await client.zcard(`market`);
+                total = await client.zcount(
+                    "market",
+                    minPrice || '-inf',
+                    maxPrice || '+inf',
+                )
             }
         }
         else {
@@ -49,7 +57,7 @@ export const getTokenSearchResults = async (
             // as those can grow infinitely, and would eventually slow down the ui
             if (tag) {
                 total = await client.zcard(`tag:${tag}:new`);
-            } else { 
+            } else {
                 total = await client.zcard(`tokens:new`);
             }
         }
@@ -57,7 +65,7 @@ export const getTokenSearchResults = async (
         if (offset >= total) {
             return {
                 items: [],
-                next: Number(total),
+                next: Number(offset) + Number(limit),
                 total: Number(total)
             };
         }
@@ -65,10 +73,10 @@ export const getTokenSearchResults = async (
         if (forSale) {
             if (tag) {
                 ids = await client.zrange(
-                    `market:${tag}`, 
-                    minPrice || '-inf', 
-                    maxPrice || '+inf', 
-                    { 
+                    `market:${tag}`,
+                    minPrice || '-inf',
+                    maxPrice || '+inf',
+                    {
                         withScores: true,
                         byScore: true,
                         offset,
@@ -77,10 +85,10 @@ export const getTokenSearchResults = async (
                 );
             } else {
                 ids = await client.zrange(
-                    "market", 
-                    minPrice || '-inf', 
-                    maxPrice || '+inf', 
-                    { 
+                    "market",
+                    minPrice || '-inf',
+                    maxPrice || '+inf',
+                    {
                         withScores: true,
                         byScore: true,
                         offset,
@@ -108,9 +116,17 @@ export const getTokenSearchResults = async (
             console.log('search/tokens - tokens', tokens);
         }
 
-        return { items: tokens, next: Number(offset) + Number(ids.length), total: Number(total) };
+        return {
+            items: tokens,
+            next: Number(offset) + Number(limit),
+            total: Number(total)
+        };
     } catch (e) {
-        return { items: [], next: 0, total: 0 };
+        return {
+            items: [],
+            next: 1,
+            total: 0
+        };
     }
 }
 
@@ -120,7 +136,7 @@ route.get(async (req, res) => {
 
     const q = getAsString(req.query.q);
     const forSale = getAsString(req.query.forSale); // true, false ? TODO: Determine what we want to support
-    
+
     const offset = getAsString(req.query.offset);
     const limit = getAsString(req.query.limit);
 
@@ -136,13 +152,13 @@ route.get(async (req, res) => {
     // TODO: Add in some yup validation
 
     const data = await getTokenSearchResults(
-        q, 
-        +offset, 
-        +limit, 
+        q || '',
+        +offset,
+        +limit,
         JSON.parse(forSale || "false"),
         +minPrice || 0,
         +maxPrice || 1000000
-        );
+    );
     return res.status(200).json(data);
 });
 

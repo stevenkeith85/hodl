@@ -25,7 +25,7 @@ const UserAvatarAndHandleBody = ({ user, size, fontSize, handle, color }) => (<B
             sx={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 1.5,
+                gap: 2,
             }}
         >
             {user.avatar ? <UserAvatar user={user} size={size} /> : <UserDefaultAvatar size={size} fontSize={size - 15} color={color} />}

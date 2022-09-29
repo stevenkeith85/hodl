@@ -18,23 +18,34 @@ export const getFollowers = async (address: string, offset: number = 0, limit: n
     let users: UserViewModel[] = [];
     const total = await client.zcard(`user:${address}:followers`);
 
+    // ZRANGE: Out of range indexes do not produce an error.
+    // So we need to check here and return if we are about to do an out of range search
     if (offset >= total) {
       return {
         items: users,
-        next: Number(total),
+        next: Number(offset) + Number(limit),
         total: Number(total)
       };
     }
 
-    const addresses : string [] = await client.zrange(`user:${address}:followers`, offset, offset + limit - 1, { rev: true });
+    const start = offset;
+    const stop = offset + limit - 1;
 
+    const addresses : string [] = await client.zrange(`user:${address}:followers`, start, stop, { rev: true });
     const promises = addresses.map(address => getUser(address, viewer));
-    
     users = await Promise.all(promises);
 
-    return { items: users, next: Number(offset) + Number(users.length), total: Number(total) };
+    return { 
+      items: users, 
+      next: Number(offset) + Number(limit), 
+      total: Number(total) 
+    };
   } catch (e) {
-    return { items: [], next: 0, total: 0 };
+    return { 
+      items: [], 
+      next: 1, 
+      total: 0 
+    };
   }
 }
 

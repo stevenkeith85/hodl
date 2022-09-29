@@ -10,11 +10,11 @@ import { HodlVideo } from '../HodlVideo';
 
 interface TokenLinkProps {
     token: Token;
-    size?: string;
-    fontSize?: string;
+    size?: number;
+    fontSize?: number;
 }
 
-export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = "40px", fontSize = "14px" }) => {
+export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = 44, fontSize = 14 }) => {
 
     return (<>
         <Link href={`/nft/${token.id}`} passHref>
@@ -26,15 +26,19 @@ export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = "40px", font
                     display="flex"
                     alignItems="center"
                     gap={2}
-                    sx={{ cursor: 'pointer', width: `100%` }}
+                    sx={{ 
+                        cursor: 'pointer', 
+                        width: `100%`,
+                    }}
                 >
-                    {token?.properties?.asset?.uri && <Box>
+                    {token?.properties?.asset?.uri && 
+                    <Box>
                         {assetType(token) === AssetTypes.Image &&
                             <HodlImageResponsive
                                 cid={token?.properties?.asset?.uri}
                                 aspectRatio="1:1"
                                 widths={[44, 88]}
-                                sizes="44px"
+                                sizes={`${size}px`}
                             />
                         }
                         {assetType(token) === AssetTypes.Video &&
@@ -42,8 +46,8 @@ export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = "40px", font
                                 cid={token?.properties?.asset?.uri}
                                 controls={false}
                                 onlyPoster={true}
-                                height={size}
-                                width={size}
+                                height={`${size}px`}
+                                width={`${size}px`}
                             />
                         }
                         {assetType(token) === AssetTypes.Gif &&
@@ -51,8 +55,8 @@ export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = "40px", font
                                 cid={token?.properties?.asset?.uri}
                                 gif={true}
                                 assetFolder="image"
-                                height={size}
-                                width={size}
+                                height={`${size}px`}
+                                width={`${size}px`}
                             />
                         }
                         {assetType(token) === AssetTypes.Audio &&
@@ -60,7 +64,10 @@ export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = "40px", font
                         }
                     </Box>
                     }
-                    <Typography sx={{ fontSize, textTransform: 'lowercase' }}>{token?.name}</Typography>
+                    <Typography sx={{ 
+                        fontSize, 
+                        color: theme => theme.palette.text.secondary
+                         }}>{token?.name}</Typography>
                 </Box>
             </Typography>
         </Link>
