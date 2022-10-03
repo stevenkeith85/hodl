@@ -102,9 +102,15 @@ export const HomePagePitch = ({ }) => {
                             height: {sm: "100%"},
                         }}
                     >
-                        <Box
-                            sx={{ width: `400px`, maxWidth: '90%'}}>
-                            <NftWindow nft={mostLiked.data?.[0].items?.[0]} />
+                        <Box sx={{ 
+                            width: `400px`, 
+                            maxWidth: '90%',
+                        }}>
+                            <NftWindow 
+                                nft={
+                                    mostLiked.data?.[0].items?.[0]
+                                } 
+                            />
                         </Box>
                     </Box>
                 </Grid>

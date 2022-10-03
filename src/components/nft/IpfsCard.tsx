@@ -28,6 +28,9 @@ export const IpfsCard : React.FC<IpfsCardProps> = ({ token }) => {
                 <Link href={cidToGatewayUrl(token?.metadata)} target="blank" sx={{ textDecoration: 'none' }}>
                     Metadata
                 </Link>
+                <Link href={cidToGatewayUrl(token?.image)} target="blank" sx={{ textDecoration: 'none' }}>
+                    Image
+                </Link>
                 <Link href={cidToGatewayUrl(token?.properties?.asset?.uri)} target="blank" sx={{ textDecoration: 'none' }}>
                     Asset
                 </Link>

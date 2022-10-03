@@ -33,13 +33,11 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({ user, size }) => {
                     }
                     {assetType(user?.avatar) === AssetTypes.Video &&
                         <HodlImageResponsive
-                            cid={user?.avatar?.properties?.asset?.uri}
+                            cid={user?.avatar?.image}
                             widths={[size, size * 2]}
                             sizes={size}
                             aspectRatio="1:1"
                             round={true}
-                            assetFolder="video"
-                            suffix="jpg"
                         />
                     }
                     {assetType(user?.avatar) === AssetTypes.Gif &&

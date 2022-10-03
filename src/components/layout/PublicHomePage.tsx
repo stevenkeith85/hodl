@@ -20,7 +20,6 @@ export const PublicHomePage = ({ }) => {
                     gridTemplateColumns: {
                         xs:`1fr`,
                         sm:`1fr 1fr`,
-                        // lg: `1fr 1fr 1fr 1fr`
                     },
                     gap: 8,
                     marginBottom: 10

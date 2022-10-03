@@ -161,6 +161,29 @@ export const assetType = (nft: Token | Nft) : AssetTypes => {
   }
 }
 
+
+export const assetTypeFromMimeType = (mimeType: string) : AssetTypes | null => {
+  if (!mimeType) { 
+    return null;
+  }
+
+  if (mimeType === 'image/gif') {
+    return AssetTypes.Gif;
+  }
+
+  if (mimeType.indexOf('video') !== -1) {
+    return AssetTypes.Video;
+  }
+
+  if (mimeType.indexOf('image') !== -1) {
+    return AssetTypes.Image;
+  }
+
+  if (mimeType.indexOf('audio') !== -1) {
+    return AssetTypes.Audio;
+  }
+}
+
 export const getInfuraIPFSAuth = () => {
   const credentials = Buffer.from(process.env.INFURA_IPFS_PROJECT_ID + ':' + process.env.INFURA_IPFS_PROJECT_SECRET).toString('base64');
   var auth = { "Authorization": `Basic ${credentials}` };

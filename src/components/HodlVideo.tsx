@@ -47,15 +47,6 @@ export const HodlVideo = ({
         }
     }, [video?.current])
 
-
-    const getPoster = () => {
-        if (gif) {
-            return null;
-        }
-
-        return `${asset}.jpg`;
-    }
-
     return (
         <>
             <Box sx={{
@@ -89,12 +80,11 @@ export const HodlVideo = ({
                         muted={typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('muted')) : false} // TODO: Not confident this works tbh
                         controls={!gif && controls}
                         controlsList="nodownload"
-                        poster={getPoster()}>
-                        {!onlyPoster && (<>
+                        >
+                        <>
                             <source type="video/mp4" src={`${asset}.mp4`} />
-                            <source type="video/webm" src={`${asset}.webm`} />
                             Your browser does not support HTML5 video tag.
-                        </>)}
+                        </>
                     </video>
                 </NoSsr>
             </Box>

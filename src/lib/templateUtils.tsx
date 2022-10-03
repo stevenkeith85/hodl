@@ -37,5 +37,8 @@ export const insertTagLinks = (text) => {
         lastPosition = index + hash.length;
     }
 
+    // in case there's any text at the end. e.g. "#guitar cover"
+    jsx.push(text.slice(lastPosition));
+
     return jsx;
 }

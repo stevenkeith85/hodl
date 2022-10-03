@@ -3,10 +3,11 @@ import { create, urlSource } from 'ipfs-http-client'
 import cloudinary, { UploadApiResponse } from 'cloudinary'
 import apiRoute from "../handler";
 import dotenv from 'dotenv'
-import { createCloudinaryUrl } from "../../../lib/utils";
+import { assetTypeFromMimeType } from "../../../lib/utils";
 import { uploadToIPFSValidationSchema } from "../../../validation/uploadToIPFS";
 import { HodlMetadata } from "../../../models/Metadata";
-import { removeFromCloudinary, removePublicIdFromCloudinary } from "../../../lib/server/cloudinary";
+import { removePublicIdFromCloudinary } from "../../../lib/server/cloudinary";
+import { AssetTypes } from "../../../models/AssetType";
 
 dotenv.config({ path: '../.env' })
 
@@ -54,80 +55,59 @@ const makeCloudinaryImageUrl = (cid, filter, aspectRatio) => {
 }
 
 // We do not do any transformations on video, as they are really expensive :(
-const makeCloudinaryVideoUrl = (cid) => {
+const makeCloudinaryVideoUrl = (cid, extension="mp4") => {
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_NAME;
   const environment = process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER; // dev, staging, or prod
   const folder = 'uploads'
 
   let cloudinaryUrl = `https://res.cloudinary.com/${cloudName}/video/upload`;
 
-  return `${cloudinaryUrl}/${environment}/${folder}/${cid}`
+  return `${cloudinaryUrl}/${environment}/${folder}/${cid}.${extension}`
 }
 
 // https://community.infura.io/t/ipfs-api-rate-limit/4995
 // TODO: Separate image and asset to allow cover art for music, still frame for the video, etc
-const uploadNFT = async (
+const uploadContentToIPFS = async (
   name,
   description,
-  fileName,
   license,
   filter,
   mimeType,
-  aspectRatio
+  aspectRatio,
+  assetUrl,
+  imageUrl
 ) => {
-  const isImage = mimeType.indexOf('image') !== -1;
-  const isVideo = mimeType.indexOf('video') !== -1;
 
-  const assetUrl: string = isImage ?
-    makeCloudinaryImageUrl(fileName.split('/')[2], filter, aspectRatio) :
-    makeCloudinaryVideoUrl(fileName.split('/')[2]);
+  console.log('api/create/ipfs - asset url -', assetUrl);
 
-  const { content } = urlSource(assetUrl);
-  const asset = await ipfs.add(content, { cidVersion: 1 });
+  // upload asset
+  const { content: assetContent } = urlSource(assetUrl);
+  const asset = await ipfs.add(assetContent, { cidVersion: 1 });
 
-  let hodlMetadata: HodlMetadata = null;
+  // upload img
+  const { content: imgContent } = urlSource(imageUrl);
+  const image = await ipfs.add(imgContent, { cidVersion: 1 });
 
-  if (isVideo) {
-    const { content: contentAsJpg } = urlSource(assetUrl + '.jpg');
-    const videoImg = await ipfs.add(contentAsJpg, { cidVersion: 1 });
-
-    hodlMetadata = {
-      name,
-      description,
-      image: `ipfs://${videoImg.cid}`,
-      properties: {
-        aspectRatio,
-        filter,
-        asset: {
-          uri: `ipfs://${asset.cid}`,
-          license,
-          mimeType
-        }
+  let hodlMetadata: HodlMetadata = {
+    name,
+    description,
+    image: `ipfs://${image.cid}`,
+    properties: {
+      aspectRatio,
+      filter,
+      asset: {
+        uri: `ipfs://${asset.cid}`,
+        license,
+        mimeType
       }
-    };
-  } else {
-    hodlMetadata = {
-      name,
-      description,
-      image: `ipfs://${asset.cid}`,
-      properties: {
-        aspectRatio,
-        filter,
-        asset: {
-          uri: `ipfs://${asset.cid}`,
-          license,
-          mimeType
-        }
-      }
-    };
-  }
-
-  
+    }
+  };
 
   const metadata = await ipfs.add(JSON.stringify(hodlMetadata), { cidVersion: 1 });
 
   return {
-    imageCid: asset.cid.toString(),
+    assetCid: asset.cid.toString(),
+    imageCid: image.cid.toString(),
     metadataCid: metadata.cid.toString()
   };
 }
@@ -153,41 +133,58 @@ route.post(async (req, res: NextApiResponse) => {
     aspectRatio
   } = req.body;
 
-  const { imageCid, metadataCid } = await uploadNFT(
+  const assetType = assetTypeFromMimeType(mimeType);
+
+  // TODO: Audio and Gifs
+  // TODO: Optimise so that we aren't doing any unnecessary double uploads, etc
+  let assetUrl = '';
+  if (assetType === AssetTypes.Image) {
+    assetUrl = makeCloudinaryImageUrl(fileName.split('/')[2], filter, aspectRatio);
+  } else if (assetType === AssetTypes.Video) {
+    assetUrl = makeCloudinaryVideoUrl(fileName.split('/')[2]);
+  }
+
+  let imageUrl = '';
+  if (assetType === AssetTypes.Image) {
+    imageUrl = assetUrl;
+  } else if (assetType === AssetTypes.Video) {
+    imageUrl = makeCloudinaryVideoUrl(fileName.split('/')[2], 'jpg'); // We did an eager transformation during the select asset stage. video transforms are locked down, as they are very expensive
+  }
+
+  const { assetCid, imageCid, metadataCid } = await uploadContentToIPFS(
     name,
     description,
-    fileName,
     license,
     filter,
     mimeType,
-    aspectRatio
+    aspectRatio,
+    assetUrl,
+    imageUrl
   );
 
-  const isImage = mimeType.indexOf('image') !== -1;
-
-  // Upload the IPFS image to cloudinary so that any user selected transformations / aspect rations become permanent
-  const processedAsset = isImage ?
-    makeCloudinaryImageUrl(fileName.split('/')[2], filter, aspectRatio) :
-    makeCloudinaryVideoUrl(fileName.split('/')[2]);
-
-  console.log('create/ipfs - processedAsset - ', processedAsset);
-
-  // TODO: This is sort of duplicate code. We should extract something to lib/server/cloudinary
-  const response: UploadApiResponse = await cloudinary.v2.uploader.upload(processedAsset, {
-    public_id: imageCid,
+  // Upload asset to cloudinary nfts folder
+  const response1: UploadApiResponse = await cloudinary.v2.uploader.upload(assetUrl, {
+    public_id: assetCid,
     folder: process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER + '/nfts/',
-    resource_type: isImage ? 'auto' : 'video'
+    resource_type: assetType === AssetTypes.Image ? 'auto' : 'video'
   });
 
-  console.log('create/ipfs - cloudinary upload response', JSON.stringify(response))
+  // Upload image to cloudinary nfts folder
+  const response2: UploadApiResponse = await cloudinary.v2.uploader.upload(imageUrl, {
+    public_id: imageCid,
+    folder: process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER + '/nfts/',
+    resource_type: 'auto'
+  });
+
+  console.log('create/ipfs - cloudinary upload response 1', JSON.stringify(response1))
+  console.log('create/ipfs - cloudinary upload response 2', JSON.stringify(response2))
 
   // Delete the upload folder item
-  console.log('create/ipfs - file to delete - ', fileName)
   const deleted = await removePublicIdFromCloudinary(fileName)
   console.log('create/ipfs - cloudinary deleted response', JSON.stringify(deleted))
 
   const result = {
-    imageCid,
+    imageCid: assetCid, // TODO: Rename client side, and update this
     metadataUrl: `ipfs://${metadataCid}`
   };
 

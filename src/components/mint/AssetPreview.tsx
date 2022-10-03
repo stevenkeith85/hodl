@@ -62,7 +62,7 @@ export const AssetPreview: FC<MintProps> = ({
               aspectRatio
             }));
 
-            setLoading();
+            setLoading(false);
           }}
         />
       }

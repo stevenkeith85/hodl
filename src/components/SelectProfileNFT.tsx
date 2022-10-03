@@ -8,11 +8,6 @@ interface SelectProfileNFTProps {
 }
 
 const SelectProfileNFT = ({ nfts, onClick, selectedTokenId }: SelectProfileNFTProps) => {
-
-    // if (!nfts.length) {
-    //     return <Typography>You need to hodl an NFT to set a custom avatar.</Typography>
-    // }
-
     return (
         <Box
             sx={{
@@ -39,7 +34,6 @@ const SelectProfileNFT = ({ nfts, onClick, selectedTokenId }: SelectProfileNFTPr
                         }}
                     >
                         <AssetThumbnail token={nft} size={90} />
-
                     </Box>
                 </ImageListItem>
             )

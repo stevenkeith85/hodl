@@ -1,10 +1,8 @@
-import { useEffect, useState } from 'react'
-import { Grid, useMediaQuery, Box, useTheme, Dialog, DialogTitle, Typography, DialogContent, DialogActions, Button, DialogContentText } from '@mui/material'
-import { MintStepperMemo } from '../components/mint/MintStepper'
+import { useState } from 'react'
+import { Grid, Box } from '@mui/material'
 import { MintProgressButtons } from '../components/mint/MintProgressButtons'
 import { HodlLoadingSpinner } from '../components/HodlLoadingSpinner'
 import { AssetPreview } from '../components/mint/AssetPreview'
-import { MintMobileStepper } from '../components/mint/MintMobileStepper'
 
 import dynamic from "next/dynamic";
 import Head from 'next/head'
@@ -12,6 +10,8 @@ import { authenticate } from '../lib/jwt'
 import { useWarningOnExit } from '../hooks/useWarningOnExit'
 import { CropAssetAction } from '../components/mint/CropAssetAction'
 import { FilterAssetAction } from '../components/mint/FilterAssetAction'
+import { assetTypeFromMimeType } from '../lib/utils'
+import { AssetTypes } from '../models/AssetType'
 
 const SelectAssetAction = dynamic(
   () => import('../components/mint/SelectAssetAction').then((module) => module.SelectAssetAction),
@@ -57,21 +57,9 @@ const Mint = ({ address }) => {
     metadataUrl: null,
     tokenId: null,
   })
-
-
   const [loading, setLoading] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const [stepComplete, setStepComplete] = useState(-1);
-  const theme = useTheme();
-  const xs = useMediaQuery(theme.breakpoints.only('xs'));
-  const stepLabels = [
-    'Select',
-    'Crop',
-    'Filter',
-    'Upload',
-    'Mint',
-    'Hodl'
-  ];
 
   const warning = useWarningOnExit(stepComplete !== 4 && activeStep > 0, "If you leave now, your token will not be added to Hodl My Moon. Are you sure?")
 
@@ -85,21 +73,9 @@ const Mint = ({ address }) => {
         <title>Create · Hodl My Moon</title>
       </Head>
       <Box
-        // display={"flex"}
-        // flexDirection="column"
         sx={{
           position: "relative",
           marginY: 4
-          // marginY: {
-          //   xs: 4,
-          //   sm: 5,
-          //   md: 8,
-          // },
-          // gap: {
-          //   xs: 4,
-          //   sm: 5,
-          //   md: 7,
-          // }
         }}
       >
         <Box
@@ -143,18 +119,20 @@ const Mint = ({ address }) => {
                     setStepComplete={setStepComplete}
                   />
                 }
-                {formData.fileName && <Box
-                  sx={{
-                    display: activeStep === 2 ? 'block' : 'none'
-                  }}
-                >
-                  <FilterAssetAction
-                    formData={formData}
-                    setFormData={setFormData}
-                    setStepComplete={setStepComplete}
-                    activeStep={activeStep}
-                  />
-                </Box>
+                {formData.fileName &&
+                  assetTypeFromMimeType(formData.mimeType) === AssetTypes.Image &&
+                  <Box
+                    sx={{
+                      display: activeStep === 2 ? 'block' : 'none'
+                    }}
+                  >
+                    <FilterAssetAction
+                      formData={formData}
+                      setFormData={setFormData}
+                      setStepComplete={setStepComplete}
+                      activeStep={activeStep}
+                    />
+                  </Box>
                 }
                 {activeStep === 3 &&
                   <UploadToIpfsAction

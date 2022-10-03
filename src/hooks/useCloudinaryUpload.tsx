@@ -1,8 +1,9 @@
 import { useRef, useState } from 'react';
 import axios from 'axios'
 
-export const useCloudinaryUpload = () : [Function, number, string, Function] => {
-  const previousFile = useRef(null);
+export const useCloudinaryUpload = (): [Function, number, string, Function] => {
+  const previousFileName = useRef(null);
+  const previousMimeType = useRef(null);
 
   const [error, setError] = useState('');
   const [progress, setProgress] = useState(0);
@@ -12,8 +13,12 @@ export const useCloudinaryUpload = () : [Function, number, string, Function] => 
     const data = new FormData();
     data.append('asset', asset);
 
-    if (previousFile.current) {
-      data.append('fileUrl', previousFile.current);
+    // User has changed their mind; delete the old file
+    // TODO: If the user navigates away from the page; we also need a method of cleaning up cloudinary :(
+    // Potentilly we could just do a sweep with the management api and remove any files older than a day or so
+    if (previousFileName.current && previousMimeType.current) {
+      data.append('previousFileName', previousFileName.current);
+      data.append('previousMimeType', previousMimeType.current);
     }
 
     try {
@@ -33,7 +38,9 @@ export const useCloudinaryUpload = () : [Function, number, string, Function] => 
         }
       )
       const { fileName, mimeType } = r.data;
-      previousFile.current = fileName;
+
+      previousFileName.current = fileName;
+      previousMimeType.current = mimeType;
 
       return { success: true, fileName, mimeType };
     } catch (error) {

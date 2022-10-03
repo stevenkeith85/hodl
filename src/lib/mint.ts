@@ -6,7 +6,7 @@ import axios from 'axios';
 
 export const mintToken = async (url) => {
   const signer = await getMetaMaskSigner();
-  const tokenContract = new ethers.Contract(process.env.HODL_NFT_ADDRESS, NFT.abi, signer);
+  const tokenContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, signer);
 
   const mintFee = await tokenContract.mintFee();
   const { hash } = await tokenContract.createToken(url, { value: mintFee });

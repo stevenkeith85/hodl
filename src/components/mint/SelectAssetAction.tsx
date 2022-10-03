@@ -35,6 +35,7 @@ export const SelectAssetAction: FC<MintProps> = ({
       }))
 
       setStepComplete(0);
+      setLoading(false);
     } else {
       setLoading(false);
     }

@@ -159,11 +159,9 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                         <VideocamOutlined sx={{ position: 'absolute', top: 8, left: 8 }} />
                         <HodlImageResponsive
                             sizes="(min-width: 900px) 25vw, (min-width: 1200px) calc(1200px / 5 * 2), 50vw"
-                            cid={nft?.properties?.asset?.uri}
+                            cid={nft?.image}
                             widths={[400, 800, 1000]}
                             aspectRatio="1:1"
-                            assetFolder="video"
-                            suffix="jpg"
                             objectFit='cover'
                         />
                     </Box>

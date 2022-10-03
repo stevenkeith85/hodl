@@ -26,48 +26,47 @@ export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = 44, fontSize
                     display="flex"
                     alignItems="center"
                     gap={2}
-                    sx={{ 
-                        cursor: 'pointer', 
+                    sx={{
+                        cursor: 'pointer',
                         width: `100%`,
                     }}
                 >
-                    {token?.properties?.asset?.uri && 
-                    <Box>
-                        {assetType(token) === AssetTypes.Image &&
-                            <HodlImageResponsive
-                                cid={token?.properties?.asset?.uri}
-                                aspectRatio="1:1"
-                                widths={[44, 88]}
-                                sizes={`${size}px`}
-                            />
-                        }
-                        {assetType(token) === AssetTypes.Video &&
-                            <HodlVideo
-                                cid={token?.properties?.asset?.uri}
-                                controls={false}
-                                onlyPoster={true}
-                                height={`${size}px`}
-                                width={`${size}px`}
-                            />
-                        }
-                        {assetType(token) === AssetTypes.Gif &&
-                            <HodlVideo
-                                cid={token?.properties?.asset?.uri}
-                                gif={true}
-                                assetFolder="image"
-                                height={`${size}px`}
-                                width={`${size}px`}
-                            />
-                        }
-                        {assetType(token) === AssetTypes.Audio &&
-                            <HodlAudioBoxMini size={size} />
-                        }
-                    </Box>
+                    {token?.properties?.asset?.uri &&
+                        <Box>
+                            {assetType(token) === AssetTypes.Image &&
+                                <HodlImageResponsive
+                                    cid={token?.properties?.asset?.uri}
+                                    aspectRatio="1:1"
+                                    widths={[44, 88]}
+                                    sizes={`${size}px`}
+                                />
+                            }
+                            {assetType(token) === AssetTypes.Video &&
+                                <HodlImageResponsive
+                                    cid={token?.image}
+                                    aspectRatio="1:1"
+                                    widths={[44, 88]}
+                                    sizes={`${size}px`}
+                                />
+                            }
+                            {assetType(token) === AssetTypes.Gif &&
+                                <HodlVideo
+                                    cid={token?.properties?.asset?.uri}
+                                    gif={true}
+                                    assetFolder="image"
+                                    height={`${size}px`}
+                                    width={`${size}px`}
+                                />
+                            }
+                            {assetType(token) === AssetTypes.Audio &&
+                                <HodlAudioBoxMini size={size} />
+                            }
+                        </Box>
                     }
-                    <Typography sx={{ 
-                        fontSize, 
+                    <Typography sx={{
+                        fontSize,
                         color: theme => theme.palette.text.secondary
-                         }}>{token?.name}</Typography>
+                    }}>{token?.name}</Typography>
                 </Box>
             </Typography>
         </Link>
