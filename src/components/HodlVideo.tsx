@@ -8,7 +8,6 @@ interface HodlVideoProps {
     environment?: string;
     sx?: object;
     controls?: boolean;
-    onlyPoster?: boolean;
     gif?: boolean;
     height?: string;
     width?: string;
@@ -22,7 +21,6 @@ export const HodlVideo = ({
     environment = process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER,
     sx = {},
     controls = true,
-    onlyPoster = false,
     gif = false,
     height = '100%',
     width = '100%',

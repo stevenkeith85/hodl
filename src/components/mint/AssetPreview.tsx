@@ -74,6 +74,7 @@ export const AssetPreview: FC<MintProps> = ({
           onLoad={(audio) => {
             setLoading();
           }}
+          mimeType={mimeType}
         />
       }
     </Box>

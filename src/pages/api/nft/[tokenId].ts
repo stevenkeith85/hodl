@@ -6,14 +6,9 @@
 
 import NFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json'
 import Market from '../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
-
-import { ipfsUriToCid, ipfsUriToGatewayUrl } from '../../../lib/utils';
 import { getProvider } from '../../../lib/server/connections'
 import { ethers } from 'ethers'
-import { nftmarketaddress, nftaddress } from '../../../../config.js'
-
 import { NextApiRequest, NextApiResponse } from "next";
-
 import dotenv from 'dotenv'
 import apiRoute from '../handler';
 import { getToken } from '../token/[tokenId]';
@@ -29,7 +24,7 @@ export const isOwnerOrSeller = async (address, tokenId) => {
   try {
     const provider = await getProvider();
 
-    const tokenContract = new ethers.Contract(nftaddress, NFT.abi, provider);
+    const tokenContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, provider);
     const tokenExists = await tokenContract.exists(tokenId);
 
     if (!tokenExists) {
@@ -42,7 +37,7 @@ export const isOwnerOrSeller = async (address, tokenId) => {
       return true;
     }
 
-    const marketContract = new ethers.Contract(nftmarketaddress, Market.abi, provider);
+    const marketContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
     const marketItem = await marketContract.getListing(tokenId);
 
     if (address === marketItem.seller) { // address is the seller (i.e. listing it)
@@ -61,7 +56,7 @@ export const isOwnerOrSeller = async (address, tokenId) => {
 export const getOwnerOrSellerAddress = async (tokenId) => {
   const provider = await getProvider();
 
-  const tokenContract = new ethers.Contract(nftaddress, NFT.abi, provider);
+  const tokenContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, provider);
   const tokenExists = await tokenContract.exists(tokenId);
 
   if (!tokenExists) {
@@ -70,7 +65,7 @@ export const getOwnerOrSellerAddress = async (tokenId) => {
 
   const owner = await tokenContract.ownerOf(tokenId);
 
-  const marketContract = new ethers.Contract(nftmarketaddress, Market.abi, provider);
+  const marketContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
   const marketItem = await marketContract.getListing(tokenId);
 
   return isTokenForSale(marketItem) ? marketItem.seller : owner
@@ -91,7 +86,7 @@ const isTokenForSale = ({ price, seller, tokenId }) => {
 export const fetchNFT = async (id: number): Promise<Nft> => {
   const provider = await getProvider();
 
-  const marketContract = new ethers.Contract(nftmarketaddress, Market.abi, provider);
+  const marketContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
 
   const marketItem = await marketContract.getListing(id);
   const forSale = isTokenForSale(marketItem);
@@ -108,7 +103,7 @@ export const fetchNFT = async (id: number): Promise<Nft> => {
   } else {
     try {
       // we'll have to consult the token contract to get the owner
-      const tokenContract = new ethers.Contract(nftaddress, NFT.abi, provider);
+      const tokenContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, provider);
       const tokenExists = await tokenContract.exists(id);
 
       if (!tokenExists) { // it was never minted on the blockchain. TODO: We could tell the user the token hasn't been minted
@@ -143,7 +138,7 @@ export const fetchNFT = async (id: number): Promise<Nft> => {
 
 export const getTokenUriAndOwner = async (id) => {
   const provider = getProvider();
-  const tokenContract = new ethers.Contract(nftaddress, NFT.abi, provider)
+  const tokenContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, provider)
 
   // This is important! We only want to store HodlNFTs in our database at the moment. 
   // If a user tries to create spoof tokens and list on the market, we

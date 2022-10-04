@@ -10,6 +10,7 @@ interface HodlAudioProps {
     height?: string;
     width?: string;
     onLoad?: Function;
+    mimeType?: string;
 }
 
 export const HodlAudio = ({
@@ -21,6 +22,7 @@ export const HodlAudio = ({
     height = 'auto',
     width = '100%',
     onLoad = null,
+    mimeType = 'audio/mp3'
 }: HodlAudioProps) => {
     const makeCloudinaryAudioUrl = () => {
         let cloudinaryUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_NAME}/video/upload`; // cloudinary stores audio under the video folder
@@ -68,8 +70,7 @@ export const HodlAudio = ({
                         controls={controls}
                         controlsList="nodownload">
                         <>
-                            <source type="video/mp4" src={`${asset}.mp4`} />
-                            <source type="video/webm" src={`${asset}.webm`} />
+                            <source src={`${asset}.${mimeType.split('/')[1]}`} type={mimeType} />
                         </>
                     </audio>
                 </NoSsr>

@@ -21,7 +21,6 @@ export const CropAssetAction = ({
       alignItems="center"
       justifyContent="center"
       textAlign="center"
-      height="550px"
       gap={4}
     >
       <Crop sx={{ fontSize: 82, color: grey[400] }} />

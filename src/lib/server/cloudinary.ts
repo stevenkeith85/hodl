@@ -37,6 +37,10 @@ const validator = (req, file, cb) => {
         if (fileSize > 100 * 1024 * 1024) {
             cb(new Error('Audio can be up to 100MB'));
         }
+
+        if (assetFormat !== "wav" && assetFormat !== "mp3") {
+            cb(new Error('Audio must be WAV or MP3'));
+        }
     }
 
     cb(null, true);
@@ -55,7 +59,7 @@ const storage = new CloudinaryStorage({
         if (isImage) {
             return {
                 folder: `${process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER}/uploads/`,
-                public_id: public_id,
+                public_id,
                 resource_type: 'auto',
                 timeout: 60000,
             };
@@ -63,7 +67,7 @@ const storage = new CloudinaryStorage({
         else if (isVideo) {
             return {
                 folder: `${process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER}/uploads/`,
-                public_id: public_id,
+                public_id,
                 resource_type: 'video',
                 timeout: 60000,
                 eager: [
@@ -79,7 +83,7 @@ const storage = new CloudinaryStorage({
         } else if (isAudio) {
             return {
                 folder: `${process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER}/uploads/`,
-                public_id: public_id,
+                public_id,
                 resource_type: 'video', // Note: Use the video resource type for all video assets as well as for audio files, such as .mp3. (from cloudinary)
                 timeout: 60000,
                 transformation: {
@@ -117,7 +121,6 @@ export const uploadToCloudinary = (req, res): Promise<any> => {
 
 export const removeFromCloudinary = (req, res): Promise<any> => {
     return new Promise((resolve, reject) => {
-        console.log('deleting old asset from cloudinary', req?.body?.previousFileName);
         const isImage = req?.body?.previousMimeType?.indexOf('image') !== -1;
 
         cloudinary.v2.uploader.destroy(
@@ -133,9 +136,12 @@ export const removeFromCloudinary = (req, res): Promise<any> => {
     });
 }
 
-export const removePublicIdFromCloudinary = (public_id: string): Promise<any> => {
+export const removePublicIdFromCloudinary = (public_id: string, resource_type: "image" | "video"): Promise<any> => {
     return new Promise((resolve, reject) => {
-        cloudinary.v2.uploader.destroy(public_id, (error: any, result: any) => {
+        cloudinary.v2.uploader.destroy(
+            public_id,
+            { resource_type },
+            (error: any, result: any) => {
             if (error) {
                 reject(error);
             } else {

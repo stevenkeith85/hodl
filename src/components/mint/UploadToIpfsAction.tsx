@@ -44,23 +44,23 @@ export const UploadToIpfsAction: FC<MintProps> = ({
     setLoading(true);
     setSubmitting(true);
 
-    enqueueSnackbar(
-      `Transferring asset to IPFS`,
-      {
-        // @ts-ignore
-        variant: "hodlsnackbar",
-        type: "info"
-      });
+    // enqueueSnackbar(
+    //   `Transferring asset to IPFS`,
+    //   {
+    //     // @ts-ignore
+    //     variant: "hodlsnackbar",
+    //     type: "info"
+    //   });
 
-    if (values.mimeType.indexOf('video') !== -1) {
-      enqueueSnackbar(
-        `Large files may take some time`,
-        {
-          // @ts-ignore
-          variant: "hodlsnackbar",
-          type: "info"
-        });
-    }
+    // if (values.mimeType.indexOf('video') !== -1) {
+    //   enqueueSnackbar(
+    //     `Large files may take some time`,
+    //     {
+    //       // @ts-ignore
+    //       variant: "hodlsnackbar",
+    //       type: "info"
+    //     });
+    // }
 
     let { success, imageCid, metadataUrl } = await uploadToIpfs(values.fileName,
       {

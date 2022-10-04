@@ -1,6 +1,5 @@
 import { HodlAction, ActionTypes } from "../../models/HodlAction";
 import { ethers } from "ethers";
-import { nftaddress } from "../../../config";
 import { Redis } from '@upstash/redis';
 
 import {
@@ -30,7 +29,7 @@ export const tokenMinted = async (
 ): Promise<boolean> => {
     console.log(`tokenMinted - processing tx`);
 
-    const contract = new ethers.Contract(nftaddress, NFT.abi, provider);
+    const contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, provider);
 
     // event Transfer(address from, address to, uint256 tokenId)
     const log: ethers.utils.LogDescription = contract.interface.parseLog(txReceipt.logs?.[0]);

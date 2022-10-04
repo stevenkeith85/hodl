@@ -38,7 +38,10 @@ const getAvatar = async (user: User) : Promise<Token>=> {
   return client.get<Token>(`token:${user.avatar}`);
 }
 
-export const getUser = async (handle: string, viewerAddress: string): Promise<UserViewModel | null> => {
+export const getUser = async (
+  handle: string, 
+  viewerAddress: string, 
+  nonce=false): Promise<UserViewModel | null> => {
 
   if (!handle) {
     return null;
@@ -53,7 +56,7 @@ export const getUser = async (handle: string, viewerAddress: string): Promise<Us
   }
 
   // TODO - We should check the 'users' collection first; as the user may have a uuid entry; but they've not actually signed the message to connect to the site
-  const user = await client.hmget<User>(`user:${address}`, 'address', 'nickname', 'avatar');
+  const user = await client.hmget<User>(`user:${address}`, 'address', 'nickname', 'avatar', 'nonce');
 
   // if we haven't seen this user before, then just return basic info.
   // this shouldn't actually happen in the wild; but is useful for dev
@@ -72,7 +75,11 @@ export const getUser = async (handle: string, viewerAddress: string): Promise<Us
     nickname: user.nickname,
     avatar: null,
     followedByViewer: false,
-    followsViewer: false
+    followsViewer: false,
+  }
+
+  if (nonce) {
+    vm.nonce = user.nonce;
   }
 
   const avatarPromise = getAvatar(user);

@@ -9,7 +9,6 @@ import { HodlAction, ActionTypes } from "../../../models/HodlAction";
 import { addAction } from "../actions/add";
 import { AddCommentValidationSchema } from "../../../validation/comments/addComments";
 import { ethers } from "ethers";
-import { nftaddress } from "../../../../config";
 import { getProvider } from "../../../lib/server/connections";
 import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import { HodlComment } from "../../../models/HodlComment";
@@ -113,7 +112,7 @@ route.post(async (req, res: NextApiResponse) => {
 
   if (object === "token") {
     const provider = await getProvider();
-    const contract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
+    const contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, HodlNFT.abi, provider);
     const tokenExists = await contract.exists(objectId);
 
     if (!tokenExists) {

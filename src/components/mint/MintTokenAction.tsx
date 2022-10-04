@@ -6,7 +6,6 @@ import { mintToken } from '../../lib/mint';
 import { MintProps } from './models';
 import { grey } from '@mui/material/colors';
 import { SuccessModal } from '../modals/SuccessModal';
-import { useRouter } from 'next/router';
 
 
 export const MintTokenAction: FC<MintProps> = ({
@@ -17,14 +16,15 @@ export const MintTokenAction: FC<MintProps> = ({
   formData,
   setFormData
 }: MintProps) => {
-
-  const router = useRouter();
   const [successModalOpen, setSuccessModalOpen] = useState(false);
+  const [mintButtonDisabled, setMintButtonDisabled] = useState(false);
 
   async function mint() {
     setLoading(true);
+    setMintButtonDisabled(true);
+
     enqueueSnackbar(
-      'Please approve the transaction in Metamask',
+      'Please confirm the transaction in MetaMask',
       {
         // @ts-ignore
         variant: "hodlsnackbar",
@@ -44,19 +44,16 @@ export const MintTokenAction: FC<MintProps> = ({
     }
 
     try {
-      const tokenId = await mintToken(metadataUrl);
+      await mintToken(metadataUrl);
       setLoading(false);
 
-      setFormData(prev => ({
-        ...prev,
-        tokenId
-      }));
-
+    
       setStepComplete(4);
       setSuccessModalOpen(true);
+      setMintButtonDisabled(false);
     } catch (e) {
       setLoading(false);
-    }
+    } 
   }
 
   return (
@@ -92,8 +89,7 @@ export const MintTokenAction: FC<MintProps> = ({
         <div>
           <Button
             color="primary"
-            // disabled={stepComplete === 4 || loading}
-            disabled={loading}
+            disabled={loading || mintButtonDisabled}
             onClick={mint}
             sx={{ paddingY: 1, paddingX: 3 }}
             variant="contained"

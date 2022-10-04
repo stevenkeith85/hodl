@@ -1,11 +1,9 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
-
 import apiRoute from "../handler";
 import { GetCommentsValidationSchema } from "../../../validation/comments/getComments";
 import { ethers } from "ethers";
-import { nftaddress } from "../../../../config";
 import { getProvider } from "../../../lib/server/connections";
 import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import { HodlCommentViewModel } from "../../../models/HodlComment";
@@ -14,7 +12,6 @@ import { getComment } from "../comment";
 dotenv.config({ path: '../.env' })
 
 const client = Redis.fromEnv();
-
 const route = apiRoute();
 
 const commentIdToViewModel = async (id): Promise<HodlCommentViewModel | null> => {
@@ -77,7 +74,7 @@ route.get(async (req, res: NextApiResponse) => {
 
   if (object === "token") {
     const provider = await getProvider();
-    const contract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
+    const contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, HodlNFT.abi, provider);
     const tokenExists = await contract.exists(objectId);
 
     if (!tokenExists) {

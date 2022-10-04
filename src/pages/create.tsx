@@ -17,10 +17,6 @@ const SelectAssetAction = dynamic(
   () => import('../components/mint/SelectAssetAction').then((module) => module.SelectAssetAction),
   { loading: () => <HodlLoadingSpinner /> }
 );
-const ApplyFilterAction = dynamic(
-  () => import('../components/mint/FilterAssetAction').then((module) => module.FilterAssetAction),
-  { loading: () => <HodlLoadingSpinner /> }
-);
 const UploadToIpfsAction = dynamic(
   () => import('../components/mint/UploadToIpfsAction').then((module) => module.UploadToIpfsAction),
   { loading: () => <HodlLoadingSpinner /> }
@@ -187,7 +183,6 @@ const Mint = ({ address }) => {
             }}
           />
         </Box>
-
         {
           activeStep < 5 &&
           <MintProgressButtons

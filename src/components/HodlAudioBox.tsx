@@ -99,7 +99,7 @@ export const HodlAudioBox: React.FC<HodlAudioBoxProps> = ({
                 </Box>
             </Box>
             {audio && <Box>
-                <HodlAudio cid={token?.properties?.asset?.uri} />
+                <HodlAudio cid={token?.properties?.asset?.uri} mimeType={token?.properties?.asset?.mimeType} />
             </Box>}
         </Box>
     )

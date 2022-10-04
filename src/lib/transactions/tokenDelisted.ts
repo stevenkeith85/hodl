@@ -1,9 +1,6 @@
 import { HodlAction, ActionTypes } from "../../models/HodlAction";
 import { ethers } from "ethers";
-import { nftmarketaddress } from "../../../config";
 import { Redis } from '@upstash/redis';
-
-
 import { addAction } from "../../pages/api/actions/add";
 import Market from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 import { getTagsForToken } from "../../pages/api/tags";
@@ -24,7 +21,7 @@ export const tokenDelisted = async (
 ): Promise<boolean> => {
     console.log(`tokenDelisted - processing tx`);
 
-    const contract = new ethers.Contract(nftmarketaddress, Market.abi, provider);
+    const contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
 
     const log: ethers.utils.LogDescription = contract.interface.parseLog(txReceipt.logs?.[0]);
     

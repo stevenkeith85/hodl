@@ -5,7 +5,6 @@ import apiRoute from '../handler';
 import { Redis } from '@upstash/redis';
 import { getProvider } from "../../../lib/server/connections";
 import { ethers } from "ethers";
-import { nftaddress } from "../../../../config";
 import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 dotenv.config({ path: '../.env' })
 
@@ -30,7 +29,7 @@ route.get(async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   const provider = await getProvider();
-  const tokenContract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
+  const tokenContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, HodlNFT.abi, provider);
   const tokenExists = await tokenContract.exists(token);
   if (!tokenExists) { 
     return res.status(400).json({ message: 'Bad Request' });

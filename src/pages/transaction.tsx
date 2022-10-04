@@ -8,6 +8,7 @@ import Head from "next/head";
 import { SuccessModal } from "../components/modals/SuccessModal";
 import { FailureModal } from "../components/modals/FailureModal";
 import { validTxHashFormat } from "../lib/utils";
+import { getUser } from "./api/user/[handle]";
 
 
 export async function getServerSideProps({ req, res }) {
@@ -17,14 +18,17 @@ export async function getServerSideProps({ req, res }) {
         return { notFound: true }
     }
 
+    const user = await getUser(req?.address, req?.address, true);
+
     return {
         props: {
             address: req.address || null,
+            user
         }
     }
 }
 
-export default function Transaction({ address }) {
+export default function Transaction({ address, user }) {
     const [hash, setHash] = useState('');
 
     const [successModalOpen, setSuccessModalOpen] = useState(false);
@@ -104,17 +108,51 @@ export default function Transaction({ address }) {
                                 padding: 1,
                             }}
                         >
-                            Do not use this form unless instructed to by support
+                            Do NOT use this form unless instructed to by support
                         </Alert>
                         <Typography mb={2} sx={{ fontSize: 20, fontWeight: 600 }}>
-                            Re-Queue Transaction
+                            Re-Queue a Missed Transaction
                         </Typography>
-                        <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16, span: { fontStyle: 'italic' } }}>
-                            <span>Occassionally</span> your transaction succeeds on the blockchain, but the service to update our website fails.
-                        </Typography>
-                        <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
-                            If that happens, you can re-queue your transaction with this form
-                        </Typography>
+                        <Box sx={{ paddingY: 2 }}>
+                            <Typography sx={{ fontWeight: 600, fontSize: 20, color: 'red' }}>READ CAREFULLY</Typography>
+                        </Box>
+                        <Box sx={{ paddingY: 2 }}>
+                            <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16, span: { fontStyle: 'italic', fontWeight: 600 } }}>
+                                <span>Occassionally</span> your transaction succeeds on the blockchain, but the service to update our website fails.
+                            </Typography>
+                            <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
+                                If that happens, you can re-queue your transaction with this form.
+                            </Typography>
+                        </Box>
+                        <Box sx={{ paddingY: 2 }}>
+                            <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
+                                Missed transactions MUST be submitted in the correct order.
+                            </Typography>
+                            <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
+                                You should WAIT for a notification that a missed transaction has been correctly handled BEFORE queuing a second one.
+                            </Typography>
+                            <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
+                                (Contact support again if you do not receive the notification in a reasonable time frame.)
+                            </Typography>
+                        </Box>
+                        <Box sx={{ paddingY: 2 }}>
+                            <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
+                                The last nonce (unique identifier) we have successfully processed from your wallet was: {user?.nonce}
+                            </Typography>
+                            <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
+                                You should submit the first transaction (to our contract) with a nonce value GREATER than {user?.nonce}
+                            </Typography>
+                        </Box>
+                        <Box sx={{ paddingY: 2 }}>
+                            <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
+                                You can get your transaction ID (and check the nonce value) in Metamask. See the link below:
+                            </Typography>
+                            <Link target={"_blank"} href="https://metamask.zendesk.com/hc/en-us/articles/4413442094235-How-to-find-a-transaction-ID">
+                                <Typography color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
+                                    How do I find my Transaction ID ?
+                                </Typography>
+                            </Link>
+                        </Box>
                         <Box
                             component="form"
                             sx={{
@@ -131,7 +169,7 @@ export default function Transaction({ address }) {
                                         id="tx"
                                         value={hash}
                                         onChange={e => setHash(e.target.value)}
-                                        label="Tx Hash"
+                                        label="Transaction ID (Hash)"
                                     />
                                 </Box>
                                 <Box>
@@ -143,11 +181,6 @@ export default function Transaction({ address }) {
                                     </Button>
                                 </Box>
                             </Box>
-                            <Link target={"_blank"} href="https://metamask.zendesk.com/hc/en-us/articles/4413442094235-How-to-find-a-transaction-ID">
-                                <Typography color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
-                                    How do I find my transaction hash?
-                                </Typography>
-                            </Link>
                         </Box>
                     </Box>
                 </HodlBorderedBox>

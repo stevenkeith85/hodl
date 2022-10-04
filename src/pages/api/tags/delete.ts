@@ -1,10 +1,8 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
-
 import { getProvider } from "../../../lib/server/connections";
 import { ethers } from "ethers";
-import { nftaddress, nftmarketaddress } from "../../../../config";
 import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import HodlMarket from '../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 
@@ -39,7 +37,7 @@ route.delete(async (req, res: NextApiResponse) => {
   }
 
   const provider = await getProvider();
-  const tokenContract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
+  const tokenContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, HodlNFT.abi, provider);
 
   const tokenExists = await tokenContract.exists(token);
   if (!tokenExists) { 
@@ -49,7 +47,7 @@ route.delete(async (req, res: NextApiResponse) => {
   // Owner (when not listed) or Seller (when listed) can modify tags
   const owner = await tokenContract.ownerOf(token);
 
-  const marketContract = new ethers.Contract(nftmarketaddress, HodlMarket.abi, provider);
+  const marketContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, HodlMarket.abi, provider);
   const marketItem = await marketContract.getListing(token);
   const seller = marketItem.seller;
 

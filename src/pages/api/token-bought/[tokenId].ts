@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { ethers, BigNumber } from 'ethers'
 import dotenv from 'dotenv'
 import { getNickname } from "../profile/nickname";
-import { nftmarketaddress } from "../../../../config";
 import { getProvider } from "../../../lib/server/connections";
 import Market from '../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 import apiRoute from '../handler';
@@ -13,7 +12,7 @@ dotenv.config({ path: '../.env' })
 export const getPriceHistory = async (tokenId) : Promise<PriceHistory []>  => {
   const provider = await getProvider();
 
-  const marketContract = new ethers.Contract(nftmarketaddress, Market.abi, provider);
+  const marketContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
   const tokenFilter = marketContract.filters.TokenBought(null, null, BigNumber.from(tokenId));
   const txs = await marketContract.queryFilter(tokenFilter, 0, "latest");
 

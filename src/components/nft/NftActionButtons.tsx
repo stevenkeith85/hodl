@@ -103,7 +103,7 @@ export const NftActionButtons = ({ nft }) => {
                             onClick={async () => {
                                 try {
                                     enqueueSnackbar(
-                                        'Please approve the transaction in Metamask',
+                                        'Please confirm the transaction in Metamask',
                                         {
                                             // @ts-ignore
                                             variant: "hodlsnackbar",
@@ -131,7 +131,7 @@ export const NftActionButtons = ({ nft }) => {
                                         onClick={async () => {
                                             try {
                                                 enqueueSnackbar(
-                                                    'Please approve the transaction in Metamask',
+                                                    'Please confirm the transaction in MetaMask',
                                                     {
                                                         // @ts-ignore
                                                         variant: "hodlsnackbar",

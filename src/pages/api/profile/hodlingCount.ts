@@ -1,8 +1,6 @@
 import dotenv from 'dotenv'
 import apiRoute from "../handler";
-import memoize from 'memoizee';
 import { ethers } from 'ethers';
-import { nftaddress } from '../../../../config';
 import { getProvider } from '../../../lib/server/connections';
 import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 
@@ -10,7 +8,6 @@ dotenv.config({ path: '../.env' })
 
 const route = apiRoute();
 
-// TODO: Memoize / Cache ?
 export const getHodlingCount = async address => {
   if (!address) {
     return null;
@@ -18,7 +15,7 @@ export const getHodlingCount = async address => {
 
   try {
     const provider = await getProvider();
-    const tokenContract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
+    const tokenContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, HodlNFT.abi, provider);
     const result = await tokenContract.balanceOf(address);
     return Number(result);
   } catch (e) {

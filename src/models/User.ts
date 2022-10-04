@@ -20,4 +20,5 @@ export interface UserViewModel {
     avatar: Token;
     followedByViewer: boolean;
     followsViewer: boolean;
+    nonce?: number;
 }

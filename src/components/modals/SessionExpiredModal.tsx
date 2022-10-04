@@ -16,7 +16,7 @@ export const SessionExpiredModal = ({ modalOpen, setModalOpen }) => {
           Sorry, your session has timed out.
         </Typography>
         <Typography sx={{ fontSize: '18px', color: theme => theme.palette.text.secondary }}>
-          You will need to log in again with Metamask
+          You will need to log in again with MetaMask
         </Typography>
         <Box>
           <Button

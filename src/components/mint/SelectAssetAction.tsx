@@ -4,7 +4,6 @@ import { useCloudinaryUpload } from "../../hooks/useCloudinaryUpload";
 import { MintProps } from "./models";
 import { Form, Formik } from "formik";
 import { HodlDropzone } from "../formFields/HodlDropZone";
-import calculateAspectRatios from 'calculate-aspect-ratio';
 
 export const SelectAssetAction: FC<MintProps> = ({
   setLoading,
@@ -12,18 +11,10 @@ export const SelectAssetAction: FC<MintProps> = ({
   setFormData,
   setStepComplete
 }: MintProps) => {
-  const [uploadToCloudinary, progress] = useCloudinaryUpload();
+  const [uploadToCloudinary] = useCloudinaryUpload();
 
   const cloudinaryUpload = useCallback(async (file) => {
     setLoading(true);
-
-    enqueueSnackbar(
-      `Large files may take some time`,
-      {
-        // @ts-ignore
-        variant: "hodlsnackbar",
-        type: "info"
-      });
 
     const { success, fileName, mimeType } = await uploadToCloudinary(file);
 
@@ -31,11 +22,12 @@ export const SelectAssetAction: FC<MintProps> = ({
       setFormData(prev => ({
         ...prev,
         fileName,
-        mimeType
+        mimeType,
+        // TODO - We should probably reset the aspect ratio if the user changes the asset. Need to check how this will affect videos first though
+        // aspectRatio: null 
       }))
 
       setStepComplete(0);
-      setLoading(false);
     } else {
       setLoading(false);
     }
@@ -66,7 +58,7 @@ export const SelectAssetAction: FC<MintProps> = ({
     >
       {() => (
         <Form>
-          <HodlDropzone onDrop={onDrop} progress={progress} />
+          <HodlDropzone onDrop={onDrop} />
         </Form>
       )}
     </Formik>

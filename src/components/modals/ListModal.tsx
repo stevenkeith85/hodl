@@ -30,8 +30,12 @@ export const ListModal = ({ listModalOpen, setListModalOpen, setListedModalOpen,
             open={listModalOpen}
             setOpen={setListModalOpen}
         >
-            <Box display="grid" gap={3} textAlign="center">
-                <Typography variant="h2" sx={{ fontSize: '18px', fontWeight: 600 }}>List your NFT</Typography>
+            <Box 
+                display="grid" 
+                gap={4} 
+                textAlign="center"
+                >
+                <Typography variant="h2" sx={{ fontSize: '18px', fontWeight: 600 }}>List Your Token</Typography>
                 <TextField
                     label="Price (in Matic)"
                     value={price}
@@ -49,7 +53,7 @@ export const ListModal = ({ listModalOpen, setListModalOpen, setListedModalOpen,
                         onClick={async () => {
                             try {
                                 enqueueSnackbar(
-                                    'Please approve the transaction in Metamask', 
+                                    'Please confirm the transaction in MetaMask',
                                 { 
                                     // @ts-ignore
                                     variant: "hodlsnackbar",

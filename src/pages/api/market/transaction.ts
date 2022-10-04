@@ -1,17 +1,10 @@
 import { NextApiResponse } from "next";
-import cookie from 'cookie'
 import apiRoute from "../handler";
-
 import { getProvider } from "../../../lib/server/connections";
-import { nftaddress, nftmarketaddress } from "../../../../config";
-
 import { Redis } from '@upstash/redis';
 import { getAsString, validTxHashFormat } from "../../../lib/utils";
-
 import axios from 'axios';
 import { User } from "../../../models/User";
-
-import { QueueClient } from "@serverlessq/nextjs/dist/queue/queue-client";
 
 const route = apiRoute();
 const client = Redis.fromEnv()
@@ -51,7 +44,9 @@ route.post(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'bad request' });
   }
 
-  if (tx.to !== nftmarketaddress && tx.to !== nftaddress) {
+  if (
+    tx.to !== process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS && 
+    tx.to !== process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS) {
     console.log(`queue/transaction - user trying to process a transaction that isn't for our contract`);
     return res.status(400).json({ message: 'bad request' });
   }
@@ -66,14 +61,6 @@ route.post(async (req, res: NextApiResponse) => {
     console.log(`queue/transaction - user trying to process a transaction that is older than the last one we've sent for processing`);
     return res.status(400).json({ message: 'bad request' });
   }
-
-  // // Create or get the users tx queue
-  // // TODO: If this is a little slow, we could just do it at login and store the queue id in the user hash
-  // const queueClient = new QueueClient();
-  // const queue = await queueClient.createOrGetQueue(`tx:${req.address}`);
-
-  // console.log('market/transaction - created queue', JSON.stringify(queue, null, 2))
-
 
   const handlerPath = `api/blockchain/transaction`;
   const url = `https://api.serverlessq.com?id=${user?.txQueueId}&target=${process.env.MESSAGE_HANDLER_HOST}/${handlerPath}`;
@@ -95,6 +82,7 @@ route.post(async (req, res: NextApiResponse) => {
     );
   } catch (error) {
     console.log("queue/transaction", error)
+    return res.status(500).json({ message: 'could not add to queue' });
   }
 
   return res.status(202).json({ message: 'accepted' });

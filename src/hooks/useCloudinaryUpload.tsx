@@ -1,15 +1,14 @@
 import { useRef, useState } from 'react';
 import axios from 'axios'
 
-export const useCloudinaryUpload = (): [Function, number, string, Function] => {
+export const useCloudinaryUpload = (): [Function, string, Function] => {
   const previousFileName = useRef(null);
   const previousMimeType = useRef(null);
 
   const [error, setError] = useState('');
-  const [progress, setProgress] = useState(0);
+
 
   const uploadToCloudinary = async (asset) => {
-    setProgress(0);
     const data = new FormData();
     data.append('asset', asset);
 
@@ -28,13 +27,8 @@ export const useCloudinaryUpload = (): [Function, number, string, Function] => {
         {
           headers: {
             'Accept': 'application/json',
+            'Accept-Encoding': 'gzip',
           },
-          onUploadProgress: progress => {
-            if (!progress.lenthComputable) {
-              setProgress(null);
-            }
-            setProgress(Math.floor(progress.loaded / progress.total * 100))
-          }
         }
       )
       const { fileName, mimeType } = r.data;
@@ -53,5 +47,5 @@ export const useCloudinaryUpload = (): [Function, number, string, Function] => {
     }
   }
 
-  return [uploadToCloudinary, progress, error, setError];
+  return [uploadToCloudinary, error, setError];
 }

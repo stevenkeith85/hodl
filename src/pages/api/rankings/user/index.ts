@@ -31,7 +31,7 @@ export const getMostFollowedUsers = async (
   if (offset >= total) {
     return {
       items: [],
-      next: Number(total),
+      next: Number(offset) + Number(limit),
       total: Number(total)
     };
   }
@@ -42,7 +42,7 @@ export const getMostFollowedUsers = async (
   
   return {
     items: users,
-    next: Number(offset) + Number(addresses.length),
+    next: Number(offset) + Number(limit),
     total: Number(total)
   };
 }

@@ -34,7 +34,7 @@ export const getNewUsers = async (
   if (offset >= total) {
     return {
       items: [],
-      next: Number(total),
+      next: Number(offset) + Number(limit),
       total: Number(total)
     };
   }
@@ -45,7 +45,7 @@ export const getNewUsers = async (
   
   return {
     items: users,
-    next: Number(offset) + Number(addresses.length),
+    next: Number(offset) + Number(limit),
     total: Number(total)
   };
 }

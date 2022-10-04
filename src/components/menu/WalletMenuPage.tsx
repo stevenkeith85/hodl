@@ -130,9 +130,9 @@ export const WalletMenuPage: React.FC<WalletMenuPageProps> = ({
                             flexDirection="column"
                             gap={3}
                         >
-                            <Typography sx={{ fontSize: 16 }}>Connect with Metamask</Typography>
+                            <Typography sx={{ fontSize: 16 }}>Connect with MetaMask</Typography>
                             <Typography sx={{ color: theme => theme.palette.text.secondary }}>
-                                Don&apos;t have Metamask? Get it <Link href="https://metamask.io/download/">here</Link>
+                                Don&apos;t have MetaMask? Get it <Link href="https://metamask.io/download/">here</Link>
                             </Typography>
                             
                             <Box>

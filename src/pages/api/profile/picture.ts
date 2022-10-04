@@ -2,7 +2,6 @@ import { NextApiResponse } from "next"
 import dotenv from 'dotenv'
 import { ethers } from "ethers"
 import apiRoute from "../handler";
-import { nftaddress, nftmarketaddress } from "../../../../config"
 import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import HodlMarket from '../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 import { getProvider } from "../../../lib/server/connections"
@@ -18,14 +17,14 @@ const isOwnerOrSeller = async (token, address) => {
   const provider = await getProvider();
 
   try {
-    const tokenContract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
+    const tokenContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, HodlNFT.abi, provider);
     const tokenExists = await tokenContract.exists(token);
     
     if (!tokenExists) {
       return false;
     }
 
-    const marketContract = new ethers.Contract(nftmarketaddress, HodlMarket.abi, provider);
+    const marketContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, HodlMarket.abi, provider);
 
     const owner = await tokenContract.ownerOf(token);
     const marketItem = await marketContract.getListing(token);
@@ -39,7 +38,6 @@ const isOwnerOrSeller = async (token, address) => {
 }
 
 const getProfilePicture = memoize(async (address) => {
-  // console.log("CALLING REDIS TO GET PROFILE PIC FOR ADDRESS", address);
   const token = await client.hget(`user:${address}`, 'avatar');
   return token;
 }, {

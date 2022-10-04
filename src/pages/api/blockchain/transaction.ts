@@ -1,11 +1,7 @@
 import { NextApiResponse } from "next";
-
 import apiRoute from "../handler";
-
 import { ethers } from "ethers";
 import { getProvider } from "../../../lib/server/connections";
-import { nftaddress, nftmarketaddress } from "../../../../config";
-
 import Market from '../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 import { Redis } from '@upstash/redis';
 import { NUMBER_OF_CONFIRMATIONS_TO_WAIT_FOR, TRANSACTION_TIMEOUT, validTxHashFormat } from "../../../lib/utils";
@@ -108,8 +104,8 @@ route.post(async (req, res: NextApiResponse) => {
         return res.status(400).json({ message: 'bad request' });
     }
 
-    if (txReceipt.to !== nftmarketaddress &&
-        txReceipt.to !== nftaddress) {
+    if (txReceipt.to !== process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS &&
+        txReceipt.to !== process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS) {
         console.log(`blockchain/transaction - endpoint called with a transaction that isn't for our contracts`);
         return res.status(400).json({ message: 'bad request' });
     }
@@ -136,12 +132,11 @@ route.post(async (req, res: NextApiResponse) => {
     // console.log('blockchain/transaction - transaction details');
     // await transactionDetails(hash, provider, txReceipt, tx);
 
-    // TODO: Review / improve the dispatcher code
     let contract = null;
-    if (txReceipt.to === nftmarketaddress) {
-        contract = new ethers.Contract(nftmarketaddress, Market.abi, provider);
-    } else if (txReceipt.to === nftaddress) {
-        contract = new ethers.Contract(nftaddress, NFT.abi, provider);
+    if (txReceipt.to === process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS) {
+        contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
+    } else if (txReceipt.to === process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS) {
+        contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, provider);
     }
 
     const log: LogDescription = contract.interface.parseLog(txReceipt.logs?.[0]);
@@ -158,7 +153,8 @@ route.post(async (req, res: NextApiResponse) => {
         success = await tokenMinted(hash, provider, txReceipt, tx);
     }
 
-    // TODO: Perhaps we should log what transactions were processed, at what time and whether they were successful
+    // TODO: Perhaps we should log what transactions were processed, 
+    // at what time and whether they were successful
     // Should be helpful if we get support requests
     if (success) {
         console.log('blockchain/transaction - successfully processed transaction - updating nonce');

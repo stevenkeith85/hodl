@@ -70,24 +70,25 @@ export const getActions = async (
   
   const total = await client.zcard(`user:${address}:${set}`);
 
+  // ZRANGE: Out of range indexes do not produce an error.
+  // So we need to check here and return if we are about to do an out of range search
   if (offset >= total) {
     return {
       items: [],
-      next: Number(total),
+      next: Number(offset) + Number(limit),
       total: Number(total)
     };
   }
 
   const actionIds : string [] = await client.zrange(`user:${address}:${set}`, offset, offset + limit - 1, { rev: true });
 
-  // The actions don't depend on each other, so we can do this async
   const actionPromises = actionIds.map(id => getAction(id, address));
 
   const actions: HodlActionViewModel[] = await Promise.all(actionPromises);
 
   return {
     items: actions,
-    next: Number(offset) + Number(actions.length),
+    next: Number(offset) + Number(limit),
     total: Number(total)
   };
 }

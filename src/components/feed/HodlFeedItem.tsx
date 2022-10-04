@@ -132,7 +132,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                                 fontFamily: theme => theme.logo.fontFamily,
                                                 color: theme => theme.palette.primary.main
                                             }}>
-                                            new
+                                            minted
                                         </Box>
                                     }
                                 </Box>

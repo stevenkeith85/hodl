@@ -1,20 +1,18 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
-
+// import dotenv from 'dotenv'
 import { getProvider } from "../../../lib/server/connections";
 import { ethers } from "ethers";
-import { nftaddress, nftmarketaddress } from "../../../../config";
 import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import HodlMarket from '../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
-
-const client = Redis.fromEnv()
 import apiRoute from "../handler";
 import { AddTagValidationSchema } from "../../../validation/addTag";
 import { MAX_TAGS_PER_TOKEN } from "../../../lib/utils";
 import { trimZSet } from "../../../lib/databaseUtils";
 
-dotenv.config({ path: '../.env' })
+// dotenv.config({ path: '../.env' })
+
+const client = Redis.fromEnv()
 const route = apiRoute();
 
 // TODO: Use setnx etc where possible, and return the value
@@ -75,7 +73,7 @@ route.post(async (req, res: NextApiResponse) => {
   }
 
   const provider = await getProvider();
-  const tokenContract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
+  const tokenContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, HodlNFT.abi, provider);
   const tokenExists = await tokenContract.exists(token);
   if (!tokenExists) {
     return res.status(400).json({ message: 'Bad Request' });
@@ -84,7 +82,7 @@ route.post(async (req, res: NextApiResponse) => {
   // Owner (when not listed) or Seller (when listed) can modify tags
   const owner = await tokenContract.ownerOf(token);
 
-  const marketContract = new ethers.Contract(nftmarketaddress, HodlMarket.abi, provider);
+  const marketContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, HodlMarket.abi, provider);
   const marketItem = await marketContract.getListing(token);
   const seller = marketItem.seller;
 

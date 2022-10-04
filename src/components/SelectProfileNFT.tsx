@@ -1,4 +1,4 @@
-import { Box, imageListItemClasses, ImageListItem, Typography } from '@mui/material'
+import { Box, imageListItemClasses, ImageListItem } from '@mui/material'
 import { AssetThumbnail } from './AssetThumbnail';
 
 interface SelectProfileNFTProps {
@@ -30,7 +30,9 @@ const SelectProfileNFT = ({ nfts, onClick, selectedTokenId }: SelectProfileNFTPr
                     <Box
                         sx={{
                             lineHeight: 0,
-                            border: selectedTokenId === nft?.id ? theme => `2px solid ${theme.palette.secondary.main}` : "2px solid transparent"
+                            border: selectedTokenId === nft?.id ?
+                                theme => `2px solid ${theme.palette.secondary.main}` :
+                                "2px solid transparent"
                         }}
                     >
                         <AssetThumbnail token={nft} size={90} />

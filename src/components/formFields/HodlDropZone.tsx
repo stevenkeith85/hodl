@@ -3,7 +3,7 @@ import { Box, Button, Typography } from '@mui/material'
 import React from 'react'
 import { useDropzone } from 'react-dropzone'
 
-export const HodlDropzone = ({ onDrop, progress }) => {
+export const HodlDropzone = ({ onDrop }) => {
     const validator = file => {
         if (file.type.indexOf("image") !== -1 && file.size > 10 * 1024 * 1024 ) {
             return  {

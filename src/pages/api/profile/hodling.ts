@@ -1,7 +1,6 @@
 import dotenv from 'dotenv'
 import { ethers } from 'ethers';
 import { getProvider } from '../../../lib/server/connections';
-import { nftaddress } from '../../../../config';
 import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import apiRoute from '../handler';
 import { getToken } from '../token/[tokenId]';
@@ -14,7 +13,7 @@ dotenv.config({ path: '../.env' })
 // TODO: We may read more data from Redis in future if we can set up a decent blockchain/redis cache mechanism
 const addressToTokenIds = async (address, offset, limit) => {
     const provider = await getProvider();
-    const tokenContract = new ethers.Contract(nftaddress, HodlNFT.abi, provider);
+    const tokenContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, HodlNFT.abi, provider);
     const result = await tokenContract.addressToTokenIds(address, offset, limit);
     return result;
 }

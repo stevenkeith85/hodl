@@ -35,7 +35,7 @@ export const getNewTokens = async (
   if (offset >= total) {
     return {
       items: [],
-      next: Number(total),
+      next: Number(offset) + Number(limit),
       total: Number(total)
     };
   }
@@ -46,7 +46,7 @@ export const getNewTokens = async (
 
   return {
     items: tokens,
-    next: Number(offset) + Number(ids.length),
+    next: Number(offset) + Number(limit),
     total: Number(total)
   };
 }

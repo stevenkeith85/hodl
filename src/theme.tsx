@@ -23,10 +23,8 @@ let theme = createTheme({
   palette: {
     primary: {
       main: "#05778A",
-      // main: indigo[500]
     },
     secondary: {
-      // main: "#C51162"
       main: '#ec4899',
     },
   },
@@ -53,9 +51,6 @@ let theme = createTheme({
     body2: {
       fontSize: 14,
     },
-    // a: {
-    //   textDecoration: 'none'
-    // }
   },
   breakpoints: {
     values: {
@@ -71,7 +66,6 @@ let theme = createTheme({
       styleOverrides: {
         root: {
           textDecoration: 'none',
-          // color: 'rgba(0,0,0,0.87);'
         }
       }
     },
@@ -84,19 +78,10 @@ let theme = createTheme({
         root: {
           textTransform: 'none',
           padding: '5px 10px',
-          // borderRadius: '4px',
           boxShadow: 'none',
           '&:hover': {
             boxShadow: 'none',
           }
-        }
-      }
-    },
-    MuiBadge: {
-      styleOverrides: {
-        badge: {
-          // fontWeight: 600,
-          // fontSize: '14px'
         }
       }
     },
@@ -138,7 +123,6 @@ let theme = createTheme({
         root: ({ ownerState, theme }) => ({
           backgroundColor: 'rgba(0, 0, 0, 0.3)',
           ...(ownerState?.position === 'top' && {
-            // background: 'none',
             borderTopLeftRadius: 8,
             borderTopRightRadius: 8
           }),

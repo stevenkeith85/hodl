@@ -25,6 +25,7 @@ export const mintToken = async (url) => {
       }
     )
   } catch (e) {
-    console.log(e)
+    console.log(e);
+    throw e;
   }
 }

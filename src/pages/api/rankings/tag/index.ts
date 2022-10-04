@@ -30,7 +30,7 @@ export const getMostUsedTags = async (
   if (offset >= total) {
     return {
       items: [],
-      next: Number(total),
+      next: Number(offset) + Number(limit),
       total: Number(total)
     };
   }
@@ -39,7 +39,7 @@ export const getMostUsedTags = async (
 
   return {
     items: tags,
-    next: Number(offset) + Number(tags.length),
+    next: Number(offset) + Number(limit),
     total: Number(total)
   };
 }

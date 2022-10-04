@@ -14,14 +14,14 @@ dotenv.config({ path: '../.env' })
 // TODO: This isn't being used yet; but we'd like to adapt it for the search bar
 // Pretty basic at the moment. We'll just return the newest users.
 // We should at least allow a lookup by nickname/address though. ideally a partial match
-export const getUserSearchResults = async (q: string | null, offset: number, limit: number, viewer=null) => {
+export const getUserSearchResults = async (q: string | null, offset: number, limit: number, viewer = null) => {
     try {
         const total = await client.zcard(`users`);
 
         if (offset >= total) {
             return {
                 items: [],
-                next: Number(total),
+                next: Number(offset) + Number(limit),
                 total: Number(total)
             };
         }
@@ -30,9 +30,17 @@ export const getUserSearchResults = async (q: string | null, offset: number, lim
         const promises = addresses.map(address => getUser(address, viewer));
         const users: UserViewModel[] = await Promise.all(promises);
 
-        return { items: users, next: Number(offset) + Number(addresses.length), total: Number(total) };
+        return {
+            items: users,
+            next: Number(offset) + Number(limit),
+            total: Number(total)
+        };
     } catch (e) {
-        return { items: [], next: 0, total: 0 };
+        return {
+            items: [],
+            next: 1,
+            total: 0
+        };
     }
 }
 
