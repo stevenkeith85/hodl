@@ -5,12 +5,9 @@ import { messageToSign } from "../../../lib/utils"
 import { ethers } from "ethers"
 import jwt from 'jsonwebtoken'
 import apiRoute from "../handler";
-import { getUuidForAddress } from "./uuid"
 import cookie from 'cookie'
 import { accessTokenExpiresIn, refreshTokenExpiresIn } from "../../../lib/jwt"
-import { User } from "../../../models/User"
 import { trimZSet } from "../../../lib/databaseUtils"
-import { createQueue } from "../queue"
 import { QueueClient } from "@serverlessq/nextjs/dist/queue/queue-client"
 
 dotenv.config({ path: '../.env' })

@@ -45,7 +45,7 @@ export const NftActionButtons = ({ nft }) => {
                         fontSize: 16,
                         color: theme => theme.palette.text.secondary
                     }}>
-                    When your transaction has been confirmed on the blockchain, we'll update our database and send you a notification.
+                    When your transaction has been confirmed on the blockchain, we&apos;ll update our database and send you a notification.
                 </Typography>
             </SuccessModal>
 
@@ -67,7 +67,7 @@ export const NftActionButtons = ({ nft }) => {
                         fontSize: 16,
                         color: theme => theme.palette.text.secondary
                     }}>
-                    When your transaction has been confirmed on the blockchain, we'll update our database and send you a notification.
+                    When your transaction has been confirmed on the blockchain, we&apos;ll update our database and send you a notification.
                 </Typography>
             </SuccessModal>
 
@@ -81,7 +81,7 @@ export const NftActionButtons = ({ nft }) => {
                         fontSize: 16,
                         color: theme => theme.palette.text.secondary
                     }}>
-                    When your transaction has been confirmed on the blockchain, we'll update our database and send you a notification.
+                    When your transaction has been confirmed on the blockchain, we&apos;ll update our database and send you a notification.
                 </Typography>
             </SuccessModal>
 

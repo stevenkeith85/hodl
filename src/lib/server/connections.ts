@@ -2,7 +2,7 @@ import { ethers } from 'ethers'
     
 export const getProvider = () => {
     // See https://docs.ethers.io/v5/api/providers/
-    if (process.env.LOCAL_BLOCKCHAIN_NODE) {
+    if (JSON.parse(process.env.LOCAL_BLOCKCHAIN_NODE)) {
         return ethers.getDefaultProvider(process.env.DEFAULT_PROVIDER_NETWORK);
     } else {
         const options = {

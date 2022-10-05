@@ -4,12 +4,12 @@ const fs = require('fs');
 const dotenv = require('dotenv');
 dotenv.config({ path: '.env.local' })
 
-const MarketProxy = JSON.parse(fs.readFileSync('./scripts/addresses.json')).HodlMarketProxy;
+const HodlMarketProxy = process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS;
 const MarketABI = JSON.parse(fs.readFileSync('artifacts/contracts/HodlMarket.sol/HodlMarket.json'));
 
 async function main() {
-  const ownerAccount = new ethers.Wallet(process.env.ACCOUNT0_PRIVATE_KEY, ethers.provider);
-  const marketContract = new ethers.Contract(MarketProxy, MarketABI.abi, ownerAccount);
+  const ownerAccount = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY, ethers.provider);
+  const marketContract = new ethers.Contract(HodlMarketProxy, MarketABI.abi, ownerAccount);
 
   console.log(await marketContract.owner());
 }

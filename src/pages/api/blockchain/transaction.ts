@@ -139,7 +139,17 @@ route.post(async (req, res: NextApiResponse) => {
         contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, provider);
     }
 
-    const log: LogDescription = contract.interface.parseLog(txReceipt.logs?.[0]);
+    // if theres logs not in the ABI, then parseLog throws. we only care about logs in the ABI though.
+    const parsedLogs = [];
+    txReceipt.logs.forEach(log => {
+        try {
+            parsedLogs.push(contract.interface.parseLog(log));
+        } catch(e) {
+            console.log("skipped a log as its not in the ABI")
+        }
+    });
+
+    const log: LogDescription = parsedLogs[0];
 
     let success = false;
 
@@ -150,7 +160,7 @@ route.post(async (req, res: NextApiResponse) => {
     } else if (log.name === 'TokenBought') {
         success = await tokenBought(hash, provider, txReceipt, tx);
     } else if (log.name === 'Transfer') {
-        success = await tokenMinted(hash, provider, txReceipt, tx);
+        success = await tokenMinted(hash, provider, txReceipt, tx, log);
     }
 
     // TODO: Perhaps we should log what transactions were processed, 

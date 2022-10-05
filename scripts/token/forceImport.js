@@ -1,13 +1,12 @@
 const { ethers, upgrades } = require("hardhat");
-const fs = require('fs');
 
 const dotenv = require('dotenv');
 dotenv.config({ path: '.env.local' })
 
-const HodlNFTProxy = JSON.parse(fs.readFileSync('./scripts/addresses.json')).HodlNFTProxy;
+const HodlNFTProxy = process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS;
 
 async function main() {
-  const ownerAccount = new ethers.Wallet(process.env.ACCOUNT0_PRIVATE_KEY, ethers.provider);
+  const ownerAccount = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY, ethers.provider);
   const HodlNFTFactoryNew = await ethers.getContractFactory("HodlNFT", ownerAccount);
   await upgrades.forceImport(HodlNFTProxy, HodlNFTFactoryNew);
 }

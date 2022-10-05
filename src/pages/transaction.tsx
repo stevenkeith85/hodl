@@ -73,7 +73,7 @@ export default function Transaction({ address, user }) {
                         fontSize: 16,
                         color: theme => theme.palette.text.secondary
                     }}>
-                    When your transaction has been confirmed on the blockchain, we'll update our database and send you a notification.
+                    When your transaction has been confirmed on the blockchain, we&pos;ll update our database and send you a notification.
                 </Typography>
             </SuccessModal>
             <FailureModal

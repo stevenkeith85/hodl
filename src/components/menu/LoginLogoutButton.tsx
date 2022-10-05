@@ -45,13 +45,13 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
                     onClick={async e => {
                         e.stopPropagation();
 
-                        if (isMobileDevice()) {
-                            connectMobile();
-                        } else {
+                        // if (isMobileDevice()) {
+                        //     connectMobile();
+                        // } else {
                             
                             await connect(false);
                             router.push(router.asPath);
-                        }
+                        // }
                     }}
                     startIcon={<AccountBalanceWallet />}
                 >Connect</Button>}

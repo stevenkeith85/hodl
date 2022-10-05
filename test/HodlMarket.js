@@ -3,7 +3,7 @@ const { upgrades, ethers } = require("hardhat");
 const { BigNumber } = require("ethers");
 
 const path = require('path')
-require('dotenv').config({ path: path.resolve(__dirname, '../.env.local') })
+require('dotenv').config({ path: path.resolve(__dirname, '../.env.test.local') })
 
 
 describe("HodlMarket Contract", function () {
@@ -842,7 +842,7 @@ describe("HodlMarket Contract", function () {
             expect(await hodlNFTAsUser.ownerOf(BigNumber.from(1))).to.equal(process.env.ACCOUNT1_PUBLIC_KEY)
         });
 
-        it.only("The market needs to be approved AFTER a sale; so that relisting can occur", async function () {
+        it("The market needs to be approved AFTER a sale; so that relisting can occur", async function () {
             const tokenUri = "ipfs://123456"
             
             let tx = await hodlNFTAsUser.createToken(tokenUri, { value: mintFee });

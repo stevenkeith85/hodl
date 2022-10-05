@@ -15,6 +15,7 @@ import { addTokenToTag } from "../../pages/api/tags/add";
 import { addAction } from "../../pages/api/actions/add";
 import { HodlMetadata } from "../../models/Metadata";
 import { trimZSet } from "../databaseUtils";
+import { LogDescription } from "ethers/lib/utils";
 
 const client = Redis.fromEnv()
 
@@ -25,15 +26,12 @@ export const tokenMinted = async (
     hash: string, // check valid address?
     provider: ethers.providers.BaseProvider,
     txReceipt: ethers.providers.TransactionReceipt,
-    tx: ethers.providers.TransactionResponse
+    tx: ethers.providers.TransactionResponse,
+    log: LogDescription
 ): Promise<boolean> => {
     console.log(`tokenMinted - processing tx`);
 
-    const contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, provider);
-
     // event Transfer(address from, address to, uint256 tokenId)
-    const log: ethers.utils.LogDescription = contract.interface.parseLog(txReceipt.logs?.[0]);
-
     const { from, to, tokenId } = log.args;
 
     // some basic sanity checks
@@ -52,6 +50,7 @@ export const tokenMinted = async (
         return false;
     }
 
+    const contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, provider);
     const metadataUrl: string = await contract.tokenURI(tokenId);
 
     if (!metadataUrl) {

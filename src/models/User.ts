@@ -11,6 +11,8 @@ export type User = {
     uuid?: string; // a random number to make the message to sign unique. 
 
     nonce?: number; // the last transaction that we processed from this user. nonce is unique to each address. you can see it in metamask, and it is logged on the blockchain
+
+    txQueueId: number;
 }
 
 // For the UI

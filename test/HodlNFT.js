@@ -4,7 +4,7 @@ const { BigNumber } = require("ethers");
 const fs = require('fs');
 const { getImplementationAddress } = require('@openzeppelin/upgrades-core');
 const path = require('path')
-require('dotenv').config({ path: path.resolve(__dirname, '../.env.local') })
+require('dotenv').config({ path: path.resolve(__dirname, '../.env.test.local') })
 
 
 describe("HodlNft Contract", function () {

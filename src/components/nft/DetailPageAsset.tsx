@@ -40,7 +40,6 @@ export const DetailPageAsset: React.FC<DetailPageAssetProps> = ({ token }) => {
                                 }
                             }}
                             cid={token?.properties?.asset?.uri}
-                            objectFit="scale-down"
                             assetFolder="image"
                             gif={true}
                         />
@@ -80,7 +79,6 @@ export const DetailPageAsset: React.FC<DetailPageAssetProps> = ({ token }) => {
                             cid={token?.properties?.asset?.uri}
                             assetFolder="image"
                             gif={true}
-                            videoWidth="auto"
                         />
                     }
                 </Box>
@@ -100,7 +98,6 @@ export const DetailPageAsset: React.FC<DetailPageAssetProps> = ({ token }) => {
                         <HodlVideo
                             cid={token?.properties?.asset?.uri}
                             height={'auto'}
-                            videoWidth="auto"
                         />
                     }
                 </Box>

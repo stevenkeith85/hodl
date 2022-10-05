@@ -29,7 +29,6 @@ export const FilterAssetAction: FC<FilterAssetActionProps> = ({
       alignItems="center"
       justifyContent="center"
       textAlign="center"
-      height="550px"
       gap={4}
     >
       <FilterButtons 

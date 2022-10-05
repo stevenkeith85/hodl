@@ -12,7 +12,8 @@ dotenv.config({ path: '../.env' })
 // The get hodling / get listed functionality should work fairly similar
 // TODO: We may read more data from Redis in future if we can set up a decent blockchain/redis cache mechanism
 const addressToTokenIds = async (address, offset, limit) => {
-    const provider = await getProvider();
+    console.log('api/profile/hodling - called')
+    const provider = getProvider();
     const tokenContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, HodlNFT.abi, provider);
     const result = await tokenContract.addressToTokenIds(address, offset, limit);
     return result;

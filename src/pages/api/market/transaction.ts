@@ -62,6 +62,11 @@ route.post(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'bad request' });
   }
 
+  // TODO: Figure out why this wasn't set; and make robust
+  if (!user?.txQueueId) {
+    return res.status(500).json({ message: 'internal server error' });
+  }
+
   const handlerPath = `api/blockchain/transaction`;
   const url = `https://api.serverlessq.com?id=${user?.txQueueId}&target=${process.env.MESSAGE_HANDLER_HOST}/${handlerPath}`;
 

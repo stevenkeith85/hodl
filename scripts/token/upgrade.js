@@ -1,16 +1,15 @@
 const { ethers, upgrades } = require("hardhat");
 const { getImplementationAddress } = require('@openzeppelin/upgrades-core');
-const fs = require('fs');
 
 const dotenv = require('dotenv');
 dotenv.config({ path: '.env.local' })
 
-const HodlNFTProxy = JSON.parse(fs.readFileSync('./scripts/addresses.json')).HodlNFTProxy;
+const HodlNFTProxy = process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS;
 
 // This is cool! We won't have to update the address the FE uses except when we deploy the proxy.
 // Any upgrades will just update the implementation address (if required/i.e. there are changes)
 async function main() {
-  const ownerAccount = new ethers.Wallet(process.env.ACCOUNT0_PRIVATE_KEY, ethers.provider);
+  const ownerAccount = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY, ethers.provider);
 
   const HodlNFTFactoryNew = await ethers.getContractFactory("HodlNFT", ownerAccount);
 

@@ -47,6 +47,7 @@ export async function getServerSideProps({ params, query, req, res }) {
 
     const nft = await fetchNFT(params.tokenId);
 
+    console.log("pages/nft/[tokenId] - nft - ", nft);
     if (!nft) {
       return { notFound: true }
     }
@@ -63,17 +64,19 @@ export async function getServerSideProps({ params, query, req, res }) {
 
     // TODO: We might not prefetch these?; to speed up the initial load
     const pprefetchedComments = getCommentsForToken(comment ? "comment" : "token", comment ? comment : params.tokenId, 0, limit, !comment);
-    const ppriceHistory = getPriceHistory(params.tokenId);
+    // const ppriceHistory = getPriceHistory(params.tokenId);
 
     const [
       prefetchedComments,
       prefetchedCommentCount,
-      priceHistory,
-      prefetchedLikeCount] = await Promise.all([
-        pprefetchedComments,
-        pprefetchedCommentCount,
-        ppriceHistory,
-        pprefetchedLikeCount]);
+      // priceHistory,
+      prefetchedLikeCount
+    ] = await Promise.all([
+      pprefetchedComments,
+      pprefetchedCommentCount,
+      // ppriceHistory,
+      pprefetchedLikeCount
+    ]);
 
     return {
       props: {
@@ -83,14 +86,15 @@ export async function getServerSideProps({ params, query, req, res }) {
         limit,
         prefetchedComments: null,//[prefetchedComments],
         prefetchedCommentCount,
-        priceHistory,
+        // priceHistory,
         prefetchedLikeCount,
-        tab
-      },
+      tab
+    },
     }
   } catch (e) {
-    return { notFound: true }
-  }
+  console.log("pages/nft/[tokenId] - error - ", e);
+  return { notFound: true }
+}
 }
 
 const NftDetail = ({
@@ -100,7 +104,7 @@ const NftDetail = ({
   prefetchedComments,
   limit,
   prefetchedCommentCount,
-  priceHistory,
+  // priceHistory,
   prefetchedLikeCount,
   tab
 }) => {
@@ -228,7 +232,7 @@ const NftDetail = ({
                     <Typography sx={{ fontSize: '18px' }}>Not for Sale</Typography>}
                   <NftActionButtons nft={nft} />
                 </Box>
-                <PriceHistoryGraph fallbackData={priceHistory} nft={nft} />
+                {/* <PriceHistoryGraph fallbackData={priceHistory} nft={nft} /> */}
                 <OwnerCreatorCard token={nft} />
                 <AssetLicense nft={nft} />
                 <IpfsCard token={nft} />

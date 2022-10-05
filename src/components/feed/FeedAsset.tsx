@@ -5,7 +5,6 @@ import { HodlVideo } from "../HodlVideo";
 import { HodlImageResponsive } from "../HodlImageResponsive";
 import { Box } from "@mui/material";
 import { HodlAudioBox } from "../HodlAudioBox";
-import { MaticPrice } from "../MaticPrice";
 import { PriceSticker } from "../PriceSticker";
 
 
@@ -73,7 +72,6 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
                     <HodlVideo
                         cid={item.token?.properties?.asset?.uri}
                         controls={true}
-                        onlyPoster={false}
                     />
                 }
                 {

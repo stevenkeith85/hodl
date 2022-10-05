@@ -5,8 +5,7 @@ const dotenv = require('dotenv');
 dotenv.config({ path: '.env.local' })
 
 async function main() {
-  console.log('Deploying with ', process.env.ACCOUNT0_PRIVATE_KEY);
-  const ownerAccount = new ethers.Wallet(process.env.ACCOUNT0_PRIVATE_KEY, ethers.provider);
+  const ownerAccount = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY, ethers.provider);
 
   const HodlMarketFactory = await ethers.getContractFactory("HodlMarket", ownerAccount);
   const hodlMarketAsOwner = await upgrades.deployProxy(HodlMarketFactory, [], { initializer: 'initialize' })
