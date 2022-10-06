@@ -87,7 +87,7 @@ const Mint = ({ address }) => {
           <Grid
             container
           >
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={formData?.fileName ? 6 : 12}>
               <Box
                 sx={{
                   height: '100%',
@@ -150,7 +150,7 @@ const Mint = ({ address }) => {
                 }
               </Box>
             </Grid>
-            <Grid
+            { formData?.fileName && <Grid
               item
               xs={12}
               md={6}>
@@ -171,7 +171,7 @@ const Mint = ({ address }) => {
                   setLoading={setLoading}
                 />
               </Box>
-            </Grid>
+            </Grid>}
           </Grid>
           <HodlLoadingSpinner
             sx={{

@@ -34,23 +34,23 @@ export const HodlFeed = ({ address, limit = 4 }) => {
         <Box
             id="hodlfeed"
             sx={{
-                paddingX: {
-                    // xs: 4
-                },
+                // paddingX: {
+                //     // xs: 4
+                // },
 
-                paddingY: {
-                    xs: 4,
-                    sm: 4
-                },
+                // paddingY: {
+                //     xs: 4,
+                //     sm: 4
+                // },
 
-                paddingBottom: {
-                    xs: 0,
-                    sm: 4,
-                },
+                // paddingBottom: {
+                //     xs: 0,
+                //     sm: 4,
+                // },
 
-                alignItems: {
-                    xs: 'center',
-                },
+                // alignItems: {
+                //     xs: 'center',
+                // },
                 gap: {
                     xs: 4
                 }

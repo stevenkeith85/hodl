@@ -45,10 +45,7 @@ export const tokenMinted = async (
         return false;
     }
 
-    if (tx.value.isZero()) {
-        console.log('tokenMinted - no mint fee was paid - not adding');
-        return false;
-    }
+    // TODO: Check tx.value === mint fee at the time the transaction was submitted
 
     const contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, provider);
     const metadataUrl: string = await contract.tokenURI(tokenId);

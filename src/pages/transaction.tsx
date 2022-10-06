@@ -102,18 +102,20 @@ export default function Transaction({ address, user }) {
                                 justifyContent: 'center',
                                 alignItems: 'center',
                                 textAlign: 'center',
-                                margin: 4,
                                 fontWeight: 600,
-                                fontSize: 18,
+                                fontSize: {
+                                    xs: 14,
+                                    sm: 18
+                                },
                                 padding: 1,
                             }}
                         >
                             Do NOT use this form unless instructed to by support
                         </Alert>
-                        <Typography mb={2} sx={{ fontSize: 20, fontWeight: 600 }}>
+                        <Typography marginY={2} sx={{ fontSize: 20, fontWeight: 600 }}>
                             Re-Queue a Missed Transaction
                         </Typography>
-                        <Box sx={{ paddingY: 2 }}>
+                        <Box sx={{ paddingY: 1 }}>
                             <Typography sx={{ fontWeight: 600, fontSize: 20, color: 'red' }}>READ CAREFULLY</Typography>
                         </Box>
                         <Box sx={{ paddingY: 2 }}>

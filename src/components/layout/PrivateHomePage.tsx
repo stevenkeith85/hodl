@@ -84,7 +84,21 @@ export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address 
                 item xs={12}
                 md={7}
             >
-                <HodlFeed address={address} />
+                <Box
+                    sx={{
+                        marginY: 4,
+                        marginX: {
+                            xs: 2,
+                            sm: 4
+                        },
+                        marginBottom: {
+                            xs: 0,
+                            sm: 4
+                        },
+                    }}>
+                    <HodlFeed address={address} />
+                </Box>
+
             </Grid>
             <Grid
                 item
@@ -97,14 +111,14 @@ export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address 
                     sx={{
                         marginY: 4,
                         marginX: {
-                            lg: 8
+                            xs: 2,
+                            sm: 4
                         },
-                        gap: {
-                            xs: 6,
+                        marginTop: {
+                            xs: 0,
+                            sm: 4
                         },
-                        alignItems: {
-                            xs: 'center'
-                        }
+                        gap: 4,
                     }}
                 >
                     <HodlProfileBadge user={user} />

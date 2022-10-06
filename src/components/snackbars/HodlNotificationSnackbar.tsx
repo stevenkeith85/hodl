@@ -29,6 +29,7 @@ export const HodlNotificationSnackbar = React.forwardRef<HTMLDivElement, HodlNot
                     lastRead={0}
                     sx={{
                         width: '400px',
+                        maxWidth: '100%',
                         margin: 0
                     }} />
             </HodlBorderedBox>

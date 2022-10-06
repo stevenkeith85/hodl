@@ -112,9 +112,6 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
         });
     }, [setSigner]);
 
-
-    // const notificationsHoverBound = useRef(false)
-
     const showPopUpNotification = (action: HodlAction) => {
         enqueueSnackbar(
             "",

@@ -1,4 +1,4 @@
-import { Box, Chip, NoSsr, Typography } from "@mui/material";
+import { Box, NoSsr, Typography } from "@mui/material";
 import Link from "next/link";
 import { FC, useContext } from "react";
 import { WalletContext } from "../../contexts/WalletContext";
@@ -11,9 +11,6 @@ import { insertTagLinks } from "../../lib/templateUtils";
 import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
 import { FeedAsset } from "./FeedAsset";
 import { MaticPrice } from "../MaticPrice";
-import { green } from "@mui/material/colors";
-import { assetType } from "../../lib/utils";
-import { AssetTypes } from "../../models/AssetType";
 
 
 interface HodlFeedItemProps {
@@ -33,11 +30,12 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                     gap={2}
                     sx={{
                         borderRadius: 1,
-                        padding: 2,
+                        padding:
+                        {
+                            xs: 1.5,
+                            sm: 2
+                        },
                         border: `1px solid #ddd`,
-                        width: "min(575px, 90vw)",
-                        maxWidth: "90%",
-                        overflow: 'hidden',
                         background: 'white'
                     }
                     }
@@ -64,7 +62,12 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                     cursor: 'pointer',
                                     textDecoration: 'none'
                                 }}>
-                                <Box display="flex" justifyContent="space-between" width="100%" alignItems="center">
+                                <Box 
+                                    display="flex" 
+                                    justifyContent="space-between" 
+                                    width="100%" 
+                                    alignItems="center"
+                                    >
                                     <Box display="flex" flexDirection="column" component="span">
                                         {item?.subject && item?.subject !== address &&
                                             <ProfileNameOrAddress
@@ -130,9 +133,13 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                             sx={{
                                                 textAlign: 'right',
                                                 fontFamily: theme => theme.logo.fontFamily,
-                                                color: theme => theme.palette.primary.main
+                                                color: theme => theme.palette.primary.main,
+                                                fontSize: {
+                                                    xs: 12,
+                                                    sm: 14
+                                                }
                                             }}>
-                                            minted
+                                            new
                                         </Box>
                                     }
                                 </Box>
@@ -144,7 +151,10 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                 <Box
                                     sx={{
                                         cursor: 'pointer',
-                                        marginX: -2,
+                                        marginX: {
+                                            xs: -1.5,
+                                            sm: -2
+                                        }
                                     }}>
                                     <FeedAsset item={item} />
                                 </Box>
@@ -167,8 +177,20 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                         </Box>}
                     </Box>
                     <Box>
-                        <Typography marginBottom={1} component="h2" sx={{ fontWeight: 600 }}>{item.token?.name}</Typography>
-                        <Box sx={{ whiteSpace: 'pre-line' }}>{insertTagLinks(item.token?.description)}</Box>
+                        <Typography
+                            sx={{
+                                fontWeight: 600
+                            }}>
+                            {item.token?.name}
+                        </Typography>
+                        <Box
+                            sx={{
+                                whiteSpace: 'pre-line'
+                            }}>
+                            {
+                                insertTagLinks(item.token?.description)
+                            }
+                        </Box>
                     </Box>
                 </Box>}
         </>

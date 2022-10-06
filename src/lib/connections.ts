@@ -6,13 +6,17 @@ export const getMetaMaskSigner = async (returningUser=true) => {
     // @ts-ignore
     const provider = new ethers.providers.Web3Provider(window.ethereum);
   
-    // if we've forgotten the user (because they asked to disconnect), then ask them to pick an account again
-    // This RPC method is not yet available in MetaMask Mobile. TODO: We should skip this if they are on that
-    // if (!returningUser) {
-    //   await provider.send("wallet_requestPermissions",  [{ 
-    //     eth_accounts: {}
-    //   }]);
-    // }
+    // This lets them select which account to connect with if they have multiple
+    if (!returningUser) {
+      try {
+        await provider.send("wallet_requestPermissions",  [{ 
+          eth_accounts: {}
+        }]);
+      } catch(e) {
+        // This RPC method is not yet available in MetaMask Mobile. 
+      }
+      
+    }
 
     
     // if we've remembered the user, then just connect

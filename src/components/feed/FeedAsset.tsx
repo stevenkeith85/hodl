@@ -21,7 +21,7 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
 
         const [num, denom] = aspectRatio.split(':');
 
-        const result = `calc(${+denom / +num} * min(90vw - 32px, ${width}px))`;
+        const result = `calc(${+denom / +num} * min(100% - 32px, ${width}px))`;
 
         return result;
     }
@@ -40,7 +40,7 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
                 position: 'absolute',
                 zIndex: 0,
 
-                width: 'min(575px, 90vw)',
+                width: 'min(575px, 100%)',
                 height: (assetType(item.token) === AssetTypes.Audio) ?
                     324 : // audio 'image' is 324
                     getHeightForAspectRatio(575, item?.token?.properties?.aspectRatio),
