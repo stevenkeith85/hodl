@@ -14,98 +14,66 @@ import {
 } from '../../components';
 
 import { fetchNFT } from "../api/nft/[tokenId]";
-import { PriceHistoryGraph } from "../../components/nft/PriceHistory";
 import { Likes } from "../../components/Likes";
 import Head from "next/head";
-import { getPriceHistory } from "../api/token-bought/[tokenId]";
 import { AssetLicense } from "../../components/nft/AssetLicense";
-import { getCommentsForToken } from "../api/comments";
 import { HodlCommentsBox } from "../../components/comments/HodlCommentsBox";
 import { Comments } from "../../components/comments/Comments";
-import { getCommentCount } from "../api/comments/count";
 import { useState } from "react";
 import { Forum, Insights } from "@mui/icons-material";
 
 import router from "next/router";
-import { getLikeCount } from "../api/like/token/count";
 import { MaticPrice } from "../../components/MaticPrice";
 import { indigo } from "@mui/material/colors";
 import { insertTagLinks } from "../../lib/templateUtils";
 import { authenticate } from "../../lib/jwt";
 import { FollowButton } from "../../components/profile/FollowButton";
 import { UserAvatarAndHandle } from "../../components/avatar/UserAvatarAndHandle";
-import { getUser } from "../api/user/[handle]";
 import { NftContext } from "../../contexts/NftContext";
 import { HodlBorderedBox } from "../../components/HodlBorderedBox";
-import { ProfileNameOrAddress } from "../../components/avatar/ProfileNameOrAddress";
 import { OwnerCreatorCard } from "../../components/nft/OwnerCreatorCard";
 
 
+// Too slow to fetch the owner info server-side :(
+// Perhaps if we start reading cached blockchain data; we could get away with it
 export async function getServerSideProps({ params, query, req, res }) {
   try {
     await authenticate(req, res);
 
-    const nft = await fetchNFT(params.tokenId);
+    const limit = 10;
+    const tab = Number(query.tab) || 0;
 
-    console.log("pages/nft/[tokenId] - nft - ", nft);
+    const nft = await fetchNFT(params.tokenId);
     if (!nft) {
       return { notFound: true }
     }
 
-    // To populate their avatar
-    const owner = await getUser(nft.owner, req.address);
-
-    const comment = params.comment;
-    const limit = 10;
-    const tab = Number(query.tab) || 0;
-
-    const pprefetchedCommentCount = getCommentCount(comment ? "comment" : "token", comment ? comment : params.tokenId);
-    const pprefetchedLikeCount = getLikeCount(params.tokenId);
-
-    // TODO: We might not prefetch these?; to speed up the initial load
-    const pprefetchedComments = getCommentsForToken(comment ? "comment" : "token", comment ? comment : params.tokenId, 0, limit, !comment);
+    // TODO: Fix; and do client-side
     // const ppriceHistory = getPriceHistory(params.tokenId);
 
-    const [
-      prefetchedComments,
-      prefetchedCommentCount,
-      // priceHistory,
-      prefetchedLikeCount
-    ] = await Promise.all([
-      pprefetchedComments,
-      pprefetchedCommentCount,
-      // ppriceHistory,
-      pprefetchedLikeCount
-    ]);
+
+    // const start = new Date();
+    // const stop = new Date();
+    // console.log('time taken', stop - start);
 
     return {
       props: {
         address: req.address || null,
         nft,
-        owner,
         limit,
-        prefetchedComments: null,//[prefetchedComments],
-        prefetchedCommentCount,
-        // priceHistory,
-        prefetchedLikeCount,
-      tab
-    },
+        tab
+      },
     }
   } catch (e) {
-  console.log("pages/nft/[tokenId] - error - ", e);
-  return { notFound: true }
-}
+    console.log("pages/nft/[tokenId] - error - ", e);
+    return { notFound: true }
+  }
 }
 
 const NftDetail = ({
   address,
   nft,
-  owner,
-  prefetchedComments,
   limit,
-  prefetchedCommentCount,
-  // priceHistory,
-  prefetchedLikeCount,
   tab
 }) => {
   const [value, setValue] = useState(Number(tab)); // tab
@@ -120,19 +88,29 @@ const NftDetail = ({
         <Head>
           <title>{nft.name} · Hodl My Moon</title>
         </Head>
-        <Grid container>
-          <Grid item xs={12} marginY={4}>
+        <Grid
+          container
+          marginTop={4}
+        >
+          <Grid
+            item
+            xs={12}
+            marginBottom={4}
+          >
             <Stack
               spacing={1}
               direction="row"
               sx={{
                 justifyContent: 'space-between',
-                alignItems: 'center'
+                alignItems: 'center',
               }}>
-              <Box display="flex" gap={1} alignItems="center">
+              <Box
+                display="flex"
+                gap={1}
+                alignItems="center"
+              >
                 <UserAvatarAndHandle
-                  address={owner.address}
-                  fallbackData={owner}
+                  address={nft?.owner}
                   size={50}
                   fontSize={18}
                 />
@@ -141,9 +119,12 @@ const NftDetail = ({
                 </div>
               </Box>
 
-              <Box display="flex" justifyContent="start" sx={{
-                marginBottom: 2
-              }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'start',
+                  marginBottom: 2
+                }}>
                 <Tabs
                   value={value}
                   onChange={(e, v) => {
@@ -170,11 +151,21 @@ const NftDetail = ({
                   <Tab key={1} value={1} icon={<Insights fontSize="small" />} sx={{ padding: 1.5, minWidth: '60px' }} />
                 </Tabs>
               </Box>
-
             </Stack>
           </Grid>
-          <Grid item xs={12} md={5} marginBottom={2} paddingRight={{ md: 1 }}>
-            <Stack spacing={2}>
+          <Grid
+            item
+            xs={12}
+            md={5}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2,
+                marginBottom: 4,
+              }}
+            >
               <DetailPageImage token={nft} />
               <Box gap={1} display='flex' alignItems='center'>
                 <Likes
@@ -184,7 +175,6 @@ const NftDetail = ({
                   }}
                   id={nft.id}
                   object="token"
-                  prefetchedLikeCount={prefetchedLikeCount}
                   fontSize={12}
                   size={18}
                 />
@@ -194,17 +184,16 @@ const NftDetail = ({
                   nft={nft}
                   popUp={false}
                   sx={{ color: '#333' }}
-                  fallbackData={prefetchedCommentCount}
                 />
               </Box>
-            </Stack>
+            </Box>
           </Grid>
           <Grid
             item
             xs={12}
             md={7}
-            marginBottom={2}
-            paddingLeft={{ md: 1 }}
+            marginBottom={4}
+            paddingLeft={{ md: 4 }}
           >
             <div hidden={value !== 0}>
               <HodlBorderedBox>
@@ -215,7 +204,10 @@ const NftDetail = ({
                   <Typography variant="h1" mb={3} sx={{ fontWeight: 600 }}>{nft.name}</Typography>
                   <Box sx={{ whiteSpace: 'pre-line' }}>{insertTagLinks(nft.description)}</Box>
                 </Box>
-                <HodlCommentsBox limit={limit} header={false} fallbackData={prefetchedComments} />
+                <HodlCommentsBox
+                  limit={limit}
+                  header={false}
+                />
               </HodlBorderedBox>
             </div>
             <div hidden={value !== 1}>

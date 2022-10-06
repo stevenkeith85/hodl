@@ -9,7 +9,6 @@ import apiRoute from '../handler';
 //
 
 import { Redis } from '@upstash/redis';
-import { ipfsUriToCid } from "../../../lib/utils";
 import { Token } from "../../../models/Token";
 
 dotenv.config({ path: '../.env' })

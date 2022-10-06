@@ -64,11 +64,11 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
     useEffect(() => {
         if (error !== '') {
             enqueueSnackbar(error,
-            { 
-                // @ts-ignore
-                variant: "hodlsnackbar",
-                type: "error"
-            });
+                {
+                    // @ts-ignore
+                    variant: "hodlsnackbar",
+                    type: "error"
+                });
 
             setError('');
         }
@@ -82,9 +82,9 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
     )
     useEffect(() => {
         axios.interceptors.response.use(null, async (error) => {
-            if (error.config && 
-                error.response && 
-                error.response.status === 401 
+            if (error.config &&
+                error.response &&
+                error.response.status === 401
                 && !error.config.__isRetry) {
                 const { refreshed } = error.response.data;
 
@@ -92,7 +92,7 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
 
                 if (refreshed) {
                     return axios.request(error.config);
-                } 
+                }
                 else {
                     // The BE is disconnected in the jwt code
                     disconnectFE();
@@ -254,7 +254,8 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                                     address={address}
                                                     withLink={false}
                                                     handle={false}
-                                                /> :
+                                                />
+                                                :
                                                 <Box
                                                     width={44}
                                                     height={44}

@@ -1,16 +1,12 @@
-import { Clear, HorizontalRule } from '@mui/icons-material';
-import { Box, Button, Chip, FormControlLabel, FormGroup, InputAdornment, Slider, Switch, TextField, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
-import { Form } from 'formik';
+import { Clear } from '@mui/icons-material';
+import { Box, FormGroup, InputAdornment, Switch, TextField, Tooltip, Typography } from '@mui/material';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { HodlImpactAlert } from '../components/HodlImpactAlert';
 import { InfiniteScrollNftWindows } from '../components/InfiniteScrollNftWindows';
 import { MaticSymbol } from '../components/MaticSymbol';
-import { TagsPaginated } from '../components/TagsPaginated';
 import { useSearchTokens } from '../hooks/useSearchTokens';
 import { authenticate } from '../lib/jwt';
-import { getMostUsedTags } from './api/rankings/tag';
 import { getTokenSearchResults } from './api/search/tokens';
 
 
@@ -30,20 +26,15 @@ export async function getServerSideProps({ query, req, res }) {
     maxPrice
   );
 
-  const tagsLimit = 4;
-  const prefetchedTags = await getMostUsedTags(0, tagsLimit);
-
   return {
     props: {
       address: req.address || null,
       q: q || '',
       limit,
-      tagsLimit,
       forSale: JSON.parse(forSale || "false"),
       minPrice: minPrice || null,
       maxPrice: maxPrice || null,
       fallbackData: [prefetchedResults],
-      prefetchedTags
     },
   }
 }
@@ -52,12 +43,10 @@ export async function getServerSideProps({ query, req, res }) {
 export default function Search({
   q,
   limit,
-  tagsLimit,
   forSale,
   minPrice,
   maxPrice,
   fallbackData,
-  prefetchedTags
 }) {
   const [qChip, setQChip] = useState(q);
   const [forSaleToggle, setForSaleToggle] = useState(forSale);
@@ -72,20 +61,21 @@ export default function Search({
     maxPrice
   });
 
+  
+  const isOriginalSearchQuery = () => {
+    return searchQ.q === q &&
+      searchQ.limit === limit &&
+      searchQ.forSale === forSale &&
+      searchQ.minPrice === minPrice &&
+      searchQ.maxPrice === maxPrice;
+  }
+
   const { results } = useSearchTokens(
     searchQ,
-    qChip === q &&
-      forSaleToggle === forSale &&
-      minPriceUI === minPrice &&
-      maxPriceUI === maxPrice ?
-      fallbackData :
-      null
+    isOriginalSearchQuery() ? fallbackData : null
   );
 
   const router = useRouter();
-
-  const theme = useTheme();
-  const xs = useMediaQuery(theme.breakpoints.only('xs'));
 
   useEffect(() => {
 
@@ -104,6 +94,11 @@ export default function Search({
   // update the url when a search happens
   // TODO: Check if the search query is the original search query, and early return. (to keep the url pretty)
   useEffect(() => {
+
+    if (isOriginalSearchQuery()) {
+      return;
+    }
+
     router.push(
       {
         pathname: '/explore',
@@ -157,35 +152,49 @@ export default function Search({
                 justifyContent: { xs: 'space-between' },
               }}
             >
-              <Tooltip title="Clear filters">
-                <Clear
-                  fontSize="small"
-                  sx={{
-                    cursor: 'pointer'
-                  }}
-                  onClick={e => {
-                    setQChip('');
-                    setMinPriceUI('');
-                    setMaxPriceUI('');
 
-                    setSearchQ(old => ({
-                      ...old,
-                      q: '',
-                      minPrice: null,
-                      maxPrice: null
-                    }))
-                  }}
-                /></Tooltip>
+              <Box
+                sx={{
+                  width: '15%',
+                  display: 'flex',
+                  justifyContent: 'start'
+
+                }}
+              >
+                <Tooltip title="Clear filters">
+                  <Clear
+                    fontSize="small"
+                    sx={{
+                      cursor: 'pointer'
+                    }}
+                    onClick={e => {
+                      setQChip('');
+                      setMinPriceUI('');
+                      setMaxPriceUI('');
+
+                      setSearchQ(old => ({
+                        ...old,
+                        q: '',
+                        minPrice: null,
+                        maxPrice: null
+                      }))
+                    }}
+                  /></Tooltip>
+              </Box>
+
               {forSaleToggle && <Box
                 sx={{
                   display: 'flex',
                   gap: 1,
                   alignItems: 'center',
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  width: '70%'
                 }}>
 
                 <TextField
-                  sx={{ width: 125 }}
+                  sx={{
+                    maxWidth: `40%`
+                  }}
                   onKeyPress={(e) => {
                     if (e.key == "Enter") {
                       setSearchQ(old => ({
@@ -204,9 +213,16 @@ export default function Search({
                   value={minPriceUI}
                   onChange={e => setMinPriceUI(e.target.value)}
                 />
-                to
+                <Typography
+                  component="span"
+                >
+                  to
+                </Typography>
+
                 <TextField
-                  sx={{ width: 125 }}
+                  sx={{
+                    maxWidth: `40%`
+                  }}
                   onKeyPress={(e) => {
                     if (e.key == "Enter") {
                       setSearchQ(old => ({
@@ -225,29 +241,38 @@ export default function Search({
                   value={maxPriceUI}
                   onChange={e => setMaxPriceUI(e.target.value)}
                 />
-              </Box>}
-              <FormGroup>
-                <Tooltip title="On The Market">
-                  <Switch
-                    checked={forSaleToggle}
-                    onChange={(e) => {
-                      setForSaleToggle(old => !old);
-                      setSearchQ(old => ({
-                        ...old,
-                        forSale: !old.forSale
-                      }))
-                    }
-                    }
-                  />
-                </Tooltip>
-              </FormGroup>
+              </Box>
+              }
+              <Box
+                sx={{
+                  width: '15%',
+                  display: 'flex',
+                  justifyContent: 'end'
+                }}
+              >
+                <FormGroup>
+                  <Tooltip title="On The Market">
+                    <Switch
+                      checked={forSaleToggle}
+                      onChange={(e) => {
+                        setForSaleToggle(old => !old);
+                        setSearchQ(old => ({
+                          ...old,
+                          forSale: !old.forSale
+                        }))
+                      }
+                      }
+                    />
+                  </Tooltip>
+                </FormGroup>
+              </Box>
             </Box>
           </Box>
         </Box>
         <Box>
-          {results?.data?.[0]?.total === 0 &&
+          {/* {results?.data?.[0]?.total === 0 &&
             <HodlImpactAlert message={"We can't find anything at the moment"} title="Sorry" />
-          }
+          } */}
           <InfiniteScrollNftWindows swr={results} limit={limit} pattern={false} />
         </Box>
       </Box>

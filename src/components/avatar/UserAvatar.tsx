@@ -1,4 +1,5 @@
-import { Avatar, Box } from "@mui/material";
+import { Avatar, Box, Skeleton } from "@mui/material";
+import { useState } from "react";
 import { token } from "../../lib/copyright";
 import { assetType } from "../../lib/utils";
 import { AssetTypes } from "../../models/AssetType";
@@ -13,7 +14,8 @@ interface UserAvatarProps {
 }
 
 export const UserAvatar: React.FC<UserAvatarProps> = ({ user, size }) => {
-    return (
+    
+    return (<>    
         <Avatar
             sx={{
                 width: size,
@@ -56,6 +58,6 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({ user, size }) => {
                 </Box>
             }
         </Avatar>
-    )
+    </>)
 }
 

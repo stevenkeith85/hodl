@@ -1,4 +1,4 @@
-import { Box, Modal } from "@mui/material";
+import { Box, Modal, Skeleton } from "@mui/material";
 import { HodlVideo } from "../HodlVideo";
 import { assetType } from "../../lib/utils";
 import { useState } from "react";
@@ -13,6 +13,44 @@ interface DetailPageAssetProps {
 }
 export const DetailPageAsset: React.FC<DetailPageAssetProps> = ({ token }) => {
     const [assetModalOpen, setAssetModalOpen] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    const asset = <Box sx={{ cursor: 'pointer' }}>
+        <Box onClick={() => setAssetModalOpen(true)}>
+            {
+                assetType(token) === AssetTypes.Gif &&
+                <HodlVideo
+                    cid={token?.properties?.asset?.uri}
+                    assetFolder="image"
+                    gif={true}
+                />
+            }
+        </Box>
+        <Box onClick={() => setAssetModalOpen(true)}>
+            {
+                assetType(token) === AssetTypes.Image &&
+                <HodlImageResponsive
+                    cid={token?.properties?.asset?.uri}
+                    widths={[500, 600, 700, 800, 900, 1000, 1080]}
+                    sizes="(min-width: 1200px) calc(1200px / 2), (min-width: 900px) calc(50vw / 2), 100vw"
+                    onLoad={() => setLoading(false)}
+                />
+            }
+        </Box>
+        <Box>
+            {
+                assetType(token) === AssetTypes.Video &&
+                <HodlVideo
+                    cid={token?.properties?.asset?.uri}
+                    height={'auto'}
+                />
+            }
+        </Box>
+        {
+            assetType(token) === AssetTypes.Audio &&
+            <HodlAudioBox token={token} size={80} />
+        }
+    </Box>
 
     return (token &&
         <>
@@ -71,41 +109,15 @@ export const DetailPageAsset: React.FC<DetailPageAssetProps> = ({ token }) => {
                     }
                 </Box>
             </Modal>
-            <Box sx={{ cursor: 'pointer' }}>
-                <Box onClick={() => setAssetModalOpen(true)}>
-                    {
-                        assetType(token) === AssetTypes.Gif &&
-                        <HodlVideo
-                            cid={token?.properties?.asset?.uri}
-                            assetFolder="image"
-                            gif={true}
-                        />
-                    }
-                </Box>
-                <Box onClick={() => setAssetModalOpen(true)}>
-                    {
-                        assetType(token) === AssetTypes.Image &&
-                        <HodlImageResponsive
-                            cid={token?.properties?.asset?.uri}
-                            widths={[500, 600, 700, 800, 900, 1000, 1080]}
-                            sizes="(min-width: 1200px) calc(1200px / 2), (min-width: 900px) calc(50vw / 2), 100vw"
-                        />
-                    }
-                </Box>
-                <Box>
-                    {
-                        assetType(token) === AssetTypes.Video &&
-                        <HodlVideo
-                            cid={token?.properties?.asset?.uri}
-                            height={'auto'}
-                        />
-                    }
-                </Box>
-                {
-                    assetType(token) === AssetTypes.Audio &&
-                    <HodlAudioBox token={token} size={80} />
-                }
-            </Box>
+            {loading ?
+                <Skeleton
+                    variant="rectangular"
+                    animation="wave"
+                >
+                    {asset}
+                </Skeleton> :
+                <>{asset}</>
+            }
         </>
     )
 }

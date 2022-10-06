@@ -191,7 +191,7 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                         <ImageOutlined sx={{ position: 'absolute', top: 8, left: 8 }} />
                         <HodlImageResponsive
                             aspectRatio="1:1"
-                            sizes="(min-width: 900px) 25vw, (min-width: 1200px) calc(1200px / 5 * 2), 50vw"
+                            sizes="(min-width: 900px) 25vw, (min-width: 1200px) calc(1200px / 5 * 2), 50vw, 100vw"
                             cid={nft?.properties?.asset?.uri}
                             widths={[400, 800, 1000]}
                             objectFit="cover"

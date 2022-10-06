@@ -1,4 +1,4 @@
-import { Box, Tooltip, Typography } from "@mui/material";
+import { Box, Skeleton, Tooltip, Typography } from "@mui/material";
 import { UserViewModel } from "../../models/User";
 import { UserHandle } from "./UserHandle";
 import { UserDefaultAvatar } from "./UserDefaultAvatar";
@@ -17,8 +17,8 @@ const UserAvatarAndHandleBody = ({ user, size, fontSize, handle, color }) => (<B
     <Tooltip title={
         <Box
             sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Typography sx={{ fontSize: 14}}>{user.nickname}</Typography>
-            <Typography sx={{ fontSize: 12}}>{getShortAddress(user.address)}</Typography>
+            <Typography sx={{ fontSize: 14 }}>{user.nickname}</Typography>
+            <Typography sx={{ fontSize: 12 }}>{getShortAddress(user.address)}</Typography>
         </Box>
     } arrow placement="right">
         <Box
@@ -56,7 +56,12 @@ export const UserAvatarAndHandle: React.FC<UserAvatarProps> = ({
     const { data: user } = useUser(address, fallbackData);
 
     if (!user) {
-        return null;
+
+        return (<>
+            <Skeleton width={size} height={size} variant="circular"></Skeleton>
+            {handle && <Skeleton width={100} variant="text"></Skeleton>}
+        </>
+        )
     }
 
     return (<>

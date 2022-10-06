@@ -7,7 +7,7 @@ export const useUser = (address, fallbackData=null) : SWRResponse<UserViewModel,
     const fetcher: Fetcher<UserViewModel, [string, string]> = (url, query)  => axios.get(`${url}/${query}`).then(r => r.data.user);
 
     const swr = useSWR(
-        [`/api/user`, address],
+        address ? [`/api/user`, address] : null,
         fetcher,
         { fallbackData }
     )

@@ -13,11 +13,14 @@ import dotenv from 'dotenv'
 import apiRoute from '../handler';
 import { getToken } from '../token/[tokenId]';
 import { Nft } from '../../../models/Nft';
+import { Listing } from '../../../models/Listing';
+import { Redis } from '@upstash/redis';
+import { Token } from '../../../models/Token';
 
 dotenv.config({ path: '../.env' })
 
 const route = apiRoute();
-
+const client = Redis.fromEnv()
 
 // Does address/user 'own' the token.
 export const isOwnerOrSeller = async (address, tokenId) => {
@@ -71,58 +74,46 @@ export const getOwnerOrSellerAddress = async (tokenId) => {
   return isTokenForSale(marketItem) ? marketItem.seller : owner
 }
 
-const isTokenForSale = ({ price, seller, tokenId }) => {
+const isTokenForSale = ({ price, seller, tokenId }: Listing) => {
   return price !== ethers.constants.Zero &&
     seller !== ethers.constants.AddressZero &&
     tokenId !== ethers.constants.Zero;
 }
 
-// The main function we call on the detail pages
-// if the item is for sale, then we only consult Redis in O(1) and a blockchain call to 'getListed' (Market contract)
-// it its not for sale, then we do Redis O(1), getListed (Market contract), and exists / ownerOf (Token contract)
-
-// TODO: We read the blockchain here. 
-// We could (in future) just read from cached data in Redis. (once we've implemented a robust caching strategy)
+// Reading the block chain here takes about 1.5 seconds :(
+// We'll need to cache the price, owner, and for sale status in redis
 export const fetchNFT = async (id: number): Promise<Nft> => {
+  const start = new Date();
+
+  const tokenPromise: Promise<Token> = client.get<Token>('token:' + id);
+
+  // And get the block-chain data too
   const provider = await getProvider();
-
   const marketContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
-
-  const marketItem = await marketContract.getListing(id);
-  const forSale = isTokenForSale(marketItem);
+  const listing: Listing = await marketContract.getListing(id);
+  const forSale = isTokenForSale(listing);
 
   // Determine the token owner
   let owner = null;
   let price = '0';
 
-  // if its for sale, technically the 'owner' will be the marketplace contract. 
-  // We set it to the seller though; who is the 'actual owner'.
+  // We cannot simply do an 'ownerOf' if the token is listed; as this will return the market contract's address
   if (forSale) {
-    owner = marketItem.seller;
-    price = ethers.utils.formatUnits(marketItem.price.toString(), 'ether');
+    owner = listing.seller;
+    price = ethers.utils.formatUnits(listing.price.toString(), 'ether');
   } else {
     try {
-      // we'll have to consult the token contract to get the owner
       const tokenContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, provider);
-      const tokenExists = await tokenContract.exists(id);
-
-      if (!tokenExists) { // it was never minted on the blockchain. TODO: We could tell the user the token hasn't been minted
-        throw new Error('token does not exist');
-      }
       owner = await tokenContract.ownerOf(id);
     } catch (e) {
       throw new Error('Cannot talk to the blockchain at the moment');
     }
   }
 
-  // Look up our immutable data from Redis
-  const token = await getToken(id);
+  const [token] = await Promise.all([tokenPromise]);
 
   if (!token) {
-    // it's gone missing from our database! 
-    // TODO: We could probably read the data from the blockchain here, and repopulate 
-    // probably via a queue
-    throw new Error('Error retrieving token'); 
+    throw new Error('Error retrieving token');
   }
 
   const result: Nft = {
@@ -132,7 +123,8 @@ export const fetchNFT = async (id: number): Promise<Nft> => {
 
     ...token
   }
-
+  const stop = new Date();
+  console.log('time taken', stop - start);
   return result;
 }
 

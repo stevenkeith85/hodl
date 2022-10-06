@@ -16,6 +16,7 @@ import { Token } from "../../../models/Token";
 import { getAsString, ipfsUriToCid } from "../../../lib/utils";
 import { isOwnerOrSeller } from "../nft/[tokenId]";
 import { isFollowing } from "../follows";
+import { ethers } from "ethers";
 
 dotenv.config({ path: '../.env' })
 
@@ -43,31 +44,27 @@ export const getUser = async (
   viewerAddress: string, 
   nonce=false): Promise<UserViewModel | null> => {
 
+    
   if (!handle) {
     return null;
   }
 
   let address = handle;
 
-  const validAddress = await isValidAddress(handle);
-
-  if (!validAddress) {
+  if (!ethers.utils.isAddress(address)) {
     address = await client.get(`nickname:${handle}`);
   }
 
-  // TODO - We should check the 'users' collection first; as the user may have a uuid entry; but they've not actually signed the message to connect to the site
-  const user = await client.hmget<User>(`user:${address}`, 'address', 'nickname', 'avatar', 'nonce');
+  if (!address) {
+    return null;
+  }
 
-  // if we haven't seen this user before, then just return basic info.
-  // this shouldn't actually happen in the wild; but is useful for dev
-  if (!user) {
-    return {
-      address: handle,
-      nickname: null,
-      avatar: null,
-      followedByViewer: false,
-      followsViewer: false
-    }
+  // TODO - We should check the 'users' collection first; as the user may have a uuid entry; but they've not actually signed the message to connect to the site
+  let user = null;
+  if (nonce) {
+    user = await client.hmget<User>(`user:${address}`, 'address', 'nickname', 'avatar', 'nonce');
+  } else {
+    user = await client.hmget<User>(`user:${address}`, 'address', 'nickname', 'avatar');
   }
 
   const vm: UserViewModel = {
