@@ -8,7 +8,7 @@ dotenv.config({ path: '../.env' })
 const client = Redis.fromEnv();
 const route = apiRoute();
 
-
+// TODO: I don't think this is needed anymore?
 export const getAddress = async (nickname) => {    
     const address = await client.get(`nickname:${nickname}`);
     return address;

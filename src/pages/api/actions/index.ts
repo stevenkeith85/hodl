@@ -9,7 +9,8 @@ import { getUser } from "../user/[handle]";
 
 dotenv.config({ path: '../.env' })
 
-const client = Redis.fromEnv()
+const client = Redis.fromEnv();
+
 const route = apiRoute();
 
 // Gets the HodlAction  and adds the user, token and comment to it to create the HodlActionViewModel

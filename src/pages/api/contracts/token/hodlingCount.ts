@@ -1,8 +1,8 @@
 import dotenv from 'dotenv'
-import apiRoute from "../handler";
+import apiRoute from "../../handler";
 import { ethers } from 'ethers';
-import { getProvider } from '../../../lib/server/connections';
-import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
+import { getProvider } from '../../../../lib/server/connections';
+import HodlNFT from '../../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 
 dotenv.config({ path: '../.env' })
 

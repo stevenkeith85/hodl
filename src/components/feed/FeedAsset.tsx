@@ -17,10 +17,7 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
     const [loading, setLoading] = useState(true);
 
     const asset = <>
-        <Box sx={{
-            position: 'relative',
-            zIndex: 1
-        }}>
+        <Box sx={{}}>
             {
                 (assetType(item.token) === AssetTypes.Image) &&
                 <HodlImageResponsive
@@ -63,16 +60,17 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
         <Box
             sx={{
                 position: 'relative',
-                height: '100%'
+                // height: '100%'
             }}>
-            {loading ?
+            {loading &&
                 <Skeleton
                     variant="rectangular"
                     animation="wave"
                 >
                     {asset}
-                </Skeleton> :
-                <>{asset}</>
-            }
+                </Skeleton>}
+            <Box sx={{
+                display: loading ? 'none' : 'block'
+            }}>{asset}</Box>
         </Box >)
 }

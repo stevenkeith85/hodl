@@ -33,7 +33,7 @@ export const MaticPrice: React.FC<MaticPriceProps> = ({
                         padding: 0,
                         verticalAlign: 'bottom',
                         fontSize,
-                        gap: 0.5,
+                        gap: 1,
                         color,
                         'img': {
                             filter: color === 'white' ?

@@ -143,7 +143,10 @@ route.post(async (req, res: NextApiResponse) => {
     const parsedLogs = [];
     txReceipt.logs.forEach(log => {
         try {
-            parsedLogs.push(contract.interface.parseLog(log));
+            console.log('raw log', log);
+            const parsedLog = contract.interface.parseLog(log);
+            console.log(`tokenMinted - parsedLog`, parsedLog);
+            parsedLogs.push(parsedLog);
         } catch(e) {
             console.log("skipped a log as its not in the ABI")
         }

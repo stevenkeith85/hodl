@@ -1,6 +1,7 @@
 import {
   Box,
   Grid,
+  Skeleton,
   Stack,
   Tab,
   Tabs,
@@ -13,29 +14,31 @@ import {
   NftActionButtons
 } from '../../components';
 
-import { fetchNFT } from "../api/nft/[tokenId]";
 import { Likes } from "../../components/Likes";
 import Head from "next/head";
 import { AssetLicense } from "../../components/nft/AssetLicense";
 import { HodlCommentsBox } from "../../components/comments/HodlCommentsBox";
 import { Comments } from "../../components/comments/Comments";
-import { useState } from "react";
-import { Forum, Insights } from "@mui/icons-material";
+import { useEffect, useState } from "react";
+import { DataObject, Forum, Insights } from "@mui/icons-material";
 
 import router from "next/router";
 import { MaticPrice } from "../../components/MaticPrice";
 import { indigo } from "@mui/material/colors";
 import { insertTagLinks } from "../../lib/templateUtils";
 import { authenticate } from "../../lib/jwt";
-import { FollowButton } from "../../components/profile/FollowButton";
 import { UserAvatarAndHandle } from "../../components/avatar/UserAvatarAndHandle";
 import { NftContext } from "../../contexts/NftContext";
 import { HodlBorderedBox } from "../../components/HodlBorderedBox";
-import { OwnerCreatorCard } from "../../components/nft/OwnerCreatorCard";
+import { HodlerCreatorCard } from "../../components/nft/HodlerCreatorCard";
+import { getToken } from "../api/token/[tokenId]";
+import useSWR, { Fetcher } from "swr";
+import { Token, TokenSolidity } from "../../models/Token";
+import axios from "axios";
+import { PriceHistoryGraph } from "../../components/nft/PriceHistory";
+import { ListingVM } from "../../models/Listing";
 
 
-// Too slow to fetch the owner info server-side :(
-// Perhaps if we start reading cached blockchain data; we could get away with it
 export async function getServerSideProps({ params, query, req, res }) {
   try {
     await authenticate(req, res);
@@ -43,18 +46,7 @@ export async function getServerSideProps({ params, query, req, res }) {
     const limit = 10;
     const tab = Number(query.tab) || 0;
 
-    const nft = await fetchNFT(params.tokenId);
-    if (!nft) {
-      return { notFound: true }
-    }
-
-    // TODO: Fix; and do client-side
-    // const ppriceHistory = getPriceHistory(params.tokenId);
-
-
-    // const start = new Date();
-    // const stop = new Date();
-    // console.log('time taken', stop - start);
+    const nft: Token = await getToken(params.tokenId);
 
     return {
       props: {
@@ -77,6 +69,27 @@ const NftDetail = ({
   tab
 }) => {
   const [value, setValue] = useState(Number(tab)); // tab
+
+  const tokenFetcher: Fetcher<TokenSolidity> = (url, id) => axios.get(`${url}/${id}`).then(r => r.data.token);
+  const { data: token } = useSWR([`/api/contracts/token`, nft.id], tokenFetcher);
+
+  const listingFetcher: Fetcher<ListingVM> = (url, id) => axios.get(`${url}/${id}`).then(r => r.data.listing);
+  const { data: listing } = useSWR([`/api/contracts/market/listing`, nft.id], listingFetcher);
+
+  const [hodler, setHodler] = useState(null);
+
+  useEffect(() => {
+    if (token === undefined || listing === undefined) {
+      console.log('still waiting on data');
+      return;
+    }
+
+    if (listing == null) { // the token isn't for sale, so the hodler is the ownerOf
+      setHodler(token.ownerOf);
+    } else {
+      setHodler(listing.seller);
+    }
+  }, [token, listing]);
 
   return (
     <>
@@ -110,13 +123,10 @@ const NftDetail = ({
                 alignItems="center"
               >
                 <UserAvatarAndHandle
-                  address={nft?.owner}
+                  address={hodler}
                   size={50}
-                  fontSize={18}
+                  fontSize={16}
                 />
-                <div>
-                  <FollowButton profileAddress={nft?.owner} variant="text" />
-                </div>
               </Box>
 
               <Box
@@ -147,8 +157,49 @@ const NftDetail = ({
                   textColor="secondary"
                   indicatorColor="secondary"
                 >
-                  <Tab key={0} value={0} icon={<Forum fontSize="small" />} sx={{ padding: 1.5, minWidth: '60px' }} />
-                  <Tab key={1} value={1} icon={<Insights fontSize="small" />} sx={{ padding: 1.5, minWidth: '60px' }} />
+                  <Tab key={0} value={0} icon={
+                    <Forum
+                      sx={{
+                        fontSize: {
+                          xs: 16,
+                        }
+                      }}
+                    />
+                  }
+                    sx={{
+                      minWidth: 0,
+                      padding: 2,
+                      margin: 0
+                    }}
+                  />
+                  <Tab key={1} value={1} icon={
+                    <Insights
+                      sx={{
+                        fontSize: {
+                          xs: 16,
+                        },
+                      }}
+                    />}
+                    sx={{
+                      minWidth: 0,
+                      padding: 2,
+                      margin: 0
+                    }}
+                  />
+                  <Tab key={2} value={2}
+                    icon={
+                      <DataObject
+                        sx={{
+                          fontSize: {
+                            xs: 16,
+                          }
+                        }}
+                      />}
+                    sx={{
+                      minWidth: 0,
+                      padding: 2,
+                      margin: 0
+                    }} />
                 </Tabs>
               </Box>
             </Stack>
@@ -167,7 +218,7 @@ const NftDetail = ({
               }}
             >
               <DetailPageImage token={nft} />
-              <Box gap={1} display='flex' alignItems='center'>
+              <Box gap={2} display='flex' alignItems='center'>
                 <Likes
                   sx={{
                     color: theme => theme.palette.secondary.main,
@@ -201,7 +252,7 @@ const NftDetail = ({
                   paddingBottom={2}
                   mb={2}
                   sx={{ borderBottom: `1px solid #ddd` }}>
-                  <Typography variant="h1" mb={3} sx={{ fontWeight: 600 }}>{nft.name}</Typography>
+                  <Typography mb={2} sx={{ fontSize: 16, fontWeight: 500 }}>{nft.name}</Typography>
                   <Box sx={{ whiteSpace: 'pre-line' }}>{insertTagLinks(nft.description)}</Box>
                 </Box>
                 <HodlCommentsBox
@@ -212,22 +263,39 @@ const NftDetail = ({
             </div>
             <div hidden={value !== 1}>
               <Box display="grid" gap={2}>
-                <Box display="grid" gap={3} sx={{
-                  background: indigo[50],
-                  padding: 2,
-                  border: `1px solid #ddd`,
-                  borderRadius: 1
-                }}>
-                  <Typography variant="h2">Price</Typography>
-                  {nft?.forSale ?
-                    <MaticPrice price={nft?.price} color="black" size={22} fontSize={22} /> :
-                    <Typography sx={{ fontSize: '18px' }}>Not for Sale</Typography>}
-                  <NftActionButtons nft={nft} />
+                <Box
+                  display="grid"
+                  sx={{
+                    background: indigo[50],
+                    padding: 2,
+                    border: `1px solid #ddd`,
+                    borderRadius: 1
+                  }}>
+                  <Typography variant="h2" marginBottom={2}>Price</Typography>
+                  {
+                    listing === undefined &&
+                    <Skeleton variant="text" width={100} height={26} animation="wave" />
+                  }
+                  {
+                    listing === null &&
+                    <Typography sx={{ fontSize: 16 }}>Not for Sale</Typography>
+                  }
+                  {listing && <MaticPrice price={listing?.price} color="black" size={18} fontSize={16} />}
+                  {hodler && <Box
+                    sx={{
+                      marginTop: 2
+                    }}>
+                    <NftActionButtons nft={nft} owner={hodler} listed={listing !== null} />
+                  </Box>}
                 </Box>
-                {/* <PriceHistoryGraph fallbackData={priceHistory} nft={nft} /> */}
-                <OwnerCreatorCard token={nft} />
-                <AssetLicense nft={nft} />
+                <PriceHistoryGraph nft={nft} />
+              </Box>
+            </div>
+            <div hidden={value !== 2}>
+              <Box display="grid" gap={2}>
                 <IpfsCard token={nft} />
+                <HodlerCreatorCard creator={nft?.creator} hodler={hodler} />
+                <AssetLicense nft={nft} />
               </Box>
             </div>
           </Grid>

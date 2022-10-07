@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Skeleton, Typography } from '@mui/material';
 import humanize from "humanize-plus";
 import Link from 'next/link';
 import { grey } from '@mui/material/colors';
@@ -20,9 +20,6 @@ interface CountAndLinkProps {
 }
 
 const CountAndLink: React.FC<CountAndLinkProps> = ({ count, user, label, tab }) => {
-    if (count === null) {
-        return null;
-    }
 
     return (<>
         {
@@ -37,7 +34,8 @@ const CountAndLink: React.FC<CountAndLinkProps> = ({ count, user, label, tab }) 
                             display: 'block'
                         }
                     }}>
-                    <span>{humanize.compactInteger(count, 1)}</span>
+                    {count === null && <Skeleton variant="text" width={10} animation="wave"/>}
+                    {count !== null && <span>{humanize.compactInteger(count, 1)}</span>}
                     {label}
                 </Typography>
             </Link>

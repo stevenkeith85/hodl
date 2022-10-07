@@ -11,18 +11,13 @@ export const ListModal = ({ listModalOpen, setListModalOpen, setListedModalOpen,
 
     // Possibly extract a hook (or something) for this
     const smartContractError = e => {
-        const re = /reverted with reason string '(.+)'/gi;
-        const matches = re.exec(e?.data?.message)
-
-        if (matches) {
-            enqueueSnackbar(
-                matches?.[1],
-                {
-                  // @ts-ignore
-                  variant: "hodlsnackbar",
-                  type: "error"
-                });
-        }
+        enqueueSnackbar(
+            e.data?.message || e.data?.details,
+            {
+                // @ts-ignore
+                variant: "hodlsnackbar",
+                type: "error"
+            });
     }
 
     return (
@@ -30,11 +25,11 @@ export const ListModal = ({ listModalOpen, setListModalOpen, setListedModalOpen,
             open={listModalOpen}
             setOpen={setListModalOpen}
         >
-            <Box 
-                display="grid" 
-                gap={4} 
+            <Box
+                display="grid"
+                gap={4}
                 textAlign="center"
-                >
+            >
                 <Typography variant="h2" sx={{ fontSize: '18px', fontWeight: 600 }}>List Your Token</Typography>
                 <TextField
                     label="Price (in Matic)"
@@ -42,9 +37,9 @@ export const ListModal = ({ listModalOpen, setListModalOpen, setListedModalOpen,
                     onChange={(e) => setPrice(e.target.value)}
                     InputProps={{
                         startAdornment: <InputAdornment position="start">
-                          <MaticSymbol />
+                            <MaticSymbol />
                         </InputAdornment>,
-                      }}
+                    }}
                 />
                 <Box display="grid" gridTemplateColumns={"1fr 1fr"} gap={4}>
                     <Button
@@ -54,11 +49,11 @@ export const ListModal = ({ listModalOpen, setListModalOpen, setListedModalOpen,
                             try {
                                 enqueueSnackbar(
                                     'Please confirm the transaction in MetaMask',
-                                { 
-                                    // @ts-ignore
-                                    variant: "hodlsnackbar",
-                                    type: "info"
-                                });
+                                    {
+                                        // @ts-ignore
+                                        variant: "hodlsnackbar",
+                                        type: "info"
+                                    });
 
                                 await listNft(router.query.tokenId, price);
 
@@ -82,7 +77,7 @@ export const ListModal = ({ listModalOpen, setListModalOpen, setListedModalOpen,
                             paddingX: 3
                         }}
                         onClick={() => setListModalOpen(false)}
-                        >
+                    >
                         Cancel
                     </Button>
                 </Box>

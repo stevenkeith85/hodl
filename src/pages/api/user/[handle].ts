@@ -24,27 +24,19 @@ const client = Redis.fromEnv()
 const route = apiRoute();
 
 
-const getAvatar = async (user: User) : Promise<Token>=> {
+const getAvatar = async (user: User): Promise<Token> => {
   if (!user?.avatar) {
     return null;
-  }
-
-  const ownsToken = await isOwnerOrSeller(user.address, user.avatar);
-
-  // We clear it here to save the future isOwnerOrSeller checks. (reduces blockchain calls)
-  if (!ownsToken) {
-    await client.hmset(`user:${user.address}`, {'avatar': ''});
   }
 
   return client.get<Token>(`token:${user.avatar}`);
 }
 
 export const getUser = async (
-  handle: string, 
-  viewerAddress: string, 
-  nonce=false): Promise<UserViewModel | null> => {
+  handle: string,
+  viewerAddress: string,
+  nonce = false): Promise<UserViewModel | null> => {
 
-    
   if (!handle) {
     return null;
   }
@@ -79,10 +71,13 @@ export const getUser = async (
     vm.nonce = user.nonce;
   }
 
+  
   const avatarPromise = getAvatar(user);
+  
+  
   const followedByViewerPromise = isFollowing(viewerAddress, user?.address);
   const followsViewerPromise = isFollowing(user?.address, viewerAddress);
-
+  
   const [avatar, followedByViewer, followsViewer] = await Promise.all([avatarPromise, followedByViewerPromise, followsViewerPromise]);
 
   vm.avatar = avatar;

@@ -5,7 +5,7 @@ import { getProvider } from "../../../lib/server/connections";
 import Market from '../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 dotenv.config({ path: '../.env' })
 
-
+// TODO: I don't think this is needed anymore?
 export const getTokensListed = async tokenId => {
   const provider = await getProvider();
 

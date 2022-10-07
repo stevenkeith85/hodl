@@ -13,7 +13,7 @@ import dotenv from 'dotenv'
 import apiRoute from '../handler';
 import { getToken } from '../token/[tokenId]';
 import { Nft } from '../../../models/Nft';
-import { Listing } from '../../../models/Listing';
+import { ListingSolidity } from '../../../models/Listing';
 import { Redis } from '@upstash/redis';
 import { Token } from '../../../models/Token';
 
@@ -74,7 +74,7 @@ export const getOwnerOrSellerAddress = async (tokenId) => {
   return isTokenForSale(marketItem) ? marketItem.seller : owner
 }
 
-const isTokenForSale = ({ price, seller, tokenId }: Listing) => {
+const isTokenForSale = ({ price, seller, tokenId }: ListingSolidity) => {
   return price !== ethers.constants.Zero &&
     seller !== ethers.constants.AddressZero &&
     tokenId !== ethers.constants.Zero;
@@ -82,15 +82,22 @@ const isTokenForSale = ({ price, seller, tokenId }: Listing) => {
 
 // Reading the block chain here takes about 1.5 seconds :(
 // We'll need to cache the price, owner, and for sale status in redis
+
+// TODO: Read the record from redis, which will include the owner, price, and forSale status.
+// and spin off a message queue task to get the latest data from the blockchain to keep the record in-sync
+// potentially push the updated data to the UI aswell...
+//
+// Or potentially, we could first have separate endpoints to get the token owner, and {forSale/price} status.
+// it would let the page load faster, and we could use SWR
 export const fetchNFT = async (id: number): Promise<Nft> => {
-  const start = new Date();
+  // const start = new Date();
 
   const tokenPromise: Promise<Token> = client.get<Token>('token:' + id);
 
   // And get the block-chain data too
   const provider = await getProvider();
   const marketContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
-  const listing: Listing = await marketContract.getListing(id);
+  const listing: ListingSolidity = await marketContract.getListing(id);
   const forSale = isTokenForSale(listing);
 
   // Determine the token owner
@@ -123,8 +130,8 @@ export const fetchNFT = async (id: number): Promise<Nft> => {
 
     ...token
   }
-  const stop = new Date();
-  console.log('time taken', stop - start);
+  // const stop = new Date();
+  // console.log('time taken', stop - start);
   return result;
 }
 

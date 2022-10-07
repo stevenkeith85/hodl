@@ -12,7 +12,7 @@ export const UserHandle: FC<UserHandle> = ({ user, fontSize }) => {
     return (<>
         <Typography sx={{
             fontSize
-        }}>{user.nickname ? truncateText(user.nickname, 20) : getShortAddress(user.address)}</Typography>
+        }}>{user.nickname ? truncateText(user.nickname, 10) : getShortAddress(user.address)}</Typography>
     </>
     )
 }

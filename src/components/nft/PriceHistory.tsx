@@ -1,4 +1,4 @@
-import { Typography, Box } from "@mui/material"
+import { Typography, Box, Skeleton } from "@mui/material"
 import { indigo } from "@mui/material/colors";
 import axios from "axios";
 import useSWR from "swr";
@@ -62,7 +62,7 @@ const CustomTick = ({ x, y, stroke, payload }) => {
     }
 };
 
-export const PriceHistoryGraph = ({ nft, fallbackData }) => {
+export const PriceHistoryGraph = ({ nft, fallbackData=null }) => {
     const fetcher: Fetcher<PriceHistory[], [string, string]> = (url, query) => axios.get(`${url}/${query}`).then(r => r.data.priceHistory);
 
     const { data: priceHistory, error } = useSWR(nft.id ? [`/api/token-bought/`, nft.id] : null,
@@ -73,7 +73,7 @@ export const PriceHistoryGraph = ({ nft, fallbackData }) => {
     if (!priceHistory && !error) {
         return <HodlBorderedBox>
             <Typography variant="h2" sx={{ marginBottom: 2 }}>History</Typography>
-            <HodlLoadingSpinner />
+            <Skeleton variant="rectangular" height={300} animation="wave" />
         </HodlBorderedBox>
     }
 
@@ -81,7 +81,7 @@ export const PriceHistoryGraph = ({ nft, fallbackData }) => {
     // new data. :(
     return (
         <HodlBorderedBox>
-            <Typography variant="h2" sx={{ marginBottom: 2 }}>History</Typography>
+            <Typography variant="h2" sx={{ marginBottom: 2 }}>Recent Price History</Typography>
             <ResponsiveContainer
                 key={Date.now()}
                 width={'100%'}

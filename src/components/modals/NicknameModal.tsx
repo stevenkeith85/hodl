@@ -1,7 +1,5 @@
-import {  Tooltip, Box, Button, Stack, Typography } from "@mui/material";
+import { Tooltip, Box, Button, Stack, Typography } from "@mui/material";
 import { HodlModal } from "./HodlModal";
-import axios from "axios";
-import { token } from "../../lib/copyright";
 import { useNickname } from "../../hooks/useNickname";
 import { Formik, Form, Field } from 'formik';
 import { nicknameValidationSchema } from "../../validation/nickname";
@@ -19,7 +17,10 @@ export const NicknameModal = ({ nicknameModalOpen, setNicknameModalOpen }) => {
             >
                 <Stack spacing={3} textAlign="center">
                     <Typography variant="h2" sx={{ fontSize: '18px', fontWeight: 600 }}>Nickname</Typography>
-                    <Typography sx={{ fontSize: '18px', color: '#999' }}>Enter a nickname to use as an alias for your wallet address</Typography>
+                    <Typography sx={{
+                        fontSize: '18px',
+                        color: theme => theme.palette.text.secondary,
+                    }}>Enter a nickname to use as an alias for your wallet address</Typography>
                     <Formik
                         initialValues={{ nickname: nickname }}
                         validationSchema={nicknameValidationSchema}
@@ -56,8 +57,8 @@ export const NicknameModal = ({ nicknameModalOpen, setNicknameModalOpen }) => {
                                                 setFieldValue('nickname', value.toLowerCase());
                                             }}
                                         />
-                                    </Tooltip>
 
+                                    </Tooltip>
                                     <Box display="grid" gridTemplateColumns={"1fr 1fr"} gap={4}>
                                         <Button
                                             disabled={isSubmitting || apiError}
@@ -67,25 +68,6 @@ export const NicknameModal = ({ nicknameModalOpen, setNicknameModalOpen }) => {
                                             sx={{
                                                 paddingY: 1.5,
                                                 paddingX: 3
-                                            }}
-                                            onClick={async () => {
-                                                if (token) {
-                                                    try {
-                                                        const r = await axios.post(
-                                                            '/api/profile/picture',
-                                                            { token },
-                                                            {
-                                                                headers: {
-                                                                    'Accept': 'application/json',
-                                                                },
-                                                            }
-                                                        );
-
-
-
-                                                    } catch (error) {
-                                                    }
-                                                }
                                             }}
                                         >
                                             Select

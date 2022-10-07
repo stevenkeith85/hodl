@@ -105,7 +105,7 @@ export const HodlImageResponsive = ({
                     srcSet={srcSet}
                     alt=""
                     sizes={sizes}
-                    // loading="eager"
+                    loading="eager"
                     decoding="auto"
                     ref={imgRef}
                 />

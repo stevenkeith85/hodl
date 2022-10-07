@@ -24,7 +24,7 @@ export const AssetLicense = ({ nft }) => {
                         title={<AssetLicenseTooltip />}
                         placement="right-start"
                         arrow>
-                        <span>Asset License</span></Tooltip>
+                        <span>License</span></Tooltip>
                 </Typography>
                 <Box>
                     {nft.properties.asset.license === token && <>

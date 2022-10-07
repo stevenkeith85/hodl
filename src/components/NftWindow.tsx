@@ -1,4 +1,4 @@
-import { Box } from '@mui/material'
+import { Box, Skeleton } from '@mui/material'
 import Link from 'next/link';
 import { assetType } from '../lib/utils';
 import { HodlVideo } from './HodlVideo';
@@ -112,7 +112,11 @@ export const NftWindow: React.FC<NftWindowProps> = ({
     }
 
     return (
-        <Link key={nft.id} href={nft?.forSale ? `/nft/${nft.id}?tab=1` : `/nft/${nft.id}`} passHref>
+        <Link
+            key={nft.id}
+            href={nft?.forSale ? `/nft/${nft.id}?tab=1` : `/nft/${nft.id}`}
+            passHref
+        >
             <Box
                 component="a"
                 sx={{
@@ -138,11 +142,11 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                             position: 'relative'
                         }}>
                         <GifBoxOutlined sx={{ position: 'absolute', top: 8, left: 8 }} />
-                    <HodlVideo
-                        cid={nft?.properties?.asset?.uri}
-                        assetFolder="image"
-                        gif={true}
-                    />
+                        <HodlVideo
+                            cid={nft?.properties?.asset?.uri}
+                            assetFolder="image"
+                            gif={true}
+                        />
                     </Box>
                 }
                 {

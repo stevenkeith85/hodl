@@ -5,9 +5,16 @@ import { enqueueSnackbar } from 'notistack';
 import { buyNft, delistNft } from "../../lib/nft";
 import { ListModal } from "../modals/ListModal";
 import { SuccessModal } from "../modals/SuccessModal";
+import { Token } from "../../models/Token";
 
 
-export const NftActionButtons = ({ nft }) => {
+interface NftActionButtons {
+    nft: Token;
+    owner: string;
+    listed: boolean;
+}
+
+export const NftActionButtons = ({ nft, owner, listed }) => {
     const { address } = useContext(WalletContext);
 
     const [listModalOpen, setListModalOpen] = useState(false);
@@ -17,7 +24,7 @@ export const NftActionButtons = ({ nft }) => {
 
     const [price, setPrice] = useState(null);
 
-    const isOwner = () => Boolean(nft?.owner?.toLowerCase() === address?.toLowerCase());
+    const isOwner = () => Boolean(owner?.toLowerCase() === address?.toLowerCase());
 
     const smartContractError = e => {
         const re = /reverted with reason string '(.+)'/gi;
@@ -32,6 +39,10 @@ export const NftActionButtons = ({ nft }) => {
                     type: "error"
                 });
         }
+    }
+
+    if (!address) {
+        return null;
     }
 
     return (
@@ -85,82 +96,73 @@ export const NftActionButtons = ({ nft }) => {
                 </Typography>
             </SuccessModal>
 
-            <Stack
-                direction="row"
-                sx={{
-                    justifyContent: "space-between",
-                    alignItems: 'center'
-                }}>
-                <Stack
-                    direction="row"
-                    spacing={2}
-                >
-                    {
-                        Boolean(address) && Boolean(nft?.forSale) && !isOwner() &&
-                        <Button
-                            variant="contained"
-                            sx={{ paddingY: 1.5, paddingX: 3 }}
-                            onClick={async () => {
-                                try {
-                                    enqueueSnackbar(
-                                        'Please confirm the transaction in Metamask',
-                                        {
-                                            // @ts-ignore
-                                            variant: "hodlsnackbar",
-                                            type: "info"
-                                        });
+            {
+                listed && !isOwner() &&
+                <div>
+                    <Button
+                        variant="contained"
+                        sx={{ paddingY: 1.5, paddingX: 3 }}
+                        onClick={async () => {
+                            try {
+                                enqueueSnackbar(
+                                    'Please confirm the transaction in Metamask',
+                                    {
+                                        // @ts-ignore
+                                        variant: "hodlsnackbar",
+                                        type: "info"
+                                    });
 
-                                    await buyNft(nft);
-                                    setBoughtModalOpen(true);
-                                } catch (e) {
-                                    if (e.code === -32603) {
-                                        smartContractError(e);
-                                    }
+                                await buyNft(nft);
+                                setBoughtModalOpen(true);
+                            } catch (e) {
+                                if (e.code === -32603) {
+                                    smartContractError(e);
                                 }
-                            }}>
-                            Buy NFT
-                        </Button>
-                    }
-                    {isOwner() &&
-                        <>
-                            {
-                                nft?.forSale ? (
-                                    <Button
-                                        variant="contained"
-                                        sx={{ paddingY: 1.5, paddingX: 3 }}
-                                        onClick={async () => {
-                                            try {
-                                                enqueueSnackbar(
-                                                    'Please confirm the transaction in MetaMask',
-                                                    {
-                                                        // @ts-ignore
-                                                        variant: "hodlsnackbar",
-                                                        type: "info"
-                                                    });
-
-                                                await delistNft(nft);
-                                                setDelistModalOpen(true);
-                                            } catch (e) {
-                                                if (e.code === -32603) {
-                                                    smartContractError(e);
-                                                }
-                                            }
-                                        }}>
-                                        Delist NFT
-                                    </Button>
-                                ) : (
-                                    <Button
-                                        variant="contained"
-                                        sx={{ paddingY: 1.5, paddingX: 3 }}
-                                        onClick={() => setListModalOpen(true)}>
-                                        List NFT
-                                    </Button>
-                                )
                             }
-                        </>
-                    }
-                </Stack>
-            </Stack>
+                        }}>
+                        Buy NFT
+                    </Button>
+                </div>
+            }
+            {
+                listed && isOwner() &&
+                <div>
+                    <Button
+                        variant="contained"
+                        sx={{ paddingY: 1.5, paddingX: 3 }}
+                        onClick={async () => {
+                            try {
+                                enqueueSnackbar(
+                                    'Please confirm the transaction in MetaMask',
+                                    {
+                                        // @ts-ignore
+                                        variant: "hodlsnackbar",
+                                        type: "info"
+                                    });
+
+                                await delistNft(nft);
+                                setDelistModalOpen(true);
+                            } catch (e) {
+                                if (e.code === -32603) {
+                                    smartContractError(e);
+                                }
+                            }
+                        }}>
+                        Delist NFT
+                    </Button>
+                </div>
+            }
+            {
+                !listed && isOwner() &&
+                <div>
+                    <Button
+                        variant="contained"
+                        sx={{ paddingY: 1.5, paddingX: 3 }}
+                        onClick={() => setListModalOpen(true)}>
+                        List NFT
+                    </Button>
+                </div>
+            }
         </>
     )
 }

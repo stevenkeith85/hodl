@@ -21,7 +21,7 @@ export const getToken = async (tokenId) => {
     return null;
   }
 
-  const token: Token = await client.get('token:' + tokenId);
+  const token: Token = await client.get<Token>('token:' + tokenId);
 
   if (!token) {
     return null;

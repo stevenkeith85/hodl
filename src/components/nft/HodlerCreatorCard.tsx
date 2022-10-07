@@ -1,15 +1,13 @@
-import { Typography, Stack, Tooltip, Link, Box } from "@mui/material";
-import { cidToGatewayUrl } from "../../lib/utils";
-import { Nft } from "../../models/Nft";
-import { Token } from "../../models/Token";
+import { Typography, Tooltip, Box } from "@mui/material";
 import { ProfileNameOrAddress } from "../avatar/ProfileNameOrAddress";
 import { IpfsTooltip } from "../tooltips/IpfsTooltip";
 
-interface OwnerCreatorCardProps {
-    token: Nft;
+interface HodlerCreatorCardProps {
+    hodler: string;
+    creator: string;
 }
 
-export const OwnerCreatorCard: React.FC<OwnerCreatorCardProps> = ({ token }) => {
+export const HodlerCreatorCard: React.FC<HodlerCreatorCardProps> = ({ hodler, creator }) => {
     return (
         <Box
             sx={{
@@ -26,21 +24,21 @@ export const OwnerCreatorCard: React.FC<OwnerCreatorCardProps> = ({ token }) => 
                     <span>Author &amp; Hodler</span></Tooltip>
             </Typography>
 
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2}}>
+            <Box sx={{ display: 'grid', gap: 2}}>
                 <Box>
-                <Typography>Token Author</Typography>
+                <Typography>Author</Typography>
                 <ProfileNameOrAddress
-                    profileAddress={token?.creator}
+                    profileAddress={creator}
                     color={"primary"}
-                    fontSize="16px"
+                    fontSize="14px"
                 />
                 </Box>
                 <Box>
-                <Typography>Token Hodler</Typography>
+                <Typography>Hodler</Typography>
                 <ProfileNameOrAddress
-                    profileAddress={token?.owner}
+                    profileAddress={hodler}
                     color={"primary"}
-                    fontSize="16px"
+                    fontSize="14px"
                 />
                 </Box>
             </Box>

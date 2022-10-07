@@ -15,15 +15,11 @@ import { getUser } from './api/user/[handle]';
 import { getMostLikedTokens } from './api/rankings/token';
 import { useNewUsers } from '../hooks/useNewUsers';
 
-import { getTokenSearchResults } from './api/search/tokens';
-import { useSearchTokens } from '../hooks/useSearchTokens';
 import { UserContext } from '../contexts/UserContext';
 import { useFollowersCount } from '../hooks/useFollowersCount';
 import { useFollowingCount } from '../hooks/useFollowingCount';
 import { useHodlingCount } from '../hooks/useHodlingCount';
 import { useListedCount } from '../hooks/useListedCount';
-import { getHodlingCount } from './api/profile/hodlingCount';
-import { getListedCount } from './api/profile/listedCount';
 import { getFollowingCount } from './api/following/count';
 import { getFollowersCount } from './api/followers/count';
 import { UserViewModel } from '../models/User';
@@ -38,23 +34,22 @@ export async function getServerSideProps({ req, res }) {
   let user: UserViewModel = null;
 
   if (req.address) {
-    user = await getUser(req.address, req.address)
+    user = await getUser(req.address, req.address);
   }
 
   const limit = 8;
 
   const feed = getActions(user?.address, ActionSet.Feed, 0, limit);
-
   const topUsers = getMostFollowedUsers(0, limit);
   const topTokens = getMostLikedTokens(0, limit);
-  
   const newUsers = getNewUsers(0, limit, user?.address);
   const newTokens = getNewTokens(0, limit);
-
-  const hodlingCount = getHodlingCount(user?.address);
-  const listedCount = getListedCount(user?.address);
   const followingCount = getFollowingCount(user?.address);
   const followersCount = getFollowersCount(user?.address);
+
+  // const start = new Date();
+  // const stop = new Date();
+  // console.log('time taken', stop - start);
 
   const [
     pfeed,
@@ -62,8 +57,6 @@ export async function getServerSideProps({ req, res }) {
     ptopTokens,
     pnewUsers,
     pnewTokens,
-    phodlingCount,
-    plistedCount,
     pfollowingCount,
     pfollowersCount
   ] = await Promise.all([
@@ -72,13 +65,10 @@ export async function getServerSideProps({ req, res }) {
     topTokens,
     newUsers,
     newTokens,
-    hodlingCount,
-    listedCount,
     followingCount,
     followersCount
   ]);
 
-  console.log('newTokens', pnewTokens)
   return {
     props: {
       address: req.address || null,
@@ -89,8 +79,6 @@ export async function getServerSideProps({ req, res }) {
       prefetchedTopTokens: [ptopTokens],
       prefetchedNewUsers: [pnewUsers],
       prefetchedNewTokens: [pnewTokens],
-      prefetchedHodlingCount: phodlingCount,
-      prefetchedListedCount: plistedCount,
       prefetchedFollowingCount: pfollowingCount,
       prefetchedFollowersCount: pfollowersCount
     }
@@ -106,8 +94,6 @@ export default function Home({
   prefetchedTopTokens,
   prefetchedNewUsers,
   prefetchedNewTokens,
-  prefetchedHodlingCount,
-  prefetchedListedCount,
   prefetchedFollowingCount,
   prefetchedFollowersCount
 }) {
@@ -118,11 +104,11 @@ export default function Home({
 
   const { results: newUsers } = useNewUsers(limit, prefetchedNewUsers);
   const { results: newTokens } = useNewTokens(limit, prefetchedNewTokens);
-  
+
   const { actions: feed } = useActions(user?.address, ActionSet.Feed, limit, prefetchedFeed);
 
-  const [hodlingCount] = useHodlingCount(user?.address, prefetchedHodlingCount);
-  const [listedCount] = useListedCount(user?.address, prefetchedListedCount);
+  const [hodlingCount] = useHodlingCount(user?.address, null);
+  const [listedCount] = useListedCount(user?.address, null);
 
   const [followersCount] = useFollowersCount(user?.address, prefetchedFollowingCount);
   const [followingCount] = useFollowingCount(user?.address, prefetchedFollowersCount);

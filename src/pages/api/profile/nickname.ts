@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
-import { getAddress } from "./address";
 import apiRoute from "../handler";
 import { nicknameValidationSchema } from "../../../validation/nickname";
 

@@ -14,7 +14,14 @@ export const getPriceHistory = async (tokenId) : Promise<PriceHistory []>  => {
 
   const marketContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
   const tokenFilter = marketContract.filters.TokenBought(null, null, BigNumber.from(tokenId));
-  const txs = await marketContract.queryFilter(tokenFilter, 0, "latest");
+
+  // Infura only lets us search 3500 blocks
+  const latest = await provider.getBlockNumber();
+  const earliest = Math.max(latest - 3500 + 1, 0);
+
+  console.log('price history from earliest block to latest block', earliest, latest);
+  // TODO: We should store the blockhash a token was minted at
+  const txs = await marketContract.queryFilter(tokenFilter, earliest, latest);
 
   const result = [];
 

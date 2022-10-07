@@ -58,8 +58,8 @@ export const UserAvatarAndHandle: React.FC<UserAvatarProps> = ({
     if (!user) {
 
         return (<>
-            <Skeleton width={size} height={size} variant="circular"></Skeleton>
-            {handle && <Skeleton width={100} variant="text"></Skeleton>}
+            <Skeleton width={size} height={size} variant="circular" animation="wave"></Skeleton>
+            {handle && <Skeleton width={100} variant="text" animation="wave"></Skeleton>}
         </>
         )
     }

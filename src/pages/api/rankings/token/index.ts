@@ -39,7 +39,6 @@ export const getMostLikedTokens = async (
   const promises = ids.map(address => getToken(address));
   const tokens: Token[] = await Promise.all(promises);
   
-  
   return {
     items: tokens,
     next: Number(offset) + Number(limit),
