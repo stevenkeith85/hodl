@@ -237,24 +237,28 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({
     return (
         <Box key={item?.id} sx={{
             background: lastRead < item.timestamp ? "#ECF3FF" : "white",
-            padding: 1,
+            padding: 0.75,
             margin: 0.5,
-            width: 'calc(100% - 8px)',
             ...sx
         }}>
             <Box
-                display="flex"
-                alignItems="center"
-                gap={2}
+                sx={{
+                    display: 'flex',
+                    alignItems: 'start',
+                    gap: 1,
+                    justifyContent: 'space-between'
+                }}
             >
                 <Box
-                    display="flex"
-                    alignItems="center"
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'start',
+                        gap: 2,
+                        width: 'calc(100% - 80px)'
+                    }}
                     onClick={
                         () => setShowNotifications(false)
                     }
-                    gap={1.5}
-                    flexGrow={1}
                 >
                     <UserAvatarAndHandle
                         address={item.subject}
@@ -264,18 +268,45 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({
                     />
                     <NotificationLink item={item} />
                 </Box>
-                {
-                    item.token && item.token &&
-                    <Link href={`/nft/${item.token.id}`} passHref>
-                        <Typography component="a" sx={{ display: 'block'}}>
-                            <AssetThumbnail token={item.token} />
-                        </Typography>
-                    </Link>
-                }
-                {
-                    followed(item) &&
-                    <FollowButton profileAddress={item.subject} variant="text" />
-                }
+                <Box
+                    sx={{
+                        // background: 'blue',
+                        width: '80px',
+                        display: 'flex',
+                        alignItems: 'start',
+                        justifyContent: 'end'
+                    }}
+                >
+                    {
+                        item.token && item.token &&
+                        <Link href={`/nft/${item.token.id}`} passHref>
+                            <Typography
+                                component="a"
+                                sx={{
+                                    display: 'block',
+                                    width: 44,
+                                    height: 44,
+                                    // background: 'yellow'
+                                }}
+                            >
+                                <AssetThumbnail token={item.token} />
+                            </Typography>
+                        </Link>
+                    }
+                    {
+                        followed(item) &&
+                        <FollowButton
+                            profileAddress={item.subject}
+                            variant="outlined"
+                            sx={{
+                                paddingX: 0.75,
+                                paddingY: 0.25,
+                                marginY: 0.75,
+                                minWidth: 0
+                            }}
+                        />
+                    }
+                </Box>
             </Box>
         </Box>
     )

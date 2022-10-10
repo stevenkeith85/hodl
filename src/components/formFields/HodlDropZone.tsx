@@ -3,7 +3,7 @@ import { Box, Button, Typography } from '@mui/material'
 import React from 'react'
 import { useDropzone } from 'react-dropzone'
 
-export const HodlDropzone = ({ onDrop }) => {
+export const HodlDropzone = ({ onDrop, loading }) => {
     const validator = file => {
         if (file.type.indexOf("image") !== -1 && file.size > 10 * 1024 * 1024) {
             return {
@@ -44,7 +44,7 @@ export const HodlDropzone = ({ onDrop }) => {
                     alignItems="center"
                     justifyContent="center"
                     textAlign="center"
-                    gap={4}
+                    gap={3}
                 >
                     <Box display="flex" gap={2}>
                         <PhotoOutlined
@@ -88,6 +88,7 @@ export const HodlDropzone = ({ onDrop }) => {
                     </Typography>
                     <div>
                         <Button
+                            disabled={loading}
                             color="primary"
                             variant="contained"
                             sx={{

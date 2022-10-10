@@ -32,8 +32,10 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
             {
                 (assetType(item.token) === AssetTypes.Video) &&
                 <HodlVideo
+                    poster={item.token?.image}
                     cid={item.token?.properties?.asset?.uri}
                     controls={true}
+                    onLoad={() => setLoading(false)}
                 />
             }
             {
@@ -43,6 +45,7 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
                     gif={true}
                     assetFolder="image"
                     height={'575px'}
+                    onLoad={() => setLoading(false)}
                 />
             }
             {

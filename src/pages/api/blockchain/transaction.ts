@@ -143,12 +143,12 @@ route.post(async (req, res: NextApiResponse) => {
     const parsedLogs = [];
     txReceipt.logs.forEach(log => {
         try {
-            console.log('raw log', log);
+            console.log('api/blockchain/transaction raw log', log);
             const parsedLog = contract.interface.parseLog(log);
-            console.log(`tokenMinted - parsedLog`, parsedLog);
+            console.log(`api/blockchain/transaction - parsedLog`, parsedLog);
             parsedLogs.push(parsedLog);
         } catch(e) {
-            console.log("skipped a log as its not in the ABI")
+            console.log("api/blockchain/transaction - skipped a log as its not in the ABI")
         }
     });
 
@@ -161,7 +161,7 @@ route.post(async (req, res: NextApiResponse) => {
     } else if (log.name === 'TokenDelisted') {
         success = await tokenDelisted(hash, provider, txReceipt, tx);
     } else if (log.name === 'TokenBought') {
-        success = await tokenBought(hash, provider, txReceipt, tx);
+        success = await tokenBought(hash, provider, txReceipt, tx, log);
     } else if (log.name === 'Transfer') {
         success = await tokenMinted(hash, provider, txReceipt, tx, log);
     }

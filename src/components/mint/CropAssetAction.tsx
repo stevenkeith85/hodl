@@ -33,31 +33,64 @@ export const CropAssetAction = ({
       <div>
         <Box
           sx={{
-            display: 'flex',
-            gap: 2
-          }}>
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: '1fr 1fr',
+              sm: '1fr 1fr',
+            },
+            gap: 3
+          }}
+        >
           <div>
-            <Button onClick={() => setFormData(old => ({
-              ...old,
-              aspectRatio: null
-            }))}>Original</Button></div>
+            <Button
+              sx={{
+                paddingX: 2.5,
+                paddingY: 1.25,
+                minWidth: '100px'
+              }}
+              variant={formData.aspectRatio === null ? 'contained' : 'outlined'}
+              onClick={() => setFormData(old => ({
+                ...old,
+                aspectRatio: null
+              }))}>Original</Button></div>
           <div>
-            <Button onClick={() => setFormData(old => ({
-              ...old,
-              aspectRatio: `1:1`
-            }))}>1:1</Button>
+            <Button
+              sx={{
+                paddingX: 2.5,
+                paddingY: 1.25,
+                minWidth: '100px'
+              }}
+              variant={formData.aspectRatio === "1:1" ? 'contained' : 'outlined'}
+              onClick={() => setFormData(old => ({
+                ...old,
+                aspectRatio: `1:1`
+              }))}>1:1</Button>
           </div>
           <div>
-            <Button onClick={() => setFormData(old => ({
-              ...old,
-              aspectRatio: `4:5`
-            }))}>4:5</Button>
+            <Button
+              sx={{
+                paddingX: 2.5,
+                paddingY: 1.25,
+                minWidth: '100px'
+              }}
+              variant={formData.aspectRatio === "4:5" ? 'contained' : 'outlined'}
+              onClick={() => setFormData(old => ({
+                ...old,
+                aspectRatio: `4:5`
+              }))}>4:5</Button>
           </div>
           <div>
-            <Button onClick={() => setFormData(old => ({
-              ...old,
-              aspectRatio: `16:9`
-            }))}>16:9</Button>
+            <Button
+              sx={{
+                paddingX: 2.5,
+                paddingY: 1.25,
+                minWidth: '100px'
+              }}
+              variant={formData.aspectRatio === "16:9" ? 'contained' : 'outlined'}
+              onClick={() => setFormData(old => ({
+                ...old,
+                aspectRatio: `16:9`
+              }))}>16:9</Button>
           </div>
         </Box>
       </div>

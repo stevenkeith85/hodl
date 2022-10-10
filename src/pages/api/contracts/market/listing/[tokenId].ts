@@ -21,9 +21,10 @@ export const getListing = async (id: number): Promise<ListingVM> => {
   const marketContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
   const listing: ListingSolidity = await marketContract.getListing(id);
 
+  // console.log('listing', listing)
   if (isValidListing(listing)) {
     return {
-      price: listing.price.toNumber(),
+      price: ethers.utils.formatEther(listing.price),
       seller: listing.seller,
       tokenId: listing.tokenId.toNumber()
     };
@@ -43,7 +44,8 @@ route.get(async (req: NextApiRequest, res: NextApiResponse) => {
     const listing: ListingVM = await getListing(+tokenId);
     return res.status(200).json({ listing })
   } catch (e) {
-    return res.status(400).json({ message: 'Bad Request' });
+    console.log('api/contracts/market/listing - error', e)
+    return res.status(500).json({ message: 'Server Error' });
   }
 });
 

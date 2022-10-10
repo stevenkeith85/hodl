@@ -4,10 +4,13 @@ import { HodlModal } from "../index";
 import { useRouter } from "next/router";
 import { enqueueSnackbar } from 'notistack';
 import { MaticSymbol } from "../MaticSymbol";
+import { useState } from "react";
 
 
 export const ListModal = ({ listModalOpen, setListModalOpen, setListedModalOpen, price, setPrice }) => {
     const router = useRouter();
+
+    const [listButtonDisabled, setListButtonDisabled] = useState(false);
 
     // Possibly extract a hook (or something) for this
     const smartContractError = e => {
@@ -47,6 +50,7 @@ export const ListModal = ({ listModalOpen, setListModalOpen, setListedModalOpen,
                         sx={{ paddingY: 1.5, paddingX: 3 }}
                         onClick={async () => {
                             try {
+                                setListButtonDisabled(true);
                                 enqueueSnackbar(
                                     'Please confirm the transaction in MetaMask',
                                     {
@@ -60,12 +64,13 @@ export const ListModal = ({ listModalOpen, setListModalOpen, setListedModalOpen,
                                 setListModalOpen(false);
                                 setListedModalOpen(true);
                             } catch (e) {
+                                setListButtonDisabled(false);
                                 if (e.code === -32603) {
                                     smartContractError(e);
                                 }
                             }
                         }}
-                        disabled={!price}
+                        disabled={!price || listButtonDisabled}
                     >
                         List
                     </Button>

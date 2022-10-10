@@ -1,6 +1,7 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
+import dotenv from 'dotenv';
+import axios from 'axios';
 
 const client = Redis.fromEnv()
 import apiRoute from "../handler";
@@ -12,6 +13,7 @@ import { ethers } from "ethers";
 import { getProvider } from "../../../lib/server/connections";
 import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import { HodlComment } from "../../../models/HodlComment";
+import { User } from "../../../models/User";
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
@@ -56,47 +58,73 @@ const route = apiRoute();
 // or store in a ZSET (which we may do later for 'rankings')
 
 
-export const addComment = async (comment: HodlComment) => {
+// TODO: REDIS TRANSACTION
+export const addComment = async (comment: HodlComment, req) => {
   comment.timestamp = Date.now();
-
-  // TODO: REDIS TRANSACTION
+    
   const commentId = await client.incr("commentId")
   comment.id = commentId;
+  
+  const p = client.pipeline();
 
   // Store the comment
-  const commentAdded = client.set(`comment:${commentId}`, comment);
+  p.set(`comment:${commentId}`, comment);
 
   // Store references to the comment for user, the token
-  const userRecordAdded = await client.zadd(`user:${comment.subject}:comments`, { 
+  p.zadd(`user:${comment.subject}:comments`, { 
     member: commentId, 
     score: comment.timestamp 
   });
-  
+
   // add the comment to to token or comment's collection
-  const tokenRecordAdded = await client.zadd(`${comment.object}:${comment.objectId}:comments`, { 
+  p.zadd(`${comment.object}:${comment.objectId}:comments`, { 
     member: commentId,
     score: comment.timestamp
   });
-  
+
   // update the comment count (comments on the nft and all the replies) for the token
-  // const commentCountUpdated = await client.zincrby("commentCount", 1, comment.tokenId);
-  const commentCountUpdated = await client.incrby(`token:${comment.tokenId}:comments:count`, 1);
+  p.incrby(`token:${comment.tokenId}:comments:count`, 1);
 
-  let notificationAdded = 0;
-  if (tokenRecordAdded) {
-    const notification: HodlAction = {
-      subject: comment.subject,
-      action: ActionTypes.Commented,
-      object: "comment", // the action's metadata is a comment
-      objectId: comment.id
-    };
+  p.hmget<User>(`user:${req.address}`, 'actionQueueId');
 
-    notificationAdded = await addAction(notification);
+  const [commentAdded, userRecordAdded, tokenRecordAdded, updatedCommentCount, user] = await p.exec<[string|null, number, number, number, User]>();
+
+
+  const start = new Date();
+  
+  const handlerPath = `api/actions/add`;
+  const url = `https://api.serverlessq.com?id=${user?.actionQueueId}&target=${process.env.MESSAGE_HANDLER_HOST}/${handlerPath}`;
+  const { accessToken, refreshToken } = req.cookies;
+  try {
+    // TODO - We don't await this at the moment; as we do nothing with the return code.
+    // it takes up to a second to get a response. possibly something to follow up with serverlessq at some point
+    // we should really log whether things were added to the queue for support purposes
+    axios.post(
+      url,
+      {
+        action: ActionTypes.Commented,
+        object: "comment",
+        id: comment.id
+      },
+      {
+        withCredentials: true,
+        headers: {
+          "Accept": "application/json",
+          "x-api-key": process.env.SERVERLESSQ_API_TOKEN,
+          "Content-Type": "application/json",
+          "Cookie": `refreshToken=${refreshToken}; accessToken=${accessToken}`
+        }
+      }
+    )
+  } catch (e) {
+    console.log(e)
   }
 
-  return [commentAdded, userRecordAdded, tokenRecordAdded, commentCountUpdated, notificationAdded]
-}
+  const stop = new Date();
+  console.log('time taken', stop - start);
 
+  return [commentAdded, userRecordAdded, tokenRecordAdded, updatedCommentCount]
+}
 
 route.post(async (req, res: NextApiResponse) => {
   if (!req.address) {
@@ -108,16 +136,6 @@ route.post(async (req, res: NextApiResponse) => {
   const isValid = await AddCommentValidationSchema.isValid(req.body)
   if (!isValid) {
     return res.status(400).json({ message: 'Bad Request' });
-  }
-
-  if (object === "token") {
-    const provider = await getProvider();
-    const contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, HodlNFT.abi, provider);
-    const tokenExists = await contract.exists(objectId);
-
-    if (!tokenExists) {
-      return res.status(400).json({ message: 'Bad Request' });
-    }
   }
 
   // We trim the comment on both the client and server. 
@@ -133,7 +151,7 @@ route.post(async (req, res: NextApiResponse) => {
     tokenId,
   };
 
-  const success = await addComment(hodlComment);
+  const success = await addComment(hodlComment, req);
 
   if (success) {
     // getCommentCount.delete(object, objectId);

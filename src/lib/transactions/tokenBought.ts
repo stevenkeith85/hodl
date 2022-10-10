@@ -6,6 +6,7 @@ import Market from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
 import { getTagsForToken } from "../../pages/api/tags";
 import { Nft } from "../../models/Nft";
 import { fetchNFT } from "../../pages/api/nft/[tokenId]";
+import { LogDescription } from "ethers/lib/utils";
 
 const client = Redis.fromEnv()
 
@@ -14,11 +15,12 @@ export const tokenBought = async (
     hash: string, // check valid address?
     provider: ethers.providers.BaseProvider,
     txReceipt: ethers.providers.TransactionReceipt,
-    tx: ethers.providers.TransactionResponse
+    tx: ethers.providers.TransactionResponse,
+    log: LogDescription
 ): Promise<boolean> => {
     console.log(`tokenBought - processing tx`);
 
-    const contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
+    // const contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
 
     // event TokenBought(
     //     address indexed buyer,
@@ -26,7 +28,7 @@ export const tokenBought = async (
     //     uint256 indexed tokenId,
     //     uint256 price
     // );
-    const log: ethers.utils.LogDescription = contract.interface.parseLog(txReceipt.logs?.[0]);
+    // const log: ethers.utils.LogDescription = contract.interface.parseLog(txReceipt.logs?.[0]);
 
     if (log.name !== 'TokenBought') {
         console.log('tokenBought - called with a non buying transaction');

@@ -56,7 +56,7 @@ export const Replies = ({
             {
                 swr.data &&
                 swr.data.length &&
-                swr.data[swr.data.length - 1].next !== swr.data[swr.data.length - 1].total &&
+                swr.data[swr.data.length - 1].next <= swr.data[swr.data.length - 1].total &&
                 <Typography
                     sx={{
                         fontSize: 10,

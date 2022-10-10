@@ -6,9 +6,14 @@ export const FilterButtons = ({ formData, setFormData }) => (
   <Box
     sx={{
       display: 'grid',
-      gap: 6,
-      gridTemplateColumns: '1fr 1fr 1fr',
-      gridTemplateRows: `1fr 1fr`,
+      gap: {
+        xs: 2,
+        sm: 3
+      },
+      gridTemplateColumns: {
+        xs: '1fr 1fr',
+        sm: '1fr 1fr 1fr',
+      }
     }}>
     {imageFilters.map(({ code, name }, index) => (
       <Box
@@ -19,20 +24,28 @@ export const FilterButtons = ({ formData, setFormData }) => (
         }))}
         sx={{
           cursor: 'pointer',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center'
         }}
       >
         {formData.fileName &&
-          <HodlImageResponsive
-            cid={formData.fileName.split('/')[2]}
-            folder="uploads"
-            effect={code}
-            widths={[100, 200]}
-            sizes="100px"
-            aspectRatio={formData.aspectRatio}
-          />}
-        <Typography sx={{
-          fontWeight: formData.filter === code ? '600' : '200',
-        }}>{name}</Typography>
+          <Box>
+            <HodlImageResponsive
+              cid={formData.fileName.split('/')[2]}
+              folder="uploads"
+              effect={code}
+              widths={[125, 250]}
+              sizes="125px"
+              aspectRatio={formData.aspectRatio}
+            />
+          </Box>
+        }
+        <Typography
+          sx={{
+            fontWeight: formData.filter === code ? '600' : '200',
+            margin: 2
+          }}>{name}</Typography>
       </Box>
     ))}
   </Box>

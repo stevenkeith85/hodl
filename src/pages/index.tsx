@@ -47,10 +47,6 @@ export async function getServerSideProps({ req, res }) {
   const followingCount = getFollowingCount(user?.address);
   const followersCount = getFollowersCount(user?.address);
 
-  // const start = new Date();
-  // const stop = new Date();
-  // console.log('time taken', stop - start);
-
   const [
     pfeed,
     ptopUsers,

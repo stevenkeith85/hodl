@@ -41,7 +41,7 @@ export const TokenLinksList: React.FC<TokenLinksListProps> = ({ swr, limit, show
                   alignItems="center" 
                   key={token.id}
                   sx={{
-                    marginY: 2
+                    marginY: 1.5
                   }}
                 >
                   <Box flexGrow={1}>

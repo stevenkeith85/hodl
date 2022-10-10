@@ -10,6 +10,8 @@ import NFT from '../../artifacts/contracts/HodlNFT.sol/HodlNFT.json'
 import { getMetaMaskSigner } from "./connections";
 import axios from 'axios'
 import { Nft } from '../models/Nft.js';
+import { Token } from '../models/Token';
+import { ListingVM } from '../models/Listing';
 
 export const listNft = async (tokenId, tokenPrice) => {
   const signer = await getMetaMaskSigner();
@@ -45,13 +47,13 @@ export const listNft = async (tokenId, tokenPrice) => {
   }
 }
 
-export const buyNft = async (nft: Nft) => {
+export const buyNft = async (token: Token, listing: ListingVM) => {
   const signer = await getMetaMaskSigner();
+  
   const contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, signer);
-
-  const price = ethers.utils.parseUnits(nft.price.toString(), 'ether')
-
-  const { hash } = await contract.buyToken(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, nft.id, { value: price })
+  const price = ethers.utils.parseUnits(listing.price.toString(), 'ether')
+  
+  const { hash } = await contract.buyToken(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, token.id, { value: price })
 
   try {
     const r = await axios.post(

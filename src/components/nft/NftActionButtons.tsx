@@ -6,15 +6,16 @@ import { buyNft, delistNft } from "../../lib/nft";
 import { ListModal } from "../modals/ListModal";
 import { SuccessModal } from "../modals/SuccessModal";
 import { Token } from "../../models/Token";
+import { ListingVM } from "../../models/Listing";
 
 
 interface NftActionButtons {
     nft: Token;
-    owner: string;
-    listed: boolean;
+    hodler: string;
+    listing: ListingVM
 }
 
-export const NftActionButtons = ({ nft, owner, listed }) => {
+export const NftActionButtons = ({ token, hodler, listing }) => {
     const { address } = useContext(WalletContext);
 
     const [listModalOpen, setListModalOpen] = useState(false);
@@ -24,21 +25,16 @@ export const NftActionButtons = ({ nft, owner, listed }) => {
 
     const [price, setPrice] = useState(null);
 
-    const isOwner = () => Boolean(owner?.toLowerCase() === address?.toLowerCase());
+    const isHodler = () => Boolean(hodler?.toLowerCase() === address?.toLowerCase());
 
     const smartContractError = e => {
-        const re = /reverted with reason string '(.+)'/gi;
-        const matches = re.exec(e?.data?.message)
-
-        if (matches) {
-            enqueueSnackbar(
-                matches[1],
-                {
-                    // @ts-ignore
-                    variant: "hodlsnackbar",
-                    type: "error"
-                });
-        }
+        enqueueSnackbar(
+            e?.data?.message,
+            {
+                // @ts-ignore
+                variant: "hodlsnackbar",
+                type: "error"
+            });
     }
 
     if (!address) {
@@ -97,7 +93,7 @@ export const NftActionButtons = ({ nft, owner, listed }) => {
             </SuccessModal>
 
             {
-                listed && !isOwner() &&
+                listing !== null && !isHodler() &&
                 <div>
                     <Button
                         variant="contained"
@@ -111,12 +107,11 @@ export const NftActionButtons = ({ nft, owner, listed }) => {
                                         variant: "hodlsnackbar",
                                         type: "info"
                                     });
-
-                                await buyNft(nft);
+                                await buyNft(token, listing);
                                 setBoughtModalOpen(true);
                             } catch (e) {
                                 if (e.code === -32603) {
-                                    smartContractError(e);
+                                smartContractError(e);
                                 }
                             }
                         }}>
@@ -125,7 +120,7 @@ export const NftActionButtons = ({ nft, owner, listed }) => {
                 </div>
             }
             {
-                listed && isOwner() &&
+                listing !== null && isHodler() &&
                 <div>
                     <Button
                         variant="contained"
@@ -140,7 +135,7 @@ export const NftActionButtons = ({ nft, owner, listed }) => {
                                         type: "info"
                                     });
 
-                                await delistNft(nft);
+                                await delistNft(token);
                                 setDelistModalOpen(true);
                             } catch (e) {
                                 if (e.code === -32603) {
@@ -153,7 +148,7 @@ export const NftActionButtons = ({ nft, owner, listed }) => {
                 </div>
             }
             {
-                !listed && isOwner() &&
+                listing === null && isHodler() &&
                 <div>
                     <Button
                         variant="contained"

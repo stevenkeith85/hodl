@@ -6,6 +6,7 @@ import { Form, Formik } from "formik";
 import { HodlDropzone } from "../formFields/HodlDropZone";
 
 export const SelectAssetAction: FC<MintProps> = ({
+  loading,
   setLoading,
   formData,
   setFormData,
@@ -58,7 +59,7 @@ export const SelectAssetAction: FC<MintProps> = ({
     >
       {() => (
         <Form>
-          <HodlDropzone onDrop={onDrop} />
+          <HodlDropzone onDrop={onDrop} loading={loading}/>
         </Form>
       )}
     </Formik>

@@ -84,6 +84,7 @@ const NftDetail = ({
       return;
     }
 
+    console.log('listing', listing)
     if (listing == null) { // the token isn't for sale, so the hodler is the ownerOf
       setHodler(token.ownerOf);
     } else {
@@ -110,99 +111,107 @@ const NftDetail = ({
             xs={12}
             marginBottom={4}
           >
-            <Stack
-              spacing={1}
-              direction="row"
+            <Box
               sx={{
-                justifyContent: 'space-between',
-                alignItems: 'center',
+                marginX: {
+                  xs: 2,
+                  sm: 0
+                }
               }}>
-              <Box
-                display="flex"
-                gap={1}
-                alignItems="center"
-              >
-                <UserAvatarAndHandle
-                  address={hodler}
-                  size={50}
-                  fontSize={16}
-                />
-              </Box>
-
-              <Box
+              <Stack
+                spacing={1}
+                direction="row"
                 sx={{
-                  display: 'flex',
-                  justifyContent: 'start',
-                  marginBottom: 2
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
                 }}>
-                <Tabs
-                  value={value}
-                  onChange={(e, v) => {
-                    setValue(v);
-
-                    router.push(
-                      {
-                        pathname: '/nft/[tokenId]',
-                        query: {
-                          tokenId: nft.id,
-                          tab: v
-                        }
-                      },
-                      undefined,
-                      {
-                        shallow: true
-                      }
-                    )
-                  }}
-                  textColor="secondary"
-                  indicatorColor="secondary"
+                <Box
+                  display="flex"
+                  gap={1}
+                  alignItems="center"
                 >
-                  <Tab key={0} value={0} icon={
-                    <Forum
-                      sx={{
-                        fontSize: {
-                          xs: 16,
-                        }
-                      }}
-                    />
-                  }
-                    sx={{
-                      minWidth: 0,
-                      padding: 2,
-                      margin: 0
-                    }}
+                  <UserAvatarAndHandle
+                    address={hodler}
+                    size={50}
+                    fontSize={16}
                   />
-                  <Tab key={1} value={1} icon={
-                    <Insights
-                      sx={{
-                        fontSize: {
-                          xs: 16,
+                </Box>
+
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'start',
+                    marginBottom: 2
+                  }}>
+                  <Tabs
+                    value={value}
+                    onChange={(e, v) => {
+                      setValue(v);
+
+                      router.push(
+                        {
+                          pathname: '/nft/[tokenId]',
+                          query: {
+                            tokenId: nft.id,
+                            tab: v
+                          }
                         },
-                      }}
-                    />}
-                    sx={{
-                      minWidth: 0,
-                      padding: 2,
-                      margin: 0
+                        undefined,
+                        {
+                          shallow: true
+                        }
+                      )
                     }}
-                  />
-                  <Tab key={2} value={2}
-                    icon={
-                      <DataObject
+                    textColor="secondary"
+                    indicatorColor="secondary"
+                  >
+                    <Tab key={0} value={0} icon={
+                      <Forum
                         sx={{
                           fontSize: {
                             xs: 16,
                           }
                         }}
+                      />
+                    }
+                      sx={{
+                        minWidth: 0,
+                        padding: 2,
+                        margin: 0
+                      }}
+                    />
+                    <Tab key={1} value={1} icon={
+                      <Insights
+                        sx={{
+                          fontSize: {
+                            xs: 16,
+                          },
+                        }}
                       />}
-                    sx={{
-                      minWidth: 0,
-                      padding: 2,
-                      margin: 0
-                    }} />
-                </Tabs>
-              </Box>
-            </Stack>
+                      sx={{
+                        minWidth: 0,
+                        padding: 2,
+                        margin: 0
+                      }}
+                    />
+                    <Tab key={2} value={2}
+                      icon={
+                        <DataObject
+                          sx={{
+                            fontSize: {
+                              xs: 16,
+                            }
+                          }}
+                        />}
+                      sx={{
+                        minWidth: 0,
+                        padding: 2,
+                        margin: 0
+                      }} />
+                  </Tabs>
+                </Box>
+              </Stack>
+            </Box>
           </Grid>
           <Grid
             item
@@ -211,31 +220,39 @@ const NftDetail = ({
           >
             <Box
               sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 2,
-                marginBottom: 4,
-              }}
-            >
-              <DetailPageImage token={nft} />
-              <Box gap={2} display='flex' alignItems='center'>
-                <Likes
-                  sx={{
-                    color: theme => theme.palette.secondary.main,
-                    '.MuiTypography-body1': { color: '#666' }
-                  }}
-                  id={nft.id}
-                  object="token"
-                  fontSize={12}
-                  size={18}
-                />
-                <Comments
-                  fontSize={12}
-                  size={18}
-                  nft={nft}
-                  popUp={false}
-                  sx={{ color: '#333' }}
-                />
+                marginX: {
+                  xs: 2,
+                  sm: 0
+                }
+              }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 2,
+                  marginBottom: 4,
+                }}
+              >
+                <DetailPageImage token={nft} />
+                <Box gap={1.5} display='flex' alignItems='center'>
+                  <Likes
+                    sx={{
+                      color: theme => theme.palette.secondary.main,
+                      '.MuiTypography-body1': { color: '#666' }
+                    }}
+                    id={nft.id}
+                    object="token"
+                    fontSize={12}
+                    size={18}
+                  />
+                  <Comments
+                    fontSize={12}
+                    size={18}
+                    nft={nft}
+                    popUp={false}
+                    sx={{ color: '#333' }}
+                  />
+                </Box>
               </Box>
             </Box>
           </Grid>
@@ -246,58 +263,70 @@ const NftDetail = ({
             marginBottom={4}
             paddingLeft={{ md: 4 }}
           >
-            <div hidden={value !== 0}>
-              <HodlBorderedBox>
-                <Box
-                  paddingBottom={2}
-                  mb={2}
-                  sx={{ borderBottom: `1px solid #ddd` }}>
-                  <Typography mb={2} sx={{ fontSize: 16, fontWeight: 500 }}>{nft.name}</Typography>
-                  <Box sx={{ whiteSpace: 'pre-line' }}>{insertTagLinks(nft.description)}</Box>
-                </Box>
-                <HodlCommentsBox
-                  limit={limit}
-                  header={false}
-                />
-              </HodlBorderedBox>
-            </div>
-            <div hidden={value !== 1}>
-              <Box display="grid" gap={2}>
-                <Box
-                  display="grid"
-                  sx={{
-                    background: indigo[50],
-                    padding: 2,
-                    border: `1px solid #ddd`,
-                    borderRadius: 1
-                  }}>
-                  <Typography variant="h2" marginBottom={2}>Price</Typography>
-                  {
-                    listing === undefined &&
-                    <Skeleton variant="text" width={100} height={26} animation="wave" />
-                  }
-                  {
-                    listing === null &&
-                    <Typography sx={{ fontSize: 16 }}>Not for Sale</Typography>
-                  }
-                  {listing && <MaticPrice price={listing?.price} color="black" size={18} fontSize={16} />}
-                  {hodler && <Box
+            <Box
+              sx={{
+                marginX: {
+                  xs: 2,
+                  sm: 0
+                }
+              }}>
+              <div hidden={value !== 0}>
+                <HodlBorderedBox>
+                  <Box
+                    paddingBottom={2}
+                    mb={2}
+                    sx={{ borderBottom: `1px solid #ddd` }}>
+                    <Typography mb={2} sx={{ fontSize: 16, fontWeight: 500 }}>{nft.name}</Typography>
+                    <Box sx={{ whiteSpace: 'pre-line' }}>{insertTagLinks(nft.description)}</Box>
+                  </Box>
+                  <HodlCommentsBox
+                    limit={limit}
+                    header={false}
+                  />
+                </HodlBorderedBox>
+              </div>
+              <div hidden={value !== 1}>
+                <Box display="grid" gap={4}>
+                  <Box
+                    display="grid"
                     sx={{
-                      marginTop: 2
+                      background: indigo[50],
+                      padding: 2,
+                      border: `1px solid #ddd`,
+                      borderRadius: 1
                     }}>
-                    <NftActionButtons nft={nft} owner={hodler} listed={listing !== null} />
-                  </Box>}
+                    <Typography variant="h2" marginBottom={2}>Price</Typography>
+                    {
+                      listing === undefined &&
+                      <Skeleton variant="text" width={100} height={26} animation="wave" />
+                    }
+                    {
+                      listing === null &&
+                      <Typography sx={{ fontSize: 16 }}>Not for Sale</Typography>
+                    }
+                    {listing && <MaticPrice price={listing?.price} color="black" size={18} fontSize={16} />}
+                    {hodler && <Box
+                      sx={{
+                        marginTop: 2
+                      }}>
+                      <NftActionButtons 
+                        token={nft} 
+                        hodler={hodler}  
+                        listing={listing}
+                        />
+                    </Box>}
+                  </Box>
+                  <PriceHistoryGraph nft={nft} />
                 </Box>
-                <PriceHistoryGraph nft={nft} />
-              </Box>
-            </div>
-            <div hidden={value !== 2}>
-              <Box display="grid" gap={2}>
-                <IpfsCard token={nft} />
-                <HodlerCreatorCard creator={nft?.creator} hodler={hodler} />
-                <AssetLicense nft={nft} />
-              </Box>
-            </div>
+              </div>
+              <div hidden={value !== 2}>
+                <Box display="grid" gap={4}>
+                  <IpfsCard token={nft} />
+                  <HodlerCreatorCard creator={nft?.creator} hodler={hodler} />
+                  <AssetLicense nft={nft} />
+                </Box>
+              </div>
+            </Box>
           </Grid>
         </Grid >
       </NftContext.Provider>

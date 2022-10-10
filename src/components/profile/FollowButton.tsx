@@ -8,15 +8,16 @@ import { User, UserViewModel } from "../../models/User";
 interface FollowButtonProps {
     profileAddress: string;
     variant?: 'text' | 'outlined' | 'contained';
+    sx?: object
 }
 
-export const FollowButton : React.FC<FollowButtonProps> = ({ profileAddress, variant ="contained" }) => {
+export const FollowButton: React.FC<FollowButtonProps> = ({ profileAddress, variant = "contained", sx = {} }) => {
     const { address } = useContext(WalletContext); // TODO: We probably just want to store the logged in UserViewModal in the context
     const profileUserSWR = useUser(profileAddress);
 
-    
+
     const [
-        follow, 
+        follow,
     ] = useFollow(profileAddress);
 
     if (!address || address === profileAddress) {
@@ -25,7 +26,7 @@ export const FollowButton : React.FC<FollowButtonProps> = ({ profileAddress, var
     if (!profileUserSWR.data) {
         return null;
     }
-    
+
     return (
         <Button
             variant={variant}
@@ -33,6 +34,9 @@ export const FollowButton : React.FC<FollowButtonProps> = ({ profileAddress, var
             onClick={ // @ts-ignore
                 async () => await follow()
             }
+            sx={{
+                ...sx
+            }}
         >
             {profileUserSWR.data.followedByViewer ? 'following' : 'follow'}
         </Button>

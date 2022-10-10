@@ -13,6 +13,7 @@ export type User = {
     nonce?: number; // the last transaction that we processed from this user. nonce is unique to each address. you can see it in metamask, and it is logged on the blockchain
 
     txQueueId: number;
+    actionQueueId: number;
 }
 
 // For the UI

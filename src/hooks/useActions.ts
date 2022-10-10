@@ -1,6 +1,4 @@
-import { useContext } from "react";
 import useSWRInfinite from 'swr/infinite'
-import { WalletContext } from "../contexts/WalletContext";
 import { ActionSet, HodlActionViewModel } from "../models/HodlAction";
 import axios from 'axios';
 import { Fetcher } from "swr";

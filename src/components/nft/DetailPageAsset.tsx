@@ -15,7 +15,11 @@ export const DetailPageAsset: React.FC<DetailPageAssetProps> = ({ token }) => {
     const [assetModalOpen, setAssetModalOpen] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    const asset = <Box sx={{ cursor: 'pointer' }}>
+    const asset = <Box
+        sx={{
+            cursor: 'pointer'
+        }}
+    >
         <Box onClick={() => setAssetModalOpen(true)}>
             {
                 assetType(token) === AssetTypes.Gif &&
@@ -23,6 +27,7 @@ export const DetailPageAsset: React.FC<DetailPageAssetProps> = ({ token }) => {
                     cid={token?.properties?.asset?.uri}
                     assetFolder="image"
                     gif={true}
+                    onLoad={() => setLoading(false)}
                 />
             }
         </Box>
@@ -41,8 +46,10 @@ export const DetailPageAsset: React.FC<DetailPageAssetProps> = ({ token }) => {
             {
                 assetType(token) === AssetTypes.Video &&
                 <HodlVideo
+                    poster={token?.image}
                     cid={token?.properties?.asset?.uri}
                     height={'auto'}
+                    onLoad={() => setLoading(false)}
                 />
             }
         </Box>

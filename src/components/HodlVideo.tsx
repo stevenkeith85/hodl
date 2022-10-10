@@ -13,6 +13,7 @@ interface HodlVideoProps {
     width?: string;
     onLoad?: Function;
     assetFolder?: "video" | "image" // gifs are stored in the image folder. we display them as videos though, to save bandwidth
+    poster?: string
 }
 
 export const HodlVideo = ({
@@ -26,6 +27,7 @@ export const HodlVideo = ({
     width = '100%',
     onLoad = null,
     assetFolder="video",
+    poster=null
 }: HodlVideoProps) => {
     const makeCloudinaryVideoUrl = () => {
         let cloudinaryUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_NAME}/${assetFolder}/upload`;
@@ -72,6 +74,7 @@ export const HodlVideo = ({
                             }
                         }
                         }
+                        poster={poster? `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_NAME}/image/upload/q_auto,c_fit/${environment}/${folder}/${poster}`: 'none'}
                         ref={video}
                         autoPlay={gif} // we autoplay gifs. videos are played when the user scrolls past them
                         loop={gif}

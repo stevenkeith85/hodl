@@ -9,6 +9,6 @@ export interface ListingSolidity {
 // type given to the FE
 export interface ListingVM {
     tokenId: number;
-    price: number;
+    price: string;
     seller: string;
 }

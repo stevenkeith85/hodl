@@ -31,10 +31,10 @@ const TikTokIcon = ({ color = "#000000" }) => {
 
 export default function Contact({ address }) {
     return (
-        <Box marginX={4} marginY={4}>
+        <Box marginX={2} marginY={4}>
             <HodlBorderedBox>
                 <Box mb={4}>
-                    <Typography mb={1} sx={{ fontSize: 20, fontWeight: 600 }}>
+                    <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
                         Contact Us
                     </Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
@@ -42,22 +42,22 @@ export default function Contact({ address }) {
                     </Typography>
                 </Box>
                 <Box mb={4}>
-                    <Typography 
-                        variant="h2" 
+                    <Typography
+                        variant="h2"
                         mb={2}
-                        >
+                    >
                         Socials
                     </Typography>
-                    <Box sx={{ 
-                        display: 'grid', 
+                    <Box sx={{
+                        display: 'grid',
                         gap: 2
-                         }}>
+                    }}>
                         <Box sx={{ gap: 1.5, display: 'flex', alignItems: 'center' }}>
                             <RocketLaunch sx={{ color: grey[500] }} />
                             <Typography color={theme => theme.palette.text.secondary}>hodlmymoon</Typography>
                         </Box>
                         <Box sx={{ gap: 1.5, display: 'flex', alignItems: 'center' }}>
-                            <TwitterIcon sx={{ color: grey[500] }}  />
+                            <TwitterIcon sx={{ color: grey[500] }} />
                             <Typography color={theme => theme.palette.text.secondary}>hodlmymoon</Typography>
                         </Box>
                         <Box sx={{ gap: 1.5, display: 'flex', alignItems: 'center' }}>
@@ -69,26 +69,28 @@ export default function Contact({ address }) {
                     </Box>
                 </Box>
                 <Box mb={4}>
-                    <Typography 
-                        variant="h2" 
+                    <Typography
+                        variant="h2"
                         mb={1}
                     >
                         Support
                     </Typography>
                     <Typography>
-                        <NoSsr>support@hodlmymoon.com</NoSsr>
+                        <NoSsr>
+                            <Typography color={theme => theme.palette.text.secondary}>support@hodlmymoon.com</Typography>
+                        </NoSsr>
                     </Typography>
                 </Box>
                 <Box mb={4}>
-                    <Typography 
-                        variant="h2" 
+                    <Typography
+                        variant="h2"
                         mb={1}
-                        >
+                    >
                         Other
                     </Typography>
-                    <Typography>
-                        <NoSsr>enquiries@hodlmymoon.com</NoSsr>
-                    </Typography>
+                    <NoSsr>
+                        <Typography color={theme => theme.palette.text.secondary}>enquiries@hodlmymoon.com</Typography>
+                    </NoSsr>
                 </Box>
             </HodlBorderedBox>
         </Box>)

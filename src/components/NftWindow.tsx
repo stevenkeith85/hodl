@@ -107,8 +107,11 @@ interface NftWindowProps {
 export const NftWindow: React.FC<NftWindowProps> = ({
     nft
 }) => {
+    const theme = useTheme();
+    const xs = useMediaQuery(theme.breakpoints.only('xs'));
+
     if (!nft) {
-        return null;
+        return <Skeleton sx={{ width: '100%', height: 0, paddingTop: '100%' }} variant="rectangular" animation="wave" />
     }
 
     return (
@@ -117,6 +120,7 @@ export const NftWindow: React.FC<NftWindowProps> = ({
             href={nft?.forSale ? `/nft/${nft.id}?tab=1` : `/nft/${nft.id}`}
             passHref
         >
+
             <Box
                 component="a"
                 sx={{
@@ -202,10 +206,8 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                         />
                     </Box>
                 }
-                <Overlay nft={nft} />
-                {
-                    nft?.forSale && <PriceSticker price={nft?.price} />
-                }
+                {!xs && <Overlay nft={nft} />}
+                {nft?.forSale && <PriceSticker price={nft?.price} />}
             </Box>
         </Link>
     )

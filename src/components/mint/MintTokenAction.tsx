@@ -6,6 +6,7 @@ import { mintToken } from '../../lib/mint';
 import { MintProps } from './models';
 import { grey } from '@mui/material/colors';
 import { SuccessModal } from '../modals/SuccessModal';
+import { MintTokenModal } from '../modals/MintTokenModal';
 
 
 export const MintTokenAction: FC<MintProps> = ({
@@ -17,11 +18,9 @@ export const MintTokenAction: FC<MintProps> = ({
   setFormData
 }: MintProps) => {
   const [successModalOpen, setSuccessModalOpen] = useState(false);
-  const [mintButtonDisabled, setMintButtonDisabled] = useState(false);
 
   async function mint() {
     setLoading(true);
-    setMintButtonDisabled(true);
 
     enqueueSnackbar(
       'Please confirm the transaction in MetaMask',
@@ -50,7 +49,6 @@ export const MintTokenAction: FC<MintProps> = ({
     
       setStepComplete(4);
       setSuccessModalOpen(true);
-      setMintButtonDisabled(false);
     } catch (e) {
       setLoading(false);
     } 
@@ -58,7 +56,7 @@ export const MintTokenAction: FC<MintProps> = ({
 
   return (
     <>
-      <SuccessModal
+      <MintTokenModal
         modalOpen={successModalOpen}
         setModalOpen={setSuccessModalOpen}>
         <Typography
@@ -68,7 +66,7 @@ export const MintTokenAction: FC<MintProps> = ({
           }}>
           When your transaction has been confirmed on the blockchain, we&apos;ll update our database and send you a notification.
         </Typography>
-      </SuccessModal>
+      </MintTokenModal>
 
       <Box
         display="flex"
@@ -89,7 +87,7 @@ export const MintTokenAction: FC<MintProps> = ({
         <div>
           <Button
             color="primary"
-            disabled={loading || mintButtonDisabled}
+            disabled={loading || stepComplete === 4}
             onClick={mint}
             sx={{ paddingY: 1, paddingX: 3 }}
             variant="contained"

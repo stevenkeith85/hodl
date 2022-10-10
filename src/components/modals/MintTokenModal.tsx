@@ -5,8 +5,8 @@ import {
 }
   from "../index"
 
-  // TODO: Switch message to be 'children' so that we can pass react nodes
-export const SuccessModal = ({
+
+export const MintTokenModal = ({
   modalOpen,
   setModalOpen,
   children }) => {
@@ -30,8 +30,7 @@ export const SuccessModal = ({
             }}
             onClick={() => {
               setModalOpen(false);
-              router.push(router.asPath);
-              // router.push('/');
+              router.push('/');
             }}
           >
             Close

@@ -15,10 +15,13 @@ export async function getServerSideProps({ req, res }) {
 
 export default function About({ address }) {
     return (
-        <Box marginX={4} marginY={4}>
+        <Box 
+            marginX={2} 
+            marginY={4}
+            >
             <HodlBorderedBox>
                 <Box mb={4}>
-                    <Typography mb={1} sx={{ fontSize: 20, fontWeight: 600 }}>
+                    <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
                         About
                     </Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
@@ -53,52 +56,62 @@ export default function About({ address }) {
                         variant="h2"
                     >
                         Wallets</Typography>
-                    <Typography mb={0}>
+                    <Typography mb={0} color={theme => theme.palette.text.secondary}>
                         We officially support <Link href="https://metamask.io/">MetaMask</Link>, and recommend connecting with that.
                     </Typography>
                 </Box>
                 <Box marginY={4}>
                     <Typography mb={1} variant="h2">Decentralized storage</Typography>
-                    <Typography mb={0}>
+                    <Typography mb={0} color={theme => theme.palette.text.secondary}>
                         We upload and pin your assets to the <Link href="https://ipfs.io/">Interplanatary File System</Link>. This ensures the longterm survival of your assets.
                     </Typography>
                 </Box>
                 <Box marginY={4}>
                     <Typography mb={1} variant="h2">Blockchain</Typography>
-                    <Typography mb={0}>
-                        We run on the <Link href="https://polygon.technology/">Polygon</Link> blockchain for incredibly low transaction fees and quick confirmations.
+                    <Typography mb={0} color={theme => theme.palette.text.secondary}>
+                        We run on the <Link href="https://polygon.technology/">Polygon</Link> blockchain for incredibly low gas fees and quick transaction confirmations.
                     </Typography>
                 </Box>
                 <Box marginY={4}>
                     <Typography mb={1} variant="h2">Minting</Typography>
-                    <Typography mb={0}>
-                        Minting a token is cheap. We charge a flat rate of 1 Matic (Polygon&apos;s cryptocurrency)
+                    <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                        Minting a token is easy. No need to know anything about smart contracts or blockchains.
+                    </Typography>
+                    <Typography mb={0} color={theme => theme.palette.text.secondary}>
+                        We add a small minting fee to cover our costs, and 
+                        deter spam. (Typically this will be 1 Matic)
                     </Typography>
                 </Box>
                 <Box marginY={4}>
                     <Typography mb={1} variant="h2">Trading</Typography>
-                    <Typography mb={0}>
-                        Trading is straight-forward. You list your token for the price you are willing to sell it for. If it sells, we charge 3% commision at the point of sale.
+                    <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                        Trading is straight-forward. You list your token for the price you are willing to sell it for.
+                    </Typography>
+                    <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                        If it sells, we charge a commision at the point of sale. (Typically this will be 3%)
+                    </Typography>
+                    <Typography mb={0} color={theme => theme.palette.text.secondary}>
+                        You can delist your token at any point, and only pay the gas.
                     </Typography>
                 </Box>
                 <Box marginY={4}>
                     <Typography mb={1} variant="h2">Trust</Typography>
-                    <Typography mb={0}>
+                    <Typography mb={0} color={theme => theme.palette.text.secondary}>
                         We don&apos;t tolerate plageurism.
                     </Typography>
                 </Box>
                 <Box marginY={4}>
                     <Typography mb={1} variant="h2" >Do your own research</Typography>
-                    <ol>
-                        <li>Check the IPFS links </li>
-                        <li>Check the selling history of the token</li>
-                        <li>Check for social validation (likes / comments)</li>
-                        <li>Check the license (if any) assigned to the asset attached to the token</li>
-                    </ol>
+                    <Typography component="ol" color={theme => theme.palette.text.secondary}>
+                        <Typography component="li" mb={1}>Check the IPFS links </Typography>
+                        <Typography component="li" mb={1}>Check the selling history of the token</Typography>
+                        <Typography component="li" mb={1}>Check for social validation (likes / comments)</Typography>
+                        <Typography component="li" mb={1}>Check the license (if any) assigned to the asset attached to the token</Typography>
+                    </Typography>
                 </Box>
                 <Box marginY={4}>
                     <Typography id="hodler-privilege" mb={1} variant="h2">Asset License</Typography>
-                    <Typography mb={2} sx={{ span: { fontWeight: 600 } }}>When an author mints an NFT, they <span>must</span> specify what any future hodler can do with the attached asset. <Link href="/asset-license">read more</Link></Typography>
+                    <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ span: { fontWeight: 600 } }}>When an author mints an NFT, they <span>must</span> specify what any future hodler can do with the attached asset. <Link href="/asset-license">read more</Link></Typography>
                 </Box>
             </HodlBorderedBox>
         </Box >)

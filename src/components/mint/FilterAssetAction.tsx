@@ -23,18 +23,11 @@ export const FilterAssetAction: FC<FilterAssetActionProps> = ({
   }, [activeStep])
 
   return (
-    <Box
-      display="flex"
-      flexDirection={"column"}
-      alignItems="center"
-      justifyContent="center"
-      textAlign="center"
-      gap={4}
-    >
-      <FilterButtons 
-        formData={formData} 
-        setFormData={setFormData} 
+    <Box>
+      <FilterButtons
+        formData={formData}
+        setFormData={setFormData}
       />
-    </Box>
+    </Box >
   )
 }

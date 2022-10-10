@@ -1,12 +1,10 @@
 import NFT from '../../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json'
-import Market from '../../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
 import { getProvider } from '../../../../lib/server/connections'
 import { ethers } from 'ethers'
 import { NextApiRequest, NextApiResponse } from "next";
 import dotenv from 'dotenv'
 import apiRoute from '../../handler';
-import { ListingSolidity } from '../../../../models/Listing';
-import { Token, TokenSolidity } from '../../../../models/Token';
+import { TokenSolidity } from '../../../../models/Token';
 
 dotenv.config({ path: '../.env' })
 

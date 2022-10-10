@@ -186,12 +186,21 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                         </Box>}
                     </Box>
                     <Box>
+                    <Link 
+                                href={
+                                    item.action === ActionTypes.Listed ? 
+                                    `/nft/${item.token.id}?tab=1` : 
+                                    `/nft/${item.token.id}`
+                                } 
+                                passHref
+                                >
                         <Typography
                             sx={{
                                 fontWeight: 600
                             }}>
                             {item.token?.name}
                         </Typography>
+                        </Link>
                         <Box
                             sx={{
                                 whiteSpace: 'pre-line'

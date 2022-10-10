@@ -87,15 +87,20 @@ const Mint = ({ address }) => {
           <Grid
             container
           >
-            <Grid item xs={12} md={formData?.fileName ? 6 : 12}>
+            <Grid 
+              item 
+              xs={12} 
+              md={formData?.fileName ? 6 : 12}
+            >
               <Box
                 sx={{
                   height: '100%',
-                  width: `100%`,
+                  // width: `100%`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  margin: 0,
+                  marginX: 1,
+                  marginY: 2,
                   padding: 1,
                 }}
               >
@@ -157,11 +162,16 @@ const Mint = ({ address }) => {
               <Box
                 sx={{
                   height: '100%',
-                  width: `100%`,
+                  // minHeight: {
+                  //   xs: '50vh',
+                  //   sm: '80vh'
+                  // },
+                  // width: `100%`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  margin: 0,
+                  marginX: 1,
+                  marginY: 2,
                   padding: 1,
                 }}
               >

@@ -44,24 +44,6 @@ export const UploadToIpfsAction: FC<MintProps> = ({
     setLoading(true);
     setSubmitting(true);
 
-    // enqueueSnackbar(
-    //   `Transferring asset to IPFS`,
-    //   {
-    //     // @ts-ignore
-    //     variant: "hodlsnackbar",
-    //     type: "info"
-    //   });
-
-    // if (values.mimeType.indexOf('video') !== -1) {
-    //   enqueueSnackbar(
-    //     `Large files may take some time`,
-    //     {
-    //       // @ts-ignore
-    //       variant: "hodlsnackbar",
-    //       type: "info"
-    //     });
-    // }
-
     let { success, imageCid, metadataUrl } = await uploadToIpfs(values.fileName,
       {
         name: values.name,
@@ -123,7 +105,7 @@ export const UploadToIpfsAction: FC<MintProps> = ({
         {({ isSubmitting, values, setFieldValue, errors, dirty, isValid }) => (
           <>
             <Form>
-              <Stack spacing={2}>
+              <Stack spacing={3}>
                 <FormControl>
                   <Tooltip title={<NameTooltip />}
                     placement="right-start"

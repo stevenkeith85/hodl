@@ -15,10 +15,10 @@ export async function getServerSideProps({ req, res }) {
 
 export default function License({ address }) {
     return (
-        <Box marginX={8} marginY={4}>
+        <Box marginX={2} marginY={4}>
             <HodlBorderedBox>
                 <Box mb={4}>
-                    <Typography mb={1} sx={{ fontSize: 20, fontWeight: 600 }}>
+                    <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
                         Token Author License Agreement
                     </Typography>
                     <Typography

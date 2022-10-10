@@ -11,11 +11,12 @@ import { ethers } from 'ethers'
 import { NextApiRequest, NextApiResponse } from "next";
 import dotenv from 'dotenv'
 import apiRoute from '../handler';
-import { getToken } from '../token/[tokenId]';
 import { Nft } from '../../../models/Nft';
 import { ListingSolidity } from '../../../models/Listing';
 import { Redis } from '@upstash/redis';
 import { Token } from '../../../models/Token';
+import { getListing } from '../contracts/market/listing/[tokenId]';
+import { getToken } from '../contracts/token/[tokenId]';
 
 dotenv.config({ path: '../.env' })
 
@@ -54,29 +55,19 @@ export const isOwnerOrSeller = async (address, tokenId) => {
   }
 }
 
-// Returns the address of the owner (if hodling) or the seller (if listed). 
-// The owner is set to the market address when the token is listed, so we need to use the seller address in many places
-export const getOwnerOrSellerAddress = async (tokenId) => {
-  const provider = await getProvider();
+export const getHodlerAddress = async (tokenId) => {
+  const listing = await getListing(tokenId);
 
-  const tokenContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, provider);
-  const tokenExists = await tokenContract.exists(tokenId);
-
-  if (!tokenExists) {
-    return false;
+  if (listing) {
+    return listing.seller;
   }
 
-  const owner = await tokenContract.ownerOf(tokenId);
-
-  const marketContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
-  const marketItem = await marketContract.getListing(tokenId);
-
-  return isTokenForSale(marketItem) ? marketItem.seller : owner
+  const token = await getToken(tokenId);
+  return token.ownerOf;
 }
 
 const isTokenForSale = ({ price, seller, tokenId }: ListingSolidity) => {
-  return price !== ethers.constants.Zero &&
-    seller !== ethers.constants.AddressZero &&
+  return seller !== ethers.constants.AddressZero &&
     tokenId !== ethers.constants.Zero;
 }
 

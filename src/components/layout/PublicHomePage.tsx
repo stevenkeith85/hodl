@@ -14,20 +14,30 @@ export const PublicHomePage = ({ }) => {
             <Box display="flex">
                 <HomePagePitch />
             </Box>
+
             <Box
                 sx={{
                     display: 'grid',
                     gridTemplateColumns: {
-                        xs:`1fr`,
-                        sm:`1fr 1fr`,
+                        xs: `1fr`,
+                        sm: `1fr 1fr`,
                     },
-                    gap: 8,
-                    marginBottom: 10
-                }}>
-                    <TopUsers followButton={false} titleSize={18} height={380} size={54} fontSize={14} titleMargin={3}/>
-                    <TopTokens showLikes={false} titleSize={18} height={380} size={54} fontSize={14} titleMargin={3} />
-                    <NewUsers followButton={false} titleSize={18} height={380} size={54} fontSize={14} titleMargin={3} />
-                    <NewTokens showLikes={false} titleSize={18} height={380} size={54} fontSize={14} titleMargin={3} />
+                    marginY: 4,
+                    marginX: {
+                        xs: 2,
+                        sm: 4
+                    },
+                    marginTop: {
+                        xs: 0,
+                        sm: 4
+                    },
+                    gap: 4,
+                }}
+            >
+                <TopUsers followButton={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
+                <TopTokens showLikes={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
+                <NewUsers followButton={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
+                <NewTokens showLikes={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
             </Box>
         </Box >
     )

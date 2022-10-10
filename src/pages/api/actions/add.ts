@@ -7,7 +7,7 @@ import { likesToken } from "../like/token/likes";
 import { getFollowers } from "../followers";
 import { isFollowing } from "../follows";
 import { likesComment } from "../like/comment/likes";
-import { fetchNFT, getOwnerOrSellerAddress } from "../nft/[tokenId]";
+import { fetchNFT, getHodlerAddress } from "../nft/[tokenId]";
 import { HodlComment } from "../../../models/HodlComment";
 
 import { Nft } from "../../../models/Nft";
@@ -16,6 +16,9 @@ import { getUser } from "../user/[handle]";
 import { getAction } from ".";
 import { pusher } from "../../../lib/server/pusher";
 import { trimZSet } from "../../../lib/databaseUtils";
+
+import { createHmac } from "crypto";
+import { User } from "../../../models/User";
 
 
 const route = apiRoute();
@@ -163,7 +166,7 @@ const addToFeedOfFollowers = async (action: HodlAction) => {
   const limit = 1;
 
   // get initial page
-  let {items, next, total} = await getFollowers(action.subject, offset, limit);
+  let { items, next, total } = await getFollowers(action.subject, offset, limit);
 
   do {
     let promises = [];
@@ -215,7 +218,7 @@ export const addAction = async (action: HodlAction): Promise<number> => {
         return;
       }
 
-      const owner = await getOwnerOrSellerAddress(action.objectId);
+      const owner = await getHodlerAddress(action.objectId);
 
       if (owner === action.subject) {
         return; // We've liked our own token. No need for a notification.
@@ -246,14 +249,14 @@ export const addAction = async (action: HodlAction): Promise<number> => {
     const comment: HodlComment = await client.get(`comment:${action.objectId}`);
 
     if (comment?.object === "token") { // the comment was about a token, tell the token owner.
-      const owner = await getOwnerOrSellerAddress(comment.tokenId);
+      const hodler = await getHodlerAddress(comment.tokenId);
 
-      if (owner === action.subject) {
+      if (hodler === action.subject) {
         return; // We've commented on our own token. No need for a notification.
       }
 
-      console.log(`actions/add - adding a notification for ${(await getUser(owner, null)).nickname}, as someone commented on their token`)
-      return await addNotification(owner, action);
+      console.log(`actions/add - adding a notification for ${hodler}, as someone commented on their token`)
+      return await addNotification(hodler, action);
     } else if (comment?.object === "comment") { // the comment was a reply, tell the comment author. 
       const commentThatWasRepliedTo: HodlComment = await client.get(`comment:${comment.objectId}`);
 
@@ -394,11 +397,56 @@ export const addAction = async (action: HodlAction): Promise<number> => {
 }
 
 
-// TODO: Actions are now added by our tx handlers. 
-// So, the code could probably be moved into a lib and this route can probably go; 
-// ...potentially we might need some locked down public api endpoint though if we add a queue in somewhere
+// TODO: Most actions are now added by our tx handlers; 
+
+// Adding a comment isn't; and it consults the blockchain; so it is pretty slow.
+// We either need to consult a cache (fast but possibly inaccurate); or move the actions stuff to a message queue
+
 route.post(async (req, res: NextApiResponse) => {
-  return res.status(400).json({ message: 'Bad Request' });
+
+  // We only accept requests that came via our message queue. 
+  // You need our API key to add something to the queue, so this adds a layer of security
+  const payload = JSON.stringify({ target: `${process.env.MESSAGE_HANDLER_HOST}/api/actions/add`});
+  const signature = createHmac("sha256", process.env.SERVERLESSQ_API_TOKEN)
+    .update(payload)
+    .digest("hex");
+
+  if (signature !== req.headers['x-serverlessq-signature']) {
+    console.log('api/actions - Request did not come via message queue')
+    return res.status(403).json({ message: "Not Authenticated" });
+  }
+
+  // We also require the user to be authenticated; so they'll need to have their access/refresh cookies forwarded
+  if (!req.address) {
+    return res.status(403).json({ message: "Not Authenticated" });
+  }
+
+  const { action, object, id } = req.body;
+
+  if (!action || !object || !id) {
+    return res.status(400).json({ message: 'Bad Request' });
+  }
+
+  // We only support comments at the moment. This may be expanded in due course if we are happy with the security of things
+  if (action !== ActionTypes.Commented) {
+    return res.status(400).json({ message: 'Bad Request' });
+  }
+
+  // Create the action.
+  // For any blockchain actions, we will also consult the live blockchain in the addAction function; to further lock things down.
+  const success = await addAction({
+    subject: req.address,
+    action,
+    objectId: id,
+    object
+  });
+
+  if (success) {
+    console.log('api/actions - successfully processed action for', req.address)
+    return res.status(200).json({ message: 'success' });
+  } else {
+    res.status(200).json({ message: 'action not processed' });
+  }
 });
 
 
