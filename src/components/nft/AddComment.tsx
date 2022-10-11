@@ -1,16 +1,15 @@
-import { Typography, Box, Tooltip, Button, TextareaAutosize, NoSsr, Popper, Popover, IconButton, ClickAwayListener } from "@mui/material";
+import { Typography, Box, Tooltip, Button, TextareaAutosize, IconButton, ClickAwayListener } from "@mui/material";
 import { FC, useContext, useState } from "react";
 import { WalletContext } from "../../contexts/WalletContext";
-import { Formik, Form, Field } from "formik";
+import { Formik, Form } from "formik";
 import { AddCommentValidationSchema } from "../../validation/comments/addComments";
 import { useAddComment } from "../../hooks/useComments";
 import { HodlComment } from "../../models/HodlComment";
 import { QuoteComment } from "./QuoteComment";
 import { NftContext } from "../../contexts/NftContext";
 import { green, red } from "@mui/material/colors";
-// import Picker from 'emoji-picker-react';
-import { EmojiEmotions, EmojiEmotionsOutlined } from "@mui/icons-material";
-import { id } from "date-fns/locale";
+
+import { EmojiEmotionsOutlined } from "@mui/icons-material";
 
 import dynamic from "next/dynamic";
 

@@ -21,7 +21,7 @@ export interface UserViewModel {
     address: string; // wallet address
     nickname: string; // a mutable field that acts as an alias
     avatar: Token;
-    followedByViewer: boolean;
-    followsViewer: boolean;
+    followedByViewer?: boolean;
+    followsViewer?: boolean;
     nonce?: number;
 }

@@ -5,7 +5,7 @@ export const useHodling = (address, limit = 10, fallbackData = null, load=true) 
 
     // TODO: Change route to /api/hodling
     const getKey = (index, _previous) => {
-        return load && limit ? [`/api/profile/hodling`, address, index * limit, limit] : null;
+        return load && limit ? [`/api/contracts/token/hodling`, address, index * limit, limit] : null;
     }
 
     const swr = useSWRInfinite(

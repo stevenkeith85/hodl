@@ -38,25 +38,25 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
     const [showDesktopNotifications, setShowDesktopNotifications] = useState(false);
 
     const theme = useTheme();
-    const xs = useMediaQuery(theme.breakpoints.only('xs'));
+    // const xs = useMediaQuery(theme.breakpoints.only('xs'));
 
     const [pages] = useState([
         {
             label: 'hodl my moon',
             url: '/',
-            icon: <RocketLaunch />,
+            icon: <RocketLaunch sx={{ fontSize: 22, margin: 0, padding: 0, lineHeight: 0 }} />,
             publicPage: true
         },
         {
             label: 'explore',
             url: '/explore',
-            icon: <Explore />,
+            icon: <Explore sx={{ fontSize: 22, margin: 0, padding: 0 }} />,
             publicPage: true
         },
         {
             label: 'create',
             url: '/create',
-            icon: <AddCircle />,
+            icon: <AddCircle sx={{ fontSize: 22, margin: 0, padding: 0 }} />,
             publicPage: false
         },
     ]);
@@ -176,37 +176,78 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                             }}>
-
-                                {pages.filter(p => p.publicPage || address).map((page, i) => (
-                                    <Link
-                                        key={page.url}
-                                        href={page.url}
-                                        passHref
+                                <Link
+                                    key={pages[0].url}
+                                    href={pages[0].url}
+                                    passHref
+                                >
+                                    <Box
+                                        component="a"
+                                        sx={{
+                                            color: theme => theme.palette.primary.main,
+                                            cursor: 'pointer',
+                                            textDecoration: 'none',
+                                            margin: 0,
+                                            padding: 0,
+                                            lineHeight: 0,
+                                        }}
                                     >
-                                        {/* <Tooltip title={page.label} > */}
                                         <Typography
-                                            component="a"
-                                            key={page.label}
+                                            component="span"
                                             sx={{
-                                                color: theme => theme.palette.primary.main,
+                                                fontFamily: theme => theme.logo.fontFamily,
                                                 margin: 0,
                                                 padding: 0,
                                                 lineHeight: 0,
-                                                fontFamily: theme => theme.logo.fontFamily,
-                                                cursor: 'pointer',
-                                                // color: 'white',
-                                                textTransform: 'none',
-                                                textDecoration: 'none',
-                                                fontSize: {
-                                                    md: 16,
-                                                },
                                             }}
+                                        >{pages[0].icon}</Typography>
+                                    </Box>
+                                </Link>
+                                {
+                                    pages.slice(1).filter(p => p.publicPage || address).map((page, i) => (
+                                        <Link
+                                            key={page.url}
+                                            href={page.url}
+                                            passHref
                                         >
-                                            {i > 0 && !xs ? page.label : page.icon}
-                                        </Typography>
-                                        {/* </Tooltip> */}
-                                    </Link>
-                                ))}
+                                            <Box
+                                                component="a"
+                                                sx={{
+                                                    color: theme => theme.palette.primary.main,
+                                                    cursor: 'pointer',
+                                                    textDecoration: 'none',
+                                                    margin: 0,
+                                                    padding: 0,
+                                                    lineHeight: 0,
+                                                }}
+                                            >
+                                                <Typography
+                                                    component="span"
+                                                    sx={{
+                                                        fontFamily: theme => theme.logo.fontFamily,
+                                                        margin: 0,
+                                                        padding: 0,
+                                                        lineHeight: 0,
+                                                        display: {
+                                                            xs: 'none',
+                                                            sm: 'block'
+                                                        }
+                                                    }}>{page.label}</Typography>
+                                                <Typography
+                                                    component="span"
+                                                    sx={{
+                                                        fontFamily: theme => theme.logo.fontFamily,
+                                                        margin: 0,
+                                                        padding: 0,
+                                                        lineHeight: 0,
+                                                        display: {
+                                                            xs: 'block',
+                                                            sm: 'none'
+                                                        }
+                                                    }}>{page.icon}</Typography>
+                                            </Box>
+                                        </Link>
+                                    ))}
                             </Box>
                             <Box
                                 sx={{
@@ -216,7 +257,17 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                     gap: { xs: 2, md: 3 },
                                 }}
                             >
-                                {!xs && <SearchBox setHoverMenuOpen={null} />}
+
+                                <Box
+                                    sx={{
+                                        display: {
+                                            xs: 'none',
+                                            sm: 'block'
+                                        }
+                                    }}
+                                >
+                                    <SearchBox setHoverMenuOpen={null} />
+                                </Box>
                                 <HodlNotifications
                                     setHoverMenuOpen={setDesktopMenuOpen}
                                     showNotifications={showDesktopNotifications}

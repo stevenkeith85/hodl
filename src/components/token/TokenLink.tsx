@@ -1,5 +1,6 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Skeleton, Typography } from '@mui/material';
 import Link from 'next/link';
+import { useState } from 'react';
 import { assetType } from '../../lib/utils';
 import { AssetTypes } from '../../models/AssetType';
 import { Token } from '../../models/Token';
@@ -15,60 +16,102 @@ interface TokenLinkProps {
 }
 
 export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = 44, fontSize = 14 }) => {
+    const [loading, setLoading] = useState(true);
+
+    const asset = <>
+        {token?.properties?.asset?.uri &&
+            <Box
+                sx={{
+                    width: size,
+                    height: size
+                }}
+            >
+                {assetType(token) === AssetTypes.Image &&
+                    <HodlImageResponsive
+                        cid={token?.properties?.asset?.uri}
+                        aspectRatio="1:1"
+                        widths={[44, 88]}
+                        sizes={`${size}px`}
+                        onLoad={() => setLoading(false)}
+                    />
+                }
+                {assetType(token) === AssetTypes.Video &&
+                    <HodlImageResponsive
+                        cid={token?.image}
+                        aspectRatio="1:1"
+                        widths={[44, 88]}
+                        sizes={`${size}px`}
+                        onLoad={() => setLoading(false)}
+                    />
+                }
+                {assetType(token) === AssetTypes.Gif &&
+                    <HodlVideo
+                        cid={token?.properties?.asset?.uri}
+                        gif={true}
+                        assetFolder="image"
+                        height={`${size}px`}
+                        width={`${size}px`}
+                        onLoad={() => setLoading(false)}
+                    />
+                }
+                {assetType(token) === AssetTypes.Audio &&
+                    <HodlAudioBoxMini size={size} />
+                }
+            </Box>
+        }</>
+
+    const name = <Typography sx={{
+        fontSize,
+        color: theme => theme.palette.text.secondary
+    }}>{token?.name}</Typography>
+
 
     return (<>
-        <Link href={`/nft/${token.id}`} passHref>
-            <Typography component="a" sx={{
-                textDecoration: 'none',
-                color: '#333'
-            }}>
-                <Box
-                    display="flex"
-                    alignItems="center"
-                    gap={2}
-                    sx={{
-                        cursor: 'pointer',
-                        width: `100%`,
-                    }}
+        {loading &&
+            <Box
+                display="flex"
+                alignItems="center"
+                gap={2}
+                sx={{
+                    cursor: 'pointer',
+                }}
+            >
+                <Skeleton
+                    variant="rectangular"
+                    animation="wave"
                 >
-                    {token?.properties?.asset?.uri &&
-                        <Box>
-                            {assetType(token) === AssetTypes.Image &&
-                                <HodlImageResponsive
-                                    cid={token?.properties?.asset?.uri}
-                                    aspectRatio="1:1"
-                                    widths={[44, 88]}
-                                    sizes={`${size}px`}
-                                />
-                            }
-                            {assetType(token) === AssetTypes.Video &&
-                                <HodlImageResponsive
-                                    cid={token?.image}
-                                    aspectRatio="1:1"
-                                    widths={[44, 88]}
-                                    sizes={`${size}px`}
-                                />
-                            }
-                            {assetType(token) === AssetTypes.Gif &&
-                                <HodlVideo
-                                    cid={token?.properties?.asset?.uri}
-                                    gif={true}
-                                    assetFolder="image"
-                                    height={`${size}px`}
-                                    width={`${size}px`}
-                                />
-                            }
-                            {assetType(token) === AssetTypes.Audio &&
-                                <HodlAudioBoxMini size={size} />
-                            }
-                        </Box>
-                    }
-                    <Typography sx={{
-                        fontSize,
-                        color: theme => theme.palette.text.secondary
-                    }}>{token?.name}</Typography>
-                </Box>
-            </Typography>
-        </Link>
+                    {asset}
+                </Skeleton>
+                <Skeleton
+                    variant="rectangular"
+                    animation="wave"
+                >
+                    {name}
+                </Skeleton>
+
+            </Box>
+        }
+        <Box sx={{
+            display: loading ? 'none' : 'block'
+        }}>
+            <Link href={`/nft/${token.id}`} passHref>
+                <Typography component="a" sx={{
+                    textDecoration: 'none',
+                    color: '#333'
+                }}>
+                    <Box
+                        display="flex"
+                        alignItems="center"
+                        gap={2}
+                        sx={{
+                            cursor: 'pointer',
+                        }}
+                    >
+                        {asset}
+                        {name}
+                    </Box>
+                </Typography>
+            </Link>
+        </Box>
     </>)
 }

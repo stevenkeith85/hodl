@@ -1,11 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { ethers, BigNumber } from 'ethers'
 import dotenv from 'dotenv'
-import { getNickname } from "../profile/nickname";
-import { getProvider } from "../../../lib/server/connections";
-import Market from '../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
-import apiRoute from '../handler';
-import { PriceHistory } from "../../../models/PriceHistory";
+import { getNickname } from "../../../../profile/nickname";
+import { getProvider } from "../../../../../../lib/server/connections";
+import Market from '../../../../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
+import apiRoute from '../../../../handler';
+import { PriceHistory } from "../../../../../../models/PriceHistory";
 
 dotenv.config({ path: '../.env' })
 

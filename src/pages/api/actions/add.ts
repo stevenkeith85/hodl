@@ -2,7 +2,7 @@ import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import apiRoute from "../handler";
 import { ActionSet, ActionSetMembers, ActionTypes, HodlAction } from '../../../models/HodlAction';
-import { getPriceHistory } from "../token-bought/[tokenId]";
+import { getPriceHistory } from "../contracts/market/events/token-bought/[tokenId]";
 import { likesToken } from "../like/token/likes";
 import { getFollowers } from "../followers";
 import { isFollowing } from "../follows";
@@ -421,14 +421,16 @@ route.post(async (req, res: NextApiResponse) => {
     return res.status(403).json({ message: "Not Authenticated" });
   }
 
-  const { action, object, id } = req.body;
+  const { action, object, objectId } = req.body;
 
-  if (!action || !object || !id) {
+  if (!action || !object || !objectId) {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
-  // We only support comments at the moment. This may be expanded in due course if we are happy with the security of things
-  if (action !== ActionTypes.Commented) {
+  // We only accept certain actions at the moment.
+  if (action !== ActionTypes.Commented && 
+      action !== ActionTypes.Liked &&
+      action !== ActionTypes.Followed) {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
@@ -437,7 +439,7 @@ route.post(async (req, res: NextApiResponse) => {
   const success = await addAction({
     subject: req.address,
     action,
-    objectId: id,
+    objectId,
     object
   });
 

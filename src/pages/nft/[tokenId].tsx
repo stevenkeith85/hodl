@@ -316,7 +316,7 @@ const NftDetail = ({
                         />
                     </Box>}
                   </Box>
-                  <PriceHistoryGraph nft={nft} />
+                  {/* <PriceHistoryGraph nft={nft} /> */}
                 </Box>
               </div>
               <div hidden={value !== 2}>

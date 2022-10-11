@@ -53,13 +53,13 @@ export const UserAvatarAndHandle: React.FC<UserAvatarProps> = ({
     withLink = true,
     color = "secondary"
 }) => {
+    console.log('fallbackdata', fallbackData)
     const { data: user } = useUser(address, fallbackData);
 
     if (!user) {
-
         return (<>
             <Skeleton width={size} height={size} variant="circular" animation="wave"></Skeleton>
-            {handle && <Skeleton width={100} variant="text" animation="wave"></Skeleton>}
+            {handle && <Skeleton width={100} height={14} variant="text" animation="wave"></Skeleton>}
         </>
         )
     }

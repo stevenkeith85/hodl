@@ -13,10 +13,10 @@ export const useLike = (
 
   const { mostLiked } = useContext(RankingsContext);
   
-  const baseUrl = `/api/like/${object}/`;
+  const baseUrl = `/api/like/${object}`;
 
   const { data: userLikesThisToken, mutate: mutateUserLikesThisToken } = useSWR(
-    address && id ? [baseUrl + 'likes', address, id] : null,
+    address && id ? [baseUrl + '/likes', address, id] : null,
     (url, address, id) => axios.get(`${url}?address=${address}&id=${id}`).then(r => Boolean(r.data.likes))
   );
 

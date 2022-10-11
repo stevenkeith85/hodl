@@ -186,6 +186,7 @@ export const HodlNotifications = ({
                             <NotificationsIcon
                                 color="primary"
                                 sx={{
+                                    fontSize: 22,
                                     cursor: 'pointer',
                                     animation: `shake 0.75s`,
                                     animationDelay: '1s',
@@ -200,6 +201,7 @@ export const HodlNotifications = ({
                             <NotificationsNoneIcon
                                 color="primary"
                                 sx={{
+                                    fontSize: 22,
                                     cursor: 'pointer',
                                 }}
                                 onClick={e => {

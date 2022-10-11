@@ -1,11 +1,11 @@
 import dotenv from 'dotenv'
 import { ethers } from 'ethers';
-import { getProvider } from '../../../lib/server/connections';
-import HodlMarket from '../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
-import apiRoute from '../handler';
-import { getToken } from '../token/[tokenId]';
-import { Token } from '../../../models/Token';
-import { Nft } from '../../../models/Nft';
+import { getProvider } from '../../../../../lib/server/connections';
+import HodlMarket from '../../../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
+import apiRoute from '../../../handler';
+import { getToken } from '../../../token/[tokenId]';
+import { Token } from '../../../../../models/Token';
+import { Nft } from '../../../../../models/Nft';
 
 dotenv.config({ path: '../.env' })
 

@@ -5,6 +5,8 @@ import { isValidAddress } from '../../../lib/profile';
 import { HodlAction, ActionTypes } from '../../../models/HodlAction';
 import { addAction } from '../actions/add';
 import { trimZSet } from '../../../lib/databaseUtils';
+import { User } from '../../../models/User';
+import axios from 'axios';
 
 dotenv.config({ path: '../.env' })
 const client = Redis.fromEnv()
@@ -24,41 +26,89 @@ const route = apiRoute();
 //
 // Potentially could have:
 // "user:0x1234:following:tags" -> (<tag>/<time>, <tag>/<time>, <tag>/<time>)
-export const toggleFollow = async (userAddress, targetAddress) => {
+export const toggleFollow = async (userAddress, targetAddress, req) => {
   let followed = false;
 
   const exists = await client.zscore(`user:${userAddress}:following`, targetAddress);
 
   if (exists) { // Unfollow
-    // TODO: REDIS TRANSACITON
-    await client.zrem(`user:${userAddress}:following`, targetAddress);
-    await client.zrem(`user:${targetAddress}:followers`, userAddress);
-    await client.zincrby('rankings:user:followers:count', -1, targetAddress);
+    const p = client.pipeline()
+
+    p.zrem(`user:${userAddress}:following`, targetAddress);
+    p.zrem(`user:${targetAddress}:followers`, userAddress);
+    p.zincrby('rankings:user:followers:count', -1, targetAddress);
+
+    // trim the top users collection.
+    // TODO: We might just do this periodically with a cron job
+    p.zremrangebyrank(
+      'rankings:user:followers:count',
+      0, 
+      -(500 + 1)
+    );
+
+    const [
+      membersRemovedFromUserFollowingSet, 
+      membersRemovedFromTargetsFollowersSet, 
+      updatedRankingCount,
+      numberOfElementsRemovedFromTopUsers
+    ] = await p.exec<[number, number, number, number]>();
     //
 
   } else { // Follow
+    const p = client.pipeline();
+
     const timestamp = Date.now();
 
-    // TODO: REDIS TRANSACITON
-    await client.zadd(`user:${userAddress}:following`, { member: targetAddress, score: timestamp});
-    await client.zadd(`user:${targetAddress}:followers`, { member: userAddress, score: timestamp});
-    await client.zincrby('rankings:user:followers:count', 1, targetAddress);
-    //
+    p.zadd(`user:${userAddress}:following`, { member: targetAddress, score: timestamp});
+    p.zadd(`user:${targetAddress}:followers`, { member: userAddress, score: timestamp});
+    p.zincrby('rankings:user:followers:count', 1, targetAddress);
+
+    // trim the top users collection.
+    // TODO: We might just do this periodically with a cron job
+    p.zremrangebyrank(
+      'rankings:user:followers:count',
+      0, 
+      -(500 + 1)
+    );
+    
+    const [
+      membersAddedToUserFollowingSet, 
+      membersAddedToTargetsFollowersSet, 
+      updatedRankingCount,
+      numberOfElementsRemovedFromTopUsers] = await p.exec<[number, number, number, number]>();
 
     followed = true;
   }
 
-  await trimZSet(client, 'rankings:user:followers:count');
-
+  
   if (followed) {
-    const notification: HodlAction = {
-      subject: userAddress,
-      action: ActionTypes.Followed,
-      object: "address",
-      objectId: targetAddress
-    };
-
-    const success = await addAction(notification);
+    // TODO - We don't await this at the moment; as we do nothing with the return code.
+    // it takes up to a second to get a response. possibly something to follow up with serverlessq at some point
+    // we should really log whether things were added to the queue for support purposes
+    const { accessToken, refreshToken } = req.cookies;
+    const user = await client.hmget<User>(`user:${req.address}`, 'actionQueueId');
+    const url = `https://api.serverlessq.com?id=${user?.actionQueueId}&target=${process.env.MESSAGE_HANDLER_HOST}/api/actions/add`;
+    try {
+      axios.post(
+        url,
+        {
+          action: ActionTypes.Followed,
+          object: "address",
+          objectId: targetAddress
+        },
+        {
+          withCredentials: true,
+          headers: {
+            "Accept": "application/json",
+            "x-api-key": process.env.SERVERLESSQ_API_TOKEN,
+            "Content-Type": "application/json",
+            "Cookie": `refreshToken=${refreshToken}; accessToken=${accessToken}`
+          }
+        }
+      )
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   return followed;
@@ -81,11 +131,11 @@ route.post(async (req, res) => {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
-  if (!(await isValidAddress(address))) {
+  if (!isValidAddress(address)) {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
-  const followed = await toggleFollow(req.address, address);
+  const followed = await toggleFollow(req.address, address, req);
 
   res.status(200).json({ followed });
 });

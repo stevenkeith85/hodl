@@ -13,7 +13,7 @@ dotenv.config({ path: '../.env' })
 const client = Redis.fromEnv()
 const route = apiRoute();
 
-export const getComment = async (id, withUser: boolean = true, viewer:string = null) : Promise<HodlCommentViewModel | null> => {
+export const getComment = async (id, withUser: boolean = true, viewer: string = null): Promise<HodlCommentViewModel | null> => {
   if (!id) {
     return null;
   }
@@ -23,7 +23,7 @@ export const getComment = async (id, withUser: boolean = true, viewer:string = n
   if (comment) {
     const vm: HodlCommentViewModel = {
       id: comment.id,
-      user: withUser ? await getUser(comment.subject, viewer): null,
+      user: withUser ? await getUser(comment.subject, viewer) : null,
       comment: comment.comment,
       timestamp: comment.timestamp,
       object: comment.object,
@@ -32,7 +32,7 @@ export const getComment = async (id, withUser: boolean = true, viewer:string = n
 
     return vm;
   }
-  
+
   return null;
 }
 
@@ -40,7 +40,7 @@ route.get(async (req, res: NextApiResponse) => {
   const { id } = req.query;
 
   if (!id) {
-    return res.status(400).json({message: 'Bad Request'});
+    return res.status(400).json({ message: 'Bad Request' });
   }
 
   const comment = await getComment(id, true, req?.address);

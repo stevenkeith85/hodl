@@ -1,18 +1,17 @@
 import dotenv from 'dotenv'
 import { ethers } from 'ethers';
-import { getProvider } from '../../../lib/server/connections';
-import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
-import apiRoute from '../handler';
-import { getToken } from '../token/[tokenId]';
-import { Nft } from '../../../models/Nft';
-import { Token } from '../../../models/Token';
+import { getProvider } from '../../../../../lib/server/connections';
+import HodlNFT from '../../../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
+import apiRoute from '../../../handler';
+import { getToken } from '../../../token/[tokenId]';
+import { Nft } from '../../../../../models/Nft';
+import { Token } from '../../../../../models/Token';
 
 dotenv.config({ path: '../.env' })
 
 // The get hodling / get listed functionality should work fairly similar
 // TODO: We may read more data from Redis in future if we can set up a decent blockchain/redis cache mechanism
 const addressToTokenIds = async (address, offset, limit) => {
-    console.log('api/profile/hodling - called')
     const provider = getProvider();
     const tokenContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, HodlNFT.abi, provider);
     const result = await tokenContract.addressToTokenIds(address, offset, limit);

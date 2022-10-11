@@ -1,5 +1,5 @@
 import useSWRInfinite from 'swr/infinite'
-import { fetchWithQueryOffsetLimit } from '../lib/swrFetchers';
+import { fetchWithOffsetLimit } from '../lib/swrFetchers';
     
 export const useNewUsers = (limit=10, fallbackData=null) => {
     const getKey = (index, _previous) => {
@@ -8,7 +8,7 @@ export const useNewUsers = (limit=10, fallbackData=null) => {
 
     const swr = useSWRInfinite(
         getKey, 
-        fetchWithQueryOffsetLimit, 
+        fetchWithOffsetLimit, 
         { fallbackData });
 
     return { results: swr };

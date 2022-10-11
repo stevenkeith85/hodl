@@ -65,7 +65,7 @@ const CustomTick = ({ x, y, stroke, payload }) => {
 export const PriceHistoryGraph = ({ nft, fallbackData=null }) => {
     const fetcher: Fetcher<PriceHistory[], [string, string]> = (url, query) => axios.get(`${url}/${query}`).then(r => r.data.priceHistory);
 
-    const { data: priceHistory, error } = useSWR(nft.id ? [`/api/token-bought/`, nft.id] : null,
+    const { data: priceHistory, error } = useSWR(nft.id ? [`/api/contracts/market/events/token-bought/`, nft.id] : null,
         fetcher,
         { fallbackData }
     );

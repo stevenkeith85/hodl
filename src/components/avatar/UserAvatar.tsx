@@ -14,7 +14,6 @@ interface UserAvatarProps {
 }
 
 export const UserAvatar: React.FC<UserAvatarProps> = ({ user, size }) => {
-    
     return (<>    
         <Avatar
             sx={{

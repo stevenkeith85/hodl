@@ -1,6 +1,7 @@
 import { Box, NoSsr } from "@mui/material";
 import { useEffect, useRef } from "react";
 import { grey } from "@mui/material/colors";
+import Head from "next/head";
 
 interface HodlVideoProps {
     cid: string;
@@ -26,8 +27,8 @@ export const HodlVideo = ({
     height = '100%',
     width = '100%',
     onLoad = null,
-    assetFolder="video",
-    poster=null
+    assetFolder = "video",
+    poster = null
 }: HodlVideoProps) => {
     const makeCloudinaryVideoUrl = () => {
         let cloudinaryUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_NAME}/${assetFolder}/upload`;
@@ -58,11 +59,11 @@ export const HodlVideo = ({
                 width,
                 background: grey[200],
                 video: {
-                    width: 'auto',
+                    width: '100%',
                     height: 'auto',
                     maxWidth: '100%',
                     maxHeight: '100%',
-                    objectFit: 'scale-down'
+                    objectFit: 'fill'
                 },
                 ...sx
             }}>
@@ -74,14 +75,14 @@ export const HodlVideo = ({
                             }
                         }
                         }
-                        poster={poster? `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_NAME}/image/upload/q_auto,c_fit/${environment}/${folder}/${poster}`: 'none'}
+                        poster={poster ? `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_NAME}/image/upload/q_auto,c_fit/${environment}/${folder}/${poster}` : 'none'}
                         ref={video}
                         autoPlay={gif} // we autoplay gifs. videos are played when the user scrolls past them
                         loop={gif}
                         muted={typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('muted')) : false} // TODO: Not confident this works tbh
                         controls={!gif && controls}
                         controlsList="nodownload"
-                        >
+                    >
                         <>
                             <source type="video/mp4" src={`${asset}.mp4`} />
                             Your browser does not support HTML5 video tag.

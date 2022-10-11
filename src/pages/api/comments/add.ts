@@ -61,23 +61,23 @@ const route = apiRoute();
 // TODO: REDIS TRANSACTION
 export const addComment = async (comment: HodlComment, req) => {
   comment.timestamp = Date.now();
-    
+
   const commentId = await client.incr("commentId")
   comment.id = commentId;
-  
+
   const p = client.pipeline();
 
   // Store the comment
   p.set(`comment:${commentId}`, comment);
 
   // Store references to the comment for user, the token
-  p.zadd(`user:${comment.subject}:comments`, { 
-    member: commentId, 
-    score: comment.timestamp 
+  p.zadd(`user:${comment.subject}:comments`, {
+    member: commentId,
+    score: comment.timestamp
   });
 
   // add the comment to to token or comment's collection
-  p.zadd(`${comment.object}:${comment.objectId}:comments`, { 
+  p.zadd(`${comment.object}:${comment.objectId}:comments`, {
     member: commentId,
     score: comment.timestamp
   });
@@ -87,18 +87,14 @@ export const addComment = async (comment: HodlComment, req) => {
 
   p.hmget<User>(`user:${req.address}`, 'actionQueueId');
 
-  const [commentAdded, userRecordAdded, tokenRecordAdded, updatedCommentCount, user] = await p.exec<[string|null, number, number, number, User]>();
+  const [commentAdded, userRecordAdded, tokenRecordAdded, updatedCommentCount, user] = await p.exec<[string | null, number, number, number, User]>();
 
-
-  const start = new Date();
-  
-  const handlerPath = `api/actions/add`;
-  const url = `https://api.serverlessq.com?id=${user?.actionQueueId}&target=${process.env.MESSAGE_HANDLER_HOST}/${handlerPath}`;
+  // TODO - We don't await this at the moment; as we do nothing with the return code.
+  // it takes up to a second to get a response. possibly something to follow up with serverlessq at some point
+  // we should really log whether things were added to the queue for support purposes
   const { accessToken, refreshToken } = req.cookies;
+  const url = `https://api.serverlessq.com?id=${user?.actionQueueId}&target=${process.env.MESSAGE_HANDLER_HOST}/api/actions/add`;
   try {
-    // TODO - We don't await this at the moment; as we do nothing with the return code.
-    // it takes up to a second to get a response. possibly something to follow up with serverlessq at some point
-    // we should really log whether things were added to the queue for support purposes
     axios.post(
       url,
       {
@@ -120,8 +116,9 @@ export const addComment = async (comment: HodlComment, req) => {
     console.log(e)
   }
 
-  const stop = new Date();
-  console.log('time taken', stop - start);
+  // const start = new Date();
+  // const stop = new Date();
+  // console.log('time taken', stop - start);
 
   return [commentAdded, userRecordAdded, tokenRecordAdded, updatedCommentCount]
 }
@@ -145,7 +142,7 @@ route.post(async (req, res: NextApiResponse) => {
   // to constantly get error messages like 'must be a trimmed string' as they type on the UI
   const hodlComment: HodlComment = {
     subject: req.address,
-    comment: comment.trim(), 
+    comment: comment.trim(),
     object, // the comment's parent can be a token or a comment
     objectId,
     tokenId,

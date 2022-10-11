@@ -31,38 +31,28 @@ import { useNewTokens } from '../hooks/useNewTokens';
 export async function getServerSideProps({ req, res }) {
   await authenticate(req, res);
 
-  let user: UserViewModel = null;
+  const limit = 10;
 
-  if (req.address) {
-    user = await getUser(req.address, req.address);
+  if (!req.address) {
+    return {
+      props: {
+        address: null,
+        user: null,
+        limit,
+        prefetchedFeed: null
+      }
+    }
   }
-
-  const limit = 8;
-
-  const feed = getActions(user?.address, ActionSet.Feed, 0, limit);
-  const topUsers = getMostFollowedUsers(0, limit);
-  const topTokens = getMostLikedTokens(0, limit);
-  const newUsers = getNewUsers(0, limit, user?.address);
-  const newTokens = getNewTokens(0, limit);
-  const followingCount = getFollowingCount(user?.address);
-  const followersCount = getFollowersCount(user?.address);
-
+  
+  const userPromise = getUser(req.address, req.address);
+  const feed = getActions(req.address, ActionSet.Feed, 0, 3); 
+  
   const [
+    user,
     pfeed,
-    ptopUsers,
-    ptopTokens,
-    pnewUsers,
-    pnewTokens,
-    pfollowingCount,
-    pfollowersCount
   ] = await Promise.all([
+    userPromise,
     feed,
-    topUsers,
-    topTokens,
-    newUsers,
-    newTokens,
-    followingCount,
-    followersCount
   ]);
 
   return {
@@ -71,12 +61,6 @@ export async function getServerSideProps({ req, res }) {
       user,
       limit,
       prefetchedFeed: [pfeed],
-      prefetchedTopUsers: [ptopUsers],
-      prefetchedTopTokens: [ptopTokens],
-      prefetchedNewUsers: [pnewUsers],
-      prefetchedNewTokens: [pnewTokens],
-      prefetchedFollowingCount: pfollowingCount,
-      prefetchedFollowersCount: pfollowersCount
     }
   }
 }
@@ -86,28 +70,22 @@ export default function Home({
   user,
   limit,
   prefetchedFeed,
-  prefetchedTopUsers,
-  prefetchedTopTokens,
-  prefetchedNewUsers,
-  prefetchedNewTokens,
-  prefetchedFollowingCount,
-  prefetchedFollowersCount
 }) {
 
-  const { rankings: mostFollowed } = useRankings(true, limit, prefetchedTopUsers);
+  const { rankings: mostFollowed } = useRankings(true, limit, null);
   const { rankings: mostLiked } = useRankings(true, limit, null, "token");
   const { rankings: mostUsedTags } = useRankings(true, limit, null, "tag");
 
-  const { results: newUsers } = useNewUsers(limit, prefetchedNewUsers);
-  const { results: newTokens } = useNewTokens(limit, prefetchedNewTokens);
+  const { results: newUsers } = useNewUsers(limit, null);
+  const { results: newTokens } = useNewTokens(limit, null);
 
   const { actions: feed } = useActions(user?.address, ActionSet.Feed, limit, prefetchedFeed);
 
   const [hodlingCount] = useHodlingCount(user?.address, null);
   const [listedCount] = useListedCount(user?.address, null);
 
-  const [followersCount] = useFollowersCount(user?.address, prefetchedFollowingCount);
-  const [followingCount] = useFollowingCount(user?.address, prefetchedFollowersCount);
+  const [followersCount] = useFollowersCount(user?.address, null);
+  const [followingCount] = useFollowingCount(user?.address, null);
 
   return (
     <>

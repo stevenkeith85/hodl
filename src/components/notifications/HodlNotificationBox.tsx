@@ -29,8 +29,8 @@ const followed = item => item.action === ActionTypes.Followed;
 
 // Components
 const LikedToken = () => <>liked your token.</>
-const LikedDeletedComment = () => <>liked a comment, that has now been deleted.</>
-const LikedComment = ({ item }) => <>{`liked a comment: ${truncateText(item?.comment?.comment, 70)}.`}</>
+const LikedDeletedComment = () => <>liked your comment, that has now been deleted.</>
+const LikedComment = ({ item }) => <>{`liked your comment: ${truncateText(item?.comment?.comment, 70)}.`}</>
 const MadeDeletedComment = () => <>commented on your token: [deleted]</>
 const CommentedOnToken = ({ item }) => <>{`commented on your token: ${truncateText(item?.comment?.comment, 70)}.`}</>
 const RepliedToComment = ({ item }) => <>{`replied: ${truncateText(item?.comment?.comment, 70)}.`}</>
@@ -128,7 +128,7 @@ const NotificationLink: React.FC<NotificationLinkProps> = ({ item }) => {
         }
         {
             likedComment(item) &&
-            <Link href={`/nft/${item?.token?.id}?comment=${item?.comment?.id}`} passHref>
+            <Link href={`/nft/${item?.comment.tokenId}?comment=${item?.comment?.id}`} passHref>
                 <Typography component="a">
                     <MessageWithAvatarAndTime item={item}>
                         <LikedComment item={item} />
@@ -146,7 +146,7 @@ const NotificationLink: React.FC<NotificationLinkProps> = ({ item }) => {
         }
         {
             commentedOnToken(item) &&
-            <Link href={`/nft/${item.token.id}?comment=${item.comment.id}`} passHref>
+            <Link href={`/nft/${item.comment.tokenId}?comment=${item.comment.id}`} passHref>
                 <Typography component="a">
                     <MessageWithAvatarAndTime item={item}>
                         <CommentedOnToken item={item} />
@@ -237,8 +237,9 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({
     return (
         <Box key={item?.id} sx={{
             background: lastRead < item.timestamp ? "#ECF3FF" : "white",
-            padding: 0.75,
-            margin: 0.5,
+            padding: 1,
+            marginX: 0.5,
+            marginY: 0.75,
             ...sx
         }}>
             <Box

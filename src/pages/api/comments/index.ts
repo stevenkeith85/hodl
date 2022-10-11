@@ -3,11 +3,11 @@ import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
 import apiRoute from "../handler";
 import { GetCommentsValidationSchema } from "../../../validation/comments/getComments";
-import { ethers } from "ethers";
-import { getProvider } from "../../../lib/server/connections";
-import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
-import { HodlCommentViewModel } from "../../../models/HodlComment";
+import { HodlComment, HodlCommentViewModel } from "../../../models/HodlComment";
 import { getComment } from "../comment";
+import { User, UserViewModel } from "../../../models/User";
+import { getUser } from "../user/[handle]";
+import { Token } from "../../../models/Token";
 
 dotenv.config({ path: '../.env' })
 
@@ -27,35 +27,91 @@ const commentIdToViewModel = async (id): Promise<HodlCommentViewModel | null> =>
 export const getCommentsForToken = async (object: "token" | "comment", objectId: number, offset: number, limit: number, reverse = false) => {
 
   try {
+    // const start = new Date();
+
     const total = await client.zcard(`${object}:${objectId}:comments`);
 
     // ZRANGE: Out of range indexes do not produce an error.
     // So we need to check here and return if we are about to do an out of range search
     if (offset >= total) {
-      return { 
-        items: [], 
+      return {
+        items: [],
         next: Number(offset) + Number(limit),
-        total: Number(total) 
+        total: Number(total)
       };
     }
 
-    const start = offset;
-    const stop = offset + limit - 1;
+    const commentIds: string[] = await client.zrange(`${object}:${objectId}:comments`, offset, offset + limit - 1, { rev: reverse });
 
-    const commentIds : string [] = await client.zrange(`${object}:${objectId}:comments`, start, stop, { rev: reverse });
-    const promises = commentIds.map(id => commentIdToViewModel(id));
-    const comments: HodlCommentViewModel[] = await Promise.all(promises);
+    // We get all the comment data with one round trip to redis
+    const commentPipeline = client.pipeline();
+    for (let id of commentIds) {
+      commentPipeline.get(`comment:${id}`);
+    }
+    const comments: HodlComment[] = await commentPipeline.exec();
 
-    return { 
-      items: comments, 
-      next: Number(offset) + Number(limit), 
-      total: Number(total) 
+    // Each comment has a subject. This is the address of the user who made the comment.
+    // We get all the unique user objects from redis in one trip.
+    const addresses: string[] = comments.map(comment => comment.subject);
+    const uniqueAddresses = new Set(addresses);
+
+    const userPipeline = client.pipeline();
+    for (let address of Array.from(uniqueAddresses)) {
+      userPipeline.hmget<User>(`user:${address}`, 'address', 'nickname', 'avatar');
+    }
+
+    const users: User[] = await userPipeline.exec();
+
+    // Each user object has a numeric id for their avatar. This represents a token.
+    // We get those tokens in one round trip to redis
+    const avatarIds: number[] = users.map(user => user.avatar);
+    const avatarPipeline = client.pipeline();
+    for (let id of avatarIds) {
+      avatarPipeline.get<Token>(`token:${id}`);
+    }
+    const avatars: Token[] = await avatarPipeline.exec();
+
+    // Create an id to token map so that we can extrapolate the user info for the UI
+    const avatarMap = avatars.reduce((map, token) => {
+      map[token.id] = token;
+      return map;
+    }, {});
+
+    const userVMs: UserViewModel[] = users.map(user => ({
+      address: user.address,
+      nickname: user.nickname,
+      avatar: avatarMap[user.avatar]
+    }))
+
+    // Create an address to user map so that we can extrapolate the comment info for the UI
+    const userMap = userVMs.reduce((map, user) => {
+      map[user.address] = user;
+      return map;
+    }, {});
+
+    // The final result we'll give back to the FE
+    const result = comments.map(comment => ({
+      id: comment.id,
+      user: userMap[comment.subject],
+      comment: comment.comment,
+      timestamp: comment.timestamp,
+      object: comment.object,
+      tokenId: comment.tokenId
+    }));
+    
+    // const stop = new Date();
+    // console.log('time taken', stop - start);
+
+    return {
+      items: result,
+      next: Number(offset) + Number(limit),
+      total: Number(total)
     };
   } catch (e) {
-    return { 
-      items: [], 
-      next: 1, 
-      total: 0 
+    return {
+      items: [],
+      next: 1,
+      total: 0
     };
   }
 }
@@ -70,16 +126,6 @@ route.get(async (req, res: NextApiResponse) => {
   const isValid = await GetCommentsValidationSchema.isValid(req.query)
   if (!isValid) {
     return res.status(400).json({ message: 'Bad Request' });
-  }
-
-  if (object === "token") {
-    const provider = await getProvider();
-    const contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, HodlNFT.abi, provider);
-    const tokenExists = await contract.exists(objectId);
-
-    if (!tokenExists) {
-      return res.status(400).json({ message: 'Bad Request' });
-    }
   }
 
   const comments = await getCommentsForToken(object as "comment" | "token", Number(objectId), Number(offset), Number(limit), JSON.parse(rev));

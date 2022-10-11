@@ -71,9 +71,7 @@ export const getUser = async (
     vm.nonce = user.nonce;
   }
 
-  
   const avatarPromise = getAvatar(user);
-  
   
   const followedByViewerPromise = isFollowing(viewerAddress, user?.address);
   const followsViewerPromise = isFollowing(user?.address, viewerAddress);

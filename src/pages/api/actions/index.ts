@@ -6,6 +6,9 @@ import { ActionSet, HodlAction, HodlActionViewModel } from "../../../models/Hodl
 import { getToken } from "../token/[tokenId]";
 import { getComment } from "../comment";
 import { getUser } from "../user/[handle]";
+import { User, UserViewModel } from "../../../models/User";
+import { Token } from "../../../models/Token";
+import { HodlComment } from "../../../models/HodlComment";
 
 dotenv.config({ path: '../.env' })
 
@@ -68,7 +71,7 @@ export const getActions = async (
   if (!address) {
     return null;
   }
-  
+
   const total = await client.zcard(`user:${address}:${set}`);
 
   // ZRANGE: Out of range indexes do not produce an error.
@@ -81,14 +84,134 @@ export const getActions = async (
     };
   }
 
-  const actionIds : string [] = await client.zrange(`user:${address}:${set}`, offset, offset + limit - 1, { rev: true });
+  const actionIds: string[] = await client.zrange(`user:${address}:${set}`, offset, offset + limit - 1, { rev: true });
 
-  const actionPromises = actionIds.map(id => getAction(id, address));
+  // We get all the action data with one round trip to redis
+  const actionPipeline = client.pipeline();
+  for (let id of actionIds) {
+    actionPipeline.get(`action:${id}`);
+  }
+  const actions: HodlAction[] = actionIds.length ? await actionPipeline.exec() : [];
 
-  const actions: HodlActionViewModel[] = await Promise.all(actionPromises);
+  // Each action has a subject. This is the address of the user who took the action
+  // We get all the unique user objects from redis in one trip.
+  const addresses: string[] = actions.map(action => action.subject);
+  const uniqueAddresses = new Set(addresses);
+
+  const userPipeline = client.pipeline();
+  for (let address of Array.from(uniqueAddresses)) {
+    userPipeline.hmget<User>(`user:${address}`, 'address', 'nickname', 'avatar');
+  }
+
+  const users: User[] = uniqueAddresses.size ? await userPipeline.exec() : [];
+
+  // Each user object has a numeric id for their avatar. This represents a token.
+  // We get those tokens in one round trip to redis
+  const avatarIds: number[] = users.filter(user => user.avatar).map(user => user.avatar); // avatars are optional
+  const avatarPipeline = client.pipeline();
+  for (let id of avatarIds) {
+    avatarPipeline.get<Token>(`token:${id}`);
+  }
+  const avatars: Token[] = avatarIds.length ? await avatarPipeline.exec() : [];
+
+  // Create an id to token map so that we can extrapolate the user info for the UI
+  const avatarMap = avatars.reduce((map, token) => {
+    map[token.id] = token;
+    return map;
+  }, {});
+
+  const userVMs: UserViewModel[] = users.map(user => ({
+    address: user.address,
+    nickname: user.nickname,
+    avatar: avatarMap[user.avatar]
+  }))
+
+  const userMap = userVMs.reduce((map, user) => {
+    map[user.address] = user;
+    return map;
+  }, {});
+
+  // Get any comments attached to the actions
+  const commentIds = actions.filter(action => action.object === 'comment').map(action => action.objectId);
+  const uniqueCommentIds = new Set(commentIds);
+
+  const commentsPipeline = client.pipeline();
+  for (let id of Array.from(uniqueCommentIds)) {
+    commentsPipeline.get<HodlComment>(`comment:${id}`);
+  }
+
+  let comments: HodlComment[] = uniqueCommentIds.size ? await commentsPipeline.exec() : [];
+
+  // Users can delete comments. So remove any missing comments.
+  comments = comments.filter(comment => comment);
+
+  // Create an id to comment map so that we can extrapolate the user info for the UI
+  const commentMap = comments.reduce((map, comment) => {
+    map[comment.id] = comment;
+    return map;
+  }, {});
+
+  // Get the tokenIds the comments were made on
+  const tokenIdsForComments = comments.map(comment => comment.tokenId);
+
+  // Get tokens attached to actions or comments
+  const tokenIds = actions.filter(action => action.object === 'token').map(action => action.objectId).concat(tokenIdsForComments);
+
+  const uniqueTokenIds = new Set(tokenIds);
+
+  const tokensPipeline = client.pipeline();
+  for (let id of Array.from(uniqueTokenIds)) {
+    tokensPipeline.get<Token>(`token:${id}`);
+  }
+  const tokens: Token[] = uniqueTokenIds.size ? await tokensPipeline.exec() : [];
+
+  // Create an id to token map so that we can extrapolate the user info for the UI
+  const tokenMap = tokens.reduce((map, token) => {
+    map[token.id] = token;
+    return map;
+  }, {});
+
+  
+
+  // The final result we'll give back to the FE
+  const result = actions.map(action => {
+
+
+    const actionVM: HodlActionViewModel = {
+      id: action.id,
+      user: userMap[action.subject],
+      timestamp: action.timestamp,
+      object: action.object,
+      objectId: action.objectId,
+      action: action.action,
+      subject: action.subject
+    };
+
+    if (action.object === "token") {
+      // console.log('this action has a token attached', action.id, tokenMap)
+      actionVM.token = tokenMap[action.objectId];
+    }
+
+    if (action.object === "comment") {
+      // console.log('this action has a token attached', action.id, tokenMap)
+      const comment = commentMap[action.objectId];
+      actionVM.comment = comment || null;
+
+      if (comment) {
+        // We also retrieved the token the comment was about (as we use the image in the notifications box)
+        actionVM.token = tokenMap[comment.tokenId];
+      }
+      
+    }
+
+    return actionVM;
+  });
+  // const actionPromises = actionIds.map(id => getAction(id, address));
+
+  // const actions: HodlActionViewModel[] = await Promise.all(actionPromises);
 
   return {
-    items: actions,
+    items: result,
     next: Number(offset) + Number(limit),
     total: Number(total)
   };
