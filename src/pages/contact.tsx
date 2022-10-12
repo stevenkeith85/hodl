@@ -4,7 +4,7 @@ import { grey } from '@mui/material/colors';
 import { RocketLaunch } from "@mui/icons-material";
 import { authenticate } from "../lib/jwt";
 import { HodlBorderedBox } from "../components/HodlBorderedBox";
-import { TikTokIcon } from "../components/TiktokIcon";
+import { TikTokIcon } from "../components/TikTokIcon";
 
 export async function getServerSideProps({ req, res }) {
     await authenticate(req, res);

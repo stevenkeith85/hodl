@@ -40,13 +40,6 @@ export default function MyApp(props: MyAppProps) {
 
   const router = useRouter();
 
-  // Whole site is currently password protected
-  if (!pageProps.hasReadPermission) {
-    return <ThemeProvider theme={theme}>
-      <LoginPage loggedIn={pageProps.hasReadPermission} />
-    </ThemeProvider>
-    
-  }
 
   const [signer, setSigner] = useState('');
 
@@ -86,6 +79,15 @@ export default function MyApp(props: MyAppProps) {
     };
 
   }, [address])
+
+  // Whole site is currently password protected
+  if (!pageProps.hasReadPermission) {
+    return <ThemeProvider theme={theme}>
+      <LoginPage loggedIn={pageProps.hasReadPermission} />
+    </ThemeProvider>
+
+  }
+
 
   return (
     <CacheProvider value={emotionCache}>
