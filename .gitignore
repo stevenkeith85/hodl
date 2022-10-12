@@ -45,7 +45,25 @@ typechain
 
 #Hardhat files
 cache
-artifacts
+
+# ignore all the artifacts except the hodlnft and holdmarket abis
+artifacts/*
+!artifacts/contracts/
+
+artifacts/contracts/*
+!artifacts/contracts/HodlNFT.sol/
+!artifacts/contracts/HodlMarket.sol/
+
+artifacts/contracts/HodlNFT.sol/*
+!artifacts/contracts/HodlNFT.sol/HodlNFT.json
+
+artifacts/contracts/HodlMarket.sol/*
+!artifacts/contracts/HodlMarket.sol/HodlMarket.json
+
+
+
+
+
 
 
 config.js
