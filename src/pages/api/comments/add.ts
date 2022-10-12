@@ -100,7 +100,7 @@ export const addComment = async (comment: HodlComment, req) => {
       {
         action: ActionTypes.Commented,
         object: "comment",
-        id: comment.id
+        objectId: comment.id
       },
       {
         withCredentials: true,

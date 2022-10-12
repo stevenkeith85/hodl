@@ -67,7 +67,7 @@ route.post(async (req, res: NextApiResponse) => {
       objectId: token
     };
 
-    const success = addAction(notification);
+    const success = await addAction(notification);
   }
 
   res.status(200).json({ liked });
