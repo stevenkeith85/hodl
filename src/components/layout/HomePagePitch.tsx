@@ -104,7 +104,7 @@ export const HomePagePitch = ({ }) => {
                     >
                         <Box sx={{ 
                             width: `400px`, 
-                            maxWidth: '90%',
+                            maxWidth: '100%',
                         }}>
                             <NftWindow 
                                 nft={

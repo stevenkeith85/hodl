@@ -1,6 +1,13 @@
 import {
   Box,
   Grid,
+  IconButton,
+  Link,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  MenuList,
   Skeleton,
   Stack,
   Tab,
@@ -14,22 +21,25 @@ import {
   NftActionButtons
 } from '../../components';
 
+import React from 'react';
+
 import { Likes } from "../../components/Likes";
 import Head from "next/head";
+
 import { AssetLicense } from "../../components/nft/AssetLicense";
 import { HodlCommentsBox } from "../../components/comments/HodlCommentsBox";
 import { Comments } from "../../components/comments/Comments";
 import { useEffect, useState } from "react";
-import { DataObject, Forum, Insights } from "@mui/icons-material";
+import { DataObject, DeleteOutlineSharp, Forum, Insights, Instagram, IosShare, Send, Share, ShareOutlined, Twitter } from "@mui/icons-material";
 
 import router from "next/router";
 import { MaticPrice } from "../../components/MaticPrice";
-import { indigo } from "@mui/material/colors";
+
 import { insertTagLinks } from "../../lib/templateUtils";
 import { authenticate } from "../../lib/jwt";
 import { UserAvatarAndHandle } from "../../components/avatar/UserAvatarAndHandle";
 import { NftContext } from "../../contexts/NftContext";
-import { HodlBorderedBox } from "../../components/HodlBorderedBox";
+
 import { HodlerCreatorCard } from "../../components/nft/HodlerCreatorCard";
 import { getToken } from "../api/token/[tokenId]";
 import useSWR, { Fetcher } from "swr";
@@ -37,6 +47,10 @@ import { Token, TokenSolidity } from "../../models/Token";
 import axios from "axios";
 import { PriceHistoryGraph } from "../../components/nft/PriceHistory";
 import { ListingVM } from "../../models/Listing";
+import { CopyText } from "../../components/CopyText";
+import comment from "../api/comment";
+import { HodlShareMenu } from "../../components/HodlShareMenu";
+
 
 
 export async function getServerSideProps({ params, query, req, res }) {
@@ -101,21 +115,33 @@ const NftDetail = ({
       >
         <Head>
           <title>{nft.name} · Hodl My Moon</title>
+          {/* <script type="text/javascript" async src="https://platform.twitter.com/widgets.js"></script> */}
         </Head>
         <Grid
           container
-          marginTop={4}
+          sx={{
+            marginTop: {
+              xs: 2,
+              sm: 4
+            }
+          }}
         >
           <Grid
             item
             xs={12}
-            marginBottom={4}
+            sx={{
+              marginBottom: {
+                xs: 2,
+                sm:
+                  4
+              }
+            }}
           >
             <Box
               sx={{
                 marginX: {
-                  xs: 2,
-                  sm: 0
+                  // xs: 2,
+                  xs: 0
                 }
               }}>
               <Stack
@@ -221,7 +247,7 @@ const NftDetail = ({
             <Box
               sx={{
                 marginX: {
-                  xs: 2,
+                  // xs: 2,
                   sm: 0
                 }
               }}>
@@ -229,29 +255,33 @@ const NftDetail = ({
                 sx={{
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: 2,
-                  marginBottom: 4,
+                  gap: 1.5,
+                  marginBottom: 2,
                 }}
               >
                 <DetailPageImage token={nft} />
-                <Box gap={1.5} display='flex' alignItems='center'>
-                  <Likes
-                    sx={{
-                      color: theme => theme.palette.secondary.main,
-                      '.MuiTypography-body1': { color: '#666' }
-                    }}
-                    id={nft.id}
-                    object="token"
-                    fontSize={12}
-                    size={18}
-                  />
-                  <Comments
-                    fontSize={12}
-                    size={18}
-                    nft={nft}
-                    popUp={false}
-                    sx={{ color: '#333' }}
-                  />
+                <Box
+                  sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Box gap={1.5} display='flex' alignItems='center'>
+                    <Likes
+                      sx={{
+                        color: theme => theme.palette.secondary.main,
+                        '.MuiTypography-body1': { color: '#666' }
+                      }}
+                      id={nft.id}
+                      object="token"
+                      fontSize={12}
+                      size={20}
+                    />
+                    <Comments
+                      fontSize={12}
+                      size={20}
+                      nft={nft}
+                      popUp={false}
+                      sx={{ color: '#333', paddingRight: 0 }}
+                    />
+                  </Box>
+                  <HodlShareMenu nft={nft}/>
                 </Box>
               </Box>
             </Box>
@@ -260,40 +290,51 @@ const NftDetail = ({
             item
             xs={12}
             md={7}
-            marginBottom={4}
+            marginBottom={{ xs: 2, sm: 4 }}
             paddingLeft={{ md: 4 }}
           >
             <Box
               sx={{
                 marginX: {
-                  xs: 2,
                   sm: 0
                 }
               }}>
               <div hidden={value !== 0}>
-                <HodlBorderedBox>
+                <Box
+                  sx={{
+                    background: 'white',
+                    padding: {
+                      xs: 2,
+                      sm: 2
+                    },
+                    border: `1px solid #ddd`
+                  }}>
                   <Box
-                    paddingBottom={2}
-                    mb={2}
-                    sx={{ borderBottom: `1px solid #ddd` }}>
-                    <Typography mb={2} sx={{ fontSize: 16, fontWeight: 500 }}>{nft.name}</Typography>
+                    marginBottom={2}
+                    sx={{
+                      position: 'relative',
+                      paddingBottom: 2,
+                      borderBottom: `1px solid #ddd`
+                    }}
+                  >
+                    <Typography mb={1} sx={{ fontWeight: 600 }}>{nft.name}</Typography>
                     <Box sx={{ whiteSpace: 'pre-line' }}>{insertTagLinks(nft.description)}</Box>
                   </Box>
                   <HodlCommentsBox
                     limit={limit}
                     header={false}
                   />
-                </HodlBorderedBox>
+                </Box>
               </div>
               <div hidden={value !== 1}>
                 <Box display="grid" gap={4}>
                   <Box
                     display="grid"
                     sx={{
-                      background: indigo[50],
+                      background: '#e8eaf6b0',
                       padding: 2,
                       border: `1px solid #ddd`,
-                      borderRadius: 1
+                      // borderRadius: 1
                     }}>
                     <Typography variant="h2" marginBottom={2}>Price</Typography>
                     {
@@ -309,11 +350,11 @@ const NftDetail = ({
                       sx={{
                         marginTop: 2
                       }}>
-                      <NftActionButtons 
-                        token={nft} 
-                        hodler={hodler}  
+                      <NftActionButtons
+                        token={nft}
+                        hodler={hodler}
                         listing={listing}
-                        />
+                      />
                     </Box>}
                   </Box>
                   {/* <PriceHistoryGraph nft={nft} /> */}

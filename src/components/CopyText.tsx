@@ -3,12 +3,12 @@ import { getShortAddress } from '../lib/utils';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useState } from 'react';
 
-export const CopyText = ({ owner, children }) => {
+export const CopyText = ({ text, children }) => {
     const [copied, setCopied] = useState(false);
 
     return (
         <CopyToClipboard
-            text={owner.address}
+            text={text}
             onCopy={() => {
                 setCopied(true);
                 setTimeout(() => {

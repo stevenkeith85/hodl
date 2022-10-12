@@ -33,7 +33,7 @@ export const Replies = ({
             flexDirection="column"
             sx={{
                 width: '100%',
-                marginTop: 3,
+                marginTop: 1,
             }}
         >
             {

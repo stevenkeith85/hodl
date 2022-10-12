@@ -11,7 +11,8 @@ import Layout from '../components/layout/Layout';
 import { CacheProvider, EmotionCache } from '@emotion/react';
 import createEmotionCache from '../createEmotionCache';
 import { AppProps } from 'next/app';
-
+import Cookies from "universal-cookie"
+import App from "next/app";
 
 import '../styles/globals.css'
 
@@ -20,6 +21,8 @@ import Pusher from 'pusher-js';
 
 import { HodlNotificationSnackbar } from '../components/snackbars/HodlNotificationSnackbar';
 import { HodlSnackbar } from '../components/snackbars/HodlSnackbar';
+import { useRouter } from 'next/router';
+import LoginPage from './login';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -34,6 +37,16 @@ export default function MyApp(props: MyAppProps) {
     Component,
     emotionCache = clientSideEmotionCache,
     pageProps } = props;
+
+  const router = useRouter();
+
+  // Whole site is currently password protected
+  if (!pageProps.hasReadPermission) {
+    return <ThemeProvider theme={theme}>
+      <LoginPage loggedIn={pageProps.hasReadPermission} />
+    </ThemeProvider>
+    
+  }
 
   const [signer, setSigner] = useState('');
 
@@ -120,4 +133,17 @@ export default function MyApp(props: MyAppProps) {
       </ConfirmProvider>
     </CacheProvider>
   )
+}
+
+MyApp.getInitialProps = async (appContext) => {
+  const appProps = await App.getInitialProps(appContext)
+
+  const cookies = new Cookies(appContext.ctx.req.headers.cookie)
+  const password = cookies.get(process.env.NEXT_PUBLIC_HODL_MY_MOON_PASSWORD_COOKIE_NAME) ?? ""
+
+  if (password === process.env.HODL_MY_MOON_PASSWORD) {
+    appProps.pageProps.hasReadPermission = true
+  }
+
+  return { ...appProps }
 }

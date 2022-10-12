@@ -7,7 +7,7 @@ import { UserAvatarAndHandle } from './avatar/UserAvatarAndHandle';
 import { useContext } from 'react';
 import { UserContext } from '../contexts/UserContext';
 import { ProfileNameOrAddress } from './avatar/ProfileNameOrAddress';
-import { CopyText } from './CopyAddress';
+import { CopyText } from './CopyText';
 import { HodlBorderedBox } from './HodlBorderedBox';
 import { getShortAddress } from '../lib/utils';
 
@@ -82,7 +82,7 @@ export const HodlProfileBadge: React.FC<HodlProfileBadgeProps> = ({ user }) => {
                             flexDirection: "column",
                         }}>
                         <ProfileNameOrAddress profileAddress={user.address} fallbackData={user} fontSize="20px" />
-                        <CopyText owner={user}>
+                        <CopyText text={user.address}>
                             <Typography sx={{ fontSize: 14 }}>{getShortAddress(user.address)}</Typography>
                         </CopyText>
                     </Box>

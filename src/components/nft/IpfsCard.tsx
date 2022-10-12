@@ -13,7 +13,7 @@ export const IpfsCard : React.FC<IpfsCardProps> = ({ token }) => {
             sx={{
                 padding: 2,
                 border: `1px solid #ddd`,
-                borderRadius: 1
+                background: 'white'
             }}>
 
             <Typography variant="h2" sx={{ marginBottom: 2 }}>

@@ -22,9 +22,12 @@ export const PublicHomePage = ({ }) => {
                         xs: `1fr`,
                         sm: `1fr 1fr`,
                     },
-                    marginY: 4,
-                    marginX: {
+                    marginY: {
                         xs: 2,
+                        sm: 4
+                    },
+                    marginX: {
+                        xs: 0,
                         sm: 4
                     },
                     marginTop: {

@@ -27,7 +27,7 @@ import { useListedCount } from '../../hooks/useListedCount'
 import Link from 'next/link'
 import { ProfileNameOrAddress } from '../../components/avatar/ProfileNameOrAddress'
 import { InfiniteScrollNftWindows } from '../../components/InfiniteScrollNftWindows'
-import { CopyText } from '../../components/CopyAddress'
+import { CopyText } from '../../components/CopyText'
 import { getShortAddress } from '../../lib/utils'
 
 
@@ -158,7 +158,7 @@ const Profile = ({
                 flexDirection: "column",
               }}>
               <ProfileNameOrAddress profileAddress={owner.address} fallbackData={owner} fontSize="22px" sx={{ fontWeight: 500 }} />
-              <CopyText owner={owner}>
+              <CopyText text={owner.address}>
                 <Typography sx={{ fontSize: 14 }}>{getShortAddress(owner.address)}</Typography>
               </CopyText>
             </Box>

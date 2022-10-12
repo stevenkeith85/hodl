@@ -184,7 +184,8 @@ export const getActions = async (
       object: action.object,
       objectId: action.objectId,
       action: action.action,
-      subject: action.subject
+      subject: action.subject,
+      metadata: action.metadata || null
     };
 
     if (action.object === "token") {

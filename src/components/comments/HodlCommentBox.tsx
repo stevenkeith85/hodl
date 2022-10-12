@@ -96,20 +96,16 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
             <Box
                 display="flex"
                 flexDirection="column"
-                // gap={0.5}
                 sx={{
-                    // paddingLeft: 0,
                     width: `calc(100% + 20px)`,
                     marginLeft: '-20px',
                     paddingBottom: 3,
-                    // background: 'yellow',
-                    // border: '1px solid red'
                 }}
             >
                 <Box
                     display="flex"
                     alignItems="start"
-                    gap={2}
+                    gap={1.5}
                     sx={{
                         // background: 'green',
                         width: `100%`
@@ -118,7 +114,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                     <UserAvatarAndHandle
                         address={comment.user.address}
                         fallbackData={comment.user}
-                        size={40}
+                        size={32}
                         handle={false}
                     />
                     <Box
@@ -164,7 +160,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                                 profileAddress={comment.user.address}
                                                 fallbackData={comment.user}
                                                 color={color}
-                                                fontSize="16px"
+                                                fontSize="14px"
                                             />
                                         </Box>
                                         <Box
@@ -244,15 +240,15 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                             />
                                         </Box>
                                     </Box>
-                                    <Typography sx={{ whiteSpace: 'pre-line', marginTop: 0.5, marginBottom: 1 }}>{comment.comment}</Typography>
+                                    <Typography sx={{ whiteSpace: 'pre-line', marginTop: 0, marginBottom: 0 }}>{comment.comment}</Typography>
                                 </Box>
                                 <Box
                                     sx={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        gap: 2,
-                                        marginTop: 0,
-                                        marginBottom: 1
+                                        gap: 1.5,
+                                        marginTop: 1,
+                                        marginBottom: 0.5
                                         
                                     }}>
                                     <Typography
@@ -260,7 +256,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                             color: theme => theme.palette.text.secondary,
                                             fontSize: 12
                                         }}>
-                                        {comment.timestamp && formatDistanceStrict(new Date(comment.timestamp), new Date(), { addSuffix: true })}
+                                        {comment.timestamp && formatDistanceStrict(new Date(comment.timestamp), new Date(), { addSuffix: false })}
                                     </Typography>
                                     {address &&
                                             <Box
@@ -289,9 +285,6 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                     }
                                 </Box>
                                 {Boolean(countSWR?.data) && <Box
-                                    display="flex"
-                                    alignItems={"center"}
-                                    gap={0.5}
                                     onClick={() => {
                                         if (level < 4) {
                                             setShowThread(old => !old);
@@ -304,13 +297,17 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                         }
 
                                     }}
-                                    //    sx={{ background: 'orange' }}
                                     sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 0.25,
                                         color: theme => theme.palette.text.secondary,
                                         cursor: 'pointer',
                                         '&:hover': {
                                             color: theme => theme.palette.text.primary
-                                        }
+                                        },
+                                        // background: 'orange',
+                                        marginTop: 2
                                     }}
                                 >
                                     {showThread ?

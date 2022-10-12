@@ -11,6 +11,7 @@ import { insertTagLinks } from "../../lib/templateUtils";
 import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
 import { FeedAsset } from "./FeedAsset";
 import { MaticPrice } from "../MaticPrice";
+import { HodlShareMenu } from "../HodlShareMenu";
 
 
 interface HodlFeedItemProps {
@@ -49,7 +50,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                         <Box
                             display="flex"
                             alignItems="center"
-                            gap={2}
+                            gap={1.5}
                         >
                             <UserAvatarAndHandle
                                 address={item.subject}
@@ -62,12 +63,12 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                     cursor: 'pointer',
                                     textDecoration: 'none'
                                 }}>
-                                <Box 
-                                    display="flex" 
-                                    justifyContent="space-between" 
-                                    width="100%" 
+                                <Box
+                                    display="flex"
+                                    justifyContent="space-between"
+                                    width="100%"
                                     alignItems="center"
-                                    >
+                                >
                                     <Box display="flex" flexDirection="column" component="span">
                                         {item?.subject && item?.subject !== address &&
                                             <ProfileNameOrAddress
@@ -147,14 +148,14 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                         </Box>
                         {
                             item.token?.properties?.asset?.uri &&
-                            <Link 
+                            <Link
                                 href={
-                                    item.action === ActionTypes.Listed ? 
-                                    `/nft/${item.token.id}?tab=1` : 
-                                    `/nft/${item.token.id}`
-                                } 
+                                    item.action === ActionTypes.Listed ?
+                                        `/nft/${item.token.id}?tab=1` :
+                                        `/nft/${item.token.id}`
+                                }
                                 passHref
-                                >
+                            >
                                 <Box
                                     sx={{
                                         height: '100%',
@@ -170,36 +171,40 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                             </Link>
                         }
                     </Box>
-                    <Box display="flex">
-                        {item.token && <Box display="flex" gap={1.5}>
-                            <Likes
-                                id={item.token?.id}
-                                object="token"
-                                size={18}
-                                fontSize={12}
-                            />
-                            <Comments
-                                nft={item.token}
-                                size={18}
-                                fontSize={12}
-                            />
-                        </Box>}
-                    </Box>
+                    {item.token &&
+                        <Box
+                            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <Box display="flex" gap={1.5}>
+                                <Likes
+                                    id={item.token?.id}
+                                    object="token"
+                                    size={18}
+                                    fontSize={12}
+                                />
+                                <Comments
+                                    nft={item.token}
+                                    size={18}
+                                    fontSize={12}
+                                />
+                            </Box>
+                            <HodlShareMenu nft={item.token} />
+                        </Box>
+                    }
                     <Box>
-                    <Link 
-                                href={
-                                    item.action === ActionTypes.Listed ? 
-                                    `/nft/${item.token.id}?tab=1` : 
+                        <Link
+                            href={
+                                item.action === ActionTypes.Listed ?
+                                    `/nft/${item.token.id}?tab=1` :
                                     `/nft/${item.token.id}`
-                                } 
-                                passHref
-                                >
-                        <Typography
-                            sx={{
-                                fontWeight: 600
-                            }}>
-                            {item.token?.name}
-                        </Typography>
+                            }
+                            passHref
+                        >
+                            <Typography
+                                sx={{
+                                    fontWeight: 600
+                                }}>
+                                {item.token?.name}
+                            </Typography>
                         </Link>
                         <Box
                             sx={{

@@ -34,25 +34,9 @@ export const HodlFeed = ({ address, limit = 4 }) => {
         <Box
             id="hodlfeed"
             sx={{
-                // paddingX: {
-                //     // xs: 4
-                // },
-
-                // paddingY: {
-                //     xs: 4,
-                //     sm: 4
-                // },
-
-                // paddingBottom: {
-                //     xs: 0,
-                //     sm: 4,
-                // },
-
-                // alignItems: {
-                //     xs: 'center',
-                // },
                 gap: {
-                    xs: 4
+                    xs: 2,
+                    sm: 4
                 }
             }}
             display="flex"
@@ -66,8 +50,6 @@ export const HodlFeed = ({ address, limit = 4 }) => {
                     </Box>
                 )
             }
-
-            
             <InfiniteScroll
                 swr={feed}
                 loadingIndicator={<HodlLoadingSpinner />}

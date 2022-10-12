@@ -107,7 +107,6 @@ export const AddComment: FC<AddCommentProps> = ({
                 <>
                     <Form>
                         <Box display="flex" alignItems="center" marginTop={0}>
-
                             <Box display="flex" flexDirection="column" position="relative" flexGrow={1} gap={1}>
                                 <Tooltip title={errors?.comment || ''} >
                                     <Box
@@ -118,8 +117,6 @@ export const AddComment: FC<AddCommentProps> = ({
                                             paddingTop: 2,
                                             marginTop: 2,
                                             borderTop: `1px solid #ddd`,
-                                            // position: 'relative',
-
                                             '#hodl-comments-add': {
                                                 border: 'none',
                                                 outline: 'none',
@@ -146,7 +143,7 @@ export const AddComment: FC<AddCommentProps> = ({
                                             autoComplete='off'
                                             ref={newTagRef}
                                             placeholder={
-                                                commentingOn.object === "comment" ? "Your reply?" : "Your comment?"
+                                                commentingOn.object === "comment" ? "Your reply ?" : "Your comment ?"
                                             }
                                             minRows={2}
                                             name="comment"

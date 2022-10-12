@@ -24,14 +24,6 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
     const { address } = useContext(WalletContext);
     const router = useRouter();
 
-    const isMobileDevice = () => {
-        return 'ontouchstart' in window || 'onmsgesturechange' in window;
-    };
-
-    const connectMobile = () => {
-        // router.push("https://metamask.app.link/dapp/hodlmymoon.com/");
-    };
-
     return (
         <>
             {!address &&
@@ -43,15 +35,9 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
                         ...sx,
                     }}
                     onClick={async e => {
-                        e.stopPropagation();
-
-                        // if (isMobileDevice()) {
-                        //     connectMobile();
-                        // } else {
-                            
+                        e.stopPropagation();                            
                             await connect(false);
-                            router.push(router.asPath);
-                        // }
+                            window.location.href = router.asPath;
                     }}
                     startIcon={<AccountBalanceWallet />}
                 >Connect</Button>}

@@ -86,9 +86,12 @@ export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address 
             >
                 <Box
                     sx={{
-                        marginY: 4,
+                        marginY: {
+                            xs:2,
+                            sm:4,
+                        },
                         marginX: {
-                            xs: 2,
+                            xs: 0,
                             sm: 4
                         },
                         marginBottom: {
@@ -109,9 +112,12 @@ export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address 
                     display="flex"
                     flexDirection="column"
                     sx={{
-                        marginY: 4,
+                        marginY: {
+                            xs:2,
+                            sm:4,
+                        },
                         marginX: {
-                            xs: 2,
+                            xs: 0,
                             sm: 4
                         },
                         marginTop: {

@@ -15,7 +15,7 @@ export const AssetLicense = ({ nft }) => {
             sx={{
                 padding: 2,
                 border: `1px solid #ddd`,
-                borderRadius: 1
+                background: 'white'
             }}
         >
             <Box display="flex" justifyContent="space-between">

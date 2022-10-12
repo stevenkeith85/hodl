@@ -9,7 +9,6 @@ import Container from '@mui/material/Container';
 import { useState, useContext, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
-import { useMediaQuery, useTheme } from '@mui/material';
 import { HoverMenu } from '../menu/HoverMenu';
 import { AccountBalanceWallet, AddCircle, Explore, RocketLaunch } from '@mui/icons-material';
 import { WalletContext } from '../../contexts/WalletContext';
@@ -36,9 +35,6 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
     const [desktopMenuOpen, setDesktopMenuOpen] = useState(false);
     const [sessionExpiredModalOpen, setSessionExpiredModalOpen] = useState(false);
     const [showDesktopNotifications, setShowDesktopNotifications] = useState(false);
-
-    const theme = useTheme();
-    // const xs = useMediaQuery(theme.breakpoints.only('xs'));
 
     const [pages] = useState([
         {

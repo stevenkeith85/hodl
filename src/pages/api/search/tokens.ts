@@ -113,7 +113,6 @@ export const getTokenSearchResults = async (
 
             const promises = ids.map(address => getToken(address));
             tokens = await Promise.all(promises);
-            console.log('search/tokens - tokens', tokens);
         }
 
         return {
