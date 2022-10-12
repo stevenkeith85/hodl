@@ -84,7 +84,18 @@ export default function Transaction({ address, user }) {
             <Head>
                 <meta name="robots" content="noindex" />
             </Head>
-            <Box margin={4}>
+            <Box
+                sx={{
+                    marginY: {
+                        xs: 2,
+                        sm: 4
+                    },
+                    marginX: {
+                        xs: 0,
+                        sm: 2
+                    }
+                }}
+            >
                 <HodlBorderedBox
                     sx={{
                         display: 'flex',
@@ -110,10 +121,10 @@ export default function Transaction({ address, user }) {
                                 padding: 1,
                             }}
                         >
-                            Do NOT use this form unless instructed to by support
+                            Do NOT use this tool unless instructed to by support
                         </Alert>
                         <Typography marginY={2} sx={{ fontSize: 20, fontWeight: 600 }}>
-                            Re-Queue a Missed Transaction
+                            Queue a transaction
                         </Typography>
                         <Box sx={{ paddingY: 1 }}>
                             <Typography sx={{ fontWeight: 600, fontSize: 20, color: 'red' }}>READ CAREFULLY</Typography>
@@ -128,13 +139,10 @@ export default function Transaction({ address, user }) {
                         </Box>
                         <Box sx={{ paddingY: 2 }}>
                             <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
-                                Missed transactions MUST be submitted in the correct order.
+                                Transactions MUST be processed in the correct order.
                             </Typography>
                             <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
-                                You should WAIT for a notification that a missed transaction has been correctly handled BEFORE queuing a second one.
-                            </Typography>
-                            <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
-                                (Contact support again if you do not receive the notification in a reasonable time frame.)
+                                You should WAIT for a notification that a missed transaction has been correctly handled BEFORE queuing a new one.
                             </Typography>
                         </Box>
                         <Box sx={{ paddingY: 2 }}>
@@ -142,12 +150,12 @@ export default function Transaction({ address, user }) {
                                 The last nonce (unique identifier) we have successfully processed from your wallet was: {user?.nonce}
                             </Typography>
                             <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
-                                You should submit the first transaction (to our contract) with a nonce value GREATER than {user?.nonce}
+                                You should submit a transaction with a nonce value GREATER than {user?.nonce}
                             </Typography>
                         </Box>
                         <Box sx={{ paddingY: 2 }}>
                             <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
-                                You can get your transaction ID (and check the nonce value) in Metamask. See the link below:
+                                You can get your transaction ID (and check the nonce value) in Metamask.
                             </Typography>
                             <Link target={"_blank"} href="https://metamask.zendesk.com/hc/en-us/articles/4413442094235-How-to-find-a-transaction-ID">
                                 <Typography color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
@@ -168,6 +176,7 @@ export default function Transaction({ address, user }) {
                             <Box display="flex" alignItems="center" gap={2} sx={{ marginY: 4 }}>
                                 <Box>
                                     <TextField
+                                    sx={{width: 250}}
                                         id="tx"
                                         value={hash}
                                         onChange={e => setHash(e.target.value)}
@@ -178,7 +187,7 @@ export default function Transaction({ address, user }) {
                                     <Button
                                         sx={{ paddingY: 1.5, paddingX: 2.5, fontWeight: 600 }}
                                         variant="contained"
-                                        onClick={sendTransaction}>
+                                        onClick={() => sendTransaction()}>
                                         Submit
                                     </Button>
                                 </Box>

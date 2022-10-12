@@ -1,4 +1,4 @@
-import { DisplaySettingsOutlined, CameraAltOutlined, PersonOutlined } from "@mui/icons-material";
+import { DisplaySettingsOutlined, CameraAltOutlined, PersonOutlined, Receipt, ReceiptOutlined } from "@mui/icons-material";
 import { Typography, Box, Stack, Link, ClickAwayListener, useTheme, Button } from "@mui/material";
 import { useRouter } from "next/router";
 import { useCallback, useContext, useEffect, useState } from "react";
@@ -28,6 +28,7 @@ export const WalletMenuPage: React.FC<WalletMenuPageProps> = ({
     const [walletPages] = useState([
         { label: 'nickname', action: () => setNicknameModalOpen(true), icon: <DisplaySettingsOutlined /> },
         { label: 'avatar', action: () => setProfilePictureModalOpen(true), icon: <CameraAltOutlined /> },
+        { label: 'transaction', action: () => router.push('/transaction'), icon: <ReceiptOutlined /> },
     ]);
 
     const handleRouteChange = useCallback(() => {
