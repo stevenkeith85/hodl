@@ -93,7 +93,7 @@ export const addComment = async (comment: HodlComment, req) => {
   // it takes up to a second to get a response. possibly something to follow up with serverlessq at some point
   // we should really log whether things were added to the queue for support purposes
   const { accessToken, refreshToken } = req.cookies;
-  const url = `https://api.serverlessq.com?id=${user?.actionQueueId}&target=${process.env.MESSAGE_HANDLER_HOST}/api/actions/add`;
+  const url = `https://api.serverlessq.com?id=${user?.actionQueueId}&target=${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/api/actions/add`;
   try {
     axios.post(
       url,

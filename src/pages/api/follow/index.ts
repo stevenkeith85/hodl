@@ -87,7 +87,7 @@ export const toggleFollow = async (userAddress, targetAddress, req) => {
     // we should really log whether things were added to the queue for support purposes
     const { accessToken, refreshToken } = req.cookies;
     const user = await client.hmget<User>(`user:${req.address}`, 'actionQueueId');
-    const url = `https://api.serverlessq.com?id=${user?.actionQueueId}&target=${process.env.MESSAGE_HANDLER_HOST}/api/actions/add`;
+    const url = `https://api.serverlessq.com?id=${user?.actionQueueId}&target=${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/api/actions/add`;
     try {
       axios.post(
         url,

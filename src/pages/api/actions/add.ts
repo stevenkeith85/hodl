@@ -406,7 +406,7 @@ route.post(async (req, res: NextApiResponse) => {
 
   // We only accept requests that came via our message queue. 
   // You need our API key to add something to the queue, so this adds a layer of security
-  const payload = JSON.stringify({ target: `${process.env.MESSAGE_HANDLER_HOST}/api/actions/add`});
+  const payload = JSON.stringify({ target: `${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/api/actions/add`});
   const signature = createHmac("sha256", process.env.SERVERLESSQ_API_TOKEN)
     .update(payload)
     .digest("hex");
