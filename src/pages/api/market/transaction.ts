@@ -68,7 +68,7 @@ route.post(async (req, res: NextApiResponse) => {
   }
 
   const handlerPath = `api/blockchain/transaction`;
-  const url = `https://api.serverlessq.com?id=${user?.txQueueId}&target=${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/${handlerPath}`;
+  const url = `https://api.serverlessq.com?id=${user?.txQueueId}&target=https://${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/${handlerPath}`;
 
   const { accessToken, refreshToken } = req.cookies;
   try {

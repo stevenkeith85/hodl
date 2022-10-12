@@ -14,7 +14,7 @@ export const MAX_TAGS_PER_TOKEN = 6;
 // Suggests 10 confirmations is fairly secure and should take around 20 seconds, so we can 'guestimate' 2 seconds per confirmation
 // Given we are really just caching stuff, we could perhaps wait a little less time, maybe 5 confirmations
 export const NUMBER_OF_CONFIRMATIONS_TO_WAIT_FOR = 1; 
-export const TRANSACTION_TIMEOUT = 6000; // we will initially use the vercel plan that gives us 60 seconds to complete a serverless function. wait up to 10% of that before getting started. We could probably wait more if we get the transaction handling very robust
+export const TRANSACTION_TIMEOUT = 30000; // we will initially use the vercel plan that gives us 60 seconds to complete a serverless function. wait up to 50% of that before getting started.
 
 export const getAsString = (param) : string | null => Array.isArray(param) ? param[0] : param;
 
