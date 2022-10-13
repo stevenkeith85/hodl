@@ -10,7 +10,8 @@ export type User = {
 
     uuid?: string; // a random number to make the message to sign unique. 
 
-    nonce?: number; // the last transaction that we processed from this user. nonce is unique to each address. you can see it in metamask, and it is logged on the blockchain
+    nonce?: number; // the last nonce (a transaction counter) we processed for this wallet
+    blockNumber?: number; // the block number of the last transaction we processed for this wallet
 
     txQueueId: number;
     actionQueueId: number;
@@ -23,5 +24,7 @@ export interface UserViewModel {
     avatar: Token;
     followedByViewer?: boolean;
     followsViewer?: boolean;
+
     nonce?: number;
+    blockNumber?: number;
 }

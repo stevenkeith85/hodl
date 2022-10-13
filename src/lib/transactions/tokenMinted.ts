@@ -6,43 +6,49 @@ import {
     getInfuraIPFSAuth,
     ipfsUriToCid,
     ipfsUriToGatewayUrl,
-    TAG_PATTERN} from "../utils";
+    TAG_PATTERN
+} from "../utils";
 
 import NFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import axios from 'axios';
 import { Token } from "../../models/Token";
-import { addTokenToTag } from "../../pages/api/tags/add";
 import { addAction } from "../../pages/api/actions/add";
 import { HodlMetadata } from "../../models/Metadata";
-import { trimZSet } from "../databaseUtils";
 import { LogDescription } from "ethers/lib/utils";
+import { User } from "../../models/User";
 
 const client = Redis.fromEnv()
 
 
 // This endpoint is pretty much idempotent now. There's always a chance some redis call fails that isn't wrapped
 // in a multi / exec... but that's on the TODO list
+
+// Boolean indicates that we've finished processing this blockchain action
+// Usually this is true for 'success'; but we may also decide to just
+// refuse to process it if it looks sus.
 export const tokenMinted = async (
     hash: string, // check valid address?
     provider: ethers.providers.BaseProvider,
     txReceipt: ethers.providers.TransactionReceipt,
     tx: ethers.providers.TransactionResponse,
-    log: LogDescription
+    log: LogDescription,
+    req
 ): Promise<boolean> => {
-    console.log(`tokenMinted - processing tx`);
+
+    // const start = new Date();
 
     // event Transfer(address from, address to, uint256 tokenId)
     const { from, to, tokenId } = log.args;
 
     // some basic sanity checks
     if (log.name !== 'Transfer') {
-        console.log('tokenMinted - called with a non transfer transaction');
-        return false;
+        console.log('tokenMinted - log.name !== Transfer');
+        return true; // successfully rejected this; do not re-attempt to process it
     }
 
     if (from !== ethers.constants.AddressZero) {
-        console.log('tokenMinted - this is not a mint - not adding');
-        return false;
+        console.log('tokenMinted - "from" !== AddressZero');
+        return true; // successfully rejected this; do not re-attempt to process it
     }
 
     // TODO: Check tx.value === mint fee at the time the transaction was submitted
@@ -50,19 +56,40 @@ export const tokenMinted = async (
     const contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, provider);
     const metadataUrl: string = await contract.tokenURI(tokenId);
 
-    if (!metadataUrl) {
-        console.log('tokenMinted - cannot get token metadata - not adding');
-        return false;
+    if (metadataUrl === '') {
+        console.log('tokenMinted - tokenURI is the empty string!');
+        return true; // successfully rejected this; do not re-attempt to process it
     }
 
-    const { data } = await axios.get(ipfsUriToGatewayUrl(metadataUrl), {
-        headers: getInfuraIPFSAuth()
-    });
+    if (!metadataUrl.startsWith('ipfs://')) {
+        console.log('tokenMinted - tokenURI is not an IPFS URI!');
+        return true; // successfully rejected this; do not re-attempt to process it
+    }
 
-    const metadata: HodlMetadata = data;
-    console.log('tokenMinted - metadata', metadata);
+    let metadata: HodlMetadata;
 
-    const { name, description, image, properties: { asset: { uri, license, mimeType }, aspectRatio, filter } } = metadata;
+    try {
+        const { data } = await axios.get(ipfsUriToGatewayUrl(metadataUrl), { headers: getInfuraIPFSAuth() });
+        metadata = data;
+    } catch (e) {
+        console.log(`tokenMinted - error getting the metadata ${e.toJSON()}`)
+        return false; // We will likely want to retry this; so its an unsuccessful run of this function
+    };
+
+    const {
+        name,
+        description,
+        image,
+        properties: {
+            asset: {
+                uri,
+                license,
+                mimeType
+            },
+            aspectRatio,
+            filter
+        }
+    } = metadata;
 
     // NB: We just store the cid as its simpler to construct the relevant urls from it
     const token: Token = {
@@ -88,57 +115,147 @@ export const tokenMinted = async (
     // use the block timestamp for accuracy
     const block = await provider.getBlock(tx.blockHash);
 
-    // store token, and add to sorted set with timestamp
-    // TODO: Make this a multi/exec in redis
-    const tokenAdded = await client.setnx(`token:${token.id}`, token);
+    const tokenExists = await client.exists(`token:${token.id}`);
 
-    if (!tokenAdded) {
-        console.log('tokenMinted - token already exists in database, aborting');
-        return false;
-    }
+    if (!tokenExists) {
+        console.log('tokenMinted - token does not exist, atomically updating redis')
+        try {
+            const r = await axios.post(
+                `${process.env.UPSTASH_REDIS_REST_URL}/multi-exec`,
+                [
+                    ["SET", `token:${token.id}`, JSON.stringify(token)],
+                    ["ZADD", `tokens`, block.timestamp, token.id],
+                    ["ZADD", `tokens:new`, block.timestamp, token.id],
+                    ["ZREMRANGEBYRANK", `tokens:new`, 0, -(1000 + 1)],
+                ],
+                {
+                    headers: {
+                        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
+                    }
+                })
 
-    const added = await client.zadd(`tokens`,
-        { nx: true },
-        {
-            score: block.timestamp,
-            member: token.id,
-        }
-    );
+            const response = r.data;
 
-    if (added) {
-        await client.zadd(`tokens:new`,
-            { nx: true },
-            {
-                score: block.timestamp,
-                member: token.id,
+            if (response.error) {
+                console.log('tokenMinted - redis add token transaction was discarded', response);
+                return false; // We will likely want to retry this; so its an unsuccessful run of this function
             }
-        );
-
-        trimZSet(client, 'tokens:new', 1000);
+        } catch (e) {
+            console.log('tokenMinted - upstash rest api error', e)
+            return false; // We will likely want to retry this; so its an unsuccessful run of this function
+        }
     }
 
-    // extract tags
-    // @ts-ignore
-    const tags = [...description.matchAll(TAG_PATTERN)].map(arr => arr[1])
+    // TODO: This potentially could be split off into a separate message queue task?
+    // Add tags. 
+    const tagsExist = await client.exists(`token:${token.id}:tags`);
 
-    // Add tags. (NB: only the first 6 will be added)
-    for (const tag of tags) {
-        await addTokenToTag(tag, token.id);
+    if (!tagsExist) {
+        console.log('tokenMinted - tags do not exist, atomically updating redis')
+        const tags = Array.from(description.matchAll(TAG_PATTERN)).map(arr => arr[1]);
+        const uniqueTags = Array.from(new Set(tags)).slice(0, 6); // we only allow six tags
+
+        const addTagsTxCommands = [];
+        for (const tag of uniqueTags) {
+            const tagLC = tag.toLowerCase();
+
+            addTagsTxCommands.push(["SADD", `token:${token.id}:tags`, tagLC])
+            addTagsTxCommands.push(["ZADD", `tag:${tagLC}`, block.timestamp, token.id])
+            addTagsTxCommands.push(["ZADD", `tag:${tagLC}:new`, block.timestamp, token.id])
+            addTagsTxCommands.push(["ZREMRANGEBYRANK", `tag:${tagLC}:new`, 0, -(500 + 1)]);
+            addTagsTxCommands.push(["ZINCRBY", `rankings:tag:count`, 1, tagLC]);
+            addTagsTxCommands.push(["ZREMRANGEBYRANK", `rankings:tag:count`, 0, -(500 + 1)]);
+        }
+
+        try {
+            const r = await axios.post(
+                `${process.env.UPSTASH_REDIS_REST_URL}/multi-exec`,
+                addTagsTxCommands,
+                {
+                    headers: {
+                        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
+                    }
+                })
+
+            const response = r.data;
+
+            if (response.error) {
+                console.log('tokenMinted - redis add tags transaction was discarded', response);
+                return false; // We will likely want to retry this; so its an unsuccessful run of this function
+            }
+        } catch (e) {
+            console.log('tokenMinted - upstash rest api error', e)
+            return false; // We will likely want to retry this; so its an unsuccessful run of this function
+        }
     }
 
-    const minted: HodlAction = {
-        subject: to,
-        action: ActionTypes.Added,
-        object: "token",
-        objectId: token.id
+    // TODO: perhaps "if action hasn't been queued" conditional to make it idempotent?
+
+    const user = await client.hmget<User>(`user:${req.address}`, 'actionQueueId');
+    const { accessToken, refreshToken } = req.cookies;
+    const url = `https://api.serverlessq.com?id=${user?.actionQueueId}&target=https://${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/api/actions/add`;
+    try {
+        // const startAddToQueue = Date.now()
+        const r = await axios.post(
+            url,
+            {
+                action: ActionTypes.Added,
+                object: "token",
+                objectId: token.id
+            },
+            {
+                withCredentials: true,
+                headers: {
+                    "Accept": "application/json",
+                    "x-api-key": process.env.SERVERLESSQ_API_TOKEN,
+                    "Content-Type": "application/json",
+                    "Cookie": `refreshToken=${refreshToken}; accessToken=${accessToken}`
+                }
+            }
+        )
+        // const stopAddToQueue = Date.now();
+        // console.log('time taken to add to queue', stopAddToQueue - startAddToQueue);
+        // console.log(r.statusText)
+    } catch (e) {
+        console.log('tokenMinted - unable to add a message to the queue', e)
+        return false; // We will likely want to retry this; so its an unsuccessful run of this function
     }
 
-    const success = addAction(minted);
+    console.log('blockchain/transaction - updating processed records');
 
-    if (!success) {
-        console.log(`tokenMinted - unable to add the action`);
-        return false;
+   
+    // await client.hmset<string>(`user:${req.address}`, { nonce: `${tx.nonce}` });
+    // await client.hmset<string>(`user:${req.address}`, { blockNumber: `${txReceipt.blockNumber}` });
+    // await client.zadd(`user:${req.address}:txs`, {
+    //     score: Date.now(),
+    //     member: hash
+    // });
+
+    try {
+        const r = await axios.post(
+            `${process.env.UPSTASH_REDIS_REST_URL}/multi-exec`,
+            [
+                ["HSET", `user:${req.address}`, 'nonce', tx.nonce, 'blockNumber', txReceipt.blockNumber],
+                ["ZADD", `user:${req.address}:txs`, Date.now(), hash],
+            ],
+            {
+                headers: {
+                    Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
+                }
+            })
+
+        const response = r.data;
+
+        if (response.error) {
+            console.log('tokenMinted - redis update user transaction details was discarded', response);
+            return false; // We will likely want to retry this; so its an unsuccessful run of this function
+        }
+    } catch (e) {
+        console.log('tokenMinted - upstash rest api error', e)
+        return false; // We will likely want to retry this; so its an unsuccessful run of this function
     }
 
+    // const stop = new Date();
+    // console.log('time taken', stop - start);
     return true;
 }

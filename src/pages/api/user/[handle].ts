@@ -54,7 +54,7 @@ export const getUser = async (
   // TODO - We should check the 'users' collection first; as the user may have a uuid entry; but they've not actually signed the message to connect to the site
   let user = null;
   if (nonce) {
-    user = await client.hmget<User>(`user:${address}`, 'address', 'nickname', 'avatar', 'nonce');
+    user = await client.hmget<User>(`user:${address}`, 'address', 'nickname', 'avatar', 'nonce', 'blockNumber');
   } else {
     user = await client.hmget<User>(`user:${address}`, 'address', 'nickname', 'avatar');
   }
@@ -69,6 +69,7 @@ export const getUser = async (
 
   if (nonce) {
     vm.nonce = user.nonce;
+    vm.blockNumber = user.blockNumber;
   }
 
   const avatarPromise = getAvatar(user);

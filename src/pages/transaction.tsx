@@ -1,7 +1,7 @@
-import { Alert, AlertTitle, Box, Button, FormControl, Link, TextField, Typography } from "@mui/material";
+import { Alert, AlertTitle, Box, Button, FormControl, Link, Paper, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, TextField, Typography } from "@mui/material";
 import { authenticate } from "../lib/jwt";
 import axios from 'axios';
-
+import { format, fromUnixTime } from "date-fns";
 import { useState } from "react";
 import { HodlBorderedBox } from "../components/HodlBorderedBox";
 import Head from "next/head";
@@ -9,6 +9,8 @@ import { SuccessModal } from "../components/modals/SuccessModal";
 import { FailureModal } from "../components/modals/FailureModal";
 import { validTxHashFormat } from "../lib/utils";
 import { getUser } from "./api/user/[handle]";
+import { Redis } from "@upstash/redis";
+import { chunk } from "../lib/lodash";
 
 
 export async function getServerSideProps({ req, res }) {
@@ -20,19 +22,27 @@ export async function getServerSideProps({ req, res }) {
 
     const user = await getUser(req?.address, req?.address, true);
 
+    // TODO: We should move this to the API, so that we can use SWR
+    const client = Redis.fromEnv();
+    let txs = await client.zrange(`user:${req.address}:txs`, 0, -1, { rev: true, withScores: true });
+
+    txs = chunk(txs, 2);
     return {
         props: {
             address: req.address || null,
-            user
+            user,
+            txs
         }
     }
 }
 
-export default function Transaction({ address, user }) {
+export default function Transaction({ address, user, txs }) {
     const [hash, setHash] = useState('');
 
     const [successModalOpen, setSuccessModalOpen] = useState(false);
     const [failureModalOpen, setFailureModalOpen] = useState(false);
+
+    const [value, setValue] = useState(0); // tab
 
     if (!address) {
         return null;
@@ -105,95 +115,178 @@ export default function Transaction({ address, user }) {
                         textAlign: 'center'
                     }}
                 >
-                    <Box mb={4}>
-                        <Alert
-                            severity="error"
+
+                    <Tabs
+                        value={value}
+                        textColor="secondary"
+                        indicatorColor="secondary"
+                    >
+                        <Tab
+                            component="a"
+                            onClick={(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+                                setValue(0);
+                            }}
+                            key={0}
+                            value={0}
+                            label="Transactions"
                             sx={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                textAlign: 'center',
-                                fontWeight: 600,
-                                fontSize: {
-                                    xs: 14,
-                                    sm: 18
+                                minWidth: 0,
+                                paddingX: {
+                                    xs: 1.75,
+                                    sm: 2
                                 },
-                                padding: 1,
+                                paddingY: 2,
+                                margin: 0
                             }}
-                        >
-                            Do NOT use this tool unless instructed to by support
-                        </Alert>
-                        <Typography marginY={2} sx={{ fontSize: 20, fontWeight: 600 }}>
-                            Queue a transaction
-                        </Typography>
-                        <Box sx={{ paddingY: 1 }}>
-                            <Typography sx={{ fontWeight: 600, fontSize: 20, color: 'red' }}>READ CAREFULLY</Typography>
-                        </Box>
-                        <Box sx={{ paddingY: 2 }}>
-                            <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16, span: { fontStyle: 'italic', fontWeight: 600 } }}>
-                                <span>Occassionally</span> your transaction succeeds on the blockchain, but the service to update our website fails.
-                            </Typography>
-                            <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
-                                If that happens, you can re-queue your transaction with this form.
-                            </Typography>
-                        </Box>
-                        <Box sx={{ paddingY: 2 }}>
-                            <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
-                                Transactions MUST be processed in the correct order.
-                            </Typography>
-                            <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
-                                You should WAIT for a notification that a missed transaction has been correctly handled BEFORE queuing a new one.
-                            </Typography>
-                        </Box>
-                        <Box sx={{ paddingY: 2 }}>
-                            <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
-                                The last nonce (unique identifier) we have successfully processed from your wallet was: {user?.nonce}
-                            </Typography>
-                            <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
-                                You should submit a transaction with a nonce value GREATER than {user?.nonce}
-                            </Typography>
-                        </Box>
-                        <Box sx={{ paddingY: 2 }}>
-                            <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
-                                You can get your transaction ID (and check the nonce value) in Metamask.
-                            </Typography>
-                            <Link target={"_blank"} href="https://metamask.zendesk.com/hc/en-us/articles/4413442094235-How-to-find-a-transaction-ID">
-                                <Typography color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
-                                    How do I find my Transaction ID ?
-                                </Typography>
-                            </Link>
-                        </Box>
-                        <Box
-                            component="form"
+                        />
+
+                        <Tab
+                            component="a"
+                            onClick={(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+                                setValue(1);
+                            }}
+                            key={1}
+                            value={1}
+                            label="Queue (Advanced)"
                             sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                textAlign: 'center'
+                                minWidth: 0,
+                                paddingX: {
+                                    xs: 1.75,
+                                    sm: 2
+                                },
+                                paddingY: 2,
+                                margin: 0
                             }}
-                        >
-                            <Box display="flex" alignItems="center" gap={2} sx={{ marginY: 4 }}>
+                        />
+                    </Tabs>
+                    <div hidden={value !== 0}>
+                        <Box marginY={4}>
+                            {/* <Box>
+                                <Typography>Last Transaction Details</Typography>
+                                <Box>Tx Nonce: {user.nonce}</Box> 
+                                <Box>Tx Block Number: {user.blockNumber}</Box>                                
+                            </Box> */}
+                            <TableContainer>
+                                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Tx Hash</TableCell>
+                                            <TableCell>Time Processed</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {txs.map(([hash, timestamp]) => (
+                                            <TableRow key={hash}>
+                                                <TableCell>
+                                                    <Link href={`https://mumbai.polygonscan.com/tx/${hash}`}>
+                                                        {hash}
+                                                    </Link>
+                                                </TableCell>
+                                                <TableCell>{format(fromUnixTime(timestamp / 1000), 'LLL do, yyyy, HH:mm:ss')}</TableCell>
+
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </Box>
+                    </div>
+                    <div hidden={value !== 1}>
+                        <Box marginY={4}>
+                            <Alert
+                                severity="error"
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    textAlign: 'center',
+                                    fontWeight: 600,
+                                    fontSize: {
+                                        xs: 14,
+                                        sm: 18
+                                    },
+                                    padding: 1,
+                                }}
+                            >
+                                Please only use this if support asks you to
+                            </Alert>
+                            <Typography marginY={2} sx={{ fontSize: 20, fontWeight: 600 }}>
+                                Queue a lost transaction
+                            </Typography>
+                            {/* <Box sx={{ paddingY: 1 }}>
+                                <Typography sx={{ fontWeight: 600, fontSize: 20, color: 'red' }}>READ CAREFULLY</Typography>
+                            </Box> */}
+
+                            <Box sx={{ paddingY: 2 }}>
+                                <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
+                                    We only update our website once a transaction is confirmed on the blockchain.
+                                </Typography>
+                                <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
+                                    This form will NOT speed up the addition of your token to Hodl My Moon.
+                                </Typography>
+
+                            </Box>
+                            <hr />
+                            <Box sx={{ paddingY: 2 }}>
+                                <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
+                                    If we&apos;ve missed one of your transactions, you can use this form to queue it for processing.
+                                </Typography>
+                            </Box>
+                            <hr />
+                            <Box sx={{ paddingY: 2 }}>
+                                <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
+                                    Before submitting this form, ensure that:
+                                </Typography>
                                 <Box>
-                                    <TextField
-                                    sx={{width: 250}}
-                                        id="tx"
-                                        value={hash}
-                                        onChange={e => setHash(e.target.value)}
-                                        label="Transaction ID (Hash)"
-                                    />
+                                    <Typography component="li" mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>We&apos;ve not already processed that transaction. See the tab at the top of this webpage</Typography>
+                                    <Typography component="li" mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>The transaction is for one of our contracts. (i.e. you initiated the transaction via Hodl My Moon)</Typography>
+                                    <Typography component="li" mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>The transaction isn&apos;t pending (i.e. it has been confirmed on the blockchain)</Typography>
+                                    <Typography component="li" mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>The transaction you are about to submit is the first one we&apos;ve missed</Typography>
                                 </Box>
-                                <Box>
-                                    <Button
-                                        sx={{ paddingY: 1.5, paddingX: 2.5, fontWeight: 600 }}
-                                        variant="contained"
-                                        onClick={() => sendTransaction()}>
-                                        Submit
-                                    </Button>
+                            </Box>
+                            <hr />
+                            <Box sx={{ paddingY: 2 }}>
+                                <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
+                                    You can get your transaction ID in Metamask.
+                                </Typography>
+                                <Link target={"_blank"} href="https://metamask.zendesk.com/hc/en-us/articles/4413442094235-How-to-find-a-transaction-ID">
+                                    <Typography color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
+                                        How do I find my Transaction ID ?
+                                    </Typography>
+                                </Link>
+                            </Box>
+                            <Box
+                                component="form"
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    textAlign: 'center'
+                                }}
+                            >
+                                <Box display="flex" alignItems="center" gap={2} sx={{ marginY: 4 }}>
+                                    <Box>
+                                        <TextField
+                                            sx={{ width: 250 }}
+                                            id="tx"
+                                            value={hash}
+                                            onChange={e => setHash(e.target.value)}
+                                            label="Transaction ID (Hash)"
+                                        />
+                                    </Box>
+                                    <Box>
+                                        <Button
+                                            sx={{ paddingY: 1.5, paddingX: 2.5, fontWeight: 600 }}
+                                            variant="contained"
+                                            onClick={() => sendTransaction()}>
+                                            Submit
+                                        </Button>
+                                    </Box>
                                 </Box>
                             </Box>
                         </Box>
-                    </Box>
+                    </div>
                 </HodlBorderedBox>
             </Box>
         </>)

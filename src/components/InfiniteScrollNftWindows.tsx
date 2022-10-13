@@ -45,7 +45,7 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
       >
         {
           ({ items, next, total }) => items.map((nft: Nft, i) => <>
-            <NftWindow nft={nft} key={nft.id} />
+            {nft && <NftWindow nft={nft} key={nft.id} />}
           </>)
         }
       </InfiniteScroll >

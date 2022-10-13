@@ -82,7 +82,7 @@ const isTokenForSale = ({ price, seller, tokenId }: ListingSolidity) => {
 // it would let the page load faster, and we could use SWR
 export const fetchNFT = async (id: number): Promise<Nft> => {
   // const start = new Date();
-
+  console.log('api/nft - retrieving token with id', id);
   const tokenPromise: Promise<Token> = client.get<Token>('token:' + id);
 
   // And get the block-chain data too
@@ -110,9 +110,14 @@ export const fetchNFT = async (id: number): Promise<Nft> => {
 
   const [token] = await Promise.all([tokenPromise]);
 
+  
+
   if (!token) {
+    console.log('api/nft cannot retrieve token')
     throw new Error('Error retrieving token');
   }
+
+  console.log('api/nft retrieved token', token);
 
   const result: Nft = {
     price,

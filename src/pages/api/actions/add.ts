@@ -163,7 +163,7 @@ const addToFeedOfFollowers = async (action: HodlAction) => {
   // The have one for transactions; but perhaps an alternative one for web2 stuff
 
   const offset = 0
-  const limit = 1;
+  const limit = 2; // TODO: This was deliberately set low for testing; we could increase this
 
   // get initial page
   let { items, next, total } = await getFollowers(action.subject, offset, limit);
@@ -209,6 +209,8 @@ export const addAction = async (action: HodlAction): Promise<number> => {
 
   await storeAction(action);
   await recordAddressActivity(action);
+
+  console.log('actions/add - Stored Action');
 
   if (action.action === ActionTypes.Liked) { // tell the token owner you liked it
     if (action.object === "token") {
@@ -349,13 +351,16 @@ export const addAction = async (action: HodlAction): Promise<number> => {
   // Who: Tell the seller's followers (via their feed) there's a new token on the site
   if (action.action === ActionTypes.Added) {
     try {
+      console.log('actions/add/added - processing action');
       const token: Nft = await fetchNFT(+action.objectId);
 
+      console.log('actions/add - Added - token is', token);
+
       if (token.owner !== action.subject) {
+        console.log('actions/add - Added - token.owner !== action.subject', token.owner, action.subject);
         return;
       }
 
-      // TODO: Possibly don't need to wait here. i.e. we could prevent the UI hanging by doing this async?
       await addNotification(`${action.subject}`, action);
       const count = await addToFeedOfFollowers(action);
 
@@ -430,7 +435,8 @@ route.post(async (req, res: NextApiResponse) => {
   // We only accept certain actions at the moment.
   if (action !== ActionTypes.Commented && 
       action !== ActionTypes.Liked &&
-      action !== ActionTypes.Followed) {
+      action !== ActionTypes.Followed &&
+      action !== ActionTypes.Added) {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
@@ -444,9 +450,10 @@ route.post(async (req, res: NextApiResponse) => {
   });
 
   if (success) {
-    console.log('api/actions - successfully processed action for', req.address)
+    console.log('actions/add - successfully processed action for', req.address)
     return res.status(200).json({ message: 'success' });
   } else {
+    console.log('actions/add - could not process action for', req.address)
     res.status(200).json({ message: 'action not processed' });
   }
 });
