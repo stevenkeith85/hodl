@@ -138,11 +138,11 @@ const Profile = ({
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
-            marginTop: { xs: 2, sm: 4}
+            marginTop: { xs: 2, sm: 4 }
           }}>
           <Box
             display="flex"
-            gap={3}
+            gap={2}
             alignItems={"center"}
           >
             <UserAvatarAndHandle
@@ -159,7 +159,7 @@ const Profile = ({
               }}>
               <ProfileNameOrAddress profileAddress={owner.address} fallbackData={owner} fontSize="22px" sx={{ fontWeight: 500 }} />
               <CopyText text={owner.address}>
-                <Typography sx={{ fontSize: 14 }}>{getShortAddress(owner.address)}</Typography>
+                <Typography sx={{ fontSize: 14, color: theme => theme.palette.text.secondary }}>{getShortAddress(owner.address)}</Typography>
               </CopyText>
             </Box>
           </Box>
@@ -181,6 +181,9 @@ const Profile = ({
             value={value}
             textColor="secondary"
             indicatorColor="secondary"
+            sx={{
+              width: '100%'
+            }}
           >
             <Link href={`/profile/${owner.nickname || owner.address}`} passHref>
               <Tab
@@ -192,7 +195,12 @@ const Profile = ({
                 value={0}
                 label="Hodling"
                 icon={<Badge
-                  sx={{ p: '6px 3px' }}
+                  sx={{ 
+                    p: {
+                      xs: '6px 1px',
+                      sm: '6px 3px',
+                    }
+                  }}
                   showZero
                   max={Number.MAX_SAFE_INTEGER}
                   badgeContent={
@@ -230,7 +238,12 @@ const Profile = ({
                 value={1}
                 label="Listed"
                 icon={<Badge
-                  sx={{ p: '6px 3px' }}
+                  sx={{
+                    p: {
+                      xs: '6px 1px',
+                      sm: '6px 3px',
+                    }
+                  }}
                   showZero
                   max={Number.MAX_SAFE_INTEGER}
                   badgeContent={
@@ -267,7 +280,12 @@ const Profile = ({
                 value={2}
                 label="Following"
                 icon={<Badge
-                  sx={{ p: '6px 3px' }}
+                  sx={{
+                    p: {
+                      xs: '6px 1px',
+                      sm: '6px 3px',
+                    }
+                  }}
                   showZero
                   max={Number.MAX_SAFE_INTEGER}
                   badgeContent={humanize.compactInteger(followingCount, 1)}
@@ -300,7 +318,12 @@ const Profile = ({
                 label="Followers"
                 icon={
                   <Badge
-                    sx={{ p: '6px 3px' }}
+                  sx={{
+                    p: {
+                      xs: '6px 1px',
+                      sm: '6px 3px',
+                    }
+                  }}
                     showZero
                     max={Number.MAX_SAFE_INTEGER}
                     badgeContent={humanize.compactInteger(followersCount, 1)}

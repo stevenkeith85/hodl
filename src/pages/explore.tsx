@@ -3,6 +3,7 @@ import { Box, FormGroup, InputAdornment, Switch, TextField, Tooltip, Typography 
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { HodlImpactAlert } from '../components/HodlImpactAlert';
 import { InfiniteScrollNftWindows } from '../components/InfiniteScrollNftWindows';
 import { MaticSymbol } from '../components/MaticSymbol';
 import { useSearchTokens } from '../hooks/useSearchTokens';
@@ -61,7 +62,7 @@ export default function Search({
     maxPrice
   });
 
-  
+
   const isOriginalSearchQuery = () => {
     return searchQ.q === q &&
       searchQ.limit === limit &&
@@ -129,7 +130,10 @@ export default function Search({
       </Head>
       <Box
         sx={{
-          marginY: 4
+          marginY: {
+            xs: 2,
+            sm: 4
+          }
         }}
       >
         <Box
@@ -140,7 +144,10 @@ export default function Search({
               display: 'flex',
               flexDirection: 'column',
               gap: 4,
-              marginY: 4
+              marginY: {
+                xs: 2,
+                sm: 4
+              }
             }}
           >
             <Box
@@ -270,9 +277,9 @@ export default function Search({
           </Box>
         </Box>
         <Box>
-          {/* {results?.data?.[0]?.total === 0 &&
+          {results?.data?.[0]?.total === 0 &&
             <HodlImpactAlert message={"We can't find anything at the moment"} title="Sorry" />
-          } */}
+          }
           <InfiniteScrollNftWindows swr={results} limit={limit} pattern={false} />
         </Box>
       </Box>

@@ -91,7 +91,7 @@ export const SearchBox = ({
                             component={StyledInputBase}
                             name="q"
                             type="text"
-                            placeholder="search by tag"
+                            placeholder="tag"
                             onClick={e => {
                                 e.stopPropagation();
                             }}

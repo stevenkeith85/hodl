@@ -85,7 +85,7 @@ export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address 
                         xs: 'flex',
                         md: 'none'
                     },
-                    justifyContent: 'center'
+                    justifyContent: 'right'
                 }}>
 
                 <Box
@@ -93,7 +93,11 @@ export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address 
                         display: 'flex',
                         gap: 1,
                         alignItems: 'center',
-                        marginTop: 1
+                        marginTop: 1,
+                        marginX: {
+                            xs: 0,
+                            sm: 4
+                        }
                     }}
                 >
                     
@@ -177,10 +181,10 @@ export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address 
                         }}
                     >
                         <HodlProfileBadge user={user} />
-                        <TopUsers />
-                        <TopTokens />
-                        <NewUsers />
-                        <NewTokens />
+                        <TopUsers followButton={false}/>
+                        <TopTokens showLikes={false}/>
+                        <NewUsers followButton={false}/>
+                        <NewTokens showLikes={false}/>
                     </Box>
                 </Grid>
 
