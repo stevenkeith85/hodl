@@ -107,7 +107,6 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                     alignItems="start"
                     gap={1.5}
                     sx={{
-                        // background: 'green',
                         width: `100%`
                     }}
                     id={`hodl-comments-${comment.id}`}>
@@ -120,10 +119,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                     <Box
                         display="flex"
                         flexDirection="column"
-                        // alignItems="start"
-                        // gap={2}
                         sx={{
-                            // background: 'orange',
                             width: `100%`,
                         }}
                     >

@@ -48,7 +48,11 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 
-export const SearchBox = ({ setHoverMenuOpen = null, sx = null }) => {
+export const SearchBox = ({ 
+    setHoverMenuOpen = null, 
+    setMobileSearchOpen = null,
+    sx = null 
+}) => {
     const router = useRouter();
 
     return (
@@ -61,6 +65,9 @@ export const SearchBox = ({ setHoverMenuOpen = null, sx = null }) => {
                 if (setHoverMenuOpen) {
                     setHoverMenuOpen(false);
                 }
+                if (setMobileSearchOpen) {
+                    setMobileSearchOpen(false);
+                }
                 router.push(`/explore?q=${values.q}`);
             }}
         >
@@ -72,7 +79,11 @@ export const SearchBox = ({ setHoverMenuOpen = null, sx = null }) => {
                         </SearchIconWrapper>
                         <Field
                             sx={{ 
-                                width: '100%', 
+                                width: {
+                                    xs: '100%',
+                                    md: '200px', 
+                                },
+                                maxWidth: '100%',
                                 border: errors.q && values.q ? theme => `1px solid ${theme.palette.secondary.main}` : `1px solid #ccc`, 
                                 borderRadius: 1, 
                                 ...sx 

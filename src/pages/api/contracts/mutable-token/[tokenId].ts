@@ -1,12 +1,3 @@
-//
-// This is used for getting a 'complete' NFT. i.e. what we've stored in Redis and the data from the blockchain.
-// We use this for operations around ownership
-//
-// See also api/token, which is used to just get token data from our redis database
-
-import NFT from '../../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json'
-import { getProvider } from '../../../../lib/server/connections'
-import { ethers } from 'ethers'
 import { NextApiRequest, NextApiResponse } from "next";
 import dotenv from 'dotenv'
 import apiRoute from '../../handler';
@@ -20,7 +11,6 @@ dotenv.config({ path: '../.env' })
 
 const route = apiRoute();
 const client = Redis.fromEnv()
-
 
 export const getMutableToken = async (tokenId, skipCache = false): Promise<MutableToken> => {
   let mutableToken = skipCache ? null : await client.get<MutableToken>(`token:${tokenId}:mutable`);
@@ -45,7 +35,7 @@ export const getMutableToken = async (tokenId, skipCache = false): Promise<Mutab
       }
     }
 
-    client.setex(`token:${tokenId}:mutable`, 60, mutableToken);
+    client.setex(`token:${tokenId}:mutable`, 120, mutableToken);
   } else {
     console.log('getMutableToken - cache hit - reading redis');
   }

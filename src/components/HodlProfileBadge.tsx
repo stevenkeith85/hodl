@@ -62,12 +62,12 @@ export const HodlProfileBadge: React.FC<HodlProfileBadgeProps> = ({ user }) => {
                 justifyContent="space-evenly"
                 alignItems={"start"}
                 sx={{
-                    gap: 3,
+                    gap: 2,
                 }}
             >
                 <Box
                     display="flex"
-                    gap={3}
+                    gap={2}
                     alignItems={"center"}
                 >
                     <UserAvatarAndHandle
@@ -94,6 +94,7 @@ export const HodlProfileBadge: React.FC<HodlProfileBadgeProps> = ({ user }) => {
                     display="grid"
                     gridTemplateColumns="1fr 1fr 1fr 1fr"
                     sx={{
+                        paddingX: 1,
                         width: '100%',
                         gap: 1
                     }}

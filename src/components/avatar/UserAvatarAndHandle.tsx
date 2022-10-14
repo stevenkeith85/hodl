@@ -28,7 +28,7 @@ const UserAvatarAndHandleBody = ({ user, size, fontSize, handle, color }) => (<B
                 gap: 2,
             }}
         >
-            {user.avatar ? <UserAvatar user={user} size={size} /> : <UserDefaultAvatar size={size} fontSize={size - 15} color={color} />}
+            {user.avatar ? <UserAvatar user={user} size={size} /> : <UserDefaultAvatar size={size} fontSize={size - 10} color={color} />}
             {handle ? <UserHandle user={user} fontSize={fontSize} /> : null}
         </Box>
     </Tooltip>

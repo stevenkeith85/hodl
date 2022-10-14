@@ -1,14 +1,13 @@
-import { Box, Grid } from '@mui/material';
+import { Box, FormGroup, Grid, Switch, Tooltip, Typography } from '@mui/material';
 import { HodlFeed } from '../feed/HodlFeed';
 import { HodlProfileBadge } from '../HodlProfileBadge';
 import { NewTokens } from '../rankings/NewTokens';
 import { TopUsers } from '../rankings/TopUsers';
 import { TopTokens } from '../rankings/TopTokens';
 import { NewUsers } from '../rankings/NewUsers';
-import { User, UserViewModel } from '../../models/User';
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { UserViewModel } from '../../models/User';
+import { useEffect, useRef, useState } from 'react';
 import { throttle } from '../../lib/lodash';
-
 
 
 interface PrivateHomePageProps {
@@ -17,6 +16,8 @@ interface PrivateHomePageProps {
 }
 
 export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
+
+    const [viewSidebar, setViewSidebar] = useState(false);
 
     const previousNearestToTop = useRef(null);
     const nearestToTop = useRef(null);
@@ -77,63 +78,113 @@ export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address 
     }, []);
 
     return (
-        <Grid
-            container
-        >
-            <Grid
-                item xs={12}
-                md={7}
-            >
-                <Box
-                    sx={{
-                        marginY: {
-                            xs:2,
-                            sm:4,
-                        },
-                        marginX: {
-                            xs: 0,
-                            sm: 4
-                        },
-                        marginBottom: {
-                            xs: 0,
-                            sm: 4
-                        },
-                    }}>
-                    <HodlFeed address={address} />
-                </Box>
+        <>
+            <Box
+                sx={{
+                    display: {
+                        xs: 'flex',
+                        md: 'none'
+                    },
+                    justifyContent: 'center'
+                }}>
 
-            </Grid>
-            <Grid
-                item
-                xs={12}
-                md={5}
-            >
                 <Box
-                    display="flex"
-                    flexDirection="column"
                     sx={{
-                        marginY: {
-                            xs:2,
-                            sm:4,
-                        },
-                        marginX: {
-                            xs: 0,
-                            sm: 4
-                        },
-                        marginTop: {
-                            xs: 0,
-                            sm: 4
-                        },
-                        gap: 4,
+                        display: 'flex',
+                        gap: 1,
+                        alignItems: 'center',
+                        marginTop: 1
                     }}
                 >
-                    <HodlProfileBadge user={user} />
-                    <TopUsers />
-                    <TopTokens />
-                    <NewUsers />
-                    <NewTokens />
+                    
+                    <Switch
+                        checked={viewSidebar}
+                        onChange={(e) => {
+                            setViewSidebar(old => !old);
+                        }
+                        }
+                    />
+
+
                 </Box>
+            </Box>
+            <Grid
+                container
+            >
+
+                <Grid
+                    sx={{
+                        display:
+                        {
+                            xs: !viewSidebar ? 'block' : 'none',
+                            md: 'block'
+                        }
+                    }}
+                    item xs={12}
+                    md={7}
+                >
+                    <Box
+                        sx={{
+                            marginY: {
+                                xs: 2,
+                                md: 4,
+                            },
+                            marginX: {
+                                xs: 0,
+                                sm: 4
+                            },
+                            marginTop: {
+                                xs: 1,
+                                md: 4
+                            },
+                            marginBottom: {
+                                xs: 0,
+                                sm: 4
+                            },
+                        }}>
+                        <HodlFeed address={address} />
+                    </Box>
+                </Grid>
+
+                <Grid
+                    sx={{
+                        display: {
+                            xs: viewSidebar ? 'block' : 'none',
+                            md: 'block'
+                        }
+                    }}
+                    item
+                    xs={12}
+                    md={5}
+                >
+                    <Box
+                        display="flex"
+                        flexDirection="column"
+                        sx={{
+                            marginY: {
+                                xs: 2,
+                                md: 4,
+                            },
+                            marginX: {
+                                xs: 0,
+                                sm: 4
+                            },
+                            marginTop: {
+                                xs: 1,
+                                md: 4
+                            },
+                            gap: 4,
+                        }}
+                    >
+                        <HodlProfileBadge user={user} />
+                        <TopUsers />
+                        <TopTokens />
+                        <NewUsers />
+                        <NewTokens />
+                    </Box>
+                </Grid>
+
             </Grid>
-        </Grid>
+        </>
     )
 }

@@ -19,6 +19,7 @@ export const HodlNotifications = ({
     setHoverMenuOpen,
     showNotifications,
     setShowNotifications,
+    setMobileSearchOpen,
     limit = 10
 }) => {
     const { pusher, userSignedInToPusher } = useContext(PusherContext);
@@ -164,23 +165,17 @@ export const HodlNotifications = ({
     return (
         <>
             <IconButton
-                size="large"
                 sx={{
                     margin: 0,
-                    padding: 0
+                    padding: 0,
+                    lineHeight: 0,
+                    width: 44,
+                    height: 44
                 }}
                 color="inherit"
             >
-                <Box
-                    width={44}
-                    height={44}
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center">
                     {showNotifications ?
-
                         <CloseIcon color="primary" />
-
                         :
                         (unread ?
                             <NotificationsIcon
@@ -195,6 +190,7 @@ export const HodlNotifications = ({
                                 onClick={e => {
                                     e.stopPropagation();
                                     setHoverMenuOpen(false);
+                                    setMobileSearchOpen(false);
                                     toggleNotifications()
                                 }
                                 } /> :
@@ -207,11 +203,11 @@ export const HodlNotifications = ({
                                 onClick={e => {
                                     e.stopPropagation();
                                     setHoverMenuOpen(false);
+                                    setMobileSearchOpen(false);
                                     toggleNotifications()
                                 }}
                             />)
                     }
-                </Box>
             </IconButton>
             <ClickAwayListener
                 onClickAway={() => {

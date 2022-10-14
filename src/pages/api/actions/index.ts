@@ -91,7 +91,7 @@ export const getActions = async (
   for (let id of actionIds) {
     actionPipeline.get(`action:${id}`);
   }
-  const actions: HodlAction[] = actionIds.length ? await actionPipeline.exec() : [];
+  const actions: HodlAction[] = actionIds?.length ? await actionPipeline.exec() : [];
 
   // Each action has a subject. This is the address of the user who took the action
   // We get all the unique user objects from redis in one trip.
@@ -123,7 +123,7 @@ export const getActions = async (
   const userVMs: UserViewModel[] = users.map(user => ({
     address: user.address,
     nickname: user.nickname,
-    avatar: avatarMap[user.avatar]
+    avatar: avatarMap[user.avatar] || null
   }))
 
   const userMap = userVMs.reduce((map, user) => {

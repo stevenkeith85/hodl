@@ -216,8 +216,13 @@ const NftDetail = ({
                 sx={{
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: 1.5,
-                  marginBottom: 2,
+                  gap: {
+                    xs: 2,
+                  },
+                  marginBottom: {
+                    xs: 2,
+                    sm: 4
+                  }
                 }}
               >
                 <DetailPageImage token={nft} />
@@ -312,10 +317,11 @@ const NftDetail = ({
                       sx={{
                         marginTop: 2
                       }}>
-                      <NftActionButtons
+                        {/* TODO */}
+                      {/* <NftActionButtons
                         token={nft}
                         mutableToken={mutableToken}
-                      />
+                      /> */}
                     </Box>}
                   </Box>
                   {/* TODO */}
@@ -323,7 +329,14 @@ const NftDetail = ({
                 </Box>
               </div>
               <div hidden={value !== 2}>
-                <Box display="grid" gap={4}>
+                <Box
+                  sx={{
+                    display: 'grid', gap: {
+                      xs: 2,
+                      sm: 4
+                    }
+                  }}
+                >
                   <IpfsCard token={nft} />
                   <HodlerCreatorCard creator={nft?.creator} hodler={mutableToken?.hodler} />
                   <AssetLicense nft={nft} />

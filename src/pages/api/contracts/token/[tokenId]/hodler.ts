@@ -26,7 +26,7 @@ export const getHodlerAddress = async (tokenId, skipCache = false)  => {
       hodler = token.ownerOf;
     }
 
-    client.setex(`token:${tokenId}:hodler`, 60, hodler);
+    client.setex(`token:${tokenId}:hodler`, 120, hodler);
   } else {
     console.log('getHodlerAddress - cache hit - reading redis');
   }

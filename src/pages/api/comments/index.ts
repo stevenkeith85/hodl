@@ -43,12 +43,13 @@ export const getCommentsForToken = async (object: "token" | "comment", objectId:
 
     const commentIds: string[] = await client.zrange(`${object}:${objectId}:comments`, offset, offset + limit - 1, { rev: reverse });
 
+    
     // We get all the comment data with one round trip to redis
     const commentPipeline = client.pipeline();
     for (let id of commentIds) {
       commentPipeline.get(`comment:${id}`);
     }
-    const comments: HodlComment[] = await commentPipeline.exec();
+    const comments: HodlComment[] = commentIds?.length ? await commentPipeline.exec() : [];
 
     // Each comment has a subject. This is the address of the user who made the comment.
     // We get all the unique user objects from redis in one trip.
@@ -60,17 +61,22 @@ export const getCommentsForToken = async (object: "token" | "comment", objectId:
       userPipeline.hmget<User>(`user:${address}`, 'address', 'nickname', 'avatar');
     }
 
-    const users: User[] = await userPipeline.exec();
+    const users: User[] = uniqueAddresses.size ? await userPipeline.exec() : [];
 
+    
     // Each user object has a numeric id for their avatar. This represents a token.
     // We get those tokens in one round trip to redis
-    const avatarIds: number[] = users.map(user => user.avatar);
+    const avatarIds: number[] = users.filter(user => user.avatar).map(user => user.avatar); // not everyone has an avatar
+
     const avatarPipeline = client.pipeline();
     for (let id of avatarIds) {
       avatarPipeline.get<Token>(`token:${id}`);
     }
-    const avatars: Token[] = await avatarPipeline.exec();
 
+    console.log('here');
+    const avatars: Token[] = avatarIds.length ? await avatarPipeline.exec() : [];
+
+    
     // Create an id to token map so that we can extrapolate the user info for the UI
     const avatarMap = avatars.reduce((map, token) => {
       map[token.id] = token;
@@ -82,6 +88,8 @@ export const getCommentsForToken = async (object: "token" | "comment", objectId:
       nickname: user.nickname,
       avatar: avatarMap[user.avatar]
     }))
+
+    console.log('userVMs', userVMs);
 
     // Create an address to user map so that we can extrapolate the comment info for the UI
     const userMap = userVMs.reduce((map, user) => {
@@ -98,6 +106,7 @@ export const getCommentsForToken = async (object: "token" | "comment", objectId:
       object: comment.object,
       tokenId: comment.tokenId
     }));
+    
     
     // const stop = new Date();
     // console.log('time taken', stop - start);

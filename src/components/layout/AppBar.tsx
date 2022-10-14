@@ -10,7 +10,7 @@ import { useState, useContext, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 import { HoverMenu } from '../menu/HoverMenu';
-import { AccountBalanceWallet, AddCircle, Explore, RocketLaunch } from '@mui/icons-material';
+import { AccountBalanceWallet, AddCircle, Explore, RocketLaunch, Search } from '@mui/icons-material';
 import { WalletContext } from '../../contexts/WalletContext';
 import { HodlNotifications } from '../notifications/HodlNotifications';
 import axios from 'axios'
@@ -23,6 +23,7 @@ import { PusherContext } from '../../contexts/PusherContext';
 import { useConnect } from '../../hooks/useConnect';
 import { SessionExpiredModal } from '../modals/SessionExpiredModal';
 import { useRouter } from 'next/router';
+import { Button, ClickAwayListener, Fade } from '@mui/material';
 
 const ResponsiveAppBar = ({ showAppBar = true }) => {
     const { address, setSigner } = useContext(WalletContext);
@@ -35,6 +36,8 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
     const [desktopMenuOpen, setDesktopMenuOpen] = useState(false);
     const [sessionExpiredModalOpen, setSessionExpiredModalOpen] = useState(false);
     const [showDesktopNotifications, setShowDesktopNotifications] = useState(false);
+
+    const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
     const [pages] = useState([
         {
@@ -168,7 +171,7 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                         }}>
                             <Box sx={{
                                 display: 'flex',
-                                gap: { xs: 4, md: 6 },
+                                gap: { xs: 1, md: 4 },
                                 alignItems: 'center',
                                 justifyContent: 'center',
                             }}>
@@ -188,15 +191,18 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                             lineHeight: 0,
                                         }}
                                     >
-                                        <Typography
-                                            component="span"
+                                        <IconButton
                                             sx={{
-                                                fontFamily: theme => theme.logo.fontFamily,
                                                 margin: 0,
                                                 padding: 0,
                                                 lineHeight: 0,
+                                                width: 44,
+                                                height: 44
                                             }}
-                                        >{pages[0].icon}</Typography>
+                                            color="inherit"
+                                        >
+                                            {pages[0].icon}
+                                        </IconButton>
                                     </Box>
                                 </Link>
                                 {
@@ -217,30 +223,35 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                                     lineHeight: 0,
                                                 }}
                                             >
-                                                <Typography
+                                                <Button
+                                                variant="text"
+                                                color="inherit"
                                                     component="span"
                                                     sx={{
                                                         fontFamily: theme => theme.logo.fontFamily,
-                                                        margin: 0,
-                                                        padding: 0,
-                                                        lineHeight: 0,
+                                                        padding: '9px',
+                                                        textAlign: 'center',
                                                         display: {
                                                             xs: 'none',
-                                                            sm: 'block'
+                                                            md: 'block'
                                                         }
-                                                    }}>{page.label}</Typography>
-                                                <Typography
-                                                    component="span"
+                                                    }}>{page.label}</Button>
+                                                <IconButton
                                                     sx={{
-                                                        fontFamily: theme => theme.logo.fontFamily,
                                                         margin: 0,
                                                         padding: 0,
                                                         lineHeight: 0,
+                                                        width: 44,
+                                                        height: 44,
                                                         display: {
                                                             xs: 'block',
-                                                            sm: 'none'
+                                                            md: 'none'
                                                         }
-                                                    }}>{page.icon}</Typography>
+                                                    }}
+                                                    color="inherit"
+                                                >
+                                                    {page.icon}
+                                                </IconButton>
                                             </Box>
                                         </Link>
                                     ))}
@@ -250,7 +261,9 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                     position: { sm: 'relative' },
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: { xs: 2, md: 3 },
+                                    // justifyContent: 'center',
+                                    color: theme => theme.palette.primary.main,
+                                    gap: { xs: 1, md: 3 },
                                 }}
                             >
 
@@ -258,16 +271,49 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                     sx={{
                                         display: {
                                             xs: 'none',
-                                            sm: 'block'
+                                            md: 'block'
                                         }
                                     }}
                                 >
                                     <SearchBox setHoverMenuOpen={null} />
                                 </Box>
+                                <Box
+                                    sx={{
+                                        lineHeight: 0,
+                                        display: {
+                                            xs: 'block',
+                                            md: 'none',
+                                        }
+                                    }}
+                                >
+                                    <IconButton
+                                        sx={{
+                                            margin: 0,
+                                            padding: 0,
+                                            lineHeight: 0,
+                                            width: 44,
+                                            height: 44
+                                        }}
+                                        color="inherit"
+                                    >
+                                        {mobileSearchOpen ?
+                                            <CloseIcon sx={{ lineHeight: 0, fontSize: 22 }} onClick={() => setMobileSearchOpen(false)} /> :
+                                            <Search
+                                                sx={{ lineHeight: 0, fontSize: 22 }}
+                                                onClick={
+                                                    () => {
+                                                        setMobileSearchOpen(true);
+                                                        setShowDesktopNotifications(false);
+                                                    }} />
+                                        }
+                                    </IconButton>
+
+                                </Box>
                                 <HodlNotifications
                                     setHoverMenuOpen={setDesktopMenuOpen}
                                     showNotifications={showDesktopNotifications}
                                     setShowNotifications={setShowDesktopNotifications}
+                                    setMobileSearchOpen={setMobileSearchOpen}
                                 />
                                 <HoverMenu
                                     hoverMenuOpen={desktopMenuOpen}
@@ -317,6 +363,35 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                         </Box>
                     </Toolbar>
                 </Container>
+                {/* Mobile Search */}
+                {/* TODO - Move to own file */}
+                {mobileSearchOpen &&
+                    <Box
+                        sx={{
+                            display: {
+                                xs: 'block',
+                                md: 'none'
+                            }
+                        }}>
+                        <ClickAwayListener
+                            onClickAway={() =>
+                                setMobileSearchOpen(false)
+                            }
+                            touchEvent={false}>
+                            <Fade in={mobileSearchOpen} timeout={300} >
+                                <Container
+                                    sx={{
+                                        color: 'black',
+                                        background: 'white',
+                                        paddingX: 2,
+                                        paddingY: 2,
+                                    }}>
+                                    <SearchBox setHoverMenuOpen={null} setMobileSearchOpen={setMobileSearchOpen} />
+                                </Container>
+                            </Fade>
+                        </ClickAwayListener>
+                    </Box>
+                }
             </AppBar>
             <Toolbar disableGutters />
         </>

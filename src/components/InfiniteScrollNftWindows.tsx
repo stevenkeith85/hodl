@@ -33,7 +33,7 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
       <InfiniteScroll
         swr={swr}
         loadingIndicator={<>
-          <Skeleton sx={{ width: '100%', height: 0, paddingTop: '100%'}} variant="rectangular" animation="wave"/>
+          <HodlLoadingSpinner />
         </>
         }
         isReachingEnd={

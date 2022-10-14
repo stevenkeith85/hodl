@@ -138,11 +138,11 @@ const Profile = ({
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
-            marginTop: 4
+            marginTop: { xs: 2, sm: 4}
           }}>
           <Box
             display="flex"
-            gap={4}
+            gap={3}
             alignItems={"center"}
           >
             <UserAvatarAndHandle
@@ -168,8 +168,14 @@ const Profile = ({
         <Box sx={{
           display: 'flex',
           justifyContent: 'space-between',
-          marginTop: 4,
-          marginBottom: 4
+          marginTop: {
+            xs: 2,
+            sm: 4,
+          },
+          marginBottom: {
+            xs: 2,
+            sm: 4
+          }
         }}>
           <Tabs
             value={value}
@@ -186,7 +192,7 @@ const Profile = ({
                 value={0}
                 label="Hodling"
                 icon={<Badge
-                  sx={{ p: '6px 0px' }}
+                  sx={{ p: '6px 3px' }}
                   showZero
                   max={Number.MAX_SAFE_INTEGER}
                   badgeContent={
@@ -200,6 +206,10 @@ const Profile = ({
                 iconPosition="end"
                 sx={{
                   minWidth: 0,
+                  width: {
+                    xs: '25%',
+                    sm: '120px',
+                  },
                   paddingX: {
                     xs: 1.75,
                     sm: 2
@@ -220,12 +230,12 @@ const Profile = ({
                 value={1}
                 label="Listed"
                 icon={<Badge
-                  sx={{ p: '6px 0px' }}
+                  sx={{ p: '6px 3px' }}
                   showZero
                   max={Number.MAX_SAFE_INTEGER}
                   badgeContent={
                     listedCount === null ?
-                      <Skeleton width={10} variant="text" animation="wave"/> :
+                      <Skeleton width={10} variant="text" animation="wave" /> :
                       humanize.compactInteger(listedCount, 1)
                   }
                 >
@@ -234,6 +244,10 @@ const Profile = ({
                 iconPosition="end"
                 sx={{
                   minWidth: 0,
+                  width: {
+                    xs: '25%',
+                    sm: '120px',
+                  },
                   paddingX: {
                     xs: 1.75,
                     sm: 2
@@ -253,7 +267,7 @@ const Profile = ({
                 value={2}
                 label="Following"
                 icon={<Badge
-                  sx={{ p: '6px 0px' }}
+                  sx={{ p: '6px 3px' }}
                   showZero
                   max={Number.MAX_SAFE_INTEGER}
                   badgeContent={humanize.compactInteger(followingCount, 1)}
@@ -262,6 +276,10 @@ const Profile = ({
                 iconPosition="end"
                 sx={{
                   minWidth: 0,
+                  width: {
+                    xs: '25%',
+                    sm: '120px',
+                  },
                   paddingX: {
                     xs: 1.75,
                     sm: 2
@@ -282,7 +300,7 @@ const Profile = ({
                 label="Followers"
                 icon={
                   <Badge
-                    sx={{ p: '6px 0px' }}
+                    sx={{ p: '6px 3px' }}
                     showZero
                     max={Number.MAX_SAFE_INTEGER}
                     badgeContent={humanize.compactInteger(followersCount, 1)}
@@ -292,6 +310,10 @@ const Profile = ({
                 iconPosition="end"
                 sx={{
                   minWidth: 0,
+                  width: {
+                    xs: '25%',
+                    sm: '120px',
+                  },
                   paddingX: {
                     xs: 1.75,
                     sm: 2
@@ -312,13 +334,23 @@ const Profile = ({
           </div>
           <Box
             hidden={value !== 2}
-            width={'max-content'}
+            width={
+              {
+                xs: '100%',
+                md: '50%',
+              }
+            }
           >
             <UserLinksList swr={following} limit={limit} />
           </Box>
           <Box
             hidden={value !== 3}
-            width={'max-content'}
+            width={
+              {
+                xs: '100%',
+                md: '50%'
+              }
+            }
           >
             <UserLinksList swr={followers} limit={limit} />
           </Box>
