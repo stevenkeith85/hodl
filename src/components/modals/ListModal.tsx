@@ -7,7 +7,15 @@ import { MaticSymbol } from "../MaticSymbol";
 import { useState } from "react";
 
 
-export const ListModal = ({ listModalOpen, setListModalOpen, setListedModalOpen, price, setPrice }) => {
+export const ListModal = ({ 
+    listModalOpen, 
+    setListModalOpen, 
+    setListedModalOpen, 
+    price, 
+    setPrice,
+    token,
+    mutableToken
+ }) => {
     const router = useRouter();
 
     const [listButtonDisabled, setListButtonDisabled] = useState(false);
@@ -59,7 +67,7 @@ export const ListModal = ({ listModalOpen, setListModalOpen, setListedModalOpen,
                                         type: "info"
                                     });
 
-                                await listNft(router.query.tokenId, price);
+                                await listNft(token, mutableToken);
 
                                 setListModalOpen(false);
                                 setListedModalOpen(true);

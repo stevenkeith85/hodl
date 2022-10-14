@@ -9,22 +9,14 @@ import { ActionSet } from '../models/HodlAction';
 import { Container } from '@mui/material';
 import { getActions } from './api/actions';
 import { useRankings } from '../hooks/useRankings';
-import { getMostFollowedUsers } from './api/rankings/user';
 import { RankingsContext } from '../contexts/RankingsContext';
 import { getUser } from './api/user/[handle]';
-import { getMostLikedTokens } from './api/rankings/token';
 import { useNewUsers } from '../hooks/useNewUsers';
-
 import { UserContext } from '../contexts/UserContext';
 import { useFollowersCount } from '../hooks/useFollowersCount';
 import { useFollowingCount } from '../hooks/useFollowingCount';
 import { useHodlingCount } from '../hooks/useHodlingCount';
 import { useListedCount } from '../hooks/useListedCount';
-import { getFollowingCount } from './api/following/count';
-import { getFollowersCount } from './api/followers/count';
-import { UserViewModel } from '../models/User';
-import { getNewUsers } from './api/rankings/user/new';
-import { getNewTokens } from './api/rankings/token/new';
 import { useNewTokens } from '../hooks/useNewTokens';
 
 
@@ -72,8 +64,8 @@ export default function Home({
   prefetchedFeed,
 }) {
 
-  const { rankings: mostFollowed } = useRankings(true, limit, null);
   const { rankings: mostLiked } = useRankings(true, limit, null, "token");
+  const { rankings: mostFollowed } = useRankings(true, limit, null);
   const { rankings: mostUsedTags } = useRankings(true, limit, null, "tag");
 
   const { results: newUsers } = useNewUsers(limit, null);

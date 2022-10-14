@@ -4,14 +4,14 @@ import { getToken } from '../token/[tokenId]';
 import { Redis } from '@upstash/redis';
 
 import { getAsString } from '../../../lib/utils';
-import { Nft } from '../../../models/Nft';
+import { FullToken } from '../../../models/Nft';
 import { chunk } from '../../../lib/lodash';
 
 const client = Redis.fromEnv()
 
 dotenv.config({ path: '../.env' })
 
-const getMarketItem = async ([id, price]): Promise<Nft> => {
+const getMarketItem = async ([id, price]): Promise<FullToken> => {
     console.log(`search/tokens/getMarketItem - id: ${id}, price: ${price}`)
     return {
         ...(await getToken(id)),

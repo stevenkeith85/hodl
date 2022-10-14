@@ -1,4 +1,3 @@
-import NFT from '../../../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json'
 import Market from '../../../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
 import { getProvider } from '../../../../../lib/server/connections'
 import { ethers } from 'ethers'
@@ -14,14 +13,12 @@ const isValidListing = ({ seller, tokenId }: ListingSolidity) => {
   return seller !== ethers.constants.AddressZero && tokenId !== ethers.constants.Zero;
 }
 
-// This retrieves what we've got on the blockchain
-export const getListing = async (id: number): Promise<ListingVM> => {
+export const getListingFromBlockchain = async (id: number): Promise<ListingVM> => {
   const provider = await getProvider();
 
   const marketContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
   const listing: ListingSolidity = await marketContract.getListing(id);
 
-  // console.log('listing', listing)
   if (isValidListing(listing)) {
     return {
       price: ethers.utils.formatEther(listing.price),
@@ -41,7 +38,7 @@ route.get(async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   try {
-    const listing: ListingVM = await getListing(+tokenId);
+    const listing: ListingVM = await getListingFromBlockchain(+tokenId);
     return res.status(200).json({ listing })
   } catch (e) {
     console.log('api/contracts/market/listing - error', e)

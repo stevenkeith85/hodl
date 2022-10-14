@@ -1,7 +1,7 @@
 import { Box, Skeleton, useMediaQuery, useTheme } from "@mui/material";
 import InfiniteScroll from 'react-swr-infinite-scroll'
 import { NftWindow } from "./NftWindow";
-import { Nft } from "../models/Nft";
+import { FullToken } from "../models/Nft";
 import { HodlLoadingSpinner } from "./HodlLoadingSpinner";
 
 interface InfiniteScrollNftWindowsProps {
@@ -44,7 +44,7 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
         }
       >
         {
-          ({ items, next, total }) => items.map((nft: Nft, i) => <>
+          ({ items, next, total }) => items.map((nft: FullToken, i) => <>
             {nft && <NftWindow nft={nft} key={nft.id} />}
           </>)
         }

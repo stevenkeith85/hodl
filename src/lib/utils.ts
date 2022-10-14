@@ -1,5 +1,5 @@
 import { AssetTypes } from "../models/AssetType";
-import { Nft } from "../models/Nft";
+import { FullToken } from "../models/Nft";
 import { Token } from "../models/Token";
 import { commercial, nonCommercial, token } from "./copyright";
 
@@ -132,7 +132,7 @@ export const validTxHashFormat = (addr) => {
   return /^0x([A-Fa-f0-9]{64})$/.test(addr);
 }
 
-export const assetType = (nft: Token | Nft) : AssetTypes => {
+export const assetType = (nft: Token | FullToken) : AssetTypes => {
   if (!nft?.properties?.asset?.mimeType) { 
     return AssetTypes.Image;
   }

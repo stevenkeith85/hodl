@@ -1,20 +1,10 @@
-import { NextApiRequest, NextApiResponse } from "next";
-
+import { NextApiResponse } from "next";
 import dotenv from 'dotenv'
-import memoize from 'memoizee';
 import apiRoute from '../handler';
-//
-// This is used for getting a 'minimal' NFT. i.e. only what we've stored in Redis (NOT the data from the blockchain).
-// We use this for operations that don't need blockchain data
-//
-
 import { Redis } from '@upstash/redis';
-import { isValid } from "date-fns";
-import { isValidAddress } from "../../../lib/profile";
 import { User, UserViewModel } from "../../../models/User";
 import { Token } from "../../../models/Token";
-import { getAsString, ipfsUriToCid } from "../../../lib/utils";
-import { isOwnerOrSeller } from "../nft/[tokenId]";
+import { getAsString } from "../../../lib/utils";
 import { isFollowing } from "../follows";
 import { ethers } from "ethers";
 

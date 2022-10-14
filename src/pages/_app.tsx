@@ -56,6 +56,10 @@ export default function MyApp(props: MyAppProps) {
   };
 
   useEffect(() => {
+    if (!address) {
+      return;
+    }
+    
     console.log('Pusher - setting up pusher');
 
     const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY, {
@@ -85,9 +89,7 @@ export default function MyApp(props: MyAppProps) {
     return <ThemeProvider theme={theme}>
       <LoginPage loggedIn={pageProps.hasReadPermission} />
     </ThemeProvider>
-
   }
-
 
   return (
     <CacheProvider value={emotionCache}>

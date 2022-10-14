@@ -16,9 +16,10 @@ export const HodlImageResponsive = ({
     onLoad = null,
     objectFit = 'scale-down',
     objectPosition = 'center',
-    zoom=null,
-    suffix=null,
-    assetFolder="image" // we sometimes want to display a video as an image. to do so, pass 'video' here
+    zoom = null,
+    suffix = null,
+    assetFolder = "image", // we sometimes want to display a video as an image. to do so, pass 'video' here
+    lcp = false // set true if this image is the largest content paint so that it takes priority on loading
 }) => {
 
     const makeCloudinaryUrl = (width) => {
@@ -47,21 +48,19 @@ export const HodlImageResponsive = ({
 
         if (suffix) {
             // e.g. We can use this to get an image representation of a video
-            return `${cloudinaryUrl}/${environment}/${folder}/${cid}.${suffix}`    
+            return `${cloudinaryUrl}/${environment}/${folder}/${cid}.${suffix}`
         }
 
         return `${cloudinaryUrl}/${environment}/${folder}/${cid}`
     }
 
     const srcSet = widths.map(width => `${makeCloudinaryUrl(width)} ${width}w`).join(',');
-
     const src = makeCloudinaryUrl(widths[0]);
+    const imgRef = useRef(null);
 
-    const imgRef  = useRef(null);
-    
     // onload doesn't fire if the image is being loaded from cache. You can use the complete property to check for this case.
     useEffect(() => {
-        if(imgRef.current) {
+        if (imgRef.current) {
             if (imgRef.current.complete && onLoad) {
                 onLoad();
             }
@@ -71,7 +70,20 @@ export const HodlImageResponsive = ({
     return (
         <>
             <Head>
-                {
+                {lcp ?
+                    <link
+                        //@ts-ignore
+                        fetchpriority="high"
+                        
+                        key={cid}
+                        rel="preload"
+                        as="image"
+                        href={src}
+                        //@ts-ignore
+                        imagesrcset={srcSet}
+                        //@ts-ignore
+                        imagesizes={sizes}
+                    /> :
                     <link
                         key={cid}
                         rel="preload"
@@ -81,7 +93,8 @@ export const HodlImageResponsive = ({
                         imagesrcset={srcSet}
                         //@ts-ignore
                         imagesizes={sizes}
-                    />}
+                    />
+                }
             </Head>
             <Box
                 sx={{

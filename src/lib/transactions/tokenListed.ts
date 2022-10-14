@@ -4,8 +4,8 @@ import { Redis } from '@upstash/redis';
 import { addAction } from "../../pages/api/actions/add";
 import Market from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 import { getTagsForToken } from "../../pages/api/tags";
-import { fetchNFT } from "../../pages/api/nft/[tokenId]";
-import { Nft } from "../../models/Nft";
+import { getFullToken } from "../../pages/api/contracts/mutable-token/[tokenId]";
+import { FullToken } from "../../models/Nft";
 
 const client = Redis.fromEnv()
 
@@ -45,7 +45,7 @@ export const tokenListed = async (
     }
 
     // Read the blockchain to ensure what we are about to do is correct
-    const token: Nft = await fetchNFT(tokenId);
+    const token: FullToken = await getFullToken(tokenId, true);
 
     if (!token.forSale) {
         console.log('tokenListed - token is not for sale according to the blockchain - not listing on market');

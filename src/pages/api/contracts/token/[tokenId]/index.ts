@@ -1,17 +1,17 @@
-import NFT from '../../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json'
-import { getProvider } from '../../../../lib/server/connections'
+import NFT from '../../../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json'
+import { getProvider } from '../../../../../lib/server/connections'
 import { ethers } from 'ethers'
 import { NextApiRequest, NextApiResponse } from "next";
 import dotenv from 'dotenv'
-import apiRoute from '../../handler';
-import { TokenSolidity } from '../../../../models/Token';
+import apiRoute from '../../../handler';
+import { TokenSolidity } from '../../../../../models/Token';
 
 dotenv.config({ path: '../.env' })
 
 const route = apiRoute();
 
 // This retrieves what we've got on the blockchain
-export const getToken = async (id: number): Promise<TokenSolidity> => {
+export const getTokenFromBlockchain = async (id: number): Promise<TokenSolidity> => {
   const provider = await getProvider();
 
   const tokenContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, provider);
@@ -30,7 +30,7 @@ route.get(async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   try {
-    const token = await getToken(+tokenId);
+    const token = await getTokenFromBlockchain(+tokenId);
     return res.status(200).json({ token })
   } catch (e) {
     return res.status(400).json({ message: 'Bad Request' });

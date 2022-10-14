@@ -1,11 +1,6 @@
-// Our Token type matches what is stored in Redis
-// At the moment we only store immutable data in Redis
-//
-// We will likely cache the MUTABLE data at some point thoughh
-// to minimise our blockchain calls (cost), speed things up (UX)
-
 import { HodlMetadata } from "./Metadata";
 
+// This data does not change once the token is minted.
 export interface Token extends HodlMetadata {
   id: number; // This is the tokenId on the blockchain
   creator: string; // This is the address that minted the token

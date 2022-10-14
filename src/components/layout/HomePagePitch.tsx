@@ -49,7 +49,6 @@ export const HomePagePitch = ({ }) => {
                                 marginBottom: 2
                             }}>
                             Hodl My Moon
-
                         </Box>
                         <Typography
                             sx={{
@@ -106,11 +105,7 @@ export const HomePagePitch = ({ }) => {
                             width: `400px`, 
                             maxWidth: '100%',
                         }}>
-                            <NftWindow 
-                                nft={
-                                    mostLiked.data?.[0].items?.[0]
-                                } 
-                            />
+                            <NftWindow nft={mostLiked.data?.[0].items?.[0]} lcp={true} />
                         </Box>
                     </Box>
                 </Grid>

@@ -1,14 +1,17 @@
-// This is a combination of what's on the blockchain, and what's on Redis
-//
-// TODO: We are moving towards storing everything in Redis, and syncing with the blockchain. 
-
 import { Token } from "./Token";
 
-// Nft includes the base fields of Token (which come from Redis), and the addional fields that
-// depend on the blockchain
-// TODO - A better name. Perhaps BlockchainToken, MarketItem, TokenWithMetadata, MutableToken, ExtendedToken
-export interface Nft extends Token {
-  owner?: string;
-  forSale?: boolean;
-  price?: string; // price in ether
+// This data changes on the blockchain. We cache it in redis to speed up the website
+export interface MutableToken {
+  // if the token is for sale, this is the seller. if it is not for sale, it is the 'ownerOf'
+  // optional; as we do not display the hodler on the market screens at the moment
+  hodler?: string; 
+
+  // indicates if the token is listed on our market
+  forSale: boolean; 
+
+  // price in ether. it will be null if the token is not for sale
+  price?: string; 
+}
+
+export interface FullToken extends Token, MutableToken {
 };

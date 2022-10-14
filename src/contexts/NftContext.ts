@@ -1,9 +1,9 @@
 import { createContext } from 'react';
-import { Nft } from '../models/Nft';
+import { FullToken } from '../models/Nft';
 
 
 export const NftContext = createContext<{
-    nft: Nft
+    nft: FullToken
 }>({
     nft: null
 });

@@ -72,7 +72,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
     const { address } = useContext(WalletContext);
     const { nft } = useContext(NftContext);
 
-    const canDeleteComment = (comment: HodlCommentViewModel) => comment.user.address === address || nft?.owner === address;
+    const canDeleteComment = (comment: HodlCommentViewModel) => comment.user.address === address || nft?.hodler === address;
     const [deleteComment] = useDeleteComment();
 
     // Comment Menu

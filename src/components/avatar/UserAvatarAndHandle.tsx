@@ -53,7 +53,6 @@ export const UserAvatarAndHandle: React.FC<UserAvatarProps> = ({
     withLink = true,
     color = "secondary"
 }) => {
-    console.log('fallbackdata', fallbackData)
     const { data: user } = useUser(address, fallbackData);
 
     if (!user) {

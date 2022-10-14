@@ -10,11 +10,11 @@ import { GifBoxOutlined, Image, ImageOutlined, MusicNote, MusicNoteOutlined, Vid
 import { AssetTypes } from '../models/AssetType';
 import { HodlImageResponsive } from './HodlImageResponsive';
 import { HodlAudioBox } from './HodlAudioBox';
-import { Nft } from '../models/Nft';
+import { FullToken } from '../models/Nft';
 import { PriceSticker } from './PriceSticker';
 
 interface OverlayProps {
-    nft: Nft;
+    nft: FullToken;
 }
 const Overlay: React.FC<OverlayProps> = ({
     nft
@@ -102,10 +102,13 @@ const Overlay: React.FC<OverlayProps> = ({
 }
 
 interface NftWindowProps {
-    nft: Nft;
+    nft: FullToken;
+    lcp?: boolean; // if this window will be the largest content paint, then set to true
 }
+
 export const NftWindow: React.FC<NftWindowProps> = ({
-    nft
+    nft,
+    lcp = false
 }) => {
     const theme = useTheme();
     const xs = useMediaQuery(theme.breakpoints.only('xs'));
@@ -166,6 +169,7 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                         }}>
                         <VideocamOutlined sx={{ position: 'absolute', top: 8, left: 8 }} />
                         <HodlImageResponsive
+                            lcp={lcp}
                             sizes="(min-width: 900px) 25vw, (min-width: 1200px) calc(1200px / 5 * 2), 50vw"
                             cid={nft?.image}
                             widths={[400, 800, 1000]}
@@ -198,6 +202,7 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                         }}>
                         <ImageOutlined sx={{ position: 'absolute', top: 8, left: 8 }} />
                         <HodlImageResponsive
+                            lcp={true}
                             aspectRatio="1:1"
                             sizes="(min-width: 900px) 25vw, (min-width: 1200px) calc(1200px / 5 * 2), 50vw, 100vw"
                             cid={nft?.properties?.asset?.uri}

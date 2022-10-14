@@ -9,25 +9,24 @@ import NFT from '../../artifacts/contracts/HodlNFT.sol/HodlNFT.json'
 
 import { getMetaMaskSigner } from "./connections";
 import axios from 'axios'
-import { Nft } from '../models/Nft.js';
+import { MutableToken } from '../models/Nft.js';
 import { Token } from '../models/Token';
-import { ListingVM } from '../models/Listing';
 
-export const listNft = async (tokenId, tokenPrice) => {
+export const listNft = async (token: Token, mutableToken: MutableToken) => {
   const signer = await getMetaMaskSigner();
   const contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, signer);
-  const price = ethers.utils.parseUnits(tokenPrice, 'ether');
+  const price = ethers.utils.parseUnits(mutableToken.price, 'ether');
   const tokenContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, signer);
 
   // If we aren't approved, then ask for approval.
   // NB: The user will be approved if they've listed a token with us before. If not, then they'll need to pay the additional gas cost to approve us.
   // TODO: We can probably override a method in the contract that means users won't need to do this.
   if (!await tokenContract.isApprovedForAll(await signer.getAddress(), process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS)) {
-    const approvalTx = await tokenContract.setApprovalForAll(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, tokenId);
+    const approvalTx = await tokenContract.setApprovalForAll(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, token.id);
     await approvalTx.wait();
   };
 
-  const { hash } = await contract.listToken(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, tokenId, price);
+  const { hash } = await contract.listToken(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, token.id, price);
 
   try {
     const r = await axios.post(
@@ -47,11 +46,11 @@ export const listNft = async (tokenId, tokenPrice) => {
   }
 }
 
-export const buyNft = async (token: Token, listing: ListingVM) => {
+export const buyNft = async (token: Token, mutableToken: MutableToken) => {
   const signer = await getMetaMaskSigner();
   
   const contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, signer);
-  const price = ethers.utils.parseUnits(listing.price.toString(), 'ether')
+  const price = ethers.utils.parseUnits(mutableToken.price.toString(), 'ether')
   
   const { hash } = await contract.buyToken(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, token.id, { value: price })
 
@@ -74,11 +73,11 @@ export const buyNft = async (token: Token, listing: ListingVM) => {
 }
 
 
-export const delistNft = async (nft: Nft) => {
+export const delistNft = async (token: Token) => {
   const signer = await getMetaMaskSigner();
   const contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, signer);
 
-  const { hash } = await contract.delistToken(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, nft.id);
+  const { hash } = await contract.delistToken(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, token.id);
 
   try {
     const r = await axios.post(

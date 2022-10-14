@@ -7,10 +7,10 @@ import { likesToken } from "../like/token/likes";
 import { getFollowers } from "../followers";
 import { isFollowing } from "../follows";
 import { likesComment } from "../like/comment/likes";
-import { fetchNFT, getHodlerAddress } from "../nft/[tokenId]";
+import { getFullToken } from "../contracts/mutable-token/[tokenId]";
 import { HodlComment } from "../../../models/HodlComment";
 
-import { Nft } from "../../../models/Nft";
+import { FullToken } from "../../../models/Nft";
 import { getUser } from "../user/[handle]";
 
 import { getAction } from ".";
@@ -19,6 +19,7 @@ import { trimZSet } from "../../../lib/databaseUtils";
 
 import { createHmac } from "crypto";
 import { User } from "../../../models/User";
+import { getHodlerAddress } from "../contracts/token/[tokenId]/hodler";
 
 
 const route = apiRoute();
@@ -220,7 +221,7 @@ export const addAction = async (action: HodlAction): Promise<number> => {
         return;
       }
 
-      const owner = await getHodlerAddress(action.objectId);
+      const owner = await getHodlerAddress(action.objectId, true);
 
       if (owner === action.subject) {
         return; // We've liked our own token. No need for a notification.
@@ -251,7 +252,7 @@ export const addAction = async (action: HodlAction): Promise<number> => {
     const comment: HodlComment = await client.get(`comment:${action.objectId}`);
 
     if (comment?.object === "token") { // the comment was about a token, tell the token owner.
-      const hodler = await getHodlerAddress(comment.tokenId);
+      const hodler = await getHodlerAddress(comment.tokenId, true);
 
       if (hodler === action.subject) {
         return; // We've commented on our own token. No need for a notification.
@@ -298,13 +299,13 @@ export const addAction = async (action: HodlAction): Promise<number> => {
   // Who: Tell the seller's followers (via their feed) there's a new token for sale
   if (action.action === ActionTypes.Listed) {
     try {
-      const token: Nft = await fetchNFT(+action.objectId);
+      const token: FullToken = await getFullToken(+action.objectId, true);
 
       if (!token.forSale) {
         return;
       }
 
-      if (token.owner !== action.subject) {
+      if (token.hodler !== action.subject) {
         return;
       }
 
@@ -322,14 +323,14 @@ export const addAction = async (action: HodlAction): Promise<number> => {
   // Who: Tell the seller's followers (via their feed) there's no longer a new token for sale
   if (action.action === ActionTypes.Delisted) {
     try {
-      const token: Nft = await fetchNFT(+action.objectId);
+      const token: FullToken = await getFullToken(+action.objectId, true);
 
       if (token.forSale) {
         console.log('actions/add/delisted - validation failed: token is still for sale')
         return;
       }
 
-      if (token.owner !== action.subject) {
+      if (token.hodler !== action.subject) {
         console.log('actions/add/delisted - validation failed: token owner should be the same as the action subject')
         return;
       }
@@ -352,12 +353,12 @@ export const addAction = async (action: HodlAction): Promise<number> => {
   if (action.action === ActionTypes.Added) {
     try {
       console.log('actions/add/added - processing action');
-      const token: Nft = await fetchNFT(+action.objectId);
+      const token: FullToken = await getFullToken(+action.objectId, true);
 
       console.log('actions/add - Added - token is', token);
 
-      if (token.owner !== action.subject) {
-        console.log('actions/add - Added - token.owner !== action.subject', token.owner, action.subject);
+      if (token.hodler !== action.subject) {
+        console.log('actions/add - Added - token.owner !== action.subject', token.hodler, action.subject);
         return;
       }
 

@@ -5,7 +5,7 @@ import HodlMarket from '../../../../../../artifacts/contracts/HodlMarket.sol/Hod
 import apiRoute from '../../../handler';
 import { getToken } from '../../../token/[tokenId]';
 import { Token } from '../../../../../models/Token';
-import { Nft } from '../../../../../models/Nft';
+import { FullToken } from '../../../../../models/Nft';
 
 dotenv.config({ path: '../.env' })
 
@@ -26,7 +26,7 @@ export const getListed = async (address, offset, limit) => {
             return { items: [], next: 0, total: 0 };
         }
 
-        const nfts: Nft [] = await Promise.all(listings.map(async listing => {
+        const nfts: FullToken [] = await Promise.all(listings.map(async listing => {
             const token: Token = await getToken(listing.tokenId);
 
             // If the token is present on the blockchain, 
@@ -36,9 +36,9 @@ export const getListed = async (address, offset, limit) => {
                 return null;
             }
 
-            const nft: Nft = {
+            const nft: FullToken = {
                 ...token,
-                owner: address,
+                hodler: address,
                 forSale: true,
                 price: ethers.utils.formatEther(listing.price)
             }

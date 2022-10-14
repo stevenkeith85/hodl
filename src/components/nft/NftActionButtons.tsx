@@ -1,4 +1,4 @@
-import { Button, Stack, Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { useContext, useState } from "react";
 import { WalletContext } from '../../contexts/WalletContext';
 import { enqueueSnackbar } from 'notistack';
@@ -6,16 +6,17 @@ import { buyNft, delistNft } from "../../lib/nft";
 import { ListModal } from "../modals/ListModal";
 import { SuccessModal } from "../modals/SuccessModal";
 import { Token } from "../../models/Token";
-import { ListingVM } from "../../models/Listing";
+import { MutableToken } from "../../models/Nft";
 
 
 interface NftActionButtons {
-    nft: Token;
-    hodler: string;
-    listing: ListingVM
+    token: Token;
+    mutableToken: MutableToken
 }
 
-export const NftActionButtons = ({ token, hodler, listing }) => {
+export const NftActionButtons = ({ 
+    token,
+    mutableToken }) => {
     const { address } = useContext(WalletContext);
 
     const [listModalOpen, setListModalOpen] = useState(false);
@@ -25,7 +26,7 @@ export const NftActionButtons = ({ token, hodler, listing }) => {
 
     const [price, setPrice] = useState(null);
 
-    const isHodler = () => Boolean(hodler?.toLowerCase() === address?.toLowerCase());
+    const isHodler = () => Boolean(mutableToken?.hodler?.toLowerCase() === address?.toLowerCase());
 
     const smartContractError = e => {
         enqueueSnackbar(
@@ -63,6 +64,8 @@ export const NftActionButtons = ({ token, hodler, listing }) => {
                 setListedModalOpen={setListedModalOpen}
                 price={price}
                 setPrice={setPrice}
+                token={token}
+                mutableToken={mutableToken}
             />
 
             {/* Listed */}
@@ -93,7 +96,7 @@ export const NftActionButtons = ({ token, hodler, listing }) => {
             </SuccessModal>
 
             {
-                listing !== null && !isHodler() &&
+                mutableToken?.forSale && !isHodler() &&
                 <div>
                     <Button
                         variant="contained"
@@ -107,7 +110,7 @@ export const NftActionButtons = ({ token, hodler, listing }) => {
                                         variant: "hodlsnackbar",
                                         type: "info"
                                     });
-                                await buyNft(token, listing);
+                                await buyNft(token, mutableToken);
                                 setBoughtModalOpen(true);
                             } catch (e) {
                                 if (e.code === -32603) {
@@ -120,7 +123,7 @@ export const NftActionButtons = ({ token, hodler, listing }) => {
                 </div>
             }
             {
-                listing !== null && isHodler() &&
+                mutableToken?.forSale && isHodler() &&
                 <div>
                     <Button
                         variant="contained"
@@ -148,7 +151,7 @@ export const NftActionButtons = ({ token, hodler, listing }) => {
                 </div>
             }
             {
-                listing === null && isHodler() &&
+                !mutableToken?.forSale && isHodler() &&
                 <div>
                     <Button
                         variant="contained"
