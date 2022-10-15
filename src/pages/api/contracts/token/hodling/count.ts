@@ -54,8 +54,8 @@ export const updateHodlingCache = async (address) => {
 
     cmds = cmds.concat([
       ["SET", `user:${address}:hodlingCount`, (scoreMemberPairs.length / 2)],
-      ["EXPIRE", `user:${address}:hodling`, 60],
-      ["EXPIRE", `user:${address}:hodlingCount`, 60],
+      ["EXPIRE", `user:${address}:hodling`, 60 * 10], // cache for 10 mins
+      ["EXPIRE", `user:${address}:hodlingCount`, 60 * 10],
     ]);
 
     try {

@@ -35,7 +35,7 @@ export const getMutableToken = async (tokenId, skipCache = false): Promise<Mutab
       }
     }
 
-    client.setex(`token:${tokenId}:mutable`, 120, mutableToken);
+    client.setex(`token:${tokenId}:mutable`, 60 * 10, mutableToken); // cache for 10 mins
   } else {
     console.log('getMutableToken - cache hit - reading redis');
   }
