@@ -1,55 +1,81 @@
 import dotenv from 'dotenv'
-import { ethers } from 'ethers';
-import { getProvider } from '../../../../../lib/server/connections';
-import HodlNFT from '../../../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import apiRoute from '../../../handler';
-import { getToken } from '../../../token/[tokenId]';
-import { FullToken } from '../../../../../models/Nft';
 import { Token } from '../../../../../models/Token';
+import { Redis } from '@upstash/redis';
+import { updateHodlingCache } from './count';
 
 dotenv.config({ path: '../.env' })
 
-// The get hodling / get listed functionality should work fairly similar
-// TODO: We may read more data from Redis in future if we can set up a decent blockchain/redis cache mechanism
-const addressToTokenIds = async (address, offset, limit) => {
-    const provider = getProvider();
-    const tokenContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, HodlNFT.abi, provider);
-    const result = await tokenContract.addressToTokenIds(address, offset, limit);
-    return result;
-}
+const client = Redis.fromEnv()
 
-export const getHodling = async (address, offset, limit) => {
-    try {
-        const [tokenIds, next, total] = await addressToTokenIds(address, offset, limit);
 
-        if (!tokenIds.length) {
-            return { items: [], next: 0, total: 0 };
-        }
-
-        const items : FullToken [] = await Promise.all(tokenIds.map(async id => {
-            const token: Token = await getToken(id);
-
-            // If the token is present on the blockchain, 
-            // but not in our database
-            // we'll mark this as null.
-            if (!token) {
-                return null;
-            }
-
-            const nft : FullToken = {
-                ...token,
-                hodler: address,
-                forSale: false,
-                price: null
-            };
-
-            return nft;
-        }));
-
-        return { items, next: Number(next), total: Number(total) };
-    } catch (e) {
-        return { items: [], next: 0, total: 0 };
+export const getHodling = async (address, offset, limit, skipCache = false): Promise<{ items: Token[], next: number; total: number }> => {
+    if (!address) {
+        return null;
     }
+
+    // Why we store 2 keys, rather than just a ZSET (and do a ZCARD to get the count)..
+
+    // if hodlingCount (via a zcard lookup) was 0 then the set isn't present. (as REDIS does not allow empty sets)
+    // that could mean its expired (and we'd need to recache it via the blockchain)...
+    // 
+    // if the user 'actually' is hodling 0 (when we read the blockchain) then we need a way of saying that (again -> redis doesn't allow empty sets)
+
+    // if we can't say 'we checked but this user really does have nothing' then we'll effectively lose the ability to cache 'hodling 0 tokens'
+
+    // so we've decided to have holding -> ZSET, AND hodlingCount -> number; and update them / expire them together
+
+    // when we do a GET hodlingCount, we can differentiate between 0 (user has nothing) and null (the cache has expired); and then update both during the caching process
+
+    let hodlingCount = skipCache ? null : await client.get<number>(`user:${address}:hodlingCount`);
+
+    if (hodlingCount === null) { // repopulate the cache  
+        await updateHodlingCache(address);
+    }
+
+    if (hodlingCount === 0) {
+        return {
+            items: [],
+            next: Number(offset) + Number(limit),
+            total: Number(0)
+        };
+    }
+
+    const tokenIds: number[] = await client.zrange<number[]>(`user:${address}:hodling`, offset, offset + limit - 1);
+
+    // const items: FullToken[] = await Promise.all(tokenIds.map(async id => {
+    //     const token: Token = await getToken(id);
+
+    //     // If the token is present on the blockchain, 
+    //     // but not in our database
+    //     // we'll mark this as null.
+    //     if (!token) {
+    //         return null;
+    //     }
+
+    //     const nft: FullToken = {
+    //         ...token,
+    //         hodler: address,
+    //         forSale: false,
+    //         price: null
+    //     };
+
+    //     return nft;
+    // }));
+
+    // We get all the comment data with one round trip to redis
+    const commentPipeline = client.pipeline();
+    for (let id of tokenIds) {
+      commentPipeline.get(`token:${id}`);
+    }
+    const items: Token[] = tokenIds?.length ? await commentPipeline.exec() : [];
+
+
+    return {
+        items: items,
+        next: Number(offset) + Number(limit),
+        total: Number(hodlingCount)
+    };
 }
 
 const route = apiRoute();

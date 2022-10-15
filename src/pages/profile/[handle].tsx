@@ -78,14 +78,13 @@ export async function getServerSideProps({ params, query, req, res }) {
       prefetchedFollowing: [prefetchedFollowing],
       prefetchedFollowersCount,
       prefetchedFollowers: [prefetchedFollowers],
-      // prefetchedHodling: [prefetchedHodling],
-      // prefetchedListed: [prefetchedListed],
       tab,
       limit
     },
   }
 }
 
+// TODO: getting the hodling count and list can both trigger cache updates. we'd like to prevent the double update
 const Profile = ({
   owner,
   address,
@@ -93,10 +92,6 @@ const Profile = ({
   prefetchedFollowing = null,
   prefetchedFollowersCount = null,
   prefetchedFollowers = null,
-  // prefetchedHodlingCount = null,
-  // prefetchedHodling = null,
-  // prefetchedListedCount = null,
-  // prefetchedListed = null,
   tab,
   limit
 }) => {
@@ -105,10 +100,10 @@ const Profile = ({
   const [value, setValue] = useState(Number(tab)); // tab
 
   const [hodlingCount] = useHodlingCount(owner.address);
-  const { swr: hodling } = useHodling(owner.address, limit);
+  const { swr: hodling } = useHodling(owner.address, limit, null, value==0);
 
   const [listedCount] = useListedCount(owner.address);
-  const { swr: listed } = useListed(owner.address, limit);
+  const { swr: listed } = useListed(owner.address, limit, null ,value==1);
 
   const [followingCount] = useFollowingCount(owner.address, prefetchedFollowingCount);
   const { swr: following } = useFollowing(true, owner.address, limit, prefetchedFollowing);

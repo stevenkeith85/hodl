@@ -16,39 +16,39 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
 
 
   return (
-    <Box
-      sx={{
-        display: "grid",
-        gridTemplateColumns: {
-          xs: `1fr 1fr`,
-          sm: `1fr 1fr 1fr`,
-        },
-        gap: {
-          xs: 1,
-          sm: 1,
-          md: 4
-        }
-      }}
-    >
-      <InfiniteScroll
-        swr={swr}
-        loadingIndicator={<>
-          <HodlLoadingSpinner />
-        </>
-        }
-        isReachingEnd={
-          swr => {
-            return swr.data?.[0]?.items?.length == 0 ||
-              swr.data?.[swr.data?.length - 1]?.items?.length < limit
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: `1fr 1fr`,
+            sm: `1fr 1fr 1fr`,
+          },
+          gap: {
+            xs: 1,
+            sm: 1,
+            md: 4
           }
-        }
+        }}
       >
-        {
-          ({ items, next, total }) => items.map((nft: FullToken, i) => <>
-            {nft && <NftWindow nft={nft} key={nft.id} />}
-          </>)
-        }
-      </InfiniteScroll >
-    </Box >
+        <InfiniteScroll
+          swr={swr}
+          loadingIndicator={<>
+            <HodlLoadingSpinner />
+          </>
+          }
+          isReachingEnd={
+            swr => {
+              return swr.data?.[0]?.items?.length == 0 ||
+                swr.data?.[swr.data?.length - 1]?.items?.length < limit
+            }
+          }
+        >
+          {
+            ({ items, next, total }) => items.map((nft: FullToken, i) => <>
+              {nft && <NftWindow nft={nft} key={nft.id} />}
+            </>)
+          }
+        </InfiniteScroll >
+      </Box >
   )
 }

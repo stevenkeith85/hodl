@@ -42,7 +42,6 @@ export const getCommentsForToken = async (object: "token" | "comment", objectId:
     }
 
     const commentIds: string[] = await client.zrange(`${object}:${objectId}:comments`, offset, offset + limit - 1, { rev: reverse });
-
     
     // We get all the comment data with one round trip to redis
     const commentPipeline = client.pipeline();
