@@ -7,10 +7,10 @@ import { likesToken } from "../like/token/likes";
 import { getFollowers } from "../followers";
 import { isFollowing } from "../follows";
 import { likesComment } from "../like/comment/likes";
-import { getFullToken } from "../contracts/mutable-token/[tokenId]";
+import { getFullToken, getMutableToken } from "../contracts/mutable-token/[tokenId]";
 import { HodlComment } from "../../../models/HodlComment";
 
-import { FullToken } from "../../../models/Nft";
+import { FullToken, MutableToken } from "../../../models/Nft";
 import { getUser } from "../user/[handle]";
 
 import { getAction } from ".";
@@ -18,9 +18,6 @@ import { pusher } from "../../../lib/server/pusher";
 import { trimZSet } from "../../../lib/databaseUtils";
 
 import { createHmac } from "crypto";
-import { User } from "../../../models/User";
-import { getHodlerAddress } from "../contracts/token/[tokenId]/hodler";
-
 
 const route = apiRoute();
 const client = Redis.fromEnv()
@@ -221,13 +218,15 @@ export const addAction = async (action: HodlAction): Promise<number> => {
         return;
       }
 
-      const owner = await getHodlerAddress(action.objectId, true);
+      // Potentially, we might be safe to just read our cached value here
+      // if our cache update strategy is bulletproof.
+      const mutableToken = await getMutableToken(action.objectId, true);
 
-      if (owner === action.subject) {
+      if (mutableToken.hodler === action.subject) {
         return; // We've liked our own token. No need for a notification.
       }
 
-      return await addNotification(owner, action);
+      return await addNotification(mutableToken.hodler, action);
 
     } else if (action.object === "comment") {
 
@@ -252,14 +251,16 @@ export const addAction = async (action: HodlAction): Promise<number> => {
     const comment: HodlComment = await client.get(`comment:${action.objectId}`);
 
     if (comment?.object === "token") { // the comment was about a token, tell the token owner.
-      const hodler = await getHodlerAddress(comment.tokenId, true);
+      // Potentially, we might be safe to just read our cached value here
+      // if our cache update strategy is bulletproof.
+      const mutableToken = await getMutableToken(comment.tokenId, true);
 
-      if (hodler === action.subject) {
+      if (mutableToken.hodler === action.subject) {
         return; // We've commented on our own token. No need for a notification.
       }
 
-      console.log(`actions/add - adding a notification for ${hodler}, as someone commented on their token`)
-      return await addNotification(hodler, action);
+      console.log(`actions/add - adding a notification for ${mutableToken.hodler}, as someone commented on their token`)
+      return await addNotification(mutableToken.hodler, action);
     } else if (comment?.object === "comment") { // the comment was a reply, tell the comment author. 
       const commentThatWasRepliedTo: HodlComment = await client.get(`comment:${comment.objectId}`);
 
@@ -299,7 +300,8 @@ export const addAction = async (action: HodlAction): Promise<number> => {
   // Who: Tell the seller's followers (via their feed) there's a new token for sale
   if (action.action === ActionTypes.Listed) {
     try {
-      const token: FullToken = await getFullToken(+action.objectId, true);
+      // This also updates the cache for us :)
+      const token: MutableToken = await getMutableToken(+action.objectId, true);
 
       if (!token.forSale) {
         return;
@@ -353,7 +355,9 @@ export const addAction = async (action: HodlAction): Promise<number> => {
   if (action.action === ActionTypes.Added) {
     try {
       console.log('actions/add/added - processing action');
-      const token: FullToken = await getFullToken(+action.objectId, true);
+
+      // This also caches it for us :)
+      const token: MutableToken = await getMutableToken(+action.objectId, true);
 
       console.log('actions/add - Added - token is', token);
 

@@ -6,13 +6,13 @@ import { fetchWithId } from "../../lib/swrFetchers";
 import useSWR from "swr";
 
 
-export const HodlCommentsBoxBody = ({ 
-    loading, 
-    minHeight, 
-    maxHeight, 
-    topLevelObject, 
+export const HodlCommentsBoxBody = ({
+    loading,
+    minHeight,
+    maxHeight,
+    topLevelObject,
     topLevelObjectId,
-    swr, 
+    swr,
     countSWR,
     limit,
     setCommentingOn,
@@ -34,17 +34,7 @@ export const HodlCommentsBoxBody = ({
             }}
         >
             {
-                loading &&
-                <Box sx={{
-                    position: 'absolute',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    height: '100%',
-                }}>
-                    <HodlLoadingSpinner />
-                </Box>
+                loading && <HodlLoadingSpinner></HodlLoadingSpinner>
             }
             {topLevelObject === "token" ?
                 <Box>

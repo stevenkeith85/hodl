@@ -141,7 +141,7 @@ export const HodlNotifications = ({
         }
         <InfiniteScroll
             swr={notifications}
-            loadingIndicator={<HodlLoadingSpinner />}
+            loadingIndicator={<HodlLoadingSpinner sx={{ textAlign: 'center', padding: 2}}/>}
             isReachingEnd={
                 swr => {
                     return swr.data?.[0]?.items?.length == 0 ||

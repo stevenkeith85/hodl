@@ -65,7 +65,6 @@ export const NftActionButtons = ({
                 price={price}
                 setPrice={setPrice}
                 token={token}
-                mutableToken={mutableToken}
             />
 
             {/* Listed */}
@@ -95,7 +94,7 @@ export const NftActionButtons = ({
                 </Typography>
             </SuccessModal>
 
-            {
+            {/* {
                 mutableToken?.forSale && !isHodler() &&
                 <div>
                     <Button
@@ -121,11 +120,13 @@ export const NftActionButtons = ({
                         Buy NFT
                     </Button>
                 </div>
-            }
+            } */}
             {
                 mutableToken?.forSale && isHodler() &&
                 <div>
+                    <Typography>Current unavailable</Typography>
                     <Button
+                    disabled
                         variant="contained"
                         sx={{ paddingY: 1.5, paddingX: 3 }}
                         onClick={async () => {

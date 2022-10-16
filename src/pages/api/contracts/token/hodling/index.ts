@@ -30,7 +30,10 @@ export const getHodling = async (address, offset, limit, skipCache = false): Pro
     let hodlingCount = skipCache ? null : await client.get<number>(`user:${address}:hodlingCount`);
 
     if (hodlingCount === null) { // repopulate the cache  
+        console.log('updating hodling cached data')
         await updateHodlingCache(address);
+    } else {
+        console.log('using hodling cached data')
     }
 
     if (hodlingCount === 0) {
@@ -42,26 +45,6 @@ export const getHodling = async (address, offset, limit, skipCache = false): Pro
     }
 
     const tokenIds: number[] = await client.zrange<number[]>(`user:${address}:hodling`, offset, offset + limit - 1);
-
-    // const items: FullToken[] = await Promise.all(tokenIds.map(async id => {
-    //     const token: Token = await getToken(id);
-
-    //     // If the token is present on the blockchain, 
-    //     // but not in our database
-    //     // we'll mark this as null.
-    //     if (!token) {
-    //         return null;
-    //     }
-
-    //     const nft: FullToken = {
-    //         ...token,
-    //         hodler: address,
-    //         forSale: false,
-    //         price: null
-    //     };
-
-    //     return nft;
-    // }));
 
     // We get all the comment data with one round trip to redis
     const commentPipeline = client.pipeline();

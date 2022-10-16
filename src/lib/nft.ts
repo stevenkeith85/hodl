@@ -12,10 +12,10 @@ import axios from 'axios'
 import { MutableToken } from '../models/Nft.js';
 import { Token } from '../models/Token';
 
-export const listNft = async (token: Token, mutableToken: MutableToken) => {
+export const listNft = async (token: Token, price: string) => {
+  
   const signer = await getMetaMaskSigner();
   const contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, signer);
-  const price = ethers.utils.parseUnits(mutableToken.price, 'ether');
   const tokenContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, signer);
 
   // If we aren't approved, then ask for approval.
@@ -26,7 +26,7 @@ export const listNft = async (token: Token, mutableToken: MutableToken) => {
     await approvalTx.wait();
   };
 
-  const { hash } = await contract.listToken(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, token.id, price);
+  const { hash } = await contract.listToken(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, token.id, ethers.utils.parseUnits(price, 'ether'));
 
   try {
     const r = await axios.post(

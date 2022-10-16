@@ -20,6 +20,14 @@ const addressToTokenIds = async (address, offset, limit) => {
 }
 
 export const updateHodlingCache = async (address) => {
+  // If a user mints or trades on the market; we'll recache.
+  //
+  // If no-one has requested a hodling count or list in a while, then the cached data will disappear from redis
+  // which will keep our storage costs down
+  //
+  // TODO: We might listed to generic transfer events in future 
+  // in case stuff happens off-site. (user adds token to another market, etc)
+  const timeToCache = 60 * 60 * 1;
 
   try {
     console.log('updating hodling cache');
@@ -36,7 +44,7 @@ export const updateHodlingCache = async (address) => {
     // get first page
     let result = await addressToTokenIds(address, offset, limit);
     result.page.forEach(item => scoreMemberPairs.push(score++, Number(item)))
-    
+
 
     // get remaining pages
     while (Number(result.next) < Number(result.total)) {
@@ -54,8 +62,8 @@ export const updateHodlingCache = async (address) => {
 
     cmds = cmds.concat([
       ["SET", `user:${address}:hodlingCount`, (scoreMemberPairs.length / 2)],
-      ["EXPIRE", `user:${address}:hodling`, 60 * 10], // cache for 10 mins
-      ["EXPIRE", `user:${address}:hodlingCount`, 60 * 10],
+      ["EXPIRE", `user:${address}:hodling`, timeToCache],
+      ["EXPIRE", `user:${address}:hodlingCount`, timeToCache],
     ]);
 
     try {

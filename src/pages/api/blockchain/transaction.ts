@@ -157,7 +157,7 @@ route.post(async (req, res: NextApiResponse) => {
     // TODO: If things are too slow for this serverless function; 
     // we COULD potentially push the 'updating task' onto another queue? (Prefer not to at the moment though)
     if (log.name === 'TokenListed') {
-        success = await tokenListed(hash, provider, txReceipt, tx);
+        success = await tokenListed(hash, provider, txReceipt, tx, log, req);
     } else if (log.name === 'TokenDelisted') {
         success = await tokenDelisted(hash, provider, txReceipt, tx);
     } else if (log.name === 'TokenBought') {

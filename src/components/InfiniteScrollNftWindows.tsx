@@ -16,8 +16,11 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
 
 
   return (
+    <>
+
       <Box
         sx={{
+          position: 'relative',
           display: "grid",
           gridTemplateColumns: {
             xs: `1fr 1fr`,
@@ -33,7 +36,14 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
         <InfiniteScroll
           swr={swr}
           loadingIndicator={<>
-            <HodlLoadingSpinner />
+            <HodlLoadingSpinner sx={{
+              width: '300px',
+              height: '300px',
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }} />
           </>
           }
           isReachingEnd={
@@ -50,5 +60,6 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
           }
         </InfiniteScroll >
       </Box >
+    </>
   )
 }

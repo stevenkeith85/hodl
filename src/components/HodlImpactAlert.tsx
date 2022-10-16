@@ -10,8 +10,7 @@ export const HodlImpactAlert = ({title, message, action=null, sx=null}) => (
             alignItems: "center", 
             textAlign: 'center', 
             justifyItems: "center", 
-            // paddingTop: 8, 
-            padding: 8, 
+            paddingY: 16,
             ...sx 
         }}>
             <Typography variant="h1" color="secondary">{title}</Typography>

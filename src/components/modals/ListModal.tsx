@@ -14,7 +14,6 @@ export const ListModal = ({
     price, 
     setPrice,
     token,
-    mutableToken
  }) => {
     const router = useRouter();
 
@@ -67,7 +66,7 @@ export const ListModal = ({
                                         type: "info"
                                     });
 
-                                await listNft(token, mutableToken);
+                                await listNft(token, price);
 
                                 setListModalOpen(false);
                                 setListedModalOpen(true);

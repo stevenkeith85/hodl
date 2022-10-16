@@ -28,7 +28,7 @@ export const WalletMenuPage: React.FC<WalletMenuPageProps> = ({
     const [walletPages] = useState([
         { label: 'nickname', action: () => setNicknameModalOpen(true), icon: <DisplaySettingsOutlined /> },
         { label: 'avatar', action: () => setProfilePictureModalOpen(true), icon: <CameraAltOutlined /> },
-        { label: 'transaction', action: () => router.push('/transaction'), icon: <ReceiptOutlined /> },
+        { label: 'transactions', action: () => router.push('/transactions'), icon: <ReceiptOutlined /> },
     ]);
 
     const handleRouteChange = useCallback(() => {

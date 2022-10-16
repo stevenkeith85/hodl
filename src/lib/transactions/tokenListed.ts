@@ -4,8 +4,11 @@ import { Redis } from '@upstash/redis';
 import { addAction } from "../../pages/api/actions/add";
 import Market from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 import { getTagsForToken } from "../../pages/api/tags";
-import { getFullToken } from "../../pages/api/contracts/mutable-token/[tokenId]";
-import { FullToken } from "../../models/Nft";
+import { getFullToken, getMutableToken } from "../../pages/api/contracts/mutable-token/[tokenId]";
+import { FullToken, MutableToken } from "../../models/Nft";
+import { updateHodlingCache } from "../../pages/api/contracts/token/hodling/count";
+import { LogDescription } from "ethers/lib/utils";
+import { updateTransactionRecords } from "./updateTransactionRecords";
 
 const client = Redis.fromEnv()
 
@@ -14,18 +17,20 @@ export const tokenListed = async (
     hash: string, // check valid address?
     provider: ethers.providers.BaseProvider,
     txReceipt: ethers.providers.TransactionReceipt,
-    tx: ethers.providers.TransactionResponse
+    tx: ethers.providers.TransactionResponse,
+    log: LogDescription,
+    req
 ): Promise<boolean> => {
     console.log(`tokenListed - processing tx`);
 
-    const contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
+    // const contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
 
     // event TokenListed(
     //     address indexed seller,
     //     uint256 indexed tokenId,
     //     uint256 price
     // );
-    const log: ethers.utils.LogDescription = contract.interface.parseLog(txReceipt.logs?.[0]);
+    // const log: ethers.utils.LogDescription = contract.interface.parseLog(txReceipt.logs?.[0]);
 
     const { tokenId: tokenIdBN, seller, price: priceInWei } = log.args;
 
@@ -38,14 +43,9 @@ export const tokenListed = async (
         return false;
     }
 
-    if (priceInWei === ethers.constants.Zero) {
-        // The smart contract should prevent this, so this is more of an assertion
-        console.log('tokenListed - somehow able to list a token for 0 - not adding');
-        return false;
-    }
-
     // Read the blockchain to ensure what we are about to do is correct
-    const token: FullToken = await getFullToken(tokenId, true);
+    // This also updates our cache :)
+    const token: MutableToken = await getMutableToken(tokenId, true);
 
     if (!token.forSale) {
         console.log('tokenListed - token is not for sale according to the blockchain - not listing on market');
@@ -57,6 +57,7 @@ export const tokenListed = async (
         return;
     }
 
+    // TODO - This should be a redis transaction
     const added = await client.zadd(`market`,
         { nx: true },
         {
@@ -93,6 +94,9 @@ export const tokenListed = async (
     // use the block timestamp for accuracy
     const block = await provider.getBlock(tx.blockHash);
 
+    // END TODO - This should be a redis transaction
+
+    // TODO: We should add this to the action queue
     const listed: HodlAction = {
         timestamp: block.timestamp,
         action: ActionTypes.Listed,
@@ -110,6 +114,14 @@ export const tokenListed = async (
         console.log(`tokenListed - unable to add the action`);
         return false;
     }
+
+    const recordsUpdated = await updateTransactionRecords(req.address, tx.nonce, hash);
+
+    if (!recordsUpdated) {
+        return false;
+    }
+    
+    await updateHodlingCache(req.address);
 
     return true;
 }

@@ -52,7 +52,7 @@ export const HodlFeed = ({ address, limit = 4 }) => {
             }
             <InfiniteScroll
                 swr={feed}
-                loadingIndicator={<HodlLoadingSpinner />}
+                loadingIndicator={<HodlLoadingSpinner sx={{ textAlign: 'center', padding: 2}}/>}
                 isReachingEnd={swr => {
                     return swr.data?.[0]?.items?.length == 0 ||
                         swr.data?.[swr.data?.length - 1]?.items?.length < limit

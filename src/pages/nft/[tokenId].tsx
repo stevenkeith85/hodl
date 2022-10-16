@@ -317,11 +317,10 @@ const NftDetail = ({
                       sx={{
                         marginTop: 2
                       }}>
-                        {/* TODO */}
-                      {/* <NftActionButtons
+                      <NftActionButtons
                         token={nft}
                         mutableToken={mutableToken}
-                      /> */}
+                      />
                     </Box>}
                   </Box>
                   {/* TODO */}

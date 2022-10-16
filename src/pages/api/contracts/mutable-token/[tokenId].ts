@@ -12,13 +12,22 @@ dotenv.config({ path: '../.env' })
 const route = apiRoute();
 const client = Redis.fromEnv()
 
-export const getMutableToken = async (tokenId, skipCache = false): Promise<MutableToken> => {
-  let mutableToken = skipCache ? null : await client.get<MutableToken>(`token:${tokenId}:mutable`);
+export const updateMutableTokenCache = async (tokenId): Promise<MutableToken> => {
+  // If a token is listed, delisted, or bought; we'll recache. 
+  //
+  // If no-one has visited the token in a while, then the cached data will disappear from redis
+  // which will keep our storage costs down
+  //
+  // TODO: We might listed to generic transfer events in future 
+  // in case stuff happens off-site. (user adds token to another market, etc)
+  const timeToCache = 60;//60 * 60 * 1; // one hour
 
-  if (!mutableToken) {
-    console.log('getMutableToken - cache miss - reading blockchain');
+  try {
+    console.log('updating mutable token cache');
 
     const listing = await getListingFromBlockchain(tokenId);
+
+    let mutableToken = null;
 
     if (listing) {
       mutableToken = {
@@ -34,14 +43,26 @@ export const getMutableToken = async (tokenId, skipCache = false): Promise<Mutab
         price: null
       }
     }
+    await client.setex(`token:${tokenId}:mutable`, timeToCache, mutableToken);
 
-    client.setex(`token:${tokenId}:mutable`, 60 * 10, mutableToken); // cache for 10 mins
+    return mutableToken;
+  } catch (e) {
+    console.log('unable to update mutable token cache')
+  }
+}
+
+
+export const getMutableToken = async (tokenId, skipCache = false): Promise<MutableToken> => {
+  let mutableToken = skipCache ? null : await client.get<MutableToken>(`token:${tokenId}:mutable`);
+
+  if (!mutableToken) {
+    console.log('getMutableToken - cache miss - reading blockchain');
+    mutableToken = await updateMutableTokenCache(tokenId);
   } else {
     console.log('getMutableToken - cache hit - reading redis');
   }
 
   return mutableToken;
-
 }
 
 // This is more of a legacy convenience function. In reality we probably won't want a full token
@@ -51,7 +72,7 @@ export const getMutableToken = async (tokenId, skipCache = false): Promise<Mutab
 // but the mutable data should probably be read client side (in case we miss the cache)
 
 // we can work on improving the caching so that we rarely if ever miss. (and still return the most up to date data)
-export const getFullToken = async (id: number, skipCache=false): Promise<FullToken> => {
+export const getFullToken = async (id: number, skipCache = false): Promise<FullToken> => {
   const tokenPromise: Promise<Token> = client.get<Token>('token:' + id);
   const mutableTokenPromise: Promise<MutableToken> = getMutableToken(id, skipCache);
 

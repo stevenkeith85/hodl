@@ -161,11 +161,6 @@ export default function Transaction({ address, user, txs }) {
                     </Tabs>
                     <div hidden={value !== 0}>
                         <Box marginY={4}>
-                            {/* <Box>
-                                <Typography>Last Transaction Details</Typography>
-                                <Box>Tx Nonce: {user.nonce}</Box> 
-                                <Box>Tx Block Number: {user.blockNumber}</Box>                                
-                            </Box> */}
                             <Box sx={{ overflow: "auto" }}>
                                 <Box sx={{ width: "100%", display: "table", tableLayout: "fixed" }}>
                                     <Table aria-label="simple table">
@@ -180,107 +175,84 @@ export default function Transaction({ address, user, txs }) {
                                                 <TableRow key={hash}>
                                                     <TableCell>
                                                         <Link href={`https://mumbai.polygonscan.com/tx/${hash}`}>
-                                                            <Typography 
-                                                            component="a" 
-                                                            sx={{
-                                                                display: 'inline-block',
-                                                                inlineSize: {
-                                                                    xs: 200,
-                                                                    sm: 300,
-                                                                    md: 400,
-                                                                    lg: 500,
-                                                                    xl: 700
-                                                                },
-                                                                overflowWrap: 'break-word'
-                                                            }}>{hash}</Typography>
+                                                            <Typography
+                                                                component="a"
+                                                                sx={{
+                                                                    display: 'inline-block',
+                                                                    inlineSize: {
+                                                                        xs: 200,
+                                                                        sm: 300,
+                                                                        md: 400,
+                                                                        lg: 500,
+                                                                        xl: 700
+                                                                    },
+                                                                    overflowWrap: 'break-word'
+                                                                }}>{hash}</Typography>
                                                         </Link>
                                                     </TableCell>
                                                     <TableCell>{format(fromUnixTime(timestamp / 1000), 'LLL do, yyyy, HH:mm:ss')}</TableCell>
 
                                                 </TableRow>
                                             ))}
-                                    </TableBody>
-                                </Table>
+                                        </TableBody>
+                                    </Table>
+                                </Box>
                             </Box>
                         </Box>
-                    </Box>
-                </div>
-                <div hidden={value !== 1}>
-                    <Box marginY={4}>
-                        <Alert
-                            severity="error"
-                            sx={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                textAlign: 'center',
-                                fontWeight: 600,
-                                fontSize: {
-                                    xs: 14,
-                                    sm: 18
-                                },
-                                padding: 1,
-                            }}
-                        >
-                            Please only use this if support asks you to
-                        </Alert>
-                        <Typography marginY={2} sx={{ fontSize: 20, fontWeight: 600 }}>
-                            Queue a lost transaction
-                        </Typography>
-                        {/* <Box sx={{ paddingY: 1 }}>
-                                <Typography sx={{ fontWeight: 600, fontSize: 20, color: 'red' }}>READ CAREFULLY</Typography>
-                            </Box> */}
-
-                        <Box sx={{ paddingY: 2 }}>
-                            <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
-                                We only update our website once a transaction is confirmed on the blockchain.
+                    </div>
+                    <div hidden={value !== 1}>
+                        <Box marginY={4}>
+                            <Alert
+                                severity="error"
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    textAlign: 'center',
+                                    fontWeight: 600,
+                                    padding: 1,
+                                }}
+                            >
+                                Please only use this if support asks you to
+                            </Alert>
+                            <Typography marginY={2} sx={{ fontSize: 18, fontWeight: 500 }}>
+                                Queue a lost transaction
                             </Typography>
-                            <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
-                                This form will NOT speed up the addition of your token to Hodl My Moon.
-                            </Typography>
-
-                        </Box>
-                        <hr />
-                        <Box sx={{ paddingY: 2 }}>
-                            <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
-                                If we&apos;ve missed one of your transactions, you can use this form to queue it for processing.
-                            </Typography>
-                        </Box>
-                        <hr />
-                        <Box sx={{ paddingY: 2 }}>
-                            <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
-                                Before submitting this form, ensure that:
-                            </Typography>
-                            <Box>
-                                <Typography component="li" mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>We&apos;ve not already processed that transaction. See the tab at the top of this webpage</Typography>
-                                <Typography component="li" mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>The transaction is for one of our contracts. (i.e. you initiated the transaction via Hodl My Moon)</Typography>
-                                <Typography component="li" mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>The transaction isn&apos;t pending (i.e. it has been confirmed on the blockchain)</Typography>
-                                <Typography component="li" mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>The transaction you are about to submit is the first one we&apos;ve missed</Typography>
-                            </Box>
-                        </Box>
-                        <hr />
-                        <Box sx={{ paddingY: 2 }}>
-                            <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
-                                You can get your transaction ID in Metamask.
-                            </Typography>
-                            <Link target={"_blank"} href="https://metamask.zendesk.com/hc/en-us/articles/4413442094235-How-to-find-a-transaction-ID">
-                                <Typography color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
-                                    How do I find my Transaction ID ?
+                            <Box sx={{ paddingY: 2 }}>
+                                <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ span: { fontWeight: 600 } }}>
+                                    We <span>only</span> update our website once a transaction is confirmed on the blockchain.
                                 </Typography>
-                            </Link>
-                        </Box>
-                        <Box
-                            component="form"
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                textAlign: 'center'
-                            }}
-                        >
-                            <Box display="flex" alignItems="center" gap={2} sx={{ marginY: 4 }}>
+                            </Box>
+
+                            <Box sx={{ paddingY: 2 }}>
+                                <Typography color={theme => theme.palette.text.secondary}>
+                                    If your transaction was confirmed on the blockchain a while ago, and our website has not been updated;
+                                </Typography>
+                                <Typography color={theme => theme.palette.text.secondary}>
+                                    then you can use this tool to requeue the transaction for processing.
+                                </Typography>
+                            </Box>
+
+                            <Box sx={{ paddingY: 2 }}>
+                                <Typography mb={2} color={theme => theme.palette.text.secondary}>
+                                    Before submitting this form, ensure that:
+                                </Typography>
                                 <Box>
+                                    <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >We haven&apos;t already processed that transaction.</Typography>
+                                    <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >The transaction has been confirmed on the blockchain.</Typography>
+                                    <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >The transaction is for one of our contracts.</Typography>
+                                    <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >The transaction you are about to submit is the first one we&apos;ve missed</Typography>
+                                </Box>
+                            </Box>
+                            <Box sx={{ paddingY: 2 }}>
+                                <Link target={"_blank"} href="https://metamask.zendesk.com/hc/en-us/articles/4413442094235-How-to-find-a-transaction-ID">
+                                    <Typography mb={2} color={theme => theme.palette.text.secondary}>
+                                        You can get your transaction ID from Metamask.
+                                    </Typography>
+                                </Link>
+                            </Box>
+                            <Box sx={{ marginY: 2 }}>
+                                <Box mb={2}>
                                     <TextField
                                         sx={{ width: 250 }}
                                         id="tx"
@@ -299,9 +271,8 @@ export default function Transaction({ address, user, txs }) {
                                 </Box>
                             </Box>
                         </Box>
-                    </Box>
-                </div>
-            </HodlBorderedBox>
-        </Box>
+                    </div>
+                </HodlBorderedBox>
+            </Box>
         </>)
 }

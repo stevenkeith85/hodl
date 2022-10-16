@@ -1,15 +1,12 @@
 import { Box, CircularProgress } from "@mui/material";
 
-export const HodlLoadingSpinner = ({ sx = {}, ...rest }) => (
+export const HodlLoadingSpinner = ({ sx = {}, size = 20 }) => (
     <Box
         sx={{
-            padding: 2,
-            display: "flex",
-            justifyContent: "center",
             ...sx
         }}>
         <CircularProgress
-            size={24}
+            size={size}
             color="secondary"
         />
     </Box>
