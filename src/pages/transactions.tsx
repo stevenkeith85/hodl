@@ -83,7 +83,7 @@ export default function Transaction({ address, user, txs }) {
                         fontSize: 16,
                         color: theme => theme.palette.text.secondary
                     }}>
-                    When your transaction has been confirmed on the blockchain, we&pos;ll update our database and send you a notification.
+                    When your transaction has been confirmed on the blockchain, we&apos;ll update our database and send you a notification.
                 </Typography>
             </SuccessModal>
             <FailureModal
@@ -176,7 +176,6 @@ export default function Transaction({ address, user, txs }) {
                                                     <TableCell>
                                                         <Link href={`https://mumbai.polygonscan.com/tx/${hash}`}>
                                                             <Typography
-                                                                component="a"
                                                                 sx={{
                                                                     display: 'inline-block',
                                                                     inlineSize: {
@@ -187,11 +186,12 @@ export default function Transaction({ address, user, txs }) {
                                                                         xl: 700
                                                                     },
                                                                     overflowWrap: 'break-word'
-                                                                }}>{hash}</Typography>
+                                                                }}>
+                                                                {hash}
+                                                            </Typography>
                                                         </Link>
                                                     </TableCell>
                                                     <TableCell>{format(fromUnixTime(timestamp / 1000), 'LLL do, yyyy, HH:mm:ss')}</TableCell>
-
                                                 </TableRow>
                                             ))}
                                         </TableBody>

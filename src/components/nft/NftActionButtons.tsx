@@ -14,7 +14,7 @@ interface NftActionButtons {
     mutableToken: MutableToken
 }
 
-export const NftActionButtons = ({ 
+export const NftActionButtons = ({
     token,
     mutableToken }) => {
     const { address } = useContext(WalletContext);
@@ -93,8 +93,7 @@ export const NftActionButtons = ({
                     When your transaction has been confirmed on the blockchain, we&apos;ll update our database and send you a notification.
                 </Typography>
             </SuccessModal>
-
-            {/* {
+            {
                 mutableToken?.forSale && !isHodler() &&
                 <div>
                     <Button
@@ -113,20 +112,18 @@ export const NftActionButtons = ({
                                 setBoughtModalOpen(true);
                             } catch (e) {
                                 if (e.code === -32603) {
-                                smartContractError(e);
+                                    smartContractError(e);
                                 }
                             }
                         }}>
                         Buy NFT
                     </Button>
                 </div>
-            } */}
+            }
             {
                 mutableToken?.forSale && isHodler() &&
                 <div>
-                    <Typography>Current unavailable</Typography>
                     <Button
-                    disabled
                         variant="contained"
                         sx={{ paddingY: 1.5, paddingX: 3 }}
                         onClick={async () => {

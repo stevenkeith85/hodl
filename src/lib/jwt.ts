@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 import cookie from 'cookie'
 
 export const accessTokenExpiresIn = 60 * 60; // 1 hour
-export const refreshTokenExpiresIn = 60 * 60 * 2; // 2 hours at the moment until we get things running smoothly
+export const refreshTokenExpiresIn = 60 * 60 * 4; // 2 hours at the moment until we get things running smoothly
 
 const client = Redis.fromEnv();
 

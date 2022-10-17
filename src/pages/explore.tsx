@@ -258,7 +258,7 @@ export default function Search({
                 }}
               >
                 <FormGroup>
-                  <Tooltip title="On The Market">
+                  <Tooltip title="For Sale">
                     <Switch
                       checked={forSaleToggle}
                       onChange={(e) => {

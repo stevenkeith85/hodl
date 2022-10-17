@@ -6,12 +6,8 @@ import axios from 'axios';
 const client = Redis.fromEnv()
 import apiRoute from "../handler";
 
-import { HodlAction, ActionTypes } from "../../../models/HodlAction";
-import { addAction } from "../actions/add";
+import { ActionTypes } from "../../../models/HodlAction";
 import { AddCommentValidationSchema } from "../../../validation/comments/addComments";
-import { ethers } from "ethers";
-import { getProvider } from "../../../lib/server/connections";
-import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import { HodlComment } from "../../../models/HodlComment";
 import { User } from "../../../models/User";
 

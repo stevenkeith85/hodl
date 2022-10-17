@@ -17,13 +17,14 @@ import axios from 'axios'
 import { enqueueSnackbar } from 'notistack'
 import { SearchBox } from '../Search';
 import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
-import { HodlAction } from '../../models/HodlAction';
+import { ActionTypes, HodlAction } from '../../models/HodlAction';
 import { PusherContext } from '../../contexts/PusherContext';
 
 import { useConnect } from '../../hooks/useConnect';
 import { SessionExpiredModal } from '../modals/SessionExpiredModal';
 import { useRouter } from 'next/router';
 import { Button, ClickAwayListener, Fade } from '@mui/material';
+import { mutate } from 'swr';
 
 const ResponsiveAppBar = ({ showAppBar = true }) => {
     const { address, setSigner } = useContext(WalletContext);
@@ -111,7 +112,13 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
         });
     }, [setSigner]);
 
-    const showPopUpNotification = (action: HodlAction) => {
+    const mutateUIAndShowPopUpNotification = (action: HodlAction) => {
+        if (action.action === ActionTypes.Bought ||
+            action.action === ActionTypes.Listed ||
+            action.action === ActionTypes.Delisted) {
+            mutate([`/api/contracts/mutable-token`, action.objectId]);
+        }
+
         enqueueSnackbar(
             "",
             {
@@ -130,11 +137,11 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
             return;
         }
 
-        pusher.user.bind('notification-hover', showPopUpNotification);
+        pusher.user.bind('notification-hover', mutateUIAndShowPopUpNotification);
 
         return () => {
             console.log('Pusher - cleaning up notification hover updates');
-            pusher.user.unbind('notification-hover', showPopUpNotification);
+            pusher.user.unbind('notification-hover', mutateUIAndShowPopUpNotification);
         }
 
     }, [pusher, userSignedInToPusher]);
@@ -224,8 +231,8 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                                 }}
                                             >
                                                 <Button
-                                                variant="text"
-                                                color="inherit"
+                                                    variant="text"
+                                                    color="inherit"
                                                     component="span"
                                                     sx={{
                                                         fontFamily: theme => theme.logo.fontFamily,

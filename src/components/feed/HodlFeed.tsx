@@ -11,25 +11,7 @@ import { PusherContext } from "../../contexts/PusherContext";
 
 export const HodlFeed = ({ address, limit = 4 }) => {
     const { feed } = useContext(FeedContext);
-    const { pusher, userSignedInToPusher } = useContext(PusherContext);
-
-    // Get real time updates about your feed! :)
-    useEffect(() => {
-        console.log('Pusher - setting up feed updates');
-        console.log('Pusher - pusher / user ', pusher, userSignedInToPusher);
-        
-        if (!pusher || !userSignedInToPusher) {
-            return;
-        }
-
-        pusher.user.bind('feed', feed.mutate);
-
-        return () => {
-            console.log('Pusher - cleaning up feed updates');
-            pusher.user.unbind('feed', feed.mutate);
-        }
-    }, [pusher, userSignedInToPusher]);
-
+    
     return (
         <Box
             id="hodlfeed"

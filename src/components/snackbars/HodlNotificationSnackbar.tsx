@@ -1,5 +1,6 @@
 import { SnackbarContent, CustomContentProps } from 'notistack'
 import React from "react";
+import { mutate } from 'swr';
 import { HodlAction } from '../../models/HodlAction';
 import { HodlBorderedBox } from '../HodlBorderedBox';
 import { HodlNotificationBox } from '../notifications/HodlNotificationBox';

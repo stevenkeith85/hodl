@@ -4,98 +4,110 @@ import { Redis } from '@upstash/redis';
 import { addAction } from "../../pages/api/actions/add";
 import Market from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 import { getTagsForToken } from "../../pages/api/tags";
-import { FullToken } from "../../models/Nft";
-import { getFullToken } from "../../pages/api/contracts/mutable-token/[tokenId]";
+import { FullToken, MutableToken } from "../../models/Nft";
+import { getFullToken, getMutableToken } from "../../pages/api/contracts/mutable-token/[tokenId]";
 import { LogDescription } from "ethers/lib/utils";
+import { updateHodlingCache } from "../../pages/api/contracts/token/hodling/count";
+import { updateTransactionRecords } from "./updateTransactionRecords";
+import { addActionToQueue } from "../actions/addToQueue";
+import { runRedisTransaction } from "../databaseUtils";
 
 const client = Redis.fromEnv()
 
-
+// event TokenBought(
+//     address indexed buyer,
+//     address indexed seller,
+//     uint256 indexed tokenId,
+//     uint256 price
+// );
 export const tokenBought = async (
     hash: string, // check valid address?
-    provider: ethers.providers.BaseProvider,
-    txReceipt: ethers.providers.TransactionReceipt,
     tx: ethers.providers.TransactionResponse,
-    log: LogDescription
+    log: LogDescription,
+    req
 ): Promise<boolean> => {
+    const start = Date.now();
     console.log(`tokenBought - processing tx`);
-
-    // const contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
-
-    // event TokenBought(
-    //     address indexed buyer,
-    //     address indexed seller,
-    //     uint256 indexed tokenId,
-    //     uint256 price
-    // );
-    // const log: ethers.utils.LogDescription = contract.interface.parseLog(txReceipt.logs?.[0]);
 
     if (log.name !== 'TokenBought') {
         console.log('tokenBought - called with a non buying transaction');
-        return false;
+        return true;
     }
 
-    const { buyer, seller, tokenId: tokenIdBN, price: priceInWei } = log.args;
+    const {
+        buyer,
+        seller,
+        tokenId: tokenIdBN,
+        price: priceInWei
+    } = log.args;
 
     const price = ethers.utils.formatEther(priceInWei);
     const tokenId = tokenIdBN.toNumber();
 
     // Read the blockchain to ensure what we are about to do is correct
-    const token: FullToken = await getFullToken(tokenId, true);
+    const token: MutableToken = await getMutableToken(tokenId, true);
 
     if (token.forSale) {
-        console.log('tokenBought - token is still for sale according to the blockchain - not delisting from market');
-        return;
+        console.log('tokenBought - token is still for sale according to the blockchain');
+        return true;
     }
 
-    const removed = await client.zrem(`market`,
-        tokenId
-    );
+    const marketListing = await client.zscore(`market`, tokenId);
 
-    if (!removed) {
-        console.log(`tokenBought - token is not on the market`);
-        return false;
-    }
+    if (marketListing !== null) {
+        const cmds = [
+            ['ZREM', 'market', tokenId]
+        ];
 
-    const tags = await getTagsForToken(tokenId);
+        const tags = await getTagsForToken(tokenId);
+        for (const tag of tags) {
+            cmds.push(
+                ['ZREM', `market:${tag}`, tokenId]
+            )
+        }
 
-    for (const tag of tags) {
-        const removed = await client.zrem(`market:${tag}`, tokenId);
+        const success = await runRedisTransaction(cmds);
 
-        if (!removed) {
-            console.log(`tokenBought - unable to remove token from market:${tag} zset`);
-            // we do not abort here as we might as well try adding the other tags
-            // TODO: Better fault tolerance here
+        if (!success) {
+            return false;
         }
     }
-
-    // use the block timestamp for accuracy
-    const block = await provider.getBlock(tx.blockHash);
-
-    const bought: HodlAction = {
-        timestamp: block.timestamp,
-        action: ActionTypes.Bought,
-        subject: buyer,
-        object: "token",
-        objectId: tokenId,
-        metadata: {
-            price,
-            seller
-        }
-    };
-
-    const success = await addAction(bought);
-
-    if (!success) {
-        console.log(`tokenBought - unable to add the action`);
-        return false;
-    }
-
+    
     // Clear the avatar if the user still has it
     const currentAvatar = await client.hmget(`user:${seller}`, 'avatar');
     if (currentAvatar === tokenId) {
         await client.hmset(`user:${seller}`, { 'avatar': '' });
     }
+
+    const actionAdded = await addActionToQueue(
+        req.cookies.accessToken,
+        req.cookies.refreshToken,
+        {
+            action: ActionTypes.Bought,
+            subject: buyer,
+            object: "token",
+            objectId: tokenId,
+            metadata: {
+                price,
+                seller
+            }
+        }
+    );
+
+    if (!actionAdded) {
+        return false;
+    }
+
+    const recordsUpdated = await updateTransactionRecords(req.address, tx.nonce, hash);
+
+    if (!recordsUpdated) {
+        return false;
+    }
+
+    await updateHodlingCache(req.address);
+
+    const stop = Date.now()
+    console.log('tokenBought time taken', stop - start);
 
     return true;
 }

@@ -1,22 +1,19 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
 
-import { likesToken } from "./likes";
-import { getLikeCount } from './count';
+import apiRoute from "../../handler";
+import { ActionTypes } from "../../../../models/HodlAction";
+import { runRedisTransaction } from "../../../../lib/databaseUtils";
+import { addActionToQueue } from "../../../../lib/actions/addToQueue";
+
+const route = apiRoute();
 
 const client = Redis.fromEnv()
-import apiRoute from "../../handler";
-import { addAction } from "../../actions/add";
-import { HodlAction, ActionTypes } from "../../../../models/HodlAction";
-import { trimZSet } from "../../../../lib/databaseUtils";
-
-dotenv.config({ path: '../.env' })
-const route = apiRoute();
 
 // Requests that address likes or stops liking a token
 route.post(async (req, res: NextApiResponse) => {
+  const start = Date.now();
+
   if (!req.address) {
     return res.status(403).json({ message: "Not Authenticated" });
   }
@@ -32,43 +29,46 @@ route.post(async (req, res: NextApiResponse) => {
   const exists = await client.zscore(`liked:tokens:${req.address}`, token);
 
   if (exists) { // unlike
-    // TODO: REDIS TRANSACTION
-    await client.zrem(`liked:tokens:${req.address}`, token);
-    await client.zrem(`likes:token:${token}`, req.address);
-    await client.zincrby('rankings:token:likes:count', -1, token);
-    // 
+    const cmds = [
+      ['ZREM', `liked:tokens:${req.address}`, token],
+      ['ZREM', `likes:token:${token}`, req.address],
+      ['ZINCRBY', 'rankings:token:likes:count', -1, token],
+      ["ZREMRANGEBYRANK", 'rankings:token:likes:count', 0, -(500 + 1)],
+    ];
+
+    await runRedisTransaction(cmds);
   } else { // like
-    // TODO: REDIS TRANSACTION
     const timestamp = Date.now();
 
-    await client.zadd(`liked:tokens:${req.address}`,
-      {
-        member: token,
-        score: timestamp
-      });
-    await client.zadd(`likes:token:${token}`,
-      {
-        member: req.address,
-        score: timestamp
-      });
-      await client.zincrby('rankings:token:likes:count', 1, token);
-    liked = true;
-  }
+    const cmds = [
+      ['ZADD', `liked:tokens:${req.address}`, timestamp, token],
+      ['ZADD', `likes:token:${token}`, timestamp, req.address],
+      ['ZINCRBY', 'rankings:token:likes:count', 1, token],
+      ["ZREMRANGEBYRANK", 'rankings:token:likes:count', 0, -(500 + 1)],
+    ];
 
-  trimZSet(client, 'rankings:token:likes:count');
-  // likesToken.delete(req.address, token);
-  // getLikeCount.delete(token);
+    liked = await runRedisTransaction(cmds);
+  }
 
   if (liked) {
-    const notification: HodlAction = {
-      subject: req.address,
-      action: ActionTypes.Liked,
-      object: "token",
-      objectId: token
-    };
-
-    const success = await addAction(notification);
+    // TODO: If the action isn't added to the queue, we should
+    // probably log it somewhere (redis?) and try again later
+    //
+    // possibly a cron script that runs once every x mins 
+    // to check for things that were missed
+    await addActionToQueue(
+      req.cookies.accessToken,
+      req.cookies.refreshToken,
+      {
+        subject: req.address,
+        action: ActionTypes.Liked,
+        object: "token",
+        objectId: token
+      });
   }
+
+  const stop = Date.now()
+  console.log('like/token time taken', stop - start);
 
   res.status(200).json({ liked });
 });

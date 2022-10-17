@@ -2,21 +2,17 @@ import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 import apiRoute from "../handler";
 import { ActionSet, ActionSetMembers, ActionTypes, HodlAction } from '../../../models/HodlAction';
-import { getPriceHistory } from "../contracts/market/events/token-bought/[tokenId]";
 import { likesToken } from "../like/token/likes";
-import { getFollowers } from "../followers";
+import { getFollowersAddresses } from "../followers";
 import { isFollowing } from "../follows";
 import { likesComment } from "../like/comment/likes";
-import { getFullToken, getMutableToken } from "../contracts/mutable-token/[tokenId]";
+import { getMutableToken } from "../contracts/mutable-token/[tokenId]";
 import { HodlComment } from "../../../models/HodlComment";
-
-import { FullToken, MutableToken } from "../../../models/Nft";
+import { MutableToken } from "../../../models/Nft";
 import { getUser } from "../user/[handle]";
-
 import { getAction } from ".";
 import { pusher } from "../../../lib/server/pusher";
-import { trimZSet } from "../../../lib/databaseUtils";
-
+import { runRedisTransaction } from "../../../lib/databaseUtils";
 import { createHmac } from "crypto";
 
 const route = apiRoute();
@@ -35,7 +31,6 @@ const client = Redis.fromEnv()
 // The ZSET of FEED actions THE USER HAS TAKEN
 // "user:0x1234:actions:feed" -> (<action_id>/<timestamp>, <action_id>/<timestamp>, <action_id>/<timestamp>)
 //
-//
 // The ZSET of notifications FOR THE USER:
 // "user:0x1234:notifications" -> (<action_id>/<timestamp>, <action_id>/<timestamp>, <action_id>/<timestamp>)
 //
@@ -43,93 +38,52 @@ const client = Redis.fromEnv()
 // "user:0x1234:feed" -> (<action_id>/<timestamp>, <action_id>/<timestamp>, <action_id>/<timestamp>)
 //
 
+
 // Add the action id to <address>s notifications
-const addNotification = async (address: string, action: HodlAction): Promise<number> => {
-  const added = await client.zadd(
-    `user:${address}:notifications`,
-    {
-      score: action.timestamp,
-      member: action.id
-    }
-  );
+const addNotification = async (address: string, action: HodlAction): Promise<boolean> => {
 
-  await trimZSet(client, `user:${address}:notifications`);
+  const cmds = [
+    ['ZADD', `user:${address}:notifications`, action.timestamp, action.id],
+    ["ZREMRANGEBYRANK", `user:${address}:notifications`, 0, -(500 + 1)]
+  ];
 
-  if (added) {
-    console.log(`actions/add/addNotification - sending ${address} push notifications.`);
+  const success = await runRedisTransaction(cmds);
 
-    const notification = await pusher.sendToUser(address, "notification", null);
-    if (!notification.ok) {
-      console.log(`actions/add/addNotification - pusher was unable to send <notification> to user`);
-    }
+  if (success) {
+    const promises = [
+      pusher.sendToUser(address, "notification", null),
+      pusher.sendToUser(address, "notification-hover", await getAction(action.id, null))
+    ];
 
-    const notificationHover = await pusher.sendToUser(address, "notification-hover", await getAction(action.id, null));
-    if (!notificationHover.ok) {
-      console.log(`actions/add/addNotification - pusher was unable to send <notification-hover> to user`);
-    }
+    await Promise.all(promises);
   }
 
-  return added;
+  return success;
 }
 
 // Add the action id to <address>s feed. We'll set the feed entry's timestamp to use the action's timestamp (for now)
 // as we'd probably not want to show something at the top of a chronological feed, if it was actually listed a while ago
-const addToFeed = async (address: string, action: HodlAction): Promise<number> => {
-  const added = await client.zadd(
-    `user:${address}:feed`,
-    {
-      score: action.timestamp,
-      member: action.id
-    }
-  );
+const addToFeed = async (address: string, action: HodlAction): Promise<boolean> => {
 
-  await trimZSet(client, `user:${address}:feed`);
+  const cmds = [
+    ['ZADD', `user:${address}:feed`, action.timestamp, action.id],
+    ["ZREMRANGEBYRANK", `user:${address}:feed`, 0, -(500 + 1)]
+  ];
 
-  if (added) {
+  const success = await runRedisTransaction(cmds);
+
+  if (success) {
     pusher.sendToUser(address, "feed", null);
   }
 
-  return added;
-}
-
-// Add the action's id to <address>s set.
-// 
-// We need this, for scenarios like:
-// When A follows B, we'd like to add B's last action to A's feed (if it's not already there)
-//
-// We could also provide a general activity log at some point for the user/address. (if that's a feature they'd like)
-const recordAddressActivity = async (action: HodlAction): Promise<number> => {
-  // actions the user has taken
-  const added = await client.zadd(
-    `user:${action.subject}:actions`,
-    {
-      score: action.timestamp,
-      member: action.id
-    }
-  );
-
-  // if this is a feed action, record it here.
-  //
-  // we will use this to get some content for
-  // a (different) user's feed if they follow this user in the future
-  if (ActionSetMembers[ActionSet.Feed].indexOf(action.action) !== -1) {
-    await client.zadd(
-      `user:${action.subject}:actions:feed`,
-      {
-        score: action.timestamp,
-        member: action.id
-      }
-    );
-  }
-
-  return added;
+  return success;
 }
 
 
-// actions could be referenced (by id) from several places.
-const storeAction = async (action: HodlAction): Promise<string | HodlAction | null> => {
-  return await client.set(`action:${action.id}`, action);
-}
+// // actions could be referenced (by id) from several places.
+// const storeAction = async (action: HodlAction): Promise<string | HodlAction | null> => {
+//   return await client.set(`action:${action.id}`, action);
+// }
 
 // gets the last <x> actions that address took that can be used in a feed
 const getLastXFeedActions = async (address: string, x: number = 5): Promise<HodlAction[]> => {
@@ -155,60 +109,78 @@ const addToFeedOfFollowers = async (action: HodlAction) => {
   // TODO: Optimise this as the user could have millions of followers.
   // and our serverless function would time out
 
-
-  // We want followers to be notified as close together as possible.
-  // We'll probably switch to doing the add to feed via the user's message queue.
-  // The have one for transactions; but perhaps an alternative one for web2 stuff
+  // TODO: We might want to performance test this and limit the total number
+  // of feeds we add to until we are sure we can handle an unlimited number
 
   const offset = 0
-  const limit = 2; // TODO: This was deliberately set low for testing; we could increase this
+  const limit = 1000;
 
   // get initial page
-  let { items, next, total } = await getFollowers(action.subject, offset, limit);
+  let { items, next, total } = await getFollowersAddresses(action.subject, offset, limit);
 
   do {
-    let promises = [];
+    const cmds = [];
 
-    for (let follower of items) {
-      console.log('adding to feed of', follower)
-      const promise = addToFeed(`${follower.address}`, action);
-      promises.push(promise);
+    for (let address of items) {
+      cmds.push(
+        ['ZADD', `user:${address}:feed`, action.timestamp, action.id],
+        ["ZREMRANGEBYRANK", `user:${address}:feed`, 0, -(500 + 1)]
+      );
     }
 
-    await Promise.all(promises);
+    await runRedisTransaction(cmds);
+
 
     // update page
-    let followers = await getFollowers(action.subject, next, limit);
+    let followers = await getFollowersAddresses(action.subject, next, limit);
     items = followers.items;
     next = followers.next;
     total = followers.total;
 
   } while (next <= total); // if next exceeds total, then we've reached the end
 
-
-
-  // console.log('actions/add/addToFeedOfFollowers - end of batch - followers, next, total', followers, next, total);
-
-
-  return 1; // TODO: We want to return how many followers were notified here
+  return true;
 }
+
 
 
 // This is the entry point ot the actions system, that will also add the appropriate feed item or notification
 //
-// TODO: Handle 'near duplicates' better.
-// i.e user toggles the like button a few times === steven liked token 2 (2 mins ago). steven liked token 2 (1 min ago)
-export const addAction = async (action: HodlAction): Promise<number> => {
+// TODO: We'd likely want to retry this if its not successful.
+// Need to figure out the specifics though. (which may differ for each action)
+export const addAction = async (action: HodlAction) => {
+
+  // TODO: This could in-theory get orphaned if the transaction doesn't go through.
+  // Not the end of the world, but would be nice if that didn't happen
+  const actionId = await client.incr("actionId");
+
+  action.id = actionId;
   action.timestamp = Date.now();
 
-  // TODO: REDIS TRANSACTION
-  const actionId = await client.incr("actionId")
-  action.id = actionId;
+  const multiExecCmds = [
+    // Add the action record
+    ['SET', `action:${action.id}`, JSON.stringify(action)],
 
-  await storeAction(action);
-  await recordAddressActivity(action);
+    // Update the users actions set
+    ['ZADD', `user:${action.subject}:actions`, action.timestamp, action.id]
+  ];
 
-  console.log('actions/add - Stored Action');
+  // If its a feed action, add it to the users feed set.
+  // We look this up when they are followed; to get content for the followers feed
+  if (ActionSetMembers[ActionSet.Feed].indexOf(action.action) !== -1) {
+    multiExecCmds.push(
+      ['ZADD', `user:${action.subject}:actions:feed`, action.timestamp, action.id]
+    )
+  }
+
+  const success = await runRedisTransaction(multiExecCmds);
+
+  if (!success) {
+    return; // TODO: Handle this
+  }
+
+  // console.log('added action with id', action.id)
+  // console.log('actions/add - Stored Action');
 
   if (action.action === ActionTypes.Liked) { // tell the token owner you liked it
     if (action.object === "token") {
@@ -297,113 +269,98 @@ export const addAction = async (action: HodlAction): Promise<number> => {
     return await addNotification(`${followed}`, action);
   }
 
-  // Who: Tell the seller's followers (via their feed) there's a new token for sale
+  // Who: 
+  // Tell the seller their token is now listed on the market
+  // Tell the seller's followers there's a new token on the market
   if (action.action === ActionTypes.Listed) {
     try {
       // This also updates the cache for us :)
       const token: MutableToken = await getMutableToken(+action.objectId, true);
 
-      if (!token.forSale) {
-        return;
-      }
-
       if (token.hodler !== action.subject) {
         return;
       }
 
-      // Blockchain transactions could take a little time; so we need to notify the user their token has made it onto the market
+      if (!token.forSale) {
+        return;
+      }
+
+      // Notify the user their token has made it onto the market
       await addNotification(action.subject, action);
+      await addToFeedOfFollowers(action);
 
-      const count = await addToFeedOfFollowers(action);
-
-      return count;
+      return;
     } catch (e) {
-      return 0;
+      return;
     }
   }
 
   // Who: Tell the seller's followers (via their feed) there's no longer a new token for sale
   if (action.action === ActionTypes.Delisted) {
     try {
-      const token: FullToken = await getFullToken(+action.objectId, true);
-
-      if (token.forSale) {
-        console.log('actions/add/delisted - validation failed: token is still for sale')
-        return;
-      }
+      const token: MutableToken = await getMutableToken(+action.objectId, true);
 
       if (token.hodler !== action.subject) {
-        console.log('actions/add/delisted - validation failed: token owner should be the same as the action subject')
         return;
       }
 
-      console.log('actions/add/delisted - adding to followers feeds')
+      if (token.forSale) {
+        return;
+      }
 
-      // Blockchain transactions could take a little time; so we need to notify the user their token has been taken off the market
       await addNotification(action.subject, action);
+      await addToFeedOfFollowers(action);
 
-      const count = await addToFeedOfFollowers(action);
-
-      return count;
+      return;
     } catch (e) {
-      return 0;
+      return;
     }
   }
 
 
-  // Who: Tell the seller's followers (via their feed) there's a new token on the site
+  // Who: 
+  // Tell the seller their token is now on hodlmymoon
+  // Tell the seller's followers there's a new token on hodlmymoon
   if (action.action === ActionTypes.Added) {
     try {
-      console.log('actions/add/added - processing action');
-
       // This also caches it for us :)
       const token: MutableToken = await getMutableToken(+action.objectId, true);
 
-      console.log('actions/add - Added - token is', token);
-
       if (token.hodler !== action.subject) {
-        console.log('actions/add - Added - token.owner !== action.subject', token.hodler, action.subject);
         return;
       }
 
       await addNotification(`${action.subject}`, action);
-      const count = await addToFeedOfFollowers(action);
+      await addToFeedOfFollowers(action);
 
-      return count;
+      return;
     } catch (e) {
-      return 0;
+      return;
     }
   }
 
-  // Who: Tell the user they've sold their token
+  // Who: 
+  // Tell the seller they've sold a token
+  // Tell the buyer they've bought a token
   if (action.action === ActionTypes.Bought) {
+    // This also caches it for us :)
+    const token: MutableToken = await getMutableToken(+action.objectId, true);
 
-    const history = await getPriceHistory(action.objectId);
-
-    if (history.length === 0) {
-      console.log(`actions/add/bought - cannot find price history. cannot verify`)
-      return 0;
-    }
-
-    console.log(`actions/add/bought - token price history === `, history)
-
-    const buyer = history[history.length - 1].buyerAddress;
-    const seller = history[history.length - 1].sellerAddress;
-
-    if (buyer !== action.subject) {
-      console.log(`actions/add/bought - buyer ${buyer}does not match the action subject ${action.subject}`)
+    if (token.hodler !== action.subject) {
       return;
     }
 
-    await client.set(`action:${action.id}`, action);
+    if (token.forSale) {
+      return;
+    }
+    
+    await addNotification(`${action.subject}`, action);
+    await addNotification(`${action.metadata.seller}`, action);
 
-    const first = await addNotification(`${buyer}`, action);
-    const second = await addNotification(`${seller}`, action);
-
-    return first + second;
+    return;
   }
 
-  return 0;
+  return;
 }
 
 
@@ -416,7 +373,7 @@ route.post(async (req, res: NextApiResponse) => {
 
   // We only accept requests that came via our message queue. 
   // You need our API key to add something to the queue, so this adds a layer of security
-  const payload = JSON.stringify({ target: `https://${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/api/actions/add`});
+  const payload = JSON.stringify({ target: `https://${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/api/actions/add` });
   const signature = createHmac("sha256", process.env.SERVERLESSQ_API_TOKEN)
     .update(payload)
     .digest("hex");
@@ -431,36 +388,25 @@ route.post(async (req, res: NextApiResponse) => {
     return res.status(403).json({ message: "Not Authenticated" });
   }
 
-  const { action, object, objectId } = req.body;
+  const { action, object, objectId, metadata } = req.body;
 
   if (!action || !object || !objectId) {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
-  // We only accept certain actions at the moment.
-  if (action !== ActionTypes.Commented && 
-      action !== ActionTypes.Liked &&
-      action !== ActionTypes.Followed &&
-      action !== ActionTypes.Added) {
-    return res.status(400).json({ message: 'Bad Request' });
-  }
+  const start = Date.now();
 
-  // Create the action.
-  // For any blockchain actions, we will also consult the live blockchain in the addAction function; to further lock things down.
-  const success = await addAction({
+  await addAction({
     subject: req.address,
     action,
     objectId,
-    object
+    object,
+    metadata
   });
+  const stop = Date.now();
+  console.log('addAction time taken', stop - start);
 
-  if (success) {
-    console.log('actions/add - successfully processed action for', req.address)
-    return res.status(200).json({ message: 'success' });
-  } else {
-    console.log('actions/add - could not process action for', req.address)
-    res.status(200).json({ message: 'action not processed' });
-  }
+  return res.status(200).json({ message: 'success' });
 });
 
 

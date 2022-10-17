@@ -70,6 +70,7 @@ export const ListModal = ({
 
                                 setListModalOpen(false);
                                 setListedModalOpen(true);
+                                setListButtonDisabled(false);
                             } catch (e) {
                                 setListButtonDisabled(false);
                                 if (e.code === -32603) {

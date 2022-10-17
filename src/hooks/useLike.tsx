@@ -8,23 +8,23 @@ export const useLike = (
   id: number,
   object: "token" | "comment",
   likeCount: SWRResponse
-) : [boolean, Function]=> {
+): [boolean, Function] => {
   const { address } = useContext(WalletContext);
 
-  const { mostLiked } = useContext(RankingsContext);
-  
   const baseUrl = `/api/like/${object}`;
 
-  const { data: userLikesThisToken, mutate: mutateUserLikesThisToken } = useSWR(
-    address && id ? [baseUrl + '/likes', address, id] : null,
-    (url, address, id) => axios.get(`${url}?address=${address}&id=${id}`).then(r => Boolean(r.data.likes))
-  );
+  const {
+    data: userLikesThisToken,
+    mutate: mutateUserLikesThisToken } = useSWR(
+      address && id ? [baseUrl + '/likes', address, id] : null,
+      (url, address, id) => axios.get(`${url}?address=${address}&id=${id}`).then(r => Boolean(r.data.likes))
+    );
 
   const toggleLike = async () => {
     if (!address) {
       return;
     }
-    
+    likeCount.mutate(old => userLikesThisToken ? old -1 : old + 1, { revalidate: false});
     mutateUserLikesThisToken(old => !old, { revalidate: false })
 
     try {
@@ -37,13 +37,6 @@ export const useLike = (
           },
         }
       )
-
-      if (mostLiked) {
-        mostLiked.mutate()
-      }
-      
-      likeCount.mutate();
-
     } catch (error) {
       likeCount.mutate();
       mutateUserLikesThisToken();

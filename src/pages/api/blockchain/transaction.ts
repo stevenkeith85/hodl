@@ -4,7 +4,7 @@ import { ethers } from "ethers";
 import { getProvider } from "../../../lib/server/connections";
 import Market from '../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 import { Redis } from '@upstash/redis';
-import { TRANSACTION_TIMEOUT, validTxHashFormat } from "../../../lib/utils";
+import { getAsString, TRANSACTION_TIMEOUT, validTxHashFormat } from "../../../lib/utils";
 import { LogDescription } from "ethers/lib/utils";
 import NFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import { fromUnixTime } from "date-fns";
@@ -13,6 +13,7 @@ import { tokenListed } from "../../../lib/transactions/tokenListed";
 import { tokenDelisted } from "../../../lib/transactions/tokenDelisted";
 import { tokenBought } from "../../../lib/transactions/tokenBought";
 import { User } from "../../../models/User";
+import { createHmac } from "crypto";
 
 const route = apiRoute();
 const client = Redis.fromEnv()
@@ -61,11 +62,21 @@ const transactionDetails = async (hash,
 // i.e. it would be nice if the notifications were separate; as we could then retry JUST them if anything went wrong.
 //
 route.post(async (req, res: NextApiResponse) => {
-    const { hash } = req.body;
-    
-    //
-    // TODO: Check the POST request came from the message queue. (We already do this for the actions queue handler)
-    //
+    const start = Date.now();
+
+    // We only accept requests that came via our message queue. 
+    // You need our API key to add something to the queue, so this adds a layer of security
+    const payload = JSON.stringify({ target: `https://${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/api/blockchain/transaction` });
+    const signature = createHmac("sha256", process.env.SERVERLESSQ_API_TOKEN)
+        .update(payload)
+        .digest("hex");
+
+    if (signature !== req.headers['x-serverlessq-signature']) {
+        console.log('api/actions - Request did not come via message queue')
+        return res.status(403).json({ message: "Not Authenticated" });
+    }
+
+    const hash = getAsString(req.body.hash);
 
     if (!validTxHashFormat(hash)) {
         console.log(`blockchain/transaction - invalid hash format - ${hash}`);
@@ -76,10 +87,6 @@ route.post(async (req, res: NextApiResponse) => {
         console.log(`blockchain/transaction - endpoint called without credentials`);
         return res.status(503).json({ message: 'unable to process the tx' });
     }
-
-    // TODO:
-    // check if we've handled this transaction before, and abort if so
-    // we store the users txs now
 
     const provider: ethers.providers.BaseProvider = await getProvider();
 
@@ -157,21 +164,22 @@ route.post(async (req, res: NextApiResponse) => {
     // TODO: If things are too slow for this serverless function; 
     // we COULD potentially push the 'updating task' onto another queue? (Prefer not to at the moment though)
     if (log.name === 'TokenListed') {
-        success = await tokenListed(hash, provider, txReceipt, tx, log, req);
+        success = await tokenListed(hash, tx, log, req);
     } else if (log.name === 'TokenDelisted') {
-        success = await tokenDelisted(hash, provider, txReceipt, tx);
+        success = await tokenDelisted(hash, tx, log, req);
     } else if (log.name === 'TokenBought') {
-        success = await tokenBought(hash, provider, txReceipt, tx, log);
+        success = await tokenBought(hash, tx, log, req);
     } else if (log.name === 'Transfer') {
-        success = await tokenMinted(hash, provider, txReceipt, tx, log, req);
+        success = await tokenMinted(hash, provider, tx, log, req);
     }
 
-    // TODO: Perhaps we should log what transactions were processed, 
-    // at what time and whether they were successful
-    // Should be helpful if we get support requests
+    const stop = Date.now()
+    console.log('blockchain/transaction time taken', stop - start);
+
     if (success) {
         return res.status(201).json({ message: 'successfully processed the transaction' });
     }
+
 
     return res.status(503).json({ message: 'unable to process the transaction' });
 });

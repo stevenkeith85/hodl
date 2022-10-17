@@ -22,21 +22,19 @@ import { addActionToQueue } from "../actions/addToQueue";
 const client = Redis.fromEnv()
 
 
-// Boolean indicates that we've finished processing this blockchain action
-// Usually this is true for 'success'; but we may also decide to just
-// refuse to process it if it looks sus.
+// returns whether we've successfully handled this log
+// dediciding not to process it can also be a 'success'
+
+// event Transfer(address from, address to, uint256 tokenId)
 export const tokenMinted = async (
     hash: string, // check valid address?
     provider: ethers.providers.BaseProvider,
-    txReceipt: ethers.providers.TransactionReceipt,
     tx: ethers.providers.TransactionResponse,
     log: LogDescription,
     req
 ): Promise<boolean> => {
+    const start = Date.now();
 
-    // const start = new Date();
-
-    // event Transfer(address from, address to, uint256 tokenId)
     const { from, to, tokenId } = log.args;
 
     // some basic sanity checks
@@ -116,58 +114,45 @@ export const tokenMinted = async (
 
     if (!tokenExists) {
         console.log('tokenMinted - token does not exist, atomically updating redis')
-        try {
-            const r = await axios.post(
-                `${process.env.UPSTASH_REDIS_REST_URL}/multi-exec`,
-                [
-                    ["SET", `token:${token.id}`, JSON.stringify(token)],
-                    ["ZADD", `tokens`, block.timestamp, token.id],
-                    ["ZADD", `tokens:new`, block.timestamp, token.id],
-                    ["ZREMRANGEBYRANK", `tokens:new`, 0, -(1000 + 1)],
-                ],
-                {
-                    headers: {
-                        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-                    }
-                })
+        
+        const multiExecCmds = [
+            // Add the token information
+            ["SET", `token:${token.id}`, JSON.stringify(token)],
 
-            const response = r.data;
+            // Add the token to the set of all tokens
+            ["ZADD", `tokens`, block.timestamp, token.id],
 
-            if (response.error) {
-                console.log('tokenMinted - redis add token transaction was discarded', response);
-                return false; // We will likely want to retry this; so its an unsuccessful run of this function
-            }
-        } catch (e) {
-            console.log('tokenMinted - upstash rest api error', e)
-            return false; // We will likely want to retry this; so its an unsuccessful run of this function
-        }
-    }
-
-    // TODO: This potentially could be split off into a separate message queue task?
-    // Add tags. 
-    const tagsExist = await client.exists(`token:${token.id}:tags`);
-
-    if (!tagsExist) {
-        console.log('tokenMinted - tags do not exist, atomically updating redis')
+            // Add the token to the new token set and trim it to 1000 items
+            ["ZADD", `tokens:new`, block.timestamp, token.id],
+            ["ZREMRANGEBYRANK", `tokens:new`, 0, -(1000 + 1)],
+        ];
+            
         const tags = Array.from(description.matchAll(TAG_PATTERN)).map(arr => arr[1]);
         const uniqueTags = Array.from(new Set(tags)).slice(0, MAX_TAGS_PER_TOKEN);
 
-        const addTagsTxCommands = [];
         for (const tag of uniqueTags) {
             const tagLC = tag.toLowerCase();
 
-            addTagsTxCommands.push(["SADD", `token:${token.id}:tags`, tagLC])
-            addTagsTxCommands.push(["ZADD", `tag:${tagLC}`, block.timestamp, token.id])
-            addTagsTxCommands.push(["ZADD", `tag:${tagLC}:new`, block.timestamp, token.id])
-            addTagsTxCommands.push(["ZREMRANGEBYRANK", `tag:${tagLC}:new`, 0, -(500 + 1)]);
-            addTagsTxCommands.push(["ZINCRBY", `rankings:tag:count`, 1, tagLC]);
-            addTagsTxCommands.push(["ZREMRANGEBYRANK", `rankings:tag:count`, 0, -(500 + 1)]);
+            // update the token's set of tags
+            multiExecCmds.push(["SADD", `token:${token.id}:tags`, tagLC]);
+
+            // update the tag's set of token ids
+            multiExecCmds.push(["ZADD", `tag:${tagLC}`, block.timestamp, token.id])
+
+            // update the tags set of new token ids and trim to 500 items
+            multiExecCmds.push(["ZADD", `tag:${tagLC}:new`, block.timestamp, token.id])
+            multiExecCmds.push(["ZREMRANGEBYRANK", `tag:${tagLC}:new`, 0, -(500 + 1)]);
+
+            // update the most popular tag rankings and trim to 500 items
+            multiExecCmds.push(["ZINCRBY", `rankings:tag:count`, 1, tagLC]);
+            multiExecCmds.push(["ZREMRANGEBYRANK", `rankings:tag:count`, 0, -(500 + 1)]);
         }
 
+        // Run the transaction
         try {
             const r = await axios.post(
                 `${process.env.UPSTASH_REDIS_REST_URL}/multi-exec`,
-                addTagsTxCommands,
+                multiExecCmds,
                 {
                     headers: {
                         Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
@@ -184,6 +169,9 @@ export const tokenMinted = async (
             console.log('tokenMinted - upstash rest api error', e)
             return false; // We will likely want to retry this; so its an unsuccessful run of this function
         }
+    
+    
+    
     }
 
     const actionAdded = await addActionToQueue(
@@ -199,7 +187,7 @@ export const tokenMinted = async (
     if (!actionAdded) {
         return false;
     }
- 
+
     const recordsUpdated = await updateTransactionRecords(req.address, tx.nonce, hash);
 
     if (!recordsUpdated) {
@@ -208,7 +196,8 @@ export const tokenMinted = async (
 
     await updateHodlingCache(req.address);
 
-    // const stop = new Date();
-    // console.log('time taken', stop - start);
+    const stop = Date.now()
+    console.log('tokenMinted time taken', stop - start);
+    
     return true;
 }

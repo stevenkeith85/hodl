@@ -13,12 +13,14 @@ export const addActionToQueue = async (
 
     const url = `https://api.serverlessq.com?id=${user?.actionQueueId}&target=https://${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/api/actions/add`;
     try {
+        const start = Date.now();
         const r = await axios.post(
             url,
             {
                 action: hodlAction.action,
                 object: hodlAction.object,
-                objectId: hodlAction.objectId
+                objectId: hodlAction.objectId,
+                metadata: hodlAction.metadata
             },
             {
                 withCredentials: true,
@@ -29,7 +31,9 @@ export const addActionToQueue = async (
                     "Cookie": `refreshToken=${refreshToken}; accessToken=${accessToken}`
                 }
             }
-        )
+        );
+        const stop = Date.now()
+        console.log('addingMessageToQueue time taken', stop - start);
     } catch (e) {
         console.log('unable to add an action to the queue', hodlAction, e)
         return false; // We will likely want to retry this; so its an unsuccessful run of this function

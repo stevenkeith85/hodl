@@ -49,10 +49,10 @@ export const Likes: FC<LikesProps> = ({
                     position: 'relative',
                     ...sx
                 }}
-                onClick={e => {
+                onClick={async (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    toggleLike();
+                    await toggleLike();
                 }}
             >
                 {

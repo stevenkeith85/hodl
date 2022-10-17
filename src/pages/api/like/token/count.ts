@@ -1,7 +1,6 @@
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
 import apiRoute from "../../handler";
-import memoize from 'memoizee';
 
 dotenv.config({ path: '../.env' })
 

@@ -21,14 +21,14 @@ const client = Redis.fromEnv()
 route.post(async (req, res: NextApiResponse) => {
   console.log('TRANSACTION QUEUER CALLED');
 
-  if (!req.address) {
-    return res.status(403).json({ message: "Not Authenticated" });
-  }
-
   const hash = getAsString(req.body.hash);
 
   if (!validTxHashFormat(hash)) {
     return res.status(400).json({ message: 'bad request' });
+  }
+
+  if (!req.address) {
+    return res.status(403).json({ message: "Not Authenticated" });
   }
 
   const provider = await getProvider();
@@ -45,7 +45,7 @@ route.post(async (req, res: NextApiResponse) => {
   }
 
   if (
-    tx.to !== process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS && 
+    tx.to !== process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS &&
     tx.to !== process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS) {
     console.log(`queue/transaction - user trying to process a transaction that isn't for our contract`);
     return res.status(400).json({ message: 'bad request' });
@@ -62,7 +62,6 @@ route.post(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'bad request' });
   }
 
-  // TODO: Figure out why this wasn't set; and make robust
   if (!user?.txQueueId) {
     return res.status(500).json({ message: 'internal server error' });
   }
