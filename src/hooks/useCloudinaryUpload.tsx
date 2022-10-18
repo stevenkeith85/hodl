@@ -24,7 +24,6 @@ export const useCloudinaryUpload = (): [Function, string, Function] => {
         {
           headers: {
             'Accept': 'application/json',
-            'Accept-Encoding': 'gzip',
           },
         }
       )
