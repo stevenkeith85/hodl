@@ -1,4 +1,4 @@
-import { FC, useCallback } from "react";
+import { FC, useCallback, useEffect } from "react";
 import { enqueueSnackbar } from 'notistack';
 import { useCloudinaryUpload } from "../../hooks/useCloudinaryUpload";
 import { MintProps } from "./models";
@@ -12,7 +12,20 @@ export const SelectAssetAction: FC<MintProps> = ({
   setFormData,
   setStepComplete
 }: MintProps) => {
-  const [uploadToCloudinary] = useCloudinaryUpload();
+  const [uploadToCloudinary, error, setError] = useCloudinaryUpload();
+
+  useEffect(() => {
+    if (error !== '') {
+        enqueueSnackbar(error,
+            {
+                // @ts-ignore
+                variant: "hodlsnackbar",
+                type: "error"
+            });
+
+        setError('');
+    }
+}, [error, enqueueSnackbar]) //  Warning: React Hook useEffect has a missing dependency: 'enqueueSnackbar'. Either include it or remove the dependency array.
 
   const cloudinaryUpload = useCallback(async (file) => {
     setLoading(true);

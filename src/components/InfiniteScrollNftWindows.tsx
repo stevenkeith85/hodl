@@ -10,49 +10,62 @@ interface InfiniteScrollNftWindowsProps {
   pattern?: boolean
 }
 
-export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> = ({ swr, limit, pattern = true }) => {
+export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> = ({ swr, limit }) => {
   const theme = useTheme();
-  const xs = useMediaQuery(theme.breakpoints.only('xs'));
+
+  const isReachingEnd = swr => {
+    const firstPageEmpty = swr.data?.[0]?.items?.length == 0;
+    const lastPageNotFull = swr.data?.[swr.data?.length - 1]?.items?.length < limit;
+
+    return firstPageEmpty || lastPageNotFull;
+  }
 
 
   return (
     <>
-
-      <Box
-        sx={{
-          position: 'relative',
-          display: "grid",
-          gridTemplateColumns: {
-            xs: `1fr 1fr`,
-            sm: `1fr 1fr 1fr`,
-          },
-          gap: {
-            xs: 1,
-            sm: 1,
-            md: 4
-          }
-        }}
-      >
+      <Box sx={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        margin: {
+          xs: -0.5,
+          sm: -1,
+          md: -1.5,
+          lg: -2,
+        }
+      }}>
         <InfiniteScroll
           swr={swr}
-          loadingIndicator={<>
-            <HodlLoadingSpinner />
-          </>
-          }
-          isReachingEnd={
-            swr => {
-              return swr.data?.[0]?.items?.length == 0 ||
-                swr.data?.[swr.data?.length - 1]?.items?.length < limit
-            }
-          }
+          isReachingEnd={isReachingEnd}
         >
-          {
-            ({ items, next, total }) => items.map((nft: FullToken, i) => <>
-              {nft && <NftWindow nft={nft} key={nft.id} />}
-            </>)
-          }
+            {
+              ({ items }) => items.map((nft: FullToken) => <Box sx={{
+                width: {
+                  xs: '50%',
+                  md: '33.3%'
+                },
+                padding: {
+                  xs: 0.5,
+                  sm: 1,
+                  md: 1.5,
+                  lg: 2
+                }
+              }}>
+                {nft && <NftWindow nft={nft} key={nft.id} />}
+              </Box>
+              )
+            }
         </InfiniteScroll >
-      </Box >
+        {
+          isReachingEnd(swr) ? null :
+            <HodlLoadingSpinner
+              sx={{
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                paddingY: 4
+              }} />
+        }
+      </Box>
     </>
   )
 }

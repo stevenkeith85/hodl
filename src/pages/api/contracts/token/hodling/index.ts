@@ -1,15 +1,12 @@
-import dotenv from 'dotenv'
 import apiRoute from '../../../handler';
 import { Token } from '../../../../../models/Token';
 import { Redis } from '@upstash/redis';
 import { updateHodlingCache } from './count';
+import { getAsString } from '../../../../../lib/utils';
 
-dotenv.config({ path: '../.env' })
+const client = Redis.fromEnv();
 
-const client = Redis.fromEnv()
-
-
-export const getHodling = async (address, offset, limit, skipCache = false): Promise<{ items: Token[], next: number; total: number }> => {
+export const getHodling = async (address: string, offset: number, limit: number, skipCache = false): Promise<{ items: Token[], next: number; total: number }> => {
     if (!address) {
         return null;
     }
@@ -30,7 +27,6 @@ export const getHodling = async (address, offset, limit, skipCache = false): Pro
     let hodlingCount = skipCache ? null : await client.get<number>(`user:${address}:hodlingCount`);
 
     if (hodlingCount === null) { // repopulate the cache  
-        console.log('updating hodling cached data')
         await updateHodlingCache(address);
     } else {
         console.log('using hodling cached data')
@@ -47,15 +43,15 @@ export const getHodling = async (address, offset, limit, skipCache = false): Pro
     const tokenIds: number[] = await client.zrange<number[]>(`user:${address}:hodling`, offset, offset + limit - 1);
 
     // We get all the comment data with one round trip to redis
-    const commentPipeline = client.pipeline();
+    const pipeline = client.pipeline();
     for (let id of tokenIds) {
-      commentPipeline.get(`token:${id}`);
+      pipeline.get(`token:${id}`);
     }
-    const items: Token[] = tokenIds?.length ? await commentPipeline.exec() : [];
+    const items: Token[] = tokenIds?.length ? await pipeline.exec() : [];
 
 
     return {
-        items: items,
+        items,
         next: Number(offset) + Number(limit),
         total: Number(hodlingCount)
     };
@@ -64,13 +60,15 @@ export const getHodling = async (address, offset, limit, skipCache = false): Pro
 const route = apiRoute();
 
 route.get(async (req, res) => {
-    const { address, offset, limit } = req.query;
+    const address = getAsString(req.query.address);
+    const offset = getAsString(req.query.offset);
+    const limit = getAsString(req.query.limit);
 
     if (!address || !offset || !limit) {
         return res.status(400).json({ message: 'Bad Request' });
     }
 
-    const data = await getHodling(address, offset, limit)
+    const data = await getHodling(address, +offset, +limit)
 
     return res.status(200).json(data);
 });

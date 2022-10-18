@@ -9,6 +9,7 @@ import { updateTransactionRecords } from "./updateTransactionRecords";
 import { updateHodlingCache } from "../../pages/api/contracts/token/hodling/count";
 import { addActionToQueue } from "../actions/addToQueue";
 import { runRedisTransaction } from "../databaseUtils";
+import { updateListedCache } from "../../pages/api/contracts/market/listed/count";
 
 const client = Redis.fromEnv()
 
@@ -84,7 +85,10 @@ export const tokenDelisted = async (
         return false;
     }
 
-    await updateHodlingCache(req.address);
+    const updateHodlingCachePromise = updateHodlingCache(req.address);
+    const updateListedCachePromise = updateListedCache(req.address);
+
+    Promise.all([updateHodlingCachePromise, updateListedCachePromise]);
 
     const stop = Date.now()
     console.log('tokenDelisted time taken', stop - start);

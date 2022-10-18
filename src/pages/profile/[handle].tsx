@@ -50,7 +50,7 @@ export async function getServerSideProps({ params, query, req, res }) {
   }
 
   const tab = Number(query.tab) || 0;
-  const limit = 10;
+  const limit = 9;
 
   const prefetchedFollowingCountPromise = getFollowingCount(owner.address);
   const prefetchedFollowersCountPromise = getFollowersCount(owner.address);
@@ -100,10 +100,10 @@ const Profile = ({
   const [value, setValue] = useState(Number(tab)); // tab
 
   const [hodlingCount] = useHodlingCount(owner.address);
-  const { swr: hodling } = useHodling(owner.address, limit, null, value==0);
+  const { swr: hodling } = useHodling(owner.address, limit, null, value == 0);
 
   const [listedCount] = useListedCount(owner.address);
-  const { swr: listed } = useListed(owner.address, limit, null ,value==1);
+  const { swr: listed } = useListed(owner.address, limit, null, value == 1);
 
   const [followingCount] = useFollowingCount(owner.address, prefetchedFollowingCount);
   const { swr: following } = useFollowing(true, owner.address, limit, prefetchedFollowing);
@@ -137,24 +137,67 @@ const Profile = ({
           }}>
           <Box
             display="flex"
-            gap={2}
+            // gap={2}
             alignItems={"center"}
           >
-            <UserAvatarAndHandle
-              address={owner.address}
-              fallbackData={owner}
-              size={90}
-              fontSize={24}
-              handle={false}
-            />
+            <Box sx={{
+              display: {
+                xs: 'block',
+                sm: 'none'
+              }
+            }}>
+              <UserAvatarAndHandle
+                address={owner.address}
+                fallbackData={owner}
+                size={90}
+                fontSize={20}
+                handle={false}
+              />
+            </Box>
+            <Box sx={{
+              display: {
+                xs: 'none',
+                sm: 'block'
+              }
+            }}>
+              <UserAvatarAndHandle
+                address={owner.address}
+                fallbackData={owner}
+                size={120}
+                fontSize={24}
+                handle={false}
+              />
+            </Box>
             <Box
               sx={{
                 display: "flex",
                 flexDirection: "column",
+                margin: {
+                  xs: 2,
+                  sm: 3
+                }
               }}>
-              <ProfileNameOrAddress profileAddress={owner.address} fallbackData={owner} fontSize="22px" sx={{ fontWeight: 500 }} />
+              <ProfileNameOrAddress
+                profileAddress={owner.address}
+                fallbackData={owner}
+                sx={{
+                  fontSize: {
+                    xs: 20,
+                    sm: 24
+                  }
+                }}
+              />
               <CopyText text={owner.address}>
-                <Typography sx={{ fontSize: 14, color: theme => theme.palette.text.secondary }}>{getShortAddress(owner.address)}</Typography>
+                <Typography
+                  sx={{
+                    fontSize: {
+                      xs: 14,
+                      sm: 14
+                    },
+                    color: theme => theme.palette.text.secondary
+                  }}>
+                  {getShortAddress(owner.address)}
+                </Typography>
               </CopyText>
             </Box>
           </Box>
@@ -190,7 +233,7 @@ const Profile = ({
                 value={0}
                 label="Hodling"
                 icon={<Badge
-                  sx={{ 
+                  sx={{
                     p: {
                       xs: '6px 1px',
                       sm: '6px 3px',
@@ -313,12 +356,12 @@ const Profile = ({
                 label="Followers"
                 icon={
                   <Badge
-                  sx={{
-                    p: {
-                      xs: '6px 1px',
-                      sm: '6px 3px',
-                    }
-                  }}
+                    sx={{
+                      p: {
+                        xs: '6px 1px',
+                        sm: '6px 3px',
+                      }
+                    }}
                     showZero
                     max={Number.MAX_SAFE_INTEGER}
                     badgeContent={humanize.compactInteger(followersCount, 1)}

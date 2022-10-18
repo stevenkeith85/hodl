@@ -4,8 +4,7 @@ import { ethers } from 'ethers';
 import { getProvider } from '../../../../../lib/server/connections';
 import HodlNFT from '../../../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import { Redis } from '@upstash/redis';
-import { ScoreMember } from '@upstash/redis/types/pkg/commands/zadd';
-import axios from 'axios';
+import { runRedisTransaction } from '../../../../../lib/databaseUtils';
 
 dotenv.config({ path: '../.env' })
 
@@ -19,75 +18,56 @@ const addressToTokenIds = async (address, offset, limit) => {
   return result;
 }
 
-export const updateHodlingCache = async (address) => {
-  // If a user mints or trades on the market; we'll recache.
+// If a user mints or trades on the market; we'll recache.
   //
   // If no-one has requested a hodling count or list in a while, then the cached data will disappear from redis
   // which will keep our storage costs down
   //
   // TODO: We might listed to generic transfer events in future 
   // in case stuff happens off-site. (user adds token to another market, etc)
-  const timeToCache = 60 * 60 * 1;
+  // This would allow us to cache for longer periods, as we'd be more sure of things
+export const updateHodlingCache = async (address) => {
+  const timeToCache = 60 * 30;
 
-  try {
-    console.log('updating hodling cache');
+  console.log('updating hodling cache');
+  const start = Date.now();
 
-    await client.del(`user:${address}:hodling`);
-    await client.del(`user:${address}:hodlingCount`);
+  const cmds = [
+    ['DEL', `user:${address}:hodling`, `user:${address}:hodlingCount`]
+  ];
 
-    const offset = 0;
-    const limit = 100;
+  const offset = 0;
+  const limit = 100;
 
-    let score = 0;
-    let scoreMemberPairs: number[] = [];
+  let score = 0;
+  let scoreMemberPairs = [];
 
-    // get first page
-    let result = await addressToTokenIds(address, offset, limit);
+  // get first page
+  let result = await addressToTokenIds(address, offset, limit);
+  result.page.forEach(item => scoreMemberPairs.push(score++, Number(item)))
+
+  // get remaining pages
+  while (Number(result.next) < Number(result.total)) {
+    result = await addressToTokenIds(address, Number(result.next), limit)
     result.page.forEach(item => scoreMemberPairs.push(score++, Number(item)))
-
-
-    // get remaining pages
-    while (Number(result.next) < Number(result.total)) {
-      result = await addressToTokenIds(address, Number(result.next), limit)
-      result.page.forEach(item => scoreMemberPairs.push(score++, Number(item)))
-    }
-
-    let cmds = [];
-
-    if (scoreMemberPairs.length) {
-      cmds.push(
-        ["ZADD", `user:${address}:hodling`, ...scoreMemberPairs],
-      )
-    }
-
-    cmds = cmds.concat([
-      ["SET", `user:${address}:hodlingCount`, (scoreMemberPairs.length / 2)],
-      ["EXPIRE", `user:${address}:hodling`, timeToCache],
-      ["EXPIRE", `user:${address}:hodlingCount`, timeToCache],
-    ]);
-
-    try {
-      const r = await axios.post(
-        `${process.env.UPSTASH_REDIS_REST_URL}/multi-exec`,
-        cmds,
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-          }
-        })
-
-      const response = r.data;
-
-      if (response.error) {
-        console.log('update hodling cache - redis add token transaction was discarded', response);
-      }
-    } catch (e) {
-      console.log('update hodling cache - upstash rest api error', e)
-    }
   }
-  catch (e) {
-    console.log('unable to update hodling cache')
+
+  if (scoreMemberPairs.length) {
+    cmds.push(
+      ["ZADD", `user:${address}:hodling`, ...scoreMemberPairs],
+    )
   }
+
+  cmds.push(
+    ["SET", `user:${address}:hodlingCount`, `${scoreMemberPairs.length / 2}`],
+    ["EXPIRE", `user:${address}:hodling`, `${timeToCache}`],
+    ["EXPIRE", `user:${address}:hodlingCount`, `${timeToCache}`],
+  );
+
+  const success = await runRedisTransaction(cmds);
+
+  const stop = Date.now();
+  console.log('updateHodlingCache time taken', stop - start);
 }
 
 export const getHodlingCount = async (address, skipCache = false): Promise<number> => {

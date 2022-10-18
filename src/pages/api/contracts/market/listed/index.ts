@@ -1,66 +1,89 @@
-import dotenv from 'dotenv'
-import { ethers } from 'ethers';
-import { getProvider } from '../../../../../lib/server/connections';
-import HodlMarket from '../../../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
 import apiRoute from '../../../handler';
-import { getToken } from '../../../token/[tokenId]';
 import { Token } from '../../../../../models/Token';
+import { Redis } from '@upstash/redis';
+import { updateListedCache } from './count';
+import { getAsString } from '../../../../../lib/utils';
 import { FullToken } from '../../../../../models/Nft';
 
-dotenv.config({ path: '../.env' })
+const client = Redis.fromEnv();
 
-// The get hodling / get listed functionality should work fairly similar
-// TODO: We may read more data from Redis in future if we can set up a decent blockchain/redis cache mechanism
-const addressToListings = async (address, offset, limit) => {
-    const provider = await getProvider();
-    const market = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, HodlMarket.abi, provider);
-    const result = await market.getListingsForAddress(address, offset, limit);
-    return result;
-}
+export const getListed = async (address: string, offset: number, limit: number, skipCache = false): Promise<{ items: Token[], next: number; total: number }> => {
+    if (!address) {
+        return null;
+    }
 
-export const getListed = async (address, offset, limit) => {
-    try {
-        const [listings, next, total] = await addressToListings(address, offset, limit);
+    let listedCount = skipCache ? null : await client.get<number>(`user:${address}:listedCount`);
 
-        if (!listings.length) {
-            return { items: [], next: 0, total: 0 };
+    if (listedCount === null) { // repopulate the cache  
+        await updateListedCache(address);
+    } else {
+        console.log('using listed cached data')
+    }
+
+    if (listedCount === 0) {
+        return {
+            items: [],
+            next: Number(offset) + Number(limit),
+            total: Number(0)
+        };
+    }
+
+    const tokenIdsWithPrice: number[] = await client.zrange<number[]>(`user:${address}:listed`, offset, offset + limit - 1, { withScores: true });
+    
+    console.log('tokenIdsWithPrice', tokenIdsWithPrice);
+
+    const tokenIdToPriceMap = tokenIdsWithPrice.reduce(
+        (map, currentValue, currentIndex, array) => {
+            console.log('map is ', map)
+            if (currentIndex < (array.length - 1)) {
+                map[currentValue] = array[currentIndex + 1];   
+            }
+
+            return map;
+            
+        }, {}
+    );
+
+    console.log('tokenIdToPriceMap', JSON.stringify(tokenIdToPriceMap));
+
+    const tokenIds = Object.keys(tokenIdToPriceMap);
+
+
+    // // We get all the comment data with one round trip to redis
+    const pipeline = client.pipeline();
+    for (let id of tokenIds) {
+        pipeline.get(`token:${id}`);
+    }
+    const tokens: Token[] = tokenIds?.length ? await pipeline.exec() : [];
+
+    const fullTokens = tokens.map(item => {
+        const token: FullToken = {
+            ...item,
+            price: tokenIdToPriceMap[item.id],
+            forSale: true
         }
 
-        const nfts: FullToken [] = await Promise.all(listings.map(async listing => {
-            const token: Token = await getToken(listing.tokenId);
-
-            // If the token is present on the blockchain, 
-            // but not in our database
-            // we'll mark this as null.
-            if (!token) {
-                return null;
-            }
-
-            const nft: FullToken = {
-                ...token,
-                hodler: address,
-                forSale: true,
-                price: ethers.utils.formatEther(listing.price)
-            }
-
-            return nft;
-        }));
-
-        return { items: nfts, next: Number(next), total: Number(total) };
-    } catch (e) {
-        return { items: [], next: 0, total: 0 };
-    }
+        return token;
+    })
+    return {
+        items: fullTokens,
+        next: Number(offset) + Number(limit),
+        total: Number(listedCount)
+    };
 }
+
 
 const route = apiRoute();
 route.get(async (req, res) => {
-    const { address, offset, limit } = req.query;
+    const address = getAsString(req.query.address);
+    const offset = getAsString(req.query.offset);
+    const limit = getAsString(req.query.limit);
 
     if (!address || !offset || !limit) {
         return res.status(400).json({ message: 'Bad Request' });
     }
 
-    const data = await getListed(address, offset, limit);
+    const data = await getListed(address, +offset, +limit);
     return res.status(200).json(data);
 });
 

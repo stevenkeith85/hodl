@@ -81,7 +81,9 @@ export const HodlProfileBadge: React.FC<HodlProfileBadgeProps> = ({ user }) => {
                             display: "flex",
                             flexDirection: "column",
                         }}>
-                        <ProfileNameOrAddress profileAddress={user.address} fallbackData={user} fontSize="20px" />
+                        <ProfileNameOrAddress profileAddress={user.address} fallbackData={user} sx={{
+                            fontSize: 18
+                            }} />
                         <CopyText text={user.address}>
                             <Typography sx={{ fontSize: 14 }}>{getShortAddress(user.address)}</Typography>
                         </CopyText>

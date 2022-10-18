@@ -17,7 +17,6 @@ interface ProfileNameOrAddressProps {
 
 export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({
     profileAddress,
-    fontSize = "14px",
     color = "inherit",
     sx = null,
     fallbackData = null,
@@ -40,9 +39,7 @@ export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({
     return (<Box
         component="span"
         sx={{
-            fontSize,
             a: {
-                fontSize,
                 textDecoration: 'none',
                 color: getColor(color),
                 cursor: 'pointer'

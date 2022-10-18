@@ -53,7 +53,7 @@ export const apiAuthenticate = async (req, res, next) => {
 
         // user will need to re-login to re-auth
         // the next endpoint may not require auth though; so clear req.address and forward the request to it
-        
+
         req.address = null;
         return next();
       } catch (e) {
@@ -61,8 +61,8 @@ export const apiAuthenticate = async (req, res, next) => {
         // the refreshToken has expired. 
         // TODO: This doesn't do exactly the same as our logout function in api/auth - check if we need to update this
         res.setHeader('Set-Cookie', [
-          cookie.serialize('accessToken', "", { httpOnly: true, path: '/', maxAge: -1}),
-          cookie.serialize('refreshToken', "", { httpOnly: true, path: '/', maxAge: -1})
+          cookie.serialize('accessToken', "", { httpOnly: true, path: '/', maxAge: -1 }),
+          cookie.serialize('refreshToken', "", { httpOnly: true, path: '/', maxAge: -1 })
         ])
         return res.status(401).json({ refreshed: false });
       }
@@ -71,7 +71,7 @@ export const apiAuthenticate = async (req, res, next) => {
     // This is unlikely to happen in the wild; but if it does; just log the user out
     // WE usually see it when switching from dev to prod mode (as we have a different jwt secret for both); 
     if (e instanceof jwt.JsonWebTokenError) {
-      
+
       req.address = null;
       return next();
     }
@@ -129,21 +129,25 @@ export const authenticate = async (req, res): Promise<boolean> => {
         // the refreshToken has expired. 
         // TODO: This doesn't do exactly the same as our logout function in api/auth - check if we need to update this
         res.setHeader('Set-Cookie', [
-          cookie.serialize('accessToken', "", { httpOnly: true, path: '/', maxAge: -1}),
-          cookie.serialize('refreshToken', "", { httpOnly: true, path: '/', maxAge: -1})
+          cookie.serialize('accessToken', "", { httpOnly: true, path: '/', maxAge: -1 }),
+          cookie.serialize('refreshToken', "", { httpOnly: true, path: '/', maxAge: -1 })
         ])
         return false;
       }
     }
 
-    // This is unlikely to happen in the wild; but if it does; just log the user out
-    // WE usually see it when switching from dev to prod mode (as we have a different jwt secret for both); 
     if (e instanceof jwt.JsonWebTokenError) {
       console.log(`AUTH: secrets dont match, have switched from dev to prod or vice versa`)
+
+      res.setHeader('Set-Cookie', [
+        cookie.serialize('accessToken', "", { httpOnly: true, path: '/', maxAge: -1 }),
+        cookie.serialize('refreshToken', "", { httpOnly: true, path: '/', maxAge: -1 })
+      ])
       return false;
     }
 
     console.log(`AUTH: something has gone wrong with the auth`, e);
+
     // just log them out if there's any issue we aren't handling
     return false;
   }

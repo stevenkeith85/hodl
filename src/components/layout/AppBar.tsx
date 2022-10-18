@@ -25,6 +25,7 @@ import { SessionExpiredModal } from '../modals/SessionExpiredModal';
 import { useRouter } from 'next/router';
 import { Button, ClickAwayListener, Fade } from '@mui/material';
 import { mutate } from 'swr';
+import { MobileSearch } from '../MobileSearch';
 
 const ResponsiveAppBar = ({ showAppBar = true }) => {
     const { address, setSigner } = useContext(WalletContext);
@@ -304,7 +305,13 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                         color="inherit"
                                     >
                                         {mobileSearchOpen ?
-                                            <CloseIcon sx={{ lineHeight: 0, fontSize: 22 }} onClick={() => setMobileSearchOpen(false)} /> :
+                                            <CloseIcon 
+                                                sx={{ 
+                                                    lineHeight: 0, 
+                                                    fontSize: 22 
+                                                }} 
+                                                onClick={() => setMobileSearchOpen(false)} 
+                                                /> :
                                             <Search
                                                 sx={{ lineHeight: 0, fontSize: 22 }}
                                                 onClick={
@@ -334,6 +341,7 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                     }}
                                     onClick={e => {
                                         setShowDesktopNotifications(false);
+                                        setMobileSearchOpen(false);
                                         setDesktopMenuOpen(prev => !prev);
                                         e.stopPropagation();
                                     }}
@@ -370,35 +378,7 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                         </Box>
                     </Toolbar>
                 </Container>
-                {/* Mobile Search */}
-                {/* TODO - Move to own file */}
-                {mobileSearchOpen &&
-                    <Box
-                        sx={{
-                            display: {
-                                xs: 'block',
-                                md: 'none'
-                            }
-                        }}>
-                        <ClickAwayListener
-                            onClickAway={() =>
-                                setMobileSearchOpen(false)
-                            }
-                            touchEvent={false}>
-                            <Fade in={mobileSearchOpen} timeout={300} >
-                                <Container
-                                    sx={{
-                                        color: 'black',
-                                        background: 'white',
-                                        paddingX: 2,
-                                        paddingY: 2,
-                                    }}>
-                                    <SearchBox setHoverMenuOpen={null} setMobileSearchOpen={setMobileSearchOpen} />
-                                </Container>
-                            </Fade>
-                        </ClickAwayListener>
-                    </Box>
-                }
+                {mobileSearchOpen && <MobileSearch  mobileSearchOpen={mobileSearchOpen} setMobileSearchOpen={setMobileSearchOpen} />}
             </AppBar>
             <Toolbar disableGutters />
         </>

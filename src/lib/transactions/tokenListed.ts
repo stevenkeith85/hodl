@@ -10,6 +10,7 @@ import { updateTransactionRecords } from "./updateTransactionRecords";
 import axios from 'axios';
 import { addActionToQueue } from "../actions/addToQueue";
 import { runRedisTransaction } from "../databaseUtils";
+import { updateListedCache } from "../../pages/api/contracts/market/listed/count";
 
 const client = Redis.fromEnv()
 
@@ -100,7 +101,10 @@ export const tokenListed = async (
         return false;
     }
 
-    await updateHodlingCache(req.address);
+    const updateHodlingCachePromise = updateHodlingCache(req.address);
+    const updateListedCachePromise = updateListedCache(req.address);
+
+    Promise.all([updateHodlingCachePromise, updateListedCachePromise]);
 
     const stop = Date.now()
     console.log('tokenListed time taken', stop - start);

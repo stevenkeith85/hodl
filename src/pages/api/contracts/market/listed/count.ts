@@ -5,35 +5,75 @@ import { ethers } from 'ethers';
 import { getProvider } from '../../../../../lib/server/connections';
 import HodlMarket from '../../../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 import { Redis } from '@upstash/redis';
+import { runRedisTransaction } from '../../../../../lib/databaseUtils';
 
 dotenv.config({ path: '../.env' })
 
 const route = apiRoute();
 const client = Redis.fromEnv()
 
+const addressToListings = async (address, offset, limit) => {
+  const provider = await getProvider();
+  const market = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, HodlMarket.abi, provider);
+  const result = await market.getListingsForAddress(address, offset, limit);
+  return result;
+}
+
+export const updateListedCache = async (address) => {
+  const timeToCache = 60 * 30;
+
+  console.log('updating listed cache');
+  const start = Date.now();
+
+  const cmds = [
+    ['DEL', `user:${address}:listed`, `user:${address}:listedCount`]
+  ];
+
+  const offset = 0;
+  const limit = 100;
+
+  let scoreMemberPairs = [];
+
+  // get first page
+  let result = await addressToListings(address, offset, limit);
+  result.page.forEach(listing => scoreMemberPairs.push(ethers.utils.formatEther(listing.price), Number(listing.tokenId)))
+
+  // get remaining pages
+  while (Number(result.nextOffset) < Number(result.totalItems)) {
+    result = await addressToListings(address, Number(result.nextOffset), limit)
+    result.page.forEach(listing => scoreMemberPairs.push(ethers.utils.formatEther(listing.price), Number(listing.tokenId)))
+  }
+
+  if (scoreMemberPairs.length) {
+    cmds.push(
+      ["ZADD", `user:${address}:listed`, ...scoreMemberPairs],
+    )
+  }
+
+  cmds.push(
+    ["SET", `user:${address}:listedCount`, `${scoreMemberPairs.length / 2}`],
+    ["EXPIRE", `user:${address}:listed`, `${timeToCache}`],
+    ["EXPIRE", `user:${address}:listedCount`, `${timeToCache}`],
+  );
+
+  
+  const success = await runRedisTransaction(cmds);
+
+  console.log('did we successfully update the listing cache?', success)
+  const stop = Date.now();
+  console.log('updateListedCache time taken', stop - start);
+}
 
 export const getListedCount = async (address, skipCache = false): Promise<number> => {
   if (!address) {
     return null;
   }
 
-  let listedCount = skipCache ? null : await client.get<number>(`user:${address}:listed`);
+  let listedCount = skipCache ? null : await client.get<number>(`user:${address}:listedCount`);
 
   if (listedCount === null) {
-    console.log('getListedCount - cache miss - reading blockchain');
-
-    try {
-      const provider = await getProvider();
-      const contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, HodlMarket.abi, provider);
-      listedCount = Number(await contract.balanceOf(address));
-
-      client.setex(`user:${address}:listed`, 120, listedCount);
-    }
-    catch (e) {
-      return null;
-    }
-  } else {
-    console.log('getListedCount - cache hit - reading redis');
+    await updateListedCache(address);
+    listedCount = await client.get<number>(`user:${address}:listedCount`);
   }
 
   return listedCount;

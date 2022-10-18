@@ -42,9 +42,9 @@ const makeCloudinaryImageUrl = (cid, filter = null, aspectRatio = null) => {
   let cloudinaryUrl = ``;
 
   if (aspectRatio) {
-    cloudinaryUrl = `https://res.cloudinary.com/${cloudName}/image/upload/c_fill,ar_${aspectRatio},w_1080`;
+    cloudinaryUrl = `https://res.cloudinary.com/${cloudName}/image/upload/c_lfill,ar_${aspectRatio},w_1080`;
   } else {
-    cloudinaryUrl = `https://res.cloudinary.com/${cloudName}/image/upload/c_limit,w_1080`;
+    cloudinaryUrl = `https://res.cloudinary.com/${cloudName}/image/upload/c_lfill,w_1080`;
   }
 
   if (filter) {

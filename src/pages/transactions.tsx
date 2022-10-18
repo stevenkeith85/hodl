@@ -38,6 +38,7 @@ export async function getServerSideProps({ req, res }) {
 
 export default function Transaction({ address, user, txs }) {
     const [hash, setHash] = useState('');
+    const [buttonDisabled, setButtonDisabled] = useState(false);
 
     const [successModalOpen, setSuccessModalOpen] = useState(false);
     const [failureModalOpen, setFailureModalOpen] = useState(false);
@@ -110,9 +111,9 @@ export default function Transaction({ address, user, txs }) {
                     sx={{
                         display: 'flex',
                         flexDirection: 'column',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        textAlign: 'center'
+                        // justifyContent: 'center',
+                        // alignItems: 'center',
+                        // textAlign: 'center'
                     }}
                 >
 
@@ -161,6 +162,19 @@ export default function Transaction({ address, user, txs }) {
                     </Tabs>
                     <div hidden={value !== 0}>
                         <Box marginY={4}>
+                            <Box mb={2}>
+                                <Typography mb={1}>
+                                    This is the set of transactions that we have successfully processed for your account.
+                                </Typography>
+                                <Typography mb={1}>
+                                    If your latest transaction is not here, then we may still be awaiting confirmation on the blockchain.
+                                    Once we have confirmation, we add the transaction to a queue for processing.
+                                </Typography>
+                                <Typography>
+                                    If some time has passed since your transaction was confirmed on the blockchain;
+                                    and we've still not processed it, then please contact support.
+                                </Typography>
+                            </Box>
                             <Box sx={{ overflow: "auto" }}>
                                 <Box sx={{ width: "100%", display: "table", tableLayout: "fixed" }}>
                                     <Table aria-label="simple table">
@@ -213,63 +227,72 @@ export default function Transaction({ address, user, txs }) {
                                     padding: 1,
                                 }}
                             >
-                                Please only use this if support asks you to
+                                Please read carefully; and only use this if support asks you to
                             </Alert>
                             <Typography marginY={2} sx={{ fontSize: 18, fontWeight: 500 }}>
                                 Queue a lost transaction
                             </Typography>
-                            <Box sx={{ paddingY: 2 }}>
-                                <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ span: { fontWeight: 600 } }}>
-                                    We <span>only</span> update our website once a transaction is confirmed on the blockchain.
-                                </Typography>
-                            </Box>
+                            <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ span: { fontWeight: 600 } }}>
+                                We only update our website once a transaction is confirmed on the blockchain.
+                            </Typography>
+                            <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ span: { fontWeight: 600 } }}>
+                                We automatically process that transaction; and usually do not require any user intervention.
+                            </Typography>
+                            <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ span: { fontWeight: 600 } }}>
+                                On very rare occurrences, we may fail to process the transaction.
+                            </Typography>
+                            <Typography mb={2} color={theme => theme.palette.text.secondary}>
+                                If your transaction <span>was</span> confirmed on the blockchain, and we haven't processed the transaction; please contact support!!
+                            </Typography>
+                            <Typography mb={2} color={theme => theme.palette.text.secondary}>
+                                If support has directed you to this page, then they've determined you need to requeue the transaction. You should use the form below to do this.
+                            </Typography>
+                            <Typography mb={2} color={theme => theme.palette.text.secondary}>
+                                Before submitting this form, ensure that:
+                            </Typography>
+                            <Typography component="ul" mb={2}>
+                            <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >You've contacted support!</Typography>
+                                <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >We haven&apos;t already processed that transaction.</Typography>
+                                <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >The transaction has been confirmed on the blockchain.</Typography>
+                                <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >The transaction is for one of our contracts.</Typography>
+                                <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >The transaction you are about to submit is the first one we&apos;ve missed</Typography>
+                            </Typography>
 
-                            <Box sx={{ paddingY: 2 }}>
-                                <Typography color={theme => theme.palette.text.secondary}>
-                                    If your transaction was confirmed on the blockchain a while ago, and our website has not been updated;
-                                </Typography>
-                                <Typography color={theme => theme.palette.text.secondary}>
-                                    then you can use this tool to requeue the transaction for processing.
-                                </Typography>
-                            </Box>
+                            
 
-                            <Box sx={{ paddingY: 2 }}>
+                            <Box 
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                paddingY: 2
+                            }}>
+                                <TextField
+                                    sx={{ width: 250 }}
+                                    id="tx"
+                                    value={hash}
+                                    onChange={e => setHash(e.target.value)}
+                                    label="Transaction ID (Hash)"
+                                />
+                                <Button
+                                disabled={buttonDisabled}
+                                    sx={{ 
+                                        marginX: 2,
+                                        paddingY: 1.5,
+                                        paddingX: 3
+                                    }}
+                                    variant="contained"
+                                    onClick={() => {
+                                        sendTransaction();
+                                        setButtonDisabled(true);
+                                    }}>
+                                    Submit
+                                </Button>
+                            </Box>
+                            <Link target={"_blank"} href="https://metamask.zendesk.com/hc/en-us/articles/4413442094235-How-to-find-a-transaction-ID">
                                 <Typography mb={2} color={theme => theme.palette.text.secondary}>
-                                    Before submitting this form, ensure that:
+                                    You can get your transaction ID from MetaMask.
                                 </Typography>
-                                <Box>
-                                    <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >We haven&apos;t already processed that transaction.</Typography>
-                                    <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >The transaction has been confirmed on the blockchain.</Typography>
-                                    <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >The transaction is for one of our contracts.</Typography>
-                                    <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >The transaction you are about to submit is the first one we&apos;ve missed</Typography>
-                                </Box>
-                            </Box>
-                            <Box sx={{ paddingY: 2 }}>
-                                <Link target={"_blank"} href="https://metamask.zendesk.com/hc/en-us/articles/4413442094235-How-to-find-a-transaction-ID">
-                                    <Typography mb={2} color={theme => theme.palette.text.secondary}>
-                                        You can get your transaction ID from Metamask.
-                                    </Typography>
-                                </Link>
-                            </Box>
-                            <Box sx={{ marginY: 2 }}>
-                                <Box mb={2}>
-                                    <TextField
-                                        sx={{ width: 250 }}
-                                        id="tx"
-                                        value={hash}
-                                        onChange={e => setHash(e.target.value)}
-                                        label="Transaction ID (Hash)"
-                                    />
-                                </Box>
-                                <Box>
-                                    <Button
-                                        sx={{ paddingY: 1.5, paddingX: 2.5, fontWeight: 600 }}
-                                        variant="contained"
-                                        onClick={() => sendTransaction()}>
-                                        Submit
-                                    </Button>
-                                </Box>
-                            </Box>
+                            </Link>
                         </Box>
                     </div>
                 </HodlBorderedBox>

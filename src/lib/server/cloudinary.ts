@@ -107,15 +107,15 @@ const upload = multer({
 export const uploadToCloudinary = (req, res): Promise<any> => {
     return new Promise((resolve, reject) => {
         upload(
-            req, 
-            res, 
+            req,
+            res,
             error => {
-            if (error) {
-                reject(error);
-            } else {
-                resolve(req.file);
-            }
-        });
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(req.file);
+                }
+            });
     });
 }
 
@@ -124,15 +124,15 @@ export const removeFromCloudinary = (req, res): Promise<any> => {
         const isImage = req?.body?.previousMimeType?.indexOf('image') !== -1;
 
         cloudinary.v2.uploader.destroy(
-            req.body.previousFileName, 
-            {resource_type: isImage ? "image": "video"},
+            req.body.previousFileName,
+            { resource_type: isImage ? "image" : "video" },
             (error, result) => {
-            if (error) {
-                reject(error);
-            } else {
-                resolve(result);
-            }
-        })
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(result);
+                }
+            })
     });
 }
 
@@ -142,12 +142,12 @@ export const removePublicIdFromCloudinary = (public_id: string, resource_type: "
             public_id,
             { resource_type },
             (error: any, result: any) => {
-            if (error) {
-                reject(error);
-            } else {
-                resolve(result);
-            }
-        })
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(result);
+                }
+            })
     });
 }
 

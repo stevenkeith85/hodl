@@ -51,9 +51,20 @@ export const NftActionButtons = ({
                 <Typography
                     sx={{
                         fontSize: 16,
+                        color: theme => theme.palette.text.secondary,
+                        span: {
+                            fontWeight: 600
+                        }
+                    }}>
+                    When your transaction has been <span>confirmed</span> on the blockchain, 
+                    we&apos;ll update our database and send you a notification.
+                </Typography>
+                <Typography
+                    sx={{
+                        fontSize: 16,
                         color: theme => theme.palette.text.secondary
                     }}>
-                    When your transaction has been confirmed on the blockchain, we&apos;ll update our database and send you a notification.
+                    Please wait until this process completes before triggering another transaction.
                 </Typography>
             </SuccessModal>
 
@@ -74,9 +85,20 @@ export const NftActionButtons = ({
                 <Typography
                     sx={{
                         fontSize: 16,
+                        color: theme => theme.palette.text.secondary,
+                        span: {
+                            fontWeight: 600
+                        }
+                    }}>
+                    When your transaction has been <span>confirmed</span> on the blockchain, 
+                    we&apos;ll update our database and send you a notification.
+                </Typography>
+                <Typography
+                    sx={{
+                        fontSize: 16,
                         color: theme => theme.palette.text.secondary
                     }}>
-                    When your transaction has been confirmed on the blockchain, we&apos;ll update our database and send you a notification.
+                    Please wait until this process completes before triggering another transaction.
                 </Typography>
             </SuccessModal>
 
@@ -88,9 +110,20 @@ export const NftActionButtons = ({
                 <Typography
                     sx={{
                         fontSize: 16,
+                        color: theme => theme.palette.text.secondary,
+                        span: {
+                            fontWeight: 600
+                        }
+                    }}>
+                    When your transaction has been <span>confirmed</span> on the blockchain, 
+                    we&apos;ll update our database and send you a notification.
+                </Typography>
+                <Typography
+                    sx={{
+                        fontSize: 16,
                         color: theme => theme.palette.text.secondary
                     }}>
-                    When your transaction has been confirmed on the blockchain, we&apos;ll update our database and send you a notification.
+                    Please wait until this process completes before triggering another transaction.
                 </Typography>
             </SuccessModal>
             {

@@ -11,6 +11,7 @@ import { updateHodlingCache } from "../../pages/api/contracts/token/hodling/coun
 import { updateTransactionRecords } from "./updateTransactionRecords";
 import { addActionToQueue } from "../actions/addToQueue";
 import { runRedisTransaction } from "../databaseUtils";
+import { updateListedCache } from "../../pages/api/contracts/market/listed/count";
 
 const client = Redis.fromEnv()
 
@@ -104,7 +105,10 @@ export const tokenBought = async (
         return false;
     }
 
-    await updateHodlingCache(req.address);
+    const updateHodlingCachePromise = updateHodlingCache(req.address);
+    const updateListedCachePromise = updateListedCache(seller);
+
+    Promise.all([updateHodlingCachePromise, updateListedCachePromise]);
 
     const stop = Date.now()
     console.log('tokenBought time taken', stop - start);

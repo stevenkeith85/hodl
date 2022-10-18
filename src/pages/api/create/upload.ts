@@ -16,10 +16,9 @@ route.post(async (req: MulterRequest, res: NextApiResponse) => {
 
   try {
     const response = await uploadToCloudinary(req, res);
-    console.log('api/create/upload - uploaded asset to cloudinary - ', response)
-  } catch (e) {
-    console.log('api/create/upload - error uploading asset to cloudinary - ', e)
-    return res.status(400).json({message: e.message})
+  } catch (error) {
+    console.log('api/create/upload - error uploading asset to cloudinary - ', error)
+    return res.status(400).json(error)
   }
   
   if (req?.body?.previousFileName) {

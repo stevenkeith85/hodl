@@ -51,7 +51,7 @@ export const ListModal = ({
                         </InputAdornment>,
                     }}
                 />
-                <Box display="grid" gridTemplateColumns={"1fr 1fr"} gap={4}>
+                <Box>
                     <Button
                         variant="contained"
                         sx={{ paddingY: 1.5, paddingX: 3 }}
@@ -82,7 +82,7 @@ export const ListModal = ({
                     >
                         List
                     </Button>
-                    <Button
+                    {/* <Button
                         variant="contained"
                         color="inherit"
                         sx={{
@@ -92,7 +92,7 @@ export const ListModal = ({
                         onClick={() => setListModalOpen(false)}
                     >
                         Cancel
-                    </Button>
+                    </Button> */}
                 </Box>
             </Box>
         </HodlModal>
