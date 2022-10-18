@@ -35,7 +35,7 @@ export default function LoginPage({ loggedIn }) {
                 alignItems: 'center',
                 justifyContent: 'center',
                 // paddingY: 10,
-                height: `calc(100vh - 250px)`,
+                height: {xs: `calc(100vh - 500px)`, sm: `calc(100vh - 250px)`},
                 background: '#fefefe'
             }}>
                 <Box
@@ -163,10 +163,14 @@ export default function LoginPage({ loggedIn }) {
             </Box>
             <Box
                 sx={{
-                    display: 'flex'
+                    display: 'flex',
+                    flexDirection: {
+                        xs: 'column',
+                        sm: 'row'
+                    }
                 }}>
                 <Box sx={{
-                    width: '50%',
+                    width: { xs: '100%%', sm: '50%'},
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -181,7 +185,7 @@ export default function LoginPage({ loggedIn }) {
                             fontSize: 20,
                             color: theme => theme.palette.text.secondary
                         }}
-                    >I'd like early access...</Typography>
+                    >I&apos;d like early access...</Typography>
                     <Box sx={{
                         display: 'flex',
                         alignItems: 'center',
@@ -236,7 +240,7 @@ export default function LoginPage({ loggedIn }) {
 
                 <Box sx={{
                     display: 'flex',
-                    width: '50%',
+                    width: { xs: '100%', sm: '50%'},
                     justifyContent: 'center',
                     alignItems: 'center',
                     height: '250px',
