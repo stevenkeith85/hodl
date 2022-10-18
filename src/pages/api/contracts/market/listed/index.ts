@@ -35,7 +35,7 @@ export const getListed = async (address: string, offset: number, limit: number, 
     const tokenIdToPriceMap = tokenIdsWithPrice.reduce(
         (map, currentValue, currentIndex, array) => {
             console.log('map is ', map)
-            if (currentIndex < (array.length - 1)) {
+            if (currentIndex % 2 == 0 && currentIndex < (array.length - 1)) {
                 map[currentValue] = array[currentIndex + 1];   
             }
 
