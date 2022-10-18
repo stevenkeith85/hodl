@@ -172,7 +172,7 @@ export default function Transaction({ address, user, txs }) {
                                 </Typography>
                                 <Typography>
                                     If some time has passed since your transaction was confirmed on the blockchain;
-                                    and we've still not processed it, then please contact support.
+                                    and we&apos;ve still not processed it, then please contact support.
                                 </Typography>
                             </Box>
                             <Box sx={{ overflow: "auto" }}>
@@ -242,16 +242,16 @@ export default function Transaction({ address, user, txs }) {
                                 On very rare occurrences, we may fail to process the transaction.
                             </Typography>
                             <Typography mb={2} color={theme => theme.palette.text.secondary}>
-                                If your transaction <span>was</span> confirmed on the blockchain, and we haven't processed the transaction; please contact support!!
+                                If your transaction <span>was</span> confirmed on the blockchain, and we haven&apos;t processed the transaction; please contact support!!
                             </Typography>
                             <Typography mb={2} color={theme => theme.palette.text.secondary}>
-                                If support has directed you to this page, then they've determined you need to requeue the transaction. You should use the form below to do this.
+                                If support has directed you to this page, then they&apos;ve determined you need to requeue the transaction. You should use the form below to do this.
                             </Typography>
                             <Typography mb={2} color={theme => theme.palette.text.secondary}>
                                 Before submitting this form, ensure that:
                             </Typography>
                             <Typography component="ul" mb={2}>
-                            <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >You've contacted support!</Typography>
+                            <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >You&apos;ve contacted support!</Typography>
                                 <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >We haven&apos;t already processed that transaction.</Typography>
                                 <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >The transaction has been confirmed on the blockchain.</Typography>
                                 <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >The transaction is for one of our contracts.</Typography>

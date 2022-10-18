@@ -38,7 +38,7 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
           isReachingEnd={isReachingEnd}
         >
             {
-              ({ items }) => items.map((nft: FullToken) => <Box sx={{
+              ({ items }) => items.map((nft: FullToken) => <Box  key={nft.id} sx={{
                 width: {
                   xs: '50%',
                   md: '33.3%'
@@ -50,7 +50,7 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
                   lg: 2
                 }
               }}>
-                {nft && <NftWindow nft={nft} key={nft.id} />}
+                {nft && <NftWindow nft={nft} />}
               </Box>
               )
             }
