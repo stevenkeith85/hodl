@@ -65,6 +65,11 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
                 gif={true}
                 assetFolder="image"
                 height={'575px'}
+                sx={{
+                    video: {
+                        width: 'auto'
+                    }
+                }}
                 onLoad={() => setLoading(false)}
             />
         }

@@ -149,10 +149,14 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                             position: 'relative'
                         }}>
                         <GifBoxOutlined sx={{ position: 'absolute', top: 8, left: 8 }} />
-                        <HodlVideo
+                        <HodlImageResponsive
+                        suffix="jpg"
+                            lcp={lcp}
+                            sizes="(min-width: 900px) 25vw, (min-width: 1200px) calc(1200px / 5 * 2), 50vw"
                             cid={nft?.properties?.asset?.uri}
-                            assetFolder="image"
-                            gif={true}
+                            widths={[400, 800, 1000]}
+                            aspectRatio="1:1"
+                            objectFit='cover'
                         />
                     </Box>
                 }

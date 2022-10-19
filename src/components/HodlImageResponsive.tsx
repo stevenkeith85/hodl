@@ -56,6 +56,7 @@ export const HodlImageResponsive = ({
 
     const srcSet = widths.map(width => `${makeCloudinaryUrl(width)} ${width}w`).join(',');
     const src = makeCloudinaryUrl(widths[0]);
+
     const imgRef = useRef(null);
 
     // onload doesn't fire if the image is being loaded from cache. You can use the complete property to check for this case.
