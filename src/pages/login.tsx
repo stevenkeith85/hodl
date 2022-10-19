@@ -35,14 +35,14 @@ export default function LoginPage({ loggedIn }) {
                 alignItems: 'center',
                 justifyContent: 'center',
                 // paddingY: 10,
-                height: {xs: `calc(100vh - 500px)`, sm: `calc(100vh - 250px)`},
+                height: { xs: `calc(100vh - 500px)`, sm: `calc(100vh - 250px)` },
+                minHeight: '66vh',
                 background: '#fefefe'
             }}>
                 <Box
                     sx={{
                         display: 'flex',
                         alignItems: 'center',
-                        // margin: 2
                     }}>
 
                     <Box
@@ -61,7 +61,7 @@ export default function LoginPage({ loggedIn }) {
 
                     </Box>
                     <RocketLaunch sx={{
-                        marginX: 2,
+                        marginLeft: 2,
                         color: grey[500],
                         fontSize: {
                             xs: 35,
@@ -80,6 +80,8 @@ export default function LoginPage({ loggedIn }) {
                         <>
                             <Typography
                                 sx={{
+                                    marginTop: 2,
+                                    marginBottom: 4,
                                     fontSize: 20,
                                     color: theme => theme.palette.text.secondary
                                 }}
@@ -117,42 +119,44 @@ export default function LoginPage({ loggedIn }) {
                             >
                                 <form>
                                     <Box
-                                        sx={{ display: 'flex' }}
+                                        sx={{ display: 'flex', flexDirection: 'column' }}
                                     >
                                         <TextField
                                             sx={{
                                                 background: 'white',
                                                 width: {
-                                                    xs: 200,
-                                                    sm: 300
-                                                }
+                                                    xs: 300,
+                                                },
+                                                marginBottom: 2
                                             }}
                                             placeholder="Early access password"
-                                            type="text"
+                                            type="password"
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                         />
-                                        <Button
-                                            sx={{
-                                                marginX: 2,
-                                                paddingY: 1,
-                                                paddingX: 3,
-                                                fontSize: 16
-                                            }}
-                                            variant="contained"
-                                            color="secondary"
-                                            type="submit"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                const cookies = new Cookies();
-                                                cookies.set(process.env.NEXT_PUBLIC_HODL_MY_MOON_PASSWORD_COOKIE_NAME, password, {
-                                                    path: "/",
-                                                });
-                                                window.location.href = "/";
-                                            }}
-                                        >
-                                            Login
-                                        </Button>
+                                        <Box>
+                                            <Button
+                                                sx={{
+                                                    marginX: 2,
+                                                    paddingY: 1,
+                                                    paddingX: 3,
+                                                    fontSize: 16
+                                                }}
+                                                variant="contained"
+                                                color="secondary"
+                                                type="submit"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    const cookies = new Cookies();
+                                                    cookies.set(process.env.NEXT_PUBLIC_HODL_MY_MOON_PASSWORD_COOKIE_NAME, password, {
+                                                        path: "/",
+                                                    });
+                                                    window.location.href = "/";
+                                                }}
+                                            >
+                                                Login
+                                            </Button>
+                                        </Box>
                                     </Box>
                                 </form>
                             </Box>
@@ -161,7 +165,7 @@ export default function LoginPage({ loggedIn }) {
                 </Box>
 
             </Box>
-            <Box
+            {!loggedIn && <Box
                 sx={{
                     display: 'flex',
                     flexDirection: {
@@ -170,7 +174,7 @@ export default function LoginPage({ loggedIn }) {
                     }
                 }}>
                 <Box sx={{
-                    width: { xs: '100%%', sm: '50%'},
+                    width: { xs: '100%%', sm: '50%' },
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -180,28 +184,30 @@ export default function LoginPage({ loggedIn }) {
                     boxSizing: 'border-box'
                 }}>
                     <Typography
-                        mb={4}
+                        mb={2}
                         sx={{
                             fontSize: 20,
                             color: theme => theme.palette.text.secondary
                         }}
                     >I&apos;d like early access...</Typography>
-                    <Box sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                    }}>
+                    <Box>
                         <form
                             action="https://hodlmymoon.us9.list-manage.com/subscribe/post?u=ec30c975c5c1d85f780a863c0&amp;id=8528416789&amp;f_id=00f60fe1f0"
                             method="post"
                             target="_self">
-                            <Box>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center'
+                                }}>
                                 <TextField
                                     sx={{
+                                        marginBottom: 2,
                                         background: 'white',
                                         width: {
-                                            xs: 200,
-                                            sm: 300
+                                            maxWidth: '90%',
+                                            xs: 300,
                                         }
                                     }}
                                     placeholder="person@example.com"
@@ -211,27 +217,28 @@ export default function LoginPage({ loggedIn }) {
                                 <Box sx={{
                                     display: 'none'
                                 }}>
-                                    <input 
-                                        type="text" 
-                                        name="b_ec30c975c5c1d85f780a863c0_8528416789" 
-                                        value="" 
+                                    <input
+                                        type="text"
+                                        name="b_ec30c975c5c1d85f780a863c0_8528416789"
+                                        value=""
                                     />
                                 </Box>
-                                <Button
-                                    sx={{
-                                        marginX: 2,
-                                        paddingY: 1.25,
-                                        paddingX: 3,
-                                        fontSize: 16
-                                    }}
-                                    color="info"
-                                    variant="outlined"
-                                    type="submit"
-                                    name="subscribe"
-                                >
-                                    Submit
-                                </Button>
-
+                                <Box>
+                                    <Button
+                                        sx={{
+                                            marginX: 2,
+                                            paddingY: 1.25,
+                                            paddingX: 3,
+                                            fontSize: 16
+                                        }}
+                                        color="info"
+                                        variant="outlined"
+                                        type="submit"
+                                        name="subscribe"
+                                    >
+                                        Submit
+                                    </Button>
+                                </Box>
                             </Box>
                         </form>
                     </Box>
@@ -240,7 +247,7 @@ export default function LoginPage({ loggedIn }) {
 
                 <Box sx={{
                     display: 'flex',
-                    width: { xs: '100%', sm: '50%'},
+                    width: { xs: '100%', sm: '50%' },
                     justifyContent: 'center',
                     alignItems: 'center',
                     height: '250px',
@@ -250,17 +257,17 @@ export default function LoginPage({ loggedIn }) {
                     <Link href="https://twitter.com/hodlmymoon">
                         <Twitter
                             sx={{
-                                marginX: 2,
-                                fontSize: 44,
+                                marginX: { xs: 1, sm: 2 },
+                                fontSize: 30,
                                 color: grey[500]
                             }} />
                     </Link>
                     <Link href="https://www.tiktok.com/@hodlmymoon">
                         <Box
                             sx={{
-                                marginX: 2,
-                                width: 44,
-                                height: 44
+                                marginX: { xs: 1, sm: 2 },
+                                width: 30,
+                                height: 30
                             }}>
                             <TikTokIcon
                                 color={grey[500]}
@@ -270,29 +277,29 @@ export default function LoginPage({ loggedIn }) {
                     <Link href="https://www.reddit.com/user/hodlmymoon1">
                         <Reddit
                             sx={{
-                                marginX: 2,
-                                fontSize: 44,
+                                marginX: { xs: 1, sm: 2 },
+                                fontSize: 30,
                                 color: grey[500]
                             }} />
                     </Link>
                     <Link href="https://www.facebook.com/people/Hodlmymoon/100086969439067/">
                         <Facebook
                             sx={{
-                                marginX: 2,
-                                fontSize: 44,
+                                marginX: { xs: 1, sm: 2 },
+                                fontSize: 30,
                                 color: grey[500]
                             }} />
                     </Link>
                     <Link href="https://www.instagram.com/hodlmymoon/">
                         <Instagram
                             sx={{
-                                marginX: 2,
-                                fontSize: 44,
+                                marginX: { xs: 1, sm: 2 },
+                                fontSize: 30,
                                 color: grey[500]
                             }} />
                     </Link>
                 </Box>
-            </Box>
+            </Box>}
         </>
     )
 }

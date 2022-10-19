@@ -40,7 +40,6 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
                         widths={[575, 700, 800, 900, 1000, 1080]}
                         sizes="575w"
                         onLoad={() => setLoading(false)}
-
                     />
                     </Box>
                     <Box
