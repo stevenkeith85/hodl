@@ -7,9 +7,9 @@ import { getMutableToken } from "../../pages/api/contracts/mutable-token/[tokenI
 import { LogDescription } from "ethers/lib/utils";
 import { updateTransactionRecords } from "./updateTransactionRecords";
 import { updateHodlingCache } from "../../pages/api/contracts/token/hodling/count";
-import { addActionToQueue } from "../actions/addToQueue";
 import { runRedisTransaction } from "../databaseUtils";
 import { updateListedCache } from "../../pages/api/contracts/market/listed/count";
+import { addToZeplo } from "../addToZeplo";
 
 const client = Redis.fromEnv()
 
@@ -65,20 +65,6 @@ export const tokenDelisted = async (
         }
     }
 
-    const actionAdded = await addActionToQueue(
-        req.cookies.accessToken,
-        req.cookies.refreshToken,
-        {
-            subject: req.address,
-            action: ActionTypes.Delisted,
-            object: "token",
-            objectId: tokenId
-        });
-
-    if (!actionAdded) {
-        return false;
-    }
-
     const recordsUpdated = await updateTransactionRecords(req.address, tx.nonce, hash);
 
     if (!recordsUpdated) {
@@ -90,9 +76,22 @@ export const tokenDelisted = async (
 
     Promise.all([updateHodlingCachePromise, updateListedCachePromise]);
 
+    const action = {
+        subject: req.address,
+        action: ActionTypes.Delisted,
+        object: "token",
+        objectId: tokenId
+    };
+
+    await addToZeplo(
+        "api/actions/add",
+        action,
+        req.cookies.refreshToken,
+        req.cookies.accessToken,
+    );
+
     const stop = Date.now()
     console.log('tokenDelisted time taken', stop - start);
-    // TODO: Update listed cached
 
     return true;
 }

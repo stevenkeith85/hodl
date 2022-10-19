@@ -14,6 +14,7 @@ import { getAction } from ".";
 import { pusher } from "../../../lib/server/pusher";
 import { runRedisTransaction } from "../../../lib/databaseUtils";
 import { createHmac } from "crypto";
+import axios from "axios";
 
 const route = apiRoute();
 const client = Redis.fromEnv()
@@ -353,7 +354,7 @@ export const addAction = async (action: HodlAction) => {
     if (token.forSale) {
       return;
     }
-    
+
     await addNotification(`${action.subject}`, action);
     await addNotification(`${action.metadata.seller}`, action);
 
@@ -370,25 +371,31 @@ export const addAction = async (action: HodlAction) => {
 // We either need to consult a cache (fast but possibly inaccurate); or move the actions stuff to a message queue
 
 route.post(async (req, res: NextApiResponse) => {
-
-  // We only accept requests that came via our message queue. 
-  // You need our API key to add something to the queue, so this adds a layer of security
-  const payload = JSON.stringify({ target: `https://${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/api/actions/add` });
-  const signature = createHmac("sha256", process.env.SERVERLESSQ_API_TOKEN)
-    .update(payload)
-    .digest("hex");
-
-  if (signature !== req.headers['x-serverlessq-signature']) {
-    console.log('api/actions - Request did not come via message queue')
-    return res.status(403).json({ message: "Not Authenticated" });
+  if (req.query.secret !== process.env.ZEPLO_SECRET) {
+    console.log("actions/add - endpoint not called via our message queue");
+    return res.status(401).json({ message: 'unauthenticated' });
   }
 
   // We also require the user to be authenticated; so they'll need to have their access/refresh cookies forwarded
   if (!req.address) {
-    return res.status(403).json({ message: "Not Authenticated" });
+    return res.status(403).json({ message: "Not Authenticated - foo" });
   }
 
-  const { action, object, objectId, metadata } = req.body;
+  let body = req.body;
+
+  const inputFromPreviousStep = req.headers['X-Zeplo-Step-A'];
+
+  if (inputFromPreviousStep) {
+    try {
+      const { data } = await axios.get(`https://zeplo.io/requests/${inputFromPreviousStep}/response.body?_token=${process.env.ZEPLO_TOKEN}`);
+      body = data;
+    } catch (e) {
+      console.log('zeplo.io/requests did not return the data', e.message);
+      return res.status(501).json({ message: 'Downstream Server Issue' })
+    }
+  }
+
+  const { action, object, objectId, metadata } = body;
 
   if (!action || !object || !objectId) {
     return res.status(400).json({ message: 'Bad Request' });

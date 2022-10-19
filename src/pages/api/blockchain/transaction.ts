@@ -64,16 +64,9 @@ const transactionDetails = async (hash,
 route.post(async (req, res: NextApiResponse) => {
     const start = Date.now();
 
-    // We only accept requests that came via our message queue. 
-    // You need our API key to add something to the queue, so this adds a layer of security
-    const payload = JSON.stringify({ target: `https://${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/api/blockchain/transaction` });
-    const signature = createHmac("sha256", process.env.SERVERLESSQ_API_TOKEN)
-        .update(payload)
-        .digest("hex");
-
-    if (signature !== req.headers['x-serverlessq-signature']) {
-        console.log('api/actions - Request did not come via message queue')
-        return res.status(403).json({ message: "Not Authenticated" });
+    if (req.query.secret !== process.env.ZEPLO_SECRET) {
+        console.log("blockchain/transaction - endpoint not called via our message queue");
+        return res.status(401).json({ message: 'unauthenticated' });
     }
 
     const hash = getAsString(req.body.hash);
@@ -85,7 +78,14 @@ route.post(async (req, res: NextApiResponse) => {
 
     if (!req.address) {
         console.log(`blockchain/transaction - endpoint called without credentials`);
-        return res.status(503).json({ message: 'unable to process the tx' });
+        return res.status(400).json({ message: 'unable to process the tx' });
+    }
+
+    const firstHashToBeProcessed = await client.zrange(`user:${req.address}:txs:pending`, 0, 0);
+    
+    if (hash !== firstHashToBeProcessed[0]) {
+        console.log(`blockchain/transaction - cannot process this tx until we successfully process the early ones`, hash, firstHashToBeProcessed[0]);
+        return res.status(400).json({ message: 'tx with a lower nonce still in the queue' });
     }
 
     const provider: ethers.providers.BaseProvider = await getProvider();
@@ -128,10 +128,10 @@ route.post(async (req, res: NextApiResponse) => {
 
     const user = await client.hmget<User>(`user:${req.address}`, 'nonce');
 
-    if (tx.nonce <= user.nonce) {
-        console.log(`blockchain/transaction - tx nonce older than last one we successfully processed. tx nonce: ${tx.nonce}, user nonce: ${user.nonce}`);
-        return res.status(400).json({ message: 'bad request' });
-    }
+    // if (tx.nonce <= user.nonce) {
+    //     console.log(`blockchain/transaction - tx nonce older than last one we successfully processed. tx nonce: ${tx.nonce}, user nonce: ${user.nonce}`);
+    //     return res.status(400).json({ message: 'bad request' });
+    // }
 
     // TODO: This is just useful for development. We can remove for prod
     // console.log('blockchain/transaction - transaction details');
@@ -159,25 +159,24 @@ route.post(async (req, res: NextApiResponse) => {
     // TODO: Parsing the first one known to the ABI should be ok? (Potentially we might need to find one of the logs 'of interest')
     const log: LogDescription = parsedLogs[0];
 
-    let success = false;
+    let action = null;
 
-    // TODO: If things are too slow for this serverless function; 
-    // we COULD potentially push the 'updating task' onto another queue? (Prefer not to at the moment though)
     if (log.name === 'TokenListed') {
-        success = await tokenListed(hash, tx, log, req);
+        action = await tokenListed(hash, tx, log, req);
     } else if (log.name === 'TokenDelisted') {
-        success = await tokenDelisted(hash, tx, log, req);
+        action = await tokenDelisted(hash, tx, log, req);
     } else if (log.name === 'TokenBought') {
-        success = await tokenBought(hash, tx, log, req);
-    } else if (log.name === 'Transfer') {
-        success = await tokenMinted(hash, provider, tx, log, req);
+        action = await tokenBought(hash, tx, log, req);
+    } else 
+    if (log.name === 'Transfer') {
+        action = await tokenMinted(hash, provider, tx, log, req);
     }
 
     const stop = Date.now()
     console.log('blockchain/transaction time taken', stop - start);
 
-    if (success) {
-        return res.status(201).json({ message: 'successfully processed the transaction' });
+    if (action) {
+        return res.status(200).json(action);
     }
 
 

@@ -7,10 +7,9 @@ import { MutableToken } from "../../models/Nft";
 import { updateHodlingCache } from "../../pages/api/contracts/token/hodling/count";
 import { LogDescription } from "ethers/lib/utils";
 import { updateTransactionRecords } from "./updateTransactionRecords";
-import axios from 'axios';
-import { addActionToQueue } from "../actions/addToQueue";
 import { runRedisTransaction } from "../databaseUtils";
 import { updateListedCache } from "../../pages/api/contracts/market/listed/count";
+import { addToZeplo } from "../addToZeplo";
 
 const client = Redis.fromEnv()
 
@@ -27,7 +26,7 @@ export const tokenListed = async (
     tx: ethers.providers.TransactionResponse,
     log: LogDescription,
     req
-): Promise<boolean> => {
+) => {
     const start = Date.now();
     console.log(`tokenListed - processing tx`);
 
@@ -80,21 +79,6 @@ export const tokenListed = async (
         }
     } 
 
-    const actionAdded = await addActionToQueue(
-        req.cookies.accessToken,
-        req.cookies.refreshToken,
-        {
-            subject: req.address,
-            action: ActionTypes.Listed,
-            object: "token",
-            objectId: tokenId,
-            metadata: { price }
-        });
-
-    if (!actionAdded) {
-        return false;
-    }
-
     const recordsUpdated = await updateTransactionRecords(req.address, tx.nonce, hash);
 
     if (!recordsUpdated) {
@@ -106,10 +90,23 @@ export const tokenListed = async (
 
     Promise.all([updateHodlingCachePromise, updateListedCachePromise]);
 
+    const action = {
+        subject: req.address,
+        action: ActionTypes.Listed,
+        object: "token",
+        objectId: tokenId,
+        metadata: { price }
+    };
+    
+    await addToZeplo(
+        "api/actions/add",
+        action,
+        req.cookies.refreshToken,
+        req.cookies.accessToken,
+    );
+
     const stop = Date.now()
     console.log('tokenListed time taken', stop - start);
 
-    // TODO: Update listed cached
-
-    return true;
+    return action;
 }

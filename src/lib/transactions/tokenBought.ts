@@ -1,17 +1,15 @@
-import { HodlAction, ActionTypes } from "../../models/HodlAction";
+import { ActionTypes } from "../../models/HodlAction";
 import { ethers } from "ethers";
 import { Redis } from '@upstash/redis';
-import { addAction } from "../../pages/api/actions/add";
-import Market from '../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 import { getTagsForToken } from "../../pages/api/tags";
-import { FullToken, MutableToken } from "../../models/Nft";
-import { getFullToken, getMutableToken } from "../../pages/api/contracts/mutable-token/[tokenId]";
+import { MutableToken } from "../../models/Nft";
+import { getMutableToken } from "../../pages/api/contracts/mutable-token/[tokenId]";
 import { LogDescription } from "ethers/lib/utils";
 import { updateHodlingCache } from "../../pages/api/contracts/token/hodling/count";
 import { updateTransactionRecords } from "./updateTransactionRecords";
-import { addActionToQueue } from "../actions/addToQueue";
 import { runRedisTransaction } from "../databaseUtils";
 import { updateListedCache } from "../../pages/api/contracts/market/listed/count";
+import { addToZeplo } from "../addToZeplo";
 
 const client = Redis.fromEnv()
 
@@ -26,7 +24,7 @@ export const tokenBought = async (
     tx: ethers.providers.TransactionResponse,
     log: LogDescription,
     req
-): Promise<boolean> => {
+) => {
     const start = Date.now();
     console.log(`tokenBought - processing tx`);
 
@@ -80,25 +78,6 @@ export const tokenBought = async (
         await client.hmset(`user:${seller}`, { 'avatar': '' });
     }
 
-    const actionAdded = await addActionToQueue(
-        req.cookies.accessToken,
-        req.cookies.refreshToken,
-        {
-            action: ActionTypes.Bought,
-            subject: buyer,
-            object: "token",
-            objectId: tokenId,
-            metadata: {
-                price,
-                seller
-            }
-        }
-    );
-
-    if (!actionAdded) {
-        return false;
-    }
-
     const recordsUpdated = await updateTransactionRecords(req.address, tx.nonce, hash);
 
     if (!recordsUpdated) {
@@ -110,8 +89,26 @@ export const tokenBought = async (
 
     Promise.all([updateHodlingCachePromise, updateListedCachePromise]);
 
+    const action = {
+        action: ActionTypes.Bought,
+        subject: buyer,
+        object: "token",
+        objectId: tokenId,
+        metadata: {
+            price,
+            seller
+        }
+    };
+
+    await addToZeplo(
+        "api/actions/add",
+        action,
+        req.cookies.refreshToken,    
+        req.cookies.accessToken,
+    );
+
     const stop = Date.now()
     console.log('tokenBought time taken', stop - start);
 
-    return true;
+    return action;
 }

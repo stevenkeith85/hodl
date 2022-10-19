@@ -17,7 +17,7 @@ import { HodlMetadata } from "../../models/Metadata";
 import { LogDescription } from "ethers/lib/utils";
 import { updateHodlingCache } from "../../pages/api/contracts/token/hodling/count";
 import { updateTransactionRecords } from "./updateTransactionRecords";
-import { addActionToQueue } from "../actions/addToQueue";
+import { addToZeplo } from "../addToZeplo";
 
 const client = Redis.fromEnv()
 
@@ -32,7 +32,7 @@ export const tokenMinted = async (
     tx: ethers.providers.TransactionResponse,
     log: LogDescription,
     req
-): Promise<boolean> => {
+) => {
     const start = Date.now();
 
     const { from, to, tokenId } = log.args;
@@ -114,7 +114,7 @@ export const tokenMinted = async (
 
     if (!tokenExists) {
         console.log('tokenMinted - token does not exist, atomically updating redis')
-        
+
         const multiExecCmds = [
             // Add the token information
             ["SET", `token:${token.id}`, JSON.stringify(token)],
@@ -126,7 +126,7 @@ export const tokenMinted = async (
             ["ZADD", `tokens:new`, block.timestamp, token.id],
             ["ZREMRANGEBYRANK", `tokens:new`, 0, -(1000 + 1)],
         ];
-            
+
         const tags = Array.from(description.matchAll(TAG_PATTERN)).map(arr => arr[1]);
         const uniqueTags = Array.from(new Set(tags)).slice(0, MAX_TAGS_PER_TOKEN);
 
@@ -169,23 +169,6 @@ export const tokenMinted = async (
             console.log('tokenMinted - upstash rest api error', e)
             return false; // We will likely want to retry this; so its an unsuccessful run of this function
         }
-    
-    
-    
-    }
-
-    const actionAdded = await addActionToQueue(
-        req.cookies.accessToken,
-        req.cookies.refreshToken,
-        {
-            subject: req.address,
-            action: ActionTypes.Added,
-            object: "token",
-            objectId: token.id
-        });
-
-    if (!actionAdded) {
-        return false;
     }
 
     const recordsUpdated = await updateTransactionRecords(req.address, tx.nonce, hash);
@@ -194,10 +177,30 @@ export const tokenMinted = async (
         return false;
     }
 
+    // We should possibly split this off into its own serverless function, and call it as part of our 'steps' ?
     await updateHodlingCache(req.address);
+
+    // We can either add the action to the queue here; 
+    // or return it and use zeplos 'steps' feature 
+    // to automatically add it if this serverless function succeeds
+
+    // The 'steps' option is likely better as it will reduce the time this serverless function runs :)
+    const action = {
+        subject: req.address,
+        action: ActionTypes.Added,
+        object: "token",
+        objectId: token.id
+    };
+
+    await addToZeplo(
+        'api/actions/add',
+        action,
+        req.cookies.refreshToken,
+        req.cookies.accessToken
+    );
 
     const stop = Date.now()
     console.log('tokenMinted time taken', stop - start);
-    
-    return true;
+
+    return action;
 }

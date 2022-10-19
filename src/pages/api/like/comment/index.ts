@@ -4,7 +4,7 @@ import dotenv from 'dotenv'
 import apiRoute from "../../handler";
 import { ActionTypes } from "../../../../models/HodlAction";
 import { runRedisTransaction } from "../../../../lib/databaseUtils";
-import { addActionToQueue } from "../../../../lib/actions/addToQueue";
+import { addToZeplo } from "../../../../lib/addToZeplo";
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
@@ -13,7 +13,7 @@ const client = Redis.fromEnv()
 // Requests that address likes or stops liking a comment
 route.post(async (req, res: NextApiResponse) => {
   const start = Date.now();
-  
+
   if (!req.address) {
     return res.status(403).json({ message: "Not Authenticated" });
   }
@@ -47,15 +47,19 @@ route.post(async (req, res: NextApiResponse) => {
   }
 
   if (liked) {
-    await addActionToQueue(
-      req.cookies.accessToken,
+    const action = {
+      subject: req.address,
+      action: ActionTypes.Liked,
+      object: "comment",
+      objectId: comment,
+    };
+
+    await addToZeplo(
+      'api/actions/add',
+      action,
       req.cookies.refreshToken,
-      {
-          subject: req.address,
-          action: ActionTypes.Liked,
-          object: "comment",
-          objectId: comment,
-      });
+      req.cookies.accessToken
+    );
   }
 
   const stop = Date.now()

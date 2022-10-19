@@ -4,7 +4,7 @@ import { Redis } from '@upstash/redis';
 import apiRoute from "../../handler";
 import { ActionTypes } from "../../../../models/HodlAction";
 import { runRedisTransaction } from "../../../../lib/databaseUtils";
-import { addActionToQueue } from "../../../../lib/actions/addToQueue";
+import { addToZeplo } from "../../../../lib/addToZeplo";
 
 const route = apiRoute();
 
@@ -56,15 +56,21 @@ route.post(async (req, res: NextApiResponse) => {
     //
     // possibly a cron script that runs once every x mins 
     // to check for things that were missed
-    await addActionToQueue(
-      req.cookies.accessToken,
+
+    const action = {
+      subject: req.address,
+      action: ActionTypes.Liked,
+      object: "token",
+      objectId: token
+    };
+
+    await addToZeplo(
+      'api/actions/add',
+      action,
       req.cookies.refreshToken,
-      {
-        subject: req.address,
-        action: ActionTypes.Liked,
-        object: "token",
-        objectId: token
-      });
+      req.cookies.accessToken,
+      req.address
+    );
   }
 
   const stop = Date.now()

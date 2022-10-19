@@ -8,7 +8,7 @@ import apiRoute from "../handler";
 import cookie from 'cookie'
 import { accessTokenExpiresIn, refreshTokenExpiresIn } from "../../../lib/jwt"
 import { trimZSet } from "../../../lib/databaseUtils"
-import { QueueClient } from "@serverlessq/nextjs/dist/queue/queue-client"
+// import { QueueClient } from "@serverlessq/nextjs/dist/queue/queue-client"
 
 dotenv.config({ path: '../.env' })
 
@@ -127,38 +127,38 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
       }
 
       // Create a tx queue for user if they don't have one
-      const txQueueId = await client.hget(`user:${address}`, 'txQueueId');
+      // const txQueueId = await client.hget(`user:${address}`, 'txQueueId');
 
-      if (!txQueueId) {
-        const queueClient = new QueueClient();
-        const { id } = await queueClient.createOrGetQueue(`tx:${address}`);
-        console.log('auth/login - created tx queue for user with id', id);
+      // if (!txQueueId) {
+      //   const queueClient = new QueueClient();
+      //   const { id } = await queueClient.createOrGetQueue(`tx:${address}`);
+      //   console.log('auth/login - created tx queue for user with id', id);
 
-        const txQueueIdAdded = await client.hsetnx(`user:${address}`, 'txQueueId', id);
+      //   const txQueueIdAdded = await client.hsetnx(`user:${address}`, 'txQueueId', id);
 
-        if (txQueueIdAdded) {
-          console.log(`auth/login - assigned the tx queue with id ${id} to ${address}`);
-        } else {
-          console.log(`auth/login - unable to assign the tx queue with id ${id} to ${address}`);
-        }
-      }
+      //   if (txQueueIdAdded) {
+      //     console.log(`auth/login - assigned the tx queue with id ${id} to ${address}`);
+      //   } else {
+      //     console.log(`auth/login - unable to assign the tx queue with id ${id} to ${address}`);
+      //   }
+      // }
 
       // Create an action queue for user if they don't have one
-      const actionQueueId = await client.hget(`user:${address}`, 'actionQueueId');
+      // const actionQueueId = await client.hget(`user:${address}`, 'actionQueueId');
 
-      if (!actionQueueId) {
-        const queueClient = new QueueClient();
-        const { id } = await queueClient.createOrGetQueue(`action:${address}`);
-        console.log('auth/login - created action queue for user with id', id);
+      // if (!actionQueueId) {
+      //   const queueClient = new QueueClient();
+      //   const { id } = await queueClient.createOrGetQueue(`action:${address}`);
+      //   console.log('auth/login - created action queue for user with id', id);
 
-        const actionQueueAdded = await client.hsetnx(`user:${address}`, 'actionQueueId', id);
+      //   const actionQueueAdded = await client.hsetnx(`user:${address}`, 'actionQueueId', id);
 
-        if (actionQueueAdded) {
-          console.log(`auth/login - assigned the action queue with id ${id} to ${address}`);
-        } else {
-          console.log(`auth/login - unable to assign the action queue with id ${id} to ${address}`);
-        }
-      }
+      //   if (actionQueueAdded) {
+      //     console.log(`auth/login - assigned the action queue with id ${id} to ${address}`);
+      //   } else {
+      //     console.log(`auth/login - unable to assign the action queue with id ${id} to ${address}`);
+      //   }
+      // }
 
       return res.status(200).json({
         success: true,

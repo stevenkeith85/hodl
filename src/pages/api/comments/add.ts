@@ -10,6 +10,7 @@ import { ActionTypes } from "../../../models/HodlAction";
 import { AddCommentValidationSchema } from "../../../validation/comments/addComments";
 import { HodlComment } from "../../../models/HodlComment";
 import { User } from "../../../models/User";
+import { addToZeplo } from "../../../lib/addToZeplo";
 
 dotenv.config({ path: '../.env' })
 const route = apiRoute();
@@ -85,32 +86,46 @@ export const addComment = async (comment: HodlComment, req) => {
 
   const [commentAdded, userRecordAdded, tokenRecordAdded, updatedCommentCount, user] = await p.exec<[string | null, number, number, number, User]>();
 
+
+  const action = {
+    action: ActionTypes.Commented,
+    object: "comment",
+    objectId: comment.id
+  };
+
+  await addToZeplo(
+    'api/actions/add',
+    action,
+    req.cookies.refreshToken,
+    req.cookies.accessToken
+  );
+  
   // TODO - We don't await this at the moment; as we do nothing with the return code.
   // it takes up to a second to get a response. possibly something to follow up with serverlessq at some point
   // we should really log whether things were added to the queue for support purposes
-  const { accessToken, refreshToken } = req.cookies;
-  const url = `https://api.serverlessq.com?id=${user?.actionQueueId}&target=https://${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/api/actions/add`;
-  try {
-    axios.post(
-      url,
-      {
-        action: ActionTypes.Commented,
-        object: "comment",
-        objectId: comment.id
-      },
-      {
-        withCredentials: true,
-        headers: {
-          "Accept": "application/json",
-          "x-api-key": process.env.SERVERLESSQ_API_TOKEN,
-          "Content-Type": "application/json",
-          "Cookie": `refreshToken=${refreshToken}; accessToken=${accessToken}`
-        }
-      }
-    )
-  } catch (e) {
-    console.log(e)
-  }
+  // const { accessToken, refreshToken } = req.cookies;
+  // const url = `https://api.serverlessq.com?id=${user?.actionQueueId}&target=https://${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/api/actions/add`;
+  // try {
+  //   axios.post(
+  //     url,
+  //     {
+  //       action: ActionTypes.Commented,
+  //       object: "comment",
+  //       objectId: comment.id
+  //     },
+  //     {
+  //       withCredentials: true,
+  //       headers: {
+  //         "Accept": "application/json",
+  //         "x-api-key": process.env.SERVERLESSQ_API_TOKEN,
+  //         "Content-Type": "application/json",
+  //         "Cookie": `refreshToken=${refreshToken}; accessToken=${accessToken}`
+  //       }
+  //     }
+  //   )
+  // } catch (e) {
+  //   console.log(e)
+  // }
 
   // const start = new Date();
   // const stop = new Date();

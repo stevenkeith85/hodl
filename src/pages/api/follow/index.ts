@@ -7,6 +7,7 @@ import { addAction } from '../actions/add';
 import { trimZSet } from '../../../lib/databaseUtils';
 import { User } from '../../../models/User';
 import axios from 'axios';
+import { addToZeplo } from '../../../lib/addToZeplo';
 
 dotenv.config({ path: '../.env' })
 const client = Redis.fromEnv()
@@ -82,33 +83,46 @@ export const toggleFollow = async (userAddress, targetAddress, req) => {
 
   
   if (followed) {
-    // TODO - We don't await this at the moment; as we do nothing with the return code.
-    // it takes up to a second to get a response. possibly something to follow up with serverlessq at some point
-    // we should really log whether things were added to the queue for support purposes
-    const { accessToken, refreshToken } = req.cookies;
-    const user = await client.hmget<User>(`user:${req.address}`, 'actionQueueId');
-    const url = `https://api.serverlessq.com?id=${user?.actionQueueId}&target=https://${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/api/actions/add`;
-    try {
-      axios.post(
-        url,
-        {
-          action: ActionTypes.Followed,
-          object: "address",
-          objectId: targetAddress
-        },
-        {
-          withCredentials: true,
-          headers: {
-            "Accept": "application/json",
-            "x-api-key": process.env.SERVERLESSQ_API_TOKEN,
-            "Content-Type": "application/json",
-            "Cookie": `refreshToken=${refreshToken}; accessToken=${accessToken}`
-          }
-        }
-      )
-    } catch (e) {
-      console.log(e)
-    }
+    const action = {
+      action: ActionTypes.Followed,
+      object: "address",
+      objectId: targetAddress
+    };
+
+    await addToZeplo(
+      'api/actions/add',
+      action,
+      req.cookies.refreshToken,
+      req.cookies.accessToken
+    );
+    
+    // // TODO - We don't await this at the moment; as we do nothing with the return code.
+    // // it takes up to a second to get a response. possibly something to follow up with serverlessq at some point
+    // // we should really log whether things were added to the queue for support purposes
+    // const { accessToken, refreshToken } = req.cookies;
+    // const user = await client.hmget<User>(`user:${req.address}`, 'actionQueueId');
+    // const url = `https://api.serverlessq.com?id=${user?.actionQueueId}&target=https://${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/api/actions/add`;
+    // try {
+    //   axios.post(
+    //     url,
+    //     {
+    //       action: ActionTypes.Followed,
+    //       object: "address",
+    //       objectId: targetAddress
+    //     },
+    //     {
+    //       withCredentials: true,
+    //       headers: {
+    //         "Accept": "application/json",
+    //         "x-api-key": process.env.SERVERLESSQ_API_TOKEN,
+    //         "Content-Type": "application/json",
+    //         "Cookie": `refreshToken=${refreshToken}; accessToken=${accessToken}`
+    //       }
+    //     }
+    //   )
+    // } catch (e) {
+    //   console.log(e)
+    // }
   }
 
   return followed;
