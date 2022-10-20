@@ -38,5 +38,6 @@ export default route;
 export const config = {
   api: {
     bodyParser: false, // Disallow body parsing, consume as stream
+    responseLimit: false
   },
 };
