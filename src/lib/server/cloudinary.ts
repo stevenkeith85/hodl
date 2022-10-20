@@ -57,6 +57,8 @@ const storage = new CloudinaryStorage({
         const isAudio = file.mimetype.indexOf('audio') !== -1;
 
         if (isImage) {
+            console.log(file);
+            console.log("Trying to upload an image to cloudinary")
             return {
                 folder: `${process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER}/uploads/`,
                 public_id,
@@ -65,6 +67,7 @@ const storage = new CloudinaryStorage({
             };
         }
         else if (isVideo) {
+            console.log("Trying to upload an image to cloudinary")
             return {
                 folder: `${process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER}/uploads/`,
                 public_id,
@@ -81,6 +84,7 @@ const storage = new CloudinaryStorage({
                 format: 'mp4'
             };
         } else if (isAudio) {
+            console.log("Trying to upload an image to cloudinary")
             return {
                 folder: `${process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER}/uploads/`,
                 public_id,
