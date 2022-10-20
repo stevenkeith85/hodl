@@ -21,8 +21,8 @@ export const HodlDropzone = ({ onDrop, loading }) => {
     }
     const { getRootProps, getInputProps } = useDropzone({
         onDrop,
-        maxFiles: 1,
-        accept: ['image/*', 'video/*', 'audio/*'],
+        // maxFiles: 1,
+        // accept: ['image/*', 'video/*', 'audio/*'],
         // validator
     })
 
