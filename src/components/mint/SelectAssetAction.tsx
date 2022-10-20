@@ -48,6 +48,8 @@ export const SelectAssetAction: FC<MintProps> = ({
   }, [enqueueSnackbar, setFormData, setLoading, setStepComplete, uploadToCloudinary]);
 
   const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
+    console.log('acceptedFiles', acceptedFiles);
+    console.log('rejectedFiles', rejectedFiles);
     if (rejectedFiles.length === 1) {
       enqueueSnackbar(
         rejectedFiles?.[0]?.errors?.[0]?.message,
