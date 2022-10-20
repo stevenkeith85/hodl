@@ -36,8 +36,7 @@ export default function LoginPage({ loggedIn }) {
                 justifyContent: 'center',
                 // paddingY: 10,
                 height: { xs: `calc(100vh - 500px)`, sm: `calc(100vh - 250px)` },
-                minHeight: '66vh',
-                background: '#fefefe'
+                minHeight: 'max(66vh, 400px)',
             }}>
                 <Box
                     sx={{
@@ -70,6 +69,18 @@ export default function LoginPage({ loggedIn }) {
                         },
                     }} />
                 </Box>
+                <Typography
+                    sx={{
+                        marginTop: 1,
+                        marginBottom: 0,
+                        fontFamily: theme => theme.logo.fontFamily,
+                        fontSize: {
+                            xs: 20,
+                        },
+                        color: '#999'
+                    }}>
+                    A web3 social network and marketplace
+                </Typography>
                 <Box sx={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -78,19 +89,12 @@ export default function LoginPage({ loggedIn }) {
                 }}>
                     {loggedIn ?
                         <>
-                            <Typography
-                                sx={{
-                                    marginTop: 2,
-                                    marginBottom: 4,
-                                    fontSize: 20,
-                                    color: theme => theme.palette.text.secondary
-                                }}
-                            >Thanks for testing!</Typography>
                             <Button
                                 sx={{
                                     paddingY: 1,
                                     paddingX: 3,
-                                    fontSize: 16
+                                    fontSize: 16,
+                                    margin: 6
                                 }}
                                 color="secondary"
                                 variant="contained"
@@ -127,9 +131,9 @@ export default function LoginPage({ loggedIn }) {
                                                 width: {
                                                     xs: 300,
                                                 },
-                                                marginBottom: 2
+                                                marginBottom: 2,
                                             }}
-                                            placeholder="Early access password"
+                                            placeholder="early access password"
                                             type="password"
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
