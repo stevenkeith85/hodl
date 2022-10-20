@@ -97,9 +97,10 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                 display="flex"
                 flexDirection="column"
                 sx={{
+                    boxSizing: 'border-box',
                     width: `calc(100% + 20px)`,
                     marginLeft: '-20px',
-                    paddingBottom: 3,
+                    marginBottom: 2
                 }}
             >
                 <Box

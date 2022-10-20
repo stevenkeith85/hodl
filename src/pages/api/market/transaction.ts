@@ -61,11 +61,13 @@ route.post(async (req, res: NextApiResponse) => {
   // }
 
 
-  const success = await addToZeplo('api/blockchain/transaction',
-    { hash },
-    req.cookies.refreshToken,
-    req.cookies.accessToken
-  );
+  // const success = await addToZeplo('api/blockchain/transaction',
+  //   { hash },
+  //   req.cookies.refreshToken,
+  //   req.cookies.accessToken
+  // );
+
+  const success = await queueTxAndAction(hash, req.cookies.refreshToken, req.cookies.accessToken, req.address);
 
   if (!success) {
     return res.status(501).json({ message: 'We were unable to queue tx at the moment; please try later' });

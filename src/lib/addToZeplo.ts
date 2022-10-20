@@ -8,8 +8,7 @@ export const addToZeplo = async (
     trace = '') => {
     try {
         const serverlessFunctionUrl = `https://${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/${endpoint}`;
-        const zeploUrl = `https://zeplo.to/${serverlessFunctionUrl}?secret=${process.env.ZEPLO_SECRET}&_token=${process.env.ZEPLO_TOKEN}&_trace=${trace}&_retry=1`;
-        // const zeploUrl = `${serverlessFunctionUrl}?secret=${process.env.ZEPLO_SECRET}&_token=${process.env.ZEPLO_TOKEN}&_trace=${trace}&_retry=1`;
+        const zeploUrl = `https://zeplo.to/${serverlessFunctionUrl}?secret=${process.env.ZEPLO_SECRET}&_token=${process.env.ZEPLO_TOKEN}&_trace=${trace}&_retry=2`;
 
         const start = Date.now();
 
@@ -34,14 +33,15 @@ export const addToZeplo = async (
 export const queueTxAndAction = async (
     hash,
     refreshToken,
-    accessToken) => {
+    accessToken,
+    trace = '') => {
     try {        
         const start = Date.now();
 
         const { data } = await axios.post(
             `https://zeplo.to/step?_token=${process.env.ZEPLO_TOKEN}`, [
                 {
-                    url: `https://${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/api/blockchain/transaction?_step=A`,
+                    url: `https://${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/api/blockchain/transaction?secret=${process.env.ZEPLO_SECRET}&_step=A&_retry=2`,
                     headers: {
                         "Cookie": `refreshToken=${refreshToken}; accessToken=${accessToken}`
                     },
@@ -49,7 +49,7 @@ export const queueTxAndAction = async (
                         hash
                     }
                 }, {
-                    url: `https://${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/api/actions/add?_requires=A`,
+                    url: `https://${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/api/actions/add?secret=${process.env.ZEPLO_SECRET}&_requires=A&_retry=2`,
                     headers: {
                         "Cookie": `refreshToken=${refreshToken}; accessToken=${accessToken}`
                     },

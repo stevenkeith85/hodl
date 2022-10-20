@@ -180,24 +180,12 @@ export const tokenMinted = async (
     // We should possibly split this off into its own serverless function, and call it as part of our 'steps' ?
     await updateHodlingCache(req.address);
 
-    // We can either add the action to the queue here; 
-    // or return it and use zeplos 'steps' feature 
-    // to automatically add it if this serverless function succeeds
-
-    // The 'steps' option is likely better as it will reduce the time this serverless function runs :)
     const action = {
         subject: req.address,
         action: ActionTypes.Added,
         object: "token",
         objectId: token.id
     };
-
-    await addToZeplo(
-        'api/actions/add',
-        action,
-        req.cookies.refreshToken,
-        req.cookies.accessToken
-    );
 
     const stop = Date.now()
     console.log('tokenMinted time taken', stop - start);

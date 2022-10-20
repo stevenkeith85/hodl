@@ -45,13 +45,13 @@ export const Comments: FC<CommentsProps> = ({
                         width: {
                             xs: '90vw',
                         },
-                        maxWidth: "900px"
+                        maxWidth: "1200px"
                     }}
                 >
                     <HodlCommentsBox
                         limit={10}
-                        maxHeight="60vh"
-                        minHeight="30vh"
+                        maxHeight="80vh"
+                        minHeight="40vh"
                     />
 
                 </HodlModal>

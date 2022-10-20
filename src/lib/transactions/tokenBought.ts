@@ -100,13 +100,6 @@ export const tokenBought = async (
         }
     };
 
-    await addToZeplo(
-        "api/actions/add",
-        action,
-        req.cookies.refreshToken,    
-        req.cookies.accessToken,
-    );
-
     const stop = Date.now()
     console.log('tokenBought time taken', stop - start);
 

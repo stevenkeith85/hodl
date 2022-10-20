@@ -22,7 +22,7 @@ export const tokenDelisted = async (
     tx: ethers.providers.TransactionResponse,
     log: LogDescription,
     req
-): Promise<boolean> => {
+) => {
     const start = Date.now();
     console.log(`tokenDelisted - processing tx`);
 
@@ -83,15 +83,8 @@ export const tokenDelisted = async (
         objectId: tokenId
     };
 
-    await addToZeplo(
-        "api/actions/add",
-        action,
-        req.cookies.refreshToken,
-        req.cookies.accessToken,
-    );
-
     const stop = Date.now()
     console.log('tokenDelisted time taken', stop - start);
 
-    return true;
+    return action;
 }

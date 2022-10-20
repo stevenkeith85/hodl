@@ -31,9 +31,12 @@ export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit, follow
       flexDirection={"column"}
       sx={{width: '100%'}}
     >
+      
       <InfiniteScroll
         swr={swr}
-        loadingIndicator={<HodlLoadingSpinner />}
+        loadingIndicator={
+          <HodlLoadingSpinner sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 1 }}/>
+        }
         isReachingEnd={swr => {
           return swr.data?.[0]?.items?.length == 0 ||
             swr.data?.[swr.data?.length - 1]?.items?.length < limit

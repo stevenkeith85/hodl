@@ -383,11 +383,12 @@ route.post(async (req, res: NextApiResponse) => {
 
   let body = req.body;
 
-  const inputFromPreviousStep = req.headers['X-Zeplo-Step-A'];
+  const inputFromPreviousStep = req.headers['x-zeplo-step-a'];
 
   if (inputFromPreviousStep) {
     try {
-      const { data } = await axios.get(`https://zeplo.io/requests/${inputFromPreviousStep}/response.body?_token=${process.env.ZEPLO_TOKEN}`);
+      const url = `https://zeplo.to/requests/${inputFromPreviousStep}/response.body?_token=${process.env.ZEPLO_TOKEN}`;
+      const { data } = await axios.get(url);
       body = data;
     } catch (e) {
       console.log('zeplo.io/requests did not return the data', e.message);

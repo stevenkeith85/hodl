@@ -97,13 +97,6 @@ export const tokenListed = async (
         objectId: tokenId,
         metadata: { price }
     };
-    
-    await addToZeplo(
-        "api/actions/add",
-        action,
-        req.cookies.refreshToken,
-        req.cookies.accessToken,
-    );
 
     const stop = Date.now()
     console.log('tokenListed time taken', stop - start);

@@ -25,9 +25,10 @@ export const InfiniteScrollComments: React.FC<InfiniteScrollCommentsProps> = ({
   mutateCount = null }) => {
 
   return (
+    <>
     <InfiniteScroll
       swr={swr}
-      loadingIndicator={<HodlLoadingSpinner />}
+      loadingIndicator={<HodlLoadingSpinner sx={{ display: 'flex', justifyContent: 'center', width: '100%', padding: 1 }} />}
       isReachingEnd={
         swr => {
           return swr.data?.[0]?.items?.length == 0 || 
@@ -56,5 +57,6 @@ export const InfiniteScrollComments: React.FC<InfiniteScrollCommentsProps> = ({
         </Box>
       }
     </InfiniteScroll>
+    </>
   )
 }

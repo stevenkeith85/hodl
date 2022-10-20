@@ -1,4 +1,4 @@
-import { Alert, Box, Button, Link, Tab, Table, TableBody, TableCell, TableHead, TableRow, Tabs, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Link, NoSsr, Tab, Table, TableBody, TableCell, TableHead, TableRow, Tabs, TextField, Typography } from "@mui/material";
 import { authenticate } from "../../lib/jwt";
 import axios from 'axios';
 import { format, fromUnixTime } from "date-fns";
@@ -9,7 +9,142 @@ import { SuccessModal } from "../../components/modals/SuccessModal";
 import { FailureModal } from "../../components/modals/FailureModal";
 import { getUser } from "../api/user/[handle]";
 import useSWR from "swr";
+import InfiniteScroll from "react-swr-infinite-scroll";
+import { useTransactions } from "../../hooks/useTransactions";
+import { HodlLoadingSpinner } from "../../components/HodlLoadingSpinner";
 
+
+export const PendingTransactionsTable = ({ limit = 10 }) => {
+
+    const { swr: pendingTxsSWR } = useTransactions(limit, false);
+
+    const isReachingEnd = swr => {
+        const firstPageEmpty = swr.data?.[0]?.items?.length == 0;
+        const lastPageNotFull = swr.data?.[swr.data?.length - 1]?.items?.length < limit;
+
+        return firstPageEmpty || lastPageNotFull;
+    }
+
+    return (<>
+        <Box sx={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            width: `100%`,
+            paddingX: 1,
+            marginBottom: 1,
+            borderBottom: `1px solid #ddd`
+        }}>
+            <Typography>Transaction Hash</Typography>
+            <Typography m={1} sx={{ textAlign: 'right' }}>Nonce</Typography>
+        </Box>
+        <Box sx={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            width: `100%`,
+            height: '500px',
+            overflow: 'auto',
+            gap: 2,
+            padding: 1
+        }}>
+            {pendingTxsSWR.data && pendingTxsSWR.data[0] && pendingTxsSWR.data[0].total === 0 && <Typography sx={{ color: theme => theme.palette.text.secondary }}>No Items</Typography>}
+            {
+                pendingTxsSWR.data &&
+                <InfiniteScroll
+                    swr={pendingTxsSWR}
+                    isReachingEnd={isReachingEnd}
+                    loadingIndicator={<HodlLoadingSpinner sx={{ paddingY: 1 }} />}
+                >
+                    {
+                        ({ items }) => (items || []).map(({ hash, nonce }) => (
+                            <>
+                                <Link href={`https://mumbai.polygonscan.com/tx/${hash}`}>
+                                    <Typography
+                                        sx={{
+                                            display: 'inline-block',
+                                            inlineSize: {
+                                                xs: '50vw',
+                                                lg: 'calc(1200px / 2)'
+                                            },
+                                            overflowWrap: 'break-word'
+                                        }}>
+                                        {hash}
+                                    </Typography>
+                                </Link>
+                                <TableCell>{nonce}</TableCell>
+                            </>
+                        ))
+                    }
+                </InfiniteScroll >
+            }
+        </Box>
+
+    </>)
+}
+
+
+export const ProcessedTransactionsTable = ({ limit = 10 }) => {
+
+    const { swr: processedTxsSWR } = useTransactions(limit);
+
+    const isReachingEnd = swr => {
+        const firstPageEmpty = swr.data?.[0]?.items?.length == 0;
+        const lastPageNotFull = swr.data?.[swr.data?.length - 1]?.items?.length < limit;
+
+        return firstPageEmpty || lastPageNotFull;
+    }
+
+    return (<>
+        <Box sx={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            width: `100%`,
+            paddingX: 1,
+            marginBottom: 1,
+            borderBottom: `1px solid #ddd`
+        }}>
+            <Typography>Transaction Hash</Typography>
+            <Typography m={1} sx={{ textAlign: 'right' }}>Time Processed</Typography>
+        </Box>
+        <Box sx={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            width: `100%`,
+            height: '500px',
+            overflow: 'auto',
+            gap: 2,
+            padding: 1
+        }}>
+            {
+                processedTxsSWR.data &&
+                <InfiniteScroll
+                    swr={processedTxsSWR}
+                    isReachingEnd={isReachingEnd}
+                    loadingIndicator={<HodlLoadingSpinner sx={{ paddingY: 1 }} />}
+                >
+                    {
+                        ({ items }) => (items || []).map(({ hash, timestamp }) => (
+                            <>
+                                <Link href={`https://mumbai.polygonscan.com/tx/${hash}`}>
+                                    <Typography
+                                        sx={{
+                                            display: 'inline-block',
+                                            inlineSize: {
+                                                xs: '50vw',
+                                                lg: 'calc(1200px / 2)'
+                                            },
+                                            overflowWrap: 'break-word'
+                                        }}>
+                                        {hash}
+                                    </Typography>
+                                </Link>
+                                <Typography sx={{ textAlign: 'right' }}>{format(fromUnixTime(timestamp / 1000), 'LLL do, yyyy, HH:mm:ss')}</Typography>
+                            </>
+                        ))
+                    }
+                </InfiniteScroll >}
+        </Box>
+    </>)
+}
 
 export async function getServerSideProps({ req, res }) {
     await authenticate(req, res);
@@ -28,21 +163,9 @@ export async function getServerSideProps({ req, res }) {
     }
 }
 
-export default function Transaction({ address, user }) {
+export default function Transaction({ address, user, limit = 10 }) {
 
-    const [value, setValue] = useState(0); // tab
-
-    const { data: pendingTxs } = useSWR(
-        [`/api/transactions/pending`, 0, 100],
-        (url, offset, limit) => axios.get(`${url}?offset=${offset}&limit=${limit}`).then(r => r.data)
-    );
-
-    const { data: processedTxs } = useSWR(
-        [`/api/transactions/processed`, 0, 100],
-        (url, offset, limit) => axios.get(`${url}?offset=${offset}&limit=${limit}`).then(r => r.data)
-    );
-
-
+    const [value, setValue] = useState(1); // tab
     return (
         <>
             <Head>
@@ -74,11 +197,11 @@ export default function Transaction({ address, user }) {
                         <Tab
                             component="a"
                             onClick={(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-                                setValue(1);
+                                setValue(0);
                             }}
-                            key={1}
-                            value={1}
-                            label="Processed Transactions"
+                            key={0}
+                            value={0}
+                            label="Pending"
                             sx={{
                                 minWidth: 0,
                                 paddingX: {
@@ -92,11 +215,11 @@ export default function Transaction({ address, user }) {
                         <Tab
                             component="a"
                             onClick={(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-                                setValue(0);
+                                setValue(1);
                             }}
-                            key={0}
-                            value={0}
-                            label="Pending Transactions"
+                            key={1}
+                            value={1}
+                            label="Processed"
                             sx={{
                                 minWidth: 0,
                                 paddingX: {
@@ -110,110 +233,40 @@ export default function Transaction({ address, user }) {
                     </Tabs>
                     <div hidden={value !== 0}>
                         <Box marginY={4}>
-                            <Box mb={2}>
+                            <Box sx={{
+                                margin: 1,
+                                marginBottom: 4
+                            }}>
                                 <Typography mb={1}>
-                                    This is the set of transactions that have been queued for processing.
+                                    This is the set of transactions that are currently queued for processing.
+                                </Typography>
+                                {/* <Typography mb={1}>
+                                    A transaction will remain queued until it has been confirmed on the blockchain; and all transactions with a lower nonce have been processed.
                                 </Typography>
                                 <Typography mb={1}>
-                                    A Tx will remain queued until it is confirmed on the blockchain, and any previously pending transactions have completed.
-                                </Typography>
-                                <Typography mb={1}>
-
-                                </Typography>
+                                    If you think a transaction has gotten 'stuck', please contact support.
+                                </Typography> */}
                             </Box>
-                            <Box sx={{ overflow: "auto" }}>
-                                <Box sx={{ width: "100%", display: "table", tableLayout: "fixed" }}>
-                                    <Table aria-label="simple table">
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell>Tx Hash</TableCell>
-                                                <TableCell>Nonce</TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {/* {pendingTxs && JSON.stringify(pendingTxs.items)} */}
-                                            {pendingTxs && pendingTxs.items.map(({ hash, nonce }) => (
-                                                <TableRow key={hash}>
-                                                    <TableCell>
-                                                        <Link href={`https://mumbai.polygonscan.com/tx/${hash}`}>
-                                                            <Typography
-                                                                sx={{
-                                                                    display: 'inline-block',
-                                                                    inlineSize: {
-                                                                        xs: 200,
-                                                                        sm: 300,
-                                                                        md: 400,
-                                                                        lg: 500,
-                                                                        xl: 700
-                                                                    },
-                                                                    overflowWrap: 'break-word'
-                                                                }}>
-                                                                {hash}
-                                                            </Typography>
-                                                        </Link>
-                                                    </TableCell>
-                                                    <TableCell>{nonce}</TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </Box>
-                            </Box>
+                            <PendingTransactionsTable limit={limit} />
                         </Box>
                     </div>
                     <div hidden={value !== 1}>
                         <Box marginY={4}>
-                            <Box mb={2}>
+                            <Box sx={{
+                                margin: 1,
+                                marginBottom: 4
+                            }}>
                                 <Typography mb={1}>
-                                    This is the set of your transactions that we have successfully processed.
+                                    This is the set of transactions that we have successfully processed.
                                 </Typography>
-                                <Typography mb={1}>
+                                {/* <Typography mb={1}>
                                     If your latest transaction is not here, it might still be queued for processing.
-                                </Typography>
-                                <Typography mb={1}>
-                                    You can check the Pending Transactions tab for it.
-                                </Typography>
+                                </Typography> */}
                             </Box>
-                            <Box sx={{ overflow: "auto" }}>
-                                <Box sx={{ width: "100%", display: "table", tableLayout: "fixed" }}>
-                                    <Table aria-label="simple table">
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell>Tx Hash</TableCell>
-                                                <TableCell>Time Processed</TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {processedTxs && processedTxs.items.map(({ hash, timestamp }) => (
-                                                <TableRow key={hash}>
-                                                    <TableCell>
-                                                        <Link href={`https://mumbai.polygonscan.com/tx/${hash}`}>
-                                                            <Typography
-                                                                sx={{
-                                                                    display: 'inline-block',
-                                                                    inlineSize: {
-                                                                        xs: 200,
-                                                                        sm: 300,
-                                                                        md: 400,
-                                                                        lg: 500,
-                                                                        xl: 700
-                                                                    },
-                                                                    overflowWrap: 'break-word'
-                                                                }}>
-                                                                {hash}
-                                                            </Typography>
-                                                        </Link>
-                                                    </TableCell>
-                                                    <TableCell>{format(fromUnixTime(timestamp / 1000), 'LLL do, yyyy, HH:mm:ss')}</TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </Box>
-                            </Box>
+                            <ProcessedTransactionsTable limit={limit} />
                         </Box>
                     </div>
-                </HodlBorderedBox>
-            </Box>
+                </HodlBorderedBox >
+            </Box >
         </>)
 }
