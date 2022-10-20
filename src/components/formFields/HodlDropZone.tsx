@@ -23,7 +23,7 @@ export const HodlDropzone = ({ onDrop, loading }) => {
         onDrop,
         maxFiles: 1,
         accept: ['image/*', 'video/*', 'audio/*'],
-        validator
+        // validator
     })
 
     return (
