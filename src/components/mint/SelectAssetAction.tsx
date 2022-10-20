@@ -31,6 +31,7 @@ export const SelectAssetAction: FC<MintProps> = ({
   const cloudinaryUpload = useCallback(async (file) => {
     setLoading(true);
 
+    alert('cloudinaryUpload');
     const { success, fileName, mimeType } = await uploadToCloudinary(file);
 
     if (success) {
@@ -49,8 +50,9 @@ export const SelectAssetAction: FC<MintProps> = ({
   }, [enqueueSnackbar, setFormData, setLoading, setStepComplete, uploadToCloudinary]);
 
   const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
-    console.log('acceptedFiles', acceptedFiles);
-    console.log('rejectedFiles', rejectedFiles);
+    alert(acceptedFiles[0].name);
+    alert(acceptedFiles[0].type);
+    alert(acceptedFiles[0].size/1024/1024);
     if (rejectedFiles.length === 1) {
       enqueueSnackbar(
         rejectedFiles?.[0]?.errors?.[0]?.message,
