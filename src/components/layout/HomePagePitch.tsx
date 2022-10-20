@@ -55,12 +55,11 @@ export const HomePagePitch = ({ }) => {
                                 fontFamily: theme => theme.logo.fontFamily,
                                 fontSize: {
                                     xs: 20,
-                                    sm: 25,
-                                    md: 30
+                                    sm: 22,
                                 },
                                 color: '#999'
                             }}>
-                            is a web3 social network<br/> and marketplace
+                            a web3 social network<br/> and marketplace
                         </Typography>
                         <Box
                             sx={{
