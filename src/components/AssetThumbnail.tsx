@@ -28,8 +28,8 @@ export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token, size = 44
 
     return (
         <Tooltip
-            title={<TokenTooltip token={token}/>}
-            arrow 
+            title={<TokenTooltip token={token} />}
+            arrow
             placement="right"
         >
             <Box
@@ -59,12 +59,13 @@ export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token, size = 44
                     />
                 }
                 {assetType(token) === AssetTypes.Gif &&
-                    <HodlVideo
-                        cid={token?.properties?.asset?.uri}
-                        gif={true}
-                        assetFolder="image"
-                        height={`${size}px`}
-                        width={`${size}px`}
+                    <HodlImageResponsive
+                        cid={token?.image}
+                        widths={[size, size * 2]}
+                        sizes={`${size}px`}
+                        aspectRatio="1:1"
+                        gravity="g_face:center"
+                        suffix="jpg"
                     />
                 }
                 {assetType(token) === AssetTypes.Audio &&

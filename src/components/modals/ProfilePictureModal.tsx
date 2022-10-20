@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box, Button, ImageListItem, Stack, Typography } from "@mui/material";
 import { useContext, useState } from "react";
 import { WalletContext } from '../../contexts/WalletContext';
 import { HodlModal } from "./HodlModal";
@@ -8,6 +8,7 @@ import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 import SelectProfileNFT from "../SelectProfileNFT";
 import useSWR, { mutate } from "swr";
 import { useHodling } from "../../hooks/useHodling";
+import { AssetThumbnail } from "../AssetThumbnail";
 
 
 export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePictureModalOpen, lim = 10 }) => {
@@ -19,7 +20,7 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
         (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.token)
     )
 
-    const {swr} = useHodling(address, lim, null, profilePictureModalOpen);
+    const { swr } = useHodling(address, lim, null, profilePictureModalOpen);
 
     const [token, setToken] = useState(tokenId);
 
@@ -32,30 +33,57 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
             <HodlModal
                 open={profilePictureModalOpen}
                 setOpen={setProfilePictureModalOpen}
+                sx={{
+                    width: '450px',
+                    maxWidth: '90%'
+                }}
             >
                 <Stack spacing={3} textAlign="center">
-                    <Typography variant="h2" sx={{ fontSize: '18px', fontWeight: 600 }}>Avatar</Typography>
-                    <Typography sx={{ fontSize: '18px', color: '#999' }}>Select an NFT to use as your profile avatar</Typography>
+                    <Typography variant="h2" sx={{ fontSize: '18px' }}>Select Profile Avatar</Typography>
+                    <Box
+                        sx={{
+                            height: '450px',
+                            maxHeight: '80vh',
+                            overflow: 'auto',
+                            display: 'flex',
+                            flexWrap: 'wrap'
+                        }}>
 
-                    <InfiniteScroll
-                        swr={swr}
-                        loadingIndicator={<HodlLoadingSpinner />}
-                        isReachingEnd={
-                            swr => {
-                                return swr.data?.[0]?.items?.length == 0 || 
+                        <InfiniteScroll
+                            swr={swr}
+                            loadingIndicator={<HodlLoadingSpinner sx={{ width: '33%', display: 'flex', alignItems: 'center', justifyContent: 'center' }} />}
+                            isReachingEnd={
+                                swr => {
+                                    return swr.data?.[0]?.items?.length == 0 ||
                                         swr.data?.[swr.data?.length - 1]?.items?.length < lim
-                              }
-                        }
-                    >
-                        {
-                            ({ items }) =>
-                                <SelectProfileNFT
-                                    selectedTokenId={token}
-                                    nfts={items}
-                                    onClick={(tokenId) => setToken(tokenId)}
-                                />
-                        }
-                    </InfiniteScroll>
+                                }
+                            }
+                        >
+                            {
+                                ({ items }) => items.map((nft, i) => (
+                                    <Box
+                                        sx={{ width: '33%' }}
+                                        key={i}
+                                        onClick={
+                                            () => setToken(nft.id)
+                                        }
+                                    >
+                                        <Box
+                                            sx={{
+                                                lineHeight: 0,
+                                                border: token === nft?.id ?
+                                                    theme => `2px solid ${theme.palette.secondary.main}` :
+                                                    "2px solid transparent"
+                                            }}
+                                        >
+                                            <AssetThumbnail token={nft} size={150} />
+                                        </Box>
+                                    </Box>
+                                )
+                                )
+                            }
+                        </InfiniteScroll>
+                    </Box>
                     <Box display="grid" gridTemplateColumns={"1fr 1fr"} gap={4}>
                         <Button
                             variant="contained"
