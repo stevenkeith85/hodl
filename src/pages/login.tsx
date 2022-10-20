@@ -36,7 +36,7 @@ export default function LoginPage({ loggedIn }) {
                 justifyContent: 'center',
                 // paddingY: 10,
                 height: { xs: `calc(100vh - 500px)`, sm: `calc(100vh - 250px)` },
-                minHeight: 'max(66vh, 400px)',
+                minHeight: 'max(70vh, 450px)',
             }}>
                 <Box
                     sx={{
@@ -75,9 +75,11 @@ export default function LoginPage({ loggedIn }) {
                         marginBottom: 0,
                         fontFamily: theme => theme.logo.fontFamily,
                         fontSize: {
-                            xs: 20,
+                            xs: 18,
+                            sm: 20,
                         },
-                        color: '#999'
+                        color: '#999',
+                        textAlign: 'center'
                     }}>
                     A web3 social network and marketplace
                 </Typography>
