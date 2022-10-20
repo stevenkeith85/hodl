@@ -36,7 +36,7 @@ export const useCloudinaryUpload = (): [Function, string, Function] => {
     } catch (error) {
       alert('error uploading to cloudinary' + error.message);
       alert('response data' + JSON.stringify(error.response.data, null, 2));
-      if (error.response.status === 400 || error.response.status === 429) {
+      if (error.response.status === 400 || error.response.status === 429) { // or 413 ?
         const { message } = error.response.data;
         setError(message);
       }

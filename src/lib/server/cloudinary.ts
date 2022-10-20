@@ -56,6 +56,7 @@ const storage = new CloudinaryStorage({
         const isVideo = file.mimetype.indexOf('video') !== -1;
         const isAudio = file.mimetype.indexOf('audio') !== -1;
 
+        console.log("Trying to upload an asset to cloudinary");
         if (isImage) {
             console.log(file);
             console.log("Trying to upload an image to cloudinary")
@@ -100,11 +101,11 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({
     storage,
-    fileFilter: validator,
-    limits: {
-        fields: 2,
-        files: 1
-    }
+    // fileFilter: validator,
+    // limits: {
+    //     fields: 2,
+    //     files: 1
+    // }
 }).single('asset');
 
 
