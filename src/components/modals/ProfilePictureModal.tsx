@@ -1,11 +1,10 @@
-import { Box, Button, ImageListItem, Stack, Typography } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import { useContext, useState } from "react";
 import { WalletContext } from '../../contexts/WalletContext';
 import { HodlModal } from "./HodlModal";
 import axios from 'axios'
 import InfiniteScroll from 'react-swr-infinite-scroll'
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
-import SelectProfileNFT from "../SelectProfileNFT";
 import useSWR, { mutate } from "swr";
 import { useHodling } from "../../hooks/useHodling";
 import { AssetThumbnail } from "../AssetThumbnail";
