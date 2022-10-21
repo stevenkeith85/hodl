@@ -8,6 +8,7 @@ export const useCloudinaryUpload = (): [Function, string, Function] => {
     let fd = new FormData();
     fd.append('upload_preset', 'browser_upload');
     fd.append('file', file);
+    fd.append('folder', `${process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER}/uploads/`);
     
     // We can use this to remove the uploaded file if the user pickes something different or navigates away
     // We need to do signed uploads first though
