@@ -31,7 +31,7 @@ export const HodlVideo = ({
     poster = null
 }: HodlVideoProps) => {
     const makeCloudinaryVideoUrl = () => {
-        let cloudinaryUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_NAME}/${assetFolder}/upload`;
+        let cloudinaryUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_NAME}/${assetFolder}/upload/q_auto`;
 
         return `${cloudinaryUrl}/${environment}/${folder}/${cid}`
     }

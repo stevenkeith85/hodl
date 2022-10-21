@@ -80,6 +80,7 @@ const storage = new CloudinaryStorage({
                     }
                 ],
                 transformation: {
+                    // they should also be limited to 1280 X 720 to minimise costs
                     duration: 60 // video clips can be up to a minute. (cloudinary transforms are v. expensive for videos)
                 },
                 format: 'mp4'
@@ -92,7 +93,7 @@ const storage = new CloudinaryStorage({
                 resource_type: 'video', // Note: Use the video resource type for all video assets as well as for audio files, such as .mp3. (from cloudinary)
                 timeout: 60000,
                 transformation: {
-                    duration: 600 // audio clips can be up to 10 mins
+                    duration: 1200 // audio clips can be up to 10 mins
                 }
             };
         }

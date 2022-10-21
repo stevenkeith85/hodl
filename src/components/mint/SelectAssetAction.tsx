@@ -4,7 +4,6 @@ import { useCloudinaryUpload } from "../../hooks/useCloudinaryUpload";
 import { MintProps } from "./models";
 import { Form, Formik } from "formik";
 import { HodlDropzone } from "../formFields/HodlDropZone";
-import { Button } from "@mui/material";
 
 export const SelectAssetAction: FC<MintProps> = ({
   loading,
@@ -31,7 +30,6 @@ export const SelectAssetAction: FC<MintProps> = ({
   const cloudinaryUpload = useCallback(async (file) => {
     setLoading(true);
 
-    alert('cloudinaryUpload');
     const { success, fileName, mimeType } = await uploadToCloudinary(file);
 
     if (success) {
@@ -50,9 +48,6 @@ export const SelectAssetAction: FC<MintProps> = ({
   }, [enqueueSnackbar, setFormData, setLoading, setStepComplete, uploadToCloudinary]);
 
   const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
-    alert(acceptedFiles[0].name);
-    alert(acceptedFiles[0].type);
-    alert(acceptedFiles[0].size/1024/1024);
     if (rejectedFiles.length === 1) {
       enqueueSnackbar(
         rejectedFiles?.[0]?.errors?.[0]?.message,
@@ -80,8 +75,8 @@ export const SelectAssetAction: FC<MintProps> = ({
       {() => (
         <Form>
           <HodlDropzone onDrop={onDrop} loading={loading}/>
-          <input type="file" name="file" onChange={event => setSelectedFiles(event.target.files)} />
-          <Button disabled={!selectedFiles} onClick={(e) => onDrop(selectedFiles, [])}>Submit</Button>
+          {/* <input type="file" name="file" onChange={event => setSelectedFiles(event.target.files)} />
+          <Button disabled={!selectedFiles} onClick={(e) => onDrop(selectedFiles, [])}>Submit</Button> */}
         </Form>
       )}
     </Formik>
