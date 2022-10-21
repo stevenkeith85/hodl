@@ -19,7 +19,10 @@ export const HodlImageResponsive = ({
     zoom = null,
     suffix = null,
     assetFolder = "image", // we sometimes want to display a video as an image. to do so, pass 'video' here
-    lcp = false // set true if this image is the largest content paint so that it takes priority on loading
+    lcp = false, // set true if this image is the largest content paint so that it takes priority on loading
+    width="100%",
+    height="100%",
+    maxHeight="100%"
 }) => {
 
     const makeCloudinaryUrl = (width) => {
@@ -103,8 +106,9 @@ export const HodlImageResponsive = ({
                     height: `100%`,
                     lineHeight: 0,
                     img: {
-                        width: `100%`,
-                        height: `100%`,
+                        maxHeight,
+                        width,
+                        height,
                         objectFit,
                         objectPosition
                     }
