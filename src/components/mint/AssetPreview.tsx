@@ -44,7 +44,6 @@ export const AssetPreview: FC<MintProps> = ({
       }
       {fileName && isVideo() &&
         <>
-          {fileName}
           <HodlVideo
             folder="uploads"
             cid={fileName.split('/')[2]}
