@@ -33,14 +33,14 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
                 (assetType(item.token) === AssetTypes.Video) && <Box>
                     <Box
                         sx={{
-                            visibility:'hidden'
-                    }}>
-                    <HodlImageResponsive
-                        cid={item.token.image}
-                        widths={[575, 700, 800, 900, 1000, 1080]}
-                        sizes="575w"
-                        onLoad={() => setLoading(false)}
-                    />
+                            visibility: 'hidden'
+                        }}>
+                        <HodlImageResponsive
+                            cid={item.token.image}
+                            widths={[575, 700, 800, 900, 1000, 1080]}
+                            sizes="575w"
+                            onLoad={() => setLoading(false)}
+                        />
                     </Box>
                     <Box
                         sx={{
@@ -53,51 +53,57 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
                             poster={item.token?.image}
                             cid={item.token?.properties?.asset?.uri}
                             controls={true}
+                            height={'575px'}
+                            sx={{
+                                video: {
+                                    width: 'auto'
+                                }
+                            }}
                         />
                     </Box>
                 </Box>
             }
+            {
+                (assetType(item.token) === AssetTypes.Gif) &&
+                <HodlVideo
+                    cid={item.token?.properties?.asset?.uri}
+                    gif={true}
+                    assetFolder="image"
+                    height={'575px'}
+                    sx={{
+                        video: {
+                            width: 'auto'
+                        }
+                    }}
+                    onLoad={() => setLoading(false)}
+                />
+            }
+            {
+                (assetType(item.token) === AssetTypes.Audio) &&
+                <HodlAudioBox token={item.token} audio={true} size={80} />
+            }
+        </Box>
         {
-            (assetType(item.token) === AssetTypes.Gif) &&
-            <HodlVideo
-                cid={item.token?.properties?.asset?.uri}
-                gif={true}
-                assetFolder="image"
-                height={'575px'}
-                sx={{
-                    video: {
-                        width: 'auto'
-                    }
-                }}
-                onLoad={() => setLoading(false)}
-            />
-        }
-        {
-            (assetType(item.token) === AssetTypes.Audio) &&
-            <HodlAudioBox token={item.token} audio={true} size={80} />
-        }
-    </Box>
-    {
-        item?.metadata?.price &&
+            item?.metadata?.price &&
             <PriceSticker price={item?.metadata?.price} />
-    }
+        }
     </>;
 
-return (
-    <Box
-        sx={{
-            position: 'relative',
-        }}>
-        {loading &&
-            <Skeleton
-                variant="rectangular"
-                animation="wave"
-            >
-                {asset}
-            </Skeleton>
-        }
-        <Box sx={{
-            display: loading ? 'none' : 'block'
-        }}>{asset}</Box>
-    </Box >)
+    return (
+        <Box
+            sx={{
+                position: 'relative',
+            }}>
+            {loading &&
+                <Skeleton
+                    variant="rectangular"
+                    animation="wave"
+                >
+                    {asset}
+                </Skeleton>
+            }
+            <Box sx={{
+                display: loading ? 'none' : 'block'
+            }}>{asset}</Box>
+        </Box >)
 }
