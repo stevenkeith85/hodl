@@ -1,18 +1,34 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios'
+import { assetTypeFromMimeType } from '../lib/utils';
+import { AssetTypes } from '../models/AssetType';
 
 export const useCloudinaryUpload = (): [Function, string, Function] => {
   const [error, setError] = useState('');
 
-  const uploadToCloudinary = async (file) => {
-    let fd = new FormData();
-    fd.append('upload_preset', 'browser_upload');
-    fd.append('file', file);
-    fd.append('folder', `${process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER}/uploads/`);
+  const getUploadPreset = (file) => {
+    const assetType = assetTypeFromMimeType(file.type);
     
-    // We can use this to remove the uploaded file if the user pickes something different or navigates away
-    // We need to do signed uploads first though
-    //fd.append('return_delete_token', '1');
+    if (assetType === AssetTypes.Image) {
+      return `image_upload_${process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER}`
+    } else if (assetType === AssetTypes.Video) {
+      return `video_upload_${process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER}`
+    } else if (assetType === AssetTypes.Gif) {
+      return `gif_upload_${process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER}`
+    } else if (assetType === AssetTypes.Audio) {
+      return `audio_upload_${process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER}`
+    } 
+
+    // not sure what it is; try the image upload preset. it will fail if its not an image
+      return `image_upload_${process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER}`      
+  }
+
+  const uploadToCloudinary = async (file) => {
+    console.log('file object', file);
+
+    let fd = new FormData();
+    fd.append('upload_preset', getUploadPreset(file));
+    fd.append('file', file);
 
     try {
       const url = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_NAME}/upload`;
@@ -26,12 +42,22 @@ export const useCloudinaryUpload = (): [Function, string, Function] => {
         }
       )
 
+      console.log('cloudinary response', r.data);
       const { public_id, resource_type, format } = r.data;
 
-      return { success: true, fileName: public_id, mimeType: `${resource_type}/${format}` };
+      return {
+        success: true,
+        fileName: public_id,
+        mimeType: `${resource_type}/${format}`
+      };
     } catch (error) {
-      alert(error.response.data.error.message);
-      return { success: false, fileName: null, mimeType: null };
+      setError(error.response.data.error.message); // Just show the user cloudinary's error message
+
+      return {
+        success: false,
+        fileName: null,
+        mimeType: null
+      };
     }
   }
 

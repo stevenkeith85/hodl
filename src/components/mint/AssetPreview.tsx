@@ -5,6 +5,7 @@ import { FilteredImageMemo } from "./FilteredImage";
 import { MintProps } from './models';
 import calculateAspectRatios from 'calculate-aspect-ratio';
 import { HodlAudio } from "../HodlAudio";
+import { validAspectRatio } from "../../lib/utils";
 
 export const AssetPreview: FC<MintProps> = ({
   formData,
@@ -42,20 +43,25 @@ export const AssetPreview: FC<MintProps> = ({
         />
       }
       {fileName && isVideo() &&
-        <HodlVideo
-          folder="uploads"
-          cid={fileName.split('/')[2]}
-          onLoad={(video) => {
-            const aspectRatio = calculateAspectRatios(video.videoWidth, video.videoHeight);
+        <>
+          {fileName}
+          <HodlVideo
+            folder="uploads"
+            cid={fileName.split('/')[2]}
+            onLoad={(video) => {
+              const aspectRatio = calculateAspectRatios(video.videoWidth, video.videoHeight);
 
-            setFormData(old => ({
-              ...old,
-              aspectRatio
-            }));
+              if (validAspectRatio(aspectRatio)) {
+                setFormData(old => ({
+                  ...old,
+                  aspectRatio
+                }));
+              }
 
-            setLoading(false);
-          }}
-        />
+              setLoading(false);
+            }}
+          />
+        </>
       }
       {fileName && isAudio() &&
         <HodlAudio

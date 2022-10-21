@@ -31,7 +31,7 @@ export const HodlVideo = ({
     poster = null
 }: HodlVideoProps) => {
     const makeCloudinaryVideoUrl = () => {
-        let cloudinaryUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_NAME}/${assetFolder}/upload/q_auto`;
+        let cloudinaryUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_NAME}/${assetFolder}/upload`;
 
         return `${cloudinaryUrl}/${environment}/${folder}/${cid}`
     }
@@ -68,14 +68,14 @@ export const HodlVideo = ({
                 ...sx
             }}>
                 <NoSsr>
-                    <video
+                    {poster ? <video
                         onLoadedData={() => {
                             if (onLoad) {
                                 onLoad(video.current)
                             }
                         }
                         }
-                        poster={poster ? `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_NAME}/image/upload/q_auto,c_fit/${environment}/${folder}/${poster}` : 'none'}
+                        poster={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_NAME}/image/upload/${environment}/${folder}/${poster}.jpg`}
                         ref={video}
                         autoPlay={gif} // we autoplay gifs. videos are played when the user scrolls past them
                         loop={gif}
@@ -88,6 +88,27 @@ export const HodlVideo = ({
                             Your browser does not support HTML5 video tag.
                         </>
                     </video>
+                        :
+                        <video
+                            onLoadedData={() => {
+                                if (onLoad) {
+                                    onLoad(video.current)
+                                }
+                            }
+                            }
+                            ref={video}
+                            autoPlay={gif} // we autoplay gifs. videos are played when the user scrolls past them
+                            loop={gif}
+                            muted={typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('muted')) : false} // TODO: Not confident this works tbh
+                            controls={!gif && controls}
+                            controlsList="nodownload"
+                        >
+                            <>
+                                <source type="video/mp4" src={`${asset}.mp4`} />
+                                Your browser does not support HTML5 video tag.
+                            </>
+                        </video>
+                    }
                 </NoSsr>
             </Box>
         </>
