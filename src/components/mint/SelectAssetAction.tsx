@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { enqueueSnackbar } from 'notistack';
 import { useCloudinaryUpload } from "../../hooks/useCloudinaryUpload";
 import { MintProps } from "./models";
@@ -62,6 +62,8 @@ export const SelectAssetAction: FC<MintProps> = ({
     }
   }, [cloudinaryUpload, enqueueSnackbar]);
 
+  const [selectedFiles, setSelectedFiles] = useState(null);
+
 
   return (
     <Formik
@@ -73,6 +75,8 @@ export const SelectAssetAction: FC<MintProps> = ({
       {() => (
         <Form>
           <HodlDropzone onDrop={onDrop} loading={loading}/>
+          {/* <input type="file" name="file" onChange={event => setSelectedFiles(event.target.files)} />
+          <Button disabled={!selectedFiles} onClick={(e) => onDrop(selectedFiles, [])}>Submit</Button> */}
         </Form>
       )}
     </Formik>

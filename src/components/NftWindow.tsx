@@ -218,6 +218,8 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                 {!xs && <Overlay nft={nft} />}
                 {nft?.forSale && <PriceSticker price={nft?.price} />}
             </Box>
+
         </Link>
+        
     )
 }

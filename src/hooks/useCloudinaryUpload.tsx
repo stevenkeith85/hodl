@@ -1,45 +1,63 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios'
+import { assetTypeFromMimeType } from '../lib/utils';
+import { AssetTypes } from '../models/AssetType';
 
 export const useCloudinaryUpload = (): [Function, string, Function] => {
-  const previousFileName = useRef(null);
-  const previousMimeType = useRef(null);
-
   const [error, setError] = useState('');
 
+  const getUploadPreset = (file) => {
+    const assetType = assetTypeFromMimeType(file.type);
+    
+    if (assetType === AssetTypes.Image) {
+      return `image_upload_${process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER}`
+    } else if (assetType === AssetTypes.Video) {
+      return `video_upload_${process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER}`
+    } else if (assetType === AssetTypes.Gif) {
+      return `gif_upload_${process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER}`
+    } else if (assetType === AssetTypes.Audio) {
+      return `audio_upload_${process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER}`
+    } 
 
-  const uploadToCloudinary = async (asset) => {
-    const data = new FormData();
-    data.append('asset', asset);
+    // not sure what it is; try the image upload preset. it will fail if its not an image
+      return `image_upload_${process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER}`      
+  }
 
-    if (previousFileName.current && previousMimeType.current) {
-      data.append('previousFileName', previousFileName.current);
-      data.append('previousMimeType', previousMimeType.current);
-    }
+  const uploadToCloudinary = async (file) => {
+    console.log('file object', file);
+
+    let fd = new FormData();
+    fd.append('upload_preset', getUploadPreset(file));
+    fd.append('file', file);
 
     try {
+      const url = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_NAME}/upload`;
       const r = await axios.post(
-        '/api/create/upload',
-        data,
+        url,
+        fd,
         {
           headers: {
             'Accept': 'application/json',
           },
         }
       )
-      const { fileName, mimeType } = r.data;
 
-      previousFileName.current = fileName;
-      previousMimeType.current = mimeType;
+      console.log('cloudinary response', r.data);
+      const { public_id, resource_type, format } = r.data;
 
-      return { success: true, fileName, mimeType };
+      return {
+        success: true,
+        fileName: public_id,
+        mimeType: `${resource_type}/${format}`
+      };
     } catch (error) {
-      if (error.response.status === 400 || error.response.status === 429) {
-        const { message } = error.response.data;
-        setError(message);
-      }
+      setError(error.response.data.error.message); // Just show the user cloudinary's error message
 
-      return { success: false, fileName: null, mimeType: null };
+      return {
+        success: false,
+        fileName: null,
+        mimeType: null
+      };
     }
   }
 
