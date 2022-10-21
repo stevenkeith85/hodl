@@ -31,15 +31,13 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
             }
             {
                 (assetType(item.token) === AssetTypes.Video) && <Box>
-                    <Box
-                        sx={{
-                            visibility: 'hidden'
-                        }}>
+                    <Box sx={{ visibility: 'hidden' }}>
                         <HodlImageResponsive
                             cid={item.token.image}
                             widths={[575, 700, 800, 900, 1000, 1080]}
                             sizes="575w"
-                            onLoad={() => setLoading(false)}
+                            maxHeight="575px"
+                            width="100%"
                         />
                     </Box>
                     <Box
@@ -53,12 +51,9 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
                             poster={item.token?.image}
                             cid={item.token?.properties?.asset?.uri}
                             controls={true}
-                            height={'575px'}
-                            sx={{
-                                video: {
-                                    width: 'auto'
-                                }
-                            }}
+                            maxHeight="575px"
+                            height="100%"
+                            onLoad={() => setLoading(false)}
                         />
                     </Box>
                 </Box>
@@ -98,6 +93,7 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
                 <Skeleton
                     variant="rectangular"
                     animation="wave"
+                    width="100%"
                 >
                     {asset}
                 </Skeleton>
