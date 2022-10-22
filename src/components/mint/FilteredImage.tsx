@@ -26,7 +26,7 @@ export const FilteredImage = ({
             sx={{
               position: 'relative',
               width: `100%`,
-              paddingTop: `${gestTopPadding(ratio)}%`,
+              paddingTop: `${getTopPadding(ratio)}%`,
               display: filter === code && aspectRatio === ratio ? 'flex' : 'none',
             }}
           >
