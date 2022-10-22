@@ -28,8 +28,12 @@ export const validFilter = (filter) => {
   return codes.find(code => code === filter);
 }
 
+export const getTopPadding = (ratio) => {
+  const [width, height] = ratio.split(':');
+  return (height / width) * 100;
+}
+
 export const aspectRatios = [
-  null,
   "1:1",
   "4:5",
   "16:9"

@@ -2,6 +2,8 @@ import { useState } from 'react';
 import axios from 'axios'
 import { assetTypeFromMimeType } from '../lib/utils';
 import { AssetTypes } from '../models/AssetType';
+import calculateAspectRatios from 'calculate-aspect-ratio';
+
 
 export const useCloudinaryUpload = (): [Function, string, Function] => {
   const [error, setError] = useState('');
@@ -43,12 +45,15 @@ export const useCloudinaryUpload = (): [Function, string, Function] => {
       )
 
       console.log('cloudinary response', r.data);
-      const { public_id, resource_type, format } = r.data;
+      const { public_id, resource_type, format, width, height } = r.data;
+
+      const aspectRatio = calculateAspectRatios(width, height);
 
       return {
         success: true,
         fileName: public_id,
-        mimeType: `${resource_type}/${format}`
+        mimeType: `${resource_type}/${format}`,
+        aspectRatio
       };
     } catch (error) {
       setError(error.response.data.error.message); // Just show the user cloudinary's error message
@@ -56,7 +61,8 @@ export const useCloudinaryUpload = (): [Function, string, Function] => {
       return {
         success: false,
         fileName: null,
-        mimeType: null
+        mimeType: null,
+        aspectRatio: null
       };
     }
   }

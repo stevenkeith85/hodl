@@ -1,5 +1,5 @@
 import { HodlActionViewModel } from "../../models/HodlAction";
-import { assetType } from "../../lib/utils";
+import { assetType, getTopPadding } from "../../lib/utils";
 import { AssetTypes } from "../../models/AssetType";
 import { HodlVideo } from "../HodlVideo";
 import { HodlImageResponsive } from "../HodlImageResponsive";
@@ -16,8 +16,18 @@ interface FeedAssetProps {
 export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
     const [loading, setLoading] = useState(true);
 
-    const asset = <>
-        <Box sx={{}}>
+    const asset = <Box
+        sx={{
+            position: 'relative',
+            width: `100%`,
+            paddingTop: item?.token?.properties?.aspectRatio ? `${getTopPadding(item.token.properties.aspectRatio)}%` : 0,
+        }}
+    >
+        <Box sx={{
+            width: `100%`,
+            position: item?.token?.properties?.aspectRatio ? 'absolute' : 'static',
+            top: 0
+        }}>
             {
                 (assetType(item.token) === AssetTypes.Image) &&
                 <HodlImageResponsive
@@ -82,24 +92,25 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
             item?.metadata?.price &&
             <PriceSticker price={item?.metadata?.price} />
         }
-    </>;
+    </Box>;
 
     return (
-        <Box
-            sx={{
-                position: 'relative',
-            }}>
-            {loading &&
-                <Skeleton
-                    variant="rectangular"
-                    animation="wave"
-                    width="100%"
-                >
-                    {asset}
-                </Skeleton>
-            }
+        <Box>
+            <Skeleton
+                variant="rectangular"
+                animation="wave"
+                sx={{
+                    display: loading ? 'block' : 'none',
+                    width: "100%",
+                    paddingTop: item.token.properties.aspectRatio ? `${getTopPadding(item.token.properties.aspectRatio)}%` : 0
+                }}
+            >
+            </Skeleton>
+
             <Box sx={{
                 display: loading ? 'none' : 'block'
-            }}>{asset}</Box>
+            }}>
+                {asset}
+            </Box>
         </Box >)
 }
