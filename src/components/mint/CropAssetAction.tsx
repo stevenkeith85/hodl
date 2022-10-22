@@ -1,10 +1,11 @@
 import { CloudSyncOutlined, Crop } from "@mui/icons-material";
 import { Box, Button, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 
 export const CropAssetAction = ({
+  originalAspectRatio,
   formData,
   setFormData,
   setStepComplete
@@ -23,7 +24,7 @@ export const CropAssetAction = ({
       textAlign="center"
       gap={4}
     >
-      <Crop sx={{ fontSize: 82, color: grey[400] }} />
+      <Crop sx={{ fontSize: 50, color: grey[400] }} />
       <Typography
         sx={{
           fontSize: '18px',
@@ -48,10 +49,9 @@ export const CropAssetAction = ({
                 paddingY: 1.25,
                 minWidth: '100px'
               }}
-              variant={formData.aspectRatio === null ? 'contained' : 'outlined'}
               onClick={() => setFormData(old => ({
                 ...old,
-                aspectRatio: null
+                aspectRatio: originalAspectRatio
               }))}>Original</Button></div>
           <div>
             <Button
@@ -60,7 +60,6 @@ export const CropAssetAction = ({
                 paddingY: 1.25,
                 minWidth: '100px'
               }}
-              variant={formData.aspectRatio === "1:1" ? 'contained' : 'outlined'}
               onClick={() => setFormData(old => ({
                 ...old,
                 aspectRatio: `1:1`
@@ -73,7 +72,6 @@ export const CropAssetAction = ({
                 paddingY: 1.25,
                 minWidth: '100px'
               }}
-              variant={formData.aspectRatio === "4:5" ? 'contained' : 'outlined'}
               onClick={() => setFormData(old => ({
                 ...old,
                 aspectRatio: `4:5`
@@ -86,7 +84,6 @@ export const CropAssetAction = ({
                 paddingY: 1.25,
                 minWidth: '100px'
               }}
-              variant={formData.aspectRatio === "16:9" ? 'contained' : 'outlined'}
               onClick={() => setFormData(old => ({
                 ...old,
                 aspectRatio: `16:9`

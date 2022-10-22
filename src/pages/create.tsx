@@ -57,6 +57,8 @@ const Mint = ({ address }) => {
   const [activeStep, setActiveStep] = useState(0);
   const [stepComplete, setStepComplete] = useState(-1);
 
+  const [originalAspectRatio, setOriginalAspectRatio] = useState(null);
+
   const warning = useWarningOnExit(stepComplete !== 4 && activeStep > 0, "If you leave now, your token will not be added to Hodl My Moon. Are you sure?")
 
   if (!address) {
@@ -68,6 +70,7 @@ const Mint = ({ address }) => {
       <Head>
         <title>Create · Hodl My Moon</title>
       </Head>
+      {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
       <Box
         sx={{
           position: "relative",
@@ -87,15 +90,14 @@ const Mint = ({ address }) => {
           <Grid
             container
           >
-            <Grid 
-              item 
-              xs={12} 
+            <Grid
+              item
+              xs={12}
               md={formData?.fileName ? 6 : 12}
             >
               <Box
                 sx={{
                   height: '100%',
-                  // width: `100%`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -111,6 +113,7 @@ const Mint = ({ address }) => {
                     loading={loading}
                     setLoading={setLoading}
                     setStepComplete={setStepComplete}
+                    setOriginalAspectRatio={setOriginalAspectRatio}
                   />
                 }
                 {activeStep === 1 &&
@@ -118,6 +121,7 @@ const Mint = ({ address }) => {
                     formData={formData}
                     setFormData={setFormData}
                     setStepComplete={setStepComplete}
+                    originalAspectRatio={originalAspectRatio}
                   />
                 }
                 {formData.fileName &&
@@ -155,7 +159,7 @@ const Mint = ({ address }) => {
                 }
               </Box>
             </Grid>
-            { formData?.fileName && <Grid
+            {formData?.fileName && <Grid
               item
               xs={12}
               md={6}>
@@ -176,6 +180,7 @@ const Mint = ({ address }) => {
                 }}
               >
                 <AssetPreview
+                  originalAspectRatio={originalAspectRatio}
                   formData={formData}
                   setFormData={setFormData}
                   setLoading={setLoading}

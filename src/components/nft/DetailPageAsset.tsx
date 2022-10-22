@@ -1,6 +1,6 @@
 import { Box, Modal, Skeleton } from "@mui/material";
 import { HodlVideo } from "../HodlVideo";
-import { assetType } from "../../lib/utils";
+import { assetType, getTopPadding } from "../../lib/utils";
 import { useState } from "react";
 import { AssetTypes } from "../../models/AssetType";
 import { HodlImageResponsive } from "../HodlImageResponsive";
@@ -19,70 +19,77 @@ export const DetailPageAsset: React.FC<DetailPageAssetProps> = ({ token }) => {
         sx={{
             cursor: 'pointer',
             position: 'relative',
-            width: '100%',
-            height: '100%'
+            width: `100%`,
+            paddingTop: token?.properties?.aspectRatio ? `${getTopPadding(token.properties.aspectRatio)}%` : 0,
         }}
     >
-        <Box onClick={() => setAssetModalOpen(true)}>
-            {
-                assetType(token) === AssetTypes.Gif &&
-                <HodlVideo
-                    cid={token?.properties?.asset?.uri}
-                    assetFolder="image"
-                    gif={true}
-                    onLoad={() => setLoading(false)}
-                />
-            }
-        </Box>
-        <Box onClick={() => setAssetModalOpen(true)}>
-            {
-                assetType(token) === AssetTypes.Image &&
-                <HodlImageResponsive
-                    lcp={true}
-                    cid={token?.properties?.asset?.uri}
-                    widths={[500, 600, 700, 800, 900, 1000, 1080]}
-                    sizes="(min-width: 1200px) calc(1200px / 2), (min-width: 900px) calc(50vw / 2), 100vw"
-                    onLoad={() => setLoading(false)}
-                    width="100%"
-                />
-            }
-        </Box>
-        <Box>
-            {
-                assetType(token) === AssetTypes.Video && <>
-                    <Box sx={{ visibility: 'hidden' }}>
-                        <HodlImageResponsive
-                            cid={token.image}
-                            widths={[575, 700, 800, 900, 1000, 1080]}
-                            sizes="575w"
-                            maxHeight="575px"
-                            width="100%"
-                        />
+        <Box sx={{
+            width: `100%`,
+            position: token?.properties?.aspectRatio ? 'absolute' : 'static',
+            top: 0
+        }}>
+            <Box onClick={() => setAssetModalOpen(true)}>
+                {
+                    assetType(token) === AssetTypes.Gif &&
+                    <HodlVideo
+                        cid={token?.properties?.asset?.uri}
+                        assetFolder="image"
+                        gif={true}
+                        onLoad={() => setLoading(false)}
+                    />
+                }
+            </Box>
+            <Box onClick={() => setAssetModalOpen(true)}>
+                {
+                    assetType(token) === AssetTypes.Image &&
+                    <HodlImageResponsive
+                        lcp={true}
+                        cid={token?.properties?.asset?.uri}
+                        widths={[500, 600, 700, 800, 900, 1000, 1080]}
+                        sizes="(min-width: 1200px) calc(1200px / 2), (min-width: 900px) calc(50vw / 2), 100vw"
+                        onLoad={() => setLoading(false)}
+                        width="100%"
+                        aspectRatio={token?.properties?.aspectRatio}
+                    />
+                }
+            </Box>
+            <Box>
+                {
+                    assetType(token) === AssetTypes.Video && <>
+                        <Box sx={{ visibility: 'hidden' }}>
+                            <HodlImageResponsive
+                                cid={token.image}
+                                widths={[575, 700, 800, 900, 1000, 1080]}
+                                sizes="575w"
+                                maxHeight="575px"
+                                width="100%"
+                            />
 
-                    </Box>
-                    <Box
-                        sx={{
-                            position: 'absolute',
-                            top: 0,
-                            width: '100%'
-                        }}
-                    >
-                        <HodlVideo
-                            poster={token?.image}
-                            cid={token?.properties?.asset?.uri}
-                            controls={true}
-                            maxHeight="575px"
-                            height="100%"
-                            onLoad={() => setLoading(false)}
-                        />
-                    </Box>
-                </>}
-        </Box>
-        {
-            assetType(token) === AssetTypes.Audio &&
-            <HodlAudioBox token={token} size={80} />
-        }
-    </Box >
+                        </Box>
+                        <Box
+                            sx={{
+                                position: 'absolute',
+                                top: 0,
+                                width: '100%'
+                            }}
+                        >
+                            <HodlVideo
+                                poster={token?.image}
+                                cid={token?.properties?.asset?.uri}
+                                controls={true}
+                                maxHeight="575px"
+                                height="100%"
+                                onLoad={() => setLoading(false)}
+                            />
+                        </Box>
+                    </>}
+            </Box>
+            {
+                assetType(token) === AssetTypes.Audio &&
+                <HodlAudioBox token={token} size={80} />
+            }
+        </Box >
+    </Box>
 
     return (token &&
         <>
@@ -141,15 +148,16 @@ export const DetailPageAsset: React.FC<DetailPageAssetProps> = ({ token }) => {
                     }
                 </Box>
             </Modal>
-            {loading &&
-                <Skeleton
-                    variant="rectangular"
-                    animation="wave"
-                    width="100%"
-                >
-                    {asset}
-                </Skeleton>
-            }
+            <Skeleton
+                variant="rectangular"
+                animation="wave"
+                sx={{
+                    display: loading ? 'block' : 'none',
+                    width: "100%",
+                    paddingTop: token.properties.aspectRatio ? `${getTopPadding(token.properties.aspectRatio)}%` : 0
+                }}
+            >
+            </Skeleton>
             <Box sx={{
                 display: loading ? 'none' : 'block'
             }}>{asset}</Box>

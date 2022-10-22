@@ -3,11 +3,10 @@ import { FC } from "react";
 import { HodlVideo } from "../HodlVideo";
 import { FilteredImageMemo } from "./FilteredImage";
 import { MintProps } from './models';
-import calculateAspectRatios from 'calculate-aspect-ratio';
 import { HodlAudio } from "../HodlAudio";
-import { validAspectRatio } from "../../lib/utils";
 
 export const AssetPreview: FC<MintProps> = ({
+  originalAspectRatio,
   formData,
   setFormData,
   setLoading,
@@ -26,11 +25,13 @@ export const AssetPreview: FC<MintProps> = ({
     >
       {fileName && isImage() && !isGif() &&
         <FilteredImageMemo
+          originalAspectRatio={originalAspectRatio}
           aspectRatio={aspectRatio}
           filter={filter}
           fileName={fileName}
           onLoad={setLoading}
-        />}
+        />
+      }
       {fileName && isGif() &&
         <HodlVideo
           assetFolder="image"
@@ -48,15 +49,6 @@ export const AssetPreview: FC<MintProps> = ({
             folder="uploads"
             cid={fileName.split('/')[2]}
             onLoad={(video) => {
-              const aspectRatio = calculateAspectRatios(video.videoWidth, video.videoHeight);
-
-              if (validAspectRatio(aspectRatio)) {
-                setFormData(old => ({
-                  ...old,
-                  aspectRatio
-                }));
-              }
-
               setLoading(false);
             }}
           />

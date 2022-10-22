@@ -5,4 +5,6 @@ export interface MintProps {
     setFormData?: Function;
     stepComplete?: number;
     setStepComplete?: Function;
+    originalAspectRatio?: string;
+    setOriginalAspectRatio?: Function;
   }

@@ -77,7 +77,7 @@ export const MintTokenAction: FC<MintProps> = ({
         height="400px"
         gap={4}
       >
-        <CloudSyncOutlined sx={{ fontSize: 82, color: grey[400] }} />
+        <CloudSyncOutlined sx={{ fontSize: 50, color: grey[400] }} />
         <Typography
           sx={{
             fontSize: '18px',

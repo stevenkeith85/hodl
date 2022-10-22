@@ -43,12 +43,12 @@ export const uploadToIPFSValidationSchema = yup.object({
       'Unsupported filter value',
       (value, context) => Boolean(value === null || validFilter(value))
     ),
-  aspectRatio: yup
-    .string()
-    .nullable()
-    .test(
-      'isValidAspectRatioValue',
-      'Unsupported aspect ratio value',
-      (value, context) => Boolean(value === null || validAspectRatio(value))
-    )
+  // aspectRatio: yup
+  //   .string()
+  //   .nullable()
+  //   .test(
+  //     'isValidAspectRatioValue',
+  //     'Unsupported aspect ratio value',
+  //     (value, context) => Boolean(value === null || validAspectRatio(value))
+  //   )
 });
