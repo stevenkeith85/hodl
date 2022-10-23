@@ -1,4 +1,8 @@
-import { AudiotrackOutlined, PhotoOutlined, VideocamOutlined } from '@mui/icons-material'
+import AudiotrackOutlinedIcon from '@mui/icons-material/AudiotrackOutlined';
+import PhotoOutlinedIcon from '@mui/icons-material/PhotoOutlined';
+import VideocamOutlinedIcon from '@mui/icons-material/VideocamOutlined';
+
+
 import { Box, Button, Typography } from '@mui/material'
 import React from 'react'
 import { useDropzone } from 'react-dropzone'
@@ -47,7 +51,7 @@ export const HodlDropzone = ({ onDrop, loading }) => {
                     gap={3}
                 >
                     <Box display="flex" gap={2}>
-                        <PhotoOutlined
+                        <PhotoOutlinedIcon
                             color="secondary"
                             sx={{
                                 fontSize: {
@@ -56,7 +60,7 @@ export const HodlDropzone = ({ onDrop, loading }) => {
                                 }
                             }}
                         />
-                        <VideocamOutlined
+                        <VideocamOutlinedIcon
                             color="secondary"
                             sx={{
                                 fontSize: {
@@ -65,7 +69,7 @@ export const HodlDropzone = ({ onDrop, loading }) => {
                                 }
                             }}
                         />
-                        <AudiotrackOutlined
+                        <AudiotrackOutlinedIcon
                             color="secondary"
                             sx={{
                                 fontSize: {

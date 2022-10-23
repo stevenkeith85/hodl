@@ -1,16 +1,17 @@
-import { ethers, BigNumber } from 'ethers'
-import dotenv from 'dotenv'
+// import { ethers, BigNumber } from 'ethers'
+import { Contract } from '@ethersproject/contracts'
+import { formatEther } from '@ethersproject/units'
+
 import { getNickname } from "../profile/nickname";
 import { getProvider } from "../../../lib/server/connections";
-import Market from '../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
-dotenv.config({ path: '../.env' })
+import Market from '../../../../smart-contracts/artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 
 // TODO: I don't think this is needed anymore?
 export const getTokensListed = async tokenId => {
   const provider = await getProvider();
 
-  const marketContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
-  const tokenFilter = marketContract.filters.TokenListed(null, BigNumber.from(tokenId));
+  const marketContract = new Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
+  const tokenFilter = marketContract.filters.TokenListed(null, tokenId);
   const txs = await marketContract.queryFilter(tokenFilter, 0, "latest");
 
   const result = [];
@@ -25,7 +26,7 @@ export const getTokensListed = async tokenId => {
     result.push({
       sellerNickname,
       sellerAddress: tx.args.seller,
-      price: ethers.utils.formatEther(tx.args.price),
+      price: formatEther(tx.args.price),
       timestamp: block.timestamp
     })
 

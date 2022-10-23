@@ -1,10 +1,9 @@
 require("@nomiclabs/hardhat-waffle");
 require('@openzeppelin/hardhat-upgrades');
-require('solidity-coverage')
+require('solidity-coverage');
 require('hardhat-contract-sizer');
-require('dotenv').config()
-
-require('./tasks/token');
+require('dotenv').config();
+// require('./tasks/token');
 
 module.exports = {
   solidity: {

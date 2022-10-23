@@ -1,5 +1,4 @@
 import * as yup from 'yup';
-import { isValidAddress } from '../lib/profile';
 
 export const nicknameValidationSchema = yup.object({
     nickname: yup
@@ -12,5 +11,9 @@ export const nicknameValidationSchema = yup.object({
         .lowercase()
         .strict()
         .matches(/^[\d\w._]+$/, 'Only letters, numbers, underscores and period accepted')
-        .test('isNotAnAddress', 'You cannot set your nickname to an address', async value => !(await isValidAddress(value)))
+        .test(
+            'isNotAnAddress', 
+            'You cannot set your nickname to something that looks similar to an address', 
+            async nickname => !/^0x[0-9A-F]{3,}$/i.test(nickname)
+        ) 
   });

@@ -1,8 +1,10 @@
 import axios from 'axios';
 import useSWR from 'swr';
 import { useState } from 'react';
-import { Box, Chip, IconButton, useMediaQuery, useTheme } from '@mui/material';
-import { NavigateBefore, NavigateNext } from '@mui/icons-material';
+import { Box, Chip, IconButton } from '@mui/material';
+
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 
 
 interface TagsPaginatedProps {
@@ -85,7 +87,7 @@ export const TagsPaginated: React.FC<TagsPaginatedProps> = ({ limit, onClick, se
     <IconButton
       disabled={offset === 0}
       onClick={() => setOffset(offset - limit)}>
-      <NavigateBefore fontSize='small'/>
+      <NavigateBeforeIcon fontSize='small'/>
     </IconButton>
     <Page 
       offset={offset} 
@@ -109,7 +111,7 @@ export const TagsPaginated: React.FC<TagsPaginatedProps> = ({ limit, onClick, se
       disabled={offset + limit >= data?.total}
       onClick={() => setOffset(offset + limit)}
     >
-      <NavigateNext fontSize='small'/>
+      <NavigateNextIcon fontSize='small'/>
     </IconButton>
   </Box>)
 

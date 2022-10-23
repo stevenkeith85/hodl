@@ -3,14 +3,19 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
 import Container from '@mui/material/Container';
-import { useState, useContext, useEffect, useRef } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import Link from 'next/link';
 
 import { HoverMenu } from '../menu/HoverMenu';
-import { AccountBalanceWallet, AddCircle, Explore, RocketLaunch, Search } from '@mui/icons-material';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import ExploreIcon from '@mui/icons-material/Explore';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+import SearchIcon from '@mui/icons-material/Search';
+
+
 import { WalletContext } from '../../contexts/WalletContext';
 import { HodlNotifications } from '../notifications/HodlNotifications';
 import axios from 'axios'
@@ -23,7 +28,7 @@ import { PusherContext } from '../../contexts/PusherContext';
 import { useConnect } from '../../hooks/useConnect';
 import { SessionExpiredModal } from '../modals/SessionExpiredModal';
 import { useRouter } from 'next/router';
-import { Button, ClickAwayListener, Fade } from '@mui/material';
+import { Button } from '@mui/material';
 import { mutate } from 'swr';
 import { MobileSearch } from '../MobileSearch';
 
@@ -45,19 +50,19 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
         {
             label: 'hodl my moon',
             url: '/',
-            icon: <RocketLaunch sx={{ fontSize: 22, margin: 0, padding: 0, lineHeight: 0 }} />,
+            icon: <RocketLaunchIcon sx={{ fontSize: 22, margin: 0, padding: 0, lineHeight: 0 }} />,
             publicPage: true
         },
         {
             label: 'explore',
             url: '/explore',
-            icon: <Explore sx={{ fontSize: 22, margin: 0, padding: 0 }} />,
+            icon: <ExploreIcon sx={{ fontSize: 22, margin: 0, padding: 0 }} />,
             publicPage: true
         },
         {
             label: 'create',
             url: '/create',
-            icon: <AddCircle sx={{ fontSize: 22, margin: 0, padding: 0 }} />,
+            icon: <AddCircleIcon sx={{ fontSize: 22, margin: 0, padding: 0 }} />,
             publicPage: false
         },
     ]);
@@ -269,7 +274,6 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                     position: { sm: 'relative' },
                                     display: 'flex',
                                     alignItems: 'center',
-                                    // justifyContent: 'center',
                                     color: theme => theme.palette.primary.main,
                                     gap: { xs: 1, md: 3 },
                                 }}
@@ -312,7 +316,7 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                                 }} 
                                                 onClick={() => setMobileSearchOpen(false)} 
                                                 /> :
-                                            <Search
+                                            <SearchIcon
                                                 sx={{ lineHeight: 0, fontSize: 22 }}
                                                 onClick={
                                                     () => {
@@ -370,7 +374,7 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                                     display="flex"
                                                     alignItems="center"
                                                     justifyContent="center">
-                                                    <AccountBalanceWallet color="primary" />
+                                                    <AccountBalanceWalletIcon color="primary" />
                                                 </Box>
                                     }
                                 </IconButton>

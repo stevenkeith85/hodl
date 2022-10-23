@@ -1,5 +1,8 @@
-import { Box, Typography } from "@mui/material";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+
 import Link from "next/link";
+
 import { HodlBorderedBox } from "../components/HodlBorderedBox";
 import { CommercialText } from "../components/tooltips/CommercialTooltip";
 import { NonCommercialText } from "../components/tooltips/NonCommercialTooltip";

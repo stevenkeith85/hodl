@@ -1,18 +1,18 @@
 import { FC, useCallback, useEffect, useState } from "react";
 import { enqueueSnackbar } from 'notistack';
+import { Form, Formik } from "formik";
+
 import { useCloudinaryUpload } from "../../hooks/useCloudinaryUpload";
 import { MintProps } from "./models";
-import { Form, Formik } from "formik";
 import { HodlDropzone } from "../formFields/HodlDropZone";
 
 export const SelectAssetAction: FC<MintProps> = ({
   loading,
   setLoading,
-  formData,
   setFormData,
   setStepComplete,
   setOriginalAspectRatio
-}: MintProps) => {
+}) => {
   const [uploadToCloudinary, error, setError] = useCloudinaryUpload();
 
   useEffect(() => {

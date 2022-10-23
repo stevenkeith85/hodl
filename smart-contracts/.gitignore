@@ -47,18 +47,24 @@ typechain
 cache
 
 # ignore all the artifacts except the hodlnft and holdmarket abis
-smart-contracts/artifacts/*
-!smart-contracts/artifacts/contracts/
+artifacts/*
+!artifacts/contracts/
 
-smart-contracts/artifacts/contracts/*
-!smart-contracts/artifacts/contracts/HodlNFT.sol/
-!smart-contracts/artifacts/contracts/HodlMarket.sol/
+artifacts/contracts/*
+!artifacts/contracts/HodlNFT.sol/
+!artifacts/contracts/HodlMarket.sol/
 
-smart-contracts/artifacts/contracts/HodlNFT.sol/*
-!smart-contracts/artifacts/contracts/HodlNFT.sol/HodlNFT.json
+artifacts/contracts/HodlNFT.sol/*
+!artifacts/contracts/HodlNFT.sol/HodlNFT.json
 
-smart-contracts/artifacts/contracts/HodlMarket.sol/*
-!smart-contracts/artifacts/contracts/HodlMarket.sol/HodlMarket.json
+artifacts/contracts/HodlMarket.sol/*
+!artifacts/contracts/HodlMarket.sol/HodlMarket.json
+
+
+
+
+
+
 
 config.js
 generateNfts/config.js

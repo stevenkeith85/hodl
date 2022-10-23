@@ -1,15 +1,10 @@
 import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
+
 import apiRoute from "../handler";
-import { isValidAddress } from '../../../lib/profile';
-import { HodlAction, ActionTypes } from '../../../models/HodlAction';
-import { addAction } from '../actions/add';
-import { trimZSet } from '../../../lib/databaseUtils';
-import { User } from '../../../models/User';
-import axios from 'axios';
+
+import { ActionTypes } from '../../../models/HodlAction';
 import { addToZeplo } from '../../../lib/addToZeplo';
 
-dotenv.config({ path: '../.env' })
 const client = Redis.fromEnv()
 const route = apiRoute();
 
@@ -95,34 +90,6 @@ export const toggleFollow = async (userAddress, targetAddress, req) => {
       req.cookies.refreshToken,
       req.cookies.accessToken
     );
-    
-    // // TODO - We don't await this at the moment; as we do nothing with the return code.
-    // // it takes up to a second to get a response. possibly something to follow up with serverlessq at some point
-    // // we should really log whether things were added to the queue for support purposes
-    // const { accessToken, refreshToken } = req.cookies;
-    // const user = await client.hmget<User>(`user:${req.address}`, 'actionQueueId');
-    // const url = `https://api.serverlessq.com?id=${user?.actionQueueId}&target=https://${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/api/actions/add`;
-    // try {
-    //   axios.post(
-    //     url,
-    //     {
-    //       action: ActionTypes.Followed,
-    //       object: "address",
-    //       objectId: targetAddress
-    //     },
-    //     {
-    //       withCredentials: true,
-    //       headers: {
-    //         "Accept": "application/json",
-    //         "x-api-key": process.env.SERVERLESSQ_API_TOKEN,
-    //         "Content-Type": "application/json",
-    //         "Cookie": `refreshToken=${refreshToken}; accessToken=${accessToken}`
-    //       }
-    //     }
-    //   )
-    // } catch (e) {
-    //   console.log(e)
-    // }
   }
 
   return followed;
@@ -145,7 +112,7 @@ route.post(async (req, res) => {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
-  if (!isValidAddress(address)) {
+  if (!/^0x[0-9A-F]{40}$/i.test(address)) { // not a valid address
     return res.status(400).json({ message: 'Bad Request' });
   }
 

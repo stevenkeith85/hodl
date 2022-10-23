@@ -2,7 +2,7 @@ import { Box, Skeleton, Typography } from '@mui/material';
 import humanize from "humanize-plus";
 import Link from 'next/link';
 import { grey } from '@mui/material/colors';
-import { User, UserViewModel } from '../models/User';
+import { UserViewModel } from '../models/User';
 import { UserAvatarAndHandle } from './avatar/UserAvatarAndHandle';
 import { useContext } from 'react';
 import { UserContext } from '../contexts/UserContext';
@@ -71,7 +71,7 @@ export const HodlProfileBadge: React.FC<HodlProfileBadgeProps> = ({ user }) => {
                     alignItems={"center"}
                 >
                     <UserAvatarAndHandle
-                        address={user.address}
+                        address={user?.address}
                         fallbackData={user}
                         size={70}
                         handle={false}

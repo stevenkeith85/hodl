@@ -1,24 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
-import memoize from 'memoizee';
-import apiRoute from "../handler";
 
-dotenv.config({ path: '../.env' })
+import apiRoute from "../handler";
 
 const client = Redis.fromEnv()
 const route = apiRoute();
 
-
-// Find out if address1 is following address2
-// Memo cleared when 'follow' is toggled
-// export const isFollowing = memoize(async (address1, address2) => {
-//   const follows = await client.zscore(`user:${address1}:following`, address2);
-//   return follows;
-// }, { 
-//   primitive: true,
-//   max: 10000, 
-// });
 
 export const isFollowing = async (address1, address2) => {
 

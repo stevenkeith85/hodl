@@ -1,27 +1,31 @@
-import { useEffect, useRef, useState } from 'react';
 import Head from 'next/head';
-import { CssBaseline, ThemeProvider } from '@mui/material';
-import theme from '../theme';
+import App, { AppProps } from 'next/app';
+import { useRouter } from 'next/router';
+
+import { useEffect, useState } from 'react';
+
+
+import CssBaseline from '@mui/material/CssBaseline';
+
 import { SnackbarProvider } from 'notistack';
-import { SWRConfig } from 'swr';
-import { WalletContext } from '../contexts/WalletContext';
-
-import Layout from '../components/layout/Layout';
+import { SWRConfig } from 'swr'
 import { CacheProvider, EmotionCache } from '@emotion/react';
-import createEmotionCache from '../createEmotionCache';
-import { AppProps } from 'next/app';
 import Cookies from "universal-cookie"
-import App from "next/app";
-
-import '../styles/globals.css'
-
-import { PusherContext } from '../contexts/PusherContext';
 import Pusher from 'pusher-js';
 
+
+import '../styles/globals.css'
+import { PusherContext } from '../contexts/PusherContext';
+import { WalletContext } from '../contexts/WalletContext';
+import LoginPage from './login';
+import theme from '../theme';
 import { HodlNotificationSnackbar } from '../components/snackbars/HodlNotificationSnackbar';
 import { HodlSnackbar } from '../components/snackbars/HodlSnackbar';
-import { useRouter } from 'next/router';
-import LoginPage from './login';
+import createEmotionCache from '../createEmotionCache';
+import Layout from '../components/layout/Layout';
+import { ThemeProvider } from '@mui/material/styles';
+
+
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();

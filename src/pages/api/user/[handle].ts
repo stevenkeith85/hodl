@@ -1,14 +1,12 @@
 import { NextApiResponse } from "next";
-import dotenv from 'dotenv'
-import apiRoute from '../handler';
 import { Redis } from '@upstash/redis';
+
 import { User, UserViewModel } from "../../../models/User";
 import { Token } from "../../../models/Token";
 import { getAsString } from "../../../lib/utils";
 import { isFollowing } from "../follows";
-import { ethers } from "ethers";
 
-dotenv.config({ path: '../.env' })
+import apiRoute from '../handler';
 
 const client = Redis.fromEnv()
 const route = apiRoute();
@@ -33,7 +31,7 @@ export const getUser = async (
 
   let address = handle;
 
-  if (!ethers.utils.isAddress(address)) {
+  if (!/^0x[0-9A-F]{40}$/i.test(address)) {// An ethereum/polygon address is a 42 character hexadecimal address
     address = await client.get(`nickname:${handle}`);
   }
 
@@ -63,10 +61,10 @@ export const getUser = async (
   }
 
   const avatarPromise = getAvatar(user);
-  
+
   const followedByViewerPromise = isFollowing(viewerAddress, user?.address);
   const followsViewerPromise = isFollowing(user?.address, viewerAddress);
-  
+
   const [avatar, followedByViewer, followsViewer] = await Promise.all([avatarPromise, followedByViewerPromise, followsViewerPromise]);
 
   vm.avatar = avatar;

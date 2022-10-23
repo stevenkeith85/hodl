@@ -1,10 +1,15 @@
-import { Box, NoSsr, Typography } from "@mui/material";
 import TwitterIcon from '@mui/icons-material/Twitter';
-import { grey } from '@mui/material/colors';
-import { RocketLaunch } from "@mui/icons-material";
+import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+
+import NoSsr from '@mui/material/NoSsr';
+
 import { authenticate } from "../lib/jwt";
 import { HodlBorderedBox } from "../components/HodlBorderedBox";
 import { TikTokIcon } from "../components/TikTokIcon";
+import { grey } from '@mui/material/colors';
+
 
 export async function getServerSideProps({ req, res }) {
     await authenticate(req, res);
@@ -40,7 +45,7 @@ export default function Contact({ address }) {
                         gap: 2
                     }}>
                         <Box sx={{ gap: 1.5, display: 'flex', alignItems: 'center' }}>
-                            <RocketLaunch sx={{ color: grey[500] }} />
+                            <RocketLaunchIcon sx={{ color: grey[500] }} />
                             <Typography color={theme => theme.palette.text.secondary}>hodlmymoon</Typography>
                         </Box>
                         <Box sx={{ gap: 1.5, display: 'flex', alignItems: 'center' }}>

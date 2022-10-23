@@ -1,27 +1,30 @@
-import Market from '../../../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json'
+import Market from '../../../../../../smart-contracts/artifacts/contracts/HodlMarket.sol/HodlMarket.json'
 import { getProvider } from '../../../../../lib/server/connections'
-import { ethers } from 'ethers'
+// import { ethers } from 'ethers'
+import { AddressZero, Zero } from '@ethersproject/constants'
+import { Contract } from '@ethersproject/contracts'
+import { formatEther } from '@ethersproject/units'
+
 import { NextApiRequest, NextApiResponse } from "next";
-import dotenv from 'dotenv'
+
 import apiRoute from '../../../handler';
 import { ListingSolidity, ListingVM } from '../../../../../models/Listing';
 
-dotenv.config({ path: '../.env' })
 const route = apiRoute();
 
 const isValidListing = ({ seller, tokenId }: ListingSolidity) => {
-  return seller !== ethers.constants.AddressZero && tokenId !== ethers.constants.Zero;
+  return seller !== AddressZero && tokenId !== Zero;
 }
 
 export const getListingFromBlockchain = async (id: number): Promise<ListingVM> => {
   const provider = await getProvider();
 
-  const marketContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
+  const marketContract = new Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
   const listing: ListingSolidity = await marketContract.getListing(id);
 
   if (isValidListing(listing)) {
     return {
-      price: ethers.utils.formatEther(listing.price),
+      price: formatEther(listing.price),
       seller: listing.seller,
       tokenId: listing.tokenId.toNumber()
     };

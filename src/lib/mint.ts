@@ -1,12 +1,13 @@
-import { ethers } from 'ethers'
+// import { ethers } from 'ethers'
+import { Contract } from '@ethersproject/contracts'
 
-import NFT from '../../artifacts/contracts/HodlNFT.sol/HodlNFT.json'
+import NFT from '../../smart-contracts/artifacts/contracts/HodlNFT.sol/HodlNFT.json'
 import { getMetaMaskSigner } from './connections';
 import axios from 'axios';
 
 export const mintToken = async (url) => {
   const signer = await getMetaMaskSigner();
-  const tokenContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, signer);
+  const tokenContract = new Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, signer);
 
   const mintFee = await tokenContract.mintFee();
   const { hash } = await tokenContract.createToken(url, { value: mintFee });

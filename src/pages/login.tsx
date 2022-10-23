@@ -1,11 +1,22 @@
-import { Facebook, Instagram, Reddit, RocketLaunch, Twitter } from "@mui/icons-material";
-import { Box, Button, Link, TextField, Typography } from "@mui/material";
+
+import FacebookIcon from "@mui/icons-material/Facebook";
+import InstagramIcon from "@mui/icons-material/Instagram";
+import RedditIcon from "@mui/icons-material/Reddit";
+import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
+import TwitterIcon from "@mui/icons-material/Twitter";
+     
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import { grey } from "@mui/material/colors";
+import Link from "@mui/material/Link";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+
 import Head from "next/head"
 import { useState } from "react";
 import Cookies from "universal-cookie"
-import { TikTokIcon } from "../components/TikTokIcon";
 
+import { TikTokIcon } from "../components/TikTokIcon";
 
 export async function getServerSideProps({ req, res }) {
     const cookies = new Cookies(req.headers.cookie);
@@ -34,7 +45,6 @@ export default function LoginPage({ loggedIn }) {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                // paddingY: 10,
                 height: { xs: `calc(100vh - 500px)`, sm: `calc(100vh - 250px)` },
                 minHeight: 'max(70vh, 450px)',
             }}>
@@ -43,7 +53,6 @@ export default function LoginPage({ loggedIn }) {
                         display: 'flex',
                         alignItems: 'center',
                     }}>
-
                     <Box
                         component="span"
                         sx={{
@@ -59,7 +68,7 @@ export default function LoginPage({ loggedIn }) {
                         Hodl My Moon
 
                     </Box>
-                    <RocketLaunch sx={{
+                    <RocketLaunchIcon sx={{
                         marginLeft: 2,
                         color: grey[500],
                         fontSize: {
@@ -113,10 +122,8 @@ export default function LoginPage({ loggedIn }) {
                         :
                         <Box
                             sx={{
-                                // background: '#f0f0f0',
                                 padding: 0,
                                 textAlign: 'center'
-                                // border: '1px solid #ddd'
                             }}>
                             <Box
                                 sx={{
@@ -169,7 +176,6 @@ export default function LoginPage({ loggedIn }) {
                         </Box>
                     }
                 </Box>
-
             </Box>
             {!loggedIn && <Box
                 sx={{
@@ -250,7 +256,6 @@ export default function LoginPage({ loggedIn }) {
                     </Box>
 
                 </Box>
-
                 <Box sx={{
                     display: 'flex',
                     width: { xs: '100%', sm: '50%' },
@@ -261,7 +266,7 @@ export default function LoginPage({ loggedIn }) {
                     boxSizing: 'border-box'
                 }}>
                     <Link href="https://twitter.com/hodlmymoon">
-                        <Twitter
+                        <TwitterIcon
                             sx={{
                                 marginX: { xs: 1, sm: 2 },
                                 fontSize: 30,
@@ -281,7 +286,7 @@ export default function LoginPage({ loggedIn }) {
                         </Box>
                     </Link>
                     <Link href="https://www.reddit.com/user/hodlmymoon1">
-                        <Reddit
+                        <RedditIcon
                             sx={{
                                 marginX: { xs: 1, sm: 2 },
                                 fontSize: 30,
@@ -289,7 +294,7 @@ export default function LoginPage({ loggedIn }) {
                             }} />
                     </Link>
                     <Link href="https://www.facebook.com/people/Hodlmymoon/100086969439067/">
-                        <Facebook
+                        <FacebookIcon
                             sx={{
                                 marginX: { xs: 1, sm: 2 },
                                 fontSize: 30,
@@ -297,7 +302,7 @@ export default function LoginPage({ loggedIn }) {
                             }} />
                     </Link>
                     <Link href="https://www.instagram.com/hodlmymoon/">
-                        <Instagram
+                        <InstagramIcon
                             sx={{
                                 marginX: { xs: 1, sm: 2 },
                                 fontSize: 30,
