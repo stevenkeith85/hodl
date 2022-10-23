@@ -1,12 +1,14 @@
 import { Box, Skeleton } from '@mui/material'
 import Link from 'next/link';
 import { assetType } from '../lib/utils';
-import { HodlVideo } from './HodlVideo';
 import { Likes } from './Likes';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Comments } from './comments/Comments';
-import { GifBoxOutlined, Image, ImageOutlined, MusicNote, MusicNoteOutlined, Videocam, VideocamOffOutlined, VideocamOutlined } from '@mui/icons-material'
+import GifBoxOutlinedIcon from '@mui/icons-material/GifBoxOutlined';
+import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
+import MusicNoteOutlinedIcon from '@mui/icons-material/MusicNoteOutlined';
+import VideocamOutlinedIcon from '@mui/icons-material/VideocamOutlined';
 import { AssetTypes } from '../models/AssetType';
 import { HodlImageResponsive } from './HodlImageResponsive';
 import { HodlAudioBox } from './HodlAudioBox';
@@ -148,7 +150,7 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                             height: '100%',
                             position: 'relative'
                         }}>
-                        <GifBoxOutlined sx={{ position: 'absolute', top: 8, left: 8 }} />
+                        <GifBoxOutlinedIcon sx={{ position: 'absolute', top: 8, left: 8 }} />
                         <HodlImageResponsive
                         suffix="jpg"
                             lcp={lcp}
@@ -171,7 +173,7 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                             height: '100%',
                             position: 'relative'
                         }}>
-                        <VideocamOutlined sx={{ position: 'absolute', top: 8, left: 8 }} />
+                        <VideocamOutlinedIcon sx={{ position: 'absolute', top: 8, left: 8 }} />
                         <HodlImageResponsive
                             lcp={lcp}
                             sizes="(min-width: 900px) 25vw, (min-width: 1200px) calc(1200px / 5 * 2), 50vw"
@@ -189,7 +191,7 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                             position: 'relative',
                             color: 'white',
                         }}>
-                        <MusicNoteOutlined sx={{ position: 'absolute', top: 8, left: 8, zIndex: 1 }} />
+                        <MusicNoteOutlinedIcon sx={{ position: 'absolute', top: 8, left: 8, zIndex: 1 }} />
                         <HodlAudioBox token={nft} audio={false} minHeight={1000} size={50} />
                     </Box>
                 }
@@ -204,7 +206,7 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                             height: '100%',
                             position: 'relative'
                         }}>
-                        <ImageOutlined sx={{ position: 'absolute', top: 8, left: 8 }} />
+                        <ImageOutlinedIcon sx={{ position: 'absolute', top: 8, left: 8 }} />
                         <HodlImageResponsive
                             lcp={true}
                             aspectRatio="1:1"

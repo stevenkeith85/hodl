@@ -1,5 +1,4 @@
 import Head from 'next/head';
-
 import { PublicHomePage } from '../components/layout/PublicHomePage';
 import { PrivateHomePage } from '../components/layout/PrivateHomePage';
 import { authenticate } from '../lib/jwt';
@@ -66,7 +65,7 @@ export default function Home({
 
   const { rankings: mostLiked } = useRankings(true, limit, null, "token");
   const { rankings: mostFollowed } = useRankings(true, limit, null);
-  const { rankings: mostUsedTags } = useRankings(true, limit, null, "tag");
+  // const { rankings: mostUsedTags } = useRankings(true, limit, null, "tag");
 
   const { results: newUsers } = useNewUsers(limit, null);
   const { results: newTokens } = useNewTokens(limit, null);
@@ -89,7 +88,7 @@ export default function Home({
         limit,
         mostFollowed,
         mostLiked,
-        mostUsedTags,
+        // mostUsedTags,
         newUsers,
         newTokens
       }}>
