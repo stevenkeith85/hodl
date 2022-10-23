@@ -13,12 +13,12 @@ import { EmojiEmotionsOutlined } from "@mui/icons-material";
 
 import dynamic from "next/dynamic";
 
-const Picker = dynamic(
-    () => {
-        return import("emoji-picker-react");
-    },
-    { ssr: false }
-);
+// const Picker = dynamic(
+//     () => {
+//         return import("emoji-picker-react");
+//     },
+//     { ssr: false }
+// );
 
 interface AddCommentProps {
     tokenId?: number, // we always store the tokenId this comment was made against to allow us to link to it; give the token owner permission to delete, etc
@@ -173,7 +173,7 @@ export const AddComment: FC<AddCommentProps> = ({
                                                         display: open ? 'block' : 'none'
                                                     }}
                                                 >
-                                                    <Picker
+                                                    {/* <Picker
                                                         preload={true}
                                                         native={true}
                                                         onEmojiClick={(e, emojiObject) => {
@@ -182,13 +182,13 @@ export const AddComment: FC<AddCommentProps> = ({
                                                             newTagRef.current.value += emojiObject.emoji;
                                                             setOpen(false);
                                                         }}
-                                                    />
+                                                    /> */}
                                                 </Box>
 
 
-                                                <IconButton onClick={() => setOpen(old => !old)}>
+                                                {/* <IconButton onClick={() => setOpen(old => !old)}>
                                                     <EmojiEmotionsOutlined color="primary" />
-                                                </IconButton>
+                                                </IconButton> */}
 
                                             </Box>
                                         </ClickAwayListener>

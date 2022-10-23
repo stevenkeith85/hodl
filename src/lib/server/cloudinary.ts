@@ -1,6 +1,4 @@
 import cloudinary from 'cloudinary'
-import multer from 'multer';
-import { CloudinaryStorage } from 'multer-storage-cloudinary';
 
 // @ts-ignore
 cloudinary.v2.config({
