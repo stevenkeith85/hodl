@@ -1,5 +1,10 @@
-import { AccountBalanceWallet } from "@mui/icons-material";
-import { Box, Button, Link, Typography } from "@mui/material";
+
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Link from "@mui/material/Link";
+import Typography from "@mui/material/Typography";
+
 import { HodlBorderedBox } from "../components/HodlBorderedBox";
 import { authenticate } from "../lib/jwt";
 
@@ -43,7 +48,7 @@ export default function About({ address }) {
                             <Button
                                 color={'secondary'}
                                 variant={'outlined'}
-                                startIcon={<AccountBalanceWallet />}
+                                startIcon={<AccountBalanceWalletIcon />}
                                 sx={{ cursor: 'auto', marginX: 1, paddingX: 1 }}
                             >
                                 connect

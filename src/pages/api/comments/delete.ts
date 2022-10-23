@@ -3,8 +3,8 @@ import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
 import { getProvider } from "../../../lib/server/connections";
 import { ethers } from "ethers";
-import HodlNFT from '../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
-import HodlMarket from '../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
+import HodlNFT from '../../../../smart-contracts/artifacts/contracts/HodlNFT.sol/HodlNFT.json';
+import HodlMarket from '../../../../smart-contracts/artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 import apiRoute from "../handler";
 import { DeleteCommentValidationSchema } from "../../../validation/comments/deleteComment";
 import { HodlComment } from "../../../models/HodlComment";

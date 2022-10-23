@@ -1,24 +1,24 @@
 import React from 'react';
 import Document, { Html, Head, Main, NextScript } from 'next/document'
+import createEmotionServer from '@emotion/server/create-instance';
 
 import theme from '../theme';
-import createEmotionServer from '@emotion/server/create-instance';
 import createEmotionCache from '../createEmotionCache';
 
 
 export default class MyDocument extends Document {
-
   render() {
     return (
       <Html lang='en'>
         <Head>
           {/* PWA primary color */}
           <meta name="theme-color" content={theme.palette.primary.main} />
+          <meta name="emotion-insertion-point" content="" />
+
           <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka&display=swap" />
           <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,500&display=swap" />
           <link rel="preconnect" href="https://res.cloudinary.com/" />
 
-          <meta name="emotion-insertion-point" content="" />
           {(this.props as any).emotionStyleTags}
         </Head>
         <body>

@@ -1,19 +1,16 @@
-import dotenv from 'dotenv'
 import apiRoute from "../../../handler";
-import { ethers } from 'ethers';
+import { Contract } from '@ethersproject/contracts'
 import { getProvider } from '../../../../../lib/server/connections';
-import HodlNFT from '../../../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
+import HodlNFT from '../../../../../../smart-contracts/artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import { Redis } from '@upstash/redis';
 import { runRedisTransaction } from '../../../../../lib/databaseUtils';
-
-dotenv.config({ path: '../.env' })
 
 const route = apiRoute();
 const client = Redis.fromEnv()
 
 const addressToTokenIds = async (address, offset, limit) => {
   const provider = getProvider();
-  const tokenContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, HodlNFT.abi, provider);
+  const tokenContract = new Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, HodlNFT.abi, provider);
   const result = await tokenContract.addressToTokenIds(address, offset, limit);
   return result;
 }

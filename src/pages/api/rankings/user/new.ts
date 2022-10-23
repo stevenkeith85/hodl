@@ -1,14 +1,13 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
+
 import apiRoute from "../../handler";
+
 import { UserViewModel } from "../../../../models/User";
 import { getUser } from "../../user/[handle]";
 import { getAsString } from "../../../../lib/utils";
 
-dotenv.config({ path: '../.env' })
-
-const client = Redis.fromEnv()
+const client = Redis.fromEnv();
 const route = apiRoute();
 
 // TODO: Possibly rename 'rankings' to 'stats' as its not just 'rankings'. i.e. in this case we are getting the 

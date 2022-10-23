@@ -10,7 +10,7 @@ import {
     TAG_PATTERN
 } from "../utils";
 
-import NFT from '../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json';
+import NFT from '../../../smart-contracts/artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import axios from 'axios';
 import { Token } from "../../models/Token";
 import { HodlMetadata } from "../../models/Metadata";

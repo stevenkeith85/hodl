@@ -1,4 +1,4 @@
-import { RocketLaunch } from '@mui/icons-material';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import { Typography } from '@mui/material';
 import { SnackbarContent, CustomContentProps } from 'notistack'
 import React from "react";
@@ -27,7 +27,7 @@ export const HodlSnackbar = React.forwardRef<HTMLDivElement, HodlSnackbarProps>(
           alignItems: 'center',
           gap: 1.5,
         }}>
-        <RocketLaunch sx={{ fontSize: `18px`, color: getColor() }} />
+        <RocketLaunchIcon sx={{ fontSize: `18px`, color: getColor() }} />
         <Typography sx={{ color: theme => theme.palette.text.primary }}>{props.message}</Typography>
       </HodlBorderedBox>
     </SnackbarContent>

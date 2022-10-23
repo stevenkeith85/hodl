@@ -1,20 +1,21 @@
-import dotenv from 'dotenv'
 import apiRoute from "../../../handler";
 
-import { ethers } from 'ethers';
+// import { ethers } from 'ethers';
+import { Contract } from '@ethersproject/contracts'
+import { formatEther } from '@ethersproject/units'
+
 import { getProvider } from '../../../../../lib/server/connections';
-import HodlMarket from '../../../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
+import HodlMarket from '../../../../../../smart-contracts/artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 import { Redis } from '@upstash/redis';
 import { runRedisTransaction } from '../../../../../lib/databaseUtils';
 
-dotenv.config({ path: '../.env' })
 
 const route = apiRoute();
 const client = Redis.fromEnv()
 
 const addressToListings = async (address, offset, limit) => {
   const provider = await getProvider();
-  const market = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, HodlMarket.abi, provider);
+  const market = new Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, HodlMarket.abi, provider);
   const result = await market.getListingsForAddress(address, offset, limit);
   return result;
 }
@@ -36,12 +37,12 @@ export const updateListedCache = async (address) => {
 
   // get first page
   let result = await addressToListings(address, offset, limit);
-  result.page.forEach(listing => scoreMemberPairs.push(ethers.utils.formatEther(listing.price), Number(listing.tokenId)))
+  result.page.forEach(listing => scoreMemberPairs.push(formatEther(listing.price), Number(listing.tokenId)))
 
   // get remaining pages
   while (Number(result.nextOffset) < Number(result.totalItems)) {
     result = await addressToListings(address, Number(result.nextOffset), limit)
-    result.page.forEach(listing => scoreMemberPairs.push(ethers.utils.formatEther(listing.price), Number(listing.tokenId)))
+    result.page.forEach(listing => scoreMemberPairs.push(formatEther(listing.price), Number(listing.tokenId)))
   }
 
   if (scoreMemberPairs.length) {

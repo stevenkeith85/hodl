@@ -1,18 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
-
-import nc from 'next-connect'
-
-
-import requestIp from 'request-ip'
-
 import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
-import jwt from 'jsonwebtoken'
-import cookie from 'cookie'
-import { accessTokenExpiresIn, apiAuthenticate, authenticate } from "../../lib/jwt";
 
+import nc from 'next-connect';
+import requestIp from 'request-ip';
 
-dotenv.config({ path: '../.env' })
+import { apiAuthenticate } from "../../lib/jwt";
 
 export interface HodlApiRequest extends NextApiRequest {
   address: string | null
@@ -20,61 +12,6 @@ export interface HodlApiRequest extends NextApiRequest {
 
 const client = Redis.fromEnv();
 
-
-// const authenticate = async (req, res, next) => {
-//   const { accessToken, refreshToken } = req.cookies;
-
-//   if (!accessToken || !refreshToken) {
-//     return next();
-//   }
-
-//   try {
-//     const { address } = jwt.verify(accessToken, process.env.JWT_SECRET);
-//     req.address = address;
-//     return next();
-//   } catch (e) {
-//     if (e instanceof jwt.TokenExpiredError) {
-//       try {
-//         const { sessionId } = jwt.verify(refreshToken, process.env.JWT_SECRET);
-//         const { address } = jwt.decode(accessToken);
-
-//         const storedSessionId = await client.hget(`user:${address}`, 'sessionId');
-
-//         // The sessionId that was set in the (longer lasting) refreshToken matches what we have in the database; so this looks legit
-//         // Give the user a new accessToken
-//         if (sessionId == storedSessionId) { 
-//           const accessToken = jwt.sign({ address, sessionId }, process.env.JWT_SECRET, { expiresIn: accessTokenExpiresIn });
-
-//           res.setHeader('Set-Cookie', [
-//             cookie.serialize('accessToken', accessToken, { httpOnly: true, path: '/' }),
-//           ])
-
-//           return res.status(401).json({ refreshed: true, 
-//             // accessToken 
-//           }); 
-//         }
-
-//         // the sessionId does not match the storedSessionId
-//         // the user has been logged out; by themselves - or us
-//         // user will need to re-login
-//         return res.status(401).json({ refreshed: false }); 
-//       } catch (e) {
-//         // the verify call has failed, i.e. the refreshToken has expired. 
-//         // the user will need to re-login
-//         return res.status(401).json({ refreshed: false }); 
-//       }
-//     }
-
-//     // This is unlikely to happen in the wild; but if it does; just log the user out
-//     // WE usually see it when switching from dev to prod mode (as we have a different jwt secret for both); 
-//     if (e instanceof jwt.JsonWebTokenError) {
-//       return res.status(401).json({ refreshed: false });
-//     }
-
-//     // just log them out if there's any issue we aren't handling
-//     return res.status(401).json({ refreshed: false });
-//   }
-// }
 
 const ratelimit = async (req, res, next) => {
   const ip = requestIp.getClientIp(req);
@@ -140,7 +77,6 @@ const handler = () => nc<HodlApiRequest, NextApiResponse>({
     res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
   },
   onError(error, req, res) {
-    // TODO: Write this error somewhere. Perhaps REDIS
     console.log('API Route Error', 'address: ', req.address, 'path: ', req.url, 'error: ', error)
     res.status(500).json(error);
   }

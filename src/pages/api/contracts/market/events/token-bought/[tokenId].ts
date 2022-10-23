@@ -1,19 +1,22 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { ethers, BigNumber } from 'ethers'
-import dotenv from 'dotenv'
+// import { ethers, BigNumber } from 'ethers'
+
+import { Contract } from '@ethersproject/contracts'
+import { formatEther } from '@ethersproject/units'
+
+
 import { getNickname } from "../../../../profile/nickname";
 import { getProvider } from "../../../../../../lib/server/connections";
-import Market from '../../../../../../../artifacts/contracts/HodlMarket.sol/HodlMarket.json';
+import Market from '../../../../../../../smart-contracts/artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 import apiRoute from '../../../../handler';
 import { PriceHistory } from "../../../../../../models/PriceHistory";
 
-dotenv.config({ path: '../.env' })
 
 export const getPriceHistory = async (tokenId) : Promise<PriceHistory []>  => {
   const provider = await getProvider();
 
-  const marketContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
-  const tokenFilter = marketContract.filters.TokenBought(null, null, BigNumber.from(tokenId));
+  const marketContract = new Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
+  const tokenFilter = marketContract.filters.TokenBought(null, null, tokenId);
 
   // Infura only lets us search 3500 blocks
   const latest = await provider.getBlockNumber();
@@ -40,7 +43,7 @@ export const getPriceHistory = async (tokenId) : Promise<PriceHistory []>  => {
       buyer: buyerNickname || tx.args.buyer,
       buyerAddress: tx.args.buyer,
 
-      price: +ethers.utils.formatEther(tx.args.price),
+      price: +formatEther(tx.args.price),
       timestamp: block.timestamp
     })
   }

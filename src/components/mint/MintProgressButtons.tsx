@@ -1,4 +1,5 @@
-import { NavigateBefore, NavigateNext } from '@mui/icons-material';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { Fab } from '@mui/material';
 
 export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, loading, formData }) => {
@@ -13,8 +14,6 @@ export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, l
 
   return (
     <>
-    {/* active { activeStep }<br></br>
-    complete { stepComplete } */}
       {stepComplete >= 0 && activeStep > 0 && <Fab
         size="small"
         color="secondary"
@@ -42,7 +41,7 @@ export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, l
             }
           }
         }>
-        <NavigateBefore />
+        <NavigateBeforeIcon />
       </Fab>}
       <Fab
         size="small"
@@ -70,7 +69,7 @@ export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, l
             setActiveStep(activeStep => activeStep + 1)
           }
         }}>
-        <NavigateNext />
+        <NavigateNextIcon />
       </Fab>
     </>
   )

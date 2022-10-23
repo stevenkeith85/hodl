@@ -1,12 +1,13 @@
-import NFT from '../../../../../../artifacts/contracts/HodlNFT.sol/HodlNFT.json'
+import NFT from '../../../../../../smart-contracts/artifacts/contracts/HodlNFT.sol/HodlNFT.json'
 import { getProvider } from '../../../../../lib/server/connections'
-import { ethers } from 'ethers'
+// import { ethers } from 'ethers'
+import { Contract } from '@ethersproject/contracts'
+
 import { NextApiRequest, NextApiResponse } from "next";
-import dotenv from 'dotenv'
+
 import apiRoute from '../../../handler';
 import { TokenSolidity } from '../../../../../models/Token';
 
-dotenv.config({ path: '../.env' })
 
 const route = apiRoute();
 
@@ -14,7 +15,7 @@ const route = apiRoute();
 export const getTokenFromBlockchain = async (id: number): Promise<TokenSolidity> => {
   const provider = await getProvider();
 
-  const tokenContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, provider);
+  const tokenContract = new Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, provider);
   const ownerOf = await tokenContract.ownerOf(id);
 
   return {

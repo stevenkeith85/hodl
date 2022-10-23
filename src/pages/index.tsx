@@ -1,11 +1,12 @@
 import Head from 'next/head';
+import Container from '@mui/material/Container';
+
 import { PublicHomePage } from '../components/layout/PublicHomePage';
 import { PrivateHomePage } from '../components/layout/PrivateHomePage';
 import { authenticate } from '../lib/jwt';
 import { FeedContext } from '../contexts/FeedContext';
 import { useActions } from '../hooks/useActions';
 import { ActionSet } from '../models/HodlAction';
-import { Container } from '@mui/material';
 import { getActions } from './api/actions';
 import { useRankings } from '../hooks/useRankings';
 import { RankingsContext } from '../contexts/RankingsContext';

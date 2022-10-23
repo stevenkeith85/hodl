@@ -1,11 +1,10 @@
-import { Typography, Stack, Button, Box } from '@mui/material';
-import { Build, CloudSyncOutlined, SatelliteAlt } from '@mui/icons-material';
+import { Typography, Button, Box } from '@mui/material';
+import CloudSyncOutlinedIcon from '@mui/icons-material/CloudSyncOutlined';
 import { FC, useState } from 'react';
 import { enqueueSnackbar } from 'notistack';
 import { mintToken } from '../../lib/mint';
 import { MintProps } from './models';
 import { grey } from '@mui/material/colors';
-import { SuccessModal } from '../modals/SuccessModal';
 import { MintTokenModal } from '../modals/MintTokenModal';
 
 
@@ -77,7 +76,7 @@ export const MintTokenAction: FC<MintProps> = ({
         height="400px"
         gap={4}
       >
-        <CloudSyncOutlined sx={{ fontSize: 50, color: grey[400] }} />
+        <CloudSyncOutlinedIcon sx={{ fontSize: 50, color: grey[400] }} />
         <Typography
           sx={{
             fontSize: '18px',

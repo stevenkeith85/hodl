@@ -1,17 +1,19 @@
-import { useState } from 'react'
-import { Grid, Box } from '@mui/material'
+import dynamic from "next/dynamic";
+import Head from 'next/head'
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import { useState } from "react";
+
 import { MintProgressButtons } from '../components/mint/MintProgressButtons'
 import { HodlLoadingSpinner } from '../components/HodlLoadingSpinner'
 import { AssetPreview } from '../components/mint/AssetPreview'
-
-import dynamic from "next/dynamic";
-import Head from 'next/head'
 import { authenticate } from '../lib/jwt'
 import { useWarningOnExit } from '../hooks/useWarningOnExit'
 import { CropAssetAction } from '../components/mint/CropAssetAction'
 import { FilterAssetAction } from '../components/mint/FilterAssetAction'
 import { assetTypeFromMimeType } from '../lib/utils'
 import { AssetTypes } from '../models/AssetType'
+
 
 const SelectAssetAction = dynamic(
   () => import('../components/mint/SelectAssetAction').then((module) => module.SelectAssetAction),
@@ -70,7 +72,6 @@ const Mint = ({ address }) => {
       <Head>
         <title>Create · Hodl My Moon</title>
       </Head>
-      {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
       <Box
         sx={{
           position: "relative",
@@ -108,7 +109,6 @@ const Mint = ({ address }) => {
               >
                 {activeStep === 0 &&
                   <SelectAssetAction
-                    formData={formData}
                     setFormData={setFormData}
                     loading={loading}
                     setLoading={setLoading}
@@ -166,11 +166,6 @@ const Mint = ({ address }) => {
               <Box
                 sx={{
                   height: '100%',
-                  // minHeight: {
-                  //   xs: '50vh',
-                  //   sm: '80vh'
-                  // },
-                  // width: `100%`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
