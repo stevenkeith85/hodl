@@ -1,22 +1,9 @@
-import { NextApiResponse } from "next";
-import { Redis } from '@upstash/redis';
-
-import apiRoute from "../../handler";
+import { NextApiRequest, NextApiResponse } from 'next'
 
 import { Token } from "../../../../models/Token";
 import { getTokens } from "../../../../lib/database/Tokens";
 import { getAsString } from "../../../../lib/getAsString";
 
-
-const client = Redis.fromEnv()
-const route = apiRoute();
-
-// TODO: Possibly rename 'rankings' to 'stats' as its not just 'rankings'. i.e. in this case we are getting the 
-// most recent tokens added to the site.
-
-// data structures:
-//
-// ZSET (tokens:new) <address> and the time they added the token (limited to a max size as it is used on the UI and we want to keep things fast)
 
 export const getNewTokens = async (
   offset: number = 0,
@@ -27,8 +14,15 @@ export const getNewTokens = async (
     next: number,
     total: number
   }> => {
+  const cardResponse = await fetch(
+    `${process.env.UPSTASH_REDIS_REST_URL}/zcard/tokens:new`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
+      }
+    });
 
-  const total = await client.zcard(`tokens:new`);
+  const { result: total } = await cardResponse.json();
 
   if (offset >= total) {
     return {
@@ -38,7 +32,15 @@ export const getNewTokens = async (
     };
   }
 
-  const ids: string[] = await client.zrange(`tokens:new`, offset, offset + limit - 1, { rev: true });
+  const idsResponse = await fetch(
+    `${process.env.UPSTASH_REDIS_REST_URL}/zrange/tokens:new/${offset}/${offset + limit - 1}/rev`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
+      }
+    });
+
+  const { result: ids } = await idsResponse.json();
   const tokens = await getTokens(ids);
 
   return {
@@ -48,19 +50,25 @@ export const getNewTokens = async (
   };
 }
 
-route.get(async (req, res: NextApiResponse) => {
-  const offset = getAsString(req.query.offset);
-  const limit = getAsString(req.query.limit);
+// TODO: Lock down to GET requests
+export default async function getLatestTokens (
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const { searchParams } = new URL(req.url);
+
+  const offset = getAsString(searchParams.get('offset'));
+  const limit = getAsString(searchParams.get('limit'));
 
   if (!offset || !limit) {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
-  const addresses = await getNewTokens(+offset, +limit);
+  const tokens = await getNewTokens(+offset, +limit);
 
-  res.status(200).json(addresses);
+  return new Response(JSON.stringify(tokens), { status: 200, headers: { 'content-type': 'application/json'}})
+};
 
-});
-
-
-export default route;
+export const config = {
+  runtime: 'experimental-edge',
+}

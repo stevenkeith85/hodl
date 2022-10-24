@@ -1,15 +1,31 @@
-import { Redis } from '@upstash/redis';
-import { Token } from '../../models/Token';
-
-const client = Redis.fromEnv();
-
+// TODO: refactor to use MGET to save cmds
 export const getTokens = async (tokenIds: string[]) => {
-    const tokensPipeline = client.pipeline();
+    const cmds = [];
+
     for (let tokenId of tokenIds) {
-        tokensPipeline.get<Token>('token:' + tokenId)
+        cmds.push(['GET', 'token:' + tokenId]);
     }
 
-    const tokens: Token[] = tokenIds.length ? await tokensPipeline.exec() : [];
+    if (cmds.length === 0) {
+        return [];
+    }
 
-    return tokens;
+    try {
+        const r = await fetch(
+          `${process.env.UPSTASH_REDIS_REST_URL}/pipeline`,
+          {
+            method: 'POST',
+            body: JSON.stringify(cmds),
+            headers: {
+              Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
+            }
+          });
+                  
+          const data = await r.json();
+          
+          const tokens = data.map(item => JSON.parse(item.result));
+          return tokens;
+      } catch (e) {
+        console.log(e)
+      }
 }
