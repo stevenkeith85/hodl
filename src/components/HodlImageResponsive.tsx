@@ -69,12 +69,13 @@ export const HodlImageResponsive = ({
                 sx={{
                     position: 'relative',
                     width: `100%`,
-                    height: 0,
                     paddingTop: `${getTopPadding(aspectRatio)}%`
                 }}>
+
+                    
                 <Box
                     sx={{
-                        position: 'absolute',
+                        position: aspectRatio ? 'absolute' : 'static',
                         top: 0,
                         left: 0,
                         width:  '100%',
