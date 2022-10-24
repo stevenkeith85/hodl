@@ -4,7 +4,6 @@ import { useRouter } from 'next/router';
 
 import { useEffect, useState } from 'react';
 
-
 import CssBaseline from '@mui/material/CssBaseline';
 
 import { SnackbarProvider } from 'notistack';
@@ -13,19 +12,22 @@ import { CacheProvider, EmotionCache } from '@emotion/react';
 import Cookies from "universal-cookie"
 import Pusher from 'pusher-js';
 
-
 import '../styles/globals.css'
 import { PusherContext } from '../contexts/PusherContext';
 import { WalletContext } from '../contexts/WalletContext';
 import LoginPage from './login';
 import theme from '../theme';
+
+// Can we lazy load this? Seems to bring in a lot of deps
 import { HodlNotificationSnackbar } from '../components/snackbars/HodlNotificationSnackbar';
 import { HodlSnackbar } from '../components/snackbars/HodlSnackbar';
+
 import createEmotionCache from '../createEmotionCache';
+
+// Also loads a lot of deps
 import Layout from '../components/layout/Layout';
+
 import { ThemeProvider } from '@mui/material/styles';
-
-
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -40,9 +42,6 @@ export default function MyApp(props: MyAppProps) {
     Component,
     emotionCache = clientSideEmotionCache,
     pageProps } = props;
-
-  const router = useRouter();
-
 
   const [signer, setSigner] = useState('');
 

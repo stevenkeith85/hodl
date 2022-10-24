@@ -2,11 +2,11 @@ import { NextApiResponse } from "next";
 import apiRoute from "../handler";
 import { getProvider } from "../../../lib/server/connections";
 import { Redis } from '@upstash/redis';
-import { getAsString, validTxHashFormat } from "../../../lib/utils";
-import axios from 'axios';
+import { validTxHashFormat } from "../../../lib/utils";
 import { User } from "../../../models/User";
-import { addToZeplo, queueTxAndAction } from "../../../lib/addToZeplo";
+import { queueTxAndAction } from "../../../lib/addToZeplo";
 import { addPendingTransaction } from "../../../lib/transactions/updateTransactionRecords";
+import { getAsString } from "../../../lib/getAsString";
 
 const route = apiRoute();
 const client = Redis.fromEnv()

@@ -2,8 +2,8 @@ import apiRoute from '../../../handler';
 import { Token } from '../../../../../models/Token';
 import { Redis } from '@upstash/redis';
 import { updateListedCache } from './count';
-import { getAsString } from '../../../../../lib/utils';
 import { FullToken } from '../../../../../models/Nft';
+import { getAsString } from '../../../../../lib/getAsString';
 
 const client = Redis.fromEnv();
 

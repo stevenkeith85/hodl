@@ -1,14 +1,12 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
-import apiRoute from "../../handler";
-import { UserViewModel } from "../../../../models/User";
-import { getUser } from "../../user/[handle]";
-import { getAsString } from "../../../../lib/utils";
-import { getToken } from "../../token/[tokenId]";
-import { Token } from "../../../../models/Token";
 
-dotenv.config({ path: '../.env' })
+import apiRoute from "../../handler";
+
+import { Token } from "../../../../models/Token";
+import { getTokens } from "../../../../lib/database/Tokens";
+import { getAsString } from "../../../../lib/getAsString";
+
 
 const client = Redis.fromEnv()
 const route = apiRoute();
@@ -40,9 +38,8 @@ export const getNewTokens = async (
     };
   }
 
-  const ids: number[] = await client.zrange(`tokens:new`, offset, offset + limit - 1, { rev: true });
-  const promises = ids.map(id => getToken(id));
-  const tokens = await Promise.all(promises);
+  const ids: string[] = await client.zrange(`tokens:new`, offset, offset + limit - 1, { rev: true });
+  const tokens = await getTokens(ids);
 
   return {
     items: tokens,

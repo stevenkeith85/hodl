@@ -32,8 +32,6 @@ export async function getServerSideProps({ req, res }) {
 export default function LoginPage({ loggedIn }) {
     const [password, setPassword] = useState("")
 
-    const [value, setValue] = useState(0);
-
     return (
         <>
             <Head>

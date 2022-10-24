@@ -3,10 +3,10 @@ import { Redis } from '@upstash/redis';
 
 import { User, UserViewModel } from "../../../models/User";
 import { Token } from "../../../models/Token";
-import { getAsString } from "../../../lib/utils";
 import { isFollowing } from "../follows";
 
 import apiRoute from '../handler';
+import { getAsString } from "../../../lib/getAsString";
 
 const client = Redis.fromEnv()
 const route = apiRoute();

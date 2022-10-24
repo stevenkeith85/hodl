@@ -1,4 +1,6 @@
-import { Box, Container } from '@mui/material'
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+
 import { useRouter } from 'next/router'
 import ResponsiveAppBar from './AppBar'
 import Footer from './Footer'

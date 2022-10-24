@@ -1,6 +1,6 @@
 import useSWR, { Fetcher, SWRResponse } from 'swr';
 import axios from 'axios'
-import { User, UserViewModel } from '../models/User';
+import { UserViewModel } from '../models/User';
 
 export const useUser = (address, fallbackData = null): SWRResponse<UserViewModel, any> => {
 

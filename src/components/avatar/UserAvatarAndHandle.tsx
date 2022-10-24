@@ -1,4 +1,4 @@
-import { Box, Skeleton, Tooltip, Typography } from "@mui/material";
+
 import { UserViewModel } from "../../models/User";
 import { UserHandle } from "./UserHandle";
 import { UserDefaultAvatar } from "./UserDefaultAvatar";
@@ -6,6 +6,10 @@ import Link from "next/link";
 import { UserAvatar } from "./UserAvatar";
 import { useUser } from "../../hooks/useUser";
 import { getShortAddress } from "../../lib/utils";
+import Tooltip from "@mui/material/Tooltip";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Skeleton from "@mui/material/Skeleton";
 
 
 const UserAvatarAndHandleBody = ({ user, size, fontSize, handle, color }) => (<Box

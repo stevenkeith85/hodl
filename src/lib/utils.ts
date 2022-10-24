@@ -8,8 +8,6 @@ export const MAX_TAGS_PER_TOKEN = 6;
 
 export const TRANSACTION_TIMEOUT = 10000;
 
-export const getAsString = (param): string | null => Array.isArray(param) ? param[0] : param;
-
 export const imageFilters: {
   code: "improve" | "athena" | "aurora" | "hairspray" | "grayscale"
   name: string;
@@ -32,7 +30,7 @@ export const getTopPadding = (ratio) => {
   if (!ratio) {
     return 0;
   }
-  
+
   const [width, height] = ratio.split(':');
   return (height / width) * 100;
 }
@@ -77,18 +75,6 @@ export const srcSet = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 
 
 export const getShortAddress = address => {
   return (address?.slice(0, 5) + '...' + address?.slice(-4)).toLowerCase();
-}
-
-export const truncateText = (text, length = 30) => {
-  if (!text) {
-    return '';
-  }
-
-  if (text.length > length) {
-    return text.slice(0, length) + '...';
-  }
-
-  return text;
 }
 
 export const ipfsUriToGatewayUrl = ipfsUri => {

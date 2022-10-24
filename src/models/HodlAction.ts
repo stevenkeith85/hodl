@@ -1,6 +1,6 @@
 import { HodlCommentViewModel } from "./HodlComment";
 import { Token } from "./Token";
-import { User, UserViewModel } from "./User";
+import { UserViewModel } from "./User";
 
 export enum ActionTypes {
     // WEB 3 ACTIONS

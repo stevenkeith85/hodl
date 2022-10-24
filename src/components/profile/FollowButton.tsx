@@ -1,9 +1,9 @@
-import { Button } from "@mui/material";
+
+import Button from "@mui/material/Button";
 import { useContext } from "react";
 import { WalletContext } from "../../contexts/WalletContext";
 import { useFollow } from "../../hooks/useFollow";
 import { useUser } from "../../hooks/useUser";
-import { User, UserViewModel } from "../../models/User";
 
 interface FollowButtonProps {
     profileAddress: string;

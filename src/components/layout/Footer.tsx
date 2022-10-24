@@ -1,9 +1,12 @@
-import { Stack, Box, Container, Typography } from "@mui/material";
-import { Twitter, Reddit, RocketLaunch } from '@mui/icons-material/';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import { HodlLink } from "../HodlLink";
 import { useContext } from "react";
 import { WalletContext } from '../../contexts/WalletContext';
 import { grey } from "@mui/material/colors";
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 
 
 const Footer = ({ showFooter = true }) => {
@@ -127,10 +130,7 @@ const Footer = ({ showFooter = true }) => {
                                 gap: 3
                             }}
                         >
-                            {/* <RocketLaunch sx={{ color: grey[500] }} />
-                            <Twitter sx={{ color: grey[500] }} />
-                            <Reddit sx={{ color: grey[500] }} /> */}
-                            <RocketLaunch sx={{ fontSize: 16, color: grey[500] }} />
+                            <RocketLaunchIcon sx={{ fontSize: 16, color: grey[500] }} />
                         </Box>
                         <Typography sx={{ color: grey[500], fontSize: '12px' }}>Copyright © 2022 Pony Powered Limited.</Typography>
                     </Stack>

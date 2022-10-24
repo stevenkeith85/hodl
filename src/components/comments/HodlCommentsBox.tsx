@@ -2,7 +2,8 @@ import { useRouter } from "next/router";
 import { useContext, useEffect, useRef, useState } from "react";
 import { NftContext } from "../../contexts/NftContext";
 import { useCommentCount, useComments } from "../../hooks/useComments";
-import { getAsString } from "../../lib/utils";
+import { getAsString } from "../../lib/getAsString";
+
 import { AddComment } from "../nft/AddComment";
 import { HodlCommentsBoxBody } from "./HodlCommentsBoxBody";
 import { HodlCommentsBoxHeader } from "./HodlCommentsBoxHeader";

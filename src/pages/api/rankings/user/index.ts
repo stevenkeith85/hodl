@@ -1,12 +1,13 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
+
 import apiRoute from "../../handler";
 import { UserViewModel } from "../../../../models/User";
-import { getUser } from "../../user/[handle]";
-import { getAsString } from "../../../../lib/utils";
 
-dotenv.config({ path: '../.env' })
+
+import { getUserVMs } from "../../../../lib/database/userVMs";
+import { getAsString } from "../../../../lib/getAsString";
+
 
 const client = Redis.fromEnv()
 const route = apiRoute();
@@ -37,11 +38,10 @@ export const getMostFollowedUsers = async (
   }
 
   const addresses: string[] = await client.zrange(`rankings:user:followers:count`, offset, offset + limit - 1, { rev: true });
-  const promises = addresses.map(address => getUser(address, viewer));
-  const users: UserViewModel[] = await Promise.all(promises);
+  const userVMs = await getUserVMs(addresses);
   
   return {
-    items: users,
+    items: userVMs,
     next: Number(offset) + Number(limit),
     total: Number(total)
   };
