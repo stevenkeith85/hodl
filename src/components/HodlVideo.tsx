@@ -1,7 +1,7 @@
 import { Box, NoSsr } from "@mui/material";
 import { useEffect, useRef } from "react";
 import { grey } from "@mui/material/colors";
-import Head from "next/head";
+import { makeCloudinaryUrl } from "../lib/cloudinaryUrl";
 
 interface HodlVideoProps {
     cid: string;
@@ -25,20 +25,11 @@ export const HodlVideo = ({
     sx = {},
     controls = true,
     gif = false,
-    height = '100%',
-    width = '100%',
     onLoad = null,
     assetFolder = "video",
     poster = null,
-    maxHeight = "100%"
 }: HodlVideoProps) => {
-    const makeCloudinaryVideoUrl = () => {
-        let cloudinaryUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_NAME}/${assetFolder}/upload`;
-
-        return `${cloudinaryUrl}/${environment}/${folder}/${cid}`
-    }
-
-    const asset = makeCloudinaryVideoUrl();
+    const asset = makeCloudinaryUrl(assetFolder, folder as 'nfts' | 'uploads', cid, {});
     const video = useRef(null);
 
     useEffect(() => {
@@ -57,15 +48,11 @@ export const HodlVideo = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                height,
-                width,
+                width: `100%`,
                 background: grey[200],
                 video: {
-                    width: 'auto',
+                    width: '100%',
                     height: 'auto',
-                    maxWidth: '100%',
-                    maxHeight,
-                    objectFit: 'scale-down'
                 },
                 ...sx
             }}>

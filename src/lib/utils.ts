@@ -6,21 +6,21 @@ import { commercial, nonCommercial, token } from "./copyright";
 export const TAG_PATTERN = /#([\d\w_]{3,25})(\s|$)/g;
 export const MAX_TAGS_PER_TOKEN = 6;
 
-export const TRANSACTION_TIMEOUT = 10000; 
+export const TRANSACTION_TIMEOUT = 10000;
 
-export const getAsString = (param) : string | null => Array.isArray(param) ? param[0] : param;
+export const getAsString = (param): string | null => Array.isArray(param) ? param[0] : param;
 
 export const imageFilters: {
-  code: "e_improve" | "e_art:athena" | "e_art:aurora" | "e_art:hairspray" | "e_grayscale"
+  code: "improve" | "athena" | "aurora" | "hairspray" | "grayscale"
   name: string;
-} [] = [
-  { code: null, name: 'original' },
-  { code: "e_improve", name: 'improve' },
-  { code: "e_art:athena", name: 'athena' },
-  { code: "e_art:aurora", name: 'aurora' },
-  { code: "e_art:hairspray", name: 'hairspray' },
-  { code: "e_grayscale", name: 'greyscale' }
-];
+}[] = [
+    { code: null, name: 'original' },
+    { code: "improve", name: 'improve' },
+    { code: "grayscale", name: 'greyscale' },
+    { code: "athena", name: 'athena' },
+    { code: "aurora", name: 'aurora' },
+    { code: "hairspray", name: 'hairspray' }
+  ];
 
 export const validFilter = (filter) => {
   const codes = imageFilters.map(f => f.code);
@@ -29,6 +29,10 @@ export const validFilter = (filter) => {
 }
 
 export const getTopPadding = (ratio) => {
+  if (!ratio) {
+    return 0;
+  }
+  
   const [width, height] = ratio.split(':');
   return (height / width) * 100;
 }
@@ -55,11 +59,11 @@ export const validLicenseDeclaration = (value) => {
 
 // TODO: Add a type for CloudinaryAssetType ('image' | 'video')
 export const createCloudinaryUrl = (
-  assetType = "image", 
-  deliveryType = "upload", 
-  transformations = null, 
-  folder, 
-  cid, 
+  assetType = "image",
+  deliveryType = "upload",
+  transformations = null,
+  folder,
+  cid,
   ext = null
 ) => {
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_NAME;
@@ -95,7 +99,7 @@ export const ipfsUriToGatewayUrl = ipfsUri => {
   const [_protocol, uri] = ipfsUri.split('//');
   const [cid, path] = uri.split('/');
 
-  
+
   if (path) {
     return `https://hodlmymoon.infura-ipfs.io/ipfs/${cid}/${path}`
   }
@@ -128,15 +132,15 @@ export const trim = str => {
 export const pluralize = (n: number, item: string) => {
   const v = n || 0;
   const endsWithY = item[item.length - 1] === 'y';
-  return v !== 1 ? `${v} ${endsWithY ? item.slice(0, -1) + 'ies' : item + 's'}`: `1 ${item}`
+  return v !== 1 ? `${v} ${endsWithY ? item.slice(0, -1) + 'ies' : item + 's'}` : `1 ${item}`
 }
 
 export const validTxHashFormat = (addr) => {
   return /^0x([A-Fa-f0-9]{64})$/.test(addr);
 }
 
-export const assetType = (nft: Token | FullToken) : AssetTypes => {
-  if (!nft?.properties?.asset?.mimeType) { 
+export const assetType = (nft: Token | FullToken): AssetTypes => {
+  if (!nft?.properties?.asset?.mimeType) {
     return AssetTypes.Image;
   }
 
@@ -160,8 +164,8 @@ export const assetType = (nft: Token | FullToken) : AssetTypes => {
 }
 
 
-export const assetTypeFromMimeType = (mimeType: string) : AssetTypes | null => {
-  if (!mimeType) { 
+export const assetTypeFromMimeType = (mimeType: string): AssetTypes | null => {
+  if (!mimeType) {
     return null;
   }
 
@@ -198,3 +202,4 @@ Please review hodlmymoon.com/legal/license before minting or trading tokens.
 
 uuid:
 `
+

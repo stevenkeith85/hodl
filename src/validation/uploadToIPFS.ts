@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import { validAspectRatio, validFilter, validLicenseDeclaration } from '../lib/utils';
+import { validFilter, validLicenseDeclaration } from '../lib/utils';
 
 export const uploadToIPFSValidationSchema = yup.object({
   name: yup

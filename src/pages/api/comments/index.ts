@@ -72,9 +72,7 @@ export const getCommentsForToken = async (object: "token" | "comment", objectId:
       avatarPipeline.get<Token>(`token:${id}`);
     }
 
-    console.log('here');
     const avatars: Token[] = avatarIds.length ? await avatarPipeline.exec() : [];
-
     
     // Create an id to token map so that we can extrapolate the user info for the UI
     const avatarMap = avatars.reduce((map, token) => {
@@ -87,8 +85,6 @@ export const getCommentsForToken = async (object: "token" | "comment", objectId:
       nickname: user.nickname,
       avatar: avatarMap[user.avatar]
     }))
-
-    console.log('userVMs', userVMs);
 
     // Create an address to user map so that we can extrapolate the comment info for the UI
     const userMap = userVMs.reduce((map, user) => {

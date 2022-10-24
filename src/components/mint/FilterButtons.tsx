@@ -5,6 +5,7 @@ import { HodlImageResponsive } from '../HodlImageResponsive';
 export const FilterButtons = ({ formData, setFormData }) => (
   <Box
     sx={{
+      width: '100%',
       display: 'grid',
       gap: {
         xs: 2,
@@ -12,7 +13,6 @@ export const FilterButtons = ({ formData, setFormData }) => (
       },
       gridTemplateColumns: {
         xs: '1fr 1fr',
-        sm: '1fr 1fr 1fr',
       }
     }}>
     {imageFilters.map(({ code, name }, index) => (
@@ -30,16 +30,15 @@ export const FilterButtons = ({ formData, setFormData }) => (
         }}
       >
         {formData.fileName &&
-          <Box>
-            <HodlImageResponsive
-              cid={formData.fileName.split('/')[2]}
-              folder="uploads"
-              effect={code}
-              widths={[125, 250]}
-              sizes="125px"
-              aspectRatio={formData.aspectRatio}
-            />
-          </Box>
+          <HodlImageResponsive
+            assetFolder={"image"}
+            folder="uploads"
+            cid={formData.fileName.split('/')[2]}
+            effect={code}
+            widths={[125, 250]}
+            sizes="125px"
+            aspectRatio={formData.aspectRatio}
+          />
         }
         <Typography
           sx={{

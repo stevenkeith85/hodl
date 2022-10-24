@@ -94,7 +94,7 @@ const Mint = ({ address }) => {
             <Grid
               item
               xs={12}
-              md={formData?.fileName ? 6 : 12}
+              md={formData?.fileName ? 5 : 12}
             >
               <Box
                 sx={{
@@ -162,7 +162,7 @@ const Mint = ({ address }) => {
             {formData?.fileName && <Grid
               item
               xs={12}
-              md={6}>
+              md={7}>
               <Box
                 sx={{
                   height: '100%',

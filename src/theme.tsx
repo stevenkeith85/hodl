@@ -56,8 +56,8 @@ let theme = createTheme({
       xs: 0,
       sm: 600,
       md: 900,
-      lg: 1200,
-      xl: 1200//1536,
+      lg: 1150,
+      xl: 1150//1536,
     },
   },
   components: {

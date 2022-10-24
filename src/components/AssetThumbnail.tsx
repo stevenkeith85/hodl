@@ -24,54 +24,46 @@ export const TokenTooltip: React.FC<TokenTooltipProps> = ({ token }) => {
         </Box>
     )
 }
-export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token, size = 44 }) => {
-
-    return (
-        <Tooltip
-            title={<TokenTooltip token={token} />}
-            arrow
-            placement="right"
+export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token, size = 44 }) => (
+    <Tooltip
+        title={<TokenTooltip token={token} />}
+        arrow
+        placement="right"
+    >
+        <Box
+            sx={{
+                cursor: 'pointer',
+                width: `100%`,
+                height: '100%'
+            }}
         >
-            <Box
-                sx={{
-                    cursor: 'pointer',
-                    width: `100%`,
-                    height: '100%'
-                }}
-            >
-                {
-                    assetType(token) === AssetTypes.Image &&
-                    <HodlImageResponsive
-                        cid={token?.properties?.asset?.uri}
-                        widths={[size, size * 2]}
-                        sizes={`${size}px`}
-                        aspectRatio="1:1"
-                        gravity="g_face:center"
-                    />
-                }
-                {assetType(token) === AssetTypes.Video &&
-                    <HodlImageResponsive
-                        cid={token?.image}
-                        widths={[size, size * 2]}
-                        sizes={`${size}px`}
-                        aspectRatio="1:1"
-                        gravity="g_face:center"
-                    />
-                }
-                {assetType(token) === AssetTypes.Gif &&
-                    <HodlImageResponsive
-                        cid={token?.image}
-                        widths={[size, size * 2]}
-                        sizes={`${size}px`}
-                        aspectRatio="1:1"
-                        gravity="g_face:center"
-                        suffix="jpg"
-                    />
-                }
-                {assetType(token) === AssetTypes.Audio &&
-                    <HodlAudioBoxMini size={size} />
-                }
-            </Box>
-        </Tooltip>
-    )
-}
+            {assetType(token) === AssetTypes.Image &&
+                <HodlImageResponsive
+                    assetFolder={"image"}
+                    folder="nfts"
+                    cid={token?.properties?.asset?.uri}
+                    widths={[size, size * 2]}
+                    sizes={`${size}px`}
+                    aspectRatio="1:1" />}
+            {assetType(token) === AssetTypes.Video &&
+                <HodlImageResponsive
+                    assetFolder={"image"}
+                    folder="nfts"
+                    cid={token?.image}
+                    widths={[size, size * 2]}
+                    sizes={`${size}px`}
+                    aspectRatio="1:1" />}
+            {assetType(token) === AssetTypes.Gif &&
+                <HodlImageResponsive
+                    assetFolder={"image"}
+                    folder="nfts"
+                    cid={token?.image}
+                    widths={[size, size * 2]}
+                    sizes={`${size}px`}
+                    aspectRatio="1:1"
+                />}
+            {assetType(token) === AssetTypes.Audio &&
+                <HodlAudioBoxMini size={size} />}
+        </Box>
+    </Tooltip>
+)

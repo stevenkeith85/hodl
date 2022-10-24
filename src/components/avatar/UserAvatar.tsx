@@ -14,7 +14,7 @@ interface UserAvatarProps {
 }
 
 export const UserAvatar: React.FC<UserAvatarProps> = ({ user, size }) => {
-    return (<>    
+    return (<>
         <Avatar
             sx={{
                 width: size,
@@ -22,33 +22,38 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({ user, size }) => {
             }}
         >
             {user?.avatar &&
-                <Box>
+                <Box sx={{ width: '100%'}}>
                     {assetType(user?.avatar) === AssetTypes.Image &&
                         <HodlImageResponsive
+                            assetFolder={"image"}
+                            folder="nfts"
                             cid={user.avatar.image}
                             widths={[size, size * 2]}
                             sizes={size}
                             aspectRatio="1:1"
-                            round={true}
+                            round="max"
                         />
                     }
                     {assetType(user?.avatar) === AssetTypes.Video &&
                         <HodlImageResponsive
+                            assetFolder={"image"}
+                            folder="nfts"
                             cid={user?.avatar?.image}
                             widths={[size, size * 2]}
                             sizes={size}
                             aspectRatio="1:1"
-                            round={true}
+                            round="max"
                         />
                     }
                     {assetType(user?.avatar) === AssetTypes.Gif &&
                         <HodlImageResponsive
+                            assetFolder={"image"}
+                            folder="nfts"
                             cid={user?.avatar?.properties?.asset?.uri}
                             widths={[size, size * 2]}
                             sizes={size}
                             aspectRatio="1:1"
-                            round={true}
-                            suffix="jpg"
+                            round="max"
                         />
                     }
                     {assetType(user?.avatar) === AssetTypes.Audio &&
