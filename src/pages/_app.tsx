@@ -47,6 +47,7 @@ export default function MyApp(props: MyAppProps) {
 
   // we set props.pageProps.address in all pages, and add it to the context so that components have easy access. 
   // some components will require the context value, such as the app bar as it renders outside the page
+  // @ts-ignore
   const [address, setAddress] = useState(props.pageProps.address || '');
   const [nickname, setNickname] = useState(''); // This will be getting removed
 
@@ -87,10 +88,10 @@ export default function MyApp(props: MyAppProps) {
   }, [address])
 
   // Whole site is currently password protected
+  // @ts-ignore
   if (!pageProps.hasReadPermission) {
-    return <ThemeProvider theme={theme}>
-      <LoginPage loggedIn={pageProps.hasReadPermission} />
-    </ThemeProvider>
+    // @ts-ignore
+    return <ThemeProvider theme={theme}><LoginPage loggedIn={pageProps.hasReadPermission} /></ThemeProvider>
   }
 
   return (
