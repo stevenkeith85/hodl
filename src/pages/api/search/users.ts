@@ -1,15 +1,11 @@
-import dotenv from 'dotenv'
 import apiRoute from '../handler';
 import { Redis } from '@upstash/redis';
 
 import { UserViewModel } from '../../../models/User';
 import { getUser } from '../user/[handle]';
-import { getAsString } from '../../../lib/utils';
+import { getAsString } from '../../../lib/getAsString';
 
 const client = Redis.fromEnv()
-
-dotenv.config({ path: '../.env' })
-
 
 // TODO: This isn't being used yet; but we'd like to adapt it for the search bar
 // Pretty basic at the moment. We'll just return the newest users.

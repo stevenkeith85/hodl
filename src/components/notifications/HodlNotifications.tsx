@@ -1,18 +1,30 @@
-import { Box, ClickAwayListener, Fade, IconButton, Typography, useMediaQuery, useTheme } from "@mui/material";
-import CloseIcon from '@mui/icons-material/Close';
-import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import { useCallback, useContext, useEffect, useRef } from "react";
+import axios from "axios";
+
+import { useCallback, useContext, useEffect } from "react";
 import { WalletContext } from "../../contexts/WalletContext";
 import { useRouter } from "next/router";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 import { useActions } from "../../hooks/useActions";
 import { HodlNotificationBox } from "./HodlNotificationBox";
 import { ActionSet, HodlAction } from "../../models/HodlAction";
+
 import InfiniteScroll from "react-swr-infinite-scroll";
 import useSWR from "swr";
-import axios from "axios";
+
 import { PusherContext } from "../../contexts/PusherContext";
+
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+import Fade from '@mui/material/Fade';
+
+import CloseIcon from '@mui/icons-material/Close';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 
 export const HodlNotifications = ({

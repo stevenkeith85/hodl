@@ -4,7 +4,7 @@ import { ethers } from "ethers";
 import { getProvider } from "../../../lib/server/connections";
 import Market from '../../../../smart-contracts/artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 import { Redis } from '@upstash/redis';
-import { getAsString, TRANSACTION_TIMEOUT, validTxHashFormat } from "../../../lib/utils";
+import { TRANSACTION_TIMEOUT, validTxHashFormat } from "../../../lib/utils";
 import { LogDescription } from "ethers/lib/utils";
 import NFT from '../../../../smart-contracts/artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import { fromUnixTime } from "date-fns";
@@ -14,6 +14,7 @@ import { tokenDelisted } from "../../../lib/transactions/tokenDelisted";
 import { tokenBought } from "../../../lib/transactions/tokenBought";
 import { User } from "../../../models/User";
 import { createHmac } from "crypto";
+import { getAsString } from "../../../lib/getAsString";
 
 const route = apiRoute();
 const client = Redis.fromEnv()

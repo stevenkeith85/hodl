@@ -1,5 +1,15 @@
-import { DisplaySettingsOutlined, CameraAltOutlined, PersonOutlined, Receipt, ReceiptOutlined } from "@mui/icons-material";
-import { Typography, Box, Stack, Link, ClickAwayListener, useTheme, Button } from "@mui/material";
+import DisplaySettingsOutlinedIcon from '@mui/icons-material/DisplaySettingsOutlined';
+import CameraAltOutlinedIcon from '@mui/icons-material/CameraAltOutlined';
+import ReceiptOutlinedIcon from '@mui/icons-material/ReceiptOutlined';
+import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
+
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
+
 import { useRouter } from "next/router";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useNickname } from "../../hooks/useNickname";
@@ -8,6 +18,7 @@ import { NicknameModal } from "../modals/NicknameModal";
 import { ProfilePictureModal } from "../modals/ProfilePictureModal";
 import { LoginLogoutButton } from "./LoginLogoutButton";
 import { ProfileNameOrAddress } from "../avatar/ProfileNameOrAddress";
+
 
 interface WalletMenuPageProps {
     hoverMenuOpen: boolean;
@@ -26,9 +37,9 @@ export const WalletMenuPage: React.FC<WalletMenuPageProps> = ({
     const [profilePictureModalOpen, setProfilePictureModalOpen] = useState(false);
 
     const [walletPages] = useState([
-        { label: 'nickname', action: () => setNicknameModalOpen(true), icon: <DisplaySettingsOutlined /> },
-        { label: 'avatar', action: () => setProfilePictureModalOpen(true), icon: <CameraAltOutlined /> },
-        { label: 'transactions', action: () => router.push('/transactions'), icon: <ReceiptOutlined /> },
+        { label: 'nickname', action: () => setNicknameModalOpen(true), icon: <DisplaySettingsOutlinedIcon /> },
+        { label: 'avatar', action: () => setProfilePictureModalOpen(true), icon: <CameraAltOutlinedIcon /> },
+        { label: 'transactions', action: () => router.push('/transactions'), icon: <ReceiptOutlinedIcon /> },
     ]);
 
     const handleRouteChange = useCallback(() => {
@@ -85,7 +96,7 @@ export const WalletMenuPage: React.FC<WalletMenuPageProps> = ({
                             >
                                 <Button
                                     color="primary"
-                                    startIcon={<PersonOutlined />}
+                                    startIcon={<PersonOutlinedIcon />}
                                     variant="text"
                                     fullWidth={true}
                                     sx={{

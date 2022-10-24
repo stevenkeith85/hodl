@@ -1,13 +1,12 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
+
 import apiRoute from "../handler";
-import { getAsString } from "../../../lib/utils";
-import { User, UserViewModel } from "../../../models/User";
+
+import { UserViewModel } from "../../../models/User";
 import { getUser } from "../user/[handle]";
+import { getAsString } from "../../../lib/getAsString";
 
-
-dotenv.config({ path: '../.env' })
 
 const client = Redis.fromEnv()
 const route = apiRoute();

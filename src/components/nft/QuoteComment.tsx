@@ -1,10 +1,9 @@
 import { Typography, Box } from "@mui/material";
-import axios from 'axios';
 import useSWR from "swr";
 import { HighlightOffOutlined } from "@mui/icons-material";
 import { fetchWithId } from "../../lib/swrFetchers";
-import { truncateText } from "../../lib/utils";
 import { ProfileNameOrAddress } from "../avatar/ProfileNameOrAddress";
+import { truncateText } from "../../lib/truncateText";
 
 
 export const QuoteComment = ({ reset, id, color }) => {

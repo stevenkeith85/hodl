@@ -1,12 +1,12 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
-import apiRoute from "../../handler";
-import { getToken } from "../../token/[tokenId]";
-import { getAsString } from "../../../../lib/utils";
-import { Token } from "../../../../models/Token";
 
-dotenv.config({ path: '../.env' })
+import apiRoute from "../../handler";
+
+import { Token } from "../../../../models/Token";
+import { getTokens } from "../../../../lib/database/Tokens";
+import { getAsString } from "../../../../lib/getAsString";
+
 
 const client = Redis.fromEnv()
 const route = apiRoute();
@@ -36,8 +36,8 @@ export const getMostLikedTokens = async (
   }
 
   const ids: string[] = await client.zrange(`rankings:token:likes:count`, offset, offset + limit - 1, { rev: true });
-  const promises = ids.map(address => getToken(address));
-  const tokens: Token[] = await Promise.all(promises);
+
+  const tokens = await getTokens(ids);
   
   return {
     items: tokens,

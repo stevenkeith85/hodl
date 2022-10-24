@@ -1,36 +1,43 @@
-import * as React from 'react';
+// import * as React from 'react';
+import { useState, useContext, useEffect } from 'react';
+
+import axios from 'axios'
+
 import AppBar from '@mui/material/AppBar';
+import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
 import Container from '@mui/material/Container';
-import { useState, useContext, useEffect } from 'react';
-import Link from 'next/link';
 
-import { HoverMenu } from '../menu/HoverMenu';
+import CloseIcon from '@mui/icons-material/Close';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import ExploreIcon from '@mui/icons-material/Explore';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import SearchIcon from '@mui/icons-material/Search';
 
+import { useRouter } from 'next/router';
+import Link from 'next/link';
+
+import { HoverMenu } from '../menu/HoverMenu';
 
 import { WalletContext } from '../../contexts/WalletContext';
 import { HodlNotifications } from '../notifications/HodlNotifications';
-import axios from 'axios'
+
 import { enqueueSnackbar } from 'notistack'
 import { SearchBox } from '../Search';
-import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
+
 import { ActionTypes, HodlAction } from '../../models/HodlAction';
 import { PusherContext } from '../../contexts/PusherContext';
 
 import { useConnect } from '../../hooks/useConnect';
 import { SessionExpiredModal } from '../modals/SessionExpiredModal';
-import { useRouter } from 'next/router';
-import { Button } from '@mui/material';
+
 import { mutate } from 'swr';
 import { MobileSearch } from '../MobileSearch';
+import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
+
 
 const ResponsiveAppBar = ({ showAppBar = true }) => {
     const { address, setSigner } = useContext(WalletContext);
@@ -298,7 +305,6 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                         }
                                     }}
                                 >
-
                                     {mobileSearchOpen ?
                                         <IconButton
                                             sx={{
@@ -340,8 +346,6 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                             />
                                         </IconButton>
                                     }
-
-
                                 </Box>
                                 <HodlNotifications
                                     setHoverMenuOpen={setDesktopMenuOpen}

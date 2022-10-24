@@ -1,10 +1,12 @@
-import { Box, Tooltip } from '@mui/material';
 import { FC } from 'react';
-import { getShortAddress, truncateText } from '../../lib/utils';
+import { getShortAddress } from '../../lib/utils';
 import Link from 'next/link';
 import { UserViewModel } from '../../models/User';
 import { useUser } from '../../hooks/useUser';
 import theme from '../../theme';
+import { truncateText } from '../../lib/truncateText';
+import Tooltip from '@mui/material/Tooltip';
+import Box from '@mui/material/Box';
 
 interface ProfileNameOrAddressProps {
     profileAddress: string;

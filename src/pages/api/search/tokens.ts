@@ -1,15 +1,12 @@
-import dotenv from 'dotenv'
 import apiRoute from '../handler';
 import { getToken } from '../token/[tokenId]';
 import { Redis } from '@upstash/redis';
 
-import { getAsString } from '../../../lib/utils';
 import { FullToken } from '../../../models/Nft';
 import { chunk } from '../../../lib/lodash';
+import { getAsString } from '../../../lib/getAsString';
 
 const client = Redis.fromEnv()
-
-dotenv.config({ path: '../.env' })
 
 const getMarketItem = async ([id, price]): Promise<FullToken> => {
     console.log(`search/tokens/getMarketItem - id: ${id}, price: ${price}`)

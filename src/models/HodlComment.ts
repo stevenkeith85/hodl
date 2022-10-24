@@ -2,9 +2,7 @@
 //
 // it will be saved at comment.id in Redis, and is displayed at the url nft/tokenId
 
-import { FullToken } from "./Nft";
-import { Token } from "./Token";
-import { User, UserViewModel } from "./User";
+import { UserViewModel } from "./User";
 
 // We store this in redis
 export interface HodlComment {

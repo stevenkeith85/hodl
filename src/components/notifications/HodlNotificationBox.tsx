@@ -1,8 +1,8 @@
-import { Box, Typography } from "@mui/material";
-import Link from "next/link";
 import { FC, useContext } from "react";
+
+import Link from "next/link";
+
 import { ActionTypes, HodlActionViewModel } from "../../models/HodlAction";
-import { truncateText } from "../../lib/utils";
 import { ProfileNameOrAddress } from '../avatar/ProfileNameOrAddress';
 import { formatDistanceStrict } from "date-fns";
 import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
@@ -10,6 +10,9 @@ import { AssetThumbnail } from "../AssetThumbnail";
 import { FollowButton } from "../profile/FollowButton";
 import { WalletContext } from "../../contexts/WalletContext";
 import { MaticPrice } from "../MaticPrice";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import { truncateText } from "../../lib/truncateText";
 
 // Boolean guards
 

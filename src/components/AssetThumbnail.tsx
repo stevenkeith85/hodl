@@ -1,13 +1,12 @@
-import { MusicNote } from "@mui/icons-material";
-import { Box, Tooltip, Typography } from "@mui/material";
+
+import Box from "@mui/material/Box";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
 import { assetType } from "../lib/utils";
 import { AssetTypes } from "../models/AssetType";
 import { Token } from "../models/Token"
-import { HodlAudio } from "./HodlAudio";
-import { HodlAudioBox } from "./HodlAudioBox";
 import { HodlAudioBoxMini } from "./HodlAudioBoxMini";
 import { HodlImageResponsive } from "./HodlImageResponsive";
-import { HodlVideo } from "./HodlVideo";
 
 interface AssetThumbnailProps {
     token: Token;

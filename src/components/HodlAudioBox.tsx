@@ -1,5 +1,6 @@
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material"
-import { truncateText } from "../lib/utils"
+import { truncateText } from "../lib/truncateText"
+
 import { Token } from "../models/Token"
 import { ProfileNameOrAddress } from "./avatar/ProfileNameOrAddress"
 import { UserAvatarAndHandle } from "./avatar/UserAvatarAndHandle"
