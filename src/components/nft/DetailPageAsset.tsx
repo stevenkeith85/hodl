@@ -43,12 +43,13 @@ export const DetailPageAsset: React.FC<DetailPageAssetProps> = ({ token }) => {
                 {
                     assetType(token) === AssetTypes.Image &&
                     <HodlImageResponsive
+                        assetFolder={"image"}
+                        folder="nfts"
                         lcp={true}
                         cid={token?.properties?.asset?.uri}
                         widths={[500, 600, 700, 800, 900, 1000, 1080]}
                         sizes="(min-width: 1200px) calc(1200px / 2), (min-width: 900px) calc(50vw / 2), 100vw"
                         onLoad={() => setLoading(false)}
-                        width="100%"
                         aspectRatio={token?.properties?.aspectRatio}
                     />
                 }
@@ -58,11 +59,12 @@ export const DetailPageAsset: React.FC<DetailPageAssetProps> = ({ token }) => {
                     assetType(token) === AssetTypes.Video && <>
                         <Box sx={{ visibility: 'hidden' }}>
                             <HodlImageResponsive
+                                assetFolder="image"
+                                folder="nfts"
                                 cid={token.image}
                                 widths={[575, 700, 800, 900, 1000, 1080]}
                                 sizes="575w"
-                                maxHeight="575px"
-                                width="100%"
+                                aspectRatio={token?.properties?.aspectRatio}
                             />
 
                         </Box>
@@ -98,54 +100,65 @@ export const DetailPageAsset: React.FC<DetailPageAssetProps> = ({ token }) => {
                 onClose={() => { setAssetModalOpen(false) }}
             >
                 <Box
-                    display="flex"
-                    flexDirection="column"
                     sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        width: '100vw',
+                        height: '100vh',
                         justifyContent: 'center',
                         alignItems: 'center',
-                        height: '100vh',
                         pointerEvents: 'none',
                     }}
                 >
-                    {
-                        assetType(token) === AssetTypes.Gif && <HodlVideo
-                            sx={{
-                                video: {
-                                    height: '80vh',
-                                    width: '80vw',
-                                    objectFit: 'scale-down',
-                                }
-                            }}
-                            cid={token?.properties?.asset?.uri}
-                            assetFolder="image"
-                            gif={true}
-                        />
-                    }
-                    {
-                        assetType(token) === AssetTypes.Video && <HodlVideo
-                            sx={{
-                                video: {
-                                    height: '80vh',
-                                    width: '80vw',
-                                    objectFit: 'scale-down',
-                                }
-                            }}
-                            cid={token?.properties?.asset?.uri}
-                            folder={'video/upload/nfts/'}
-                        />
-                    }
-                    {
-                        assetType(token) === AssetTypes.Audio && <HodlAudio
-                            cid={token?.properties?.asset?.uri}
-                            folder={'video/upload/nfts/'}
-                        />
-                    }
-                    {
-                        assetType(token) === AssetTypes.Image && <HodlImageResponsive
-                            widths={[1080]}
-                            sizes="1080px"
-                            cid={token?.properties?.asset?.uri} />
-                    }
+                    <Box sx={{
+                        maxWidth: '90%',
+                        width: '900px',                        
+                        pointerEvents: 'none',
+                    }}>
+                        {
+                            assetType(token) === AssetTypes.Gif && <HodlVideo
+                                sx={{
+                                    video: {
+                                        height: '80vh',
+                                        width: '80vw',
+                                        objectFit: 'scale-down',
+                                    }
+                                }}
+                                cid={token?.properties?.asset?.uri}
+                                assetFolder="image"
+                                gif={true}
+                            />
+                        }
+                        {
+                            assetType(token) === AssetTypes.Video && <HodlVideo
+                                sx={{
+                                    video: {
+                                        height: '80vh',
+                                        width: '80vw',
+                                        objectFit: 'scale-down',
+                                    }
+                                }}
+                                cid={token?.properties?.asset?.uri}
+                                folder={'video/upload/nfts/'}
+                            />
+                        }
+                        {
+                            assetType(token) === AssetTypes.Audio && <HodlAudio
+                                cid={token?.properties?.asset?.uri}
+                                folder={'video/upload/nfts/'}
+                            />
+                        }
+                        {
+                            assetType(token) === AssetTypes.Image && <HodlImageResponsive
+                                assetFolder={"image"}
+                                folder="nfts"
+                                widths={[1080]}
+                                sizes="1080px"
+                                cid={token?.properties?.asset?.uri}
+                                aspectRatio={token?.properties?.aspectRatio}
+                            />
+                        }
+                    </Box>
                 </Box>
             </Modal>
             <Skeleton

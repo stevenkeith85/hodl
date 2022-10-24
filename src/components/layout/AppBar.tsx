@@ -298,33 +298,49 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                         }
                                     }}
                                 >
-                                    <IconButton
-                                        sx={{
-                                            margin: 0,
-                                            padding: 0,
-                                            lineHeight: 0,
-                                            width: 44,
-                                            height: 44
-                                        }}
-                                        color="inherit"
-                                    >
-                                        {mobileSearchOpen ?
-                                            <CloseIcon 
-                                                sx={{ 
-                                                    lineHeight: 0, 
-                                                    fontSize: 22 
-                                                }} 
-                                                onClick={() => setMobileSearchOpen(false)} 
-                                                /> :
-                                            <SearchIcon
-                                                sx={{ lineHeight: 0, fontSize: 22 }}
-                                                onClick={
-                                                    () => {
-                                                        setMobileSearchOpen(true);
-                                                        setShowDesktopNotifications(false);
-                                                    }} />
-                                        }
-                                    </IconButton>
+
+                                    {mobileSearchOpen ?
+                                        <IconButton
+                                            sx={{
+                                                margin: 0,
+                                                padding: 0,
+                                                lineHeight: 0,
+                                                width: 44,
+                                                height: 44
+                                            }}
+                                            color="inherit"
+                                            onClick={() => setMobileSearchOpen(false)}
+                                        >
+                                            <CloseIcon sx={{
+                                                lineHeight: 0,
+                                                fontSize: 22
+                                            }}
+                                            />
+                                        </IconButton>
+                                        :
+                                        <IconButton
+                                            sx={{
+                                                margin: 0,
+                                                padding: 0,
+                                                lineHeight: 0,
+                                                width: 44,
+                                                height: 44
+                                            }}
+                                            color="inherit"
+                                            onClick={
+                                                () => {
+                                                    setMobileSearchOpen(true);
+                                                    setShowDesktopNotifications(false);
+                                                }}
+                                        >
+                                            <SearchIcon sx={{
+                                                lineHeight: 0,
+                                                fontSize: 22
+                                            }}
+                                            />
+                                        </IconButton>
+                                    }
+
 
                                 </Box>
                                 <HodlNotifications
@@ -382,7 +398,7 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                         </Box>
                     </Toolbar>
                 </Container>
-                {mobileSearchOpen && <MobileSearch  mobileSearchOpen={mobileSearchOpen} setMobileSearchOpen={setMobileSearchOpen} />}
+                {mobileSearchOpen && <MobileSearch mobileSearchOpen={mobileSearchOpen} setMobileSearchOpen={setMobileSearchOpen} />}
             </AppBar>
             <Toolbar disableGutters />
         </>

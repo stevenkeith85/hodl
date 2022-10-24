@@ -1,12 +1,11 @@
 import { Box } from "@mui/material";
-import { useContext, useEffect, useRef } from "react";
+import { useContext } from "react";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 import { HodlFeedItem } from "./HodlFeedItem";
 import { HodlAction } from "../../models/HodlAction";
 import InfiniteScroll from "react-swr-infinite-scroll";
 import { HodlImpactAlert } from "../HodlImpactAlert";
 import { FeedContext } from "../../contexts/FeedContext";
-import { PusherContext } from "../../contexts/PusherContext";
 
 
 export const HodlFeed = ({ address, limit = 4 }) => {

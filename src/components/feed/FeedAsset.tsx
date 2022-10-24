@@ -31,55 +31,30 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
             {
                 (assetType(item.token) === AssetTypes.Image) &&
                 <HodlImageResponsive
+                    assetFolder={"image"}
+                    folder="nfts"
                     cid={item.token?.properties?.asset?.uri}
                     aspectRatio={item?.token?.properties?.aspectRatio || "1:1"}
-                    gravity="g_face"
                     widths={[575, 700, 800, 900, 1000, 1080]}
                     sizes="575w"
                     onLoad={() => setLoading(false)}
                 />
             }
             {
-                (assetType(item.token) === AssetTypes.Video) && <Box>
-                    <Box sx={{ visibility: 'hidden' }}>
-                        <HodlImageResponsive
-                            cid={item.token.image}
-                            widths={[575, 700, 800, 900, 1000, 1080]}
-                            sizes="575w"
-                            maxHeight="575px"
-                            width="100%"
-                        />
-                    </Box>
-                    <Box
-                        sx={{
-                            position: 'absolute',
-                            top: 0,
-                            width: '100%'
-                        }}
-                    >
-                        <HodlVideo
-                            poster={item.token?.image}
-                            cid={item.token?.properties?.asset?.uri}
-                            controls={true}
-                            maxHeight="575px"
-                            height="100%"
-                            onLoad={() => setLoading(false)}
-                        />
-                    </Box>
-                </Box>
+                (assetType(item.token) === AssetTypes.Video) &&
+                <HodlVideo
+                    poster={item.token?.image}
+                    cid={item.token?.properties?.asset?.uri}
+                    controls={true}
+                    onLoad={() => setLoading(false)}
+                />
             }
             {
                 (assetType(item.token) === AssetTypes.Gif) &&
                 <HodlVideo
                     cid={item.token?.properties?.asset?.uri}
                     gif={true}
-                    assetFolder="image"
-                    height={'575px'}
-                    sx={{
-                        video: {
-                            width: 'auto'
-                        }
-                    }}
+                    assetFolder="image"                  
                     onLoad={() => setLoading(false)}
                 />
             }

@@ -120,8 +120,10 @@ export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address 
                     sx={{
                         display:
                         {
-                            xs: !viewSidebar ? 'block' : 'none',
-                            md: 'block'
+                            xs: !viewSidebar ? 'flex' : 'none',
+                            md: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center'
                         }
                     }}
                     item xs={12}
@@ -129,13 +131,15 @@ export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address 
                 >
                     <Box
                         sx={{
+                            width: '100%',
+                            maxWidth: `min(530px, 100%)`,
                             marginY: {
                                 xs: 2,
                                 md: 4,
                             },
                             marginX: {
                                 xs: 0,
-                                sm: 4
+                                // sm: 10,
                             },
                             marginTop: {
                                 xs: 1,

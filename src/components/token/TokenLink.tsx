@@ -28,6 +28,8 @@ export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = 44, fontSize
             >
                 {assetType(token) === AssetTypes.Image &&
                     <HodlImageResponsive
+                        assetFolder="image"
+                        folder="nfts"
                         cid={token?.properties?.asset?.uri}
                         aspectRatio="1:1"
                         widths={[44, 88]}
@@ -37,6 +39,8 @@ export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = 44, fontSize
                 }
                 {assetType(token) === AssetTypes.Video &&
                     <HodlImageResponsive
+                        assetFolder="image"
+                        folder="nfts"
                         cid={token?.image}
                         aspectRatio="1:1"
                         widths={[44, 88]}
