@@ -32,10 +32,9 @@ export const NftActionButtons = ({
         enqueueSnackbar(
             e?.data?.message,
             {
-                // @ts-ignore
-                variant: "hodlsnackbar",
-                type: "error"
-            });
+                variant: "error",
+                hideIconVariant: true
+              });
     }
 
     if (!address) {
@@ -137,10 +136,9 @@ export const NftActionButtons = ({
                                 enqueueSnackbar(
                                     'Please confirm the transaction in Metamask',
                                     {
-                                        // @ts-ignore
-                                        variant: "hodlsnackbar",
-                                        type: "info"
-                                    });
+                                        variant: "info",
+                                        hideIconVariant: true
+                                      });
                                 await buyNft(token, mutableToken);
                                 setBoughtModalOpen(true);
                             } catch (e) {
@@ -164,10 +162,9 @@ export const NftActionButtons = ({
                                 enqueueSnackbar(
                                     'Please confirm the transaction in MetaMask',
                                     {
-                                        // @ts-ignore
-                                        variant: "hodlsnackbar",
-                                        type: "info"
-                                    });
+                                        variant: "info",
+                                        hideIconVariant: true
+                                      });
 
                                 await delistNft(token);
                                 setDelistModalOpen(true);

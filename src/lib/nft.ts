@@ -2,20 +2,18 @@
 // as they need the user to sign the transaction with a signer (MetaMask)
 // TODO: They could be react hooks
 
-// import { ethers } from 'ethers'
 import { Contract } from '@ethersproject/contracts'
 import { parseUnits } from '@ethersproject/units'
 
 import Market from '../../smart-contracts/artifacts/contracts/HodlMarket.sol/HodlMarket.json'
 import NFT from '../../smart-contracts/artifacts/contracts/HodlNFT.sol/HodlNFT.json'
 
-import { getMetaMaskSigner } from "./connections";
 import axios from 'axios'
 import { MutableToken } from '../models/Nft.js';
 import { Token } from '../models/Token';
+import { getMetaMaskSigner } from '../lib/connections';
 
 export const listNft = async (token: Token, price: string) => {
-  
   const signer = await getMetaMaskSigner();
   const contract = new Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, signer);
   const tokenContract = new Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, signer);
@@ -48,7 +46,7 @@ export const listNft = async (token: Token, price: string) => {
   }
 }
 
-export const buyNft = async (token: Token, mutableToken: MutableToken) => {
+export const buyNft = async (token: Token, mutableToken: MutableToken) => { 
   const signer = await getMetaMaskSigner();
   
   const contract = new Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, signer);

@@ -1,8 +1,8 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
+
 import { getProvider } from "../../../lib/server/connections";
-import { ethers } from "ethers";
+import { Contract } from '@ethersproject/contracts'
 import HodlNFT from '../../../../smart-contracts/artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import HodlMarket from '../../../../smart-contracts/artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 import apiRoute from "../handler";
@@ -11,7 +11,6 @@ import { HodlComment } from "../../../models/HodlComment";
 
 const client = Redis.fromEnv()
 
-dotenv.config({ path: '../.env' })
 const route = apiRoute();
 
 // if a token has replies, we just change the text to "[deleted]", so that the replies still have an anchor
@@ -60,7 +59,7 @@ route.delete(async (req, res: NextApiResponse) => {
   const { object, objectId, subject, tokenId } = comment as HodlComment;
 
   const provider = await getProvider();
-  const contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, HodlNFT.abi, provider);
+  const contract = new Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, HodlNFT.abi, provider);
   const tokenExists = await contract.exists(tokenId);
 
   if (!tokenExists) {
@@ -69,7 +68,7 @@ route.delete(async (req, res: NextApiResponse) => {
 
   const owner = await contract.ownerOf(tokenId);
 
-  const marketContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, HodlMarket.abi, provider);
+  const marketContract = new Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, HodlMarket.abi, provider);
   const marketItem = await marketContract.getListing(tokenId);
   const seller = marketItem.seller;
 

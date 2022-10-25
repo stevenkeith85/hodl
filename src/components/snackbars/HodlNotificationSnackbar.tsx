@@ -1,43 +1,53 @@
 import React from "react";
-
 import { SnackbarContent, CustomContentProps } from 'notistack'
+import dynamic from "next/dynamic";
+// import { HodlNotificationBox } from '../notifications/HodlNotificationBox';
+import { HodlAction } from "../../models/HodlAction";
 
-
-import { HodlAction } from '../../models/HodlAction';
-import { HodlBorderedBox } from '../HodlBorderedBox';
-import { HodlNotificationBox } from '../notifications/HodlNotificationBox';
-
-// TODO: Notistack has an error that we'd like to hide in the console (as we can't do anything about it)
 interface HodlNotificationSnackbarProps extends CustomContentProps {
     action: HodlAction
 }
+
+const HodlNotificationBox = dynamic(
+    () => import('../notifications/HodlNotificationBox').then(mod => mod.HodlNotificationBox),
+    {
+        ssr: false,
+        loading: () => <div style={{
+            width: '400px',
+            height: '50px',
+            maxWidth: '100%',
+            margin: 0,
+            background: '#ECF3FF',
+            display: 'flex',
+            alignItems: 'center',
+            padding: '8px'
+
+        }}>
+            ...
+        </div>
+    }
+);
+
 export const HodlNotificationSnackbar = React.forwardRef<HTMLDivElement, HodlNotificationSnackbarProps>((props, ref) => {
     const {
         action,
         ...other
     } = props
 
-    // TODO: We could get the last read time and update it if the user clicks on the snackbar here?
     return (
         // @ts-ignore
-        <SnackbarContent
-            ref={ref}
-            role="alert"
-            {...other}
-        >
-            <HodlBorderedBox sx={{ padding: 0, overflow: 'hidden', border: 'none'}}>
-                <HodlNotificationBox
-                    item={action}
-                    setShowNotifications={() => { }}
-                    lastRead={0}
-                    sx={{
-                        width: '400px',
-                        maxWidth: '100%',
-                        margin: 0
-                    }} />
-            </HodlBorderedBox>
+        <SnackbarContent {...other} ref={ref} role="alert">
+            <HodlNotificationBox
+                item={props.action}
+                setShowNotifications={() => { }}
+                lastRead={0}
+                sx={{
+                    width: '400px',
+                    maxWidth: '100%',
+                    margin: 0
+                }} />
         </SnackbarContent>
     )
-})
+});
 
-HodlNotificationSnackbar.displayName = "NotificationSnackbar"
+HodlNotificationSnackbar.displayName = 'HodlNotificationSnackbar'

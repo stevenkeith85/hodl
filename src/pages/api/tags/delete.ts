@@ -1,16 +1,16 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
+
+import { Contract } from '@ethersproject/contracts'
+
 import { getProvider } from "../../../lib/server/connections";
-import { ethers } from "ethers";
+
 import HodlNFT from '../../../../smart-contracts/artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import HodlMarket from '../../../../smart-contracts/artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 
 const client = Redis.fromEnv()
 import apiRoute from "../handler";
 
-
-dotenv.config({ path: '../.env' })
 const route = apiRoute();
 
 // TODO: We don' actually let user's remove tags anymore, as they are added to the metadata
@@ -37,7 +37,7 @@ route.delete(async (req, res: NextApiResponse) => {
   }
 
   const provider = await getProvider();
-  const tokenContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, HodlNFT.abi, provider);
+  const tokenContract = new Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, HodlNFT.abi, provider);
 
   const tokenExists = await tokenContract.exists(token);
   if (!tokenExists) { 
@@ -47,7 +47,7 @@ route.delete(async (req, res: NextApiResponse) => {
   // Owner (when not listed) or Seller (when listed) can modify tags
   const owner = await tokenContract.ownerOf(token);
 
-  const marketContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, HodlMarket.abi, provider);
+  const marketContract = new Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, HodlMarket.abi, provider);
   const marketItem = await marketContract.getListing(token);
   const seller = marketItem.seller;
 

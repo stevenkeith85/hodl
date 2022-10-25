@@ -1,6 +1,7 @@
 import { NextApiResponse } from "next"
-import dotenv from 'dotenv'
-import { ethers } from "ethers"
+
+import { Contract } from '@ethersproject/contracts'
+
 import apiRoute from "../handler";
 import HodlNFT from '../../../../smart-contracts/artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import HodlMarket from '../../../../smart-contracts/artifacts/contracts/HodlMarket.sol/HodlMarket.json';
@@ -8,7 +9,7 @@ import { getProvider } from "../../../lib/server/connections"
 import memoize from 'memoizee';
 import { Redis } from '@upstash/redis';
 
-dotenv.config({ path: '../.env' })
+
 
 const client = Redis.fromEnv();
 const route = apiRoute();
@@ -17,14 +18,14 @@ const isOwnerOrSeller = async (token, address) => {
   const provider = await getProvider();
 
   try {
-    const tokenContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, HodlNFT.abi, provider);
+    const tokenContract = new Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, HodlNFT.abi, provider);
     const tokenExists = await tokenContract.exists(token);
     
     if (!tokenExists) {
       return false;
     }
 
-    const marketContract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, HodlMarket.abi, provider);
+    const marketContract = new Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, HodlMarket.abi, provider);
 
     const owner = await tokenContract.ownerOf(token);
     const marketItem = await marketContract.getListing(token);
@@ -79,7 +80,6 @@ route.post(async (req, res: NextApiResponse) => {
     return res.status(400).json({ error: 'bad request' });
   }
 
-  // console.log("CALLING REDIS TO SET USER'S PROFILE PIC TO NFT", token);
   await client.hset(`user:${req.address}`, { 'avatar': token });
 
   getProfilePicture.delete(req.address);

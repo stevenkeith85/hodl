@@ -1,4 +1,4 @@
-import { BigNumber } from "ethers";
+import { BigNumber } from '@ethersproject/bignumber'
 
 export interface ListingSolidity {
     tokenId: BigNumber;

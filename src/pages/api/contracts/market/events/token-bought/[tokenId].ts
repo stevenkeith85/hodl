@@ -1,9 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
-// import { ethers, BigNumber } from 'ethers'
 
 import { Contract } from '@ethersproject/contracts'
 import { formatEther } from '@ethersproject/units'
-
 
 import { getNickname } from "../../../../profile/nickname";
 import { getProvider } from "../../../../../../lib/server/connections";

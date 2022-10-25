@@ -1,37 +1,40 @@
-import Head from 'next/head';
-import App, { AppProps } from 'next/app';
-import { useRouter } from 'next/router';
-
+import React from "react";
 import { useEffect, useState } from 'react';
 
+import Head from 'next/head';
+import App, { AppProps } from 'next/app';
+import dynamic from "next/dynamic";
+
+import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
 import { SnackbarProvider } from 'notistack';
 import { SWRConfig } from 'swr'
 import { CacheProvider, EmotionCache } from '@emotion/react';
 import Cookies from "universal-cookie"
-import Pusher from 'pusher-js';
 
 import '../styles/globals.css'
 import { PusherContext } from '../contexts/PusherContext';
 import { WalletContext } from '../contexts/WalletContext';
-import LoginPage from './login';
-import theme from '../theme';
 
-// Can we lazy load this? Seems to bring in a lot of deps
 import { HodlNotificationSnackbar } from '../components/snackbars/HodlNotificationSnackbar';
-import { HodlSnackbar } from '../components/snackbars/HodlSnackbar';
 
+const LoginPage = dynamic(
+  () => import('./login'),
+  {
+    ssr: false,
+    loading: () => <div></div>
+  }
+);
+
+import theme from '../theme';
 import createEmotionCache from '../createEmotionCache';
 
 // Also loads a lot of deps
 import Layout from '../components/layout/Layout';
 
-import { ThemeProvider } from '@mui/material/styles';
-
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
-
 
 interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
@@ -58,12 +61,8 @@ export default function MyApp(props: MyAppProps) {
     setUserSignedInToPusher(true);
   };
 
-  useEffect(() => {
-    if (!address) {
-      return;
-    }
-    
-    console.log('Pusher - setting up pusher');
+  const loadPusher = async () => {
+    const { default: Pusher } = await import('pusher-js');
 
     const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY, {
       cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER,
@@ -79,11 +78,20 @@ export default function MyApp(props: MyAppProps) {
     pusher.signin();
 
     return () => {
-      console.log('Pusher - cleaning up pusher');
       pusher.unbind('pusher:signin_success', setPusherSignInSuccess);
       setPusher(null);
       setUserSignedInToPusher(false);
     };
+
+  }
+
+  useEffect(() => {
+    if (!address) {
+      return;
+    }
+
+    loadPusher()
+      .catch(console.error);
 
   }, [address])
 
@@ -96,46 +104,44 @@ export default function MyApp(props: MyAppProps) {
 
   return (
     <CacheProvider value={emotionCache}>
-        <Head>
-          <meta name="viewport" content="initial-scale=1, width=device-width" />
-        </Head>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <SWRConfig value={{
-            dedupingInterval: 15000, // default is 2000
-            focusThrottleInterval: 15000, // default is 5000
-            errorRetryCount: 0
+      <Head>
+        <meta name="viewport" content="initial-scale=1, width=device-width" />
+      </Head>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <SWRConfig value={{
+          dedupingInterval: 15000, // default is 2000
+          focusThrottleInterval: 15000, // default is 5000
+          errorRetryCount: 0
+        }}>
+          <WalletContext.Provider value={{
+            signer,
+            setSigner,
+            address,
+            setAddress,
+            nickname,
+            setNickname
           }}>
-            <WalletContext.Provider value={{
-              signer,
-              setSigner,
-              address,
-              setAddress,
-              nickname,
-              setNickname
+            <PusherContext.Provider value={{
+              pusher,
+              setPusher,
+              userSignedInToPusher,
+              setUserSignedInToPusher
             }}>
-              <PusherContext.Provider value={{
-                pusher,
-                setPusher,
-                userSignedInToPusher,
-                setUserSignedInToPusher
-              }}>
-                <SnackbarProvider
-                  Components={{
-                    // @ts-ignore
-                    hodlnotification: HodlNotificationSnackbar,
-                    // @ts-ignore
-                    hodlsnackbar: HodlSnackbar
-                  }}
-                >
-                  <Layout>
-                    <Component {...pageProps} />
-                  </Layout>
-                </SnackbarProvider>
-              </PusherContext.Provider>
-            </WalletContext.Provider>
-          </SWRConfig>
-        </ThemeProvider>
+              <SnackbarProvider
+                Components={{
+                  // @ts-ignore
+                  hodlnotification: HodlNotificationSnackbar
+                }}
+              >
+                <Layout>
+                  <Component {...pageProps} />
+                </Layout>
+              </SnackbarProvider>
+            </PusherContext.Provider>
+          </WalletContext.Provider>
+        </SWRConfig>
+      </ThemeProvider>
     </CacheProvider>
   )
 }

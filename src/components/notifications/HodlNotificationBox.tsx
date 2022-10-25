@@ -2,16 +2,22 @@ import { FC, useContext } from "react";
 
 import Link from "next/link";
 
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+
+import formatDistanceStrict from "date-fns/formatDistanceStrict";
+
 import { ActionTypes, HodlActionViewModel } from "../../models/HodlAction";
+
+// Possibly dynamic load this?
 import { ProfileNameOrAddress } from '../avatar/ProfileNameOrAddress';
-import { formatDistanceStrict } from "date-fns";
+
 import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
 import { AssetThumbnail } from "../AssetThumbnail";
 import { FollowButton } from "../profile/FollowButton";
 import { WalletContext } from "../../contexts/WalletContext";
 import { MaticPrice } from "../MaticPrice";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
+
 import { truncateText } from "../../lib/truncateText";
 
 // Boolean guards

@@ -17,12 +17,12 @@ export const SelectAssetAction: FC<MintProps> = ({
 
   useEffect(() => {
     if (error !== '') {
-        enqueueSnackbar(error,
-            {
-                // @ts-ignore
-                variant: "hodlsnackbar",
-                type: "error"
-            });
+        enqueueSnackbar(
+          error,
+          {
+            variant: "error",
+            hideIconVariant: true
+          });
 
         setError('');
     }
@@ -54,9 +54,8 @@ export const SelectAssetAction: FC<MintProps> = ({
       enqueueSnackbar(
         rejectedFiles?.[0]?.errors?.[0]?.message,
         {
-          // @ts-ignore
-          variant: "hodlsnackbar",
-          type: "error"
+          variant: "error",
+          hideIconVariant: true
         });
     }
     else if (acceptedFiles.length === 1) {

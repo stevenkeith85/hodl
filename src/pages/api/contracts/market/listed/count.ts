@@ -1,6 +1,5 @@
 import apiRoute from "../../../handler";
 
-// import { ethers } from 'ethers';
 import { Contract } from '@ethersproject/contracts'
 import { formatEther } from '@ethersproject/units'
 

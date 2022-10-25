@@ -1,16 +1,13 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import { Redis } from '@upstash/redis'
-import dotenv from 'dotenv'
-import { messageToSign } from "../../../lib/utils"
-import { ethers } from "ethers"
+
+import { verifyMessage } from '@ethersproject/wallet'
 import jwt from 'jsonwebtoken'
 import apiRoute from "../handler";
 import cookie from 'cookie'
 import { accessTokenExpiresIn, refreshTokenExpiresIn } from "../../../lib/jwt"
 import { trimZSet } from "../../../lib/databaseUtils"
-// import { QueueClient } from "@serverlessq/nextjs/dist/queue/queue-client"
-
-dotenv.config({ path: '../.env' })
+import { messageToSign } from "../../../lib/messageToSign";
 
 const client = Redis.fromEnv()
 const route = apiRoute();
@@ -64,7 +61,7 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
   const uuid = await client.hget(`user:${address}`, 'uuid');
 
   if (uuid) {
-    const signerAddress = ethers.utils.verifyMessage(messageToSign + uuid, signature);
+    const signerAddress = verifyMessage(messageToSign + uuid, signature);
 
     if (address == signerAddress) {
       // User has connected
@@ -125,40 +122,6 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
 
         trimZSet(client, 'users:new');
       }
-
-      // Create a tx queue for user if they don't have one
-      // const txQueueId = await client.hget(`user:${address}`, 'txQueueId');
-
-      // if (!txQueueId) {
-      //   const queueClient = new QueueClient();
-      //   const { id } = await queueClient.createOrGetQueue(`tx:${address}`);
-      //   console.log('auth/login - created tx queue for user with id', id);
-
-      //   const txQueueIdAdded = await client.hsetnx(`user:${address}`, 'txQueueId', id);
-
-      //   if (txQueueIdAdded) {
-      //     console.log(`auth/login - assigned the tx queue with id ${id} to ${address}`);
-      //   } else {
-      //     console.log(`auth/login - unable to assign the tx queue with id ${id} to ${address}`);
-      //   }
-      // }
-
-      // Create an action queue for user if they don't have one
-      // const actionQueueId = await client.hget(`user:${address}`, 'actionQueueId');
-
-      // if (!actionQueueId) {
-      //   const queueClient = new QueueClient();
-      //   const { id } = await queueClient.createOrGetQueue(`action:${address}`);
-      //   console.log('auth/login - created action queue for user with id', id);
-
-      //   const actionQueueAdded = await client.hsetnx(`user:${address}`, 'actionQueueId', id);
-
-      //   if (actionQueueAdded) {
-      //     console.log(`auth/login - assigned the action queue with id ${id} to ${address}`);
-      //   } else {
-      //     console.log(`auth/login - unable to assign the action queue with id ${id} to ${address}`);
-      //   }
-      // }
 
       return res.status(200).json({
         success: true,

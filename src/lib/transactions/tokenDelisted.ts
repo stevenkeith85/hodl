@@ -1,15 +1,17 @@
 import { ActionTypes } from "../../models/HodlAction";
-import { ethers } from "ethers";
+
 import { Redis } from '@upstash/redis';
 import { getTagsForToken } from "../../pages/api/tags";
 import { MutableToken } from "../../models/Nft";
 import { getMutableToken } from "../../pages/api/contracts/mutable-token/[tokenId]";
-import { LogDescription } from "ethers/lib/utils";
+
 import { updateTransactionRecords } from "./updateTransactionRecords";
 import { updateHodlingCache } from "../../pages/api/contracts/token/hodling/count";
 import { runRedisTransaction } from "../databaseUtils";
 import { updateListedCache } from "../../pages/api/contracts/market/listed/count";
-import { addToZeplo } from "../addToZeplo";
+
+import { TransactionResponse } from '@ethersproject/abstract-provider'
+import { LogDescription } from '@ethersproject/abi'
 
 const client = Redis.fromEnv()
 
@@ -19,7 +21,7 @@ const client = Redis.fromEnv()
 // );
 export const tokenDelisted = async (
     hash: string, // check valid address?
-    tx: ethers.providers.TransactionResponse,
+    tx: TransactionResponse,
     log: LogDescription,
     req
 ) => {

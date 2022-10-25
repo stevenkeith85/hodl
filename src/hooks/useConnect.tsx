@@ -1,9 +1,9 @@
 import { useContext } from 'react';
-import { messageToSign } from "../lib/utils";
-// import { getMetaMaskSigner } from '../lib/connections';
 import { WalletContext } from '../contexts/WalletContext';
 import axios from 'axios'
 import { PusherContext } from '../contexts/PusherContext';
+import { messageToSign } from '../lib/messageToSign';
+import { getMetaMaskSigner } from '../lib/connections';
 
 
 export const useConnect = () => {
@@ -13,8 +13,6 @@ export const useConnect = () => {
   // we ask which account they want if they aren't a returning user (i.e. they've logged out)
   // we can also connect returningusers to update their jwt
   const connect = async (returningUser = true): Promise<Boolean> => {
-    const { getMetaMaskSigner } = await import('../lib/connections');  
-
     try {
       const signer = await getMetaMaskSigner(returningUser);
       const address = await signer.getAddress();

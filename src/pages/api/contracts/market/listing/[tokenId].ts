@@ -1,6 +1,6 @@
 import Market from '../../../../../../smart-contracts/artifacts/contracts/HodlMarket.sol/HodlMarket.json'
 import { getProvider } from '../../../../../lib/server/connections'
-// import { ethers } from 'ethers'
+
 import { AddressZero, Zero } from '@ethersproject/constants'
 import { Contract } from '@ethersproject/contracts'
 import { formatEther } from '@ethersproject/units'

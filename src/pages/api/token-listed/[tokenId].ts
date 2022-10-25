@@ -1,4 +1,3 @@
-// import { ethers, BigNumber } from 'ethers'
 import { Contract } from '@ethersproject/contracts'
 import { formatEther } from '@ethersproject/units'
 

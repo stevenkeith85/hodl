@@ -1,7 +1,19 @@
-import { Box, ClickAwayListener, Fade, Container } from "@mui/material";
+
+import Box from "@mui/material/Box";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
+import Container from "@mui/material/Container";
+import Fade from "@mui/material/Fade";
 import { SearchBox } from "./Search";
 
-export const MobileSearch = ({setMobileSearchOpen, mobileSearchOpen}) => (
+interface MobileSearchProps {
+    setMobileSearchOpen: Function;
+    mobileSearchOpen: boolean;
+}
+
+export const MobileSearch: React.FC<MobileSearchProps> = ({
+    setMobileSearchOpen, 
+    mobileSearchOpen
+}) => (
     <Box
         sx={{
             display: {

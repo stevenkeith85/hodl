@@ -1,7 +1,12 @@
-// import * as React from 'react';
 import { useState, useContext, useEffect } from 'react';
 
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
+
 import axios from 'axios'
+
+import useSWR from "swr";
 
 import AppBar from '@mui/material/AppBar';
 import Button from '@mui/material/Button';
@@ -16,26 +21,45 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import ExploreIcon from '@mui/icons-material/Explore';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import SearchIcon from '@mui/icons-material/Search';
-
-import { useRouter } from 'next/router';
-import Link from 'next/link';
-
-import { HoverMenu } from '../menu/HoverMenu';
-
-import { WalletContext } from '../../contexts/WalletContext';
-import { HodlNotifications } from '../notifications/HodlNotifications';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 
 import { enqueueSnackbar } from 'notistack'
-import { SearchBox } from '../Search';
 
-import { ActionTypes, HodlAction } from '../../models/HodlAction';
+import { WalletContext } from '../../contexts/WalletContext';
 import { PusherContext } from '../../contexts/PusherContext';
+import { SearchBox } from '../Search';
+import { ActionTypes, HodlAction } from '../../models/HodlAction';
+
+const HoverMenu = dynamic(
+    () => import('./../menu/HoverMenu').then(mod => mod.HoverMenu),
+    {
+        ssr: false,
+        loading: () => <div>...</div>
+    }
+);
+
+const MobileSearch = dynamic(
+    () => import('../MobileSearch').then(mod => mod.MobileSearch),
+    {
+        ssr: false,
+        loading: () => <div>...</div>
+    }
+);
+
+const HodlNotifications = dynamic(
+    () => import('../notifications/HodlNotifications').then(mod => mod.HodlNotifications),
+    {
+        ssr: false,
+        loading: () => <div>...</div>
+    }
+);
 
 import { useConnect } from '../../hooks/useConnect';
 import { SessionExpiredModal } from '../modals/SessionExpiredModal';
 
 import { mutate } from 'swr';
-import { MobileSearch } from '../MobileSearch';
+
 import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
 
 
@@ -47,11 +71,11 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
     const [connect, disconnect, disconnectFE] = useConnect();
     const [error, setError] = useState('');
 
-    const [desktopMenuOpen, setDesktopMenuOpen] = useState(false);
-    const [sessionExpiredModalOpen, setSessionExpiredModalOpen] = useState(false);
-    const [showDesktopNotifications, setShowDesktopNotifications] = useState(false);
-
+    const [hoverMenuOpen, setHoverMenuOpen] = useState(false);
+    const [showNotifications, setShowNotifications] = useState(false);
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+
+    const [sessionExpiredModalOpen, setSessionExpiredModalOpen] = useState(false);
 
     const [pages] = useState([
         {
@@ -158,6 +182,35 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
         }
 
     }, [pusher, userSignedInToPusher]);
+
+    const ringNotificationBell = () => {
+        mutateUnread(true, { revalidate: false });
+    }
+
+    // Notifications bell start
+    useEffect(() => {
+        console.log('Pusher - setting up notification bell updates');
+        console.log('Pusher - pusher / user ', pusher, userSignedInToPusher);
+
+        if (!pusher || !userSignedInToPusher) {
+            return;
+        }
+
+        pusher.user.bind('notification', ringNotificationBell);
+
+        return () => {
+            console.log('Pusher - cleaning up notification bell updates');
+            pusher.user.unbind('notification', ringNotificationBell);
+        }
+
+    }, [pusher, userSignedInToPusher]);
+
+
+
+    const { data: unread, mutate: mutateUnread } = useSWR(address ? ['/api/notifications', address] : null,
+        (url, address) => axios.get(url).then(r => Boolean(r.data.unread))
+    );
+
 
     if (!showAppBar) {
         return null;
@@ -294,7 +347,7 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                         }
                                     }}
                                 >
-                                    <SearchBox setHoverMenuOpen={null} />
+                                    <SearchBox />
                                 </Box>
                                 <Box
                                     sx={{
@@ -336,7 +389,7 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                             onClick={
                                                 () => {
                                                     setMobileSearchOpen(true);
-                                                    setShowDesktopNotifications(false);
+                                                    setShowNotifications(false);
                                                 }}
                                         >
                                             <SearchIcon sx={{
@@ -347,16 +400,63 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                         </IconButton>
                                     }
                                 </Box>
+
+
+                                {/* Notifications button and menu */}
+                                {address && <IconButton
+                                    sx={{
+                                        margin: 0,
+                                        padding: 0,
+                                        lineHeight: 0,
+                                        width: 44,
+                                        height: 44
+                                    }}
+                                    color="inherit"
+                                >
+                                    {showNotifications ? <CloseIcon color="primary" /> :
+                                        (unread ?
+                                            <NotificationsIcon
+                                                color="primary"
+                                                sx={{
+                                                    fontSize: 22,
+                                                    cursor: 'pointer',
+                                                    animation: `shake 0.75s`,
+                                                    animationDelay: '1s',
+                                                    animationTimingFunction: 'ease-in'
+                                                }}
+                                                onClick={e => {
+                                                    e.stopPropagation();
+                                                    setHoverMenuOpen(false);
+                                                    setMobileSearchOpen(false);
+                                                    setShowNotifications(true);
+
+                                                    mutateUnread(false, { revalidate: false });
+                                                }
+                                                } /> :
+                                            <NotificationsNoneIcon
+                                                color="primary"
+                                                sx={{
+                                                    fontSize: 22,
+                                                    cursor: 'pointer',
+                                                }}
+                                                onClick={e => {
+                                                    e.stopPropagation();
+                                                    setHoverMenuOpen(false);
+                                                    setMobileSearchOpen(false);
+                                                    setShowNotifications(true);
+
+                                                    mutateUnread(false, { revalidate: false });
+                                                }}
+                                            />)
+                                    }
+                                </IconButton>
+                                }
                                 <HodlNotifications
-                                    setHoverMenuOpen={setDesktopMenuOpen}
-                                    showNotifications={showDesktopNotifications}
-                                    setShowNotifications={setShowDesktopNotifications}
-                                    setMobileSearchOpen={setMobileSearchOpen}
+                                    showNotifications={showNotifications}
+                                    setShowNotifications={setShowNotifications}
                                 />
-                                <HoverMenu
-                                    hoverMenuOpen={desktopMenuOpen}
-                                    setHoverMenuOpen={setDesktopMenuOpen}
-                                />
+
+                                {/* Wallet button and menu */}
                                 <IconButton
                                     size="large"
                                     sx={{
@@ -364,15 +464,15 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                         padding: 0
                                     }}
                                     onClick={e => {
-                                        setShowDesktopNotifications(false);
+                                        setShowNotifications(false);
                                         setMobileSearchOpen(false);
-                                        setDesktopMenuOpen(prev => !prev);
+                                        setHoverMenuOpen(prev => !prev);
                                         e.stopPropagation();
                                     }}
                                     color="inherit"
                                 >
                                     {
-                                        desktopMenuOpen ?
+                                        hoverMenuOpen ?
                                             <Box
                                                 width={44}
                                                 height={44}
@@ -398,11 +498,21 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                                 </Box>
                                     }
                                 </IconButton>
+                                <HoverMenu
+                                    hoverMenuOpen={hoverMenuOpen}
+                                    setHoverMenuOpen={setHoverMenuOpen}
+                                />
                             </Box>
                         </Box>
                     </Toolbar>
                 </Container>
-                {mobileSearchOpen && <MobileSearch mobileSearchOpen={mobileSearchOpen} setMobileSearchOpen={setMobileSearchOpen} />}
+                {
+                    mobileSearchOpen &&
+                    <MobileSearch
+                        mobileSearchOpen={mobileSearchOpen}
+                        setMobileSearchOpen={setMobileSearchOpen}
+                    />
+                }
             </AppBar>
             <Toolbar disableGutters />
         </>
