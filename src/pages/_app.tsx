@@ -1,3 +1,4 @@
+import React from "react";
 import { useEffect, useState } from 'react';
 
 import Head from 'next/head';
@@ -12,7 +13,6 @@ import { SWRConfig } from 'swr'
 import { CacheProvider, EmotionCache } from '@emotion/react';
 import Cookies from "universal-cookie"
 
-
 import '../styles/globals.css'
 import { PusherContext } from '../contexts/PusherContext';
 import { WalletContext } from '../contexts/WalletContext';
@@ -20,10 +20,11 @@ import { WalletContext } from '../contexts/WalletContext';
 import { HodlNotificationSnackbar } from '../components/snackbars/HodlNotificationSnackbar';
 
 const LoginPage = dynamic(
-    () => import('./login'),
-    {
-        loading: () => <div>...</div>
-    }
+  () => import('./login'),
+  {
+    ssr: false,
+    loading: () => <div></div>
+  }
 );
 
 import theme from '../theme';
@@ -60,10 +61,8 @@ export default function MyApp(props: MyAppProps) {
     setUserSignedInToPusher(true);
   };
 
-  const loadPusher =  async () => {
-    const {default: Pusher} = await import('pusher-js');
-
-    console.log('Pusher - setting up pusher');
+  const loadPusher = async () => {
+    const { default: Pusher } = await import('pusher-js');
 
     const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY, {
       cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER,
@@ -79,7 +78,6 @@ export default function MyApp(props: MyAppProps) {
     pusher.signin();
 
     return () => {
-      console.log('Pusher - cleaning up pusher');
       pusher.unbind('pusher:signin_success', setPusherSignInSuccess);
       setPusher(null);
       setUserSignedInToPusher(false);
@@ -106,46 +104,44 @@ export default function MyApp(props: MyAppProps) {
 
   return (
     <CacheProvider value={emotionCache}>
-        <Head>
-          <meta name="viewport" content="initial-scale=1, width=device-width" />
-        </Head>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <SWRConfig value={{
-            dedupingInterval: 15000, // default is 2000
-            focusThrottleInterval: 15000, // default is 5000
-            errorRetryCount: 0
+      <Head>
+        <meta name="viewport" content="initial-scale=1, width=device-width" />
+      </Head>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <SWRConfig value={{
+          dedupingInterval: 15000, // default is 2000
+          focusThrottleInterval: 15000, // default is 5000
+          errorRetryCount: 0
+        }}>
+          <WalletContext.Provider value={{
+            signer,
+            setSigner,
+            address,
+            setAddress,
+            nickname,
+            setNickname
           }}>
-            <WalletContext.Provider value={{
-              signer,
-              setSigner,
-              address,
-              setAddress,
-              nickname,
-              setNickname
+            <PusherContext.Provider value={{
+              pusher,
+              setPusher,
+              userSignedInToPusher,
+              setUserSignedInToPusher
             }}>
-              <PusherContext.Provider value={{
-                pusher,
-                setPusher,
-                userSignedInToPusher,
-                setUserSignedInToPusher
-              }}>
-                <SnackbarProvider
-                  Components={{
-                    // @ts-ignore
-                    hodlnotification: HodlNotificationSnackbar,
-                    // @ts-ignore
-                    // hodlsnackbar: HodlSnackbar
-                  }}
-                >
-                  <Layout>
-                    <Component {...pageProps} />
-                  </Layout>
-                </SnackbarProvider>
-              </PusherContext.Provider>
-            </WalletContext.Provider>
-          </SWRConfig>
-        </ThemeProvider>
+              <SnackbarProvider
+                Components={{
+                  // @ts-ignore
+                  hodlnotification: HodlNotificationSnackbar
+                }}
+              >
+                <Layout>
+                  <Component {...pageProps} />
+                </Layout>
+              </SnackbarProvider>
+            </PusherContext.Provider>
+          </WalletContext.Provider>
+        </SWRConfig>
+      </ThemeProvider>
     </CacheProvider>
   )
 }

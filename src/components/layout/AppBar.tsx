@@ -34,6 +34,7 @@ import { ActionTypes, HodlAction } from '../../models/HodlAction';
 const HoverMenu = dynamic(
     () => import('./../menu/HoverMenu').then(mod => mod.HoverMenu),
     {
+        ssr: false,
         loading: () => <div>...</div>
     }
 );
@@ -41,6 +42,7 @@ const HoverMenu = dynamic(
 const MobileSearch = dynamic(
     () => import('../MobileSearch').then(mod => mod.MobileSearch),
     {
+        ssr: false,
         loading: () => <div>...</div>
     }
 );
@@ -48,6 +50,7 @@ const MobileSearch = dynamic(
 const HodlNotifications = dynamic(
     () => import('../notifications/HodlNotifications').then(mod => mod.HodlNotifications),
     {
+        ssr: false,
         loading: () => <div>...</div>
     }
 );
@@ -208,8 +211,6 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
         (url, address) => axios.get(url).then(r => Boolean(r.data.unread))
     );
 
-
-    // Notifications bell end
 
     if (!showAppBar) {
         return null;

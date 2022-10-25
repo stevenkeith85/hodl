@@ -2,8 +2,25 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 
 import { useRouter } from 'next/router'
-import ResponsiveAppBar from './AppBar'
-import Footer from './Footer'
+
+import dynamic from "next/dynamic";
+
+const AppBar = dynamic(
+    () => import('./AppBar'),
+    {
+        ssr: false,
+        loading: () => <div style={{ height: '64px'}}></div>
+    }
+);
+
+const Footer = dynamic(
+    () => import('./Footer'),
+    {
+        ssr: false,
+        loading: () => <div></div>
+    }
+);
+
 
 export default function Layout({ children }) {
 
@@ -33,7 +50,7 @@ export default function Layout({ children }) {
                     }
                 }}>
                 <header>
-                    <ResponsiveAppBar />
+                    <AppBar />
                 </header>
                 <main
                     style={{

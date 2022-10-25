@@ -17,15 +17,24 @@ import { AssetTypes } from '../models/AssetType'
 
 const SelectAssetAction = dynamic(
   () => import('../components/mint/SelectAssetAction').then((module) => module.SelectAssetAction),
-  { loading: () => <HodlLoadingSpinner /> }
+  {
+    ssr: false,
+    loading: () => <HodlLoadingSpinner />
+  }
 );
 const UploadToIpfsAction = dynamic(
   () => import('../components/mint/UploadToIpfsAction').then((module) => module.UploadToIpfsAction),
-  { loading: () => <HodlLoadingSpinner /> }
+  {
+    ssr: false,
+    loading: () => <HodlLoadingSpinner />
+  }
 );
 const MintTokenAction = dynamic(
   () => import('../components/mint/MintTokenAction').then((module) => module.MintTokenAction),
-  { loading: () => <HodlLoadingSpinner /> }
+  {
+    ssr: false,
+    loading: () => <HodlLoadingSpinner />
+  }
 );
 
 export async function getServerSideProps({ req, res }) {
