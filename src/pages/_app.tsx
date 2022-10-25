@@ -1,37 +1,39 @@
-import Head from 'next/head';
-import App, { AppProps } from 'next/app';
-import { useRouter } from 'next/router';
-
 import { useEffect, useState } from 'react';
 
+import Head from 'next/head';
+import App, { AppProps } from 'next/app';
+import dynamic from "next/dynamic";
+
+import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
 import { SnackbarProvider } from 'notistack';
 import { SWRConfig } from 'swr'
 import { CacheProvider, EmotionCache } from '@emotion/react';
 import Cookies from "universal-cookie"
-import Pusher from 'pusher-js';
+
 
 import '../styles/globals.css'
 import { PusherContext } from '../contexts/PusherContext';
 import { WalletContext } from '../contexts/WalletContext';
-import LoginPage from './login';
-import theme from '../theme';
 
-// Can we lazy load this? Seems to bring in a lot of deps
 import { HodlNotificationSnackbar } from '../components/snackbars/HodlNotificationSnackbar';
-import { HodlSnackbar } from '../components/snackbars/HodlSnackbar';
 
+const LoginPage = dynamic(
+    () => import('./login'),
+    {
+        loading: () => <div>...</div>
+    }
+);
+
+import theme from '../theme';
 import createEmotionCache from '../createEmotionCache';
 
 // Also loads a lot of deps
 import Layout from '../components/layout/Layout';
 
-import { ThemeProvider } from '@mui/material/styles';
-
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
-
 
 interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
@@ -58,11 +60,9 @@ export default function MyApp(props: MyAppProps) {
     setUserSignedInToPusher(true);
   };
 
-  useEffect(() => {
-    if (!address) {
-      return;
-    }
-    
+  const loadPusher =  async () => {
+    const {default: Pusher} = await import('pusher-js');
+
     console.log('Pusher - setting up pusher');
 
     const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY, {
@@ -84,6 +84,16 @@ export default function MyApp(props: MyAppProps) {
       setPusher(null);
       setUserSignedInToPusher(false);
     };
+
+  }
+
+  useEffect(() => {
+    if (!address) {
+      return;
+    }
+
+    loadPusher()
+      .catch(console.error);
 
   }, [address])
 
@@ -125,7 +135,7 @@ export default function MyApp(props: MyAppProps) {
                     // @ts-ignore
                     hodlnotification: HodlNotificationSnackbar,
                     // @ts-ignore
-                    hodlsnackbar: HodlSnackbar
+                    // hodlsnackbar: HodlSnackbar
                   }}
                 >
                   <Layout>

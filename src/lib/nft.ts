@@ -2,7 +2,6 @@
 // as they need the user to sign the transaction with a signer (MetaMask)
 // TODO: They could be react hooks
 
-// import { ethers } from 'ethers'
 import { Contract } from '@ethersproject/contracts'
 import { parseUnits } from '@ethersproject/units'
 

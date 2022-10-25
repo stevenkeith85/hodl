@@ -24,10 +24,9 @@ export const ListModal = ({
         enqueueSnackbar(
             e.data?.message || e.data?.details,
             {
-                // @ts-ignore
-                variant: "hodlsnackbar",
-                type: "error"
-            });
+                variant: "error",
+                hideIconVariant: true
+              });
     }
 
     return (
@@ -61,10 +60,9 @@ export const ListModal = ({
                                 enqueueSnackbar(
                                     'Please confirm the transaction in MetaMask',
                                     {
-                                        // @ts-ignore
-                                        variant: "hodlsnackbar",
-                                        type: "info"
-                                    });
+                                        variant: "info",
+                                        hideIconVariant: true
+                                      });
 
                                 await listNft(token, price);
 

@@ -1,5 +1,3 @@
-// import { ethers } from 'ethers'
-
 import { Web3Provider } from '@ethersproject/providers'
 
 export const getMetaMaskSigner = async (returningUser=true) => {

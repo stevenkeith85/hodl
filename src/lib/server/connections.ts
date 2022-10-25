@@ -1,4 +1,3 @@
-// import { ethers } from 'ethers'
 import { JsonRpcProvider } from '@ethersproject/providers'
 import { getDefaultProvider } from "@ethersproject/providers";
 

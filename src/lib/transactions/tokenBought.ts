@@ -1,15 +1,18 @@
 import { ActionTypes } from "../../models/HodlAction";
-import { ethers } from "ethers";
+
+import { formatEther } from '@ethersproject/units'
+import { TransactionResponse } from '@ethersproject/abstract-provider'
+import { LogDescription } from '@ethersproject/abi'
+
 import { Redis } from '@upstash/redis';
 import { getTagsForToken } from "../../pages/api/tags";
 import { MutableToken } from "../../models/Nft";
 import { getMutableToken } from "../../pages/api/contracts/mutable-token/[tokenId]";
-import { LogDescription } from "ethers/lib/utils";
+
 import { updateHodlingCache } from "../../pages/api/contracts/token/hodling/count";
 import { updateTransactionRecords } from "./updateTransactionRecords";
 import { runRedisTransaction } from "../databaseUtils";
 import { updateListedCache } from "../../pages/api/contracts/market/listed/count";
-import { addToZeplo } from "../addToZeplo";
 
 const client = Redis.fromEnv()
 
@@ -21,7 +24,7 @@ const client = Redis.fromEnv()
 // );
 export const tokenBought = async (
     hash: string, // check valid address?
-    tx: ethers.providers.TransactionResponse,
+    tx: TransactionResponse,
     log: LogDescription,
     req
 ) => {
@@ -40,7 +43,7 @@ export const tokenBought = async (
         price: priceInWei
     } = log.args;
 
-    const price = ethers.utils.formatEther(priceInWei);
+    const price = formatEther(priceInWei);
     const tokenId = tokenIdBN.toNumber();
 
     // Read the blockchain to ensure what we are about to do is correct

@@ -24,9 +24,8 @@ export const MintTokenAction: FC<MintProps> = ({
     enqueueSnackbar(
       'Please confirm the transaction in MetaMask',
       {
-        // @ts-ignore
-        variant: "hodlsnackbar",
-        type: "info"
+        variant: "info",
+        hideIconVariant: true
       });
 
     const { metadataUrl } = formData;
@@ -35,9 +34,8 @@ export const MintTokenAction: FC<MintProps> = ({
       enqueueSnackbar(
         'Expected metadata to be on IPFS. Aborting',
         {
-          // @ts-ignore
-          variant: "hodlsnackbar",
-          type: "error"
+          variant: "error",
+          hideIconVariant: true
         });
     }
 

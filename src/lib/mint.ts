@@ -1,4 +1,3 @@
-// import { ethers } from 'ethers'
 import { Contract } from '@ethersproject/contracts'
 
 import NFT from '../../smart-contracts/artifacts/contracts/HodlNFT.sol/HodlNFT.json'

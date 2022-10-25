@@ -1,6 +1,6 @@
 import NFT from '../../../../../../smart-contracts/artifacts/contracts/HodlNFT.sol/HodlNFT.json'
 import { getProvider } from '../../../../../lib/server/connections'
-// import { ethers } from 'ethers'
+
 import { Contract } from '@ethersproject/contracts'
 
 import { NextApiRequest, NextApiResponse } from "next";

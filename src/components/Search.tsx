@@ -1,8 +1,11 @@
+import { useRouter } from 'next/router';
+
+import SearchIcon from '@mui/icons-material/Search';
 import { styled, alpha } from '@mui/material/styles';
+
 import { Formik, Form, Field } from 'formik';
 import { InputBase } from 'formik-mui';
-import { useRouter } from 'next/router';
-import SearchIcon from '@mui/icons-material/Search';
+
 import { SearchValidationSchema } from '../validation/search';
 
 const Search = styled('div')(({ theme }) => ({
@@ -31,7 +34,6 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    // color: 'inherit',
     '& .MuiInputBase-input': {
         padding: theme.spacing(1, 1, 1, 0),
         // vertical padding + font size from searchIcon
@@ -49,7 +51,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 
 export const SearchBox = ({ 
-    setHoverMenuOpen = null, 
     setMobileSearchOpen = null,
     sx = null 
 }) => {
@@ -62,9 +63,6 @@ export const SearchBox = ({
             }}
             validationSchema={SearchValidationSchema}
             onSubmit={async (values) => {
-                if (setHoverMenuOpen) {
-                    setHoverMenuOpen(false);
-                }
                 if (setMobileSearchOpen) {
                     setMobileSearchOpen(false);
                 }

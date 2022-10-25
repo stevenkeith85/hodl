@@ -74,9 +74,8 @@ export const UploadToIpfsAction: FC<MintProps> = ({
       enqueueSnackbar(
         `IPFS upload success`,
         {
-          // @ts-ignore
-          variant: "hodlsnackbar",
-          type: "success"
+          variant: "success",
+          hideIconVariant: true
         });
 
       setStepComplete(3);

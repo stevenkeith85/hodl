@@ -1,11 +1,11 @@
 import { NextApiResponse } from "next";
 import apiRoute from "../handler";
-import { ethers } from "ethers";
+
 import { getProvider } from "../../../lib/server/connections";
 import Market from '../../../../smart-contracts/artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 import { Redis } from '@upstash/redis';
 import { TRANSACTION_TIMEOUT, validTxHashFormat } from "../../../lib/utils";
-import { LogDescription } from "ethers/lib/utils";
+
 import NFT from '../../../../smart-contracts/artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import { fromUnixTime } from "date-fns";
 import { tokenMinted } from "../../../lib/transactions/tokenMinted";
@@ -16,14 +16,20 @@ import { User } from "../../../models/User";
 import { createHmac } from "crypto";
 import { getAsString } from "../../../lib/getAsString";
 
+import { BaseProvider } from '@ethersproject/providers'
+import { TransactionResponse, TransactionReceipt} from '@ethersproject/abstract-provider'
+import { LogDescription } from '@ethersproject/abi'
+import { Contract } from '@ethersproject/contracts'
+import { formatEther } from '@ethersproject/units'
+
 const route = apiRoute();
 const client = Redis.fromEnv()
 
 
 const transactionDetails = async (hash,
-    provider: ethers.providers.BaseProvider,
-    txReceipt: ethers.providers.TransactionReceipt,
-    tx: ethers.providers.TransactionResponse) => {
+    provider: BaseProvider,
+    txReceipt: TransactionReceipt,
+    tx: TransactionResponse) => {
     console.log('hash', hash);
     console.log('status', txReceipt.byzantium && txReceipt.status === 1 ? 'success' : 'reverted');
     console.log('block', txReceipt.blockNumber);
@@ -32,10 +38,10 @@ const transactionDetails = async (hash,
     console.log('from', txReceipt.from);
     console.log('to', txReceipt.to);
 
-    console.log('value', ethers.utils.formatEther(tx.value));
-    console.log('total gas fee', ethers.utils.formatEther(txReceipt.gasUsed.mul(txReceipt.effectiveGasPrice)));
+    console.log('value', formatEther(tx.value));
+    console.log('total gas fee', formatEther(txReceipt.gasUsed.mul(txReceipt.effectiveGasPrice)));
 
-    console.log('total cost to sender', ethers.utils.formatEther(txReceipt.gasUsed.mul(txReceipt.effectiveGasPrice).add(tx.value)));
+    console.log('total cost to sender', formatEther(txReceipt.gasUsed.mul(txReceipt.effectiveGasPrice).add(tx.value)));
 
     console.log('transaction nonce', tx.nonce);
 
@@ -89,11 +95,11 @@ route.post(async (req, res: NextApiResponse) => {
         return res.status(400).json({ message: 'tx with a lower nonce still in the queue' });
     }
 
-    const provider: ethers.providers.BaseProvider = await getProvider();
+    const provider: BaseProvider = await getProvider();
 
     // We can't wait very long at all, as this is a serverless function. 
     // There's no point in failing the request if we ARE able to wait though.
-    const txReceipt: ethers.providers.TransactionReceipt = await provider.waitForTransaction(
+    const txReceipt: TransactionReceipt = await provider.waitForTransaction(
         hash,
         +process.env.NUMBER_OF_CONFIRMATIONS_TO_WAIT_FOR,
         TRANSACTION_TIMEOUT
@@ -125,7 +131,7 @@ route.post(async (req, res: NextApiResponse) => {
         return res.status(503);
     }
 
-    const tx: ethers.providers.TransactionResponse = await provider.getTransaction(hash);
+    const tx: TransactionResponse = await provider.getTransaction(hash);
 
     const user = await client.hmget<User>(`user:${req.address}`, 'nonce');
 
@@ -140,9 +146,9 @@ route.post(async (req, res: NextApiResponse) => {
 
     let contract = null;
     if (txReceipt.to === process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS) {
-        contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
+        contract = new Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
     } else if (txReceipt.to === process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS) {
-        contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, provider);
+        contract = new Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, provider);
     }
 
     // if there are logs unknown to the ABI, then parseLog throws. 

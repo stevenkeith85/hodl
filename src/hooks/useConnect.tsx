@@ -1,9 +1,11 @@
 import { useContext } from 'react';
-import { messageToSign } from "../lib/utils";
-// import { getMetaMaskSigner } from '../lib/connections';
+
+
+
 import { WalletContext } from '../contexts/WalletContext';
 import axios from 'axios'
 import { PusherContext } from '../contexts/PusherContext';
+import { messageToSign } from '../lib/messageToSign';
 
 
 export const useConnect = () => {

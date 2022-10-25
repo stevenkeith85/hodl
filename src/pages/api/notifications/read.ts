@@ -28,6 +28,7 @@ route.get(async (req, res: NextApiResponse) => {
     return res.status(200).json(time);
 });
 
+// update the time the user last read their notifications
 route.post(async (req, res: NextApiResponse) => {
     if (!req.address) {
         return res.status(403).json({ message: "Not Authenticated" });

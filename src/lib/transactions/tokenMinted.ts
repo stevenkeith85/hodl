@@ -1,6 +1,11 @@
 import { ActionTypes } from "../../models/HodlAction";
-import { ethers } from "ethers";
 import { Redis } from '@upstash/redis';
+
+import { BaseProvider } from '@ethersproject/providers'
+import { TransactionResponse } from '@ethersproject/abstract-provider'
+import { LogDescription } from '@ethersproject/abi'
+import { AddressZero } from '@ethersproject/constants'
+import { Contract } from '@ethersproject/contracts'
 
 import {
     getInfuraIPFSAuth,
@@ -14,10 +19,10 @@ import NFT from '../../../smart-contracts/artifacts/contracts/HodlNFT.sol/HodlNF
 import axios from 'axios';
 import { Token } from "../../models/Token";
 import { HodlMetadata } from "../../models/Metadata";
-import { LogDescription } from "ethers/lib/utils";
+
 import { updateHodlingCache } from "../../pages/api/contracts/token/hodling/count";
 import { updateTransactionRecords } from "./updateTransactionRecords";
-import { addToZeplo } from "../addToZeplo";
+
 
 const client = Redis.fromEnv()
 
@@ -28,8 +33,8 @@ const client = Redis.fromEnv()
 // event Transfer(address from, address to, uint256 tokenId)
 export const tokenMinted = async (
     hash: string, // check valid address?
-    provider: ethers.providers.BaseProvider,
-    tx: ethers.providers.TransactionResponse,
+    provider: BaseProvider,
+    tx: TransactionResponse,
     log: LogDescription,
     req
 ) => {
@@ -43,12 +48,12 @@ export const tokenMinted = async (
         return true; // successfully rejected this; do not re-attempt to process it
     }
 
-    if (from !== ethers.constants.AddressZero) {
+    if (from !== AddressZero) {
         console.log('tokenMinted - "from" !== AddressZero');
         return true; // successfully rejected this; do not re-attempt to process it
     }
 
-    const contract = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, provider);
+    const contract = new Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, provider);
     const metadataUrl: string = await contract.tokenURI(tokenId);
 
     if (metadataUrl === '') {
