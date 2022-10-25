@@ -1,8 +1,7 @@
-import { NextApiRequest, NextApiResponse } from 'next'
-
 import { Token } from "../../../../models/Token";
 import { getTokens } from "../../../../lib/database/Tokens";
 import { getAsString } from "../../../../lib/getAsString";
+import { NextRequest, NextResponse } from 'next/server';
 
 
 export const getNewTokens = async (
@@ -14,7 +13,7 @@ export const getNewTokens = async (
     next: number,
     total: number
   }> => {
-  const cardResponse = await fetch(
+  const zcardResponse = await fetch(
     `${process.env.UPSTASH_REDIS_REST_URL}/zcard/tokens:new`,
     {
       headers: {
@@ -22,7 +21,7 @@ export const getNewTokens = async (
       }
     });
 
-  const { result: total } = await cardResponse.json();
+  const { result: total } = await zcardResponse.json();
 
   if (offset >= total) {
     return {
@@ -50,23 +49,23 @@ export const getNewTokens = async (
   };
 }
 
-// TODO: Lock down to GET requests
-export default async function getLatestTokens (
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function getLatestTokens (req: NextRequest) {
+  if (req.method !== 'GET') {
+    return new Response(null, { status: 405 });
+  }
+
   const { searchParams } = new URL(req.url);
 
   const offset = getAsString(searchParams.get('offset'));
   const limit = getAsString(searchParams.get('limit'));
 
   if (!offset || !limit) {
-    return res.status(400).json({ message: 'Bad Request' });
+    return new Response(null, { status: 400 });
   }
 
   const tokens = await getNewTokens(+offset, +limit);
 
-  return new Response(JSON.stringify(tokens), { status: 200, headers: { 'content-type': 'application/json'}})
+  return NextResponse.json(tokens);
 };
 
 export const config = {

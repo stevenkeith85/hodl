@@ -49,13 +49,15 @@ export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = 44, fontSize
                     />
                 }
                 {assetType(token) === AssetTypes.Gif &&
-                    <HodlVideo
-                        cid={token?.properties?.asset?.uri}
-                        gif={true}
+                    <HodlImageResponsive
                         assetFolder="image"
-                        height={`${size}px`}
-                        width={`${size}px`}
+                        folder="nfts"
+                        cid={token?.image}
+                        aspectRatio="1:1"
+                        widths={[44, 88]}
+                        sizes={`${size}px`}
                         onLoad={() => setLoading(false)}
+                        extension="jpg"
                     />
                 }
                 {assetType(token) === AssetTypes.Audio &&

@@ -1,20 +1,9 @@
-import { NextApiResponse } from "next";
-import { Redis } from '@upstash/redis';
-
-import apiRoute from "../../handler";
-
 import { Token } from "../../../../models/Token";
 import { getTokens } from "../../../../lib/database/Tokens";
 import { getAsString } from "../../../../lib/getAsString";
+import { NextRequest, NextResponse } from 'next/server';
 
 
-const client = Redis.fromEnv()
-const route = apiRoute();
-
-// data structures:
-//
-
-// ZSET (rankings:token:likes:count) <id> and like count of a token
 export const getMostLikedTokens = async (
   offset: number = 0,
   limit: number = 10
@@ -24,8 +13,15 @@ export const getMostLikedTokens = async (
     next: number,
     total: number
   }> => {
+  const zcardResponse = await fetch(
+    `${process.env.UPSTASH_REDIS_REST_URL}/zcard/rankings:token:likes:count`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
+      }
+    });
 
-  const total = await client.zcard(`rankings:token:likes:count`);
+  const { result: total } = await zcardResponse.json();
 
   if (offset >= total) {
     return {
@@ -35,10 +31,17 @@ export const getMostLikedTokens = async (
     };
   }
 
-  const ids: string[] = await client.zrange(`rankings:token:likes:count`, offset, offset + limit - 1, { rev: true });
+  const idsResponse = await fetch(
+    `${process.env.UPSTASH_REDIS_REST_URL}/zrange/rankings:token:likes:count/${offset}/${offset + limit - 1}/rev`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
+      }
+    });
 
+  const { result: ids } = await idsResponse.json();
   const tokens = await getTokens(ids);
-  
+
   return {
     items: tokens,
     next: Number(offset) + Number(limit),
@@ -46,20 +49,25 @@ export const getMostLikedTokens = async (
   };
 }
 
+export default async function getLatestTokens (req: NextRequest) {
+  if (req.method !== 'GET') {
+    return new Response(null, { status: 405 });
+  }
 
-route.get(async (req, res: NextApiResponse) => {
-  const offset = getAsString(req.query.offset);
-  const limit = getAsString(req.query.limit);
+  const { searchParams } = new URL(req.url);
+
+  const offset = getAsString(searchParams.get('offset'));
+  const limit = getAsString(searchParams.get('limit'));
 
   if (!offset || !limit) {
-      return res.status(400).json({ message: 'Bad Request' });
+    return new Response(null, { status: 400 });
   }
 
   const tokens = await getMostLikedTokens(+offset, +limit);
 
-  res.status(200).json(tokens);
+  return NextResponse.json(tokens);
+};
 
-});
-
-
-export default route;
+export const config = {
+  runtime: 'experimental-edge',
+}
