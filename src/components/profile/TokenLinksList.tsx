@@ -34,7 +34,7 @@ export const TokenLinksList: React.FC<TokenLinksListProps> = ({ swr, limit, show
             }
           >
             {
-              ({ items }) => items.map((token : Token) => 
+              ({ items }) => items?.map((token : Token) => 
                 <Box 
                   display="flex" 
                   width={`100%`} 
