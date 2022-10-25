@@ -60,7 +60,6 @@ import { mutate } from 'swr';
 import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
 
 
-
 const ResponsiveAppBar = ({ showAppBar = true }) => {
     const { address, setSigner } = useContext(WalletContext);
     const { pusher, userSignedInToPusher } = useContext(PusherContext);
@@ -403,7 +402,7 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
 
 
                                 {/* Notifications button and menu */}
-                                <IconButton
+                                {address && <IconButton
                                     sx={{
                                         margin: 0,
                                         padding: 0,
@@ -450,10 +449,12 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
                                             />)
                                     }
                                 </IconButton>
+                                }
                                 <HodlNotifications
                                     showNotifications={showNotifications}
                                     setShowNotifications={setShowNotifications}
                                 />
+
                                 {/* Wallet button and menu */}
                                 <IconButton
                                     size="large"
