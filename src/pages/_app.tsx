@@ -132,9 +132,10 @@ export default function MyApp(props: MyAppProps) {
                   hodlnotification: HodlNotificationSnackbar
                 }}
               >
-                <Layout>
+                test
+                {/* <Layout>
                   <Component {...pageProps} />
-                </Layout>
+                </Layout> */}
               </SnackbarProvider>
             </PusherContext.Provider>
           </WalletContext.Provider>
