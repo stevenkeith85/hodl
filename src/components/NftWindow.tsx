@@ -18,8 +18,6 @@ import { HodlAudioBox } from './HodlAudioBox';
 import { FullToken } from '../models/Nft';
 import { PriceSticker } from './PriceSticker';
 
-// import { NftWindowOverlay } from "./NftWindowOverlay";
-
 const NftWindowOverlay = dynamic(
     () => import('./NftWindowOverlay').then(mod => mod.NftWindowOverlay),
     {
