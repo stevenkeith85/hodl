@@ -1,8 +1,9 @@
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import { FC } from 'react';
 import { truncateText } from '../../lib/truncateText';
 import { getShortAddress } from '../../lib/utils';
 import { User } from '../../models/User';
+
 
 interface UserHandle {
     user: User;

@@ -3,10 +3,10 @@ import { useRouter } from 'next/router';
 import SearchIcon from '@mui/icons-material/Search';
 import { styled, alpha } from '@mui/material/styles';
 
-import { Formik, Form, Field } from 'formik';
-import { InputBase } from 'formik-mui';
+import InputBase from '@mui/material/InputBase';
 
 import { SearchValidationSchema } from '../validation/search';
+import { useState } from 'react';
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -56,52 +56,49 @@ export const SearchBox = ({
 }) => {
     const router = useRouter();
 
+    const [q, setQ] = useState('');
+    const [valid, setValid] = useState(true);
+
     return (
-        <Formik
-            initialValues={{
-                q: router?.query?.q || ''
-            }}
-            validationSchema={SearchValidationSchema}
-            onSubmit={async (values) => {
+        <form onSubmit={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            if (valid) {
                 if (setMobileSearchOpen) {
                     setMobileSearchOpen(false);
                 }
-                router.push(`/explore?q=${values.q}`);
-            }}
-        >
-            {({ setFieldValue, errors, values }) => (
-                <Form>
+                router.push(`/explore?q=${q}`);
+            }
+        }}>
                     <Search>
                         <SearchIconWrapper>
                             <SearchIcon color="primary" />
                         </SearchIconWrapper>
-                        <Field
-                            sx={{ 
-                                width: {
-                                    xs: '100%',
-                                    md: '200px', 
-                                },
-                                maxWidth: '100%',
-                                border: errors.q && values.q ? theme => `1px solid ${theme.palette.secondary.main}` : `1px solid #ccc`, 
-                                borderRadius: 1, 
-                                ...sx 
-                            }}
-                            component={StyledInputBase}
-                            name="q"
-                            type="text"
-                            placeholder="tag"
-                            onClick={e => {
-                                e.stopPropagation();
-                            }}
-                            onChange={e => {
-                                const value = e.target.value || "";
-                                setFieldValue('q', value.toLowerCase());
-                            }}
-                            autoComplete='off'
-                        />
+                        <StyledInputBase 
+                        sx={{
+                            width: {
+                                xs: '100%',
+                                md: 'auto',
+                            },
+                            border: !valid ? theme => `1px solid ${theme.palette.secondary.main}` : `1px solid #ccc`,
+                            borderRadius: 1,
+                            ...sx
+                        }}
+                        type="text"
+                        placeholder="tag"
+                        onClick={e => {
+                            e.stopPropagation();
+                        } 
+                    }
+                    onChange={async (e) => {
+                        const value = (e.target.value || "").toLowerCase();
+
+                        setQ(value);
+                        SearchValidationSchema.isValid({ q: value }).then(setValid);
+                    } }
+                    autoComplete='off'                        
+                    />
                     </Search>
-                </Form>
-            )}
-        </Formik>
+                    </form>
     )
 }

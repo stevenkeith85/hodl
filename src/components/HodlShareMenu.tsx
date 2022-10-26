@@ -1,15 +1,17 @@
-import {
-    IconButton,
-    Link,
-    ListItemIcon,
-    ListItemText,
-    Menu,
-    MenuItem,
-    MenuList
-} from "@mui/material";
-
 import React from 'react';
-import { Facebook, Send, Twitter } from "@mui/icons-material";
+
+import FacebookIcon from "@mui/icons-material/Facebook";
+import SendIcon from "@mui/icons-material/Send";
+import TwitterIcon from "@mui/icons-material/Twitter";
+
+import IconButton from '@mui/material/IconButton';
+import MenuList from '@mui/material/MenuList';
+import Link from '@mui/material/Link';
+import MenuItem from '@mui/material/MenuItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Menu from '@mui/material/Menu';
+
 
 export const HodlShareMenu = ({ nft }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -28,17 +30,15 @@ export const HodlShareMenu = ({ nft }) => {
             size="small"
             sx={{
                 padding: 0,
-                // visibility: 'hidden'
             }}
         >
-            <Send sx={{
+            <SendIcon sx={{
                 fontSize: 20,
                 lineHeight: 0,
                 color: theme => theme.palette.text.secondary
             }}
             />
         </IconButton>
-
         <Menu
             anchorEl={anchorEl}
             anchorOrigin={{
@@ -53,7 +53,6 @@ export const HodlShareMenu = ({ nft }) => {
             onClose={handleClose}
 
         >
-
             <MenuList
                 sx={{
                     padding: 0
@@ -65,7 +64,7 @@ export const HodlShareMenu = ({ nft }) => {
                 >
                     <MenuItem>
                         <ListItemIcon>
-                            <Twitter />
+                            <TwitterIcon />
                         </ListItemIcon>
                         <ListItemText>Twitter</ListItemText>
                     </MenuItem>
@@ -76,7 +75,7 @@ export const HodlShareMenu = ({ nft }) => {
                 >
                     <MenuItem>
                         <ListItemIcon>
-                            <Facebook />
+                            <FacebookIcon />
                         </ListItemIcon>
                         <ListItemText>Facebook</ListItemText>
                     </MenuItem>

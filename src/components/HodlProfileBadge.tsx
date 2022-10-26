@@ -1,4 +1,3 @@
-import { Box, Skeleton, Typography } from '@mui/material';
 import humanize from "humanize-plus";
 import Link from 'next/link';
 import { grey } from '@mui/material/colors';
@@ -10,6 +9,9 @@ import { ProfileNameOrAddress } from './avatar/ProfileNameOrAddress';
 import { CopyText } from './CopyText';
 import { HodlBorderedBox } from './HodlBorderedBox';
 import { getShortAddress } from '../lib/utils';
+import Typography from "@mui/material/Typography";
+import Skeleton from "@mui/material/Skeleton";
+import Box from "@mui/material/Box";
 
 
 interface CountAndLinkProps {
@@ -88,10 +90,7 @@ export const HodlProfileBadge: React.FC<HodlProfileBadgeProps> = ({ user }) => {
                             <Typography sx={{ fontSize: 14 }}>{getShortAddress(user.address)}</Typography>
                         </CopyText>
                     </Box>
-
                 </Box>
-
-
                 <Box
                     display="grid"
                     gridTemplateColumns="1fr 1fr 1fr 1fr"

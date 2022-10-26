@@ -1,7 +1,7 @@
-import { Box, Tooltip, Typography } from '@mui/material'
-import { getShortAddress } from '../lib/utils';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useState } from 'react';
+import Tooltip from '@mui/material/Tooltip';
+import Box from '@mui/material/Box';
 
 export const CopyText = ({ text, children }) => {
     const [copied, setCopied] = useState(false);

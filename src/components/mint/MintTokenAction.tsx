@@ -1,4 +1,3 @@
-import { Typography, Button, Box } from '@mui/material';
 import CloudSyncOutlinedIcon from '@mui/icons-material/CloudSyncOutlined';
 import { FC, useState } from 'react';
 import { enqueueSnackbar } from 'notistack';
@@ -6,6 +5,9 @@ import { mintToken } from '../../lib/mint';
 import { MintProps } from './models';
 import { grey } from '@mui/material/colors';
 import { MintTokenModal } from '../modals/MintTokenModal';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 
 
 export const MintTokenAction: FC<MintProps> = ({
@@ -106,5 +108,4 @@ export const MintTokenAction: FC<MintProps> = ({
       </Box>
     </>
   );
-
 }

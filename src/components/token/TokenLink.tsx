@@ -1,4 +1,6 @@
-import { Box, Skeleton, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Skeleton from '@mui/material/Skeleton';
+import Typography from '@mui/material/Typography';
 import Link from 'next/link';
 import { useState } from 'react';
 import { assetType } from '../../lib/utils';
@@ -6,7 +8,6 @@ import { AssetTypes } from '../../models/AssetType';
 import { Token } from '../../models/Token';
 import { HodlAudioBoxMini } from '../HodlAudioBoxMini';
 import { HodlImageResponsive } from '../HodlImageResponsive';
-import { HodlVideo } from '../HodlVideo';
 
 
 interface TokenLinkProps {
@@ -94,7 +95,6 @@ export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = 44, fontSize
                 >
                     {name}
                 </Skeleton>
-
             </Box>
         }
         <Box sx={{

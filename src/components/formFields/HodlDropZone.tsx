@@ -1,9 +1,10 @@
 import AudiotrackOutlinedIcon from '@mui/icons-material/AudiotrackOutlined';
 import PhotoOutlinedIcon from '@mui/icons-material/PhotoOutlined';
 import VideocamOutlinedIcon from '@mui/icons-material/VideocamOutlined';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 
-
-import { Box, Button, Typography } from '@mui/material'
 import React from 'react'
 import { useDropzone } from 'react-dropzone'
 
@@ -25,9 +26,9 @@ export const HodlDropzone = ({ onDrop, loading }) => {
     }
     const { getRootProps, getInputProps } = useDropzone({
         onDrop,
-        // maxFiles: 1,
-        // accept: ['image/*', 'video/*', 'audio/*'],
-        // validator
+        maxFiles: 1,
+        accept: ['image/*', 'video/*', 'audio/*'],
+        validator
     })
 
     return (

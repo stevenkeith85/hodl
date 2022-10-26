@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { Badge, Box, Skeleton, Tab, Tabs, Typography } from '@mui/material'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
 import { HodlLoadingSpinner } from '../../components/HodlLoadingSpinner'
@@ -29,6 +28,12 @@ import { ProfileNameOrAddress } from '../../components/avatar/ProfileNameOrAddre
 import { InfiniteScrollNftWindows } from '../../components/InfiniteScrollNftWindows'
 import { CopyText } from '../../components/CopyText'
 import { getShortAddress } from '../../lib/utils'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import Tabs from '@mui/material/Tabs'
+import Tab from '@mui/material/Tab'
+import Skeleton from '@mui/material/Skeleton'
+import Badge from '@mui/material/Badge'
 
 
 const UserLinksList = dynamic(
@@ -137,7 +142,6 @@ const Profile = ({
           }}>
           <Box
             display="flex"
-            // gap={2}
             alignItems={"center"}
           >
             <Box sx={{

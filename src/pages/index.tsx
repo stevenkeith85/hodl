@@ -3,7 +3,6 @@ import dynamic from 'next/dynamic';
 
 import Container from '@mui/material/Container';
 
-
 import { authenticate } from '../lib/jwt';
 import { FeedContext } from '../contexts/FeedContext';
 import { useActions } from '../hooks/useActions';
@@ -23,16 +22,10 @@ import { useNewTokens } from '../hooks/useNewTokens';
 
 const PublicHomePage = dynamic(
   () => import('../components/layout/PublicHomePage'),
-  {
-    loading: () => <div>...</div>
-  }
 );
 
 const PrivateHomePage = dynamic(
   () => import('../components/layout/PrivateHomePage'),
-  {
-    loading: () => <div>...</div>
-  }
 );
 
 export async function getServerSideProps({ req, res }) {

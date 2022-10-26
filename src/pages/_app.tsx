@@ -11,8 +11,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { SnackbarProvider } from 'notistack';
 import { SWRConfig } from 'swr'
 import { CacheProvider, EmotionCache } from '@emotion/react';
-import Cookies from "universal-cookie"
-
+import cookie from 'cookie'
 import '../styles/globals.css'
 import { PusherContext } from '../contexts/PusherContext';
 import { WalletContext } from '../contexts/WalletContext';
@@ -146,8 +145,8 @@ export default function MyApp(props: MyAppProps) {
 MyApp.getInitialProps = async (appContext) => {
   const appProps = await App.getInitialProps(appContext)
 
-  const cookies = new Cookies(appContext.ctx.req.headers.cookie)
-  const password = cookies.get(process.env.NEXT_PUBLIC_HODL_MY_MOON_PASSWORD_COOKIE_NAME) ?? ""
+  const cookies = cookie.parse(appContext?.ctx?.req?.headers?.cookie ?? "");
+  const password = cookies[process.env.NEXT_PUBLIC_HODL_MY_MOON_PASSWORD_COOKIE_NAME] ?? ""
 
   if (password === process.env.HODL_MY_MOON_PASSWORD) {
     appProps.pageProps.hasReadPermission = true

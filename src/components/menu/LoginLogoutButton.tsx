@@ -1,4 +1,6 @@
-import { CloudOff, AccountBalanceWallet } from "@mui/icons-material";
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import CloudOffIcon from '@mui/icons-material/CloudOff';
+
 import { Button } from "@mui/material";
 import { useRouter } from "next/router";
 import { useContext } from "react";
@@ -39,7 +41,7 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
                             await connect(false);
                             window.location.href = router.asPath;
                     }}
-                    startIcon={<AccountBalanceWallet />}
+                    startIcon={<AccountBalanceWalletIcon />}
                 >Connect</Button>}
             {address &&
                 <Button
@@ -54,7 +56,7 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
                         await disconnect();
                         router.push('/');
                     }}
-                    startIcon={<CloudOff />}
+                    startIcon={<CloudOffIcon />}
                 >
                     Disconnect
                 </Button>}

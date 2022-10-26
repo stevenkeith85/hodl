@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import Box from '@mui/material/Box';
 import { HodlBorderedBox } from './HodlBorderedBox';
 
 export const HodlScrollBox = ({ title, height = 250, children }) => {

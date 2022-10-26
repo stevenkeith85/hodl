@@ -1,8 +1,8 @@
-import { memo, useEffect, useRef, useState } from 'react';
-import { Box } from '@mui/material';
-import { aspectRatios, getTopPadding, imageFilters } from '../../lib/utils';
+import { memo, useEffect, useState } from 'react';
+import { aspectRatios, imageFilters } from '../../lib/utils';
 import { HodlImageResponsive } from '../HodlImageResponsive';
-import { makeCloudinaryUrl } from '../../lib/cloudinaryUrl';
+import Box from '@mui/material/Box';
+
 
 export const FilteredImage = ({
   originalAspectRatio,

@@ -2,7 +2,7 @@ import { TokenLinksList } from '../profile/TokenLinksList';
 import { useContext } from 'react';
 import { RankingsContext } from '../../contexts/RankingsContext';
 import { HodlScrollBox } from '../HodlScrollBox';
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 
 
 export const NewTokens = ({ showLikes = true, titleSize = 16, height = 250, size=44, fontSize=14, titleMargin=2}) => {
