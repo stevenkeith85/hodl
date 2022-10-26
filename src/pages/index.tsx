@@ -138,7 +138,7 @@ export async function getServerSideProps({ req, res }) {
 
   return {
     props: {
-      address: req.address,
+      address: req.address || null,
     }
   }
 }
