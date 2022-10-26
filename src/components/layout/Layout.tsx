@@ -5,12 +5,12 @@ import { useRouter } from 'next/router'
 
 import dynamic from "next/dynamic";
 
-// const AppBar = dynamic(
-//     () => import('./AppBar'),
-//     {
-//         loading: () => <div style={{ height: '64px'}}></div>
-//     }
-// );
+const AppBar = dynamic(
+    () => import('./AppBar'),
+    {
+        loading: () => <div style={{ height: '64px'}}></div>
+    }
+);
 
 // const Footer = dynamic(
 //     () => import('./Footer'),
@@ -47,9 +47,9 @@ export default function Layout({ children }) {
                         flexBasis: 'auto'
                     }
                 }}>
-                {/* <header>
+                <header>
                     <AppBar />
-                </header> */}
+                </header>
                 <main
                     style={{
                             background: "#fcfcfc"
