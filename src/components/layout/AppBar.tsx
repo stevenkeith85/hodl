@@ -26,7 +26,7 @@ import { enqueueSnackbar } from 'notistack'
 
 import { SearchBox } from '../Search';
 import { ActionTypes, HodlAction } from '../../models/HodlAction';
-// import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
+
 
 const HoverMenu = dynamic(
     () => import('./../menu/HoverMenu').then(mod => mod.HoverMenu),
@@ -49,20 +49,23 @@ const HodlNotifications = dynamic(
     }
 );
 
-const SessionExpiredModal = dynamic(
-    () => import('../modals/SessionExpiredModal').then(mod => mod.SessionExpiredModal),
-    {
-        loading: () => <div>...</div>
-    }
-);
+import { SessionExpiredModal } from '../modals/SessionExpiredModal';
+import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
 
-const UserAvatarAndHandle = dynamic(
-    () => import('../avatar/UserAvatarAndHandle').then(mod => mod.UserAvatarAndHandle),
-    {
-        ssr: false,
-        loading: () => <Skeleton variant='circular' width={44} height={44} animation="wave" />
-    }
-);
+// const SessionExpiredModal = dynamic(
+//     () => import('../modals/SessionExpiredModal').then(mod => mod.SessionExpiredModal),
+//     {
+//         loading: () => <div>...</div>
+//     }
+// );
+
+// const UserAvatarAndHandle = dynamic(
+//     () => import('../avatar/UserAvatarAndHandle').then(mod => mod.UserAvatarAndHandle),
+//     {
+//         ssr: false,
+//         loading: () => <Skeleton variant='circular' width={44} height={44} animation="wave" />
+//     }
+// );
 
 
 const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
