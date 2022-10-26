@@ -42,15 +42,15 @@ export const HodlImageResponsive = ({
             <Head>
                 {lcp ?
                     <link
-                        //@ts-ignore
+                        // @ts-ignore
                         fetchpriority="high"
                         key={cid}
                         rel="preload"
                         as="image"
                         href={src}
-                        //@ts-ignore
+                        // @ts-ignore
                         imagesrcset={srcSet}
-                        //@ts-ignore
+                        // @ts-ignore
                         imagesizes={sizes}
                     /> :
                     <link
@@ -58,9 +58,9 @@ export const HodlImageResponsive = ({
                         rel="preload"
                         as="image"
                         href={src}
-                        //@ts-ignore
+                        // @ts-ignore
                         imagesrcset={srcSet}
-                        //@ts-ignore
+                        // @ts-ignore
                         imagesizes={sizes}
                     />
                 }

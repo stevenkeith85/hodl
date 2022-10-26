@@ -12,7 +12,7 @@ interface FollowButtonProps {
 }
 
 export const FollowButton: React.FC<FollowButtonProps> = ({ profileAddress, variant = "contained", sx = {} }) => {
-    const { address } = useContext(WalletContext); // TODO: We probably just want to store the logged in UserViewModal in the context
+    const { address } = useContext(WalletContext);
     const profileUserSWR = useUser(profileAddress);
 
 

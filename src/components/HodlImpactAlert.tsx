@@ -1,5 +1,5 @@
-import { Stack, Typography } from "@mui/material";
-
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 
 export const HodlImpactAlert = ({title, message, action=null, sx=null}) => (
     <Stack 

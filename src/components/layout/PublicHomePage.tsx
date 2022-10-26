@@ -5,7 +5,7 @@ import { TopTokens } from "../rankings/TopTokens"
 import { NewTokens } from "../rankings/NewTokens"
 import { NewUsers } from "../rankings/NewUsers"
 
-export const PublicHomePage = ({ }) => {
+const PublicHomePage = ({ }) => {
     return (
         <Box
             display="flex"
@@ -45,3 +45,5 @@ export const PublicHomePage = ({ }) => {
         </Box >
     )
 }
+
+export default PublicHomePage

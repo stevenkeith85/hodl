@@ -9,7 +9,6 @@ import formatDistanceStrict from "date-fns/formatDistanceStrict";
 
 import { ActionTypes, HodlActionViewModel } from "../../models/HodlAction";
 
-// Possibly dynamic load this?
 import { ProfileNameOrAddress } from '../avatar/ProfileNameOrAddress';
 
 import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";

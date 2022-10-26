@@ -1,24 +1,32 @@
-import ClearIcon from '@mui/icons-material/Clear';
-import Box from '@mui/material/Box';
-import FormGroup from '@mui/material/FormGroup';
-import InputAdornment from '@mui/material/InputAdornment';
-import Switch from '@mui/material/Switch';
-import TextField from '@mui/material/TextField';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
-
-import Head from 'next/head';
-
-import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
+
+import Box from '@mui/material/Box';
+import FormGroup from '@mui/material/FormGroup';
+
+import Switch from '@mui/material/Switch';
+import Tooltip from '@mui/material/Tooltip';
+
+import ClearIcon from '@mui/icons-material/Clear';
+
 import { HodlImpactAlert } from '../components/HodlImpactAlert';
-import { InfiniteScrollNftWindows } from '../components/InfiniteScrollNftWindows';
-import { MaticSymbol } from '../components/MaticSymbol';
 import { useSearchTokens } from '../hooks/useSearchTokens';
+
 import { authenticate } from '../lib/jwt';
 import { getTokenSearchResults } from './api/search/tokens';
 
+// large import
+import { InfiniteScrollNftWindows } from '../components/InfiniteScrollNftWindows';
+
+const ForSaleFields = dynamic(
+  () => import('../components/explore/ForSaleFields').then(mod => mod.ForSaleFields),
+  {
+    loading: () => <div>...</div>
+  }
+);
 
 export async function getServerSideProps({ query, req, res }) {
   let { q, forSale, minPrice, maxPrice } = query;
@@ -168,7 +176,6 @@ export default function Search({
                 justifyContent: { xs: 'space-between' },
               }}
             >
-
               <Box
                 sx={{
                   width: '15%',
@@ -198,66 +205,13 @@ export default function Search({
                   /></Tooltip>
               </Box>
 
-              {forSaleToggle && <Box
-                sx={{
-                  display: 'flex',
-                  gap: 1,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '70%'
-                }}>
-
-                <TextField
-                  sx={{
-                    maxWidth: `40%`
-                  }}
-                  onKeyPress={(e) => {
-                    if (e.key == "Enter") {
-                      setSearchQ(old => ({
-                        ...old,
-                        minPrice: minPriceUI,
-                      }))
-                    }
-                  }}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start">
-                      <MaticSymbol />
-                    </InputAdornment>,
-                  }}
-                  size="small"
-                  inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                  value={minPriceUI}
-                  onChange={e => setMinPriceUI(e.target.value)}
-                />
-                <Typography
-                  component="span"
-                >
-                  to
-                </Typography>
-
-                <TextField
-                  sx={{
-                    maxWidth: `40%`
-                  }}
-                  onKeyPress={(e) => {
-                    if (e.key == "Enter") {
-                      setSearchQ(old => ({
-                        ...old,
-                        maxPrice: maxPriceUI,
-                      }))
-                    }
-                  }}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start">
-                      <MaticSymbol />
-                    </InputAdornment>,
-                  }}
-                  size="small"
-                  inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                  value={maxPriceUI}
-                  onChange={e => setMaxPriceUI(e.target.value)}
-                />
-              </Box>
+              {forSaleToggle && <ForSaleFields
+                setSearchQ={setSearchQ}
+                minPriceUI={minPriceUI}
+                setMinPriceUI={setMinPriceUI}
+                maxPriceUI={maxPriceUI}
+                setMaxPriceUI={setMaxPriceUI}
+              />
               }
               <Box
                 sx={{

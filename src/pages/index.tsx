@@ -1,8 +1,9 @@
 import Head from 'next/head';
+import dynamic from 'next/dynamic';
+
 import Container from '@mui/material/Container';
 
-import { PublicHomePage } from '../components/layout/PublicHomePage';
-import { PrivateHomePage } from '../components/layout/PrivateHomePage';
+
 import { authenticate } from '../lib/jwt';
 import { FeedContext } from '../contexts/FeedContext';
 import { useActions } from '../hooks/useActions';
@@ -20,6 +21,20 @@ import { useListedCount } from '../hooks/useListedCount';
 import { useNewTokens } from '../hooks/useNewTokens';
 
 
+const PublicHomePage = dynamic(
+  () => import('../components/layout/PublicHomePage'),
+  {
+    loading: () => <div>...</div>
+  }
+);
+
+const PrivateHomePage = dynamic(
+  () => import('../components/layout/PrivateHomePage'),
+  {
+    loading: () => <div>...</div>
+  }
+);
+
 export async function getServerSideProps({ req, res }) {
   await authenticate(req, res);
 
@@ -35,10 +50,10 @@ export async function getServerSideProps({ req, res }) {
       }
     }
   }
-  
+
   const userPromise = getUser(req.address, req.address);
-  const feed = getActions(req.address, ActionSet.Feed, 0, 3); 
-  
+  const feed = getActions(req.address, ActionSet.Feed, 0, limit);
+
   const [
     user,
     pfeed,
@@ -66,7 +81,6 @@ export default function Home({
 
   const { rankings: mostLiked } = useRankings(true, limit, null, "token");
   const { rankings: mostFollowed } = useRankings(true, limit, null);
-  // const { rankings: mostUsedTags } = useRankings(true, limit, null, "tag");
 
   const { results: newUsers } = useNewUsers(limit, null);
   const { results: newTokens } = useNewTokens(limit, null);
@@ -84,12 +98,10 @@ export default function Home({
       <Head>
         <title>Hodl My Moon</title>
       </Head>
-
       <RankingsContext.Provider value={{
         limit,
         mostFollowed,
         mostLiked,
-        // mostUsedTags,
         newUsers,
         newTokens
       }}>
@@ -119,3 +131,21 @@ export default function Home({
     </>
   )
 }
+
+// export async function getServerSideProps({ req, res }) {
+//   console.log('home server side')
+//   await authenticate(req, res);
+
+//   return {
+//     props: {
+//       address: req.address || null,
+//     }
+//   }
+// }
+
+// export default function Home({ address }) {
+//   console.log('home client side')
+//   return (
+//     <h1>Home</h1>
+//   )
+// } 

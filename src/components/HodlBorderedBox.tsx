@@ -2,6 +2,7 @@ import Box from "@mui/material/Box";
 
 interface HodlBorderedBoxProps {
     sx?: object,
+    children: React.ReactNode
 }
 
 export const HodlBorderedBox: React.FC<HodlBorderedBoxProps> = ({ sx = null, children }) => (

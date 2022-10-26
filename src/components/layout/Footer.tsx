@@ -1,7 +1,7 @@
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import { HodlLink } from "../HodlLink";
-import { useContext } from "react";
-import { WalletContext } from '../../contexts/WalletContext';
+
+
 import { grey } from "@mui/material/colors";
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -9,13 +9,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 
-const Footer = ({ showFooter = true }) => {
-    const { address } = useContext(WalletContext);
-
-    if (!showFooter) {
-        return null;
-    }
-
+const Footer = ({ address }) => {
     return (
         <Box>
             <Box sx={{
@@ -136,9 +130,9 @@ const Footer = ({ showFooter = true }) => {
                     </Stack>
                 </Container>
             </Box>
-
         </Box >
     )
 }
 
 export default Footer;
+

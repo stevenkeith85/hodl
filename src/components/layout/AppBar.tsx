@@ -60,7 +60,7 @@ import { mutate } from 'swr';
 import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
 
 
-const ResponsiveAppBar = ({ showAppBar = true }) => {
+const ResponsiveAppBar = ({ }) => {
     const { address, setSigner } = useContext(WalletContext);
     const { pusher, userSignedInToPusher } = useContext(PusherContext);
 
@@ -153,12 +153,11 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
             mutate([`/api/contracts/mutable-token`, action.objectId]);
         }
 
-        enqueueSnackbar(
-            "",
-            {
+        enqueueSnackbar("", {
                 // @ts-ignore
                 variant: 'hodlnotification',
-                action,
+                // @ts-ignore
+                hodlAction: action,
             }
         )
     }
@@ -202,16 +201,9 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
 
     }, [pusher, userSignedInToPusher]);
 
-
-
     const { data: unread, mutate: mutateUnread } = useSWR(address ? ['/api/notifications', address] : null,
         (url, address) => axios.get(url).then(r => Boolean(r.data.unread))
     );
-
-
-    if (!showAppBar) {
-        return null;
-    }
 
     return (
         <>

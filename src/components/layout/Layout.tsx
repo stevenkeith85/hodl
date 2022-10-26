@@ -1,3 +1,6 @@
+import { WalletContext } from '../../contexts/WalletContext';
+import { useContext } from "react";
+
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 
@@ -5,24 +8,19 @@ import { useRouter } from 'next/router'
 
 import dynamic from "next/dynamic";
 
-const AppBar = dynamic(
-    () => import('./AppBar'),
-    {
-        loading: () => <div style={{ height: '64px'}}></div>
-    }
-);
+import Footer from './Footer';
+import AppBar from './AppBar';
 
-const Footer = dynamic(
-    () => import('./Footer'),
-    {
-        loading: () => <div></div>
-    }
-);
-
+// const AppBar = dynamic(
+//     () => import('./AppBar'),
+//     {
+//         ssr: false,
+//     }
+// );
 
 export default function Layout({ children }) {
-
     const router = useRouter();
+    const { address } = useContext(WalletContext);
 
     return (
         <>
@@ -50,13 +48,11 @@ export default function Layout({ children }) {
                 <header>
                     <AppBar />
                 </header>
-                <main
-                    style={{
-                            background: "#fcfcfc"
-                        }}>
-                    {router.asPath !== '/' && <Container maxWidth="xl">
-                        {children}
-                    </Container>
+                <main style={{ background: "#fcfcfc" }}>
+                    {router.asPath !== '/' &&
+                        <Container maxWidth="xl">
+                            {children}
+                        </Container>
                     }
                     {router.asPath === '/' && <>
                         {children}
@@ -64,7 +60,7 @@ export default function Layout({ children }) {
                     }
                 </main>
                 <footer>
-                    <Footer />
+                    <Footer address={address}/>
                 </footer>
             </Box>
         </>
