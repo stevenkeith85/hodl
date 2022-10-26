@@ -28,7 +28,7 @@ export default function Layout({ children, address, pusher, userSignedInToPusher
                 }
             }}>
             <header>
-                <AppBar address={address} pusher={pusher} userSignedInToPusher={userSignedInToPusher} />
+                {/* <AppBar address={address} pusher={pusher} userSignedInToPusher={userSignedInToPusher} /> */}
             </header>
             <main style={{ background: "#fcfcfc" }}>
                 <Container maxWidth="xl">
