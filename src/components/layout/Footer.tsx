@@ -12,13 +12,7 @@ import { useContext } from "react";
 // import Typography from '@mui/material/Typography';
 
 
-const Footer = ({ showFooter = true }) => {
-    const { address } = useContext(WalletContext);
-
-    if (!showFooter) {
-        return null;
-    }
-
+const Footer = ({ address }) => {
     return <h1>{ address }</h1>
     // return (
     //     <Box>

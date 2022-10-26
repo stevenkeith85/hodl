@@ -49,7 +49,6 @@ export default function MyApp(props: MyAppProps) {
   // some components will require the context value, such as the app bar as it renders outside the page
   // @ts-ignore
   const [address, setAddress] = useState(props?.pageProps?.address);
-  const [nickname, setNickname] = useState(''); // This will be getting removed
 
   const [pusher, setPusher] = useState(null);
   const [userSignedInToPusher, setUserSignedInToPusher] = useState(false); // TODO
@@ -115,8 +114,6 @@ export default function MyApp(props: MyAppProps) {
             setSigner,
             address,
             setAddress,
-            nickname,
-            setNickname
           }}>
             <PusherContext.Provider value={{
               pusher,

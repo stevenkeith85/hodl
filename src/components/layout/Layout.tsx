@@ -1,3 +1,6 @@
+import { WalletContext } from '../../contexts/WalletContext';
+import { useContext } from "react";
+
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 
@@ -20,6 +23,7 @@ const Footer = dynamic(
 export default function Layout({ children }) {
     console.log('Layout');
     const router = useRouter();
+    const { address } = useContext(WalletContext);
 
     return (
         <>
@@ -61,7 +65,7 @@ export default function Layout({ children }) {
                     }
                 </main>
                 <footer>
-                    <Footer />
+                    <Footer address={address}/>
                 </footer>
             </Box>
         </>
