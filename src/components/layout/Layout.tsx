@@ -8,7 +8,6 @@ import dynamic from "next/dynamic";
 const AppBar = dynamic(
     () => import('./AppBar'),
     {
-        ssr: false,
         loading: () => <div style={{ height: '64px'}}></div>
     }
 );
@@ -16,7 +15,6 @@ const AppBar = dynamic(
 const Footer = dynamic(
     () => import('./Footer'),
     {
-        ssr: false,
         loading: () => <div></div>
     }
 );

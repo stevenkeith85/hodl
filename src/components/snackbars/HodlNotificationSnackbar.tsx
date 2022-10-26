@@ -11,7 +11,6 @@ interface HodlNotificationSnackbarProps extends CustomContentProps {
 const HodlNotificationBox = dynamic(
     () => import('../notifications/HodlNotificationBox').then(mod => mod.HodlNotificationBox),
     {
-        ssr: false,
         loading: () => <div style={{
             width: '400px',
             height: '50px',
