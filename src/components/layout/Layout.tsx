@@ -5,19 +5,16 @@ import { useRouter } from 'next/router'
 
 import dynamic from "next/dynamic";
 
-const AppBar = dynamic(
-    () => import('./AppBar'),
-    {
-        ssr: false,
-    }
-);
-
-// const Footer = dynamic(
-//     () => import('./Footer'),
+// const AppBar = dynamic(
+//     () => import('./AppBar'),
 //     {
-//         loading: () => <div></div>
+//         ssr: false,
 //     }
 // );
+
+const Footer = dynamic(
+    () => import('./Footer'),
+);
 
 
 export default function Layout({ children }) {
@@ -48,7 +45,7 @@ export default function Layout({ children }) {
                     }
                 }}>
                 <header>
-                    <AppBar />
+                    {/* <AppBar /> */}
                 </header>
                 <main
                     style={{
@@ -63,9 +60,9 @@ export default function Layout({ children }) {
                     </>
                     }
                 </main>
-                {/* <footer>
+                <footer>
                     <Footer />
-                </footer> */}
+                </footer>
             </Box>
         </>
     )

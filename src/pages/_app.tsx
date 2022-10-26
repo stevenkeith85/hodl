@@ -21,9 +21,6 @@ import { HodlNotificationSnackbar } from '../components/snackbars/HodlNotificati
 
 const LoginPage = dynamic(
   () => import('./login'),
-  {
-    loading: () => <div></div>
-  }
 );
 
 import theme from '../theme';
