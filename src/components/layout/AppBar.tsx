@@ -1,12 +1,7 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
-
-import axios from 'axios'
-
-import useSWR from "swr";
 
 import AppBar from '@mui/material/AppBar';
 import Button from '@mui/material/Button';
@@ -24,12 +19,14 @@ import SearchIcon from '@mui/icons-material/Search';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 
+
+import axios from 'axios'
+import useSWR, { mutate } from 'swr';
 import { enqueueSnackbar } from 'notistack'
 
-import { WalletContext } from '../../contexts/WalletContext';
-import { PusherContext } from '../../contexts/PusherContext';
 import { SearchBox } from '../Search';
 import { ActionTypes, HodlAction } from '../../models/HodlAction';
+
 
 const HoverMenu = dynamic(
     () => import('./../menu/HoverMenu').then(mod => mod.HoverMenu),
@@ -52,27 +49,25 @@ const HodlNotifications = dynamic(
     }
 );
 
-import { useConnect } from '../../hooks/useConnect';
-import { SessionExpiredModal } from '../modals/SessionExpiredModal';
+const SessionExpiredModal = dynamic(
+    () => import('../modals/SessionExpiredModal').then(mod => mod.SessionExpiredModal),
+    {
+        loading: () => <div>...</div>
+    }
+);
 
-import { mutate } from 'swr';
 
 import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
 
 
-const ResponsiveAppBar = ({ }) => {
-    const { address, setSigner } = useContext(WalletContext);
-    const { pusher, userSignedInToPusher } = useContext(PusherContext);
-
-    const router = useRouter();
-    const [connect, disconnect, disconnectFE] = useConnect();
+const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
     const [error, setError] = useState('');
 
     const [hoverMenuOpen, setHoverMenuOpen] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
-    const [sessionExpiredModalOpen, setSessionExpiredModalOpen] = useState(false);
+    const [sessionExpired, setSessionExpired] = useState(false);
 
     const [pages] = useState([
         {
@@ -95,31 +90,26 @@ const ResponsiveAppBar = ({ }) => {
         },
     ]);
 
-    useEffect(() => {
-        if (error !== '') {
-            enqueueSnackbar(error,
-                {
-                    // @ts-ignore
-                    variant: "hodlsnackbar",
-                    type: "error"
-                });
-
-            setError('');
-        }
-    }, [error, enqueueSnackbar]) //  Warning: React Hook useEffect has a missing dependency: 'enqueueSnackbar'. Either include it or remove the dependency array.
 
     useEffect(() => {
-        if (router?.query?.sessionExpired) {
-            setSessionExpiredModalOpen(true);
+        if (!error) {
+            return;
         }
-    }, [router?.query]
-    )
+
+        enqueueSnackbar(error,
+            {
+                // @ts-ignore
+                variant: "hodlsnackbar",
+                type: "error"
+            });
+
+        setError('');
+    }, [error]);
+
+
     useEffect(() => {
         axios.interceptors.response.use(null, async (error) => {
-            if (error.config &&
-                error.response &&
-                error.response.status === 401
-                && !error.config.__isRetry) {
+            if (error.config && error.response && error.response.status === 401 && !error.config.__isRetry) {
                 const { refreshed } = error.response.data;
 
                 error.config.__isRetry = true;
@@ -128,13 +118,9 @@ const ResponsiveAppBar = ({ }) => {
                     return axios.request(error.config);
                 }
                 else {
-                    // The BE is disconnected in the jwt code
-                    disconnectFE();
-
-                    // add the query param to display the 'session ended' dialog
-                    router.push(window.location.pathname + '?sessionExpired=true');
+                    setSessionExpired(true);
+                    pusher?.disconnect();
                 }
-
             } else if (error.config && error.response && error.response.status === 429) {
                 const { message } = error.response.data;
                 setError(message);
@@ -144,9 +130,10 @@ const ResponsiveAppBar = ({ }) => {
 
             return Promise.reject(error);
         });
-    }, [setSigner]);
+    }, [address]);
 
-    const mutateUIAndShowPopUpNotification = (action: HodlAction) => {
+
+    const mutateAndNotify = (action: HodlAction) => {
         if (action.action === ActionTypes.Bought ||
             action.action === ActionTypes.Listed ||
             action.action === ActionTypes.Delisted) {
@@ -154,60 +141,40 @@ const ResponsiveAppBar = ({ }) => {
         }
 
         enqueueSnackbar("", {
-                // @ts-ignore
-                variant: 'hodlnotification',
-                // @ts-ignore
-                hodlAction: action,
-            }
+            // @ts-ignore
+            variant: 'hodlnotification',
+            // @ts-ignore
+            hodlAction: action,
+        }
         )
     }
 
-    useEffect(() => {
-        console.log('Pusher - setting up notification hover updates');
-        console.log('Pusher - pusher / user ', pusher, userSignedInToPusher);
+    const ringNotificationBell = () => mutateUnread(true, { revalidate: false });
 
+    useEffect(() => {
         if (!pusher || !userSignedInToPusher) {
             return;
         }
 
-        pusher.user.bind('notification-hover', mutateUIAndShowPopUpNotification);
-
-        return () => {
-            console.log('Pusher - cleaning up notification hover updates');
-            pusher.user.unbind('notification-hover', mutateUIAndShowPopUpNotification);
-        }
-
-    }, [pusher, userSignedInToPusher]);
-
-    const ringNotificationBell = () => {
-        mutateUnread(true, { revalidate: false });
-    }
-
-    // Notifications bell start
-    useEffect(() => {
-        console.log('Pusher - setting up notification bell updates');
-        console.log('Pusher - pusher / user ', pusher, userSignedInToPusher);
-
-        if (!pusher || !userSignedInToPusher) {
-            return;
-        }
-
+        pusher.user.bind('notification-hover', mutateAndNotify);
         pusher.user.bind('notification', ringNotificationBell);
 
         return () => {
-            console.log('Pusher - cleaning up notification bell updates');
+            pusher.user.unbind('notification-hover', mutateAndNotify);
             pusher.user.unbind('notification', ringNotificationBell);
         }
 
     }, [pusher, userSignedInToPusher]);
 
+
     const { data: unread, mutate: mutateUnread } = useSWR(address ? ['/api/notifications', address] : null,
         (url, address) => axios.get(url).then(r => Boolean(r.data.unread))
     );
 
+
     return (
         <>
-            <SessionExpiredModal modalOpen={sessionExpiredModalOpen} setModalOpen={setSessionExpiredModalOpen} />
+            <SessionExpiredModal modalOpen={sessionExpired} setModalOpen={setSessionExpired} />
             <AppBar
                 position="fixed"
                 sx={{
