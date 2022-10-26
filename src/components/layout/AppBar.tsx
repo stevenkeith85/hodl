@@ -9,6 +9,7 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Container from '@mui/material/Container';
+import Skeleton from '@mui/material/Skeleton';
 
 import CloseIcon from '@mui/icons-material/Close';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
@@ -19,14 +20,12 @@ import SearchIcon from '@mui/icons-material/Search';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 
-
 import axios from 'axios'
 import useSWR, { mutate } from 'swr';
 import { enqueueSnackbar } from 'notistack'
 
 import { SearchBox } from '../Search';
 import { ActionTypes, HodlAction } from '../../models/HodlAction';
-
 
 const HoverMenu = dynamic(
     () => import('./../menu/HoverMenu').then(mod => mod.HoverMenu),
@@ -56,19 +55,20 @@ const SessionExpiredModal = dynamic(
     }
 );
 
-
-import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
+const UserAvatarAndHandle = dynamic(
+    () => import('../avatar/UserAvatarAndHandle').then(mod => mod.UserAvatarAndHandle),
+    {
+        loading: () => <Skeleton variant='circular' width={44} height={44} animation="wave" />
+    }
+);
 
 
 const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
     const [error, setError] = useState('');
-
     const [hoverMenuOpen, setHoverMenuOpen] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
-
     const [sessionExpired, setSessionExpired] = useState(false);
-
     const [pages] = useState([
         {
             label: 'hodl my moon',
@@ -170,7 +170,6 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
     const { data: unread, mutate: mutateUnread } = useSWR(address ? ['/api/notifications', address] : null,
         (url, address) => axios.get(url).then(r => Boolean(r.data.unread))
     );
-
 
     return (
         <>
