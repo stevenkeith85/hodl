@@ -9,15 +9,16 @@ import { useRouter } from 'next/router'
 import dynamic from "next/dynamic";
 // import Footer from './Footer';
 
-// const AppBar = dynamic(
-//     () => import('./AppBar'),
-//     {
-//         ssr: false,
-//     }
-// );
+const AppBar = dynamic(
+    () => import('./AppBar'),
+    {
+        ssr: false,
+    }
+);
 
 const Footer = dynamic(
     () => import('./Footer'),
+    { ssr: false }
 );
 
 
@@ -51,7 +52,7 @@ export default function Layout({ children }) {
                     }
                 }}>
                 <header>
-                    {/* <AppBar /> */}
+                    <AppBar address={address}/>
                 </header>
                 <main style={{ background: "#fcfcfc" }}>
                     {router.asPath !== '/' &&
