@@ -19,7 +19,7 @@ const Footer = ({ showFooter = true }) => {
         return null;
     }
 
-    return <>{ address ? <h1>signed in</h1> : <h1>no address yet</h1> }</>
+    return <h1>{ address }</h1>
     // return (
     //     <Box>
     //         <Box sx={{
