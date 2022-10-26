@@ -1,14 +1,15 @@
 import { WalletContext } from '../../contexts/WalletContext';
 import { useContext } from "react";
-// import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
-// import { HodlLink } from "../HodlLink";
+
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+import { HodlLink } from "../HodlLink";
 
 
-// import { grey } from "@mui/material/colors";
-// import Box from '@mui/material/Box';
-// import Container from '@mui/material/Container';
-// import Stack from '@mui/material/Stack';
-// import Typography from '@mui/material/Typography';
+import { grey } from "@mui/material/colors";
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 
 
 const Footer = ({ showFooter = true }) => {
@@ -18,7 +19,7 @@ const Footer = ({ showFooter = true }) => {
         return null;
     }
 
-    return <h1>footer</h1>
+    return <>{ address ? <h1>signed in</h1> : <h1>no address yet</h1> }</>
     // return (
     //     <Box>
     //         <Box sx={{
