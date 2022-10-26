@@ -1,10 +1,12 @@
 import axios from 'axios';
 import useSWR from 'swr';
 import { useState } from 'react';
-import { Box, Chip, IconButton } from '@mui/material';
 
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import IconButton from '@mui/material/IconButton';
 
 
 interface TagsPaginatedProps {

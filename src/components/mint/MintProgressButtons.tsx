@@ -1,9 +1,9 @@
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { Fab } from '@mui/material';
+import Fab from '@mui/material/Fab';
+
 
 export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, loading, formData }) => {
-
   const isAudio = mimeType => mimeType && mimeType.indexOf('audio') !== -1;
   const isVideo = mimeType => mimeType && mimeType.indexOf('video') !== -1;
   const isGif = mimeType => mimeType && mimeType.indexOf('gif') !== -1;

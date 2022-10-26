@@ -126,7 +126,6 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                     >
                         <Box
                             sx={{
-                                // background: 'lightblue',
                                 display: 'flex',
                                 width: `100%`,
                             }}>
@@ -134,7 +133,6 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                 display="flex"
                                 flexDirection="column"
                                 flexWrap="wrap"
-                                // gap={0.5}
                                 width={`100%`}
                             >
                                 <Box
@@ -145,7 +143,6 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                     <Box sx={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        // background: 'yellow',
                                         justifyContent: 'space-between',
                                         width: `100%`
                                     }}>
@@ -173,7 +170,6 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                                         size="small"
                                                         sx={{
                                                             padding: 0,
-                                                            // visibility: 'hidden'
                                                         }}
                                                     >
                                                         <MoreVertIcon
@@ -191,9 +187,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                                         anchorEl={anchorEl}
                                                         open={open}
                                                         onClose={handleClose}
-
                                                     >
-
                                                         <MenuList
                                                             dense
                                                             sx={{
@@ -303,7 +297,6 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                         '&:hover': {
                                             color: theme => theme.palette.text.primary
                                         },
-                                        // background: 'orange',
                                         marginTop: 2
                                     }}
                                 >

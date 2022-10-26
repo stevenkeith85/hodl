@@ -1,5 +1,6 @@
-import { MusicNote } from "@mui/icons-material";
-import { Box } from "@mui/material";
+import Box from "@mui/material/Box";
+import MusicNoteIcon from '@mui/icons-material/MusicNote';
+
 
 export const HodlAudioBoxMini = ({size}) => (
     <Box sx={{
@@ -10,6 +11,6 @@ export const HodlAudioBoxMini = ({size}) => (
         alignItems: 'center',
         justifyContent: 'center'
     }}>
-        <MusicNote sx={{ color: 'white' }} />
+        <MusicNoteIcon sx={{ color: 'white' }} />
     </Box>
 )

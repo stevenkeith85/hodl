@@ -1,4 +1,7 @@
-import { Box, Button, Stack, Typography } from "@mui/material"
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 import { useRouter } from "next/router";
 import { HodlModal } from "./HodlModal";
 
@@ -28,9 +31,9 @@ export const SessionExpiredModal = ({ modalOpen, setModalOpen }) => {
             }}
             onClick={() => {
               setModalOpen(false);
-
-              // remove the query param that tells this dialog to display
-              router.replace(window.location.pathname, undefined, { shallow: true });
+              
+              // full page refresh
+              window.location.href = router.asPath;
             }}
           >
             Close

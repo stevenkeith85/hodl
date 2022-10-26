@@ -51,6 +51,8 @@ export const useConnect = () => {
   // Sometimes we only need to disconnect the FE, as the BE has already been disconnected
   const disconnectFE = () => {
     setSigner(null);
+    
+    // TODO: Perhaps we just refresh the page? I think reducing the reliance on address might be good
     setAddress(null);
 
     pusher?.disconnect();

@@ -1,4 +1,3 @@
-import { Box, FormGroup, Grid, Switch, Tooltip, Typography } from '@mui/material';
 import { HodlFeed } from '../feed/HodlFeed';
 import { HodlProfileBadge } from '../HodlProfileBadge';
 import { NewTokens } from '../rankings/NewTokens';
@@ -8,6 +7,9 @@ import { NewUsers } from '../rankings/NewUsers';
 import { UserViewModel } from '../../models/User';
 import { useEffect, useRef, useState } from 'react';
 import { throttle } from '../../lib/lodash';
+import Box from '@mui/material/Box';
+import Switch from '@mui/material/Switch';
+import Grid from '@mui/material/Grid';
 
 
 interface PrivateHomePageProps {
@@ -87,7 +89,6 @@ const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
                     },
                     justifyContent: 'right'
                 }}>
-
                 <Box
                     sx={{
                         display: 'flex',
@@ -99,8 +100,7 @@ const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
                             sm: 4
                         }
                     }}
-                >
-                    
+                > 
                     <Switch
                         checked={viewSidebar}
                         onChange={(e) => {
@@ -108,14 +108,11 @@ const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
                         }
                         }
                     />
-
-
                 </Box>
             </Box>
             <Grid
                 container
             >
-
                 <Grid
                     sx={{
                         display:
@@ -139,7 +136,6 @@ const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
                             },
                             marginX: {
                                 xs: 0,
-                                // sm: 10,
                             },
                             marginTop: {
                                 xs: 1,

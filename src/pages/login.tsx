@@ -14,13 +14,13 @@ import Typography from "@mui/material/Typography";
 
 import Head from "next/head"
 import { useState } from "react";
-import Cookies from "universal-cookie"
+import cookie from 'cookie'
 
 import { TikTokIcon } from "../components/TikTokIcon";
 
 export async function getServerSideProps({ req, res }) {
-    const cookies = new Cookies(req.headers.cookie);
-    const password = cookies.get(process.env.NEXT_PUBLIC_HODL_MY_MOON_PASSWORD_COOKIE_NAME) ?? ""
+    const cookies = cookie.parse(req?.headers?.cookie ?? "");
+    const password = cookies[process.env.NEXT_PUBLIC_HODL_MY_MOON_PASSWORD_COOKIE_NAME] ?? ""
 
     return {
         props: {
@@ -109,8 +109,7 @@ export default function LoginPage({ loggedIn }) {
                                 variant="contained"
                                 onClick={(e) => {
                                     e.preventDefault();
-                                    const cookies = new Cookies();
-                                    cookies.remove(process.env.NEXT_PUBLIC_HODL_MY_MOON_PASSWORD_COOKIE_NAME, { path: "/" });
+                                    document.cookie = `${process.env.NEXT_PUBLIC_HODL_MY_MOON_PASSWORD_COOKIE_NAME}=; max-age=; path=`;
                                     window.location.href = "/login";
                                 }}
                             >
@@ -158,10 +157,7 @@ export default function LoginPage({ loggedIn }) {
                                                 type="submit"
                                                 onClick={(e) => {
                                                     e.preventDefault();
-                                                    const cookies = new Cookies();
-                                                    cookies.set(process.env.NEXT_PUBLIC_HODL_MY_MOON_PASSWORD_COOKIE_NAME, password, {
-                                                        path: "/",
-                                                    });
+                                                    document.cookie = `${process.env.NEXT_PUBLIC_HODL_MY_MOON_PASSWORD_COOKIE_NAME}=${password}; max-age=${60 * 60 * 24 * 7}; path=/`;
                                                     window.location.href = "/";
                                                 }}
                                             >
