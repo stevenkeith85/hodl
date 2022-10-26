@@ -9,17 +9,6 @@ import { QuoteComment } from "./QuoteComment";
 import { NftContext } from "../../contexts/NftContext";
 import { green, red } from "@mui/material/colors";
 
-import { EmojiEmotionsOutlined } from "@mui/icons-material";
-
-import dynamic from "next/dynamic";
-
-// const Picker = dynamic(
-//     () => {
-//         return import("emoji-picker-react");
-//     },
-//     { ssr: false }
-// );
-
 interface AddCommentProps {
     tokenId?: number, // we always store the tokenId this comment was made against to allow us to link to it; give the token owner permission to delete, etc
     objectId: number, // the base object we will be commenting on

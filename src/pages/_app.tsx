@@ -22,7 +22,6 @@ import { HodlNotificationSnackbar } from '../components/snackbars/HodlNotificati
 const LoginPage = dynamic(
   () => import('./login'),
   {
-    ssr: false,
     loading: () => <div></div>
   }
 );
@@ -82,7 +81,6 @@ export default function MyApp(props: MyAppProps) {
       setPusher(null);
       setUserSignedInToPusher(false);
     };
-
   }
 
   useEffect(() => {
