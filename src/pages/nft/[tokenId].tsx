@@ -8,11 +8,6 @@ import {
   Typography
 } from "@mui/material";
 
-import {
-  DetailPageImage,
-  IpfsCard,
-  NftActionButtons
-} from '../../components';
 
 import React from 'react';
 import { Likes } from "../../components/Likes";
@@ -35,6 +30,9 @@ import { Token } from "../../models/Token";
 import axios from "axios";
 import { HodlShareMenu } from "../../components/HodlShareMenu";
 import { MutableToken } from "../../models/Nft";
+import { NftActionButtons } from "../../components/nft/NftActionButtons";
+import { IpfsCard } from "../../components/nft/IpfsCard";
+import { DetailPageAsset } from "../../components/nft/DetailPageAsset";
 
 
 export async function getServerSideProps({ params, query, req, res }) {
@@ -208,7 +206,6 @@ const NftDetail = ({
             <Box
               sx={{
                 marginX: {
-                  // xs: 2,
                   sm: 0
                 }
               }}>
@@ -225,7 +222,7 @@ const NftDetail = ({
                   }
                 }}
               >
-                <DetailPageImage token={nft} />
+                <DetailPageAsset token={nft} />
                 <Box
                   sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <Box gap={1.5} display='flex' alignItems='center'>

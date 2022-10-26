@@ -1,8 +1,13 @@
-import { Box, Skeleton, useMediaQuery, useTheme } from "@mui/material";
+import Box from '@mui/material/Box';
+
 import InfiniteScroll from 'react-swr-infinite-scroll'
-import { NftWindow } from "./NftWindow";
-import { FullToken } from "../models/Nft";
+
 import { HodlLoadingSpinner } from "./HodlLoadingSpinner";
+import { FullToken } from "../models/Nft";
+
+
+import { NftWindow } from "./NftWindow";
+
 
 interface InfiniteScrollNftWindowsProps {
   swr: any,
@@ -11,7 +16,6 @@ interface InfiniteScrollNftWindowsProps {
 }
 
 export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> = ({ swr, limit }) => {
-  const theme = useTheme();
 
   const isReachingEnd = swr => {
     const firstPageEmpty = swr.data?.[0]?.items?.length == 0;
@@ -19,7 +23,6 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
 
     return firstPageEmpty || lastPageNotFull;
   }
-
 
   return (
     <>

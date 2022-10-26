@@ -1,11 +1,12 @@
 import React from "react";
 import { SnackbarContent, CustomContentProps } from 'notistack'
 import dynamic from "next/dynamic";
-// import { HodlNotificationBox } from '../notifications/HodlNotificationBox';
 import { HodlAction } from "../../models/HodlAction";
 
+// @ts-ignore
 interface HodlNotificationSnackbarProps extends CustomContentProps {
-    action: HodlAction
+    // @ts-ignore
+    hodlAction: HodlAction
 }
 
 const HodlNotificationBox = dynamic(
@@ -29,7 +30,7 @@ const HodlNotificationBox = dynamic(
 
 export const HodlNotificationSnackbar = React.forwardRef<HTMLDivElement, HodlNotificationSnackbarProps>((props, ref) => {
     const {
-        action,
+        hodlAction: action,
         ...other
     } = props
 
@@ -37,7 +38,7 @@ export const HodlNotificationSnackbar = React.forwardRef<HTMLDivElement, HodlNot
         // @ts-ignore
         <SnackbarContent {...other} ref={ref} role="alert">
             <HodlNotificationBox
-                item={props.action}
+                item={props.hodlAction}
                 setShowNotifications={() => { }}
                 lastRead={0}
                 sx={{

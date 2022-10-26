@@ -8,6 +8,7 @@ interface SearchQuery {
     minPrice: number;
     maxPrice: number;
 }
+
 export const useSearchTokens = (
     {q, limit, forSale, minPrice, maxPrice}: SearchQuery,
     fallbackData=null) => {

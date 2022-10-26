@@ -1,4 +1,5 @@
-import { Typography } from "@mui/material"
+import Typography from "@mui/material/Typography"
+
 
 export const MaticSymbol = ({ }) => {
     return (

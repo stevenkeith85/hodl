@@ -1,9 +1,10 @@
-import { Box, Button, Stack, Typography } from "@mui/material"
-import {
-  HodlModal}
-  from "../index"
-
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 import { useRouter } from "next/router";
+import { HodlModal } from "./HodlModal";
+
 
 export const FailureModal = ({ modalOpen, setModalOpen, message }) => {
   const router = useRouter();

@@ -153,12 +153,11 @@ const ResponsiveAppBar = ({ showAppBar = true }) => {
             mutate([`/api/contracts/mutable-token`, action.objectId]);
         }
 
-        enqueueSnackbar(
-            "",
-            {
+        enqueueSnackbar("", {
                 // @ts-ignore
                 variant: 'hodlnotification',
-                action,
+                // @ts-ignore
+                hodlAction: action,
             }
         )
     }

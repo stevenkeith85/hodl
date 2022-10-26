@@ -15,7 +15,7 @@ interface PrivateHomePageProps {
     address: string;
 }
 
-export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
+const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
 
     const [viewSidebar, setViewSidebar] = useState(false);
 
@@ -196,3 +196,5 @@ export const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address 
         </>
     )
 }
+
+export default PrivateHomePage

@@ -1,10 +1,14 @@
-import { Box, Button, InputAdornment, TextField, Typography } from "@mui/material";
 import { listNft } from "../../lib/nft";
-import { HodlModal } from "../index";
-import { useRouter } from "next/router";
 import { enqueueSnackbar } from 'notistack';
 import { MaticSymbol } from "../MaticSymbol";
 import { useState } from "react";
+import { HodlModal } from "./HodlModal";
+
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import InputAdornment from "@mui/material/InputAdornment";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
 
 
 export const ListModal = ({ 
@@ -15,8 +19,6 @@ export const ListModal = ({
     setPrice,
     token,
  }) => {
-    const router = useRouter();
-
     const [listButtonDisabled, setListButtonDisabled] = useState(false);
 
     // Possibly extract a hook (or something) for this
@@ -80,17 +82,6 @@ export const ListModal = ({
                     >
                         List
                     </Button>
-                    {/* <Button
-                        variant="contained"
-                        color="inherit"
-                        sx={{
-                            paddingY: 1.5,
-                            paddingX: 3
-                        }}
-                        onClick={() => setListModalOpen(false)}
-                    >
-                        Cancel
-                    </Button> */}
                 </Box>
             </Box>
         </HodlModal>

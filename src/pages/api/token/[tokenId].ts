@@ -1,6 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next";
-
-import dotenv from 'dotenv'
 import memoize from 'memoizee';
 import apiRoute from '../handler';
 //
@@ -11,7 +9,6 @@ import apiRoute from '../handler';
 import { Redis } from '@upstash/redis';
 import { Token } from "../../../models/Token";
 
-dotenv.config({ path: '../.env' })
 
 const client = Redis.fromEnv()
 const route = apiRoute();
