@@ -7,6 +7,7 @@ import Container from '@mui/material/Container';
 import { useRouter } from 'next/router'
 
 import dynamic from "next/dynamic";
+import Footer from './Footer';
 
 // const AppBar = dynamic(
 //     () => import('./AppBar'),
@@ -15,9 +16,9 @@ import dynamic from "next/dynamic";
 //     }
 // );
 
-const Footer = dynamic(
-    () => import('./Footer'),
-);
+// const Footer = dynamic(
+//     () => import('./Footer'),
+// );
 
 
 export default function Layout({ children }) {
