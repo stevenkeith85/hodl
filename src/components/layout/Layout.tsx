@@ -8,6 +8,7 @@ import dynamic from "next/dynamic";
 const AppBar = dynamic(
     () => import('./AppBar'),
     {
+        ssr: false,
         loading: () => <div style={{ height: '64px'}}></div>
     }
 );
