@@ -26,7 +26,7 @@ import { enqueueSnackbar } from 'notistack'
 
 import { SearchBox } from '../Search';
 import { ActionTypes, HodlAction } from '../../models/HodlAction';
-import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
+// import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
 
 const HoverMenu = dynamic(
     () => import('./../menu/HoverMenu').then(mod => mod.HoverMenu),
@@ -56,12 +56,13 @@ const SessionExpiredModal = dynamic(
     }
 );
 
-// const UserAvatarAndHandle = dynamic(
-//     () => import('../avatar/UserAvatarAndHandle').then(mod => mod.UserAvatarAndHandle),
-//     {
-//         loading: () => <Skeleton variant='circular' width={44} height={44} animation="wave" />
-//     }
-// );
+const UserAvatarAndHandle = dynamic(
+    () => import('../avatar/UserAvatarAndHandle').then(mod => mod.UserAvatarAndHandle),
+    {
+        ssr: false,
+        loading: () => <Skeleton variant='circular' width={44} height={44} animation="wave" />
+    }
+);
 
 
 const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
