@@ -7,29 +7,23 @@ import Container from '@mui/material/Container';
 import { useRouter } from 'next/router'
 
 import dynamic from "next/dynamic";
-// import Footer from './Footer';
 
-const AppBar = dynamic(
-    () => import('./AppBar'),
-    {
-        ssr: false,
-    }
-);
+import Footer from './Footer';
+import AppBar from './AppBar';
 
-const Footer = dynamic(
-    () => import('./Footer'),
-    { ssr: false }
-);
-
+// const AppBar = dynamic(
+//     () => import('./AppBar'),
+//     {
+//         ssr: false,
+//     }
+// );
 
 export default function Layout({ children }) {
-    console.log('Layout');
     const router = useRouter();
     const { address } = useContext(WalletContext);
 
     return (
         <>
-            <h1>Layout: address {address}</h1>
             <Box
                 sx={{
                     display: 'flex',
@@ -52,7 +46,7 @@ export default function Layout({ children }) {
                     }
                 }}>
                 <header>
-                    <AppBar address={address}/>
+                    <AppBar />
                 </header>
                 <main style={{ background: "#fcfcfc" }}>
                     {router.asPath !== '/' &&
