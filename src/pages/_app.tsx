@@ -38,18 +38,18 @@ interface MyAppProps extends AppProps {
 
 export default function MyApp(props: MyAppProps) {
   console.log('MyApp');
+
   const {
     Component,
     emotionCache = clientSideEmotionCache,
     pageProps } = props;
 
-  const [signer, setSigner] = useState('');
-
-  // we set props.pageProps.address in all pages, and add it to the context so that components have easy access. 
-  // some components will require the context value, such as the app bar as it renders outside the page
+  // WalletContext state
   // @ts-ignore
-  const [address, setAddress] = useState(props?.pageProps?.address);
-
+  const [address, setAddress] = useState(props?.pageProps?.address); 
+  const [signer, setSigner] = useState('');
+  
+  // PusherContext state
   const [pusher, setPusher] = useState(null);
   const [userSignedInToPusher, setUserSignedInToPusher] = useState(false); // TODO
 

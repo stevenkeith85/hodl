@@ -146,6 +146,6 @@ export async function getServerSideProps({ req, res }) {
 export default function Home({ address }) {
   console.log('home client side')
   return (
-    <h1>test</h1>
+    <h1>Home</h1>
   )
 } 

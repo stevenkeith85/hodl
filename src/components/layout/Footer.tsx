@@ -13,7 +13,7 @@ import { useContext } from "react";
 
 
 const Footer = ({ address }) => {
-    return <h1>{ address }</h1>
+    return <h1>footer { address }</h1>
     // return (
     //     <Box>
     //         <Box sx={{

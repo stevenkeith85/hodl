@@ -7,7 +7,7 @@ import Container from '@mui/material/Container';
 import { useRouter } from 'next/router'
 
 import dynamic from "next/dynamic";
-import Footer from './Footer';
+// import Footer from './Footer';
 
 // const AppBar = dynamic(
 //     () => import('./AppBar'),
@@ -16,9 +16,9 @@ import Footer from './Footer';
 //     }
 // );
 
-// const Footer = dynamic(
-//     () => import('./Footer'),
-// );
+const Footer = dynamic(
+    () => import('./Footer'),
+);
 
 
 export default function Layout({ children }) {
@@ -28,6 +28,7 @@ export default function Layout({ children }) {
 
     return (
         <>
+            <h1>Layout: address -> {address}</h1>
             <Box
                 sx={{
                     display: 'flex',
@@ -52,13 +53,11 @@ export default function Layout({ children }) {
                 <header>
                     {/* <AppBar /> */}
                 </header>
-                <main
-                    style={{
-                            background: "#fcfcfc"
-                        }}>
-                    {router.asPath !== '/' && <Container maxWidth="xl">
-                        {children}
-                    </Container>
+                <main style={{ background: "#fcfcfc" }}>
+                    {router.asPath !== '/' &&
+                        <Container maxWidth="xl">
+                            {children}
+                        </Container>
                     }
                     {router.asPath === '/' && <>
                         {children}
