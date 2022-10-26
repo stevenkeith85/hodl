@@ -4,7 +4,7 @@
 // import Container from '@mui/material/Container';
 
 
-// import { authenticate } from '../lib/jwt';
+import { authenticate } from '../lib/jwt';
 // import { FeedContext } from '../contexts/FeedContext';
 // import { useActions } from '../hooks/useActions';
 // import { ActionSet } from '../models/HodlAction';
@@ -132,7 +132,19 @@
 //   )
 // }
 
-export default function Home({ }) {
+export async function getServerSideProps({ req, res }) {
+  console.log('home server side')
+  await authenticate(req, res);
+
+  return {
+    props: {
+      address: req.address,
+    }
+  }
+}
+
+export default function Home({ address }) {
+  console.log('home client side')
   return (
     <h1>test</h1>
   )

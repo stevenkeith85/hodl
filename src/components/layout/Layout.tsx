@@ -18,7 +18,7 @@ const Footer = dynamic(
 
 
 export default function Layout({ children }) {
-
+    console.log('Layout');
     const router = useRouter();
 
     return (
