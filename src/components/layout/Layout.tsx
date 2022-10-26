@@ -28,7 +28,7 @@ export default function Layout({ children }) {
 
     return (
         <>
-            <h1>Layout: address -> {address}</h1>
+            <h1>Layout: address {address}</h1>
             <Box
                 sx={{
                     display: 'flex',
