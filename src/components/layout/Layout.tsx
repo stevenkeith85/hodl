@@ -12,12 +12,12 @@ import dynamic from "next/dynamic";
 //     }
 // );
 
-const Footer = dynamic(
-    () => import('./Footer'),
-    {
-        loading: () => <div></div>
-    }
-);
+// const Footer = dynamic(
+//     () => import('./Footer'),
+//     {
+//         loading: () => <div></div>
+//     }
+// );
 
 
 export default function Layout({ children }) {
@@ -63,9 +63,9 @@ export default function Layout({ children }) {
                     </>
                     }
                 </main>
-                <footer>
+                {/* <footer>
                     <Footer />
-                </footer>
+                </footer> */}
             </Box>
         </>
     )
