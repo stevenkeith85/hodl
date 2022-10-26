@@ -1,7 +1,7 @@
 // import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 // import { HodlLink } from "../HodlLink";
-import { useContext } from "react";
-import { WalletContext } from '../../contexts/WalletContext';
+// import { useContext } from "react";
+// import { WalletContext } from '../../contexts/WalletContext';
 // import { grey } from "@mui/material/colors";
 // import Box from '@mui/material/Box';
 // import Container from '@mui/material/Container';
@@ -10,7 +10,7 @@ import { WalletContext } from '../../contexts/WalletContext';
 
 
 const Footer = ({ showFooter = true }) => {
-    const { address } = useContext(WalletContext);
+    // const { address } = useContext(WalletContext);
 
     if (!showFooter) {
         return null;
