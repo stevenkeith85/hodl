@@ -14,28 +14,16 @@ import Typography from "@mui/material/Typography";
 
 import Head from "next/head"
 import { useState } from "react";
-import cookie from 'cookie'
 
 import { TikTokIcon } from "../components/TikTokIcon";
 
-export async function getServerSideProps({ req, res }) {
-    const cookies = cookie.parse(req?.headers?.cookie ?? "");
-    const password = cookies[process.env.NEXT_PUBLIC_HODL_MY_MOON_PASSWORD_COOKIE_NAME] ?? ""
-
-    return {
-        props: {
-            loggedIn: password === process.env.HODL_MY_MOON_PASSWORD
-        }
-    }
-}
-
-export default function LoginPage({ loggedIn }) {
+export default function LoginPage({ hasReadPermission }) {
     const [password, setPassword] = useState("")
 
     return (
         <>
             <Head>
-                <title>{loggedIn ? 'Logout' : 'Login'}</title>
+                <title>{hasReadPermission ? 'Logout' : 'Login'}</title>
                 <meta name="robots" content="noindex" />
             </Head>
             <Box sx={{
@@ -96,7 +84,7 @@ export default function LoginPage({ loggedIn }) {
                     alignItems: 'center',
                     justifyContent: 'center',
                 }}>
-                    {loggedIn ?
+                    {hasReadPermission ?
                         <>
                             <Button
                                 sx={{
@@ -171,7 +159,7 @@ export default function LoginPage({ loggedIn }) {
                     }
                 </Box>
             </Box>
-            {!loggedIn && <Box
+            {!hasReadPermission && <Box
                 sx={{
                     display: 'flex',
                     flexDirection: {

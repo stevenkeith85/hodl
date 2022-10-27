@@ -93,7 +93,7 @@ export default function MyApp(props: MyAppProps) {
   // @ts-ignore
   if (!pageProps.hasReadPermission) {
     // @ts-ignore
-    return <ThemeProvider theme={theme}><LoginPage loggedIn={pageProps.hasReadPermission} /></ThemeProvider>
+    return <ThemeProvider theme={theme}><LoginPage {...pageProps}/></ThemeProvider>
   }
 
   return (
@@ -131,7 +131,7 @@ export default function MyApp(props: MyAppProps) {
                   pusher={pusher} 
                   userSignedInToPusher={userSignedInToPusher}
                 >
-                  {/* <Component {...pageProps} /> */}
+                  <Component {...pageProps} />
                 </Layout>
               </SnackbarProvider>
             </PusherContext.Provider>
