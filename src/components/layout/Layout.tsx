@@ -3,12 +3,12 @@ import Container from '@mui/material/Container';
 import dynamic from 'next/dynamic';
 
 import Footer from './Footer';
-// import AppBar from './AppBar';
+import AppBar from './AppBar';
 
-const AppBar = dynamic(
-    () => import('./AppBar'),
-    { suspense: true }
-);
+// const AppBar = dynamic(
+//     () => import('./AppBar'),
+//     { suspense: true }
+// );
 
 import { Suspense } from 'react';
 
