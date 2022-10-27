@@ -177,3 +177,9 @@ export const getInfuraIPFSAuth = () => {
   var auth = { "Authorization": `Basic ${credentials}` };
   return auth;
 };
+
+export function delayForDemo(promise) {
+  return new Promise(resolve => {
+      setTimeout(resolve, 10000);
+  }).then(() => promise);
+}

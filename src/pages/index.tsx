@@ -18,17 +18,28 @@ import { useFollowingCount } from '../hooks/useFollowingCount';
 import { useHodlingCount } from '../hooks/useHodlingCount';
 import { useListedCount } from '../hooks/useListedCount';
 import { useNewTokens } from '../hooks/useNewTokens';
-import PublicHomePage from '../components/layout/PublicHomePage';
-import PrivateHomePage from '../components/layout/PrivateHomePage';
+import { delayForDemo } from '../lib/utils';
+// import PublicHomePage from '../components/layout/PublicHomePage';
+// import PrivateHomePage from '../components/layout/PrivateHomePage';
 
 
-// const PublicHomePage = dynamic(
-//   () => import('../components/layout/PublicHomePage'),
-// );
+const PublicHomePage = dynamic(
+  () => delayForDemo(import('../components/layout/PublicHomePage')),
+  {
+    ssr: false,
+    loading: () => <h1>Loading...</h1>
+  }
+);
 
-// const PrivateHomePage = dynamic(
-//   () => import('../components/layout/PrivateHomePage'),
-// );
+
+const PrivateHomePage = dynamic(
+  () => delayForDemo(import('../components/layout/PrivateHomePage')),
+  {
+    ssr: false,
+    loading: () => <h1>Loading...</h1>
+  }
+);
+
 
 export async function getServerSideProps({ req, res }) {
   await authenticate(req, res);

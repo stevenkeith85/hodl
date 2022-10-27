@@ -3,16 +3,13 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import dynamic from 'next/dynamic';
 import { Suspense, lazy, useState } from 'react';
+import { delayForDemo } from '../../lib/utils';
 import Footer from './Footer';
 // import AppBar from './AppBar';
 
 
 
-function delayForDemo(promise) {
-    return new Promise(resolve => {
-        setTimeout(resolve, 10000);
-    }).then(() => promise);
-}
+
 
 // const AppBar = lazy(() => delayForDemo(import('./AppBar')));
 
