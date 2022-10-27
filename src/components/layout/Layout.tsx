@@ -39,7 +39,7 @@ export default function Layout({ children, address, pusher, userSignedInToPusher
                     flexBasis: 'auto'
                 }
             }}>
-            <header>
+            <header style={{ height: '65px'}}>
                 {/* @ts-ignore */}
                 <AppBar address={address} pusher={pusher} userSignedInToPusher={userSignedInToPusher} />
             </header>

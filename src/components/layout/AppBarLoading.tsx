@@ -1,10 +1,8 @@
 import { useState } from 'react';
 
 import AppBar from '@mui/material/AppBar';
-import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
 import Container from '@mui/material/Container';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
@@ -15,19 +13,19 @@ const AppBarLoading = ({ address }) => {
         {
             label: 'hodl my moon',
             url: '/',
-            icon: <Skeleton variant="circular" animation="wave" width={22} height={22} sx={{ fontSize: 22, margin: 0, padding: 0, lineHeight: 0 }} />,
+            icon: <Skeleton variant="circular" animation="wave" width={22} height={22} />,
             publicPage: true
         },
         {
             label: <Skeleton variant="text" animation="wave"><Typography>explore</Typography></Skeleton>,
             url: '/explore',
-            icon: <Skeleton variant="circular" animation="wave" width={22} height={22} sx={{ fontSize: 22, margin: 0, padding: 0, lineHeight: 0 }} />,
+            icon: <Skeleton variant="circular" animation="wave" width={22} height={22} />,
             publicPage: true
         },
         {
             label: <Skeleton variant="text" animation="wave"><Typography>create</Typography></Skeleton>,
             url: '/create',
-            icon: <Skeleton variant="circular" animation="wave" width={22} height={22} sx={{ fontSize: 22, margin: 0, padding: 0, lineHeight: 0 }} />,
+            icon: <Skeleton variant="circular" animation="wave" width={22} height={22} />,
             publicPage: false
         },
     ]);
@@ -71,18 +69,20 @@ const AppBarLoading = ({ address }) => {
                                         lineHeight: 0,
                                     }}
                                 >
-                                    <IconButton
+                                    <Box
                                         sx={{
                                             margin: 0,
                                             padding: 0,
                                             lineHeight: 0,
                                             width: 44,
-                                            height: 44
+                                            height: 44,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
                                         }}
-                                        color="inherit"
                                     >
                                         {pages[0].icon}
-                                    </IconButton>
+                                    </Box>
                                 </Box>
                                 {
                                     pages.slice(1).filter(p => p.publicPage || address).map((page, i) => (
@@ -96,10 +96,7 @@ const AppBarLoading = ({ address }) => {
                                                 lineHeight: 0,
                                             }}
                                         >
-                                            <Button
-                                                variant="text"
-                                                color="inherit"
-                                                component="span"
+                                            <Box
                                                 sx={{
                                                     fontFamily: theme => theme.logo.fontFamily,
                                                     padding: '9px',
@@ -108,8 +105,8 @@ const AppBarLoading = ({ address }) => {
                                                         xs: 'none',
                                                         md: 'block'
                                                     }
-                                                }}>{page.label}</Button>
-                                            <IconButton
+                                                }}>{page.label}</Box>
+                                            <Box
                                                 sx={{
                                                     margin: 0,
                                                     padding: 0,
@@ -117,14 +114,16 @@ const AppBarLoading = ({ address }) => {
                                                     width: 44,
                                                     height: 44,
                                                     display: {
-                                                        xs: 'block',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        xs: 'flex',
                                                         md: 'none'
                                                     }
                                                 }}
                                                 color="inherit"
                                             >
                                                 {page.icon}
-                                            </IconButton>
+                                            </Box>
                                         </Box>
                                     ))}
                             </Box>
@@ -145,7 +144,7 @@ const AppBarLoading = ({ address }) => {
                                         }
                                     }}
                                 >
-                                    <Skeleton variant="rounded" width={160} height={36} />,
+                                    <Skeleton variant="rounded" width={155} height={36} />,
                                 </Box>
                                 <Box
                                     sx={{
@@ -160,7 +159,7 @@ const AppBarLoading = ({ address }) => {
                                 </Box>
 
                                 {/* Notifications button and menu */}
-                                <IconButton
+                                <Box
                                     sx={{
                                         margin: 0,
                                         padding: 0,
@@ -181,16 +180,14 @@ const AppBarLoading = ({ address }) => {
                                         justifyContent="center">
                                         <Skeleton variant="rounded" animation="wave" width={22} height={22} sx={{ fontSize: 22, margin: 0, padding: 0, lineHeight: 0 }} />
                                     </Box>
-                                </IconButton>
+                                </Box>
 
                                 {/* Wallet button and menu */}
-                                <IconButton
-                                    size="large"
+                                <Box
                                     sx={{
                                         margin: 0,
                                         padding: 0
                                     }}
-                                    color="inherit"
                                 >
                                     <Box
                                         sx={{ display: !address ? 'flex' : 'none' }}
@@ -210,7 +207,7 @@ const AppBarLoading = ({ address }) => {
                                         justifyContent="center">
                                         <Skeleton variant="circular" animation="wave" width={44} height={44} />
                                     </Box>
-                                </IconButton>
+                                </Box>
                             </Box>
                         </Box>
                     </Toolbar>

@@ -31,21 +31,21 @@ import { ActionTypes, HodlAction } from '../../models/HodlAction';
 const HoverMenu = dynamic(
     () => import('./../menu/HoverMenu').then(mod => mod.HoverMenu),
     {
-        loading: () => <div>...</div>
+        loading: () => null
     }
 );
 
 const MobileSearch = dynamic(
     () => import('../MobileSearch').then(mod => mod.MobileSearch),
     {
-        loading: () => <div>...</div>
+        loading: () => null
     }
 );
 
 const HodlNotifications = dynamic(
     () => import('../notifications/HodlNotifications').then(mod => mod.HodlNotifications),
     {
-        loading: () => <div>...</div>
+        loading: () => null
     }
 );
 
