@@ -194,9 +194,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                         width: '100%',
                         position: 'relative'
                     }}>
-                    <Toolbar
-                        disableGutters
-                    >
+                    <Toolbar disableGutters>
                         <Box sx={{
                             display: 'flex',
                             width: '100%',
@@ -214,7 +212,6 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                     passHref
                                 >
                                     <Box
-                                        component="a"
                                         sx={{
                                             color: theme => theme.palette.primary.main,
                                             cursor: 'pointer',
@@ -240,13 +237,8 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                 </Link>
                                 {
                                     pages.slice(1).filter(p => p.publicPage || address).map((page, i) => (
-                                        <Link
-                                            key={page.url}
-                                            href={page.url}
-                                            passHref
-                                        >
+                                        <Link key={page.url} href={page.url}>
                                             <Box
-                                                component="a"
                                                 sx={{
                                                     color: theme => theme.palette.primary.main,
                                                     cursor: 'pointer',
@@ -298,7 +290,6 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                     gap: { xs: 1, md: 3 },
                                 }}
                             >
-
                                 <Box
                                     sx={{
                                         display: {
@@ -360,7 +351,6 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                         </IconButton>
                                     }
                                 </Box>
-
 
                                 {/* Notifications button and menu */}
                                 {address && <IconButton
@@ -478,4 +468,8 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
         </>
     );
 };
+
+// const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
+//     return <div>Appbar Loaded</div>
+// }
 export default ResponsiveAppBar;

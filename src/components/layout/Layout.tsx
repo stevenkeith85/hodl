@@ -1,8 +1,16 @@
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
+import dynamic from 'next/dynamic';
 
 import Footer from './Footer';
-import AppBar from './AppBar';
+// import AppBar from './AppBar';
+
+const AppBar = dynamic(
+    () => import('./AppBar'),
+    { suspense: true }
+);
+
+import { Suspense } from 'react';
 
 export default function Layout({ children, address, pusher, userSignedInToPusher }) {
     return (
@@ -28,7 +36,9 @@ export default function Layout({ children, address, pusher, userSignedInToPusher
                 }
             }}>
             <header>
-                <AppBar address={address} pusher={pusher} userSignedInToPusher={userSignedInToPusher} />
+                <Suspense fallback={<div>Loading Header</div>}>
+                    <AppBar address={address} pusher={pusher} userSignedInToPusher={userSignedInToPusher} />
+                </Suspense>
             </header>
             <main style={{ background: "#fcfcfc" }}>
                 <Container maxWidth="xl">
@@ -36,7 +46,9 @@ export default function Layout({ children, address, pusher, userSignedInToPusher
                 </Container>
             </main>
             <footer>
-                <Footer address={address} />
+                <Suspense fallback={<div>Loading Footer</div>}>
+                    <Footer address={address} />
+                </Suspense>
             </footer>
         </Box>
     )

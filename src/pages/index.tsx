@@ -18,15 +18,17 @@ import { useFollowingCount } from '../hooks/useFollowingCount';
 import { useHodlingCount } from '../hooks/useHodlingCount';
 import { useListedCount } from '../hooks/useListedCount';
 import { useNewTokens } from '../hooks/useNewTokens';
+import PublicHomePage from '../components/layout/PublicHomePage';
+import PrivateHomePage from '../components/layout/PrivateHomePage';
 
 
-const PublicHomePage = dynamic(
-  () => import('../components/layout/PublicHomePage'),
-);
+// const PublicHomePage = dynamic(
+//   () => import('../components/layout/PublicHomePage'),
+// );
 
-const PrivateHomePage = dynamic(
-  () => import('../components/layout/PrivateHomePage'),
-);
+// const PrivateHomePage = dynamic(
+//   () => import('../components/layout/PrivateHomePage'),
+// );
 
 export async function getServerSideProps({ req, res }) {
   await authenticate(req, res);
