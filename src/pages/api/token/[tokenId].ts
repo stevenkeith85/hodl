@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import memoize from 'memoizee';
 import apiRoute from '../handler';
 //
 // This is used for getting a 'minimal' NFT. i.e. only what we've stored in Redis (NOT the data from the blockchain).

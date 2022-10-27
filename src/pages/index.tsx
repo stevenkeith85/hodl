@@ -25,8 +25,8 @@ import PublicHomePageLoading from '../components/layout/PublicHomeLoading';
 
 
 const PublicHomePage = dynamic(
-  // () => import('../components/layout/PublicHomePage'),
-  () => delayForDemo(import('../components/layout/PublicHomePage')),
+  () => import('../components/layout/PublicHomePage'),
+  // () => delayForDemo(import('../components/layout/PublicHomePage')),
   {
     ssr: false,
     loading: () => <PublicHomePageLoading />
@@ -35,10 +35,11 @@ const PublicHomePage = dynamic(
 
 
 const PrivateHomePage = dynamic(
-  () => delayForDemo(import('../components/layout/PrivateHomePage')),
+  () => import('../components/layout/PrivateHomePage'),
+  // () => delayForDemo(import('../components/layout/PrivateHomePage')),
   {
     ssr: false,
-    loading: () => <h1>Loading...</h1>
+    loading: () => null
   }
 );
 

@@ -9,8 +9,8 @@ import Footer from './Footer';
 export default function Layout({ children, address, pusher, userSignedInToPusher }) {
 
     const AppBar = dynamic(
-        () => delayForDemo(import('./AppBar')),
-        // () => import('./AppBar'),
+        // () => delayForDemo(import('./AppBar')),
+        () => import('./AppBar'),
         {
             ssr: false,
             loading: () => <AppBarLoading address={address} />
@@ -28,16 +28,17 @@ export default function Layout({ children, address, pusher, userSignedInToPusher
                     flexShrink: 0,
                     flexBasis: 'auto'
                 },
+                
+                main: {
+                    flexGrow: 1,
+                    flexShrink: 0,
+                    flexBasis: 'auto'
+                },
                 footer: {
                     flexGrow: 0,
                     flexShrink: 0,
                     flexBasis: 'auto'
                 },
-                main: {
-                    flexGrow: 1,
-                    flexShrink: 0,
-                    flexBasis: 'auto'
-                }
             }}>
             <header style={{ height: '65px'}}>
                 {/* @ts-ignore */}

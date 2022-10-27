@@ -1,11 +1,17 @@
+import { FC, useState } from "react";
+
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+
 import { CommentOutlined } from "@mui/icons-material";
-import { Box, Typography } from "@mui/material";
+
+import humanize from "humanize-plus";
+
 import { HodlModal } from "../modals/HodlModal";
 import { HodlCommentsBox } from "./HodlCommentsBox";
-import { FC, useState } from "react";
 import { useCommentCount } from "../../hooks/useComments";
-import humanize from "humanize-plus";
 import { NftContext } from "../../contexts/NftContext";
+
 
 export interface CommentsProps {
     nft: any,

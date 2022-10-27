@@ -1,38 +1,69 @@
-import {
-  Box,
-  Grid,
-  Skeleton,
-  Stack,
-  Tab,
-  Tabs,
-  Typography
-} from "@mui/material";
-
-
 import React from 'react';
-import { Likes } from "../../components/Likes";
-import Head from "next/head";
-import { AssetLicense } from "../../components/nft/AssetLicense";
-import { HodlCommentsBox } from "../../components/comments/HodlCommentsBox";
-import { Comments } from "../../components/comments/Comments";
 import { useState } from "react";
-import { DataObject, Forum, Insights } from "@mui/icons-material";
+
 import router from "next/router";
-import { MaticPrice } from "../../components/MaticPrice";
-import { insertTagLinks } from "../../lib/templateUtils";
+import Head from "next/head";
+import dynamic from "next/dynamic";
+
+import useSWR, { Fetcher } from "swr";
+
+import DataObjectIcon from '@mui/icons-material/DataObject';
+import InsightsIcon from '@mui/icons-material/Insights';
+import ForumIcon from '@mui/icons-material/Forum';
+
+import axios from "axios";
+
+import { Likes } from "../../components/Likes";
+import { Comments } from "../../components/comments/Comments";
+
 import { authenticate } from "../../lib/jwt";
+
 import { UserAvatarAndHandle } from "../../components/avatar/UserAvatarAndHandle";
 import { NftContext } from "../../contexts/NftContext";
-import { HodlerCreatorCard } from "../../components/nft/HodlerCreatorCard";
 import { getToken } from "../api/token/[tokenId]";
-import useSWR, { Fetcher } from "swr";
-import { Token } from "../../models/Token";
-import axios from "axios";
-import { HodlShareMenu } from "../../components/HodlShareMenu";
+
 import { MutableToken } from "../../models/Nft";
-import { NftActionButtons } from "../../components/nft/NftActionButtons";
-import { IpfsCard } from "../../components/nft/IpfsCard";
+import { Token } from "../../models/Token";
+
+import { HodlShareMenu } from "../../components/HodlShareMenu";
 import { DetailPageAsset } from "../../components/nft/DetailPageAsset";
+import { HodlLoadingSpinner } from "../../components/HodlLoadingSpinner";
+
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+
+const SocialTab = dynamic(
+  () => import('../../components/nft/SocialTab'),
+  {
+    ssr: false,
+    loading: () => <HodlLoadingSpinner
+      sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '150px' }}
+    />
+  }
+);
+
+const MarketTab = dynamic(
+  () => import('../../components/nft/MarketTab'),
+  {
+    ssr: false,
+    loading: () => <HodlLoadingSpinner
+      sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '150px' }}
+    />
+  }
+);
+
+const TokenDataTab = dynamic(
+  () => import('../../components/nft/TokenDataTab'),
+  {
+    ssr: false,
+    loading: () => <HodlLoadingSpinner
+      sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '150px' }}
+    />
+  }
+);
 
 
 export async function getServerSideProps({ params, query, req, res }) {
@@ -151,7 +182,7 @@ const NftDetail = ({
                     indicatorColor="secondary"
                   >
                     <Tab key={0} value={0} icon={
-                      <Forum
+                      <ForumIcon
                         sx={{
                           fontSize: {
                             xs: 16,
@@ -166,7 +197,7 @@ const NftDetail = ({
                       }}
                     />
                     <Tab key={1} value={1} icon={
-                      <Insights
+                      <InsightsIcon
                         sx={{
                           fontSize: {
                             xs: 16,
@@ -181,7 +212,7 @@ const NftDetail = ({
                     />
                     <Tab key={2} value={2}
                       icon={
-                        <DataObject
+                        <DataObjectIcon
                           sx={{
                             fontSize: {
                               xs: 16,
@@ -263,80 +294,13 @@ const NftDetail = ({
                 }
               }}>
               <div hidden={value !== 0}>
-                <Box
-                  sx={{
-                    background: 'white',
-                    padding: {
-                      xs: 2,
-                      sm: 2
-                    },
-                    border: `1px solid #ddd`
-                  }}>
-                  <Box
-                    marginBottom={2}
-                    sx={{
-                      position: 'relative',
-                      paddingBottom: 2,
-                      borderBottom: `1px solid #ddd`
-                    }}
-                  >
-                    <Typography mb={1} sx={{ fontWeight: 600 }}>{nft.name}</Typography>
-                    <Box sx={{ whiteSpace: 'pre-line' }}>{insertTagLinks(nft.description)}</Box>
-                  </Box>
-                  <HodlCommentsBox
-                    limit={limit}
-                    header={false}
-                  />
-                </Box>
+                <SocialTab nft={nft} limit={limit} />
               </div>
               <div hidden={value !== 1}>
-                <Box display="grid" gap={4}>
-                  <Box
-                    display="grid"
-                    sx={{
-                      background: '#e8eaf6b0',
-                      padding: 2,
-                      border: `1px solid #ddd`,
-                    }}>
-                    <Typography variant="h2" marginBottom={2}>Price</Typography>
-                    {
-                      !mutableToken &&
-                      <Skeleton variant="text" width={100} height={26} animation="wave" />
-                    }
-                    {
-                      mutableToken && !mutableToken.forSale &&
-                      <Typography sx={{ fontSize: 16 }}>Not for Sale</Typography>
-                    }
-                    {
-                      mutableToken && mutableToken.forSale &&
-                      <MaticPrice price={mutableToken?.price} color="black" size={18} fontSize={16} />}
-                    {mutableToken && <Box
-                      sx={{
-                        marginTop: 2
-                      }}>
-                      <NftActionButtons
-                        token={nft}
-                        mutableToken={mutableToken}
-                      />
-                    </Box>}
-                  </Box>
-                  {/* TODO */}
-                  {/* <PriceHistoryGraph nft={nft} /> */}
-                </Box>
+                <MarketTab mutableToken={mutableToken} nft={nft} />
               </div>
               <div hidden={value !== 2}>
-                <Box
-                  sx={{
-                    display: 'grid', gap: {
-                      xs: 2,
-                      sm: 4
-                    }
-                  }}
-                >
-                  <IpfsCard token={nft} />
-                  <HodlerCreatorCard creator={nft?.creator} hodler={mutableToken?.hodler} />
-                  <AssetLicense nft={nft} />
-                </Box>
+                <TokenDataTab mutableToken={mutableToken} nft={nft} />
               </div>
             </Box>
           </Grid>

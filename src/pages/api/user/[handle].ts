@@ -47,6 +47,11 @@ export const getUser = async (
     user = await client.hmget<User>(`user:${address}`, 'address', 'nickname', 'avatar');
   }
 
+  if(!user) {
+    return null;
+  }
+
+
   const vm: UserViewModel = {
     address: user.address,
     nickname: user.nickname,
