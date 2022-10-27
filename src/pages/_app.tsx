@@ -17,9 +17,14 @@ import { PusherContext } from '../contexts/PusherContext';
 import { WalletContext } from '../contexts/WalletContext';
 
 import { HodlNotificationSnackbar } from '../components/snackbars/HodlNotificationSnackbar';
+// import LoginPage from "./login";
 
 const LoginPage = dynamic(
   () => import('./login'),
+  {
+      ssr: false,
+      loading: () => null
+  }
 );
 
 import theme from '../theme';
@@ -93,7 +98,7 @@ export default function MyApp(props: MyAppProps) {
   // @ts-ignore
   if (!pageProps.hasReadPermission) {
     // @ts-ignore
-    return <ThemeProvider theme={theme}><LoginPage loggedIn={pageProps.hasReadPermission} /></ThemeProvider>
+    return <ThemeProvider theme={theme}><LoginPage {...pageProps}/></ThemeProvider>
   }
 
   return (

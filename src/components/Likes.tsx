@@ -1,10 +1,17 @@
-import { Box, Tooltip, Typography } from "@mui/material";
+import { FC } from "react";
+
+import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import { useLike } from "../hooks/useLike";
-import { FC } from "react";
-import humanize from "humanize-plus";
+
 import { useLikeCount } from "../hooks/useLikeCount";
+import { useLike } from "../hooks/useLike";
+
+import humanize from "humanize-plus";
+
 
 export interface LikesProps {
     id: number;

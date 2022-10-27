@@ -67,9 +67,9 @@ export const HomePagePitch = ({ }) => {
                             }}>
                             <LoginLogoutButton
                                 variant="contained"
-                                fontSize='18px'
                                 sx={{
                                     fontFamily: theme => theme.logo.fontFamily,
+                                    fontSize: '18px',
                                     paddingY: {
                                         xs: 1,
                                         sm: 1.5

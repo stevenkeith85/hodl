@@ -18,15 +18,31 @@ import { useFollowingCount } from '../hooks/useFollowingCount';
 import { useHodlingCount } from '../hooks/useHodlingCount';
 import { useListedCount } from '../hooks/useListedCount';
 import { useNewTokens } from '../hooks/useNewTokens';
+import { delayForDemo } from '../lib/utils';
+import PublicHomePageLoading from '../components/layout/PublicHomeLoading';
+// import PublicHomePage from '../components/layout/PublicHomePage';
+// import PrivateHomePage from '../components/layout/PrivateHomePage';
 
 
 const PublicHomePage = dynamic(
   () => import('../components/layout/PublicHomePage'),
+  // () => delayForDemo(import('../components/layout/PublicHomePage')),
+  {
+    ssr: false,
+    loading: () => <PublicHomePageLoading />
+  }
 );
+
 
 const PrivateHomePage = dynamic(
   () => import('../components/layout/PrivateHomePage'),
+  // () => delayForDemo(import('../components/layout/PrivateHomePage')),
+  {
+    ssr: false,
+    loading: () => null
+  }
 );
+
 
 export async function getServerSideProps({ req, res }) {
   await authenticate(req, res);
@@ -115,6 +131,7 @@ export default function Home({
               }}
             >
               <Container maxWidth="xl">
+                {/* @ts-ignore */}
                 <PrivateHomePage user={user} address={address} />
               </Container>
             </UserContext.Provider>

@@ -1,15 +1,16 @@
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
-import { HodlLink } from "../HodlLink";
-
 
 import { grey } from "@mui/material/colors";
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import Link from 'next/link';
 
 
-const Footer = ({ address }) => {
+const Footer = ({
+    // address 
+}) => {
     return (
         <Box>
             <Box sx={{
@@ -65,14 +66,17 @@ const Footer = ({ address }) => {
                                     }}>
                                     hodl my moon
                                 </Typography>
-                                <HodlLink href="/about">about</HodlLink>
-                                <HodlLink href="/contact">contact</HodlLink>
+                                <Link href="/about">about</Link>
+                                <Link href="/contact">contact</Link>
 
                             </Stack>
                             <Stack spacing={1}>
                                 <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>tokens</Typography>
-                                <HodlLink href="/explore">explore</HodlLink>
-                                {address && <HodlLink href="/create">create</HodlLink>}
+                                <Link href="/explore">explore</Link>
+                                {
+                                    // address &&
+                                    <Link href="/create">create</Link>
+                                }
                             </Stack>
                         </Stack>
                         <Box display="flex" justifyContent="center" alignItems="center" textAlign="center" gap={1}>

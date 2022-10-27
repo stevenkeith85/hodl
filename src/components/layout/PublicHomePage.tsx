@@ -7,14 +7,10 @@ import { NewUsers } from "../rankings/NewUsers"
 
 const PublicHomePage = ({ }) => {
     return (
-        <Box
-            display="flex"
-            flexDirection="column"
-        >
+        <Box sx={{ display: 'flex', flexDirection: 'column'}}>
             <Box display="flex">
                 <HomePagePitch />
             </Box>
-
             <Box
                 sx={{
                     display: 'grid',

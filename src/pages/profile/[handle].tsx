@@ -123,7 +123,7 @@ const Profile = ({
   }, [router.asPath, router?.query?.tab]);
 
 
-  return (<>
+  return <>
     <Head>
       <link href={`/profile/${owner.nickname || owner.address}`} />
     </Head>
@@ -227,7 +227,10 @@ const Profile = ({
               width: '100%'
             }}
           >
-            <Link href={`/profile/${owner.nickname || owner.address}`} passHref>
+            <Link
+              href={`/profile/${owner.nickname || owner.address}`}
+              passHref
+              legacyBehavior>
               <Tab
                 component="a"
                 onClick={(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
@@ -270,7 +273,10 @@ const Profile = ({
               />
             </Link>
             {/* Listed */}
-            <Link href={`/profile/${owner.nickname || owner.address}?tab=1`} passHref>
+            <Link
+              href={`/profile/${owner.nickname || owner.address}?tab=1`}
+              passHref
+              legacyBehavior>
               <Tab
                 component="a"
                 onClick={(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
@@ -312,7 +318,10 @@ const Profile = ({
                 }}
               />
             </Link>
-            <Link href={`/profile/${owner.nickname || owner.address}?tab=2`} passHref>
+            <Link
+              href={`/profile/${owner.nickname || owner.address}?tab=2`}
+              passHref
+              legacyBehavior>
               <Tab
                 component="a"
                 onClick={(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
@@ -349,7 +358,10 @@ const Profile = ({
                 }}
               />
             </Link>
-            <Link href={`/profile/${owner.nickname || owner.address}?tab=3`} passHref>
+            <Link
+              href={`/profile/${owner.nickname || owner.address}?tab=3`}
+              passHref
+              legacyBehavior>
               <Tab
                 component="a"
                 onClick={(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
@@ -422,7 +434,7 @@ const Profile = ({
         </Box>
       </FollowingContext.Provider>
     </FollowersContext.Provider>
-  </>)
+  </>;
 }
 
 export default Profile;

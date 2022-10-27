@@ -5,7 +5,7 @@ export const insertTagLinks = (text) => {
     if (!text) {
         return null;
     }
-    
+
     const parsed = [...text.matchAll(/#([\d\w_]+)/g)].map(x => ({
         index: x.index,
         hash: x[0],
@@ -23,11 +23,11 @@ export const insertTagLinks = (text) => {
     for (const { index, hash, tag } of parsed) {
         jsx.push(text.slice(lastPosition, index));
         jsx.push(
-            <Link href={`/explore?q=${tag}`} passHref key={tag}>
+            <Link href={`/explore?q=${tag}`} key={tag}>
                 <Typography
+                    component="span"
                     color="primary"
-                    component="a"
-                    sx={{ 
+                    sx={{
                         textDecoration: 'none',
                         cursor: 'pointer'
                     }}>

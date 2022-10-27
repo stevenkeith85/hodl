@@ -1,10 +1,22 @@
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-
+import dynamic from 'next/dynamic';
+import { delayForDemo } from '../../lib/utils';
+import AppBarLoading from './AppBarLoading';
 import Footer from './Footer';
-import AppBar from './AppBar';
+
 
 export default function Layout({ children, address, pusher, userSignedInToPusher }) {
+
+    const AppBar = dynamic(
+        // () => delayForDemo(import('./AppBar')),
+        () => import('./AppBar'),
+        {
+            ssr: false,
+            loading: () => <AppBarLoading address={address} />
+        }
+    );
+
     return (
         <Box
             sx={{
@@ -16,18 +28,20 @@ export default function Layout({ children, address, pusher, userSignedInToPusher
                     flexShrink: 0,
                     flexBasis: 'auto'
                 },
+                
+                main: {
+                    flexGrow: 1,
+                    flexShrink: 0,
+                    flexBasis: 'auto'
+                },
                 footer: {
                     flexGrow: 0,
                     flexShrink: 0,
                     flexBasis: 'auto'
                 },
-                main: {
-                    flexGrow: 1,
-                    flexShrink: 0,
-                    flexBasis: 'auto'
-                }
             }}>
-            <header>
+            <header style={{ height: '65px'}}>
+                {/* @ts-ignore */}
                 <AppBar address={address} pusher={pusher} userSignedInToPusher={userSignedInToPusher} />
             </header>
             <main style={{ background: "#fcfcfc" }}>
@@ -36,7 +50,7 @@ export default function Layout({ children, address, pusher, userSignedInToPusher
                 </Container>
             </main>
             <footer>
-                <Footer address={address} />
+                <Footer />
             </footer>
         </Box>
     )
