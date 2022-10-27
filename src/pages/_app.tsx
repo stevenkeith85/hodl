@@ -17,10 +17,10 @@ import { PusherContext } from '../contexts/PusherContext';
 import { WalletContext } from '../contexts/WalletContext';
 
 import { HodlNotificationSnackbar } from '../components/snackbars/HodlNotificationSnackbar';
-
-const LoginPage = dynamic(
-  () => import('./login'),
-);
+import LoginPage from "./login";
+// const LoginPage = dynamic(
+//   () => import('./login'),
+// );
 
 import theme from '../theme';
 import createEmotionCache from '../createEmotionCache';
