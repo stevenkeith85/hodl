@@ -1,18 +1,68 @@
+import { Skeleton } from '@mui/material';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import dynamic from 'next/dynamic';
-
+import { Suspense, lazy, useState } from 'react';
 import Footer from './Footer';
-import AppBar from './AppBar';
+// import AppBar from './AppBar';
 
-// const AppBar = dynamic(
-//     () => import('./AppBar'),
-//     { suspense: true }
-// );
 
-import { Suspense } from 'react';
+
+function delayForDemo(promise) {
+    return new Promise(resolve => {
+        setTimeout(resolve, 10000);
+    }).then(() => promise);
+}
+
+// const AppBar = lazy(() => delayForDemo(import('./AppBar')));
+
+const HeaderLoading = ({ }) => (
+    <Container
+        maxWidth="xl"
+        sx={{
+            width: '100%',
+            position: 'relative'
+        }}>
+        <Box
+            sx={{
+                padding: 1,
+                display: 'flex',
+                justifyContent: 'space-between',
+                height: '64px'
+            }}>
+            <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 5
+            }}>
+                <Skeleton variant="circular" width={30} height={30} animation="wave" />
+                <Skeleton variant="text" width={55} height={30} animation="wave" />
+            </Box>
+            <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4
+            }}>
+                <Skeleton variant="text" width={160} height={60} animation="wave" />
+                <Skeleton variant="circular" width={30} height={30} animation="wave" />
+
+            </Box>
+        </Box>
+    </Container>
+)
+const AppBar = dynamic(
+    () => delayForDemo(import('./AppBar')),
+    {
+        ssr: false,
+        loading: () => <HeaderLoading />
+    }
+);
+
 
 export default function Layout({ children, address, pusher, userSignedInToPusher }) {
+
+    const [showHeader, setShowHeader] = useState(false);
+
     return (
         <Box
             sx={{
@@ -36,13 +86,18 @@ export default function Layout({ children, address, pusher, userSignedInToPusher
                 }
             }}>
             <header>
-                <Suspense fallback={<div>Loading Header</div>}>
-                    <AppBar 
-                        // address={address} 
-                        // pusher={pusher} 
-                        // userSignedInToPusher={userSignedInToPusher} 
-                        />
-                </Suspense>
+                {/* <label>
+                    <input type="checkbox" checked={showHeader} onChange={e => setShowHeader(e.target.checked)} />
+                    Show header
+                </label> */}
+                {/* {showHeader && */}
+
+                <AppBar
+                // address={address} 
+                // pusher={pusher} 
+                // userSignedInToPusher={userSignedInToPusher} 
+                />
+                {/* } */}
             </header>
             <main style={{ background: "#fcfcfc" }}>
                 <Container maxWidth="xl">
@@ -50,11 +105,11 @@ export default function Layout({ children, address, pusher, userSignedInToPusher
                 </Container>
             </main>
             <footer>
-                <Suspense fallback={<div>Loading Footer</div>}>
-                    <Footer 
-                        // address={address} 
-                    />
-                </Suspense>
+                {/* <Suspense fallback={<div>Loading...</div>}> */}
+                <Footer
+                // address={address} 
+                />
+                {/* </Suspense> */}
             </footer>
         </Box>
     )
