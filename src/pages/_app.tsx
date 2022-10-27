@@ -131,7 +131,7 @@ export default function MyApp(props: MyAppProps) {
                   pusher={pusher} 
                   userSignedInToPusher={userSignedInToPusher}
                 >
-                  <Component {...pageProps} />
+                  {/* <Component {...pageProps} /> */}
                 </Layout>
               </SnackbarProvider>
             </PusherContext.Provider>
