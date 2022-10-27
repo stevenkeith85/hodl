@@ -128,6 +128,7 @@ export default function Home({
               }}
             >
               <Container maxWidth="xl">
+                {/* @ts-ignore */}
                 <PrivateHomePage user={user} address={address} />
               </Container>
             </UserContext.Provider>
