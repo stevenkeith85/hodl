@@ -2,21 +2,20 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import dynamic from 'next/dynamic';
 import { delayForDemo } from '../../lib/utils';
-import { AppBarLoading } from './AppBarLoading';
+import AppBarLoading from './AppBarLoading';
 import Footer from './Footer';
 
 
-const AppBar = dynamic(
-    // () => delayForDemo(import('./AppBar')),
-    () => import('./AppBar'),
-    {
-        ssr: false,
-        loading: () => <AppBarLoading />
-    }
-);
-
-
 export default function Layout({ children, address, pusher, userSignedInToPusher }) {
+
+    const AppBar = dynamic(
+        () => delayForDemo(import('./AppBar')),
+        // () => import('./AppBar'),
+        {
+            ssr: false,
+            loading: () => <AppBarLoading address={address} />
+        }
+    );
 
     return (
         <Box

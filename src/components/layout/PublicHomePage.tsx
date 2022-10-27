@@ -11,7 +11,6 @@ const PublicHomePage = ({ }) => {
             <Box display="flex">
                 <HomePagePitch />
             </Box>
-
             <Box
                 sx={{
                     display: 'grid',

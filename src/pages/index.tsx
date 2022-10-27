@@ -25,8 +25,8 @@ import PublicHomePageLoading from '../components/layout/PublicHomeLoading';
 
 
 const PublicHomePage = dynamic(
-  () => import('../components/layout/PublicHomePage'),
-  // () => delayForDemo(import('../components/layout/PublicHomePage')),
+  // () => import('../components/layout/PublicHomePage'),
+  () => delayForDemo(import('../components/layout/PublicHomePage')),
   {
     ssr: false,
     loading: () => <PublicHomePageLoading />

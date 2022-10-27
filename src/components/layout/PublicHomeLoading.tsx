@@ -3,6 +3,7 @@ import Skeleton from "@mui/material/Skeleton"
 import Box from "@mui/material/Box"
 import Grid from "@mui/material/Grid"
 import Typography from "@mui/material/Typography"
+import Button from "@mui/material/Button"
 
 const PublicHomePageLoading = ({ }) => {
     return (
@@ -36,8 +37,10 @@ const PublicHomePageLoading = ({ }) => {
                                 }}
                             >
                                 <Skeleton variant="text" animation="wave">
-                                    <Typography
+                                    <Box
+                                        component="span"
                                         sx={{
+                                            fontFamily: theme => theme.logo.fontFamily,
                                             fontSize: {
                                                 xs: 30,
                                                 sm: 35,
@@ -47,19 +50,43 @@ const PublicHomePageLoading = ({ }) => {
                                             marginBottom: 2
                                         }}>
                                         Hodl My Moon
-                                    </Typography>
+                                    </Box>
                                 </Skeleton>
                                 <Skeleton variant="text" animation="wave">
-                                    <Typography sx={{ fontSize: { xs: 20, sm: 22, }, }}>a web3 social network</Typography>
+                                    <Typography
+                                        sx={{
+                                            fontFamily: theme => theme.logo.fontFamily,
+                                            fontSize: {
+                                                xs: 20,
+                                                sm: 22,
+                                            },
+                                        }}>
+                                        a web3 social network</Typography>
                                 </Skeleton>
                                 <Skeleton variant="text" animation="wave">
-                                    <Typography sx={{ fontSize: { xs: 20, sm: 22, }, }}>and marketplace</Typography>
+                                    <Typography
+                                        sx={{
+                                            fontFamily: theme => theme.logo.fontFamily,
+                                            fontSize: {
+                                                xs: 20,
+                                                sm: 22,
+                                            },
+                                        }}>and marketplace</Typography>
                                 </Skeleton>
                                 <Box
                                     sx={{
                                         marginTop: { xs: '40px', md: '50px' },
                                     }}>
-                                    <Skeleton variant="rectangular" animation="wave" />
+                                    <Skeleton variant="rounded" animation="wave">
+                                        <Button sx={{
+                                            fontSize: '18px',
+                                            width: '155px',
+                                            paddingY: {
+                                                xs: 1,
+                                                sm: 1.5
+                                            },
+                                        }}>Connect</Button>
+                                    </Skeleton>
                                 </Box>
                             </Box>
                         </Grid>
@@ -81,17 +108,22 @@ const PublicHomePageLoading = ({ }) => {
                                 }}
                             >
                                 <Skeleton
-                                    height="400px"
-                                    width="400px"
                                     variant="rectangular"
                                     animation="wave"
-                                />
+                                >
+                                    <Box sx={{
+                                        height: '400px',
+                                        width: `400px`,
+                                        maxWidth: '100%',
+                                    }}>
+                                        &nbsp;
+                                    </Box>
+                                </Skeleton>
                             </Box>
                         </Grid>
                     </Grid>
                 </Box>
             </Box>
-
             <Box
                 sx={{
                     display: 'grid',
@@ -115,20 +147,68 @@ const PublicHomePageLoading = ({ }) => {
                 }}
             >
                 <Box>
-                    <Skeleton variant="text" animation="wave" height={28} sx={{ marginBottom: 1 }}></Skeleton>
-                    <Skeleton variant="rectangular" animation="wave" height={250} sx={{ borderRadius: 1 }}></Skeleton>
+                    <Skeleton variant="text" animation="wave" >
+                        <Typography
+                            variant='h2'
+                            color="primary"
+                            sx={{
+                                fontFamily: theme => theme.logo.fontFamily,
+                                marginBottom: 2,
+                                padding: 0,
+                                fontSize: 16
+                            }}>
+                            Top Users
+                        </Typography>
+                    </Skeleton>
+                    <Skeleton variant="rounded" animation="wave" height={250}></Skeleton>
                 </Box>
                 <Box>
-                    <Skeleton variant="text" animation="wave" height={28} sx={{ marginBottom: 1 }}></Skeleton>
-                    <Skeleton variant="rectangular" animation="wave" height={250} sx={{ borderRadius: 1 }}></Skeleton>
+                <Skeleton variant="text" animation="wave" >
+                        <Typography
+                            variant='h2'
+                            color="primary"
+                            sx={{
+                                fontFamily: theme => theme.logo.fontFamily,
+                                marginBottom: 2,
+                                padding: 0,
+                                fontSize: 16
+                            }}>
+                            Top Tokens
+                        </Typography>
+                    </Skeleton>
+                    <Skeleton variant="rounded" animation="wave" height={250}></Skeleton>
                 </Box>
                 <Box>
-                    <Skeleton variant="text" animation="wave" height={28} sx={{ marginBottom: 1 }}></Skeleton>
-                    <Skeleton variant="rectangular" animation="wave" height={250} sx={{ borderRadius: 1 }}></Skeleton>
+                <Skeleton variant="text" animation="wave" >
+                        <Typography
+                            variant='h2'
+                            color="primary"
+                            sx={{
+                                fontFamily: theme => theme.logo.fontFamily,
+                                marginBottom: 2,
+                                padding: 0,
+                                fontSize: 16
+                            }}>
+                            New Users
+                        </Typography>
+                    </Skeleton>
+                    <Skeleton variant="rounded" animation="wave" height={250}></Skeleton>
                 </Box>
                 <Box>
-                    <Skeleton variant="text" animation="wave" height={28} sx={{ marginBottom: 1 }}></Skeleton>
-                    <Skeleton variant="rectangular" animation="wave" height={250} sx={{ borderRadius: 1 }}></Skeleton>
+                <Skeleton variant="text" animation="wave" >
+                        <Typography
+                            variant='h2'
+                            color="primary"
+                            sx={{
+                                fontFamily: theme => theme.logo.fontFamily,
+                                marginBottom: 2,
+                                padding: 0,
+                                fontSize: 16
+                            }}>
+                            New Tokens
+                        </Typography>
+                    </Skeleton>
+                    <Skeleton variant="rounded" animation="wave" height={250}></Skeleton>
                 </Box>
             </Box>
         </Box >

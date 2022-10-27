@@ -353,13 +353,16 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                 </Box>
 
                                 {/* Notifications button and menu */}
-                                {address && <IconButton
+                                <IconButton
                                     sx={{
                                         margin: 0,
                                         padding: 0,
                                         lineHeight: 0,
                                         width: 44,
-                                        height: 44
+                                        height: 44,
+                                        display: {
+                                            xs: address ? 'flex' : 'none'
+                                        }
                                     }}
                                     color="inherit"
                                 >
@@ -400,7 +403,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                             />)
                                     }
                                 </IconButton>
-                                }
+
                                 <HodlNotifications
                                     showNotifications={showNotifications}
                                     setShowNotifications={setShowNotifications}
@@ -421,32 +424,38 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                     }}
                                     color="inherit"
                                 >
-                                    {
-                                        hoverMenuOpen ?
-                                            <Box
-                                                width={44}
-                                                height={44}
-                                                display="flex"
-                                                alignItems="center"
-                                                justifyContent="center">
-                                                <CloseIcon color="primary" />
-                                            </Box> :
-                                            address ?
-                                                <UserAvatarAndHandle
-                                                    address={address}
-                                                    withLink={false}
-                                                    handle={false}
-                                                />
-                                                :
-                                                <Box
-                                                    width={44}
-                                                    height={44}
-                                                    display="flex"
-                                                    alignItems="center"
-                                                    justifyContent="center">
-                                                    <AccountBalanceWalletIcon color="primary" />
-                                                </Box>
-                                    }
+                                    <Box
+                                        sx={{
+                                            display: hoverMenuOpen ? 'flex' : 'none'
+                                        }}
+                                        width={44}
+                                        height={44}
+                                        display="flex"
+                                        alignItems="center"
+                                        justifyContent="center">
+                                        <CloseIcon color="primary" />
+                                    </Box>
+                                    <Box
+                                        sx={{
+                                            display: !hoverMenuOpen && address ? 'flex' : 'none'
+                                        }} >
+                                        <UserAvatarAndHandle
+                                            address={address}
+                                            withLink={false}
+                                            handle={false}
+                                        />
+                                    </Box>
+                                    <Box
+                                        sx={{
+                                            display: !hoverMenuOpen && !address ? 'flex' : 'none'
+                                        }}
+                                        width={44}
+                                        height={44}
+                                        display="flex"
+                                        alignItems="center"
+                                        justifyContent="center">
+                                        <AccountBalanceWalletIcon color="primary" />
+                                    </Box>
                                 </IconButton>
                                 <HoverMenu
                                     hoverMenuOpen={hoverMenuOpen}
