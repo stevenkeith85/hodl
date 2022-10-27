@@ -469,7 +469,7 @@
 //     );
 // };
 
-const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
+const ResponsiveAppBar = ({  }) => {
     return <div>Appbar Loaded</div>
 }
 export default ResponsiveAppBar;

@@ -36,9 +36,13 @@ export default function Layout({ children, address, pusher, userSignedInToPusher
                 }
             }}>
             <header>
-                {/* <Suspense fallback={<div>Loading Header</div>}> */}
-                    <AppBar address={address} pusher={pusher} userSignedInToPusher={userSignedInToPusher} />
-                {/* </Suspense> */}
+                <Suspense fallback={<div>Loading Header</div>}>
+                    <AppBar 
+                        // address={address} 
+                        // pusher={pusher} 
+                        // userSignedInToPusher={userSignedInToPusher} 
+                        />
+                </Suspense>
             </header>
             <main style={{ background: "#fcfcfc" }}>
                 <Container maxWidth="xl">
@@ -47,7 +51,9 @@ export default function Layout({ children, address, pusher, userSignedInToPusher
             </main>
             <footer>
                 <Suspense fallback={<div>Loading Footer</div>}>
-                    <Footer address={address} />
+                    <Footer 
+                        // address={address} 
+                    />
                 </Suspense>
             </footer>
         </Box>

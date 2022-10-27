@@ -8,7 +8,9 @@ import Typography from '@mui/material/Typography';
 import Link from 'next/link';
 
 
-const Footer = ({ address }) => {
+const Footer = ({
+    // address 
+}) => {
     return (
         <Box>
             <Box sx={{
@@ -71,7 +73,10 @@ const Footer = ({ address }) => {
                             <Stack spacing={1}>
                                 <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>tokens</Typography>
                                 <Link href="/explore">explore</Link>
-                                {address && <Link href="/create">create</Link>}
+                                {
+                                    // address &&
+                                    <Link href="/create">create</Link>
+                                }
                             </Stack>
                         </Stack>
                         <Box display="flex" justifyContent="center" alignItems="center" textAlign="center" gap={1}>
