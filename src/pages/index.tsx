@@ -19,6 +19,7 @@ import { useHodlingCount } from '../hooks/useHodlingCount';
 import { useListedCount } from '../hooks/useListedCount';
 import { useNewTokens } from '../hooks/useNewTokens';
 import { delayForDemo } from '../lib/utils';
+import PublicHomePageLoading from '../components/layout/PublicHomeLoading';
 // import PublicHomePage from '../components/layout/PublicHomePage';
 // import PrivateHomePage from '../components/layout/PrivateHomePage';
 
@@ -27,7 +28,7 @@ const PublicHomePage = dynamic(
   () => delayForDemo(import('../components/layout/PublicHomePage')),
   {
     ssr: false,
-    loading: () => <h1>Loading...</h1>
+    loading: () => <PublicHomePageLoading />
   }
 );
 
