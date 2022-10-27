@@ -7,7 +7,8 @@ import Footer from './Footer';
 
 
 const AppBar = dynamic(
-    () => delayForDemo(import('./AppBar')),
+    // () => delayForDemo(import('./AppBar')),
+    () => import('./AppBar'),
     {
         ssr: false,
         loading: () => <AppBarLoading />
