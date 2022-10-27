@@ -180,6 +180,6 @@ export const getInfuraIPFSAuth = () => {
 
 export function delayForDemo(promise) {
   return new Promise(resolve => {
-      setTimeout(resolve, 4000);
+      setTimeout(resolve, 2000);
   }).then(() => promise);
 }
