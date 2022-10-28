@@ -25,9 +25,8 @@ const CountAndLink: React.FC<CountAndLinkProps> = ({ count, user, label, tab }) 
 
     return (<>
         {
-            <Link href={`/profile/${user.nickname || user.address}?tab=${tab}`} passHref>
+            <Link href={`/profile/${user.nickname || user.address}?tab=${tab}`}>
                 <Typography
-                    component="a"
                     sx={{
                         color: grey[700],
                         textDecoration: 'none',

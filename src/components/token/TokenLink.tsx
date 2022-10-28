@@ -101,7 +101,7 @@ export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = 44, fontSize
             display: loading ? 'none' : 'block'
         }}>
             <Link href={`/nft/${token.id}`} passHref>
-                <Typography component="a" sx={{
+                <Typography component="span" sx={{
                     textDecoration: 'none',
                     color: '#333'
                 }}>

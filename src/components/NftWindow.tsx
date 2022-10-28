@@ -21,7 +21,8 @@ import { PriceSticker } from './PriceSticker';
 const NftWindowOverlay = dynamic(
     () => import('./NftWindowOverlay').then(mod => mod.NftWindowOverlay),
     {
-        loading: () => <div>...</div>
+        ssr: false,
+        loading: () => null
     }
 );
 
@@ -45,11 +46,8 @@ export const NftWindow: React.FC<NftWindowProps> = ({
         <Link
             key={nft.id}
             href={nft?.forSale ? `/nft/${nft.id}?tab=1` : `/nft/${nft.id}`}
-            passHref
         >
-
             <Box
-                component="a"
                 sx={{
                     position: 'relative',
                     overflow: 'hidden',

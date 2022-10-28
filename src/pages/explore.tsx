@@ -24,7 +24,8 @@ import { InfiniteScrollNftWindows } from '../components/InfiniteScrollNftWindows
 const ForSaleFields = dynamic(
   () => import('../components/explore/ForSaleFields').then(mod => mod.ForSaleFields),
   {
-    loading: () => <div>...</div>
+    ssr: false,
+    loading: () => null
   }
 );
 

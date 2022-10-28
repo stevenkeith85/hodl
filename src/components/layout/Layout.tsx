@@ -2,6 +2,7 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import dynamic from 'next/dynamic';
 import { delayForDemo } from '../../lib/utils';
+
 import AppBarLoading from './AppBarLoading';
 import Footer from './Footer';
 
@@ -28,7 +29,7 @@ export default function Layout({ children, address, pusher, userSignedInToPusher
                     flexShrink: 0,
                     flexBasis: 'auto'
                 },
-                
+
                 main: {
                     flexGrow: 1,
                     flexShrink: 0,
@@ -40,7 +41,7 @@ export default function Layout({ children, address, pusher, userSignedInToPusher
                     flexBasis: 'auto'
                 },
             }}>
-            <header style={{ height: '65px'}}>
+            <header style={{ height: '65px' }}>
                 {/* @ts-ignore */}
                 <AppBar address={address} pusher={pusher} userSignedInToPusher={userSignedInToPusher} />
             </header>

@@ -1,4 +1,3 @@
-import React from "react";
 import { useEffect, useState } from 'react';
 
 import Head from 'next/head';
@@ -17,13 +16,12 @@ import { PusherContext } from '../contexts/PusherContext';
 import { WalletContext } from '../contexts/WalletContext';
 
 import { HodlNotificationSnackbar } from '../components/snackbars/HodlNotificationSnackbar';
-// import LoginPage from "./login";
 
 const LoginPage = dynamic(
   () => import('./login'),
   {
-      ssr: false,
-      loading: () => null
+    ssr: false,
+    loading: () => <h1>loading</h1>
   }
 );
 
@@ -33,6 +31,7 @@ import createEmotionCache from '../createEmotionCache';
 // Also loads a lot of deps
 import Layout from '../components/layout/Layout';
 
+
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
@@ -41,8 +40,6 @@ interface MyAppProps extends AppProps {
 }
 
 export default function MyApp(props: MyAppProps) {
-  console.log('MyApp');
-
   const {
     Component,
     emotionCache = clientSideEmotionCache,
@@ -50,9 +47,9 @@ export default function MyApp(props: MyAppProps) {
 
   // WalletContext state
   // @ts-ignore
-  const [address, setAddress] = useState(props?.pageProps?.address); 
+  const [address, setAddress] = useState(props?.pageProps?.address);
   const [signer, setSigner] = useState('');
-  
+
   // PusherContext state
   const [pusher, setPusher] = useState(null);
   const [userSignedInToPusher, setUserSignedInToPusher] = useState(false); // TODO
@@ -98,7 +95,7 @@ export default function MyApp(props: MyAppProps) {
   // @ts-ignore
   if (!pageProps.hasReadPermission) {
     // @ts-ignore
-    return <ThemeProvider theme={theme}><LoginPage {...pageProps}/></ThemeProvider>
+    return <ThemeProvider theme={theme}><LoginPage {...pageProps} /></ThemeProvider>
   }
 
   return (
@@ -131,9 +128,9 @@ export default function MyApp(props: MyAppProps) {
                   hodlnotification: HodlNotificationSnackbar
                 }}
               >
-                <Layout 
-                  address={address} 
-                  pusher={pusher} 
+                <Layout
+                  address={address}
+                  pusher={pusher}
                   userSignedInToPusher={userSignedInToPusher}
                 >
                   <Component {...pageProps} />

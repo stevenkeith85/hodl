@@ -118,108 +118,86 @@ const NotificationLink: React.FC<NotificationLinkProps> = ({ item }) => {
         </Box>
         {
             likedToken(item) &&
-            <Link href={`/nft/${item?.token?.id}`} passHref>
-                <Typography component="a">
-                    <MessageWithAvatarAndTime item={item}>
-                        <LikedToken />
-                    </MessageWithAvatarAndTime>
-                </Typography>
+            <Link href={`/nft/${item?.token?.id}`}>
+                <MessageWithAvatarAndTime item={item}>
+                    <LikedToken />
+                </MessageWithAvatarAndTime>
             </Link>
         }
         {
             likedDeletedComment(item) &&
-            <Typography component="a">
-                <MessageWithAvatarAndTime item={item}>
-                    <LikedDeletedComment />
-                </MessageWithAvatarAndTime>
-            </Typography>
+            <MessageWithAvatarAndTime item={item}>
+                <LikedDeletedComment />
+            </MessageWithAvatarAndTime>
         }
         {
             likedComment(item) &&
-            <Link href={`/nft/${item?.comment.tokenId}?comment=${item?.comment?.id}`} passHref>
-                <Typography component="a">
-                    <MessageWithAvatarAndTime item={item}>
-                        <LikedComment item={item} />
-                    </MessageWithAvatarAndTime>
-                </Typography>
+            <Link href={`/nft/${item?.comment.tokenId}?comment=${item?.comment?.id}`}>
+                <MessageWithAvatarAndTime item={item}>
+                    <LikedComment item={item} />
+                </MessageWithAvatarAndTime>
             </Link>
         }
         {
             madeDeletedComment(item) &&
-            <Typography component="a">
-                <MessageWithAvatarAndTime item={item}>
-                    <MadeDeletedComment />
-                </MessageWithAvatarAndTime>
-            </Typography>
+            <MessageWithAvatarAndTime item={item}>
+                <MadeDeletedComment />
+            </MessageWithAvatarAndTime>
         }
         {
             commentedOnToken(item) &&
             <Link href={`/nft/${item.comment.tokenId}?comment=${item.comment.id}`} passHref>
-                <Typography component="a">
-                    <MessageWithAvatarAndTime item={item}>
-                        <CommentedOnToken item={item} />
-                    </MessageWithAvatarAndTime>
-                </Typography>
+                <MessageWithAvatarAndTime item={item}>
+                    <CommentedOnToken item={item} />
+                </MessageWithAvatarAndTime>
             </Link>
         }
         {
             repliedToComment(item) &&
             <Link href={`/nft/${item?.token?.id}?comment=${item?.comment?.id}`} passHref>
-                <Typography component="a">
-                    <MessageWithAvatarAndTime item={item}>
-                        <RepliedToComment item={item} />
-                    </MessageWithAvatarAndTime>
-                </Typography>
+                <MessageWithAvatarAndTime item={item}>
+                    <RepliedToComment item={item} />
+                </MessageWithAvatarAndTime>
             </Link>
         }
         {
             boughtToken(item) &&
             <Link href={`/nft/${item.token.id}`} passHref>
-                <Typography component="a">
-                    <MessageWithAvatarAndTime item={item}>
-                        <BoughtToken item={item} />
-                    </MessageWithAvatarAndTime>
-                </Typography>
+                <MessageWithAvatarAndTime item={item}>
+                    <BoughtToken item={item} />
+                </MessageWithAvatarAndTime>
             </Link>
         }
         {
             mintedToken(item) &&
             <Link href={`/nft/${item?.token?.id}`} passHref>
-                <Typography component="a">
-                    <MessageWithAvatarAndTime item={item}>
-                        <MintedToken />
-                    </MessageWithAvatarAndTime>
-                </Typography>
+                <MessageWithAvatarAndTime item={item}>
+                    <MintedToken />
+                </MessageWithAvatarAndTime>
             </Link>
         }
         {
             listedToken(item) &&
             <Link href={`/nft/${item?.token?.id}`} passHref>
-                <Typography component="a">
-                    <MessageWithAvatarAndTime item={item}>
-                        <ListedToken item={item} />
-                    </MessageWithAvatarAndTime>
-                </Typography>
+                <MessageWithAvatarAndTime item={item}>
+                    <ListedToken item={item} />
+                </MessageWithAvatarAndTime>
             </Link>
         }
         {
             delistedToken(item) &&
             <Link href={`/nft/${item?.token?.id}`} passHref>
-                <Typography component="a">
-                    <MessageWithAvatarAndTime item={item}>
-                        <DelistedToken item={item} />
-                    </MessageWithAvatarAndTime>
-                </Typography>
+                <MessageWithAvatarAndTime item={item}>
+                    <DelistedToken item={item} />
+                </MessageWithAvatarAndTime>
             </Link>
         }
         {
             followed(item) &&
             <Link href={`/profile/${item?.user?.nickname || item?.user?.address}`} passHref>
-                <Typography component="a">
-                    <MessageWithAvatarAndTime item={item}>
-                        <Followed />
-                    </MessageWithAvatarAndTime>
-                </Typography>
+                <MessageWithAvatarAndTime item={item}>
+                    <Followed />
+                </MessageWithAvatarAndTime>
             </Link>
         }
     </Box>)
@@ -295,7 +273,6 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({
                                     display: 'block',
                                     width: 44,
                                     height: 44,
-                                    // background: 'yellow'
                                 }}
                             >
                                 <AssetThumbnail token={item.token} />

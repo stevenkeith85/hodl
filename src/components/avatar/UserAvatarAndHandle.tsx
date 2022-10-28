@@ -73,7 +73,7 @@ export const UserAvatarAndHandle: React.FC<UserAvatarProps> = ({
         {
             withLink ?
                 <Link href={`/profile/${user.nickname || user.address}`} passHref>
-                    <Typography component="a" sx={{
+                    <Typography sx={{
                         textDecoration: 'none',
                         color: theme => theme.palette.text.secondary
                     }}>
