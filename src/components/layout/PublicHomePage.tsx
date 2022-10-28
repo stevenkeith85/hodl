@@ -30,7 +30,7 @@ const PublicHomePage = ({ }) => {
                         xs: 0,
                         sm: 4
                     },
-                    gap: 4,
+                    gap: 6,
                 }}
             >
                 <TopUsers followButton={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
