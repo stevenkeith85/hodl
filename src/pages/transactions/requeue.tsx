@@ -1,15 +1,36 @@
-import { Alert, Box, Button, Link, Tab, Table, TableBody, TableCell, TableHead, TableRow, Tabs, TextField, Typography } from "@mui/material";
-import { authenticate } from "../../lib/jwt";
-import axios from 'axios';
-import { format, fromUnixTime } from "date-fns";
 import { useState } from "react";
-import { HodlBorderedBox } from "../../components/HodlBorderedBox";
-import Head from "next/head";
-import { SuccessModal } from "../../components/modals/SuccessModal";
-import { FailureModal } from "../../components/modals/FailureModal";
-import { getUser } from "../api/user/[handle]";
-import useSWR from "swr";
 
+import Head from "next/head";
+import dynamic from 'next/dynamic';
+
+import axios from 'axios';
+
+import { authenticate } from "../../lib/jwt";
+import { HodlBorderedBox } from "../../components/HodlBorderedBox";
+
+import Typography from "@mui/material/Typography";
+import Alert from "@mui/material/Alert";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Link from "@mui/material/Link";
+
+
+const SuccessModal = dynamic(
+    () => import('../../components/modals/SuccessModal').then(mod => mod.SuccessModal),
+    {
+        ssr: false,
+        loading: () => null
+    }
+);
+
+const FailureModal = dynamic(
+    () => import('../../components/modals/FailureModal').then(mod => mod.FailureModal),
+    {
+        ssr: false,
+        loading: () => null
+    }
+);
 
 export async function getServerSideProps({ req, res }) {
     await authenticate(req, res);
@@ -18,36 +39,21 @@ export async function getServerSideProps({ req, res }) {
         return { notFound: true }
     }
 
-    const user = await getUser(req?.address, req?.address, true);
-
     return {
         props: {
             address: req.address || null,
-            user
         }
     }
 }
 
-export default function Transaction({ address, user }) {
+export default function Transaction({ address }) {
     const [hash, setHash] = useState('');
     const [buttonDisabled, setButtonDisabled] = useState(false);
 
     const [successModalOpen, setSuccessModalOpen] = useState(false);
     const [failureModalOpen, setFailureModalOpen] = useState(false);
 
-    const [value, setValue] = useState(0); // tab
-
     const [errorMessage, setErrorMessage] = useState('The transaction was not queued. Please contact support if you need help');
-
-    const { data: pendingTxs } = useSWR(
-        [`/api/transactions/pending`, 0, 100],
-        (url, offset, limit) => axios.get(`${url}?offset=${offset}&limit=${limit}`).then(r => r.data)
-    );
-
-    const { data: processedTxs } = useSWR(
-        [`/api/transactions/processed`, 0, 100],
-        (url, offset, limit) => axios.get(`${url}?offset=${offset}&limit=${limit}`).then(r => r.data)
-    );
 
     const sendTransaction = async () => {
         try {
@@ -110,7 +116,7 @@ export default function Transaction({ address, user }) {
                         flexDirection: 'column',
                     }}
                 >
-                    <Box marginY={4}>
+                    <Box>
                         <Alert
                             severity="error"
                             sx={{
@@ -119,7 +125,7 @@ export default function Transaction({ address, user }) {
                                 alignItems: 'center',
                                 textAlign: 'center',
                                 fontWeight: 600,
-                                padding: 1,
+                                paddingY: 2,
                             }}
                         >
                             Please read carefully; and only use this if support asks you to
@@ -169,7 +175,7 @@ export default function Transaction({ address, user }) {
                                 label="Transaction ID (Hash)"
                             />
                             <Button
-                                // disabled={buttonDisabled}
+                                disabled={buttonDisabled}
                                 sx={{
                                     marginX: 2,
                                     paddingY: 1.5,
@@ -183,13 +189,14 @@ export default function Transaction({ address, user }) {
                                 Submit
                             </Button>
                         </Box>
-                        <Link target={"_blank"} href="https://metamask.zendesk.com/hc/en-us/articles/4413442094235-How-to-find-a-transaction-ID">
+                        <Link
+                            target={"_blank"}
+                            href="https://metamask.zendesk.com/hc/en-us/articles/4413442094235-How-to-find-a-transaction-ID">
                             <Typography mb={2} color={theme => theme.palette.text.secondary}>
                                 You can get your transaction ID from MetaMask.
                             </Typography>
                         </Link>
                     </Box>
-
                 </HodlBorderedBox>
             </Box>
         </>)

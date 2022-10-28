@@ -55,28 +55,16 @@ route.post(async (req, res: NextApiResponse) => {
 
   const user = await client.hmget<User>(`user:${req.address}`, 'nonce');
 
-  // if (tx.nonce <= user.nonce) {
-  //   console.log(`queue/transaction - user nonce is ${user?.nonce}. tx nonce is ${tx?.nonce}`);
-  //   return res.status(400).json({ message: 'You are trying to queue a tx that is older than the last one we have successfully processed' });
-  // }
-
-
-  // const success = await addToZeplo('api/blockchain/transaction',
-  //   { hash },
-  //   req.cookies.refreshToken,
-  //   req.cookies.accessToken
-  // );
+  if (tx.nonce <= user.nonce) {
+    console.log(`queue/transaction - user nonce is ${user?.nonce}. tx nonce is ${tx?.nonce}`);
+    return res.status(400).json({ message: 'You are trying to queue a tx that is older than the last one we have successfully processed' });
+  }
 
   const success = await queueTxAndAction(hash, req.cookies.refreshToken, req.cookies.accessToken, req.address);
 
   if (!success) {
     return res.status(501).json({ message: 'We were unable to queue tx at the moment; please try later' });
   }
-
-
-  // When zeplo fix their steps feature, we should call 'queueTxAndAction' as it
-  // should result in a shorter execution time for the serverless functions
-  // due to us not having to queue the action within the first endpoint
 
   await addPendingTransaction(req.address, tx.nonce, hash);
 

@@ -4,6 +4,7 @@ import Box from "@mui/material/Box"
 import Grid from "@mui/material/Grid"
 import Typography from "@mui/material/Typography"
 import Button from "@mui/material/Button"
+import { RankingListLoading } from "./RankingListLoading"
 
 const PublicHomePageLoading = ({ }) => {
     return (
@@ -146,70 +147,10 @@ const PublicHomePageLoading = ({ }) => {
                     gap: 4,
                 }}
             >
-                <Box>
-                    <Skeleton variant="text" animation="wave" >
-                        <Typography
-                            variant='h2'
-                            color="primary"
-                            sx={{
-                                fontFamily: theme => theme.logo.fontFamily,
-                                marginBottom: 2,
-                                padding: 0,
-                                fontSize: 16
-                            }}>
-                            Top Users
-                        </Typography>
-                    </Skeleton>
-                    <Skeleton variant="rounded" animation="wave" height={250}></Skeleton>
-                </Box>
-                <Box>
-                <Skeleton variant="text" animation="wave" >
-                        <Typography
-                            variant='h2'
-                            color="primary"
-                            sx={{
-                                fontFamily: theme => theme.logo.fontFamily,
-                                marginBottom: 2,
-                                padding: 0,
-                                fontSize: 16
-                            }}>
-                            Top Tokens
-                        </Typography>
-                    </Skeleton>
-                    <Skeleton variant="rounded" animation="wave" height={250}></Skeleton>
-                </Box>
-                <Box>
-                <Skeleton variant="text" animation="wave" >
-                        <Typography
-                            variant='h2'
-                            color="primary"
-                            sx={{
-                                fontFamily: theme => theme.logo.fontFamily,
-                                marginBottom: 2,
-                                padding: 0,
-                                fontSize: 16
-                            }}>
-                            New Users
-                        </Typography>
-                    </Skeleton>
-                    <Skeleton variant="rounded" animation="wave" height={250}></Skeleton>
-                </Box>
-                <Box>
-                <Skeleton variant="text" animation="wave" >
-                        <Typography
-                            variant='h2'
-                            color="primary"
-                            sx={{
-                                fontFamily: theme => theme.logo.fontFamily,
-                                marginBottom: 2,
-                                padding: 0,
-                                fontSize: 16
-                            }}>
-                            New Tokens
-                        </Typography>
-                    </Skeleton>
-                    <Skeleton variant="rounded" animation="wave" height={250}></Skeleton>
-                </Box>
+                <RankingListLoading text="Top Users" />
+                <RankingListLoading text="Top Tokens" />
+                <RankingListLoading text="New Users" />
+                <RankingListLoading text="New Tokens" />
             </Box>
         </Box >
     )

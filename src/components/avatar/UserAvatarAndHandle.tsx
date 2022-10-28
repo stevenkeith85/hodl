@@ -23,8 +23,8 @@ const UserAvatarAndHandleBody = ({ user, size, fontSize, handle, color }) => (<B
     <Tooltip title={
         <Box
             sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Typography sx={{ fontSize: 14 }}>{user.nickname}</Typography>
-            <Typography sx={{ fontSize: 12 }}>{getShortAddress(user.address)}</Typography>
+            <Typography sx={{ fontSize: 14 }}>{user?.nickname}</Typography>
+            <Typography sx={{ fontSize: 12 }}>{getShortAddress(user?.address)}</Typography>
         </Box>
     } arrow placement="right">
         <Box
@@ -34,7 +34,7 @@ const UserAvatarAndHandleBody = ({ user, size, fontSize, handle, color }) => (<B
                 gap: 2,
             }}
         >
-            {user.avatar ? <UserAvatar user={user} size={size} /> : <UserDefaultAvatar size={size} fontSize={size - 10} color={color} />}
+            {user?.avatar ? <UserAvatar user={user} size={size} /> : <UserDefaultAvatar size={size} fontSize={size - 10} color={color} />}
             {handle ? <UserHandle user={user} fontSize={fontSize} /> : null}
         </Box>
     </Tooltip>
@@ -72,19 +72,15 @@ export const UserAvatarAndHandle: React.FC<UserAvatarProps> = ({
     return (<>
         {
             withLink ?
-                <Link href={`/profile/${user.nickname || user.address}`} passHref>
-                    <Typography sx={{
-                        textDecoration: 'none',
-                        color: theme => theme.palette.text.secondary
-                    }}>
-                        <UserAvatarAndHandleBody
-                            user={user}
-                            size={size}
-                            fontSize={fontSize}
-                            handle={handle}
-                            color={color}
-                        />
-                    </Typography>
+                <Link href={`/profile/${user?.nickname || user?.address}`}>
+
+                    <UserAvatarAndHandleBody
+                        user={user}
+                        size={size}
+                        fontSize={fontSize}
+                        handle={handle}
+                        color={color}
+                    />
                 </Link > :
                 <UserAvatarAndHandleBody
                     user={user}

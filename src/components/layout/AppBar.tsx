@@ -185,6 +185,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
             <AppBar
                 position="fixed"
                 sx={{
+                    width: '100%',
                     background: 'white',
                     maxWidth: `100vw`,
                     left: 0,

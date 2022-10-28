@@ -1,4 +1,3 @@
-import { Box, Modal, Skeleton } from "@mui/material";
 import { HodlVideo } from "../HodlVideo";
 import { assetType, getTopPadding } from "../../lib/utils";
 import { useState } from "react";
@@ -7,6 +6,9 @@ import { HodlImageResponsive } from "../HodlImageResponsive";
 import { HodlAudio } from "../HodlAudio";
 import { HodlAudioBox } from "../HodlAudioBox";
 import { Token } from "../../models/Token";
+import Box from "@mui/material/Box";
+import Modal from "@mui/material/Modal";
+import Skeleton from "@mui/material/Skeleton";
 
 interface DetailPageAssetProps {
     token: Token;
@@ -14,84 +16,6 @@ interface DetailPageAssetProps {
 export const DetailPageAsset: React.FC<DetailPageAssetProps> = ({ token }) => {
     const [assetModalOpen, setAssetModalOpen] = useState(false);
     const [loading, setLoading] = useState(true);
-
-    const asset = <Box
-        sx={{
-            cursor: 'pointer',
-            position: 'relative',
-            width: `100%`,
-            paddingTop: token?.properties?.aspectRatio ? `${getTopPadding(token.properties.aspectRatio)}%` : 0,
-        }}
-    >
-        <Box sx={{
-            width: `100%`,
-            position: token?.properties?.aspectRatio ? 'absolute' : 'static',
-            top: 0
-        }}>
-            <Box onClick={() => setAssetModalOpen(true)}>
-                {
-                    assetType(token) === AssetTypes.Gif &&
-                    <HodlVideo
-                        cid={token?.properties?.asset?.uri}
-                        assetFolder="image"
-                        gif={true}
-                        onLoad={() => setLoading(false)}
-                    />
-                }
-            </Box>
-            <Box onClick={() => setAssetModalOpen(true)}>
-                {
-                    assetType(token) === AssetTypes.Image &&
-                    <HodlImageResponsive
-                        assetFolder={"image"}
-                        folder="nfts"
-                        lcp={true}
-                        cid={token?.properties?.asset?.uri}
-                        widths={[500, 600, 700, 800, 900, 1000, 1080]}
-                        sizes="(min-width: 1200px) calc(1200px / 2), (min-width: 900px) calc(50vw / 2), 100vw"
-                        onLoad={() => setLoading(false)}
-                        aspectRatio={token?.properties?.aspectRatio}
-                    />
-                }
-            </Box>
-            <Box>
-                {
-                    assetType(token) === AssetTypes.Video && <>
-                        <Box sx={{ visibility: 'hidden' }}>
-                            <HodlImageResponsive
-                                assetFolder="image"
-                                folder="nfts"
-                                cid={token.image}
-                                widths={[575, 700, 800, 900, 1000, 1080]}
-                                sizes="575w"
-                                aspectRatio={token?.properties?.aspectRatio}
-                            />
-
-                        </Box>
-                        <Box
-                            sx={{
-                                position: 'absolute',
-                                top: 0,
-                                width: '100%'
-                            }}
-                        >
-                            <HodlVideo
-                                poster={token?.image}
-                                cid={token?.properties?.asset?.uri}
-                                controls={true}
-                                maxHeight="575px"
-                                height="100%"
-                                onLoad={() => setLoading(false)}
-                            />
-                        </Box>
-                    </>}
-            </Box>
-            {
-                assetType(token) === AssetTypes.Audio &&
-                <HodlAudioBox token={token} size={80} />
-            }
-        </Box >
-    </Box>
 
     return (token &&
         <>
@@ -112,7 +36,7 @@ export const DetailPageAsset: React.FC<DetailPageAssetProps> = ({ token }) => {
                 >
                     <Box sx={{
                         maxWidth: '90%',
-                        width: '900px',                        
+                        width: '900px',
                         pointerEvents: 'none',
                     }}>
                         {
@@ -167,13 +91,55 @@ export const DetailPageAsset: React.FC<DetailPageAssetProps> = ({ token }) => {
                 sx={{
                     display: loading ? 'block' : 'none',
                     width: "100%",
-                    paddingTop: token.properties.aspectRatio ? `${getTopPadding(token.properties.aspectRatio)}%` : 0
+                    paddingTop: token.properties.aspectRatio ? `${getTopPadding(token.properties.aspectRatio)}%` : '100%'
                 }}
             >
             </Skeleton>
             <Box sx={{
-                display: loading ? 'none' : 'block'
-            }}>{asset}</Box>
+                display: loading ? 'none' : 'block',
+            }}>
+                {
+                    assetType(token) === AssetTypes.Gif &&
+                    <Box onClick={() => setAssetModalOpen(true)}>
+                        <HodlVideo
+                            cid={token?.properties?.asset?.uri}
+                            assetFolder="image"
+                            gif={true}
+                            onLoad={() => setLoading(false)}
+                            aspectRatio={token?.properties?.aspectRatio}
+                        />
+                    </Box>
+                }
+                {
+                    assetType(token) === AssetTypes.Image &&
+                    <Box onClick={() => setAssetModalOpen(true)}>
+                        <HodlImageResponsive
+                            assetFolder={"image"}
+                            folder="nfts"
+                            lcp={true}
+                            cid={token?.properties?.asset?.uri}
+                            widths={[500, 600, 700, 800, 900, 1000, 1080]}
+                            sizes="(min-width: 1200px) calc(1200px / 2), (min-width: 900px) calc(50vw / 2), 100vw"
+                            onLoad={() => setLoading(false)}
+                            aspectRatio={token?.properties?.aspectRatio}
+                        />
+                    </Box>
+                }
+                {
+                    assetType(token) === AssetTypes.Video &&
+                    <HodlVideo
+                        poster={token?.image}
+                        cid={token?.properties?.asset?.uri}
+                        controls={true}
+                        aspectRatio={token?.properties?.aspectRatio || "1:1"}
+                        onLoad={() => setLoading(false)}
+                    />
+                }
+                {
+                    assetType(token) === AssetTypes.Audio &&
+                    <HodlAudioBox token={token} size={80} />
+                }
+            </Box>
         </>
     )
 }

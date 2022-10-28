@@ -21,7 +21,7 @@ const LoginPage = dynamic(
   () => import('./login'),
   {
     ssr: false,
-    loading: () => <h1>loading</h1>
+    loading: () => null
   }
 );
 

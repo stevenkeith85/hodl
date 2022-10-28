@@ -13,7 +13,6 @@ import { tokenListed } from "../../../lib/transactions/tokenListed";
 import { tokenDelisted } from "../../../lib/transactions/tokenDelisted";
 import { tokenBought } from "../../../lib/transactions/tokenBought";
 import { User } from "../../../models/User";
-import { createHmac } from "crypto";
 import { getAsString } from "../../../lib/getAsString";
 
 import { BaseProvider } from '@ethersproject/providers'
@@ -135,14 +134,10 @@ route.post(async (req, res: NextApiResponse) => {
 
     const user = await client.hmget<User>(`user:${req.address}`, 'nonce');
 
-    // if (tx.nonce <= user.nonce) {
-    //     console.log(`blockchain/transaction - tx nonce older than last one we successfully processed. tx nonce: ${tx.nonce}, user nonce: ${user.nonce}`);
-    //     return res.status(400).json({ message: 'bad request' });
-    // }
-
-    // TODO: This is just useful for development. We can remove for prod
-    // console.log('blockchain/transaction - transaction details');
-    // await transactionDetails(hash, provider, txReceipt, tx);
+    if (tx.nonce <= user.nonce) {
+        console.log(`blockchain/transaction - tx nonce older than last one we successfully processed. tx nonce: ${tx.nonce}, user nonce: ${user.nonce}`);
+        return res.status(400).json({ message: 'bad request' });
+    }    
 
     let contract = null;
     if (txReceipt.to === process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS) {
@@ -185,7 +180,6 @@ route.post(async (req, res: NextApiResponse) => {
     if (action) {
         return res.status(200).json(action);
     }
-
 
     return res.status(503).json({ message: 'unable to process the transaction' });
 });
