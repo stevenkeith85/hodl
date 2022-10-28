@@ -18,18 +18,21 @@ import { AssetTypes } from '../models/AssetType'
 const SelectAssetAction = dynamic(
   () => import('../components/mint/SelectAssetAction').then((module) => module.SelectAssetAction),
   {
+    ssr: false,
     loading: () => <HodlLoadingSpinner />
   }
 );
 const UploadToIpfsAction = dynamic(
   () => import('../components/mint/UploadToIpfsAction').then((module) => module.UploadToIpfsAction),
   {
+    ssr: false,
     loading: () => <HodlLoadingSpinner />
   }
 );
 const MintTokenAction = dynamic(
   () => import('../components/mint/MintTokenAction').then((module) => module.MintTokenAction),
   {
+    ssr: false,
     loading: () => <HodlLoadingSpinner />
   }
 );
