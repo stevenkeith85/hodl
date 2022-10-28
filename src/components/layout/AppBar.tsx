@@ -31,6 +31,7 @@ import { ActionTypes, HodlAction } from '../../models/HodlAction';
 const HoverMenu = dynamic(
     () => import('./../menu/HoverMenu').then(mod => mod.HoverMenu),
     {
+        ssr: false,
         loading: () => null
     }
 );
@@ -38,6 +39,7 @@ const HoverMenu = dynamic(
 const MobileSearch = dynamic(
     () => import('../MobileSearch').then(mod => mod.MobileSearch),
     {
+        ssr: false,
         loading: () => null
     }
 );
@@ -45,6 +47,7 @@ const MobileSearch = dynamic(
 const HodlNotifications = dynamic(
     () => import('../notifications/HodlNotifications').then(mod => mod.HodlNotifications),
     {
+        ssr: false,
         loading: () => null
     }
 );
@@ -209,7 +212,6 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                 <Link
                                     key={pages[0].url}
                                     href={pages[0].url}
-                                    passHref
                                 >
                                     <Box
                                         sx={{

@@ -37,9 +37,11 @@ import Badge from '@mui/material/Badge'
 
 
 const UserLinksList = dynamic(
-
   () => import('../../components/profile/UserLinksList').then((module) => module.UserLinksList),
-  { loading: () => <HodlLoadingSpinner /> }
+  { 
+    ssr: false,
+    loading: () => <HodlLoadingSpinner /> 
+  }
 );
 
 
@@ -232,7 +234,7 @@ const Profile = ({
               passHref
               legacyBehavior>
               <Tab
-                component="a"
+                component="span"
                 onClick={(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
                   setValue(0);
                 }}
@@ -278,7 +280,7 @@ const Profile = ({
               passHref
               legacyBehavior>
               <Tab
-                component="a"
+                component="span"
                 onClick={(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
                   setValue(1);
                 }}
@@ -323,7 +325,7 @@ const Profile = ({
               passHref
               legacyBehavior>
               <Tab
-                component="a"
+                component="span"
                 onClick={(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
                   setValue(2);
                 }}
@@ -363,7 +365,7 @@ const Profile = ({
               passHref
               legacyBehavior>
               <Tab
-                component="a"
+                component="span"
                 onClick={(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
                   setValue(3);
                 }}

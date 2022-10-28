@@ -154,7 +154,6 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                         `/nft/${item.token.id}?tab=1` :
                                         `/nft/${item.token.id}`
                                 }
-                                passHref
                             >
                                 <Box
                                     sx={{
@@ -197,7 +196,6 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                     `/nft/${item.token.id}?tab=1` :
                                     `/nft/${item.token.id}`
                             }
-                            passHref
                         >
                             <Typography
                                 sx={{
