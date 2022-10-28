@@ -30,9 +30,8 @@ export const HomePagePitch = ({ }) => {
                         gap={0}
                         height="100%"
                         sx={{
-                            paddingTop: {xs: 0, sm: '25px', md: '50px', lg: '75px', xl: '100px'},
-                            paddingBottom: { xs: '50px', sm: '75px', md:`100px`, lg: '125px', xl: '150px'},
-                            
+                            paddingTop: {xs: 0, sm: '25px', md: '50px', lg: '70px', xl: '90px'},
+                            paddingBottom: { xs: '50px', sm: '75px', md:`100px`, lg: '120px', xl: '140px'},
                         }}
                     >
                         <Box
