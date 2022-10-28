@@ -18,9 +18,6 @@ import { useSearchTokens } from '../hooks/useSearchTokens';
 import { authenticate } from '../lib/jwt';
 import { getTokenSearchResults } from './api/search/tokens';
 
-// large import
-import { InfiniteScrollNftWindows } from '../components/InfiniteScrollNftWindows';
-
 const ForSaleFields = dynamic(
   () => import('../components/explore/ForSaleFields').then(mod => mod.ForSaleFields),
   {
@@ -28,6 +25,15 @@ const ForSaleFields = dynamic(
     loading: () => null
   }
 );
+
+const InfiniteScrollNftWindows = dynamic(
+  () => import('../components/InfiniteScrollNftWindows').then((module) => module.InfiniteScrollNftWindows),
+  {
+    ssr: false,
+    loading: () => null
+  }
+);
+
 
 export async function getServerSideProps({ query, req, res }) {
   let { q, forSale, minPrice, maxPrice } = query;

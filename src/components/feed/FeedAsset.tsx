@@ -16,18 +16,8 @@ interface FeedAssetProps {
 export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
     const [loading, setLoading] = useState(true);
 
-    const asset = <Box
-        sx={{
-            position: 'relative',
-            width: `100%`,
-            paddingTop: item?.token?.properties?.aspectRatio ? `${getTopPadding(item.token.properties.aspectRatio)}%` : 0,
-        }}
-    >
-        <Box sx={{
-            width: `100%`,
-            position: item?.token?.properties?.aspectRatio ? 'absolute' : 'static',
-            top: 0
-        }}>
+    const asset = <Box>
+        <Box>
             {
                 (assetType(item.token) === AssetTypes.Image) &&
                 <HodlImageResponsive
@@ -45,6 +35,7 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
                 <HodlVideo
                     poster={item.token?.image}
                     cid={item.token?.properties?.asset?.uri}
+                    aspectRatio={item?.token?.properties?.aspectRatio || "1:1"}
                     controls={true}
                     onLoad={() => setLoading(false)}
                 />
@@ -54,7 +45,7 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
                 <HodlVideo
                     cid={item.token?.properties?.asset?.uri}
                     gif={true}
-                    assetFolder="image"                  
+                    assetFolder="image"
                     onLoad={() => setLoading(false)}
                 />
             }
@@ -64,10 +55,9 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
             }
         </Box>
         {
-            item?.metadata?.price &&
-            <PriceSticker price={item?.metadata?.price} />
+            item?.metadata?.price && <PriceSticker price={item?.metadata?.price} />
         }
-    </Box>;
+    </Box >;
 
     return (
         <Box>
@@ -77,7 +67,7 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
                 sx={{
                     display: loading ? 'block' : 'none',
                     width: "100%",
-                    paddingTop: item.token.properties.aspectRatio ? `${getTopPadding(item.token.properties.aspectRatio)}%` : 0
+                    paddingTop: item.token.properties.aspectRatio ? `${getTopPadding(item.token.properties.aspectRatio)}%` : '100%'
                 }}
             >
             </Skeleton>

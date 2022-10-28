@@ -87,7 +87,7 @@ const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
                         xs: 'flex',
                         md: 'none'
                     },
-                    justifyContent: 'right'
+                    justifyContent: 'right',
                 }}>
                 <Box
                     sx={{

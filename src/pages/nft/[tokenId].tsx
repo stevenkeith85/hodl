@@ -17,6 +17,7 @@ import { DetailPageAsset } from "../../components/nft/DetailPageAsset";
 
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
+import Skeleton from '@mui/material/Skeleton';
 
 
 const TokenHeader = dynamic(
@@ -32,7 +33,7 @@ const TokenActionBox = dynamic(
   () => import('../../components/nft/TokenActionBox'),
   {
     ssr: false,
-    loading: () => null
+    loading: () => <Skeleton variant="rectangular" width="100%" height="20px" animation="wave" />
   }
 );
 
@@ -41,7 +42,7 @@ const SocialTab = dynamic(
   () => import('../../components/nft/SocialTab'),
   {
     ssr: false,
-    loading: () => null
+    loading: () => <Skeleton variant="rectangular" width="100%" height="430px" animation="wave" />
   }
 );
 
@@ -50,7 +51,7 @@ const MarketTab = dynamic(
   () => import('../../components/nft/MarketTab'),
   {
     ssr: false,
-    loading: () => null
+    loading: () => <Skeleton variant="rectangular" width="100%" height="158px" animation="wave" />
   }
 );
 
@@ -59,7 +60,11 @@ const TokenDataTab = dynamic(
   () => import('../../components/nft/TokenDataTab'),
   {
     ssr: false,
-    loading: () => null
+    loading: () => <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+    <Skeleton variant="rectangular" width="100%" height="127.18px" animation="wave" />
+    <Skeleton variant="rectangular" width="100%" height="169.19px" animation="wave" />
+    <Skeleton variant="rectangular" width="100%" height="180.17px" animation="wave" />
+  </Box>
   }
 );
 
@@ -145,7 +150,7 @@ const NftDetail = ({
               }}>
               <Box
                 sx={{
-                  lineHeight: 0,
+                  // lineHeight: 0,
                   display: 'flex',
                   flexDirection: 'column',
                   gap: {

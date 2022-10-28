@@ -1,8 +1,6 @@
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 
-import Container from '@mui/material/Container';
-
 import { authenticate } from '../lib/jwt';
 import { FeedContext } from '../contexts/FeedContext';
 import { useActions } from '../hooks/useActions';
@@ -19,9 +17,9 @@ import { useHodlingCount } from '../hooks/useHodlingCount';
 import { useListedCount } from '../hooks/useListedCount';
 import { useNewTokens } from '../hooks/useNewTokens';
 import { delayForDemo } from '../lib/utils';
+
 import PublicHomePageLoading from '../components/layout/PublicHomeLoading';
-// import PublicHomePage from '../components/layout/PublicHomePage';
-// import PrivateHomePage from '../components/layout/PrivateHomePage';
+import PrivateHomePageLoading from '../components/layout/PrivateHomePageLoading';
 
 
 const PublicHomePage = dynamic(
@@ -39,7 +37,7 @@ const PrivateHomePage = dynamic(
   // () => delayForDemo(import('../components/layout/PrivateHomePage')),
   {
     ssr: false,
-    loading: () => null
+    loading: () => <PrivateHomePageLoading />
   }
 );
 
@@ -115,9 +113,7 @@ export default function Home({
         newTokens
       }}>
         {!address &&
-          <Container maxWidth="xl">
-            <PublicHomePage />
-          </Container>
+          <PublicHomePage />
         }
         {address &&
           <FeedContext.Provider
@@ -130,10 +126,8 @@ export default function Home({
                 followingCount
               }}
             >
-              <Container maxWidth="xl">
-                {/* @ts-ignore */}
-                <PrivateHomePage user={user} address={address} />
-              </Container>
+              {/* @ts-ignore */}
+              <PrivateHomePage user={user} address={address} />
             </UserContext.Provider>
           </FeedContext.Provider>
         }
@@ -141,21 +135,3 @@ export default function Home({
     </>
   )
 }
-
-// export async function getServerSideProps({ req, res }) {
-//   console.log('home server side')
-//   await authenticate(req, res);
-
-//   return {
-//     props: {
-//       address: req.address || null,
-//     }
-//   }
-// }
-
-// export default function Home({ address }) {
-//   console.log('home client side')
-//   return (
-//     <h1>Home</h1>
-//   )
-// } 
