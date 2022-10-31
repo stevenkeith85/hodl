@@ -21,7 +21,7 @@ export const SessionExpiredModal = ({ modalOpen, setModalOpen }) => {
         <Typography sx={{ fontSize: '18px', color: theme => theme.palette.text.secondary }}>
           You will need to log in again with MetaMask
         </Typography>
-        <Box>
+        <div>
           <Button
             variant="contained"
             color="primary"
@@ -38,7 +38,7 @@ export const SessionExpiredModal = ({ modalOpen, setModalOpen }) => {
           >
             Close
           </Button>
-        </Box>
+        </div>
       </Stack>
     </HodlModal >
   )

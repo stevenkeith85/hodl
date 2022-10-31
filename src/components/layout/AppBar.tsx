@@ -3,13 +3,10 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 
-import AppBar from '@mui/material/AppBar';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Container from '@mui/material/Container';
-import Skeleton from '@mui/material/Skeleton';
 
 import CloseIcon from '@mui/icons-material/Close';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
@@ -182,13 +179,19 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
     return (
         <>
             <SessionExpiredModal modalOpen={sessionExpired} setModalOpen={setSessionExpired} />
-            <AppBar
-                position="fixed"
+            <Box
                 sx={{
-                    width: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    boxSizing: 'border-box',
+                    position: 'fixed',
+                    zIndex: 1100,
+                    top: 0,
+                    right: 0,
+                    color: 'white',
                     background: 'white',
+                    width: '100%',
                     maxWidth: `100vw`,
-                    left: 0,
                     boxShadow: 'none',
                     borderBottom: `1px solid #ddd`
                 }}>
@@ -198,7 +201,12 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                         width: '100%',
                         position: 'relative'
                     }}>
-                    <Toolbar disableGutters>
+                    <Box sx={{
+                        minHeight: '64px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        position: 'relative'
+                    }}>
                         <Box sx={{
                             display: 'flex',
                             width: '100%',
@@ -466,7 +474,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                 />
                             </Box>
                         </Box>
-                    </Toolbar>
+                    </Box>
                 </Container>
                 {
                     mobileSearchOpen &&
@@ -475,13 +483,15 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                         setMobileSearchOpen={setMobileSearchOpen}
                     />
                 }
-            </AppBar>
-            <Toolbar disableGutters />
+            </Box>
+            <Box sx={{
+                minHeight: '64px',
+                display: 'flex',
+                alignItems: 'center',
+                position: 'relative'
+            }} />
         </>
     );
 };
 
-// const ResponsiveAppBar = ({  }) => {
-//     return <h1>Appbar</h1>
-// }
 export default ResponsiveAppBar;

@@ -73,7 +73,6 @@ export const UserAvatarAndHandle: React.FC<UserAvatarProps> = ({
         {
             withLink ?
                 <Link href={`/profile/${user?.nickname || user?.address}`}>
-
                     <UserAvatarAndHandleBody
                         user={user}
                         size={size}

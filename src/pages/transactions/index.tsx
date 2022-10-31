@@ -1,15 +1,21 @@
-import { Alert, Box, Button, Link, NoSsr, Tab, Table, TableBody, TableCell, TableHead, TableRow, Tabs, TextField, Typography } from "@mui/material";
-import { authenticate } from "../../lib/jwt";
-import axios from 'axios';
-import { format, fromUnixTime } from "date-fns";
 import { useState } from "react";
-import { HodlBorderedBox } from "../../components/HodlBorderedBox";
+
 import Head from "next/head";
-import { SuccessModal } from "../../components/modals/SuccessModal";
-import { FailureModal } from "../../components/modals/FailureModal";
-import { getUser } from "../api/user/[handle]";
-import useSWR from "swr";
+
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Link from "@mui/material/Link";
+import TableCell from "@mui/material/TableCell";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
+
 import InfiniteScroll from "react-swr-infinite-scroll";
+
+import { format, fromUnixTime } from "date-fns";
+
+import { authenticate } from "../../lib/jwt";
+import { HodlBorderedBox } from "../../components/HodlBorderedBox";
+import { getUser } from "../api/user/[handle]";
 import { useTransactions } from "../../hooks/useTransactions";
 import { HodlLoadingSpinner } from "../../components/HodlLoadingSpinner";
 
@@ -240,12 +246,6 @@ export default function Transaction({ address, user, limit = 10 }) {
                                 <Typography mb={1}>
                                     This is the set of transactions that are currently queued for processing.
                                 </Typography>
-                                {/* <Typography mb={1}>
-                                    A transaction will remain queued until it has been confirmed on the blockchain; and all transactions with a lower nonce have been processed.
-                                </Typography>
-                                <Typography mb={1}>
-                                    If you think a transaction has gotten 'stuck', please contact support.
-                                </Typography> */}
                             </Box>
                             <PendingTransactionsTable limit={limit} />
                         </Box>
@@ -259,9 +259,6 @@ export default function Transaction({ address, user, limit = 10 }) {
                                 <Typography mb={1}>
                                     This is the set of transactions that we have successfully processed.
                                 </Typography>
-                                {/* <Typography mb={1}>
-                                    If your latest transaction is not here, it might still be queued for processing.
-                                </Typography> */}
                             </Box>
                             <ProcessedTransactionsTable limit={limit} />
                         </Box>

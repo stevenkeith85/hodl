@@ -11,9 +11,10 @@ import { HodlBorderedBox } from "../../components/HodlBorderedBox";
 import Typography from "@mui/material/Typography";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
+
 import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
+import InputBase from "@mui/material/InputBase";
 
 
 const SuccessModal = dynamic(
@@ -116,7 +117,7 @@ export default function Transaction({ address }) {
                         flexDirection: 'column',
                     }}
                 >
-                    <Box>
+                    <div>
                         <Alert
                             severity="error"
                             sx={{
@@ -167,12 +168,16 @@ export default function Transaction({ address }) {
                                 alignItems: 'center',
                                 paddingY: 2
                             }}>
-                            <TextField
-                                sx={{ width: 600 }}
+                            <InputBase
+                                sx={{ 
+                                    border: `1px solid #ddd`,
+                                    borderRadius: 1,
+                                    padding: 1,
+                                    width: 600 
+                                }}
                                 id="tx"
                                 value={hash}
                                 onChange={e => setHash(e.target.value)}
-                                label="Transaction ID (Hash)"
                             />
                             <Button
                                 disabled={buttonDisabled}
@@ -196,7 +201,7 @@ export default function Transaction({ address }) {
                                 You can get your transaction ID from MetaMask.
                             </Typography>
                         </Link>
-                    </Box>
+                    </div>
                 </HodlBorderedBox>
             </Box>
         </>)

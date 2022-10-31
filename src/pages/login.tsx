@@ -132,7 +132,7 @@ export default function LoginPage({ hasReadPermission }) {
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                         />
-                                        <Box>
+                                        <div>
                                             <Button
                                                 sx={{
                                                     marginX: 2,
@@ -151,7 +151,7 @@ export default function LoginPage({ hasReadPermission }) {
                                             >
                                                 Login
                                             </Button>
-                                        </Box>
+                                        </div>
                                     </Box>
                                 </form>
                             </Box>
@@ -184,7 +184,7 @@ export default function LoginPage({ hasReadPermission }) {
                             color: theme => theme.palette.text.secondary
                         }}
                     >I&apos;d like early access...</Typography>
-                    <Box>
+                    <div>
                         <form
                             action="https://hodlmymoon.us9.list-manage.com/subscribe/post?u=ec30c975c5c1d85f780a863c0&amp;id=8528416789&amp;f_id=00f60fe1f0"
                             method="post"
@@ -217,7 +217,7 @@ export default function LoginPage({ hasReadPermission }) {
                                         value=""
                                     />
                                 </Box>
-                                <Box>
+                                <div>
                                     <Button
                                         sx={{
                                             marginX: 2,
@@ -232,11 +232,10 @@ export default function LoginPage({ hasReadPermission }) {
                                     >
                                         Submit
                                     </Button>
-                                </Box>
+                                </div>
                             </Box>
                         </form>
-                    </Box>
-
+                    </div>
                 </Box>
                 <Box sx={{
                     display: 'flex',

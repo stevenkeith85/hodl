@@ -18,9 +18,9 @@ interface TokenTooltipProps {
 }
 export const TokenTooltip: React.FC<TokenTooltipProps> = ({ token }) => {
     return (
-        <Box>
+        <div>
             <Typography sx={{ fontSize: 14 }}>{token.name}</Typography>
-        </Box>
+        </div>
     )
 }
 export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token, size = 44 }) => (

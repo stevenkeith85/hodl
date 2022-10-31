@@ -15,10 +15,10 @@ interface LoginLogoutButtonProps {
     sx?: object;
 }
 
-export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({ 
-    color="secondary", 
-    variant="outlined", 
-    fontSize='14px', 
+export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
+    color = "secondary",
+    variant = "outlined",
+    fontSize = '14px',
     sx = null,
 
 }) => {
@@ -30,6 +30,8 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
         <>
             {!address &&
                 <Button
+                    // @ts-ignore
+                    disabled={!window.ethereum}
                     color={color}
                     variant={variant}
                     sx={{
@@ -37,14 +39,16 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
                         ...sx,
                     }}
                     onClick={async e => {
-                        e.stopPropagation();                            
-                            await connect(false);
-                            window.location.href = router.asPath;
+                        e.stopPropagation();
+                        await connect(false);
+                        window.location.href = router.asPath;
                     }}
                     startIcon={<AccountBalanceWalletIcon />}
                 >Connect</Button>}
             {address &&
                 <Button
+                    // @ts-ignore
+                    disabled={!window.ethereum}
                     color={color}
                     variant={variant}
                     sx={{

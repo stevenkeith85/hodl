@@ -75,7 +75,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                                 color={"primary"}
                                                 profileAddress={item.subject}
                                                 fallbackData={item.user}
-                                                sx={{ fontWeight: 600 }}
+                                                fontWeight={600}
                                             />}
                                         {item?.subject && item?.subject === address &&
                                             <Typography component="span" sx={{ fontWeight: 600 }}>You</Typography>
@@ -189,7 +189,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                             <HodlShareMenu nft={item.token} />
                         </Box>
                     }
-                    <Box>
+                    <div>
                         <Link
                             href={
                                 item.action === ActionTypes.Listed ?
@@ -212,7 +212,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                 insertTagLinks(item.token?.description)
                             }
                         </Box>
-                    </Box>
+                    </div>
                 </Box>}
         </>
     )
