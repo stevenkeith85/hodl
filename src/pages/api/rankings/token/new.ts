@@ -1,5 +1,5 @@
 import { Token } from "../../../../models/Token";
-import { getTokens } from "../../../../lib/database/Tokens";
+import { getTokens } from "../../../../lib/database/rest/Tokens";
 import { getAsString } from "../../../../lib/getAsString";
 import { NextRequest, NextResponse } from 'next/server';
 

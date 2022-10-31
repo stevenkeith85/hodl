@@ -5,7 +5,7 @@ import apiRoute from "../../handler";
 import { UserViewModel } from "../../../../models/User";
 
 
-import { getUserVMs } from "../../../../lib/database/userVMs";
+import { getUserVMs } from "../../../../lib/database/client/userVMs";
 import { getAsString } from "../../../../lib/getAsString";
 
 

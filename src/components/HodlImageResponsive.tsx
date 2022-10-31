@@ -19,12 +19,12 @@ export const HodlImageResponsive = ({
 
     onLoad = null,
     lcp = false, // set true if this image is the largest content paint so that it takes priority on loading
-    extension=null
+    extension = null
 }) => {
 
     const srcSet = widths.map(width => `${makeCloudinaryUrl(assetFolder as "image" | "video", folder as "nfts" | "uploads", cid, { crop: 'fill', effect, aspect_ratio: aspectRatio, width: `${width}`, round }, extension)} ${width}w`).join(',');
 
-    const src = makeCloudinaryUrl(assetFolder as "image" | "video", folder as "nfts" | "uploads", cid, { crop: 'fill', effect, aspect_ratio: aspectRatio, width: `${widths[0]}`, round}, extension);
+    const src = makeCloudinaryUrl(assetFolder as "image" | "video", folder as "nfts" | "uploads", cid, { crop: 'fill', effect, aspect_ratio: aspectRatio, width: `${widths[0]}`, round }, extension);
 
     const imgRef = useRef(null);
 
@@ -71,32 +71,49 @@ export const HodlImageResponsive = ({
                     width: `100%`,
                     paddingTop: `${getTopPadding(aspectRatio)}%`
                 }}>
-
-                    
                 <Box
                     sx={{
                         position: aspectRatio ? 'absolute' : 'static',
                         top: 0,
                         left: 0,
-                        width:  '100%',
+                        width: '100%',
                         img: {
                             width: `100%`
                         }
                     }}>
-                    <img
-                        onLoad={() => {
-                            if (onLoad) {
-                                onLoad();
-                            }
-                        }}
-                        src={src}
-                        srcSet={srcSet}
-                        alt=""
-                        sizes={sizes}
-                        loading="eager"
-                        decoding="auto"
-                        ref={imgRef}
-                    />
+                    {lcp ?
+                        <img
+                            // @ts-ignore
+                            fetchpriority="high"
+                            onLoad={() => {
+                                if (onLoad) {
+                                    onLoad();
+                                }
+                            }}
+                            src={src}
+                            srcSet={srcSet}
+                            alt=""
+                            sizes={sizes}
+                            loading="eager"
+
+                            decoding="auto"
+                            ref={imgRef}
+                        /> :
+                        <img
+                            onLoad={() => {
+                                if (onLoad) {
+                                    onLoad();
+                                }
+                            }}
+                            src={src}
+                            srcSet={srcSet}
+                            alt=""
+                            sizes={sizes}
+                            loading="eager"
+                            decoding="auto"
+                            ref={imgRef}
+                        />
+                    }
                 </Box>
             </Box>
         </>
