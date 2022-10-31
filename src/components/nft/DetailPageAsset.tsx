@@ -106,7 +106,7 @@ export const DetailPageAsset: React.FC<DetailPageAssetProps> = ({ token }) => {
                             assetFolder="image"
                             gif={true}
                             onLoad={() => setLoading(false)}
-                            aspectRatio={token?.properties?.aspectRatio}
+                            aspectRatio={token?.properties?.aspectRatio || "1:1"}
                         />
                     </Box>
                 }
