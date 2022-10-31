@@ -4,13 +4,32 @@ import createEmotionServer from '@emotion/server/create-instance';
 
 import theme from '../theme';
 import createEmotionCache from '../createEmotionCache';
-
+import Script from 'next/script'
 
 export default class MyDocument extends Document {
   render() {
     return (
       <Html lang='en'>
         <Head>
+          <Script
+            id="gtagman"
+            strategy="afterInteractive"
+            src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_TRACKING_ID}`}
+          />
+          <Script
+            id="gtag"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
+                      window.dataLayer = window.dataLayer || [];
+
+                      function gtag() {
+                        window.dataLayer.push(arguments)
+                      }
+
+                      gtag('js', new Date());
+                      gtag('config', '${process.env.NEXT_PUBLIC_GA_TRACKING_ID}');`
+            }} />
           {/* PWA primary color */}
           <meta name="theme-color" content={theme.palette.primary.main} />
           <meta name="emotion-insertion-point" content="" />
@@ -25,7 +44,7 @@ export default class MyDocument extends Document {
           <Main />
           <NextScript />
         </body>
-      </Html>
+      </Html >
     )
   }
 }
@@ -65,9 +84,9 @@ MyDocument.getInitialProps = async (ctx) => {
   ctx.renderPage = () =>
     originalRenderPage({
       enhanceApp: (App: any) =>
-        (function EnhanceApp(props) {
-          return <App emotionCache={cache} {...props} />;
-        }),
+      (function EnhanceApp(props) {
+        return <App emotionCache={cache} {...props} />;
+      }),
     });
 
   const initialProps = await Document.getInitialProps(ctx);
