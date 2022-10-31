@@ -75,7 +75,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                                 color={"primary"}
                                                 profileAddress={item.subject}
                                                 fallbackData={item.user}
-                                                sx={{ fontWeight: 600 }}
+                                                fontWeight={600}
                                             />}
                                         {item?.subject && item?.subject === address &&
                                             <Typography component="span" sx={{ fontWeight: 600 }}>You</Typography>

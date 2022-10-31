@@ -12,6 +12,7 @@ import { Typography } from '@mui/material';
 interface ProfileNameOrAddressProps {
     profileAddress: string;
     fontSize?: string;
+    fontWeight?: number;
     color?: "primary" | "secondary" | "inherit";
     sx?: object | null;
     fallbackData?: UserViewModel | null;
@@ -20,6 +21,8 @@ interface ProfileNameOrAddressProps {
 
 export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({
     profileAddress,
+    fontSize = '14px',
+    fontWeight =  500,
     color = "inherit",
     sx = null,
     fallbackData = null,
@@ -50,13 +53,13 @@ export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({
             ...sx
         }}>
         {user.nickname ?
-            <Link href={`/profile/${user.nickname}`} passHref>
-                <Typography color={color}>{you ? 'You' : truncateText(user.nickname, 20)}</Typography>
+            <Link href={`/profile/${user.nickname}`}>
+                <Typography component="span" fontSize={fontSize} fontWeight={fontWeight} color={color}>{you ? 'You' : truncateText(user.nickname, 20)}</Typography>
             </Link>
             :
-            <Link href={`/profile/${user.address}`} passHref>
+            <Link href={`/profile/${user.address}`}>
                 <Tooltip title={user.address} arrow placement="right">
-                    <Typography color={color}>{getShortAddress(user.address)}</Typography>
+                    <Typography component="span" fontSize={fontSize} fontWeight={fontWeight} color={color}>{getShortAddress(user.address)}</Typography>
                 </Tooltip>
             </Link >
 

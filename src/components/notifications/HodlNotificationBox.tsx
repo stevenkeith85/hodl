@@ -111,7 +111,7 @@ const NotificationLink: React.FC<NotificationLinkProps> = ({ item }) => {
                     color={"primary"}
                     profileAddress={item.subject}
                     fallbackData={item.user}
-                    sx={{ fontWeight: 600 }}
+                    fontWeight={600}
                     you={item?.subject === address}
                 />}
 

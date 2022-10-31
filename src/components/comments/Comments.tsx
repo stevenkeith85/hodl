@@ -51,7 +51,9 @@ export const Comments: FC<CommentsProps> = ({
                         width: {
                             xs: '90vw',
                         },
-                        maxWidth: "1200px"
+                        maxWidth: "1200px",
+                       maxHeight: '90vh',
+                       overflow: 'auto'
                     }}
                 >
                     <HodlCommentsBox
@@ -59,7 +61,6 @@ export const Comments: FC<CommentsProps> = ({
                         maxHeight="80vh"
                         minHeight="40vh"
                     />
-
                 </HodlModal>
                 <Box
                     display="flex"
