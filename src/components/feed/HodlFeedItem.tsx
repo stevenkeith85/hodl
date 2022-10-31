@@ -189,7 +189,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                             <HodlShareMenu nft={item.token} />
                         </Box>
                     }
-                    <Box>
+                    <div>
                         <Link
                             href={
                                 item.action === ActionTypes.Listed ?
@@ -212,7 +212,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                                 insertTagLinks(item.token?.description)
                             }
                         </Box>
-                    </Box>
+                    </div>
                 </Box>}
         </>
     )

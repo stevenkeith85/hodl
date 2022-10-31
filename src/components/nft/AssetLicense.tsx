@@ -26,7 +26,7 @@ export const AssetLicense = ({ nft }) => {
                         arrow>
                         <span>License</span></Tooltip>
                 </Typography>
-                <Box>
+                <div>
                     {nft.properties.asset.license === token && <>
                         <Chip
                             label="Token Only"
@@ -51,10 +51,10 @@ export const AssetLicense = ({ nft }) => {
                             variant="outlined"
                         />
                     }
-                </Box>
+                </div>
             </Box>
-            <Box>
-                <Box>
+            <div>
+                <div>
                     {nft.properties.asset.license === token &&
                         <NoLicenseText />
 
@@ -65,8 +65,8 @@ export const AssetLicense = ({ nft }) => {
                     {nft.properties.asset.license === commercial &&
                         <CommercialText />
                     }
-                </Box>
-            </Box>
+                </div>
+            </div>
         </Box >
     )
 }

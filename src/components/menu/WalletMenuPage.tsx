@@ -147,15 +147,14 @@ export const WalletMenuPage: React.FC<WalletMenuPageProps> = ({
                                 Don&apos;t have MetaMask? Get it <Link href="https://metamask.io/download/">here</Link>
                             </Typography>
                             
-                            <Box>
+                            <div>
                                 <LoginLogoutButton
                                     sx={{
                                         paddingY: 1,
                                         paddingX: 2,
                                         textTransform: 'lowercase'
                                     }} />
-                            </Box>
-
+                            </div>
                         </Box>
                     }
                 </Box>

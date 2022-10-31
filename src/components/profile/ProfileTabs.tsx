@@ -24,7 +24,7 @@ export const ProfileTabs = ({
           width: '100%'
         }}
       >
-        <Link href={`/profile/${owner.nickname || owner.address}`}>
+
           <Tab
             component="span"
             onClick={(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
@@ -65,12 +65,6 @@ export const ProfileTabs = ({
               margin: 0
             }}
           />
-        </Link>
-        {/* Listed */}
-        <Link
-          href={`/profile/${owner.nickname || owner.address}?tab=1`}
-          passHref
-          legacyBehavior>
           <Tab
             component="span"
             onClick={(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
@@ -111,11 +105,6 @@ export const ProfileTabs = ({
               margin: 0
             }}
           />
-        </Link>
-        <Link
-          href={`/profile/${owner.nickname || owner.address}?tab=2`}
-          passHref
-          legacyBehavior>
           <Tab
             component="span"
             onClick={(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
@@ -151,11 +140,6 @@ export const ProfileTabs = ({
               margin: 0
             }}
           />
-        </Link>
-        <Link
-          href={`/profile/${owner.nickname || owner.address}?tab=3`}
-          passHref
-          legacyBehavior>
           <Tab
             component="span"
             onClick={(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
@@ -193,7 +177,6 @@ export const ProfileTabs = ({
               margin: 0
             }}
           />
-        </Link>
       </Tabs>
     )
   }

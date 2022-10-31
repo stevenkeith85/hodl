@@ -52,7 +52,7 @@ export const ListModal = ({
                         </InputAdornment>,
                     }}
                 />
-                <Box>
+                <div>
                     <Button
                         variant="contained"
                         sx={{ paddingY: 1.5, paddingX: 3 }}
@@ -82,7 +82,7 @@ export const ListModal = ({
                     >
                         List
                     </Button>
-                </Box>
+                </div>
             </Box>
         </HodlModal>
     )

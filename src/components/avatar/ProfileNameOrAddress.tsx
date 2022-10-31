@@ -7,6 +7,7 @@ import theme from '../../theme';
 import { truncateText } from '../../lib/truncateText';
 import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
+import { Typography } from '@mui/material';
 
 interface ProfileNameOrAddressProps {
     profileAddress: string;
@@ -50,14 +51,12 @@ export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({
         }}>
         {user.nickname ?
             <Link href={`/profile/${user.nickname}`} passHref>
-                {
-                    you ? 'You' : truncateText(user.nickname, 20)
-                }
+                <Typography color={color}>{you ? 'You' : truncateText(user.nickname, 20)}</Typography>
             </Link>
             :
             <Link href={`/profile/${user.address}`} passHref>
                 <Tooltip title={user.address} arrow placement="right">
-                    <>{getShortAddress(user.address)}</>
+                    <Typography color={color}>{getShortAddress(user.address)}</Typography>
                 </Tooltip>
             </Link >
 

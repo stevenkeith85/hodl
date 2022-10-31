@@ -24,23 +24,23 @@ export const HodlerCreatorCard: React.FC<HodlerCreatorCardProps> = ({ hodler, cr
                     <span>Author &amp; Hodler</span></Tooltip>
             </Typography>
 
-            <Box sx={{ display: 'grid', gap: 2}}>
-                <Box>
-                <Typography>Author</Typography>
-                <ProfileNameOrAddress
-                    profileAddress={creator}
-                    color={"primary"}
-                    fontSize="14px"
-                />
-                </Box>
-                <Box>
-                <Typography>Hodler</Typography>
-                <ProfileNameOrAddress
-                    profileAddress={hodler}
-                    color={"primary"}
-                    fontSize="14px"
-                />
-                </Box>
+            <Box sx={{ display: 'grid', gap: 2 }}>
+                <div>
+                    <Typography>Author</Typography>
+                    <ProfileNameOrAddress
+                        profileAddress={creator}
+                        color={"primary"}
+                        fontSize="14px"
+                    />
+                </div>
+                <div>
+                    <Typography>Hodler</Typography>
+                    <ProfileNameOrAddress
+                        profileAddress={hodler}
+                        color={"primary"}
+                        fontSize="14px"
+                    />
+                </div>
             </Box>
         </Box>
     )

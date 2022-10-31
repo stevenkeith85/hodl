@@ -1,8 +1,6 @@
 import { useState } from 'react';
 
-import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
@@ -32,12 +30,19 @@ const AppBarLoading = ({ address }) => {
 
     return (
         <>
-            <AppBar
-                position="fixed"
+            <Box
                 sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    boxSizing: 'border-box',
+                    position: 'fixed',
+                    zIndex: 1100,
+                    top: 0,
+                    right: 0,
+                    color: 'white',
                     background: 'white',
+                    width: '100%',
                     maxWidth: `100vw`,
-                    left: 0,
                     boxShadow: 'none',
                     borderBottom: `1px solid #ddd`
                 }}>
@@ -47,7 +52,12 @@ const AppBarLoading = ({ address }) => {
                         width: '100%',
                         position: 'relative'
                     }}>
-                    <Toolbar disableGutters>
+                    <Box sx={{
+                        minHeight: '64px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        position: 'relative'
+                    }}>
                         <Box sx={{
                             display: 'flex',
                             width: '100%',
@@ -210,10 +220,15 @@ const AppBarLoading = ({ address }) => {
                                 </Box>
                             </Box>
                         </Box>
-                    </Toolbar>
+                    </Box>
                 </Container>
-            </AppBar>
-            <Toolbar disableGutters />
+            </Box>
+            <Box sx={{
+                minHeight: '64px',
+                display: 'flex',
+                alignItems: 'center',
+                position: 'relative'
+            }} />
         </>
     );
 };

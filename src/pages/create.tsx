@@ -1,16 +1,14 @@
-import dynamic from "next/dynamic";
-import Head from 'next/head'
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
 import { useState } from "react";
 
-import { MintProgressButtons } from '../components/mint/MintProgressButtons'
+import dynamic from "next/dynamic";
+import Head from 'next/head'
+
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+
 import { HodlLoadingSpinner } from '../components/HodlLoadingSpinner'
-import { AssetPreview } from '../components/mint/AssetPreview'
 import { authenticate } from '../lib/jwt'
 import { useWarningOnExit } from '../hooks/useWarningOnExit'
-import { CropAssetAction } from '../components/mint/CropAssetAction'
-import { FilterAssetAction } from '../components/mint/FilterAssetAction'
 import { assetTypeFromMimeType } from '../lib/utils'
 import { AssetTypes } from '../models/AssetType'
 
@@ -22,6 +20,23 @@ const SelectAssetAction = dynamic(
     loading: () => <HodlLoadingSpinner />
   }
 );
+
+const CropAssetAction = dynamic(
+  () => import('../components/mint/CropAssetAction').then((module) => module.CropAssetAction),
+  {
+    ssr: false,
+    loading: () => <HodlLoadingSpinner />
+  }
+);
+
+const FilterAssetAction = dynamic(
+  () => import('../components/mint/FilterAssetAction').then((module) => module.FilterAssetAction),
+  {
+    ssr: false,
+    loading: () => <HodlLoadingSpinner />
+  }
+);
+
 const UploadToIpfsAction = dynamic(
   () => import('../components/mint/UploadToIpfsAction').then((module) => module.UploadToIpfsAction),
   {
@@ -29,6 +44,7 @@ const UploadToIpfsAction = dynamic(
     loading: () => <HodlLoadingSpinner />
   }
 );
+
 const MintTokenAction = dynamic(
   () => import('../components/mint/MintTokenAction').then((module) => module.MintTokenAction),
   {
@@ -36,6 +52,23 @@ const MintTokenAction = dynamic(
     loading: () => <HodlLoadingSpinner />
   }
 );
+
+const AssetPreview = dynamic(
+  () => import('../components/mint/AssetPreview').then((module) => module.AssetPreview),
+  {
+    ssr: false,
+    loading: () => <HodlLoadingSpinner />
+  }
+);
+
+const MintProgressButtons = dynamic(
+  () => import('../components/mint/MintProgressButtons').then((module) => module.MintProgressButtons),
+  {
+    ssr: false,
+    loading: () => null
+  }
+);
+
 
 export async function getServerSideProps({ req, res }) {
   await authenticate(req, res);

@@ -23,11 +23,11 @@ export const FilterAssetAction: FC<FilterAssetActionProps> = ({
   }, [activeStep])
 
   return (
-    <Box>
+    <div>
       <FilterButtons
         formData={formData}
         setFormData={setFormData}
       />
-    </Box >
+    </div>
   )
 }

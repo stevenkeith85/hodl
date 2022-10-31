@@ -46,7 +46,7 @@ export const HodlCommentsBoxBody = ({
 
             }
             {topLevelObject === "token" ?
-                <Box>
+                <div>
                     <InfiniteScrollComments
                         swr={swr}
                         limit={limit}
@@ -57,8 +57,7 @@ export const HodlCommentsBoxBody = ({
                         mutateCount={countSWR.mutate}
                     />
                     {swr?.data && swr?.data[0]?.items?.length === 0 && <Typography>No comments</Typography>}
-
-                </Box> :
+                </div> :
                 comment && <HodlCommentBox
                     color="primary"
                     shouldShowThread={true}

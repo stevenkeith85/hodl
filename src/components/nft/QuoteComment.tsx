@@ -24,10 +24,10 @@ export const QuoteComment = ({ reset, id, color }) => {
                 borderColor: theme => theme.palette[color].main
             }}
         >
-            <Box>
-                <ProfileNameOrAddress profileAddress={comment?.user?.address} fallbackData={comment?.user} color={color}/>
+            <div>
+                <ProfileNameOrAddress profileAddress={comment?.user?.address} fallbackData={comment?.user} color={color} />
                 <Typography sx={{ color: '#666' }}>{truncateText(comment?.comment || '...', 80)}</Typography>
-            </Box>
+            </div>
             <HighlightOffOutlined
                 sx={{ cursor: 'pointer', position: 'absolute', right: 8, top: 8, color: '#999' }}
                 fontSize="inherit"

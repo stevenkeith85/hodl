@@ -3,7 +3,6 @@ import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import { grey } from "@mui/material/colors";
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Link from 'next/link';
 
@@ -12,7 +11,7 @@ const Footer = ({
     // address 
 }) => {
     return (
-        <Box>
+        <div>
             <Box sx={{
                 backgroundColor: '#efefef',
                 borderTop: `1px solid #ddd`,
@@ -27,14 +26,17 @@ const Footer = ({
                         xs: 4,
                     },
                 }}>
-                    <Stack
-                        direction={{ xs: 'column-reverse', md: 'row' }}
-                        spacing={{
-                            xs: 4,
-                            md: 10
-                        }}
+                    <Box
                         sx={{
                             display: 'flex',
+                            flexDirection: {
+                                xs: 'column-reverse',
+                                md: 'row'
+                            },
+                            gap: {
+                                xs: 4,
+                                md: 10
+                            },
                             justifyContent: {
                                 md: 'space-between'
                             },
@@ -48,17 +50,26 @@ const Footer = ({
                             }
                         }}
                     >
-                        <Stack
-                            direction={{
-                                xs: 'column-reverse',
-                                md: 'row'
-                            }}
-                            spacing={{
-                                xs: 4,
-                                md: 12
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexDirection: {
+                                    xs: 'column-reverse',
+                                    md: 'row'
+                                },
+                                gap: {
+                                    xs: 4,
+                                    md: 12
+                                }
                             }}
                         >
-                            <Stack spacing={1}>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: 1,
+                                }}
+                            >
                                 <Typography
                                     sx={{
                                         fontWeight: 600,
@@ -69,17 +80,29 @@ const Footer = ({
                                 <Link href="/about">about</Link>
                                 <Link href="/contact">contact</Link>
 
-                            </Stack>
-                            <Stack spacing={1}>
+                            </Box>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: 1,
+                                }}
+                            >
                                 <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>tokens</Typography>
                                 <Link href="/explore">explore</Link>
                                 {
                                     // address &&
                                     <Link href="/create">create</Link>
                                 }
-                            </Stack>
-                        </Stack>
-                        <Box display="flex" justifyContent="center" alignItems="center" textAlign="center" gap={1}>
+                            </Box>
+                        </Box>
+                        <Box
+                            display="flex"
+                            justifyContent="center"
+                            alignItems="center"
+                            textAlign="center"
+                            gap={1}
+                        >
                             <Typography
                                 sx={{
                                     fontFamily: theme => theme.logo.fontFamily,
@@ -89,7 +112,7 @@ const Footer = ({
                                 Hodl My Moon
                             </Typography>
                         </Box>
-                    </Stack>
+                    </Box>
                 </Container>
             </Box>
             <Box sx={{ backgroundColor: 'white' }}>
@@ -104,16 +127,14 @@ const Footer = ({
                         },
                     }}
                 >
-                    <Stack
-                        direction={{
-                            xs: 'column',
-                            md: 'row',
-                        }}
-                        spacing={{
-                            xs: 1,
-                        }}
+                    <Box
                         sx={{
                             display: 'flex',
+                            flexDirection: {
+                                xs: 'column',
+                                md: 'row',
+                            },
+                            gap: 1,
                             justifyContent: {
                                 xs: 'center',
                                 md: 'space-between'
@@ -131,10 +152,10 @@ const Footer = ({
                             <RocketLaunchIcon sx={{ fontSize: 16, color: grey[500] }} />
                         </Box>
                         <Typography sx={{ color: grey[500], fontSize: '12px' }}>Copyright © 2022 Pony Powered Limited.</Typography>
-                    </Stack>
+                    </Box>
                 </Container>
             </Box>
-        </Box >
+        </div >
     )
 }
 

@@ -116,7 +116,7 @@ export default function Transaction({ address }) {
                         flexDirection: 'column',
                     }}
                 >
-                    <Box>
+                    <div>
                         <Alert
                             severity="error"
                             sx={{
@@ -196,7 +196,7 @@ export default function Transaction({ address }) {
                                 You can get your transaction ID from MetaMask.
                             </Typography>
                         </Link>
-                    </Box>
+                    </div>
                 </HodlBorderedBox>
             </Box>
         </>)

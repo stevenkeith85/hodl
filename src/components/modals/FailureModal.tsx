@@ -17,7 +17,7 @@ export const FailureModal = ({ modalOpen, setModalOpen, message }) => {
       <Stack spacing={3} textAlign="center">
         <Typography variant="h2" sx={{ fontSize: '18px', fontWeight: 600 }}>Something has gone wrong</Typography>
         <Typography sx={{ fontSize: '18px', color: theme => theme.palette.text.secondary }}>{message}</Typography>
-        <Box>
+        <div>
           <Button
             variant="contained"
             color="primary"
@@ -32,7 +32,7 @@ export const FailureModal = ({ modalOpen, setModalOpen, message }) => {
           >
             Close
           </Button>
-        </Box>
+        </div>
       </Stack>
     </HodlModal >
   )

@@ -246,12 +246,12 @@ export default function Search({
             </Box>
           </Box>
         </Box>
-        <Box>
+        <div>
           {!results.isValidating && results.data && results.data[0] && results.data[0].total === 0 &&
             <HodlImpactAlert message={"We can't find anything at the moment"} title="Sorry" />
           }
           <InfiniteScrollNftWindows swr={results} limit={limit} pattern={false} />
-        </Box>
+        </div>
       </Box>
     </>
   )

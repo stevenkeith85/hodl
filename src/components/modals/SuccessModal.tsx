@@ -1,4 +1,3 @@
-import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -20,7 +19,7 @@ export const SuccessModal = ({
       <Stack spacing={3} textAlign="center">
         <Typography variant="h2" sx={{ fontSize: '18px', fontWeight: 600 }}>Success</Typography>
         { children }
-        <Box>
+        <div>
           <Button
             variant="contained"
             color="primary"
@@ -35,7 +34,7 @@ export const SuccessModal = ({
           >
             Close
           </Button>
-        </Box>
+        </div>
       </Stack>
     </HodlModal >
   )

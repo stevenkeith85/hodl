@@ -1,13 +1,14 @@
+import { useState } from "react";
+import Skeleton from "@mui/material/Skeleton";
+import Box from "@mui/material/Box";
+
 import { HodlActionViewModel } from "../../models/HodlAction";
 import { assetType, getTopPadding } from "../../lib/utils";
 import { AssetTypes } from "../../models/AssetType";
 import { HodlVideo } from "../HodlVideo";
 import { HodlImageResponsive } from "../HodlImageResponsive";
-import { Box, Skeleton } from "@mui/material";
 import { HodlAudioBox } from "../HodlAudioBox";
 import { PriceSticker } from "../PriceSticker";
-import { useRef, useState } from "react";
-
 
 interface FeedAssetProps {
     item: HodlActionViewModel;
@@ -16,8 +17,8 @@ interface FeedAssetProps {
 export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
     const [loading, setLoading] = useState(true);
 
-    const asset = <Box>
-        <Box>
+    const asset = <div>
+        <div>
             {
                 (assetType(item.token) === AssetTypes.Image) &&
                 <HodlImageResponsive
@@ -53,14 +54,14 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
                 (assetType(item.token) === AssetTypes.Audio) &&
                 <HodlAudioBox token={item.token} audio={true} size={80} />
             }
-        </Box>
+        </div>
         {
             item?.metadata?.price && <PriceSticker price={item?.metadata?.price} />
         }
-    </Box >;
+    </div>;
 
     return (
-        <Box>
+        <div>
             <Skeleton
                 variant="rectangular"
                 animation="wave"
@@ -71,11 +72,10 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
                 }}
             >
             </Skeleton>
-
             <Box sx={{
                 display: loading ? 'none' : 'block'
             }}>
                 {asset}
             </Box>
-        </Box >)
+        </div>)
 }
