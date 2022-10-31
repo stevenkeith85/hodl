@@ -59,10 +59,12 @@ export const HodlVideo = ({
                         position: 'absolute',
                         left: 0,
                         width: '100%',
+                        height: '100%',
                         top: '50%',
                         transform: 'translateY(-50%)',
                         video: {
-                            width: `100%`
+                            width: `100%`,
+                            height: '100%'
                         }
                     }}>
                     <NoSsr>
