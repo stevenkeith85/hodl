@@ -8,7 +8,6 @@ import Box from '@mui/material/Box';
 import FormGroup from '@mui/material/FormGroup';
 
 import Switch from '@mui/material/Switch';
-import Tooltip from '@mui/material/Tooltip';
 
 import ClearIcon from '@mui/icons-material/Clear';
 
@@ -191,7 +190,6 @@ export default function Search({
 
                 }}
               >
-                <Tooltip title="Clear filters">
                   <ClearIcon
                     fontSize="small"
                     sx={{
@@ -209,7 +207,7 @@ export default function Search({
                         maxPrice: null
                       }))
                     }}
-                  /></Tooltip>
+                  />
               </Box>
 
               {forSaleToggle && <ForSaleFields
@@ -228,7 +226,6 @@ export default function Search({
                 }}
               >
                 <FormGroup>
-                  <Tooltip title="For Sale">
                     <Switch
                       checked={forSaleToggle}
                       onChange={(e) => {
@@ -240,7 +237,6 @@ export default function Search({
                       }
                       }
                     />
-                  </Tooltip>
                 </FormGroup>
               </Box>
             </Box>

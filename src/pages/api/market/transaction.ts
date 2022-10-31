@@ -38,7 +38,7 @@ route.post(async (req, res: NextApiResponse) => {
 
   if (tx === null) {
     console.log(`queue/transaction - unknown tx`);
-    return res.status(400).json({ message: 'That tx has is not known on this blockchain.' });
+    return res.status(400).json({ message: 'That transaction hash is not known on this blockchain.' });
   }
 
   if (tx.from !== req.address) {
@@ -57,7 +57,7 @@ route.post(async (req, res: NextApiResponse) => {
 
   if (tx.nonce <= user.nonce) {
     console.log(`queue/transaction - user nonce is ${user?.nonce}. tx nonce is ${tx?.nonce}`);
-    return res.status(400).json({ message: 'You are trying to queue a tx that is older than the last one we have successfully processed' });
+    return res.status(400).json({ message: 'You are trying to queue a tx that we have already processed; or a transaction older than the last one we have successfully processed' });
   }
 
   const success = await queueTxAndAction(hash, req.cookies.refreshToken, req.cookies.accessToken, req.address);
