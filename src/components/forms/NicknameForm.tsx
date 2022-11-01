@@ -1,9 +1,8 @@
-import { Box, Button, Stack, Tooltip } from "@mui/material";
+import { Button, Stack, Tooltip } from "@mui/material";
 import { useNickname } from "../../hooks/useNickname";
 import { Formik, Form, Field } from 'formik';
-import { HodlFormikTextField } from "../formFields/HodlFormikTextField";
 import { nicknameValidationSchema } from "../../validation/nickname";
-import { InputBase, TextField } from "formik-mui";
+import { InputBase } from "formik-mui";
 
 
 export const NicknameForm = ({ onSuccess = null }) => {
