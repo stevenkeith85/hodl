@@ -136,7 +136,7 @@ const Footer = ({
                             },
                         }}>
                         <RocketLaunchIcon
-                            size={22}
+                            size={14}
                             fill={grey[500]}
                         />
                         <Typography sx={{ color: grey[500], fontSize: '12px' }}>Copyright © 2022 Pony Powered Limited.</Typography>

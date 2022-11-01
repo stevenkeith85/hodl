@@ -12,7 +12,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import ExploreIcon from '@mui/icons-material/Explore';
-import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+
 import SearchIcon from '@mui/icons-material/Search';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import NotificationsIcon from '@mui/icons-material/Notifications';
@@ -52,20 +52,8 @@ const HodlNotifications = dynamic(
 import { SessionExpiredModal } from '../modals/SessionExpiredModal';
 import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
 
-// const SessionExpiredModal = dynamic(
-//     () => import('../modals/SessionExpiredModal').then(mod => mod.SessionExpiredModal),
-//     {
-//         loading: () => <div>...</div>
-//     }
-// );
-
-// const UserAvatarAndHandle = dynamic(
-//     () => import('../avatar/UserAvatarAndHandle').then(mod => mod.UserAvatarAndHandle),
-//     {
-//         ssr: false,
-//         loading: () => <Skeleton variant='circular' width={44} height={44} animation="wave" />
-//     }
-// );
+import { RocketLaunchIcon } from '../icons/RocketLaunchIcon';
+import { useTheme } from '@mui/material/styles';
 
 
 const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
@@ -74,11 +62,14 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
     const [showNotifications, setShowNotifications] = useState(false);
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
     const [sessionExpired, setSessionExpired] = useState(false);
+
+    const theme = useTheme();
+    
     const [pages] = useState([
         {
             label: 'hodl my moon',
             url: '/',
-            icon: <RocketLaunchIcon sx={{ fontSize: 22, margin: 0, padding: 0, lineHeight: 0 }} />,
+            icon: <RocketLaunchIcon size={22} fill={theme.palette.primary.main} />,
             publicPage: true
         },
         {

@@ -30,7 +30,7 @@ export default function About({ address }) {
                         About
                     </Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
-                        Hodl My Moon is a web3 social network and nft marketplace.
+                        Hodl My Moon is a web3 social network and marketplace.
                     </Typography>
                 </Box>
                 <Box marginY={4}>
@@ -84,7 +84,7 @@ export default function About({ address }) {
                     </Typography>
                     <Typography mb={0} color={theme => theme.palette.text.secondary}>
                         We add a small minting fee to cover our costs, and 
-                        deter spam. (Typically this will be 1 Matic)
+                        deter spam.
                     </Typography>
                 </Box>
                 <Box marginY={4}>
@@ -93,7 +93,10 @@ export default function About({ address }) {
                         Trading is straight-forward. You list your token for the price you are willing to sell it for.
                     </Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                        If it sells, we charge a commision at the point of sale. (Typically this will be 3%)
+                        If it sells, we charge a commision at the point of sale.
+                    </Typography>
+                    <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                        Typically this will be 3%
                     </Typography>
                     <Typography mb={0} color={theme => theme.palette.text.secondary}>
                         You can delist your token at any point, and only pay the gas.
