@@ -1,10 +1,9 @@
-import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
-
 import { grey } from "@mui/material/colors";
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Link from 'next/link';
+import { RocketLaunchIcon } from "../icons/RocketLaunchIcon";
 
 
 const Footer = ({
@@ -18,14 +17,12 @@ const Footer = ({
                 borderBottom: `1px solid #ddd`
             }}
             >
-                <Container maxWidth="xl" sx={{
-                    paddingTop: {
-                        xs: 4,
-                    },
-                    paddingBottom: {
-                        xs: 4,
-                    },
-                }}>
+                <Container
+                    maxWidth="xl"
+                    sx={{
+                        boxSizing: 'border-box',
+                        paddingY: 3
+                    }}>
                     <Box
                         sx={{
                             display: 'flex',
@@ -119,14 +116,9 @@ const Footer = ({
                 <Container
                     maxWidth="xl"
                     sx={{
-                        paddingTop: {
-                            xs: 2
-                        },
-                        paddingBottom: {
-                            xs: 2,
-                        },
-                    }}
-                >
+                        boxSizing: 'border-box',
+                        padding: 2
+                    }}>
                     <Box
                         sx={{
                             display: 'flex',
@@ -143,14 +135,10 @@ const Footer = ({
                                 xs: 'center',
                             },
                         }}>
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                gap: 3
-                            }}
-                        >
-                            <RocketLaunchIcon sx={{ fontSize: 16, color: grey[500] }} />
-                        </Box>
+                        <RocketLaunchIcon
+                            size={22}
+                            fill={grey[500]}
+                        />
                         <Typography sx={{ color: grey[500], fontSize: '12px' }}>Copyright © 2022 Pony Powered Limited.</Typography>
                     </Box>
                 </Container>
