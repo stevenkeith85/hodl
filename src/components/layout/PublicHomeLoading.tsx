@@ -33,8 +33,7 @@ const PublicHomePageLoading = ({ }) => {
                                 height="100%"
                                 sx={{
                                     paddingTop: { xs: 0, sm: '25px', md: '50px', lg: '75px', xl: '100px' },
-                                    paddingBottom: { xs: '50px', sm: '75px', md: `100px`, lg: '125px', xl: '150px' },
-
+                                    paddingBottom: { xs: '64px', sm: '75px', md:`100px`, lg: '120px', xl: '140px'},
                                 }}
                             >
                                 <Skeleton variant="text" animation="wave">
@@ -80,8 +79,14 @@ const PublicHomePageLoading = ({ }) => {
                                     }}>
                                     <Skeleton variant="rounded" animation="wave">
                                         <Button sx={{
-                                            fontSize: '18px',
-                                            width: '155px',
+                                            fontSize: {
+                                                xs: '16px',
+                                                sm: '18px',
+                                            },
+                                            width: {
+                                                xs: '116px',
+                                                sm: '155px',
+                                            },
                                             paddingY: {
                                                 xs: 1,
                                                 sm: 1.5
@@ -104,22 +109,13 @@ const PublicHomePageLoading = ({ }) => {
                                 alignItems="center"
                                 justifyContent="center"
                                 gap={0}
-                                sx={{
-                                    height: { sm: "100%" },
-                                }}
                             >
                                 <Skeleton
                                     variant="rectangular"
                                     animation="wave"
-                                >
-                                    <Box sx={{
-                                        height: '400px',
-                                        width: `400px`,
-                                        maxWidth: '100%',
-                                    }}>
-                                        &nbsp;
-                                    </Box>
-                                </Skeleton>
+                                    width={`400px`}
+                                    sx={{ maxWidth: '100%', paddingTop: '100%'}}
+                                />
                             </Box>
                         </Grid>
                     </Grid>
@@ -144,7 +140,7 @@ const PublicHomePageLoading = ({ }) => {
                         xs: 0,
                         sm: 4
                     },
-                    gap: 4,
+                    gap: 6,
                 }}
             >
                 <RankingListLoading text="Top Users" />
