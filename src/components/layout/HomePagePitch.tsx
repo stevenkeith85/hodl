@@ -31,7 +31,7 @@ export const HomePagePitch = ({ }) => {
                         height="100%"
                         sx={{
                             paddingTop: {xs: 0, sm: '25px', md: '50px', lg: '70px', xl: '90px'},
-                            paddingBottom: { xs: '50px', sm: '75px', md:`100px`, lg: '120px', xl: '140px'},
+                            paddingBottom: { xs: '56px', sm: '75px', md:`100px`, lg: '120px', xl: '140px'},
                         }}
                     >
                         <Box
@@ -45,7 +45,7 @@ export const HomePagePitch = ({ }) => {
                                 },
                                 fontWeight: 600,
                                 color: theme => theme.palette.primary.main,
-                                marginBottom: 2
+                                marginBottom: 1,
                             }}>
                             Hodl My Moon
                         </Box>
@@ -53,7 +53,7 @@ export const HomePagePitch = ({ }) => {
                             sx={{
                                 fontFamily: theme => theme.logo.fontFamily,
                                 fontSize: {
-                                    xs: 20,
+                                    xs: 18,
                                     sm: 22,
                                 },
                                 color: '#999'
@@ -62,13 +62,16 @@ export const HomePagePitch = ({ }) => {
                         </Typography>
                         <Box
                             sx={{
-                                marginTop: {xs: '40px', md: '50px'},
+                                marginTop: {xs: '32px', md: '50px'},
                             }}>
                             <LoginLogoutButton
                                 variant="contained"
                                 sx={{
                                     fontFamily: theme => theme.logo.fontFamily,
-                                    fontSize: '18px',
+                                    fontSize: {
+                                        xs: '16px',
+                                        sm: '18px',
+                                    },
                                     paddingY: {
                                         xs: 1,
                                         sm: 1.5
