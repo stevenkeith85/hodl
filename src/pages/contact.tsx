@@ -1,5 +1,3 @@
-import TwitterIcon from '@mui/icons-material/Twitter';
-import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
@@ -7,8 +5,6 @@ import NoSsr from '@mui/material/NoSsr';
 
 import { authenticate } from "../lib/jwt";
 import { HodlBorderedBox } from "../components/HodlBorderedBox";
-import { TikTokIcon } from "../components/TikTokIcon";
-import { grey } from '@mui/material/colors';
 
 
 export async function getServerSideProps({ req, res }) {
@@ -27,38 +23,11 @@ export default function Contact({ address }) {
             <HodlBorderedBox>
                 <Box mb={4}>
                     <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
-                        Contact Us
+                        Contact
                     </Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
                         We&apos;ll get back to you as soon as possible.
                     </Typography>
-                </Box>
-                <Box mb={4}>
-                    <Typography
-                        variant="h2"
-                        mb={2}
-                    >
-                        Socials
-                    </Typography>
-                    <Box sx={{
-                        display: 'grid',
-                        gap: 2
-                    }}>
-                        <Box sx={{ gap: 1.5, display: 'flex', alignItems: 'center' }}>
-                            <RocketLaunchIcon sx={{ color: grey[500] }} />
-                            <Typography color={theme => theme.palette.text.secondary}>hodlmymoon</Typography>
-                        </Box>
-                        <Box sx={{ gap: 1.5, display: 'flex', alignItems: 'center' }}>
-                            <TwitterIcon sx={{ color: grey[500] }} />
-                            <Typography color={theme => theme.palette.text.secondary}>hodlmymoon</Typography>
-                        </Box>
-                        <Box sx={{ gap: 1.5, display: 'flex', alignItems: 'center' }}>
-                            <Box sx={{ width: 24, height: 24 }}>
-                                <TikTokIcon color={grey[500]} />
-                            </Box>
-                            <Typography color={theme => theme.palette.text.secondary}>hodlmymoon</Typography>
-                        </Box>
-                    </Box>
                 </Box>
                 <Box mb={4}>
                     <Typography
@@ -78,7 +47,7 @@ export default function Contact({ address }) {
                         variant="h2"
                         mb={1}
                     >
-                        Other
+                        Other Enquiries
                     </Typography>
                     <NoSsr>
                         <Typography color={theme => theme.palette.text.secondary}>enquiries@hodlmymoon.com</Typography>

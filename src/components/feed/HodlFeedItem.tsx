@@ -12,6 +12,7 @@ import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
 import { FeedAsset } from "./FeedAsset";
 import { MaticPrice } from "../MaticPrice";
 import { HodlShareMenu } from "../HodlShareMenu";
+import TokenActionBox from "../nft/TokenActionBox";
 
 
 interface HodlFeedItemProps {
@@ -170,24 +171,9 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                             </Link>
                         }
                     </Box>
-                    {item.token &&
-                        <Box
-                            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <Box display="flex" gap={1.5}>
-                                <Likes
-                                    id={item.token?.id}
-                                    object="token"
-                                    size={18}
-                                    fontSize={12}
-                                />
-                                <Comments
-                                    nft={item.token}
-                                    size={18}
-                                    fontSize={12}
-                                />
-                            </Box>
-                            <HodlShareMenu nft={item.token} />
-                        </Box>
+                    {item.token && <div style={{ height: '20px' }}>
+                        <TokenActionBox nft={item?.token} popUp={true} />
+                    </div>
                     }
                     <div>
                         <Link

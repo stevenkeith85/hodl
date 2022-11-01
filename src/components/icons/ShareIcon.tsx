@@ -1,11 +1,11 @@
-import RocketLaunch from '../../../public/rocket_launch_FILL1_wght700_GRAD200_opsz48.svg';
+import Share from '../../../public/share_FILL1_wght400_GRAD0_opsz48.svg';
 
-export const RocketLaunchIcon = ({size, fill}) => (
+export const ShareIcon = ({size, fill}) => (
     <div style={{ 
         width: size,
         height: size,
     }}>
-        <RocketLaunch 
+        <Share 
             width={'100%'}
             height={'100%'}
             fill={fill} 

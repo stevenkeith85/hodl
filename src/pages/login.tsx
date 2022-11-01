@@ -33,44 +33,44 @@ export default function LoginPage({ hasReadPermission }) {
                     flexGrow: 1,
                     boxSizing: 'border-box'
                 }}>
-                    <div style={{ padding: '8px'}}>
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            padding: 0.5
-                        }}>
+                    <div style={{ padding: '8px' }}>
                         <Box
-                            component="span"
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                padding: 0.5
+                            }}>
+                            <Box
+                                component="span"
+                                sx={{
+                                    fontFamily: theme => theme.logo.fontFamily,
+                                    fontSize: {
+                                        xs: 35,
+                                        sm: 40,
+                                        md: 45
+                                    },
+                                    fontWeight: 600,
+                                    color: theme => theme.palette.primary.main,
+                                }}>
+                                Hodl My Moon
+                            </Box>
+                            <div style={{ marginLeft: '12px' }}>
+                                <RocketLaunchIcon fill={grey[500]} size={33} />
+                            </div>
+                        </Box>
+                        <Typography
                             sx={{
                                 fontFamily: theme => theme.logo.fontFamily,
                                 fontSize: {
-                                    xs: 35,
-                                    sm: 40,
-                                    md: 45
+                                    xs: 18,
+                                    sm: 20,
                                 },
-                                fontWeight: 600,
-                                color: theme => theme.palette.primary.main,
+                                color: '#999',
+                                textAlign: 'center'
                             }}>
-                            Hodl My Moon
-                        </Box>
-                        <div style={{ marginLeft: '12px' }}>
-                            <RocketLaunchIcon fill={grey[500]} size={33} />
-                        </div>
-                    </Box>
-                    <Typography
-                        sx={{
-                            fontFamily: theme => theme.logo.fontFamily,
-                            fontSize: {
-                                xs: 18,
-                                sm: 20,
-                            },
-                            color: '#999',
-                            textAlign: 'center'
-                        }}>
-                        A web3 social network and marketplace
-                    </Typography>
+                            A web3 social network and marketplace
+                        </Typography>
                     </div>
                     <Box sx={{
                         display: 'flex',

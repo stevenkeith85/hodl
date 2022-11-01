@@ -4,7 +4,7 @@ import { HodlShareMenu } from "../HodlShareMenu";
 import { Likes } from "../Likes";
 
 
-export default function TokenActionBox({ nft }) {
+export default function TokenActionBox({ nft, popUp=false }) {
     return (<Box
       sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
       <Box gap={1.5} display='flex' alignItems='center'>
@@ -22,7 +22,7 @@ export default function TokenActionBox({ nft }) {
           fontSize={12}
           size={20}
           nft={nft}
-          popUp={false}
+          popUp={popUp}
           sx={{ color: '#333', paddingRight: 0 }}
         />
       </Box>

@@ -1,7 +1,6 @@
 import React from 'react';
 
 import FacebookIcon from "@mui/icons-material/Facebook";
-import SendIcon from "@mui/icons-material/Send";
 import TwitterIcon from "@mui/icons-material/Twitter";
 
 import IconButton from '@mui/material/IconButton';
@@ -11,7 +10,8 @@ import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
-
+import { ShareIcon } from './icons/ShareIcon';
+import { grey } from "@mui/material/colors";
 
 export const HodlShareMenu = ({ nft }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -30,14 +30,10 @@ export const HodlShareMenu = ({ nft }) => {
             size="small"
             sx={{
                 padding: 0,
+                lineHeight: 0,
             }}
         >
-            <SendIcon sx={{
-                fontSize: 20,
-                lineHeight: 0,
-                color: theme => theme.palette.text.secondary
-            }}
-            />
+            <ShareIcon size={20} fill={grey[600]} />
         </IconButton>
         <Menu
             anchorEl={anchorEl}
