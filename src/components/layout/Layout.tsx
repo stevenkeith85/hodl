@@ -42,8 +42,11 @@ export default function Layout({ children, address, pusher, userSignedInToPusher
                 },
             }}>
             <header>
+            {/* <AppBarLoading address={address} /> */}
+                
                 {/* @ts-ignore */}
                 <AppBar address={address} pusher={pusher} userSignedInToPusher={userSignedInToPusher} />
+                
             </header>
             <main style={{ background: "#fcfcfc" }}>
                 <Container maxWidth="xl">

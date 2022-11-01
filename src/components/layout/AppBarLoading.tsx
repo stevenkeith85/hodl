@@ -1,5 +1,4 @@
 import { useState } from 'react';
-
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Skeleton from '@mui/material/Skeleton';
@@ -146,6 +145,7 @@ const AppBarLoading = ({ address }) => {
                                     gap: { xs: 1, md: 3 },
                                 }}
                             >
+                                {/* Search box desktop */}
                                 <Box
                                     sx={{
                                         display: {
@@ -154,26 +154,28 @@ const AppBarLoading = ({ address }) => {
                                         }
                                     }}
                                 >
-                                    <Skeleton variant="rounded" width={155} height={36} />,
+                                    <Skeleton variant="rounded" width={157} height={36} />
                                 </Box>
+                                {/* Search box mobile */}
                                 <Box
                                     sx={{
-                                        lineHeight: 0,
+                                        width: 44,
+                                        height: 44,
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
                                         display: {
-                                            xs: 'block',
+                                            xs: 'flex',
                                             md: 'none',
+                                            
                                         }
                                     }}
                                 >
-                                    <Skeleton variant="circular" animation="wave" width={22} height={22} sx={{ fontSize: 22, margin: 0, padding: 0, lineHeight: 0 }} />
+                                    <Skeleton variant="circular" animation="wave" width={22} height={22} />
                                 </Box>
 
                                 {/* Notifications button and menu */}
                                 <Box
                                     sx={{
-                                        margin: 0,
-                                        padding: 0,
-                                        lineHeight: 0,
                                         width: 44,
                                         height: 44,
                                         display: {
@@ -188,7 +190,7 @@ const AppBarLoading = ({ address }) => {
                                         display="flex"
                                         alignItems="center"
                                         justifyContent="center">
-                                        <Skeleton variant="rounded" animation="wave" width={22} height={22} sx={{ fontSize: 22, margin: 0, padding: 0, lineHeight: 0 }} />
+                                        <Skeleton variant="rounded" animation="wave" width={22} height={22} />
                                     </Box>
                                 </Box>
 
