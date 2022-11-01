@@ -10,8 +10,7 @@ import Container from '@mui/material/Container';
 
 import CloseIcon from '@mui/icons-material/Close';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import ExploreIcon from '@mui/icons-material/Explore';
+// import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 import SearchIcon from '@mui/icons-material/Search';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
@@ -54,6 +53,8 @@ import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
 
 import { RocketLaunchIcon } from '../icons/RocketLaunchIcon';
 import { useTheme } from '@mui/material/styles';
+import { ExploreIcon } from '../icons/ExploreIcon';
+import { AddCircleIcon } from '../icons/AddCircleIcon';
 
 
 const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
@@ -75,13 +76,13 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
         {
             label: 'explore',
             url: '/explore',
-            icon: <ExploreIcon sx={{ fontSize: 22, margin: 0, padding: 0 }} />,
+            icon: <ExploreIcon size={22} fill={theme.palette.primary.main} />,
             publicPage: true
         },
         {
             label: 'create',
             url: '/create',
-            icon: <AddCircleIcon sx={{ fontSize: 22, margin: 0, padding: 0 }} />,
+            icon: <AddCircleIcon size={22} fill={theme.palette.primary.main} />,
             publicPage: false
         },
     ]);
@@ -229,7 +230,8 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                                 padding: 0,
                                                 lineHeight: 0,
                                                 width: 44,
-                                                height: 44
+                                                height: 44,
+                                                textAlign: 'center'
                                             }}
                                             color="inherit"
                                         >
@@ -260,7 +262,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                                         textAlign: 'center',
                                                         display: {
                                                             xs: 'none',
-                                                            md: 'block'
+                                                            md: 'flex'
                                                         }
                                                     }}>{page.label}</Button>
                                                 <IconButton
@@ -271,7 +273,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                                         width: 44,
                                                         height: 44,
                                                         display: {
-                                                            xs: 'block',
+                                                            xs: 'flex',
                                                             md: 'none'
                                                         }
                                                     }}
@@ -296,7 +298,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                     sx={{
                                         display: {
                                             xs: 'none',
-                                            md: 'block'
+                                            md: 'flex'
                                         }
                                     }}
                                 >
@@ -306,7 +308,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                     sx={{
                                         lineHeight: 0,
                                         display: {
-                                            xs: 'block',
+                                            xs: 'flex',
                                             md: 'none',
                                         }
                                     }}
@@ -314,9 +316,6 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                     {mobileSearchOpen ?
                                         <IconButton
                                             sx={{
-                                                margin: 0,
-                                                padding: 0,
-                                                lineHeight: 0,
                                                 width: 44,
                                                 height: 44
                                             }}
@@ -332,11 +331,8 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                         :
                                         <IconButton
                                             sx={{
-                                                margin: 0,
-                                                padding: 0,
-                                                lineHeight: 0,
                                                 width: 44,
-                                                height: 44
+                                                height: 44,
                                             }}
                                             color="inherit"
                                             onClick={
@@ -345,11 +341,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                                     setShowNotifications(false);
                                                 }}
                                         >
-                                            <SearchIcon sx={{
-                                                lineHeight: 0,
-                                                fontSize: 22
-                                            }}
-                                            />
+                                            <SearchIcon sx={{ fontSize: 22 }} />
                                         </IconButton>
                                     }
                                 </Box>
