@@ -29,15 +29,16 @@ export default function LoginPage({ hasReadPermission }) {
             <div style={{
                 display: 'flex',
                 minHeight: '100vh',
-                width: '100vw',
                 flexDirection: 'column',
+                boxSizing: 'border-box'
             }}>
                 <Box sx={{
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    flex: 1,
+                    flexGrow: 1,
+                    boxSizing: 'border-box'
                 }}>
                     <Box
                         sx={{
@@ -163,14 +164,14 @@ export default function LoginPage({ hasReadPermission }) {
                         }
                     </Box>
                 </Box>
-                <Box sx={{
+                {!hasReadPermission && <Box sx={{
                     display: 'flex',
                     width: `100%`,
                     justifyContent: 'center',
                     alignItems: 'center',
                     background: '#f6f6f6',
                     boxSizing: 'border-box',
-                    padding: 2
+                    paddingY: 3
                 }}>
                     <Link href="https://twitter.com/hodlmymoon">
                         <TwitterIcon
@@ -217,6 +218,7 @@ export default function LoginPage({ hasReadPermission }) {
                             }} />
                     </Link>
                 </Box>
+                }
             </div>
         </>
     )
