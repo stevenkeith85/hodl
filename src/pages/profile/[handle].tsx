@@ -148,7 +148,9 @@ const Profile = ({
           <title>{owner.nickname || owner.address} · Hodl My Moon</title>
         </Head>
         <Box sx={{
-          height: '120px',
+          height: {
+            md:'120px',
+          },
           marginTop: { xs: 2, sm: 4 }
         }}>
           <ProfileHeader owner={owner} />
