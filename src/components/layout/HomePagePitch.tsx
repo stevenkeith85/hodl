@@ -31,7 +31,7 @@ export const HomePagePitch = ({ }) => {
                         height="100%"
                         sx={{
                             paddingTop: {xs: 0, sm: '25px', md: '50px', lg: '70px', xl: '90px'},
-                            paddingBottom: { xs: '56px', sm: '75px', md:`100px`, lg: '120px', xl: '140px'},
+                            paddingBottom: { xs: '64px', sm: '75px', md:`100px`, lg: '120px', xl: '140px'},
                         }}
                     >
                         <Box
