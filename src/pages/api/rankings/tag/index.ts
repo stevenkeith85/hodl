@@ -43,6 +43,7 @@ export const getMostUsedTags = async (
 
 
 route.get(async (req, res: NextApiResponse) => {
+  return res.status(410); // not currently supporting this
   const offset = getAsString(req.query.offset);
   const limit = getAsString(req.query.limit);
 

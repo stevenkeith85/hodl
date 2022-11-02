@@ -1,32 +1,42 @@
-import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
-import apiRoute from "../handler";
-
-dotenv.config({ path: '../.env' })
-
-const client = Redis.fromEnv()
-const route = apiRoute();
+import { NextRequest, NextResponse } from 'next/server';
+import { getAsString } from '../../../lib/getAsString';
 
 
-export const getFollowingCount = async (address) => {
-  if (!address) {
-    return 0;
-  }
 
-  const count = await client.zcard(`user:${address}:following`);
-  return (count || 0);
+export const getFollowingCount = async (address) => {    
+  const zcardResponse = await fetch(
+    `${process.env.UPSTASH_REDIS_REST_URL}/zcard/user:${address}:following`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
+      }
+    });
+
+  const { result: count } = await zcardResponse.json();
+
+  return count || 0;
 }
 
-route.get(async (req, res) => {
-  const { address } = req.query;
+
+export default async function route (req: NextRequest) {
+  if (req.method !== 'GET') {
+    return new Response(null, { status: 405 });
+  }
+
+  const { searchParams } = new URL(req.url);
+
+  const address = getAsString(searchParams.get('address'));
 
   if (!address) {
-    return res.status(400).json({message: 'Bad Request'});
+    return new Response(null, { status: 400 });
   }
 
   const count = await getFollowingCount(address);
-  res.status(200).json(count);
-});
+
+  return NextResponse.json(count);
+};
 
 
-export default route;
+export const config = {
+  runtime: 'experimental-edge',
+}

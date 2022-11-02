@@ -1,43 +1,57 @@
-import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
-import apiRoute from "../handler";
+import { NextRequest, NextResponse } from 'next/server';
+import { getAsString } from '../../../lib/getAsString';
 import { CommentCountValidationSchema } from '../../../validation/comments/commentCount';
 
-dotenv.config({ path: '../.env' })
-
-const client = Redis.fromEnv()
-const route = apiRoute();
 
 export const getCommentCount = async (object, id) => {
   if (object === "comment") {
-    const count = await client.zcard(`comment:${id}:comments`);
-    return count;
+    const zcardResponse = await fetch(
+      `${process.env.UPSTASH_REDIS_REST_URL}/zcard/comment:${id}:comments`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
+        }
+      });
+
+    const { result: count } = await zcardResponse.json();
+
+    return count || 0;
   } else {
-    const count = await client.get(`token:${id}:comments:count`);
+    const zcardResponse = await fetch(
+      `${process.env.UPSTASH_REDIS_REST_URL}/get/token:${id}:comments:count`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
+        }
+      });
+
+    const { result: count } = await zcardResponse.json();
     return count || 0;
   }
+}
+
+
+export default async function route(req: NextRequest) {
+  if (req.method !== 'GET') {
+    return new Response(null, { status: 405 });
+  }
+
+  const { searchParams } = new URL(req.url);
+
+  const object = getAsString(searchParams.get('object'));
+  const id = getAsString(searchParams.get('id'));
+
+  const isValid = await CommentCountValidationSchema.isValid({object, id})
+  if (!isValid) {
+    return new Response(null, { status: 400 });
+  }
+
+  const count = await getCommentCount(object, id);
+
+  return NextResponse.json(count);
 };
 
-route.get(async (req, res) => {
-  try {
-    const object = Array.isArray(req.query.object) ? req.query.object[0] : req.query.object;
-    const id = Array.isArray(req.query.id) ? req.query.id[0] : req.query.id;
 
-    const isValid = await CommentCountValidationSchema.isValid(req.query)
-    if (!isValid) {
-      return res.status(400).json({ message: 'Bad Request' });
-    }
-    const count = await getCommentCount(object, id);
-    res.status(200).json(count);
-  } catch (e) {
-    // We likely had a problem talking to the blockchain. 
-    // We'll just send back a 200 to the UI though, with a 0 comment count 
-    // as there's nothing that can be done.
-    //
-    console.log(e); 
-    return res.status(200).json(0)
-  }
-});
-
-
-export default route;
+export const config = {
+  runtime: 'experimental-edge',
+}
