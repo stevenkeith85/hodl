@@ -1,37 +1,41 @@
-import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
-import apiRoute from "../../handler";
-import memoize from 'memoizee';
+import { NextRequest, NextResponse } from 'next/server';
+import { getAsString } from '../../../../lib/getAsString';
 
-dotenv.config({ path: '../.env' })
 
-const client = Redis.fromEnv()
-const route = apiRoute();
+export const getLikeCount = async (comment) => {    
+  const zcardResponse = await fetch(
+    `${process.env.UPSTASH_REDIS_REST_URL}/zcard/likes:comment:${comment}`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
+      }
+    });
 
-// export const getCommentLikeCount = memoize(async (comment) => {    
-//   const count = await client.zcard(`likes:comment:${comment}`);
-//   return count;
-// }, { 
-//   primitive: true,
-//   max: 10000, // 10000 tokens 
-// });
+  const { result: count } = await zcardResponse.json();
 
-export const getCommentLikeCount = async (comment) => {    
-  const count = await client.zcard(`likes:comment:${comment}`);
   return count || 0;
 }
 
-// Requests the number of users who like a comment
-route.get(async (req, res) => {
-  const { id: comment } = req.query;
 
-  if (!comment) {
-    return res.status(400).json({message: 'Bad Request'});
+export default async function route (req: NextRequest) {
+  if (req.method !== 'GET') {
+    return new Response(null, { status: 405 });
   }
 
-  const count = await getCommentLikeCount(comment);
-  res.status(200).json(count);
-});
+  const { searchParams } = new URL(req.url);
+
+  const comment = getAsString(searchParams.get('id'));
+
+  if (!comment) {
+    return new Response(null, { status: 400 });
+  }
+
+  const count = await getLikeCount(+comment);
+
+  return NextResponse.json(count);
+};
 
 
-export default route;
+export const config = {
+  runtime: 'experimental-edge',
+}

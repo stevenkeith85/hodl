@@ -49,7 +49,7 @@ export const getNewTokens = async (
   };
 }
 
-export default async function getLatestTokens (req: NextRequest) {
+export default async function route (req: NextRequest) {
   if (req.method !== 'GET') {
     return new Response(null, { status: 405 });
   }

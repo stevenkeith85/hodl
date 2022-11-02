@@ -1,28 +1,41 @@
-import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
-import apiRoute from "../../handler";
+import { NextRequest, NextResponse } from 'next/server';
+import { getAsString } from '../../../../lib/getAsString';
 
-dotenv.config({ path: '../.env' })
-
-const client = Redis.fromEnv()
-const route = apiRoute();
 
 export const getLikeCount = async (token) => {    
-  const count = await client.zcard(`likes:token:${token}`);
+  const zcardResponse = await fetch(
+    `${process.env.UPSTASH_REDIS_REST_URL}/zcard/likes:token:${token}`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
+      }
+    });
+
+  const { result: count } = await zcardResponse.json();
+
   return count || 0;
 }
 
-// Requests the number of users who like a token
-route.get(async (req, res) => {
-  const { id: token } = req.query;
 
-  if (!token) {
-    return res.status(400).json({message: 'Bad Request'});
+export default async function route (req: NextRequest) {
+  if (req.method !== 'GET') {
+    return new Response(null, { status: 405 });
   }
 
-  const count = await getLikeCount(token);
-  res.status(200).json(count);
-});
+  const { searchParams } = new URL(req.url);
+
+  const token = getAsString(searchParams.get('id'));
+
+  if (!token) {
+    return new Response(null, { status: 400 });
+  }
+
+  const count = await getLikeCount(+token);
+
+  return NextResponse.json(count);
+};
 
 
-export default route;
+export const config = {
+  runtime: 'experimental-edge',
+}
