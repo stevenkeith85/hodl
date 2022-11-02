@@ -11,6 +11,8 @@ import { HodlModal } from "../modals/HodlModal";
 import { HodlCommentsBox } from "./HodlCommentsBox";
 import { useCommentCount } from "../../hooks/useComments";
 import { NftContext } from "../../contexts/NftContext";
+import useSWR, { Fetcher } from "swr";
+import { MutableToken } from "../../models/Nft";
 
 
 export interface CommentsProps {
@@ -34,13 +36,17 @@ export const Comments: FC<CommentsProps> = ({
 }) => {
     const { data: count } = useCommentCount(nft?.id, "token", fallbackData)
 
+    const mutableTokenFetcher: Fetcher<MutableToken> = (url, id) => fetch(`${url}/${id}`).then(r => r.json()).then(data => data.mutableToken);
+    const { data: mutableToken } = useSWR([`/api/contracts/mutable-token`, nft.id], mutableTokenFetcher);
+
     const [open, setOpen] = useState(false);
 
     return (
         <>
             <NftContext.Provider
                 value={{
-                    nft
+                    nft,
+                    mutableToken
                 }}
             >
                 <HodlModal
@@ -52,8 +58,8 @@ export const Comments: FC<CommentsProps> = ({
                             xs: '90vw',
                         },
                         maxWidth: "1200px",
-                       maxHeight: '90vh',
-                       overflow: 'auto'
+                        maxHeight: '90vh',
+                        overflow: 'auto'
                     }}
                 >
                     <HodlCommentsBox
@@ -85,17 +91,17 @@ export const Comments: FC<CommentsProps> = ({
                 >
                     <CommentOutlined
                         color={color}
-                        sx={{ 
+                        sx={{
                             fontSize: size
-                        }} 
+                        }}
                     />
-                        <Typography
-                            sx={{
-                                fontSize,
-                                color
-                            }}>
-                            {humanize.compactInteger(count || 0, 1)}
-                        </Typography>
+                    <Typography
+                        sx={{
+                            fontSize,
+                            color
+                        }}>
+                        {humanize.compactInteger(count || 0, 1)}
+                    </Typography>
                 </Box>
             </NftContext.Provider>
         </>

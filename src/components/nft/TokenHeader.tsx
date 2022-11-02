@@ -1,14 +1,14 @@
-import DataObjectIcon from '@mui/icons-material/DataObject';
-import InsightsIcon from '@mui/icons-material/Insights';
-import ForumIcon from '@mui/icons-material/Forum';
+import router from "next/router";
 
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Tabs from "@mui/material/Tabs";
-import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
 import Tab from '@mui/material/Tab';
 
-import router from "next/router";
+import { DataObjectIcon } from '../icons/DataObjectIcon';
+import { InsightsIcon } from '../icons/InsightsIcon';
+import { ForumIcon } from "../icons/ForumIcon";
+import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
 
 
 export default function TokenHeader({
@@ -71,13 +71,7 @@ export default function TokenHeader({
                         indicatorColor="secondary"
                     >
                         <Tab key={0} value={0} icon={
-                            <ForumIcon
-                                sx={{
-                                    fontSize: {
-                                        xs: 16,
-                                    }
-                                }}
-                            />
+                            <ForumIcon size={16} />
                         }
                             sx={{
                                 minWidth: 0,
@@ -86,13 +80,7 @@ export default function TokenHeader({
                             }}
                         />
                         <Tab key={1} value={1} icon={
-                            <InsightsIcon
-                                sx={{
-                                    fontSize: {
-                                        xs: 16,
-                                    },
-                                }}
-                            />}
+                            <InsightsIcon size={16}/>}
                             sx={{
                                 minWidth: 0,
                                 padding: 2,
@@ -100,14 +88,7 @@ export default function TokenHeader({
                             }}
                         />
                         <Tab key={2} value={2}
-                            icon={
-                                <DataObjectIcon
-                                    sx={{
-                                        fontSize: {
-                                            xs: 16,
-                                        }
-                                    }}
-                                />}
+                            icon={<DataObjectIcon size={16} />}
                             sx={{
                                 minWidth: 0,
                                 padding: 2,

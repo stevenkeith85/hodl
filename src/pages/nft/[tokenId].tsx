@@ -16,6 +16,8 @@ import { DetailPageAsset } from "../../components/nft/DetailPageAsset";
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Skeleton from '@mui/material/Skeleton';
+import TokenActionBoxLoading from '../../components/nft/TokenActionBoxLoading';
+import SocialTabLoading from '../../components/nft/SocialTabLoading';
 
 
 const TokenHeader = dynamic(
@@ -31,7 +33,7 @@ const TokenActionBox = dynamic(
   () => import('../../components/nft/TokenActionBox'),
   {
     ssr: false,
-    loading: () => <Skeleton variant="rectangular" width="100%" height="20px" animation="wave" />
+    loading: () => <TokenActionBoxLoading />
   }
 );
 
@@ -40,7 +42,7 @@ const SocialTab = dynamic(
   () => import('../../components/nft/SocialTab'),
   {
     ssr: false,
-    loading: () => <Skeleton variant="rectangular" width="100%" height="430px" animation="wave" />
+    loading: () => <SocialTabLoading />
   }
 );
 
@@ -59,10 +61,10 @@ const TokenDataTab = dynamic(
   {
     ssr: false,
     loading: () => <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-    <Skeleton variant="rectangular" width="100%" height="127.18px" animation="wave" />
-    <Skeleton variant="rectangular" width="100%" height="169.19px" animation="wave" />
-    <Skeleton variant="rectangular" width="100%" height="180.17px" animation="wave" />
-  </Box>
+      <Skeleton variant="rectangular" width="100%" height="127.18px" animation="wave" />
+      <Skeleton variant="rectangular" width="100%" height="169.19px" animation="wave" />
+      <Skeleton variant="rectangular" width="100%" height="180.17px" animation="wave" />
+    </Box>
   }
 );
 
@@ -97,7 +99,7 @@ const NftDetail = ({
   tab
 }) => {
   const [value, setValue] = useState(Number(tab)); // tab
-  // const mutableTokenFetcher: Fetcher<MutableToken> = (url, id) => axios.get(`${url}/${id}`).then(r => r.data.mutableToken);
+  
   const mutableTokenFetcher: Fetcher<MutableToken> = (url, id) => fetch(`${url}/${id}`).then(r => r.json()).then(data => data.mutableToken);
   const { data: mutableToken } = useSWR([`/api/contracts/mutable-token`, nft.id], mutableTokenFetcher);
 
@@ -105,7 +107,8 @@ const NftDetail = ({
     <>
       <NftContext.Provider
         value={{
-          nft
+          nft,
+          mutableToken
         }}
       >
         <Head>
@@ -131,7 +134,9 @@ const NftDetail = ({
               }
             }}
           >
-            <div style={{ height: '50px' }}>
+            <div
+              style={{ height: '50px' }}
+            >
               <TokenHeader mutableToken={mutableToken} nft={nft} setValue={setValue} value={value} />
             </div>
 
@@ -149,7 +154,6 @@ const NftDetail = ({
               }}>
               <Box
                 sx={{
-                  // lineHeight: 0,
                   display: 'flex',
                   flexDirection: 'column',
                   gap: {
@@ -164,6 +168,7 @@ const NftDetail = ({
                 <DetailPageAsset token={nft} />
                 <div style={{ height: '20px' }}>
                   <TokenActionBox nft={nft} />
+                  {/* <TokenActionBoxLoading /> */}
                 </div>
               </Box>
             </Box>
@@ -183,6 +188,7 @@ const NftDetail = ({
               }}>
               <div hidden={value !== 0}>
                 <SocialTab nft={nft} limit={limit} />
+                {/* <SocialTabLoading /> */}
               </div>
               <div hidden={value !== 1}>
                 <MarketTab mutableToken={mutableToken} nft={nft} />

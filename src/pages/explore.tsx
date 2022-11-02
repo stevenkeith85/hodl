@@ -5,7 +5,6 @@ import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 
 import Box from '@mui/material/Box';
-import FormGroup from '@mui/material/FormGroup';
 import Switch from '@mui/material/Switch';
 import IconButton from '@mui/material/IconButton';
 
@@ -160,9 +159,7 @@ export default function Search({
           }
         }}
       >
-        <Box
-          sx={{
-          }}>
+        <div>
           <Box
             sx={{
               display: 'flex',
@@ -227,23 +224,21 @@ export default function Search({
                   justifyContent: 'end'
                 }}
               >
-                <FormGroup>
-                  <Switch
-                    checked={forSaleToggle}
-                    onChange={(e) => {
-                      setForSaleToggle(old => !old);
-                      setSearchQ(old => ({
-                        ...old,
-                        forSale: !old.forSale
-                      }))
-                    }
-                    }
-                  />
-                </FormGroup>
+                <Switch
+                  checked={forSaleToggle}
+                  onChange={(e) => {
+                    setForSaleToggle(old => !old);
+                    setSearchQ(old => ({
+                      ...old,
+                      forSale: !old.forSale
+                    }))
+                  }
+                  }
+                />
               </Box>
             </Box>
           </Box>
-        </Box>
+        </div>
         <div>
           {!results.isValidating && results.data && results.data[0] && results.data[0].total === 0 &&
             <HodlImpactAlert message={"We can't find anything at the moment"} title="Sorry" />

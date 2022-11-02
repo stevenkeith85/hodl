@@ -7,7 +7,6 @@ import { ResponsiveContainer, CartesianGrid, Line, LineChart, Tooltip, XAxis, YA
 import { Fetcher } from "swr";
 import { PriceHistory } from "../../models/PriceHistory";
 import { HodlBorderedBox } from "../HodlBorderedBox";
-import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 
 const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {

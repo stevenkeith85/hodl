@@ -1,7 +1,6 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextApiResponse } from "next";
 
 import dotenv from 'dotenv'
-import memoize from 'memoizee';
 import apiRoute from '../handler';
 
 import { Redis } from '@upstash/redis';
@@ -27,6 +26,7 @@ export const getComment = async (id, withUser: boolean = true, viewer: string = 
       comment: comment.comment,
       timestamp: comment.timestamp,
       object: comment.object,
+      objectId: comment.objectId,
       tokenId: comment.tokenId
     }
 

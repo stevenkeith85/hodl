@@ -32,9 +32,7 @@ export interface HodlCommentViewModel {
     timestamp: number; // when was the comment was made
 
     object: "token" | "comment"; // what was this comment about
-
+    objectId: number;
+    
     tokenId: number;
-    // TODO
-    // reply?: boolean; // if "object" in HodlComment is a "comment" then this will be true; otherwise false
-    // objectId?: number; // comment -> token's id; reply -> comment's id
 }
