@@ -1,4 +1,3 @@
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import CloudOffIcon from '@mui/icons-material/CloudOff';
 
 import { Button } from "@mui/material";
@@ -6,6 +5,7 @@ import { useRouter } from "next/router";
 import { useContext } from "react";
 import { useConnect } from "../../hooks/useConnect";
 import { WalletContext } from '../../contexts/WalletContext';
+import { AccountBalanceWalletIcon } from '../icons/AccountBalanceWalletIcon';
 
 
 interface LoginLogoutButtonProps {
@@ -43,7 +43,7 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
                         await connect(false);
                         window.location.href = router.asPath;
                     }}
-                    startIcon={<AccountBalanceWalletIcon />}
+                    startIcon={<AccountBalanceWalletIcon size={22} />}
                 >Connect</Button>}
             {address &&
                 <Button

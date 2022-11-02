@@ -6,16 +6,17 @@ import dynamic from 'next/dynamic';
 
 import Box from '@mui/material/Box';
 import FormGroup from '@mui/material/FormGroup';
-
 import Switch from '@mui/material/Switch';
-
-import ClearIcon from '@mui/icons-material/Clear';
+import IconButton from '@mui/material/IconButton';
 
 import { HodlImpactAlert } from '../components/HodlImpactAlert';
 import { useSearchTokens } from '../hooks/useSearchTokens';
 
 import { authenticate } from '../lib/jwt';
 import { getTokenSearchResults } from './api/search/tokens';
+import theme from '../theme';
+
+import { CloseIcon } from '../components/icons/CloseIcon';
 
 const ForSaleFields = dynamic(
   () => import('../components/explore/ForSaleFields').then(mod => mod.ForSaleFields),
@@ -190,24 +191,25 @@ export default function Search({
 
                 }}
               >
-                  <ClearIcon
-                    fontSize="small"
-                    sx={{
-                      cursor: 'pointer'
-                    }}
-                    onClick={e => {
-                      setQChip('');
-                      setMinPriceUI('');
-                      setMaxPriceUI('');
+                <IconButton
+                  onClick={e => {
+                    setQChip('');
+                    setMinPriceUI('');
+                    setMaxPriceUI('');
 
-                      setSearchQ(old => ({
-                        ...old,
-                        q: '',
-                        minPrice: null,
-                        maxPrice: null
-                      }))
-                    }}
+                    setSearchQ(old => ({
+                      ...old,
+                      q: '',
+                      minPrice: null,
+                      maxPrice: null
+                    }))
+                  }}
+                >
+                  <CloseIcon
+                    size={22}
+                    fill={theme.palette.primary.main}
                   />
+                </IconButton>
               </Box>
 
               {forSaleToggle && <ForSaleFields
@@ -226,17 +228,17 @@ export default function Search({
                 }}
               >
                 <FormGroup>
-                    <Switch
-                      checked={forSaleToggle}
-                      onChange={(e) => {
-                        setForSaleToggle(old => !old);
-                        setSearchQ(old => ({
-                          ...old,
-                          forSale: !old.forSale
-                        }))
-                      }
-                      }
-                    />
+                  <Switch
+                    checked={forSaleToggle}
+                    onChange={(e) => {
+                      setForSaleToggle(old => !old);
+                      setSearchQ(old => ({
+                        ...old,
+                        forSale: !old.forSale
+                      }))
+                    }
+                    }
+                  />
                 </FormGroup>
               </Box>
             </Box>

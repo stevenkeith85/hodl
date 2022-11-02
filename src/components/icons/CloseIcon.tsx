@@ -1,8 +1,8 @@
-import AddCircle from '../../../public/add_circle_FILL1_wght400_GRAD0_opsz48.svg';
+import Close from '../../../public/close_FILL1_wght400_GRAD0_opsz48.svg';
 
-export const AddCircleIcon = ({ size, fill }) => (
+export const CloseIcon = ({ size, fill }) => (
     <div style={{ width: size, height: size, display: 'flex' }}>
-        <AddCircle
+        <Close
             width={'100%'}
             height={'100%'}
             fill={fill}

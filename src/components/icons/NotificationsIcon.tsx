@@ -1,8 +1,8 @@
-import AddCircle from '../../../public/add_circle_FILL1_wght400_GRAD0_opsz48.svg';
+import Notifications from '../../../public/notifications_FILL1_wght400_GRAD0_opsz48.svg';
 
-export const AddCircleIcon = ({ size, fill }) => (
+export const NotificationsIcon = ({ size, fill }) => (
     <div style={{ width: size, height: size, display: 'flex' }}>
-        <AddCircle
+        <Notifications
             width={'100%'}
             height={'100%'}
             fill={fill}

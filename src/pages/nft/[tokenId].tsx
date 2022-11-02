@@ -6,8 +6,6 @@ import dynamic from "next/dynamic";
 
 import useSWR, { Fetcher } from "swr";
 
-import axios from "axios";
-
 import { authenticate } from "../../lib/jwt";
 import { NftContext } from "../../contexts/NftContext";
 import { getToken } from "../api/token/[tokenId]";
@@ -99,7 +97,8 @@ const NftDetail = ({
   tab
 }) => {
   const [value, setValue] = useState(Number(tab)); // tab
-  const mutableTokenFetcher: Fetcher<MutableToken> = (url, id) => axios.get(`${url}/${id}`).then(r => r.data.mutableToken);
+  // const mutableTokenFetcher: Fetcher<MutableToken> = (url, id) => axios.get(`${url}/${id}`).then(r => r.data.mutableToken);
+  const mutableTokenFetcher: Fetcher<MutableToken> = (url, id) => fetch(`${url}/${id}`).then(r => r.json()).then(data => data.mutableToken);
   const { data: mutableToken } = useSWR([`/api/contracts/mutable-token`, nft.id], mutableTokenFetcher);
 
   return (
