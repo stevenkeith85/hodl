@@ -1,12 +1,12 @@
 import { useRouter } from 'next/router';
 
-import SearchIcon from '@mui/icons-material/Search';
-import { styled, alpha } from '@mui/material/styles';
+import { styled, alpha, useTheme } from '@mui/material/styles';
 
 import InputBase from '@mui/material/InputBase';
 
 import { SearchValidationSchema } from '../validation/search';
 import { useState } from 'react';
+import { SearchIcon } from './icons/SearchIcon';
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -50,11 +50,12 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 
-export const SearchBox = ({ 
+export const SearchBox = ({
     setMobileSearchOpen = null,
-    sx = null 
+    sx = null
 }) => {
     const router = useRouter();
+    const theme = useTheme();
 
     const [q, setQ] = useState('');
     const [valid, setValid] = useState(true);
@@ -70,35 +71,35 @@ export const SearchBox = ({
                 router.push(`/explore?q=${q}`);
             }
         }}>
-                    <Search>
-                        <SearchIconWrapper>
-                            <SearchIcon color="primary" />
-                        </SearchIconWrapper>
-                        <StyledInputBase 
-                        sx={{
-                            width: {
-                                xs: '100%',
-                                md: 'auto',
-                            },
-                            border: !valid ? theme => `1px solid ${theme.palette.secondary.main}` : `1px solid #ccc`,
-                            borderRadius: 1,
-                            ...sx
-                        }}
-                        type="text"
-                        placeholder="tag"
-                        onClick={e => {
-                            e.stopPropagation();
-                        } 
+            <Search>
+                <SearchIconWrapper>
+                    <SearchIcon size={22} fill={theme.palette.primary.main} />
+                </SearchIconWrapper>
+                <StyledInputBase
+                    sx={{
+                        width: {
+                            xs: '100%',
+                            md: 'auto',
+                        },
+                        border: !valid ? theme => `1px solid ${theme.palette.secondary.main}` : `1px solid #ccc`,
+                        borderRadius: 1,
+                        ...sx
+                    }}
+                    type="text"
+                    placeholder="tag"
+                    onClick={e => {
+                        e.stopPropagation();
+                    }
                     }
                     onChange={async (e) => {
                         const value = (e.target.value || "").toLowerCase();
 
                         setQ(value);
                         SearchValidationSchema.isValid({ q: value }).then(setValid);
-                    } }
-                    autoComplete='off'                        
-                    />
-                    </Search>
-                    </form>
+                    }}
+                    autoComplete='off'
+                />
+            </Search>
+        </form>
     )
 }

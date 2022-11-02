@@ -1,9 +1,14 @@
-import { Box, Typography, useMediaQuery, useTheme } from "@mui/material"
+import Box from "@mui/material/Box"
+import { useTheme } from "@mui/material/styles"
+import Typography from "@mui/material/Typography"
+import useMediaQuery from "@mui/material/useMediaQuery"
 import { truncateText } from "../lib/truncateText"
 
 import { Token } from "../models/Token"
+
 import { ProfileNameOrAddress } from "./avatar/ProfileNameOrAddress"
 import { UserAvatarAndHandle } from "./avatar/UserAvatarAndHandle"
+
 import { HodlAudio } from "./HodlAudio"
 
 
@@ -26,10 +31,7 @@ export const HodlAudioBox: React.FC<HodlAudioBoxProps> = ({
     const smAndBelow = useMediaQuery(theme.breakpoints.down('md'));
 
     return (
-        <Box
-            className="hodlAudioBox"
-            sx={{ width: '100%' }}
-        >
+        <Box className="hodlAudioBox" sx={{ width: '100%' }}>
             <Box sx={{
                 position: "relative",
                 width,

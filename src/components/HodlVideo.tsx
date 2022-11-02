@@ -1,6 +1,6 @@
-import { Box, NoSsr } from "@mui/material";
+import NoSsr from "@mui/material/NoSsr";
 import { useEffect, useRef } from "react";
-import { grey } from "@mui/material/colors";
+
 import { makeCloudinaryUrl } from "../lib/cloudinaryUrl";
 import { getTopPadding } from "../lib/utils";
 
@@ -46,29 +46,28 @@ export const HodlVideo = ({
 
     return (
         <>
-            <Box
-                sx={{
+            <div
+                style={{
                     position: 'relative',
                     width: `100%`,
                     paddingTop: `${getTopPadding(aspectRatio)}%`,
                     background: '#f0f0f0',
                 }}>
-                <Box
-                    sx={{
-
+                <div
+                    style={{
                         position: 'absolute',
                         left: 0,
                         width: '100%',
                         height: '100%',
                         top: '50%',
                         transform: 'translateY(-50%)',
-                        video: {
-                            width: `100%`,
-                            height: '100%'
-                        }
                     }}>
                     <NoSsr>
                         {poster ? <video
+                        style={{
+                            width: `100%`,
+                            height: '100%'
+                        }}
                             //@ts-ignore
                             onLoadedMetadata={() => { // on loaded data doesnt work on mobiles
                                 if (onLoad) {
@@ -92,6 +91,10 @@ export const HodlVideo = ({
                         </video>
                             :
                             <video
+                            style={{
+                                width: `100%`,
+                                height: '100%'
+                            }}
                                 //@ts-ignore
                                 onLoadedMetadata={() => { // on loaded data doesnt work on mobiles
                                     if (onLoad) {
@@ -114,8 +117,8 @@ export const HodlVideo = ({
                             </video>
                         }
                     </NoSsr>
-                </Box>
-            </Box>
+                </div>
+            </div>
         </>
     )
 }

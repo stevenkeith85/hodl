@@ -8,13 +8,6 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Container from '@mui/material/Container';
 
-import CloseIcon from '@mui/icons-material/Close';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-
-
-import SearchIcon from '@mui/icons-material/Search';
-import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 
 import axios from 'axios'
 import useSWR, { mutate } from 'swr';
@@ -55,6 +48,11 @@ import { RocketLaunchIcon } from '../icons/RocketLaunchIcon';
 import { useTheme } from '@mui/material/styles';
 import { ExploreIcon } from '../icons/ExploreIcon';
 import { AddCircleIcon } from '../icons/AddCircleIcon';
+import { CloseIcon } from '../icons/CloseIcon';
+import { AccountBalanceWalletIcon } from '../icons/AccountBalanceWalletIcon';
+import { SearchIcon } from '../icons/SearchIcon';
+import { NotificationsIcon } from '../icons/NotificationsIcon';
+import { NotificationsNoneIcon } from '../icons/NotificationsNoneIcon';
 
 
 const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
@@ -65,7 +63,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
     const [sessionExpired, setSessionExpired] = useState(false);
 
     const theme = useTheme();
-    
+
     const [pages] = useState([
         {
             label: 'hodl my moon',
@@ -322,11 +320,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                             color="inherit"
                                             onClick={() => setMobileSearchOpen(false)}
                                         >
-                                            <CloseIcon sx={{
-                                                lineHeight: 0,
-                                                fontSize: 22
-                                            }}
-                                            />
+                                            <CloseIcon size={22} fill={theme.palette.primary.main} />
                                         </IconButton>
                                         :
                                         <IconButton
@@ -341,13 +335,13 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                                     setShowNotifications(false);
                                                 }}
                                         >
-                                            <SearchIcon sx={{ fontSize: 22 }} />
+                                            <SearchIcon size={22} fill={theme.palette.primary.main} />
                                         </IconButton>
                                     }
                                 </Box>
 
                                 {/* Notifications button and menu */}
-                                <IconButton
+                                {/* <IconButton
                                     sx={{
                                         margin: 0,
                                         padding: 0,
@@ -359,45 +353,86 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                         }
                                     }}
                                     color="inherit"
-                                >
-                                    {showNotifications ? <CloseIcon color="primary" /> :
-                                        (unread ?
-                                            <NotificationsIcon
-                                                color="primary"
-                                                sx={{
-                                                    fontSize: 22,
-                                                    cursor: 'pointer',
-                                                    animation: `shake 0.75s`,
-                                                    animationDelay: '1s',
-                                                    animationTimingFunction: 'ease-in'
-                                                }}
-                                                onClick={e => {
-                                                    e.stopPropagation();
-                                                    setHoverMenuOpen(false);
-                                                    setMobileSearchOpen(false);
-                                                    setShowNotifications(true);
-
-                                                    mutateUnread(false, { revalidate: false });
+                                > */}
+                                {showNotifications ?
+                                    <IconButton
+                                        sx={{
+                                            margin: 0,
+                                            padding: 0,
+                                            lineHeight: 0,
+                                            width: 44,
+                                            height: 44,
+                                            display: {
+                                                xs: address ? 'flex' : 'none'
+                                            }
+                                        }}
+                                        color="inherit"
+                                    >
+                                        <CloseIcon size={22} fill={theme.palette.primary.main} />
+                                    </IconButton> :
+                                    (unread ?
+                                        <IconButton
+                                            sx={{
+                                                margin: 0,
+                                                padding: 0,
+                                                lineHeight: 0,
+                                                width: 44,
+                                                height: 44,
+                                                display: {
+                                                    xs: address ? 'flex' : 'none'
                                                 }
-                                                } /> :
+                                            }}
+                                            color="inherit"
+
+                                            onClick={e => {
+                                                e.stopPropagation();
+                                                setHoverMenuOpen(false);
+                                                setMobileSearchOpen(false);
+                                                setShowNotifications(true);
+
+                                                mutateUnread(false, { revalidate: false });
+                                            }}
+                                        >
+                                            <div style={{
+                                                cursor: 'pointer',
+                                                animation: `shake 0.75s`,
+                                                animationDelay: '1s',
+                                                animationTimingFunction: 'ease-in'
+                                            }}>
+                                                <NotificationsIcon
+                                                    size={22}
+                                                    fill={theme.palette.primary.main}
+                                                />
+                                            </div>
+                                        </IconButton> :
+                                        <IconButton
+                                            sx={{
+                                                margin: 0,
+                                                padding: 0,
+                                                lineHeight: 0,
+                                                width: 44,
+                                                height: 44,
+                                                display: {
+                                                    xs: address ? 'flex' : 'none'
+                                                }
+                                            }}
+                                            color="inherit"
+                                            onClick={e => {
+                                                e.stopPropagation();
+                                                setHoverMenuOpen(false);
+                                                setMobileSearchOpen(false);
+                                                setShowNotifications(true);
+
+                                                mutateUnread(false, { revalidate: false });
+                                            }}
+                                        >
                                             <NotificationsNoneIcon
-                                                color="primary"
-                                                sx={{
-                                                    fontSize: 22,
-                                                    cursor: 'pointer',
-                                                }}
-                                                onClick={e => {
-                                                    e.stopPropagation();
-                                                    setHoverMenuOpen(false);
-                                                    setMobileSearchOpen(false);
-                                                    setShowNotifications(true);
-
-                                                    mutateUnread(false, { revalidate: false });
-                                                }}
-                                            />)
-                                    }
-                                </IconButton>
-
+                                                fill={theme.palette.primary.main}
+                                                size={22}
+                                            />
+                                        </IconButton>
+                                    )
+                                }
                                 <HodlNotifications
                                     showNotifications={showNotifications}
                                     setShowNotifications={setShowNotifications}
@@ -427,7 +462,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                         display="flex"
                                         alignItems="center"
                                         justifyContent="center">
-                                        <CloseIcon color="primary" />
+                                        <CloseIcon size={22} fill={theme.palette.primary.main} />
                                     </Box>
                                     <Box
                                         sx={{
@@ -448,7 +483,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                         display="flex"
                                         alignItems="center"
                                         justifyContent="center">
-                                        <AccountBalanceWalletIcon color="primary" />
+                                        <AccountBalanceWalletIcon size={22} fill={theme.palette.primary.main} />
                                     </Box>
                                 </IconButton>
                                 <HoverMenu
@@ -466,7 +501,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                         setMobileSearchOpen={setMobileSearchOpen}
                     />
                 }
-            </Box>
+            </Box >
             <Box sx={{
                 minHeight: '64px',
                 display: 'flex',

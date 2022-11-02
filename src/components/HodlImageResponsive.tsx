@@ -1,6 +1,7 @@
-import { Box } from "@mui/material";
-import Head from "next/head";
 import { useEffect, useRef } from "react";
+
+import Head from "next/head";
+
 import { makeCloudinaryUrl } from "../lib/cloudinaryUrl";
 import { getTopPadding } from "../lib/utils";
 
@@ -65,24 +66,22 @@ export const HodlImageResponsive = ({
                     />
                 }
             </Head>
-            <Box
-                sx={{
+            <div
+                style={{
                     position: 'relative',
                     width: `100%`,
                     paddingTop: `${getTopPadding(aspectRatio)}%`
                 }}>
-                <Box
-                    sx={{
+                <div
+                    style={{
                         position: aspectRatio ? 'absolute' : 'static',
                         top: 0,
                         left: 0,
                         width: '100%',
-                        img: {
-                            width: `100%`
-                        }
                     }}>
                     {lcp ?
                         <img
+                            style={{ width: '100%' }}
                             // @ts-ignore
                             fetchpriority="high"
                             onLoad={() => {
@@ -100,6 +99,7 @@ export const HodlImageResponsive = ({
                             ref={imgRef}
                         /> :
                         <img
+                            style={{ width: '100%' }}
                             onLoad={() => {
                                 if (onLoad) {
                                     onLoad();
@@ -114,8 +114,8 @@ export const HodlImageResponsive = ({
                             ref={imgRef}
                         />
                     }
-                </Box>
-            </Box>
+                </div>
+            </div>
         </>
     )
 }

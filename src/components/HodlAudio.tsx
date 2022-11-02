@@ -1,5 +1,8 @@
-import { Box, NoSsr } from "@mui/material";
+import Box from "@mui/material/Box";
+import NoSsr from "@mui/material/NoSsr";
+
 import { useEffect, useRef } from "react";
+
 
 interface HodlAudioProps {
     cid: string;

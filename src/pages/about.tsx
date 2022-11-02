@@ -1,7 +1,4 @@
-
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 
@@ -44,15 +41,7 @@ export default function About({ address }) {
                             </Link>
                         </Typography>
                         <Typography component="li" mb={1}>
-                            Click
-                            <Button
-                                color={'secondary'}
-                                variant={'outlined'}
-                                startIcon={<AccountBalanceWalletIcon />}
-                                sx={{ cursor: 'auto', marginX: 1, paddingX: 1 }}
-                            >
-                                connect
-                            </Button> on the homepage
+                            Click &quot;Connect&quot; on the homepage
                         </Typography>
                     </Typography>
                 </Box>
