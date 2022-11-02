@@ -10,7 +10,9 @@ export const Replies = ({
     swr,
     setCommentingOn,
     addCommentInput,
+    topLevel,
     setTopLevel,
+    setOldTopLevel,
     mutateCount,
     parentColor,
     level
@@ -47,7 +49,9 @@ export const Replies = ({
                         addCommentInput={addCommentInput}
                         parentMutateList={swr.mutate}
                         parentMutateCount={countSWR.mutate}
+                        topLevel={topLevel}
                         setTopLevel={setTopLevel}
+                        setOldTopLevel={setOldTopLevel}
                         mutateCount={mutateCount}
                         level={level + 1}
                     />

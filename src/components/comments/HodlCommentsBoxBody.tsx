@@ -16,7 +16,9 @@ export const HodlCommentsBoxBody = ({
     countSWR,
     limit,
     setCommentingOn,
+    topLevel,
     setTopLevel,
+    setOldTopLevel,
     newTagRef,
 }) => {
     const { data: comment } = useSWR(
@@ -53,7 +55,9 @@ export const HodlCommentsBoxBody = ({
                         setCommentingOn={setCommentingOn}
                         addCommentInput={newTagRef?.current}
                         parentMutateCount={countSWR.mutate}
+                        topLevel={topLevel}
                         setTopLevel={setTopLevel}
+                        setOldTopLevel={setOldTopLevel}
                         mutateCount={countSWR.mutate}
                     />
                     {swr?.data && swr?.data[0]?.items?.length === 0 && <Typography>No comments</Typography>}
@@ -68,7 +72,9 @@ export const HodlCommentsBoxBody = ({
                     addCommentInput={newTagRef.current}
                     replySWR={swr}
                     replyCountSWR={countSWR}
+                    topLevel={topLevel}
                     setTopLevel={setTopLevel}
+                    setOldTopLevel={setOldTopLevel}
                     mutateCount={countSWR.mutate}
                 />
             }

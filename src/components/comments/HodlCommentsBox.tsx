@@ -27,6 +27,7 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
     const { nft } = useContext(NftContext);
     const router = useRouter();
 
+    
     const [topLevel, setTopLevel] = useState<{
         objectId: number,
         object: "token" | "comment"
@@ -34,6 +35,9 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
         objectId: +getAsString(router.query.comment) || nft.id,
         object: router?.query?.comment ? "comment" : "token"
     })
+
+    // We remember the previous top levels as well, so that we can do 'back'
+    const [oldTopLevel, setOldTopLevel] = useState([])
 
     const newTagRef = useRef();
     const [loading, setLoading] = useState(false);
@@ -79,14 +83,14 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
     }, [router.query.comment])
 
     return (<>
-        <HodlCommentsBoxHeader
-            object={topLevel.object}
-            countSWR={countSWR}
+        { Boolean(oldTopLevel.length) && <HodlCommentsBoxHeader
             setTopLevel={setTopLevel}
-        />
+            oldTopLevel={oldTopLevel}
+            setOldTopLevel={setOldTopLevel}
+        />}
         <HodlCommentsBoxBody
-            topLevelObject={topLevel.object}
-            topLevelObjectId={topLevel.objectId}
+            topLevelObject={topLevel.object} // TODO: Refactor to remove - we are now passing 'topLevel'
+            topLevelObjectId={topLevel.objectId} // TODO: Refactor to remove - we are now passing 'topLevel'
             swr={swr}
             countSWR={countSWR}
             loading={loading}
@@ -94,7 +98,9 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
             maxHeight={maxHeight}
             limit={limit}
             setCommentingOn={setCommentingOn} // TODO: Looks like its really this that we'd want to put in a context - as its just passed through intermediate components
+            topLevel={topLevel}
             setTopLevel={setTopLevel}
+            setOldTopLevel={setOldTopLevel}
             newTagRef={newTagRef} />
         <AddComment
             object={topLevel.object}

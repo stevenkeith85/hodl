@@ -1,18 +1,17 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
 
-import { getProvider } from "../../../lib/server/connections";
-import { Contract } from '@ethersproject/contracts'
-import HodlNFT from '../../../../smart-contracts/artifacts/contracts/HodlNFT.sol/HodlNFT.json';
-import HodlMarket from '../../../../smart-contracts/artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 import apiRoute from "../handler";
 import { DeleteCommentValidationSchema } from "../../../validation/comments/deleteComment";
 import { HodlComment } from "../../../models/HodlComment";
+import { getMutableToken } from "../contracts/mutable-token/[tokenId]";
+import { MutableToken } from "../../../models/Nft";
 
 const client = Redis.fromEnv()
 
 const route = apiRoute();
 
+// TODO: This is slow. Add to a pipeline at the very least
 // if a token has replies, we just change the text to "[deleted]", so that the replies still have an anchor
 const removeComment = async (address, object, objectId, id, tokenId) => {
 
@@ -58,21 +57,10 @@ route.delete(async (req, res: NextApiResponse) => {
 
   const { object, objectId, subject, tokenId } = comment as HodlComment;
 
-  const provider = await getProvider();
-  const contract = new Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, HodlNFT.abi, provider);
-  const tokenExists = await contract.exists(tokenId);
+  // Read the blockchain to ensure what we are about to do is correct
+  const token: MutableToken = await getMutableToken(tokenId, true);
 
-  if (!tokenExists) {
-    return res.status(400).json({ message: 'Bad Request' });
-  }
-
-  const owner = await contract.ownerOf(tokenId);
-
-  const marketContract = new Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, HodlMarket.abi, provider);
-  const marketItem = await marketContract.getListing(tokenId);
-  const seller = marketItem.seller;
-
-  const notTokenOwner = req.address !== owner && req.address !== seller;
+  const notTokenOwner = req.address !== token.hodler;
   const notMyComment = req.address !== subject;
 
   if (notMyComment && notTokenOwner) {

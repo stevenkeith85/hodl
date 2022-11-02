@@ -11,8 +11,10 @@ interface InfiniteScrollCommentsProps {
   setCommentingOn: Function,
   addCommentInput: any,
   parentMutateCount: Function,
-  setTopLevel?: any | null,
-  mutateCount?: any | null,
+  topLevel?: any,
+  setTopLevel?: Function,
+  setOldTopLevel?: Function,
+  mutateCount?: any,
 }
 
 export const InfiniteScrollComments: React.FC<InfiniteScrollCommentsProps> = ({
@@ -21,7 +23,9 @@ export const InfiniteScrollComments: React.FC<InfiniteScrollCommentsProps> = ({
   setCommentingOn,
   addCommentInput,
   parentMutateCount,
+  topLevel=null,
   setTopLevel = null,
+  setOldTopLevel=null,
   mutateCount = null }) => {
 
   return (
@@ -49,7 +53,9 @@ export const InfiniteScrollComments: React.FC<InfiniteScrollCommentsProps> = ({
                   addCommentInput={addCommentInput}
                   parentMutateList={swr.mutate}
                   parentMutateCount={parentMutateCount}
+                  topLevel={topLevel}
                   setTopLevel={setTopLevel}
+                  setOldTopLevel={setOldTopLevel}
                   mutateCount={mutateCount}
                 />
             )
