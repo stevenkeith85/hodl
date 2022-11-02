@@ -43,6 +43,7 @@ export const getUserSearchResults = async (q: string | null, offset: number, lim
 
 const route = apiRoute();
 route.get(async (req, res) => {
+    return res.status(410); // not currently supporting this
     const q = getAsString(req.query.q);
     const offset = getAsString(req.query.offset);
     const limit = getAsString(req.query.limit);
