@@ -11,7 +11,6 @@ import { HodlCommentsBoxHeader } from "./HodlCommentsBoxHeader";
 
 interface HodlCommentsBoxProps {
     limit: number;
-    header?: boolean;
     minHeight?: string;
     maxHeight?: string;
     fallbackData?: any;
@@ -19,14 +18,12 @@ interface HodlCommentsBoxProps {
 
 export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
     limit,
-    header = true,
     minHeight = '200px',
     maxHeight = '500px',
     fallbackData = null
 }) => {
     const { nft } = useContext(NftContext);
     const router = useRouter();
-
     
     const [topLevel, setTopLevel] = useState<{
         objectId: number,
@@ -89,8 +86,6 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
             setOldTopLevel={setOldTopLevel}
         />}
         <HodlCommentsBoxBody
-            topLevelObject={topLevel.object} // TODO: Refactor to remove - we are now passing 'topLevel'
-            topLevelObjectId={topLevel.objectId} // TODO: Refactor to remove - we are now passing 'topLevel'
             swr={swr}
             countSWR={countSWR}
             loading={loading}

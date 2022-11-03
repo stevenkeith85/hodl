@@ -1,5 +1,5 @@
 import { UserViewModel } from "../../../models/User";
-import { getTokens } from "./Tokens";
+import { mGetTokens } from "./Tokens";
 
 export const getUsers = async (addresses: string[]) => {
     const cmds = [];
@@ -28,7 +28,7 @@ export const getUsers = async (addresses: string[]) => {
 
         const avatarIds = users.filter(user => user.avatar).map(user => user.avatar); // avatars are optional
 
-        const avatars = await getTokens(avatarIds);
+        const avatars = await mGetTokens(avatarIds);
 
         const avatarMap = avatars.reduce((map, token) => {
             map[token.id] = token;

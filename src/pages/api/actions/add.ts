@@ -12,7 +12,7 @@ import { MutableToken } from "../../../models/Nft";
 import { getUser } from "../user/[handle]";
 import { getAction } from ".";
 import { pusher } from "../../../lib/server/pusher";
-import { runRedisTransaction } from "../../../lib/databaseUtils";
+import { runRedisTransaction } from "../../../lib/database/rest/databaseUtils";
 import { createHmac } from "crypto";
 import axios from "axios";
 

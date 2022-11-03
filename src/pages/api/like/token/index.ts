@@ -3,7 +3,7 @@ import { Redis } from '@upstash/redis';
 
 import apiRoute from "../../handler";
 import { ActionTypes } from "../../../../models/HodlAction";
-import { runRedisTransaction } from "../../../../lib/databaseUtils";
+import { runRedisTransaction } from "../../../../lib/database/rest/databaseUtils";
 import { addToZeplo } from "../../../../lib/addToZeplo";
 
 const route = apiRoute();

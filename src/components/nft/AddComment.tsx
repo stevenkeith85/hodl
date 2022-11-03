@@ -1,5 +1,5 @@
-import { Typography, Box, Tooltip, Button, TextareaAutosize, IconButton, ClickAwayListener } from "@mui/material";
 import { FC, useContext, useState } from "react";
+
 import { WalletContext } from "../../contexts/WalletContext";
 import { Formik, Form } from "formik";
 import { AddCommentValidationSchema } from "../../validation/comments/addComments";
@@ -8,6 +8,13 @@ import { HodlComment } from "../../models/HodlComment";
 import { QuoteComment } from "./QuoteComment";
 import { NftContext } from "../../contexts/NftContext";
 import { green, red } from "@mui/material/colors";
+import Box from "@mui/material/Box";
+import Tooltip from "@mui/material/Tooltip";
+import { useTheme } from "@mui/material/styles"
+import TextareaAutosize from "@mui/material/TextareaAutosize";
+import Typography from "@mui/material/Typography";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
+import Button from "@mui/material/Button";
 
 interface AddCommentProps {
     tokenId?: number, // we always store the tokenId this comment was made against to allow us to link to it; give the token owner permission to delete, etc
@@ -35,7 +42,7 @@ export const AddComment: FC<AddCommentProps> = ({
     const { address } = useContext(WalletContext);
     const [addComment] = useAddComment();
     const { nft } = useContext(NftContext);
-
+    const theme = useTheme();
     const [open, setOpen] = useState(false);
 
     const reset = () => {
@@ -46,10 +53,6 @@ export const AddComment: FC<AddCommentProps> = ({
             mutateCount,
             setShowThread: () => null,
             color: "primary"
-        });
-        setTimeout(() => {
-            // @ts-ignore
-            newTagRef?.current?.focus();
         });
     }
 
@@ -66,7 +69,7 @@ export const AddComment: FC<AddCommentProps> = ({
                 tokenId
             }}
             validationSchema={AddCommentValidationSchema}
-            onSubmit={async (values) => {
+            onSubmit={async (values, actions) => {
                 const comment: HodlComment = {
                     tokenId: tokenId,
                     object: commentingOn.object,
@@ -84,9 +87,10 @@ export const AddComment: FC<AddCommentProps> = ({
 
 
                 mutateCount();
-                // TODO: NEED TO MUTATE THE TOP LEVEL COUNT
+                // TODO: NEED TO MUTATE THE TOP LEVEL COUNT ??
 
                 newTagRef.current.value = "";
+                actions.setFieldValue('comment', '');
                 reset();
 
                 setLoading(false);
@@ -95,8 +99,21 @@ export const AddComment: FC<AddCommentProps> = ({
             {({ errors, values, setFieldValue, isValid, submitForm, }) => (
                 <>
                     <Form>
-                        <Box display="flex" alignItems="center" marginTop={0}>
-                            <Box display="flex" flexDirection="column" position="relative" flexGrow={1} gap={1}>
+                        <div
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                marginTop: 0
+                            }}
+                        >
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    position: "relative",
+                                    flexGrow: 1,
+                                    gap: theme.spacing(1)
+                                }} >
                                 <Tooltip title={errors?.comment || ''} >
                                     <Box
                                         display="flex"
@@ -139,7 +156,7 @@ export const AddComment: FC<AddCommentProps> = ({
                                             id="hodl-comments-add"
                                         />
 
-                                        
+
                                     </Box>
                                 </Tooltip>
                                 <Box display="flex" justifyContent="right" alignItems="center" gap={2}>
@@ -148,45 +165,33 @@ export const AddComment: FC<AddCommentProps> = ({
                                             fontSize: 10,
                                             paddingLeft: 0.75,
                                             color: isValid ? green : red
-                                        }}>{values?.comment?.length} / 400</Typography>
-                                        <ClickAwayListener onClickAway={() => setOpen(false)}>
+                                        }}>{values?.comment?.length} / 400
+                                    </Typography>
+                                    <ClickAwayListener
+                                        onClickAway={() => setOpen(false)}>
+                                        <Box>
                                             <Box
-                                                // sx={{ position: 'absolute', right: 0, top: 20 }}
+                                                sx={{
+                                                    position: 'absolute',
+                                                    bottom: 50,
+                                                    right: 0,
+                                                    display: open ? 'block' : 'none'
+                                                }}
                                             >
-
-                                                <Box
-                                                    sx={{
-                                                        position: 'absolute',
-                                                        bottom: 50,
-                                                        right: 0,
-                                                        display: open ? 'block' : 'none'
-                                                    }}
-                                                >
-                                                    {/* <Picker
-                                                        preload={true}
-                                                        native={true}
-                                                        onEmojiClick={(e, emojiObject) => {
-
-                                                            setFieldValue('comment', newTagRef.current.value + emojiObject.emoji);
-                                                            newTagRef.current.value += emojiObject.emoji;
-                                                            setOpen(false);
-                                                        }}
-                                                    /> */}
-                                                </Box>
-
-
-                                                {/* <IconButton onClick={() => setOpen(old => !old)}>
-                                                    <EmojiEmotionsOutlined color="primary" />
-                                                </IconButton> */}
-
                                             </Box>
-                                        </ClickAwayListener>
+                                        </Box>
+                                    </ClickAwayListener>
                                     <Tooltip title="ctrl + enter">
-                                        <Button disabled={!isValid} type="submit">{commentingOn.object === "comment" ? "reply" : "comment"}</Button>
+                                        <Button
+                                            disabled={!isValid}
+                                            type="submit"
+                                        >
+                                            {commentingOn.object === "comment" ? "reply" : "comment"}
+                                        </Button>
                                     </Tooltip>
                                 </Box>
-                            </Box>
-                        </Box>
+                            </div>
+                        </div>
                     </Form>
                 </>)}
         </Formik>

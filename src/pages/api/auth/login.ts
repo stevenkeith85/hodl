@@ -6,8 +6,9 @@ import jwt from 'jsonwebtoken'
 import apiRoute from "../handler";
 import cookie from 'cookie'
 import { accessTokenExpiresIn, refreshTokenExpiresIn } from "../../../lib/jwt"
-import { trimZSet } from "../../../lib/databaseUtils"
+
 import { messageToSign } from "../../../lib/messageToSign";
+import { trimZSet } from "../../../lib/database/client/trimZSet";
 
 const client = Redis.fromEnv()
 const route = apiRoute();

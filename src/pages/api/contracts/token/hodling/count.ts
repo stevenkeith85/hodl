@@ -3,7 +3,7 @@ import { Contract } from '@ethersproject/contracts'
 import { getProvider } from '../../../../../lib/server/connections';
 import HodlNFT from '../../../../../../smart-contracts/artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import { Redis } from '@upstash/redis';
-import { runRedisTransaction } from '../../../../../lib/databaseUtils';
+import { runRedisTransaction } from '../../../../../lib/database/rest/databaseUtils';
 
 const route = apiRoute();
 const client = Redis.fromEnv()

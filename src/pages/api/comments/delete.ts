@@ -1,37 +1,36 @@
 import { NextApiResponse } from "next";
-import { Redis } from '@upstash/redis';
 
 import apiRoute from "../handler";
 import { DeleteCommentValidationSchema } from "../../../validation/comments/deleteComment";
 import { HodlComment } from "../../../models/HodlComment";
 import { getMutableToken } from "../contracts/mutable-token/[tokenId]";
 import { MutableToken } from "../../../models/Nft";
-
-const client = Redis.fromEnv()
+import { runRedisTransaction } from "../../../lib/database/rest/databaseUtils";
+import { getComment } from "../../../lib/database/rest/getComment";
+import { setComment } from "../../../lib/database/rest/setComment";
+import { getCommentReplyCount } from "../../../lib/database/rest/getCommentReplyCount";
 
 const route = apiRoute();
 
-// TODO: This is slow. Add to a pipeline at the very least
-// if a token has replies, we just change the text to "[deleted]", so that the replies still have an anchor
-const removeComment = async (address, object, objectId, id, tokenId) => {
+const removeComment = async (address, object, objectId, id, tokenId) : Promise<boolean> => {
+  const count = await getCommentReplyCount(id);
 
-  const replies = await client.zcard(`comment:${id}:comments`);
-
-  if (!replies) {
-    const commentDeleted = await client.del(`comment:${id}`);
-    const userRecordDeleted = await client.zrem(`user:${address}:comments`, id);
-    const tokenRecordDeleted = await client.zrem(`${object}:${objectId}:comments`, id);
-
-    // We always decrement the token id's comment count; as this represents the number of top level and sub level comments
-    const commentCountUpdated = await client.incrby(`token:${tokenId}:comments:count`, -1);
-
-    return commentDeleted + userRecordDeleted + tokenRecordDeleted + commentCountUpdated;
-  } else {
-    const comment: HodlComment = await client.get(`comment:${id}`);
+  if (count === 0) { // remove the comment
+    const cmds = [
+      ['DEL', `comment:${id}`],
+      ['ZREM', `user:${address}:comments`, id],
+      ['ZREM', `${object}:${objectId}:comments`, id],
+      ['INCRBY', `token:${tokenId}:comments:count`, -1] // We always decrement the token id's comment count; as this represents the number of top level and sub level comments
+    ];
+  
+    const success = await runRedisTransaction(cmds);
+    return success;
+  } else { // just change the text to "[deleted]"
+    const comment: HodlComment = await getComment(id);
     comment.comment = "[deleted]";
 
-    const commentUpdated = await client.set(`comment:${id}`, comment);
-    return commentUpdated;
+    const success = await setComment(id, comment);
+    return success;
   }
 }
 
@@ -46,18 +45,20 @@ route.delete(async (req, res: NextApiResponse) => {
 
   const isValid = await DeleteCommentValidationSchema.isValid(req.body)
   if (!isValid) {
+    console.log('invalid params')
     return res.status(400).json({ message: 'Bad Request' });
   }
 
-  const comment = await client.get(`comment:${id}`);
+  const comment: HodlComment = await getComment(id);
 
   if (!comment) {
+    console.log('trying to delete a non-existent comment')
     return res.status(400).json({ message: 'Bad Request' });
   }
 
   const { object, objectId, subject, tokenId } = comment as HodlComment;
 
-  // Read the blockchain to ensure what we are about to do is correct
+  // Read the blockchain to ensure what we are about to do is correct. (Potentially, we could rely on the cache at some point)
   const token: MutableToken = await getMutableToken(tokenId, true);
 
   const notTokenOwner = req.address !== token.hodler;
@@ -67,7 +68,6 @@ route.delete(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
-  console.log(subject, object, objectId, id, tokenId)
   const success = await removeComment(subject, object, objectId, id, tokenId);
 
   if (success) {
