@@ -1,10 +1,10 @@
 import apiRoute from '../handler';
-import { getToken } from '../token/[tokenId]';
 import { Redis } from '@upstash/redis';
 
 import { FullToken } from '../../../models/Nft';
 import { chunk } from '../../../lib/lodash';
 import { getAsString } from '../../../lib/getAsString';
+import { getToken } from '../../../lib/database/rest/getToken';
 
 const client = Redis.fromEnv()
 

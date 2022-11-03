@@ -3,12 +3,13 @@ import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv'
 import apiRoute from "../handler";
 import { ActionSet, HodlAction, HodlActionViewModel } from "../../../models/HodlAction";
-import { getToken } from "../token/[tokenId]";
+
 import { getComment } from "../comment";
 import { getUser } from "../user/[handle]";
 import { User, UserViewModel } from "../../../models/User";
 import { Token } from "../../../models/Token";
 import { HodlComment } from "../../../models/HodlComment";
+import { getToken } from "../../../lib/database/rest/getToken";
 
 dotenv.config({ path: '../.env' })
 
@@ -207,9 +208,6 @@ export const getActions = async (
 
     return actionVM;
   });
-  // const actionPromises = actionIds.map(id => getAction(id, address));
-
-  // const actions: HodlActionViewModel[] = await Promise.all(actionPromises);
 
   return {
     items: result,
