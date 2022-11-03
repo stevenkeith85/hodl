@@ -1,19 +1,38 @@
-import { Typography, Box, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, MenuList } from "@mui/material";
-import { useRouter } from "next/router";
-import { useComments, useCommentCount, useDeleteComment } from "../../hooks/useComments";
 import React, { FC, useContext, useState } from "react";
-import { HodlCommentViewModel } from "../../models/HodlComment";
-import { formatDistanceStrict } from "date-fns";
-import { ProfileNameOrAddress } from "../avatar/ProfileNameOrAddress";
-import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
-import { useLikeCount } from "../../hooks/useLikeCount";
-import { pluralize } from "../../lib/utils";
-import { HodlCommentActionButtons } from "./HodlCommentActionButtons";
-import { Replies } from "./Replies";
-import { DeleteOutlineSharp, ExpandLess, ExpandMore } from "@mui/icons-material";
+
+import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
+
+import { useTheme } from "@mui/material/styles"
+
+import Typography from "@mui/material/Typography";
+
+import formatDistanceStrict from "date-fns/formatDistanceStrict";
+
 import { NftContext } from "../../contexts/NftContext";
 import { WalletContext } from "../../contexts/WalletContext";
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+
+import { HodlCommentViewModel } from "../../models/HodlComment";
+
+import { Replies } from "./Replies";
+import { ProfileNameOrAddress } from "../avatar/ProfileNameOrAddress";
+import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
+import { HodlCommentActionButtons } from "./HodlCommentActionButtons";
+
+import { useComments, useCommentCount, useDeleteComment } from "../../hooks/useComments";
+
+import { pluralize } from "../../lib/utils";
+
+import { ExpandMoreIcon } from "../icons/ExpandMoreIcon";
+import { ExpandLessIcon } from "../icons/ExpandLessIcon";
+
+const HodlCommentPopUpMenu = dynamic(
+    () => import('./HodlCommentPopUpMenu'),
+    {
+        ssr: false,
+        loading: () => null
+    }
+);
 
 interface HodlCommentBoxProps {
     comment: HodlCommentViewModel;
@@ -51,15 +70,19 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
     replyCountSWR = null,
     replySWR = null,
     shouldShowThread = false,
-    topLevel=null,
+    topLevel = null,
     setTopLevel = null,
     setOldTopLevel = null,
     mutateCount = null,
     level = 0
 }) => {
-    const { swr: likesCount } = useLikeCount(comment.id, "comment");
 
-    const [showThread, setShowThread] = useState(shouldShowThread || level < 1);
+    const theme = useTheme();
+
+    // once there's a certain depth; we rebase the comment to the root so that its easy to read. (especially on mobiles)
+    const numberOfLevelsBeforeThread = 2;
+
+    const [showThread, setShowThread] = useState(shouldShowThread); // we could do 'shouldShowThread || level < X' if we want to auto show replies. This could hammer the db though; so perhaps hold off on that until we see what its like with some users
 
     // SWRs
 
@@ -77,153 +100,112 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
     const router = useRouter();
 
     const { address } = useContext(WalletContext);
-    const { nft, mutableToken } = useContext(NftContext);
+    const { mutableToken } = useContext(NftContext);
 
     const canDeleteComment = (comment: HodlCommentViewModel) => comment.user.address === address || mutableToken?.hodler === address;
     const [deleteComment] = useDeleteComment();
 
-    // Comment Menu
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const open = Boolean(anchorEl);
-    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
+    // When the user tries to delete a comment, we give a visual cue
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const onDelete = async () => {
+        setIsDeleting(true);
+
+        await deleteComment(comment);
+        parentMutateList();
+        parentMutateCount();
+        mutateCount();
+
+        setTimeout(() => setIsDeleting(false));
     };
 
     return (
-        <Box
-            display="flex"
-            flexDirection="column"
-            sx={{
+        <div
+            style={{
+                display: "flex",
+                flexDirection: "column",
+                opacity: isDeleting ? 0.4 : 1,
                 marginLeft: '20px',
             }}
         >
-            <Box
-                display="flex"
-                flexDirection="column"
-                sx={{
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
                     boxSizing: 'border-box',
                     width: `calc(100% + 20px)`,
                     marginLeft: '-20px',
-                    marginBottom: 2
+                    marginBottom: theme.spacing(2)
                 }}
             >
-                <Box
-                    display="flex"
-                    alignItems="start"
-                    gap={1.5}
-                    sx={{
+                <div
+                    style={{
+                        display: 'flex',
+                        alignItems: 'start',
+                        gap: theme.spacing(1.5),
                         width: `100%`
                     }}
-                    id={`hodl-comments-${comment.id}`}>
+                    id={`hodl-comments-${comment.id}`}
+                >
                     <UserAvatarAndHandle
                         address={comment.user.address}
                         fallbackData={comment.user}
                         size={32}
                         handle={false}
                     />
-                    <Box
-                        display="flex"
-                        flexDirection="column"
-                        sx={{
+                    <div
+                        style={{
+                            display: "flex",
+                            flexDirection: "column",
                             width: `100%`,
                         }}
                     >
-                        <Box
-                            sx={{
+                        <div
+                            style={{
                                 display: 'flex',
                                 width: `100%`,
                             }}>
-                            <Box
-                                display="flex"
-                                flexDirection="column"
-                                flexWrap="wrap"
-                                width={`100%`}
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    flexWrap: 'wrap',
+                                    width: `100%`
+                                }}
                             >
-                                <Box
-                                    display="flex"
-                                    flexDirection="column"
-                                    flexWrap="wrap"
-                                >
-                                    <Box sx={{
+                                <div
+                                    style={{
                                         display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                        width: `100%`
-                                    }}>
-                                        <Box display="flex" sx={{
-                                            gap: 1,
+                                        flexDirection: 'column',
+                                        flexWrap: 'wrap',
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            display: 'flex',
                                             alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                            width: `100%`
                                         }}>
+                                        <div
+                                            style={{
+                                                display: 'flex',
+                                                gap: theme.spacing(1),
+                                                alignItems: 'center',
+                                            }}>
                                             <ProfileNameOrAddress
                                                 profileAddress={comment.user.address}
                                                 fallbackData={comment.user}
                                                 color={color}
                                                 fontSize="14px"
                                             />
-                                        </Box>
-                                        <Box
-                                            sx={{
+                                        </div>
+                                        <div
+                                            style={{
                                                 display: 'flex',
                                                 alignItems: 'center'
                                             }}>
-                                            {
-                                                address && canDeleteComment(comment) && (<>
-                                                    <IconButton
-                                                        className="moreMenu"
-                                                        onClick={handleClick}
-                                                        size="small"
-                                                        sx={{
-                                                            padding: 0,
-                                                        }}
-                                                    >
-                                                        <MoreVertIcon
-                                                            sx={{
-                                                                cursor: 'pointer',
-                                                                color: theme => theme.palette.text.secondary,
-                                                                '&:hover': {
-                                                                    color: theme => theme.palette.text.primary,
-                                                                },
-                                                                fontSize: 12
-                                                            }}
-                                                        />
-                                                    </IconButton>
-                                                    <Menu
-                                                        anchorEl={anchorEl}
-                                                        open={open}
-                                                        onClose={handleClose}
-                                                    >
-                                                        <MenuList
-                                                            dense
-                                                            sx={{
-                                                                padding: 0
-                                                            }}
-                                                        >
-                                                            <MenuItem
-                                                                onClick={async () => {
-                                                                    await deleteComment(comment);
-                                                                    parentMutateList();
-                                                                    parentMutateCount();
-                                                                    mutateCount();
-                                                                }
-                                                                }>
-                                                                <ListItemIcon
-                                                                    sx={{
-                                                                        '&.MuiListItemIcon-root': {
-                                                                            minWidth: 0,
-                                                                            marginRight: `8px`
-                                                                        }
-                                                                    }}>
-                                                                    <DeleteOutlineSharp sx={{ fontSize: '14px' }} />
-                                                                </ListItemIcon>
-                                                                <ListItemText>delete</ListItemText>
-                                                            </MenuItem>
-                                                        </MenuList>
-                                                    </Menu>
-                                                </>)
-                                            }
+                                            {address && canDeleteComment(comment) && <HodlCommentPopUpMenu onDelete={onDelete} />}
                                             <HodlCommentActionButtons
                                                 comment={comment}
                                                 setCommentingOn={setCommentingOn}
@@ -236,17 +218,24 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                                 parentMutateCount={parentMutateCount}
                                                 mutateCount={mutateCount}
                                             />
-                                        </Box>
-                                    </Box>
-                                    <Typography sx={{ whiteSpace: 'pre-line', marginTop: 0, marginBottom: 0 }}>{comment.comment}</Typography>
-                                </Box>
-                                <Box
-                                    sx={{
+                                        </div>
+                                    </div>
+                                    <Typography
+                                        sx={{
+                                            whiteSpace: 'pre-line',
+                                            marginTop: 0,
+                                            marginBottom: 0
+                                        }}>
+                                        {comment.comment}
+                                    </Typography>
+                                </div>
+                                <div
+                                    style={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        gap: 1.5,
-                                        marginTop: 1,
-                                        marginBottom: 0.5
+                                        gap: theme.spacing(1.5),
+                                        marginTop: theme.spacing(1),
+                                        marginBottom: theme.spacing(0.5)
 
                                     }}>
                                     <Typography
@@ -257,14 +246,11 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                         {comment.timestamp && formatDistanceStrict(new Date(comment.timestamp), new Date(), { addSuffix: false })}
                                     </Typography>
                                     {address &&
-                                        <Box
-                                            sx={{
+                                        <a
+                                            className="text-secondary"
+                                            style={{
                                                 cursor: 'pointer',
-                                                color: theme => theme.palette.text.secondary,
-                                                '&:hover': {
-                                                    color: theme => theme.palette.text.primary,
-                                                },
-                                                fontSize: 12
+                                                fontSize: 12,
                                             }}
                                             onClick={() => {
                                                 setCommentingOn({
@@ -279,63 +265,60 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                             }
                                             }>
                                             reply
-                                        </Box>
+                                        </a>
                                     }
-                                </Box>
-                                {Boolean(countSWR?.data) && <Box
-                                    onClick={() => {
-                                        if (level < 4) {
-                                            setShowThread(old => !old);
-                                        } else {
-                                            
-                                            setOldTopLevel(old => old.concat([topLevel]));
-                                            setTopLevel(({ objectId: comment.id, object: "comment" }));
+                                </div>
+                                {
+                                    Boolean(countSWR?.data) &&
+                                    <a
+                                        className="text-secondary"
+                                        onClick={() => {
+                                            if (level < numberOfLevelsBeforeThread) {
+                                                setShowThread(old => !old);
+                                            } else {
+                                                setOldTopLevel(old => old.concat([topLevel]));
+                                                setTopLevel(({ objectId: comment.id, object: "comment" }));
 
-                                            router.push({
-                                                pathname: window.location.pathname,
-                                                query: { comment: comment.id }
-                                            }, undefined, { shallow: true });
+                                                router.push({
+                                                    pathname: window.location.pathname,
+                                                    query: { comment: comment.id }
+                                                }, undefined, { shallow: true });
+                                            }
+
+                                        }}
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: theme.spacing(0.25),
+                                            cursor: 'pointer',
+                                            marginTop: theme.spacing(0.5)
+                                        }}
+                                    >
+                                        {level < numberOfLevelsBeforeThread && <>
+                                            {showThread ?
+                                                <ExpandLessIcon size={12} /> :
+                                                <ExpandMoreIcon size={12} />
+                                            }</>}
+                                        {
+                                            countSWR.data && showThread && !swr.error && !swr.data ?
+                                                <Typography
+                                                    sx={{
+                                                        fontSize: 12
+                                                    }}
+                                                >
+                                                    loading
+                                                </Typography> :
+                                                <Typography
+                                                    sx={{
+                                                        fontSize: 12
+                                                    }}
+                                                >
+                                                    {level < numberOfLevelsBeforeThread ? pluralize(countSWR.data, 'reply') : 'view comment thread'}
+                                                </Typography>
                                         }
-
-                                    }}
-                                    sx={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: 0.25,
-                                        color: theme => theme.palette.text.secondary,
-                                        cursor: 'pointer',
-                                        '&:hover': {
-                                            color: theme => theme.palette.text.primary
-                                        },
-                                        marginTop: 0.5
-                                    }}
-                                >
-                                    {level < 4 && <>
-                                        {showThread ?
-
-                                            <ExpandLess sx={{ fontSize: 12 }} /> :
-                                            <ExpandMore sx={{ fontSize: 12 }} />
-                                        }</>}
-                                    {
-                                        countSWR.data && showThread && !swr.error && !swr.data ?
-                                            <Typography
-                                                sx={{
-                                                    fontSize: 12
-                                                }}
-                                            >
-                                                loading
-                                            </Typography> :
-                                            <Typography
-                                                sx={{
-                                                    fontSize: 12
-                                                }}
-                                            >
-                                                {level < 4 ? pluralize(countSWR.data, 'reply') : 'view comment thread'}
-                                            </Typography>
-                                    }
-                                </Box>}
-                            </Box>
-                        </Box>
+                                    </a>}
+                            </div>
+                        </div>
                         <Replies
                             countSWR={countSWR}
                             showThread={showThread}
@@ -349,9 +332,9 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                             parentColor={color}
                             level={level}
                         />
-                    </Box>
-                </Box>
-            </Box>
-        </Box >
+                    </div>
+                </div>
+            </div>
+        </div >
     );
 };

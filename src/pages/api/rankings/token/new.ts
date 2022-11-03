@@ -1,5 +1,5 @@
 import { Token } from "../../../../models/Token";
-import { getTokens } from "../../../../lib/database/rest/Tokens";
+import { mGetTokens } from "../../../../lib/database/rest/Tokens";
 import { getAsString } from "../../../../lib/getAsString";
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -40,7 +40,7 @@ export const getNewTokens = async (
     });
 
   const { result: ids } = await idsResponse.json();
-  const tokens = await getTokens(ids);
+  const tokens = await mGetTokens(ids);
 
   return {
     items: tokens,

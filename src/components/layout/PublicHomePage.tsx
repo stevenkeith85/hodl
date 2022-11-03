@@ -1,16 +1,24 @@
-import { Box } from "@mui/material"
 import { HomePagePitch } from "./HomePagePitch"
 import { TopUsers } from "../rankings/TopUsers"
 import { TopTokens } from "../rankings/TopTokens"
 import { NewTokens } from "../rankings/NewTokens"
 import { NewUsers } from "../rankings/NewUsers"
 
+import Box from "@mui/material/Box"
+
 const PublicHomePage = ({ }) => {
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column'}}>
-            <Box display="flex">
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'column'
+            }}
+        >
+            <div style={{
+                display: 'flex',
+            }}>
                 <HomePagePitch />
-            </Box>
+            </div>
             <Box
                 sx={{
                     display: 'grid',
@@ -38,7 +46,7 @@ const PublicHomePage = ({ }) => {
                 <NewUsers followButton={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
                 <NewTokens showLikes={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
             </Box>
-        </Box >
+        </div>
     )
 }
 

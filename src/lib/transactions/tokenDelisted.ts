@@ -7,7 +7,7 @@ import { getMutableToken } from "../../pages/api/contracts/mutable-token/[tokenI
 
 import { updateTransactionRecords } from "./updateTransactionRecords";
 import { updateHodlingCache } from "../../pages/api/contracts/token/hodling/count";
-import { runRedisTransaction } from "../databaseUtils";
+import { runRedisTransaction } from "../database/rest/databaseUtils";
 import { updateListedCache } from "../../pages/api/contracts/market/listed/count";
 
 import { TransactionResponse } from '@ethersproject/abstract-provider'

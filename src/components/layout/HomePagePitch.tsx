@@ -1,7 +1,11 @@
-import { Box, Grid, Typography } from "@mui/material"
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
 import { useContext } from "react";
+
 import { RankingsContext } from "../../contexts/RankingsContext";
 import { LoginLogoutButton } from "../menu/LoginLogoutButton"
+
 import { NftWindow } from "../NftWindow"
 
 export const HomePagePitch = ({ }) => {
@@ -10,7 +14,10 @@ export const HomePagePitch = ({ }) => {
     return (
         <Box
             sx={{
-                paddingY:{ xs:`50px`, md: '80px' },
+                paddingY: {
+                    xs: `50px`,
+                    md: '80px'
+                },
                 width: `100%`,
             }}>
             <Grid container>
@@ -30,8 +37,8 @@ export const HomePagePitch = ({ }) => {
                         gap={0}
                         height="100%"
                         sx={{
-                            paddingTop: {xs: 0, sm: '25px', md: '50px', lg: '70px', xl: '90px'},
-                            paddingBottom: { xs: '64px', sm: '75px', md:`100px`, lg: '120px', xl: '140px'},
+                            paddingTop: { xs: 0, sm: '25px', md: '50px', lg: '70px', xl: '90px' },
+                            paddingBottom: { xs: '64px', sm: '75px', md: `100px`, lg: '120px', xl: '140px' },
                         }}
                     >
                         <Box
@@ -58,11 +65,11 @@ export const HomePagePitch = ({ }) => {
                                 },
                                 color: '#999'
                             }}>
-                            a web3 social network<br/> and marketplace
+                            a web3 social network<br /> and marketplace
                         </Typography>
                         <Box
                             sx={{
-                                marginTop: {xs: '32px', md: '50px'},
+                                marginTop: { xs: '32px', md: '50px' },
                             }}>
                             <LoginLogoutButton
                                 variant="contained"
@@ -99,11 +106,11 @@ export const HomePagePitch = ({ }) => {
                         justifyContent="center"
                         gap={0}
                         sx={{
-                            height: {sm: "100%"},
+                            height: { sm: "100%" },
                         }}
                     >
-                        <Box sx={{ 
-                            width: `400px`, 
+                        <Box sx={{
+                            width: `400px`,
                             maxWidth: '100%',
                         }}>
                             <NftWindow nft={mostLiked.data?.[0].items?.[0]} lcp={true} />

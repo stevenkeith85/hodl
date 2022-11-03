@@ -1,5 +1,8 @@
-import { Typography, Box } from "@mui/material";
-import React, { } from "react";
+import React from "react";
+
+import { useTheme } from "@mui/material/styles"
+import Typography from "@mui/material/Typography";
+
 import { HodlCommentViewModel } from "../../models/HodlComment";
 import { HodlCommentBox } from "./HodlCommentBox";
 
@@ -18,6 +21,7 @@ export const Replies = ({
     level
 }) => {
 
+    const theme = useTheme();
     const colors: ("primary" | "secondary")[] = ["primary", "secondary"];
     const firstIndex = colors.indexOf(parentColor) + 1
 
@@ -30,13 +34,13 @@ export const Replies = ({
     }
 
     return (
-        <Box
-            display="flex"
-            flexDirection="column"
-            sx={{
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
                 width: '100%',
-                marginTop: 1,
-                marginBottom: -2
+                marginTop: theme.spacing(1),
+                marginBottom: theme.spacing(-2)
             }}
         >
             {
@@ -75,6 +79,6 @@ export const Replies = ({
                     more replies ...
                 </Typography>
             }
-        </Box>
+        </div>
     )
 }

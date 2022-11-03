@@ -10,8 +10,6 @@ export const HodlCommentsBoxBody = ({
     loading,
     minHeight,
     maxHeight,
-    topLevelObject,
-    topLevelObjectId,
     swr,
     countSWR,
     limit,
@@ -22,7 +20,7 @@ export const HodlCommentsBoxBody = ({
     newTagRef,
 }) => {
     const { data: comment } = useSWR(
-        topLevelObject === "comment" && topLevelObjectId ? [`/api/comment`, topLevelObjectId] : null,
+        topLevel && topLevel.object === "comment" && topLevel.objectId ? [`/api/comment`, topLevel?.objectId] : null,
         fetchWithId
     );
 
@@ -36,18 +34,18 @@ export const HodlCommentsBoxBody = ({
             }}
         >
             {
-                loading && <HodlLoadingSpinner 
-                    sx={{ 
-                        position: 'absolute', 
-                        display: 'flex', 
-                        justifyContent: 'center', 
+                loading && <HodlLoadingSpinner
+                    sx={{
+                        position: 'absolute',
+                        display: 'flex',
+                        justifyContent: 'center',
                         alignItems: 'center',
-                        width: '100%', 
-                        height: '100%', 
+                        width: '100%',
+                        height: '100%',
                     }} />
 
             }
-            {topLevelObject === "token" ?
+            {topLevel?.object === "token" ?
                 <div>
                     <InfiniteScrollComments
                         swr={swr}

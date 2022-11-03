@@ -11,7 +11,7 @@ import { MutableToken } from "../../models/Nft";
 import { updateHodlingCache } from "../../pages/api/contracts/token/hodling/count";
 
 import { updateTransactionRecords } from "./updateTransactionRecords";
-import { runRedisTransaction } from "../databaseUtils";
+import { runRedisTransaction } from "../database/rest/databaseUtils";
 import { updateListedCache } from "../../pages/api/contracts/market/listed/count";
 
 

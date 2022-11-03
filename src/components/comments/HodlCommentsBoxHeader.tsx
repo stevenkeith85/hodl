@@ -22,7 +22,7 @@ export const HodlCommentsBoxHeader: React.FC<HodlCommentsBoxHeaderProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 gap: theme.spacing(1),
-                marginBottom: theme.spacing(1),
+                marginBottom: theme.spacing(2),
                 cursor: 'pointer'
             }}
             onClick={() => {

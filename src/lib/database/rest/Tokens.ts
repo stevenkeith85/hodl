@@ -1,4 +1,4 @@
-export const getTokens = async (tokenIds: string[]) => {
+export const mGetTokens = async (tokenIds: string[]) => {
     if (tokenIds.length === 0) {
         return [];
     }

@@ -6,7 +6,7 @@ import { formatEther } from '@ethersproject/units'
 import { getProvider } from '../../../../../lib/server/connections';
 import HodlMarket from '../../../../../../smart-contracts/artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 import { Redis } from '@upstash/redis';
-import { runRedisTransaction } from '../../../../../lib/databaseUtils';
+import { runRedisTransaction } from '../../../../../lib/database/rest/databaseUtils';
 
 
 const route = apiRoute();
