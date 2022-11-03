@@ -1,9 +1,10 @@
 import { createContext } from 'react';
-import { FullToken, MutableToken } from '../models/Nft';
+import { MutableToken } from '../models/Nft';
+import { Token } from '../models/Token';
 
 
 export const NftContext = createContext<{
-    nft: FullToken,
+    nft: Token,
     mutableToken: MutableToken
 }>({
     nft: null,

@@ -16,7 +16,6 @@ import { useFollowingCount } from '../hooks/useFollowingCount';
 import { useHodlingCount } from '../hooks/useHodlingCount';
 import { useListedCount } from '../hooks/useListedCount';
 import { useNewTokens } from '../hooks/useNewTokens';
-import { delayForDemo } from '../lib/utils';
 
 import PublicHomePageLoading from '../components/layout/PublicHomeLoading';
 import PrivateHomePageLoading from '../components/layout/PrivateHomePageLoading';
@@ -24,7 +23,6 @@ import PrivateHomePageLoading from '../components/layout/PrivateHomePageLoading'
 
 const PublicHomePage = dynamic(
   () => import('../components/layout/PublicHomePage'),
-  // () => delayForDemo(import('../components/layout/PublicHomePage')),
   {
     ssr: false,
     loading: () => <PublicHomePageLoading />
@@ -34,7 +32,6 @@ const PublicHomePage = dynamic(
 
 const PrivateHomePage = dynamic(
   () => import('../components/layout/PrivateHomePage'),
-  // () => delayForDemo(import('../components/layout/PrivateHomePage')),
   {
     ssr: false,
     loading: () => <PrivateHomePageLoading />

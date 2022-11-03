@@ -8,7 +8,7 @@ import useSWR, { Fetcher } from "swr";
 
 import { authenticate } from "../../lib/jwt";
 import { NftContext } from "../../contexts/NftContext";
-import { getToken } from "../api/token/[tokenId]";
+
 import { MutableToken } from "../../models/Nft";
 import { Token } from "../../models/Token";
 import { DetailPageAsset } from "../../components/nft/DetailPageAsset";
@@ -70,38 +70,35 @@ const TokenDataTab = dynamic(
 
 
 export async function getServerSideProps({ params, query, req, res }) {
-  try {
-    await authenticate(req, res);
+  await authenticate(req, res);
 
-    const limit = 10;
-    const tab = Number(query.tab) || 0;
+  const limit = 10;
+  const tab = Number(query.tab) || 0;
 
-    const nft: Token = await getToken(params.tokenId);
 
-    return {
-      props: {
-        address: req.address || null, // This is actually used to populate the address context in _app.ts. The app bar needs it
-        nft,
-        limit,
-        tab
-      },
-    }
-  } catch (e) {
-    console.log("pages/nft/[tokenId] - error - ", e);
-    return { notFound: true }
+  return {
+    props: {
+      address: req.address || null, // This is actually used to populate the address context in _app.ts. The app bar needs it
+      tokenId: params.tokenId,
+      limit,
+      tab
+    },
   }
 }
 
 const NftDetail = ({
   address,
-  nft,
+  tokenId,
   limit,
   tab
 }) => {
   const [value, setValue] = useState(Number(tab)); // tab
-  
+
+  const tokenFetcher: Fetcher<Token> = (url, id) => fetch(`${url}/${id}`).then(r => r.json()).then(data => data.token);
+  const { data: nft } = useSWR(tokenId ? [`/api/token`, tokenId]: null, tokenFetcher);
+
   const mutableTokenFetcher: Fetcher<MutableToken> = (url, id) => fetch(`${url}/${id}`).then(r => r.json()).then(data => data.mutableToken);
-  const { data: mutableToken } = useSWR([`/api/contracts/mutable-token`, nft.id], mutableTokenFetcher);
+  const { data: mutableToken } = useSWR(tokenId ? [`/api/contracts/mutable-token`, tokenId]: null, mutableTokenFetcher);
 
   return (
     <>
@@ -112,7 +109,7 @@ const NftDetail = ({
         }}
       >
         <Head>
-          <title>{nft.name} · Hodl My Moon</title>
+          <title>{nft?.name} · Hodl My Moon</title>
         </Head>
         <Grid
           container
@@ -137,7 +134,7 @@ const NftDetail = ({
             <div
               style={{ height: '50px' }}
             >
-              <TokenHeader mutableToken={mutableToken} nft={nft} setValue={setValue} value={value} />
+              {nft && <TokenHeader mutableToken={mutableToken} nft={nft} setValue={setValue} value={value} />}
             </div>
 
           </Grid>
@@ -165,11 +162,12 @@ const NftDetail = ({
                   }
                 }}
               >
-                <DetailPageAsset token={nft} />
-                <div style={{ height: '20px' }}>
-                  <TokenActionBox nft={nft} />
-                  {/* <TokenActionBoxLoading /> */}
-                </div>
+                {nft && <>
+                  <DetailPageAsset token={nft} />
+                  <div style={{ height: '20px' }}>
+                    <TokenActionBox nft={nft} />
+                  </div>
+                </>}
               </Box>
             </Box>
           </Grid>
@@ -187,14 +185,14 @@ const NftDetail = ({
                 }
               }}>
               <div hidden={value !== 0}>
-                <SocialTab nft={nft} limit={limit} />
+                {nft && <SocialTab nft={nft} limit={limit} />}
                 {/* <SocialTabLoading /> */}
               </div>
               <div hidden={value !== 1}>
-                <MarketTab mutableToken={mutableToken} nft={nft} />
+                {nft && <MarketTab mutableToken={mutableToken} nft={nft} />}
               </div>
               <div hidden={value !== 2}>
-                <TokenDataTab mutableToken={mutableToken} nft={nft} />
+                {nft && <TokenDataTab mutableToken={mutableToken} nft={nft} />}
               </div>
             </Box>
           </Grid>
