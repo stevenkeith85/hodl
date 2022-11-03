@@ -30,10 +30,7 @@ const SocialTab = ({ nft, limit }) => (
             <Typography mb={1} sx={{ fontWeight: 600 }}>{nft.name}</Typography>
             <Box sx={{ whiteSpace: 'pre-line' }}>{insertTagLinks(nft.description)}</Box>
         </Box>
-        <HodlCommentsBox
-            limit={limit}
-            header={false}
-        />
+        <HodlCommentsBox limit={limit} />
     </Box>
 )
 
