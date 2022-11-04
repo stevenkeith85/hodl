@@ -1,8 +1,41 @@
 import { HomePagePitch } from "./HomePagePitch"
-import { TopUsers } from "../rankings/TopUsers"
-import { TopTokens } from "../rankings/TopTokens"
-import { NewTokens } from "../rankings/NewTokens"
-import { NewUsers } from "../rankings/NewUsers"
+
+import dynamic from 'next/dynamic';
+
+import { RankingListLoading } from './RankingListLoading';
+
+const NewTokens = dynamic(
+    () => import('../rankings/NewTokens').then(mod => mod.NewTokens),
+    {
+        ssr: false,
+        loading: () => <RankingListLoading text="New Tokens" />
+    }
+);
+
+const TopUsers = dynamic(
+    () => import('../rankings/TopUsers').then(mod => mod.TopUsers),
+    {
+        ssr: false,
+        loading: () => <RankingListLoading text="Top Users" />
+    }
+);
+
+const TopTokens = dynamic(
+    () => import('../rankings/TopTokens').then(mod => mod.TopTokens),
+    {
+        ssr: false,
+        loading: () => <RankingListLoading text="Top Tokens" />
+    }
+);
+
+const NewUsers = dynamic(
+    () => import('../rankings/NewUsers').then(mod => mod.NewUsers),
+    {
+        ssr: false,
+        loading: () => <RankingListLoading text="New Users" />
+    }
+);
+
 
 import Box from "@mui/material/Box"
 

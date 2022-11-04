@@ -8,7 +8,7 @@ export const addToZeplo = async (
     trace = '') => {
     try {
         const serverlessFunctionUrl = `https://${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/${endpoint}`;
-        const zeploUrl = `https://zeplo.to/${serverlessFunctionUrl}?secret=${process.env.ZEPLO_SECRET}&_token=${process.env.ZEPLO_TOKEN}&_trace=${trace}&_retry=2`;
+        const zeploUrl = `https://zeplo.to/${serverlessFunctionUrl}?secret=${process.env.ZEPLO_SECRET}&_token=${process.env.ZEPLO_TOKEN}&_trace=${trace}&_retry=3`;
 
         const start = Date.now();
 
@@ -41,7 +41,7 @@ export const queueTxAndAction = async (
         const { data } = await axios.post(
             `https://zeplo.to/step?_token=${process.env.ZEPLO_TOKEN}`, [
                 {
-                    url: `https://${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/api/blockchain/transaction?secret=${process.env.ZEPLO_SECRET}&_step=A&_retry=2`,
+                    url: `https://${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/api/blockchain/transaction?secret=${process.env.ZEPLO_SECRET}&_step=A&_retry=3`,
                     headers: {
                         "Cookie": `refreshToken=${refreshToken}; accessToken=${accessToken}`
                     },
@@ -49,7 +49,7 @@ export const queueTxAndAction = async (
                         hash
                     }
                 }, {
-                    url: `https://${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/api/actions/add?secret=${process.env.ZEPLO_SECRET}&_requires=A&_retry=2`,
+                    url: `https://${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/api/actions/add?secret=${process.env.ZEPLO_SECRET}&_requires=A&_retry=3`,
                     headers: {
                         "Cookie": `refreshToken=${refreshToken}; accessToken=${accessToken}`
                     },
