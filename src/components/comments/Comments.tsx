@@ -1,19 +1,27 @@
 import { FC, useState } from "react";
 
+import dynamic from 'next/dynamic';
+
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
 import { CommentOutlined } from "@mui/icons-material";
 
+import useSWR, { Fetcher } from "swr";
 import humanize from "humanize-plus";
 
-import { HodlModal } from "../modals/HodlModal";
-import { HodlCommentsBox } from "./HodlCommentsBox";
 import { useCommentCount } from "../../hooks/useComments";
 import { NftContext } from "../../contexts/NftContext";
-import useSWR, { Fetcher } from "swr";
+
 import { MutableToken } from "../../models/Nft";
 
+const HodlCommentsModal = dynamic(
+    () => import('./HodlCommentsModal'),
+    {
+        ssr: false,
+        loading: () => null
+    }
+);
 
 export interface CommentsProps {
     nft: any,
@@ -49,25 +57,7 @@ export const Comments: FC<CommentsProps> = ({
                     mutableToken
                 }}
             >
-                <HodlModal
-                    open={open}
-                    setOpen={setOpen}
-                    sx={{
-                        padding: 2,
-                        width: {
-                            xs: '90vw',
-                        },
-                        maxWidth: "1200px",
-                        maxHeight: '90vh',
-                        overflow: 'auto'
-                    }}
-                >
-                    <HodlCommentsBox
-                        limit={10}
-                        maxHeight="80vh"
-                        minHeight="40vh"
-                    />
-                </HodlModal>
+                <HodlCommentsModal open={open} setOpen={setOpen} />
                 <Box
                     display="flex"
                     gap={0.5}
@@ -89,19 +79,8 @@ export const Comments: FC<CommentsProps> = ({
                         }
                     }}
                 >
-                    <CommentOutlined
-                        color={color}
-                        sx={{
-                            fontSize: size
-                        }}
-                    />
-                    <Typography
-                        sx={{
-                            fontSize,
-                            color
-                        }}>
-                        {humanize.compactInteger(count || 0, 1)}
-                    </Typography>
+                    <CommentOutlined color={color} sx={{ fontSize: size }} />
+                    <p style={{ fontSize, color, margin: 0 }}>{humanize.compactInteger(count || 0, 1)}</p>
                 </Box>
             </NftContext.Provider>
         </>
