@@ -35,11 +35,17 @@ export const HodlVideo = ({
     const asset = makeCloudinaryUrl(assetFolder, folder as 'nfts' | 'uploads', cid, {});
     const video = useRef(null);
 
+    const setMutedLocalStorage = () => {
+        localStorage.setItem('muted', video?.current?.muted);
+    };
+
     useEffect(() => {
         try {
-            video?.current?.addEventListener('volumechange', (event) => {
-                localStorage.setItem('muted', video?.current?.muted);
-            });
+            video?.current?.addEventListener('volumechange', setMutedLocalStorage);
+
+            return () => {
+                window.removeEventListener('volumechange', setMutedLocalStorage);
+            };
         } catch (e) {
         }
     }, [video?.current])

@@ -125,6 +125,7 @@ export default function Home({
             >
               {/* @ts-ignore */}
               <PrivateHomePage user={user} address={address} />
+              {/* <PrivateHomePageLoading /> */}
             </UserContext.Provider>
           </FeedContext.Provider>
         }

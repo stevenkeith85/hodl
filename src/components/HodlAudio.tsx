@@ -36,16 +36,23 @@ export const HodlAudio = ({
     const asset = makeCloudinaryAudioUrl();
     const audio = useRef(null);
 
+    const setMutedLocalStorage = () => {
+        localStorage.setItem('muted', audio?.current?.muted);
+    };
+
     useEffect(() => {
         try {
             // user does this
-            audio?.current?.addEventListener('volumechange', (event) => {
-                localStorage.setItem('muted', audio?.current?.muted);
-            });
+            audio?.current?.addEventListener('volumechange', setMutedLocalStorage);
+
+            return () => {
+                window.removeEventListener('volumechange', setMutedLocalStorage);
+            };
         } catch (e) {
         }
     }, [audio?.current])
 
+    
     return (
         <>
             <Box sx={{
