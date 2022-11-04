@@ -8,14 +8,12 @@ import cookie from 'cookie'
 import { accessTokenExpiresIn, refreshTokenExpiresIn } from "../../../lib/jwt"
 
 import { messageToSign } from "../../../lib/messageToSign";
-import { trimZSet } from "../../../lib/database/client/trimZSet";
+import { runRedisTransaction } from "../../../lib/database/rest/databaseUtils";
 
 const client = Redis.fromEnv()
 const route = apiRoute();
 
-
 // TODO: CSRF checks - get a library
-
 
 // data structures:
 //
@@ -37,8 +35,6 @@ const route = apiRoute();
 //
 // users = { 1: 42345, 2: 42345, ...}
 //
-
-
 
 // <signature> - the message that's been signed with the user's metamask wallet 
 // <address> - their wallet address
@@ -65,17 +61,29 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
     const signerAddress = verifyMessage(messageToSign + uuid, signature);
 
     if (address == signerAddress) {
-      // User has connected
+      const exist = await client.hexists(`user:${address}`, 'address');
 
-      // Create user
-      await client.hsetnx(`user:${address}`, 'address', address);
-      await client.hsetnx(`user:${address}`, 'nickname', '');
-      await client.hsetnx(`user:${address}`, 'avatar', '');
-      await client.hsetnx(`user:${address}`, 'nonce', -1); // if we've never seen them, just set their nonce to 0. when we receive their first transaction it will be 0 or higher
+      if (!exist) { // we have a new user
+        const timestamp = Date.now();
 
-      // Update
+        const cmds = [
+          ['HSET', `user:${address}`, 'address', address, 'nickname', '', 'avatar', '', 'nonce', -1],
+          ['ZADD', 'users', timestamp, address],
+          ['ZADD', 'users:new', timestamp, address],
+          ["ZREMRANGEBYRANK", `users:new`, 0, -(500 + 1)],
+        ]
+
+        const success = await runRedisTransaction(cmds);
+
+        if (!success) {
+          return res.status(500);
+        }
+      }
+
+      // Update the sessionId
       const sessionId = Math.floor(Math.random() * 1000000);
       const uuid = Math.floor(Math.random() * 1000000);
+
       await client.hset(`user:${address}`, {
         sessionId,
         uuid
@@ -92,37 +100,10 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
         { expiresIn: refreshTokenExpiresIn }
       );
 
-      console.log('AUTH: setting login cookies')
       res.setHeader('Set-Cookie', [
         cookie.serialize('accessToken', accessToken, { httpOnly: true, path: '/' }),
         cookie.serialize('refreshToken', refreshToken, { httpOnly: true, path: '/' })
       ])
-
-      // Log when the user joined
-      const timestamp = Date.now();
-      const added = await client.zadd(
-        `users`,
-        { nx: true },
-        {
-          score: timestamp,
-          member: address
-        }
-      );
-
-
-      if (added) { // user has 'joined' the site
-        // Add to the set of new users (limited in size; used on the UI)
-        await client.zadd(
-          `users:new`,
-          { nx: true },
-          {
-            score: timestamp,
-            member: address
-          }
-        );
-
-        trimZSet(client, 'users:new');
-      }
 
       return res.status(200).json({
         success: true,

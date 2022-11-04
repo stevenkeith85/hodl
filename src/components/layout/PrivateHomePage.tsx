@@ -1,16 +1,71 @@
-import { HodlFeed } from '../feed/HodlFeed';
-import { HodlProfileBadge } from '../HodlProfileBadge';
-import { NewTokens } from '../rankings/NewTokens';
-import { TopUsers } from '../rankings/TopUsers';
-import { TopTokens } from '../rankings/TopTokens';
-import { NewUsers } from '../rankings/NewUsers';
-import { UserViewModel } from '../../models/User';
 import { useEffect, useRef, useState } from 'react';
-import { throttle } from '../../lib/lodash';
+
+import dynamic from 'next/dynamic';
+
 import Box from '@mui/material/Box';
 import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Grid';
 
+import { UserViewModel } from '../../models/User';
+
+
+import { throttle } from '../../lib/lodash';
+
+// import { delayForDemo } from '../../lib/utils';
+
+import HodlProfileBadgeLoading from './HodlProfileBadgeLoading';
+import { RankingListLoading } from './RankingListLoading';
+import HodlFeedLoading from './HodlFeedLoading';
+
+const HodlFeed = dynamic(
+    () => import('../feed/HodlFeed').then(mod => mod.HodlFeed),
+    // () => delayForDemo(import('../HodlProfileBadge').then(mod => mod.HodlProfileBadge)),
+    {
+        ssr: false,
+        loading: () => <HodlFeedLoading />
+    }
+);
+
+const HodlProfileBadge = dynamic(
+    () => import('../HodlProfileBadge').then(mod => mod.HodlProfileBadge),
+    // () => delayForDemo(import('../HodlProfileBadge').then(mod => mod.HodlProfileBadge)),
+    {
+        ssr: false,
+        loading: () => <HodlProfileBadgeLoading />
+    }
+);
+
+const NewTokens = dynamic(
+    () => import('../rankings/NewTokens').then(mod => mod.NewTokens),
+    {
+        ssr: false,
+        loading: () => <RankingListLoading text="New Tokens" />
+    }
+);
+
+const TopUsers = dynamic(
+    () => import('../rankings/TopUsers').then(mod => mod.TopUsers),
+    {
+        ssr: false,
+        loading: () => <RankingListLoading text="Top Users" />
+    }
+);
+
+const TopTokens = dynamic(
+    () => import('../rankings/TopTokens').then(mod => mod.TopTokens),
+    {
+        ssr: false,
+        loading: () => <RankingListLoading text="Top Tokens" />
+    }
+);
+
+const NewUsers = dynamic(
+    () => import('../rankings/NewUsers').then(mod => mod.NewUsers),
+    {
+        ssr: false,
+        loading: () => <RankingListLoading text="New Users" />
+    }
+);
 
 interface PrivateHomePageProps {
     user: UserViewModel;
@@ -100,7 +155,7 @@ const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
                             sm: 4
                         }
                     }}
-                > 
+                >
                     <Switch
                         checked={viewSidebar}
                         onChange={(e) => {
@@ -110,9 +165,7 @@ const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
                     />
                 </Box>
             </Box>
-            <Grid
-                container
-            >
+            <Grid container>
                 <Grid
                     sx={{
                         display:
@@ -181,10 +234,10 @@ const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
                         }}
                     >
                         <HodlProfileBadge user={user} />
-                        <TopUsers followButton={false}/>
-                        <TopTokens showLikes={false}/>
-                        <NewUsers followButton={false}/>
-                        <NewTokens showLikes={false}/>
+                        <TopUsers followButton={false} />
+                        <TopTokens showLikes={false} />
+                        <NewUsers followButton={false} />
+                        <NewTokens showLikes={false} />
                     </Box>
                 </Grid>
 

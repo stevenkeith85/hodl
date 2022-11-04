@@ -72,7 +72,6 @@ export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = 44, fontSize
         color: theme => theme.palette.text.secondary
     }}>{token?.name}</Typography>
 
-
     return (<>
         {loading &&
             <Box
@@ -90,7 +89,7 @@ export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = 44, fontSize
                     {asset}
                 </Skeleton>
                 <Skeleton
-                    variant="rectangular"
+                    variant="text"
                     animation="wave"
                 >
                     {name}
