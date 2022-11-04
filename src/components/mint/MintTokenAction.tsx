@@ -76,6 +76,13 @@ export const MintTokenAction: FC<MintProps> = ({
           }}>
           Please wait until this process completes before triggering another transaction.
         </Typography>
+        <Typography
+          sx={{
+            fontSize: 16,
+            color: theme => theme.palette.text.secondary
+          }}>
+          You can continue browsing the site whilst waiting.
+        </Typography>
       </MintTokenModal>
 
       <Box

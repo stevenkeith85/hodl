@@ -86,7 +86,6 @@ export const SearchBox = ({
                         ...sx
                     }}
                     type="text"
-                    placeholder="tag"
                     onClick={e => {
                         e.stopPropagation();
                     }

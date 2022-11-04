@@ -34,7 +34,7 @@ export const NftActionButtons = ({
             {
                 variant: "error",
                 hideIconVariant: true
-              });
+            });
     }
 
     if (!address) {
@@ -55,7 +55,7 @@ export const NftActionButtons = ({
                             fontWeight: 600
                         }
                     }}>
-                    When your transaction has been <span>confirmed</span> on the blockchain, 
+                    When your transaction has been <span>confirmed</span> on the blockchain,
                     we&apos;ll update our database and send you a notification.
                 </Typography>
                 <Typography
@@ -64,6 +64,13 @@ export const NftActionButtons = ({
                         color: theme => theme.palette.text.secondary
                     }}>
                     Please wait until this process completes before triggering another transaction.
+                </Typography>
+                <Typography
+                    sx={{
+                        fontSize: 16,
+                        color: theme => theme.palette.text.secondary
+                    }}>
+                    You can continue browsing the site whilst waiting.
                 </Typography>
             </SuccessModal>
 
@@ -89,7 +96,7 @@ export const NftActionButtons = ({
                             fontWeight: 600
                         }
                     }}>
-                    When your transaction has been <span>confirmed</span> on the blockchain, 
+                    When your transaction has been <span>confirmed</span> on the blockchain,
                     we&apos;ll update our database and send you a notification.
                 </Typography>
                 <Typography
@@ -98,6 +105,13 @@ export const NftActionButtons = ({
                         color: theme => theme.palette.text.secondary
                     }}>
                     Please wait until this process completes before triggering another transaction.
+                </Typography>
+                <Typography
+                    sx={{
+                        fontSize: 16,
+                        color: theme => theme.palette.text.secondary
+                    }}>
+                    You can continue browsing the site whilst waiting.
                 </Typography>
             </SuccessModal>
 
@@ -114,7 +128,7 @@ export const NftActionButtons = ({
                             fontWeight: 600
                         }
                     }}>
-                    When your transaction has been <span>confirmed</span> on the blockchain, 
+                    When your transaction has been <span>confirmed</span> on the blockchain,
                     we&apos;ll update our database and send you a notification.
                 </Typography>
                 <Typography
@@ -123,6 +137,13 @@ export const NftActionButtons = ({
                         color: theme => theme.palette.text.secondary
                     }}>
                     Please wait until this process completes before triggering another transaction.
+                </Typography>
+                <Typography
+                    sx={{
+                        fontSize: 16,
+                        color: theme => theme.palette.text.secondary
+                    }}>
+                    You can continue browsing the site whilst waiting.
                 </Typography>
             </SuccessModal>
             {
@@ -138,7 +159,7 @@ export const NftActionButtons = ({
                                     {
                                         variant: "info",
                                         hideIconVariant: true
-                                      });
+                                    });
                                 await buyNft(token, mutableToken);
                                 setBoughtModalOpen(true);
                             } catch (e) {
@@ -164,7 +185,7 @@ export const NftActionButtons = ({
                                     {
                                         variant: "info",
                                         hideIconVariant: true
-                                      });
+                                    });
 
                                 await delistNft(token);
                                 setDelistModalOpen(true);
