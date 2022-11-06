@@ -28,11 +28,11 @@ export const toggleFollow = async (userAddress, targetAddress, req) => {
   const exists = await client.zscore(`user:${userAddress}:following`, targetAddress);
 
   if (exists) { // Unfollow
-    const p = client.pipeline()
+    const p = client.pipeline() // TODO: This should be a redis transaction
 
     p.zrem(`user:${userAddress}:following`, targetAddress);
     p.zrem(`user:${targetAddress}:followers`, userAddress);
-    p.zincrby('rankings:user:followers:count', -1, targetAddress);
+    p.zincrby('rankings:user:followers:count', -1, targetAddress); // TODO: We can't do this; as we trim the set. We need to set it explicity to the number. See the most liked tokens
 
     // trim the top users collection.
     // TODO: We might just do this periodically with a cron job

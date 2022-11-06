@@ -91,12 +91,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
             return;
         }
 
-        enqueueSnackbar(error,
-            {
-                // @ts-ignore
-                variant: "hodlsnackbar",
-                type: "error"
-            });
+        enqueueSnackbar(error, { variant: "error" });
 
         setError('');
     }, [error]);
