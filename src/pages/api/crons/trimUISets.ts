@@ -6,6 +6,7 @@ import { Redis } from '@upstash/redis';
 const route = apiRoute();
 const client = Redis.fromEnv()
 
+// TODO: Could we heavily rate limit this; in case something goes wrong?
 route.post(async (req, res: NextApiResponse) => {
 
     if (req.query.secret !== process.env.ZEPLO_SECRET) {
@@ -14,13 +15,15 @@ route.post(async (req, res: NextApiResponse) => {
     }
 
     const pipeline = client.pipeline();
+
     pipeline.zremrangebyrank('rankings:token:likes:count', 0, -(500 + 1))
     pipeline.zremrangebyrank(`tokens:new`, 0, -(1000 + 1))
     
-    const [tokenLikesEntriesRemoved] = await pipeline.exec();
+    const [tokenLikesEntriesRemoved, newTokenEntriesRemoved] = await pipeline.exec();
 
     console.log('tokenLikesEntriesRemoved', tokenLikesEntriesRemoved);
-
+    console.log('newTokenEntriesRemoved', newTokenEntriesRemoved);
+    
     return res.status(200).json({ message: 'ok'});
 });
 
