@@ -1,29 +1,44 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
-import apiRoute from "../../handler";
+import { NextRequest, NextResponse } from 'next/server';
+import { getAsString } from '../../../../lib/getAsString';
 
-dotenv.config({ path: '../.env' })
-
-const client = Redis.fromEnv()
-const route = apiRoute();
 
 export const likesToken = async (address, token) => {
-  const likes = await client.zscore(`liked:tokens:${address}`, token);
+  const zscoreResponse = await fetch(
+    `${process.env.UPSTASH_REDIS_REST_URL}/zscore/liked:tokens:${address}/${token}`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
+      }
+    });
+
+  const { result: likes } = await zscoreResponse.json();
+
   return Boolean(likes);
 }
 
-route.get(async (req: NextApiRequest, res: NextApiResponse) => {
-  const { address, id: token } = req.query;
 
-  if (!address || !token) {
-    return res.status(400).json({message: 'Bad Request'});
+// TODO: We should perhaps add auth here
+// TODO: We'd need to migrate away from jsonwebtoken though as that uses node libs. (jose perhaps)
+export default async function route(req: NextRequest) {
+  if (req.method !== 'GET') {
+    return new Response(null, { status: 405 });
+  }
+
+  const { searchParams } = new URL(req.url);
+
+  const token = getAsString(searchParams.get('id'));
+  const address = getAsString(searchParams.get('address'));
+
+  if (!token || !address) {
+    return new Response(null, { status: 400 });
   }
 
   const likes = await likesToken(address, token);
-  res.status(200).json({likes});
-  
-});
+
+  return NextResponse.json({ likes });
+};
 
 
-export default route;
+export const config = {
+  runtime: 'experimental-edge',
+}

@@ -3,7 +3,7 @@ import { Redis } from '@upstash/redis';
 
 import { User, UserViewModel } from "../../../models/User";
 import { Token } from "../../../models/Token";
-import { isFollowing } from "../follows";
+
 
 import apiRoute from '../handler';
 import { getAsString } from "../../../lib/getAsString";
@@ -11,14 +11,6 @@ import { getAsString } from "../../../lib/getAsString";
 const client = Redis.fromEnv()
 const route = apiRoute();
 
-
-const getAvatar = async (user: User): Promise<Token> => {
-  if (!user?.avatar) {
-    return null;
-  }
-
-  return client.get<Token>(`token:${user.avatar}`);
-}
 
 export const getUser = async (
   handle: string,
@@ -39,7 +31,8 @@ export const getUser = async (
     return null;
   }
 
-  // TODO - We should check the 'users' collection first; as the user may have a uuid entry; but they've not actually signed the message to connect to the site
+  // TODO - We should check the 'users' collection first; as the user may have a uuid entry; 
+  // but they've not actually signed the message to connect to the site
   let user = null;
   if (nonce) {
     user = await client.hmget<User>(`user:${address}`, 'address', 'nickname', 'avatar', 'nonce', 'blockNumber');
@@ -47,17 +40,16 @@ export const getUser = async (
     user = await client.hmget<User>(`user:${address}`, 'address', 'nickname', 'avatar');
   }
 
-  if(!user) {
+  if (!user) {
     return null;
   }
-
 
   const vm: UserViewModel = {
     address: user.address,
     nickname: user.nickname,
     avatar: null,
     followedByViewer: false,
-    followsViewer: false,
+    followsViewer: false
   }
 
   if (nonce) {
@@ -65,16 +57,28 @@ export const getUser = async (
     vm.blockNumber = user.blockNumber;
   }
 
-  const avatarPromise = getAvatar(user);
+  const avatarPromise = user?.avatar ? client.get<Token>(`token:${user.avatar}`) : null;
 
-  const followedByViewerPromise = isFollowing(viewerAddress, user?.address);
-  const followsViewerPromise = isFollowing(user?.address, viewerAddress);
+  let viewerAddressPromise = null;
 
-  const [avatar, followedByViewer, followsViewer] = await Promise.all([avatarPromise, followedByViewerPromise, followsViewerPromise]);
+  // if we have a known user viewing this; get their details
+  if (viewerAddress) {
+    const pipeline = client.pipeline();
+
+    pipeline.zscore(`user:${viewerAddress}:following`, user?.address);
+    pipeline.zscore(`user:${user?.address}:following`, viewerAddress);
+
+    viewerAddressPromise = pipeline.exec<[number, number]>();
+  }
+
+  const [avatar, result] = await Promise.all([avatarPromise, viewerAddressPromise]);
 
   vm.avatar = avatar;
-  vm.followedByViewer = Boolean(followedByViewer);
-  vm.followsViewer = Boolean(followsViewer);
+
+  if (result) {
+    vm.followedByViewer = Boolean(result[0]);
+    vm.followsViewer = Boolean(result[1]);
+  }
 
   return vm;
 }

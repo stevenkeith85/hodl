@@ -13,8 +13,6 @@ const route = apiRoute();
 const client = Redis.fromEnv()
 
 export const updateMutableTokenCache = async (tokenId): Promise<MutableToken> => {
-  
-
   // If a token is listed, delisted, or bought; we'll recache. 
   //
   // If no-one has visited the token in a while, then the cached data will disappear from redis
@@ -25,15 +23,13 @@ export const updateMutableTokenCache = async (tokenId): Promise<MutableToken> =>
   const timeToCache = 60 * 30;
 
   try {
-    console.log('updating mutable token cache');
-    const start = Date.now();
-
     const listingPromise = getListingFromBlockchain(tokenId);
     const tokenPromise = getTokenFromBlockchain(tokenId);
 
     const [listing, token] = await Promise.all([listingPromise, tokenPromise]);
 
     let mutableToken = null;
+
     if (listing) {
       mutableToken = {
         forSale: true,
@@ -49,9 +45,6 @@ export const updateMutableTokenCache = async (tokenId): Promise<MutableToken> =>
     }
     await client.setex(`token:${tokenId}:mutable`, timeToCache, mutableToken);
 
-    const stop = Date.now();
-    console.log('updateMutableTokenCache time taken', stop - start);
-
     return mutableToken;
   } catch (e) {
     console.log('unable to update mutable token cache', e)
@@ -63,10 +56,7 @@ export const getMutableToken = async (tokenId, skipCache = false): Promise<Mutab
   let mutableToken = skipCache ? null : await client.get<MutableToken>(`token:${tokenId}:mutable`);
 
   if (!mutableToken) {
-    console.log('getMutableToken - cache miss - reading blockchain');
     mutableToken = await updateMutableTokenCache(tokenId);
-  } else {
-    console.log('getMutableToken - cache hit - reading redis');
   }
 
   return mutableToken;
