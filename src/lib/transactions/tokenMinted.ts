@@ -127,9 +127,9 @@ export const tokenMinted = async (
             // Add the token to the set of all tokens
             ["ZADD", `tokens`, block.timestamp, token.id],
 
-            // Add the token to the new token set and trim it to 1000 items
+            // Add the token to the new token set (this set is trimmed periodically to 1000 items)
             ["ZADD", `tokens:new`, block.timestamp, token.id],
-            ["ZREMRANGEBYRANK", `tokens:new`, 0, -(1000 + 1)],
+            // ["ZREMRANGEBYRANK", `tokens:new`, 0, -(1000 + 1)],
         ];
 
         const tags = Array.from(description.matchAll(TAG_PATTERN)).map(arr => arr[1]);
@@ -146,11 +146,11 @@ export const tokenMinted = async (
 
             // update the tags set of new token ids and trim to 500 items
             multiExecCmds.push(["ZADD", `tag:${tagLC}:new`, block.timestamp, token.id])
-            multiExecCmds.push(["ZREMRANGEBYRANK", `tag:${tagLC}:new`, 0, -(500 + 1)]);
+            multiExecCmds.push(["ZREMRANGEBYRANK", `tag:${tagLC}:new`, 0, -(500 + 1)]); // TODO: Check logic. We should do this sort of thing with a cron
 
             // update the most popular tag rankings and trim to 500 items
             multiExecCmds.push(["ZINCRBY", `rankings:tag:count`, 1, tagLC]);
-            multiExecCmds.push(["ZREMRANGEBYRANK", `rankings:tag:count`, 0, -(500 + 1)]);
+            multiExecCmds.push(["ZREMRANGEBYRANK", `rankings:tag:count`, 0, -(500 + 1)]); // TODO: Check logic. We should do this sort of thing with a cron
         }
 
         // Run the transaction

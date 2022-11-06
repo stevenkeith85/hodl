@@ -12,8 +12,6 @@ const client = Redis.fromEnv()
 
 // Requests that address likes or stops liking a token
 route.post(async (req, res: NextApiResponse) => {
-  const start = Date.now();
-
   if (!req.address) {
     return res.status(403).json({ message: "Not Authenticated" });
   }
@@ -31,31 +29,27 @@ route.post(async (req, res: NextApiResponse) => {
   if (exists) { // unlike
     const cmds = [
       ['ZREM', `liked:tokens:${req.address}`, token],
-      ['ZREM', `likes:token:${token}`, req.address],
-      ['ZINCRBY', 'rankings:token:likes:count', -1, token],
-      ["ZREMRANGEBYRANK", 'rankings:token:likes:count', 0, -(500 + 1)],
+      ['ZREM', `likes:token:${token}`, req.address]
     ];
 
-    await runRedisTransaction(cmds);
+    const success = await runRedisTransaction(cmds);
+
+    if (!success) {
+      return res.status(510).json({ message: 'Upstream error' });
+    }
   } else { // like
     const timestamp = Date.now();
 
     const cmds = [
       ['ZADD', `liked:tokens:${req.address}`, timestamp, token],
-      ['ZADD', `likes:token:${token}`, timestamp, req.address],
-      ['ZINCRBY', 'rankings:token:likes:count', 1, token],
-      ["ZREMRANGEBYRANK", 'rankings:token:likes:count', 0, -(500 + 1)],
+      ['ZADD', `likes:token:${token}`, timestamp, req.address]
     ];
 
-    liked = await runRedisTransaction(cmds);
-  }
+    const success = await runRedisTransaction(cmds);
 
-  if (liked) {
-    // TODO: If the action isn't added to the queue, we should
-    // probably log it somewhere (redis?) and try again later
-    //
-    // possibly a cron script that runs once every x mins 
-    // to check for things that were missed
+    if (!success) {
+      return res.status(510).json({ message: 'Upstream error' });
+    }
 
     const action = {
       subject: req.address,
@@ -73,10 +67,16 @@ route.post(async (req, res: NextApiResponse) => {
     );
   }
 
-  const stop = Date.now()
-  console.log('like/token time taken', stop - start);
+  // We can't just increment / decrement as the rankings set is periodically trimmed; so re-entries will not start at 0
+  // TODO: Possibly could be spun off as a queue task
+  const tokenLikeCount = await client.zcard(`likes:token:${token}`);
+  await client.zadd('rankings:token:likes:count', 
+  {
+    score: tokenLikeCount,
+    member: token
+  });
 
-  res.status(200).json({ liked });
+  return res.status(200).json({ liked });
 });
 
 
