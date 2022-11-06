@@ -4,6 +4,8 @@ import Head from 'next/head';
 import App, { AppProps } from 'next/app';
 import dynamic from "next/dynamic";
 
+import { Analytics } from '@vercel/analytics/react';
+
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
@@ -99,48 +101,50 @@ export default function MyApp(props: MyAppProps) {
   }
 
   return (
-    <CacheProvider value={emotionCache}>
-      <Head>
-        <meta name="viewport" content="initial-scale=1, width=device-width" />
-      </Head>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <SWRConfig value={{
-          dedupingInterval: 15000, // default is 2000
-          focusThrottleInterval: 15000, // default is 5000
-          errorRetryCount: 0
-        }}>
-          <WalletContext.Provider value={{
-            signer,
-            setSigner,
-            address,
-            setAddress,
+    <>
+      <CacheProvider value={emotionCache}>
+        <Head>
+          <meta name="viewport" content="initial-scale=1, width=device-width" />
+        </Head>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <SWRConfig value={{
+            dedupingInterval: 15000, // default is 2000
+            focusThrottleInterval: 15000, // default is 5000
+            errorRetryCount: 0
           }}>
-            <PusherContext.Provider value={{
-              pusher,
-              setPusher,
-              userSignedInToPusher,
-              setUserSignedInToPusher
+            <WalletContext.Provider value={{
+              signer,
+              setSigner,
+              address,
+              setAddress,
             }}>
-              <SnackbarProvider
-                Components={{
-                  // @ts-ignore
-                  hodlnotification: HodlNotificationSnackbar
-                }}
-              >
-                <Layout
-                  address={address}
-                  pusher={pusher}
-                  userSignedInToPusher={userSignedInToPusher}
+              <PusherContext.Provider value={{
+                pusher,
+                setPusher,
+                userSignedInToPusher,
+                setUserSignedInToPusher
+              }}>
+                <SnackbarProvider
+                  Components={{
+                    // @ts-ignore
+                    hodlnotification: HodlNotificationSnackbar
+                  }}
                 >
-                  <Component {...pageProps} />
-                </Layout>
-              </SnackbarProvider>
-            </PusherContext.Provider>
-          </WalletContext.Provider>
-        </SWRConfig>
-      </ThemeProvider>
-    </CacheProvider>
+                  <Layout
+                    address={address}
+                    pusher={pusher}
+                    userSignedInToPusher={userSignedInToPusher}
+                  >
+                    <Component {...pageProps} />
+                  </Layout>
+                </SnackbarProvider>
+              </PusherContext.Provider>
+            </WalletContext.Provider>
+          </SWRConfig>
+        </ThemeProvider>
+      </CacheProvider>
+      <Analytics /></>
   )
 }
 
