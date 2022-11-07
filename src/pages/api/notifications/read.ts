@@ -1,11 +1,8 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
-
-const client = Redis.fromEnv()
 import apiRoute from "../handler";
 
-dotenv.config({ path: '../.env' })
+const client = Redis.fromEnv()
 const route = apiRoute();
 
 // remember when the user last read their notifications

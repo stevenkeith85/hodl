@@ -91,7 +91,10 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
             return;
         }
 
-        enqueueSnackbar(error, { variant: "error" });
+        enqueueSnackbar(error, { 
+            variant: "error",
+            hideIconVariant: true
+        });
 
         setError('');
     }, [error]);

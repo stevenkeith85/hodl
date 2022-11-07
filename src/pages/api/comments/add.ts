@@ -1,9 +1,5 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv';
-import axios from 'axios';
-
-const client = Redis.fromEnv()
 import apiRoute from "../handler";
 
 import { ActionTypes } from "../../../models/HodlAction";
@@ -11,8 +7,10 @@ import { AddCommentValidationSchema } from "../../../validation/comments/addComm
 import { HodlComment } from "../../../models/HodlComment";
 import { User } from "../../../models/User";
 import { addToZeplo } from "../../../lib/addToZeplo";
+import { runRedisTransaction } from "../../../lib/database/rest/databaseUtils";
 
-dotenv.config({ path: '../.env' })
+
+const client = Redis.fromEnv();
 const route = apiRoute();
 
 // Data Structures:
@@ -54,86 +52,47 @@ const route = apiRoute();
 //
 // or store in a ZSET (which we may do later for 'rankings')
 
-
-// TODO: REDIS TRANSACTION
 export const addComment = async (comment: HodlComment, req) => {
   comment.timestamp = Date.now();
 
   const commentId = await client.incr("commentId")
   comment.id = commentId;
 
-  const p = client.pipeline();
+  const cmds = [
+    // Store the comment
+    ['SET', `comment:${commentId}`, JSON.stringify(comment)],
 
-  // Store the comment
-  p.set(`comment:${commentId}`, comment);
+    // Add the comment to the users collection
+    ['ZADD', `user:${comment.subject}:comments`, comment.timestamp, commentId],
 
-  // Store references to the comment for user, the token
-  p.zadd(`user:${comment.subject}:comments`, {
-    member: commentId,
-    score: comment.timestamp
-  });
+    // Add the comment to the token's (or comment's) collection
+    ['ZADD', `${comment.object}:${comment.objectId}:comments`, comment.timestamp, commentId],
 
-  // add the comment to to token or comment's collection
-  p.zadd(`${comment.object}:${comment.objectId}:comments`, {
-    member: commentId,
-    score: comment.timestamp
-  });
+    // Increase the token's comment count
+    ['INCRBY', `token:${comment.tokenId}:comments:count`, 1]
+  ];
+  
+  const success = await runRedisTransaction(cmds);
 
-  // update the comment count (comments on the nft and all the replies) for the token
-  p.incrby(`token:${comment.tokenId}:comments:count`, 1);
-
-  p.hmget<User>(`user:${req.address}`, 'actionQueueId');
-
-  const [commentAdded, userRecordAdded, tokenRecordAdded, updatedCommentCount, user] = await p.exec<[string | null, number, number, number, User]>();
-
-
-  const action = {
-    action: ActionTypes.Commented,
-    object: "comment",
-    objectId: comment.id
-  };
+  if (!success) {
+    return false;
+  }
 
   await addToZeplo(
     'api/actions/add',
-    action,
+    {
+      action: ActionTypes.Commented,
+      object: "comment",
+      objectId: comment.id
+    },
     req.cookies.refreshToken,
     req.cookies.accessToken
   );
-  
-  // TODO - We don't await this at the moment; as we do nothing with the return code.
-  // it takes up to a second to get a response. possibly something to follow up with serverlessq at some point
-  // we should really log whether things were added to the queue for support purposes
-  // const { accessToken, refreshToken } = req.cookies;
-  // const url = `https://api.serverlessq.com?id=${user?.actionQueueId}&target=https://${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/api/actions/add`;
-  // try {
-  //   axios.post(
-  //     url,
-  //     {
-  //       action: ActionTypes.Commented,
-  //       object: "comment",
-  //       objectId: comment.id
-  //     },
-  //     {
-  //       withCredentials: true,
-  //       headers: {
-  //         "Accept": "application/json",
-  //         "x-api-key": process.env.SERVERLESSQ_API_TOKEN,
-  //         "Content-Type": "application/json",
-  //         "Cookie": `refreshToken=${refreshToken}; accessToken=${accessToken}`
-  //       }
-  //     }
-  //   )
-  // } catch (e) {
-  //   console.log(e)
-  // }
 
-  // const start = new Date();
-  // const stop = new Date();
-  // console.log('time taken', stop - start);
-
-  return [commentAdded, userRecordAdded, tokenRecordAdded, updatedCommentCount]
+  return true;
 }
 
+// TODO: CSRF
 route.post(async (req, res: NextApiResponse) => {
   if (!req.address) {
     return res.status(403).json({ message: "Not Authenticated" });
@@ -162,7 +121,6 @@ route.post(async (req, res: NextApiResponse) => {
   const success = await addComment(hodlComment, req);
 
   if (success) {
-    // getCommentCount.delete(object, objectId);
     return res.status(200).json({ message: 'success' });
   } else {
     res.status(500).json({ message: 'comment not added' });

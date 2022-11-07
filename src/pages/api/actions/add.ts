@@ -378,7 +378,7 @@ route.post(async (req, res: NextApiResponse) => {
 
   // We also require the user to be authenticated; so they'll need to have their access/refresh cookies forwarded
   if (!req.address) {
-    return res.status(403).json({ message: "Not Authenticated - foo" });
+    return res.status(403).json({ message: "Not Authenticated" });
   }
 
   let body = req.body;
@@ -402,8 +402,6 @@ route.post(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
-  const start = Date.now();
-
   await addAction({
     subject: req.address,
     action,
@@ -411,8 +409,6 @@ route.post(async (req, res: NextApiResponse) => {
     object,
     metadata
   });
-  const stop = Date.now();
-  console.log('addAction time taken', stop - start);
 
   return res.status(200).json({ message: 'success' });
 });

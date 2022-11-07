@@ -1,13 +1,10 @@
 import { NextApiResponse } from "next";
 
-import dotenv from 'dotenv'
 import apiRoute from '../handler';
 
 import { Redis } from '@upstash/redis';
 import { HodlComment, HodlCommentViewModel } from "../../../models/HodlComment";
 import { getUser } from "../user/[handle]";
-
-dotenv.config({ path: '../.env' })
 
 const client = Redis.fromEnv()
 const route = apiRoute();
@@ -36,6 +33,7 @@ export const getComment = async (id, withUser: boolean = true, viewer: string = 
   return null;
 }
 
+// TODO: Potentially convert to edge function
 route.get(async (req, res: NextApiResponse) => {
   const { id } = req.query;
 

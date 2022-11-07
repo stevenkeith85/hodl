@@ -26,9 +26,6 @@ const addressToTokenIds = async (address, offset, limit) => {
 export const updateHodlingCache = async (address) => {
   const timeToCache = 60 * 30;
 
-  console.log('updating hodling cache');
-  const start = Date.now();
-
   const cmds = [
     ['DEL', `user:${address}:hodling`, `user:${address}:hodlingCount`]
   ];
@@ -62,9 +59,6 @@ export const updateHodlingCache = async (address) => {
   );
 
   const success = await runRedisTransaction(cmds);
-
-  const stop = Date.now();
-  console.log('updateHodlingCache time taken', stop - start);
 }
 
 export const getHodlingCount = async (address, skipCache = false): Promise<number> => {

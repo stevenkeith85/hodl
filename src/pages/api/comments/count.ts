@@ -48,11 +48,7 @@ export default async function route(req: NextRequest) {
 
   const count = await getCommentCount(object, id);
 
-  return NextResponse.json(count, {
-    headers: {
-      // 'Cache-Control': 's-maxage=1, stale-while-revalidate',
-    }
-  });
+  return NextResponse.json(count);
 };
 
 

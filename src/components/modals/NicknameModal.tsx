@@ -14,6 +14,9 @@ export const NicknameModal = ({ nicknameModalOpen, setNicknameModalOpen }) => {
             <HodlModal
                 open={nicknameModalOpen}
                 setOpen={setNicknameModalOpen}
+                sx={{
+                    maxWidth: '90vw'
+                }}
             >
                 <Stack spacing={3} textAlign="center">
                     <Typography variant="h2" sx={{ fontSize: '18px', fontWeight: 600 }}>Nickname</Typography>

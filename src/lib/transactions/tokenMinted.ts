@@ -120,7 +120,7 @@ export const tokenMinted = async (
     if (!tokenExists) {
         console.log('tokenMinted - token does not exist, atomically updating redis')
 
-        const multiExecCmds = [
+        const cmds = [
             // Add the token information
             ["SET", `token:${token.id}`, JSON.stringify(token)],
 
@@ -138,28 +138,28 @@ export const tokenMinted = async (
             const tagLC = tag.toLowerCase();
 
             // update the token's set of tags
-            multiExecCmds.push(["SADD", `token:${token.id}:tags`, tagLC]);
+            cmds.push(["SADD", `token:${token.id}:tags`, tagLC]);
 
             // update the tag's set of token ids
-            multiExecCmds.push(["ZADD", `tag:${tagLC}`, block.timestamp, token.id])
+            cmds.push(["ZADD", `tag:${tagLC}`, block.timestamp, token.id])
 
             // update the tags set of new token ids and trim to 500 items
-            multiExecCmds.push(["ZADD", `tag:${tagLC}:new`, block.timestamp, token.id])
+            cmds.push(["ZADD", `tag:${tagLC}:new`, block.timestamp, token.id])
 
             // TODO: We probably want to extract the trim to some sort of scheduled task, rather than doing it in the request. Possibyl batch trim a bunch of tag sets
-            multiExecCmds.push(["ZREMRANGEBYRANK", `tag:${tagLC}:new`, 0, -(500 + 1)]); 
+            cmds.push(["ZREMRANGEBYRANK", `tag:${tagLC}:new`, 0, -(500 + 1)]); 
 
             // update the tag rankings. 
             // We do not trim this as we don't need this on the UI at the moment. 
             // We might just copy the top N items to a smaller collection at some point if we decide to use it on the UI. (as this set will just keep growing)
-            multiExecCmds.push(["ZINCRBY", `rankings:tag:count`, 1, tagLC]);
+            cmds.push(["ZINCRBY", `rankings:tag:count`, 1, tagLC]);
         }
 
         // Run the transaction
         try {
             const r = await axios.post(
                 `${process.env.UPSTASH_REDIS_REST_URL}/multi-exec`,
-                multiExecCmds,
+                cmds,
                 {
                     headers: {
                         Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`

@@ -16,8 +16,6 @@ export const getListed = async (address: string, offset: number, limit: number, 
 
     if (listedCount === null) { // repopulate the cache  
         await updateListedCache(address);
-    } else {
-        console.log('using listed cached data')
     }
 
     if (listedCount === 0) {
@@ -30,8 +28,6 @@ export const getListed = async (address: string, offset: number, limit: number, 
 
     const tokenIdsWithPrice: number[] = await client.zrange<number[]>(`user:${address}:listed`, offset, offset + limit - 1, { withScores: true });
     
-    console.log('tokenIdsWithPrice', tokenIdsWithPrice);
-
     const tokenIdToPriceMap = tokenIdsWithPrice.reduce(
         (map, currentValue, currentIndex, array) => {
             console.log('map is ', map)
@@ -44,12 +40,9 @@ export const getListed = async (address: string, offset: number, limit: number, 
         }, {}
     );
 
-    console.log('tokenIdToPriceMap', JSON.stringify(tokenIdToPriceMap));
-
     const tokenIds = Object.keys(tokenIdToPriceMap);
 
-
-    // // We get all the comment data with one round trip to redis
+    // We get all the comment data with one round trip to redis
     const pipeline = client.pipeline();
     for (let id of tokenIds) {
         pipeline.get(`token:${id}`);
