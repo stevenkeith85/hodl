@@ -115,6 +115,7 @@ route.get(async (req, res: NextApiResponse) => {
   }
 
   const followers = await getFollowers(address, +offset, +limit, req.address);
+
   res.status(200).json(followers);
 });
 

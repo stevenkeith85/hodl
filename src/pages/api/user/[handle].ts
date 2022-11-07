@@ -83,7 +83,7 @@ export const getUser = async (
   return vm;
 }
 
-
+// TODO: We don't actually call this via the api at the moment
 route.get(async (req, res: NextApiResponse) => {
   const handle = getAsString(req.query.handle);
 

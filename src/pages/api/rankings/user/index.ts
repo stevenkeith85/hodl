@@ -65,7 +65,11 @@ export default async function getLatestUsers (req: NextRequest) {
 
   const tokens = await getTopUsers(+offset, +limit);
 
-  return NextResponse.json(tokens);
+  return NextResponse.json(tokens, {
+    headers: {
+      'Cache-Control': 'max-age=0, s-maxage=60'
+    }
+  });
 };
 
 export const config = {

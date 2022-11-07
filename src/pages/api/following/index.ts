@@ -60,6 +60,7 @@ route.get(async (req, res: NextApiResponse) => {
   }
 
   const following = await getFollowing(address, +offset, +limit, req?.address);
+
   res.status(200).json(following);
 });
 

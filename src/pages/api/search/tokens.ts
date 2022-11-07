@@ -131,7 +131,7 @@ const route = apiRoute();
 route.get(async (req, res) => {
 
     const q = getAsString(req.query.q);
-    const forSale = getAsString(req.query.forSale); // true, false ? TODO: Determine what we want to support
+    const forSale = getAsString(req.query.forSale);
 
     const offset = getAsString(req.query.offset);
     const limit = getAsString(req.query.limit);

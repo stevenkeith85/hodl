@@ -44,6 +44,12 @@ route.get(async (req, res: NextApiResponse) => {
   }
 
   const comment = await getComment(id, true, req?.address);
+
+  // You can't edit comments but.. we edit them on the users behalf sometimes. 
+  // i.e. when they delete a comment that has replies we change the comment to [deleted]
+  
+  // Serve from cache; but revalidate it if requested after 1 second. 
+  res.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate');
   res.status(200).json(comment)
 });
 
