@@ -92,7 +92,6 @@ export default async function route(req: NextRequest) {
 
   return NextResponse.json(tokens, {
     headers: {
-      'Cache-Control': 's-maxage=1, stale-while-revalidate',
     }
   });
 };
