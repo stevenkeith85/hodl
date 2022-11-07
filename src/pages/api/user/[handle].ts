@@ -83,7 +83,7 @@ export const getUser = async (
   return vm;
 }
 
-
+// TODO: We don't actually call this via the api at the moment
 route.get(async (req, res: NextApiResponse) => {
   const handle = getAsString(req.query.handle);
 
@@ -92,7 +92,6 @@ route.get(async (req, res: NextApiResponse) => {
   }
 
   const user = await getUser(handle, req?.address);
-  res.setHeader('Cache-Control', 's-maxage=1, s-maxage=30');
   res.status(200).json({ user })
 });
 
