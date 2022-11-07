@@ -1,7 +1,36 @@
 import * as yup from 'yup';
 import { validFilter, validLicenseDeclaration } from '../lib/utils';
 
-export const uploadToIPFSValidationSchema = yup.object({
+
+
+export const ipfsImageAndAssetValidationSchema = yup.object({
+  fileName: yup
+    .string()
+    .ensure()
+    .min(1)
+    .max(1000)
+    .required(),
+  filter: yup
+    .string()
+    .nullable()
+    .test(
+      'isValidFilterValue',
+      'Unsupported filter value',
+      (value, context) => Boolean(value === null || validFilter(value))
+    ),
+  mimeType: yup
+    .string()
+    .ensure()
+    .min(1)
+    .max(1000)
+    .required(),
+  aspectRatio: yup
+    .string()
+    .ensure()
+    .required()
+});
+
+export const ipfsMetadataValidationSchema = yup.object({
   name: yup
     .string()
     .ensure()
@@ -23,18 +52,6 @@ export const uploadToIPFSValidationSchema = yup.object({
       'Unsupported license declaration',
       (value, context) => Boolean(value === null || validLicenseDeclaration(value)),
     ),
-  fileName: yup
-    .string()
-    .ensure()
-    .min(1)
-    .max(1000)
-    .required(),
-  mimeType: yup
-    .string()
-    .ensure()
-    .min(1)
-    .max(1000)
-    .required(),
   filter: yup
     .string()
     .nullable()
@@ -43,12 +60,22 @@ export const uploadToIPFSValidationSchema = yup.object({
       'Unsupported filter value',
       (value, context) => Boolean(value === null || validFilter(value))
     ),
-  // aspectRatio: yup
-  //   .string()
-  //   .nullable()
-  //   .test(
-  //     'isValidAspectRatioValue',
-  //     'Unsupported aspect ratio value',
-  //     (value, context) => Boolean(value === null || validAspectRatio(value))
-  //   )
+  mimeType: yup
+    .string()
+    .ensure()
+    .min(1)
+    .max(1000)
+    .required(),
+  aspectRatio: yup
+    .string()
+    .ensure()
+    .required(),
+  assetCid: yup
+    .string()
+    .ensure()
+    .required(),
+  imageCid: yup
+    .string()
+    .ensure()
+    .required()
 });

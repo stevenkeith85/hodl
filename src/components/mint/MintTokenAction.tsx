@@ -8,6 +8,7 @@ import { MintTokenModal } from '../modals/MintTokenModal';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
 
 
 export const MintTokenAction: FC<MintProps> = ({
@@ -91,8 +92,7 @@ export const MintTokenAction: FC<MintProps> = ({
         alignItems="center"
         justifyContent="center"
         textAlign="center"
-        height="400px"
-        gap={4}
+        gap={5}
       >
         <CloudSyncOutlinedIcon sx={{ fontSize: 50, color: grey[400] }} />
         <Typography
@@ -100,17 +100,17 @@ export const MintTokenAction: FC<MintProps> = ({
             fontSize: '18px',
             color: grey[600],
             span: { fontWeight: 600 }
-          }}>Click the button to mint your NFT <span>{formData.name}</span> on the blockchain</Typography>
+          }}>Click the button to mint your NFT <span>{formData.name}</span> on the polygon blockchain</Typography>
         <div>
-          <Button
-            color="primary"
-            disabled={loading || stepComplete === 4}
-            onClick={mint}
-            sx={{ paddingY: 1, paddingX: 3 }}
-            variant="contained"
-          >
-            Mint
-          </Button>
+            <Button
+              color="primary"
+              disabled={loading || stepComplete === 4}
+              onClick={mint}
+              sx={{ paddingY: 1, paddingX: 3 }}
+              variant="contained"
+            >
+              Mint Your Token
+            </Button>
         </div>
       </Box>
     </>
