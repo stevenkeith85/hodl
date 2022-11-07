@@ -69,8 +69,7 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
         const cmds = [
           ['HSET', `user:${address}`, 'address', address, 'nickname', '', 'avatar', '', 'nonce', -1],
           ['ZADD', 'users', timestamp, address],
-          ['ZADD', 'users:new', timestamp, address],
-          ["ZREMRANGEBYRANK", `users:new`, 0, -(500 + 1)],
+          ['ZADD', 'users:new', timestamp, address]
         ]
 
         const success = await runRedisTransaction(cmds);

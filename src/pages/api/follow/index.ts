@@ -4,6 +4,7 @@ import apiRoute from "../handler";
 
 import { ActionTypes } from '../../../models/HodlAction';
 import { addToZeplo } from '../../../lib/addToZeplo';
+import { runRedisTransaction } from '../../../lib/database/rest/databaseUtils';
 
 const client = Redis.fromEnv()
 const route = apiRoute();
@@ -28,56 +29,30 @@ export const toggleFollow = async (userAddress, targetAddress, req) => {
   const exists = await client.zscore(`user:${userAddress}:following`, targetAddress);
 
   if (exists) { // Unfollow
-    const p = client.pipeline() // TODO: This should be a redis transaction
+    const cmds = [
+      ['ZREM', `user:${userAddress}:following`, targetAddress],
+      ['ZREM', `user:${targetAddress}:followers`, userAddress]
+    ];
 
-    p.zrem(`user:${userAddress}:following`, targetAddress);
-    p.zrem(`user:${targetAddress}:followers`, userAddress);
-    p.zincrby('rankings:user:followers:count', -1, targetAddress); // TODO: We can't do this; as we trim the set. We need to set it explicity to the number. See the most liked tokens
+    const success = await runRedisTransaction(cmds);
 
-    // trim the top users collection.
-    // TODO: We might just do this periodically with a cron job
-    p.zremrangebyrank(
-      'rankings:user:followers:count',
-      0, 
-      -(500 + 1)
-    );
-
-    const [
-      membersRemovedFromUserFollowingSet, 
-      membersRemovedFromTargetsFollowersSet, 
-      updatedRankingCount,
-      numberOfElementsRemovedFromTopUsers
-    ] = await p.exec<[number, number, number, number]>();
-    //
-
+    if (!success) {
+      throw new Error('Unable to run transaction');
+    }
   } else { // Follow
-    const p = client.pipeline();
-
     const timestamp = Date.now();
 
-    p.zadd(`user:${userAddress}:following`, { member: targetAddress, score: timestamp});
-    p.zadd(`user:${targetAddress}:followers`, { member: userAddress, score: timestamp});
-    p.zincrby('rankings:user:followers:count', 1, targetAddress);
+    const cmds = [
+      ['ZADD', `user:${userAddress}:following`, timestamp, targetAddress],
+      ['ZADD', `user:${targetAddress}:followers`, timestamp, userAddress]
+    ];
 
-    // trim the top users collection.
-    // TODO: We might just do this periodically with a cron job
-    p.zremrangebyrank(
-      'rankings:user:followers:count',
-      0, 
-      -(500 + 1)
-    );
-    
-    const [
-      membersAddedToUserFollowingSet, 
-      membersAddedToTargetsFollowersSet, 
-      updatedRankingCount,
-      numberOfElementsRemovedFromTopUsers] = await p.exec<[number, number, number, number]>();
+    const success = await runRedisTransaction(cmds);
 
-    followed = true;
-  }
+    if (!success) {
+      throw new Error('Unable to run transaction');
+    }
 
-  
-  if (followed) {
     const action = {
       action: ActionTypes.Followed,
       object: "address",
@@ -92,8 +67,16 @@ export const toggleFollow = async (userAddress, targetAddress, req) => {
     );
   }
 
-  return followed;
+  // We can't just increment / decrement as the set is periodically trimmed; so re-entries will not start at 0
+  // TODO: Possibly could be spun off as a queue task
+  const userFollowerCount = await client.zcard(`user:${targetAddress}:followers`);
+  await client.zadd('rankings:user:followers:count', 
+  {
+    score: userFollowerCount,
+    member: targetAddress
+  });
 
+  return followed;
 }
 
 // <req.address> to follow/unfollow <address>

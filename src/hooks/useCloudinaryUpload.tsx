@@ -3,14 +3,12 @@ import axios from 'axios'
 import { assetTypeFromMimeType } from '../lib/utils';
 import { AssetTypes } from '../models/AssetType';
 import calculateAspectRatios from 'calculate-aspect-ratio';
-
+import { readAndCompressImage } from 'browser-image-resizer';
 
 export const useCloudinaryUpload = (): [Function, string, Function] => {
   const [error, setError] = useState('');
 
-  const getUploadPreset = (file) => {
-    const assetType = assetTypeFromMimeType(file.type);
-    
+  const getUploadPreset = (assetType) => {
     if (assetType === AssetTypes.Image) {
       return `image_upload_${process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER}`
     } else if (assetType === AssetTypes.Video) {
@@ -19,17 +17,38 @@ export const useCloudinaryUpload = (): [Function, string, Function] => {
       return `gif_upload_${process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER}`
     } else if (assetType === AssetTypes.Audio) {
       return `audio_upload_${process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER}`
-    } 
+    }
 
     // not sure what it is; try the image upload preset. it will fail if its not an image
-      return `image_upload_${process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER}`      
+    return `image_upload_${process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER}`
   }
 
   const uploadToCloudinary = async (file) => {
-    console.log('file object', file);
+    const assetType = assetTypeFromMimeType(file.type);
+
+    // Resize Image before upload to make it faster
+    if (assetType === AssetTypes.Image) {
+      const config = {
+        quality: 0.8,
+        maxWidth: 1080,
+        maxHeight: 1350,
+      };
+
+      file = await readAndCompressImage(file, config);
+
+      if (file.size > 10 * 1024 * 1024) {
+        setError(`Images can be up to 10MB`);
+        return {
+          success: false,
+          fileName: null,
+          mimeType: null,
+          aspectRatio: null
+        };
+      }
+    }
 
     let fd = new FormData();
-    fd.append('upload_preset', getUploadPreset(file));
+    fd.append('upload_preset', getUploadPreset(assetType));
     fd.append('file', file);
 
     try {
@@ -44,7 +63,6 @@ export const useCloudinaryUpload = (): [Function, string, Function] => {
         }
       )
 
-      console.log('cloudinary response', r.data);
       const { public_id, resource_type, format, width, height } = r.data;
 
       const aspectRatio = calculateAspectRatios(width, height);
