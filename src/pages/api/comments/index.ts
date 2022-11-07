@@ -90,7 +90,11 @@ export default async function route(req: NextRequest) {
 
   const tokens = await getCommentsForObject(object as "comment" | "token", +objectId, +offset, +limit, JSON.parse(rev));
 
-  return NextResponse.json(tokens);
+  return NextResponse.json(tokens, {
+    headers: {
+      'Cache-Control': 's-maxage=1, stale-while-revalidate',
+    }
+  });
 };
 
 export const config = {
