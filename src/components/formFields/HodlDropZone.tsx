@@ -3,6 +3,7 @@ import PhotoOutlinedIcon from '@mui/icons-material/PhotoOutlined';
 import VideocamOutlinedIcon from '@mui/icons-material/VideocamOutlined';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 
 import React from 'react'
@@ -10,12 +11,7 @@ import { useDropzone } from 'react-dropzone'
 
 export const HodlDropzone = ({ onDrop, loading }) => {
     const validator = file => {
-        if (file.type.indexOf("image") !== -1 && file.size > 10 * 1024 * 1024) {
-            return {
-                code: "filesize-too-large",
-                message: `Images can be up to 10MB`
-            };
-        } else if (file.type.indexOf("video") !== -1 && file.size > 100 * 1024 * 1024) {
+        if (file.type.indexOf("video") !== -1 && file.size > 100 * 1024 * 1024) {
             return {
                 code: "filesize-too-large",
                 message: `Videos can be up to 100MB`
@@ -61,24 +57,26 @@ export const HodlDropzone = ({ onDrop, loading }) => {
                                 }
                             }}
                         />
-                        <VideocamOutlinedIcon
-                            color="secondary"
-                            sx={{
-                                fontSize: {
-                                    xs: 40,
-                                    sm: 50
-                                }
-                            }}
-                        />
-                        <AudiotrackOutlinedIcon
-                            color="secondary"
-                            sx={{
-                                fontSize: {
-                                    xs: 40,
-                                    sm: 50
-                                }
-                            }}
-                        />
+                        <Tooltip title="Videos will be truncated to 15 seconds. We recommend trimming it yourself before upload">
+                            <VideocamOutlinedIcon
+                                color="secondary"
+                                sx={{
+                                    fontSize: {
+                                        xs: 40,
+                                        sm: 50
+                                    }
+                                }}
+                            /></Tooltip>
+                        <Tooltip title="Audio will be truncated to 60 seconds. We recommend trimming it yourself before upload">
+                            <AudiotrackOutlinedIcon
+                                color="secondary"
+                                sx={{
+                                    fontSize: {
+                                        xs: 40,
+                                        sm: 50
+                                    }
+                                }}
+                            /></Tooltip>
                     </Box>
                     <Typography
                         sx={{
