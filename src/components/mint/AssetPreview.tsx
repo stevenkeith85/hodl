@@ -18,6 +18,10 @@ export const AssetPreview: FC<MintProps> = ({
   const isVideo = () => mimeType && mimeType.indexOf('video') !== -1;
   const isAudio = () => mimeType && mimeType.indexOf('audio') !== -1;
 
+  if (!fileName) {
+    return null;
+  }
+  
   return (
     <Box
       className="assetPreview"

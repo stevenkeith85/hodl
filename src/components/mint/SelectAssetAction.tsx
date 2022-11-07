@@ -6,6 +6,7 @@ import { useCloudinaryUpload } from "../../hooks/useCloudinaryUpload";
 import { MintProps } from "./models";
 import { HodlDropzone } from "../formFields/HodlDropZone";
 
+
 export const SelectAssetAction: FC<MintProps> = ({
   loading,
   setLoading,
@@ -17,16 +18,16 @@ export const SelectAssetAction: FC<MintProps> = ({
 
   useEffect(() => {
     if (error !== '') {
-        enqueueSnackbar(
-          error,
-          {
-            variant: "error",
-            hideIconVariant: true
-          });
+      enqueueSnackbar(
+        error,
+        {
+          variant: "error",
+          hideIconVariant: true
+        });
 
-        setError('');
+      setError('');
     }
-}, [error, enqueueSnackbar]) //  Warning: React Hook useEffect has a missing dependency: 'enqueueSnackbar'. Either include it or remove the dependency array.
+  }, [error, enqueueSnackbar]) //  Warning: React Hook useEffect has a missing dependency: 'enqueueSnackbar'. Either include it or remove the dependency array.
 
   const cloudinaryUpload = useCallback(async (file) => {
     setLoading(true);
@@ -35,7 +36,7 @@ export const SelectAssetAction: FC<MintProps> = ({
 
     if (success) {
       setOriginalAspectRatio(aspectRatio);
-      
+
       setFormData(prev => ({
         ...prev,
         fileName,
@@ -63,10 +64,7 @@ export const SelectAssetAction: FC<MintProps> = ({
     }
   }, [cloudinaryUpload, enqueueSnackbar]);
 
-  const [selectedFiles, setSelectedFiles] = useState(null);
-
-
-  return (
+  return (<>
     <Formik
       initialValues={{
         fileName: ''
@@ -75,9 +73,10 @@ export const SelectAssetAction: FC<MintProps> = ({
     >
       {() => (
         <Form>
-          <HodlDropzone onDrop={onDrop} loading={loading}/>
+          <HodlDropzone onDrop={onDrop} loading={loading} />
         </Form>
       )}
     </Formik>
+  </>
   )
 }

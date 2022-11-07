@@ -48,6 +48,7 @@ export const HodlDropzone = ({ onDrop, loading }) => {
                     gap={3}
                 >
                     <Box display="flex" gap={2}>
+                    
                         <PhotoOutlinedIcon
                             color="secondary"
                             sx={{
@@ -57,7 +58,7 @@ export const HodlDropzone = ({ onDrop, loading }) => {
                                 }
                             }}
                         />
-                        <Tooltip title="Videos will be truncated to 15 seconds. We recommend trimming it yourself before upload">
+                        <Tooltip title="We recommend trimming your video to 15s before upload">
                             <VideocamOutlinedIcon
                                 color="secondary"
                                 sx={{
@@ -67,7 +68,7 @@ export const HodlDropzone = ({ onDrop, loading }) => {
                                     }
                                 }}
                             /></Tooltip>
-                        <Tooltip title="Audio will be truncated to 60 seconds. We recommend trimming it yourself before upload">
+                        <Tooltip title="We recommend trimming your audio to 60s before upload">
                             <AudiotrackOutlinedIcon
                                 color="secondary"
                                 sx={{
@@ -87,7 +88,7 @@ export const HodlDropzone = ({ onDrop, loading }) => {
                                 sm: 18
                             }
                         }}>
-                        Drag a photo, video, or audio clip here
+                        Image <br></br>Video ( &#8804; 15s ) or Audio ( &#8804; 60s )
                     </Typography>
                     <div>
                         <Button
@@ -98,7 +99,7 @@ export const HodlDropzone = ({ onDrop, loading }) => {
                                 paddingX: 3,
                                 paddingY: 1
                             }}>
-                            Select
+                            Select Asset
                         </Button>
                     </div>
                 </Box>

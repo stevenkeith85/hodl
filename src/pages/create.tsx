@@ -96,6 +96,8 @@ const Mint = ({ address }) => {
     license: null,
     metadataUrl: null,
     tokenId: null,
+    imageCid: null,
+    assetCid: null
   })
   const [loading, setLoading] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
@@ -120,6 +122,7 @@ const Mint = ({ address }) => {
           marginY: 4
         }}
       >
+        {/* <pre>{JSON.stringify(formData, null, 2)}</pre> */}
         <Box
           sx={{
             position: 'relative',
