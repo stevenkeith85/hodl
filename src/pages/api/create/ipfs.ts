@@ -1,10 +1,13 @@
+// THIS IS TO BE DELETED VERY SOON
+
+
+
 import { NextApiResponse } from "next";
 import { create, urlSource } from 'ipfs-http-client'
 
 import apiRoute from "../handler";
 
 import { assetTypeFromMimeType } from "../../../lib/utils";
-import { uploadToIPFSValidationSchema } from "../../../validation/uploadToIPFS";
 import { HodlMetadata } from "../../../models/Metadata";
 
 import { AssetTypes } from "../../../models/AssetType";
@@ -160,11 +163,6 @@ const updateCloudinary = async (
 route.post(async (req, res: NextApiResponse) => {
   if (!req.address) {
     return res.status(403).json({ message: "Not authenticated" });
-  }
-
-  const isValid = await uploadToIPFSValidationSchema.isValid(req.body)
-  if (!isValid) {
-    return res.status(400).json({ message: 'Invalid data supplied' });
   }
 
   const {
