@@ -92,6 +92,7 @@ route.get(async (req, res: NextApiResponse) => {
   }
 
   const user = await getUser(handle, req?.address);
+  res.setHeader('Cache-Control', 's-maxage=1, s-maxage=30');
   res.status(200).json({ user })
 });
 

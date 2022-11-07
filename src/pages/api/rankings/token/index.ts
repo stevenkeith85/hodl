@@ -65,7 +65,13 @@ export default async function route (req: NextRequest) {
 
   const tokens = await getMostLikedTokens(+offset, +limit);
 
-  return NextResponse.json(tokens);
+  return NextResponse.json(tokens, {
+    headers: {
+      'Cache-Control': 'max-age=0, s-maxage=60'
+    }
+  });
+
+  
 };
 
 export const config = {

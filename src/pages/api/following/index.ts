@@ -61,7 +61,6 @@ route.get(async (req, res: NextApiResponse) => {
 
   const following = await getFollowing(address, +offset, +limit, req?.address);
 
-  res.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate');
   res.status(200).json(following);
 });
 
