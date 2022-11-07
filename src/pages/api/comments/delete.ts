@@ -12,15 +12,20 @@ import { getCommentReplyCount } from "../../../lib/database/rest/getCommentReply
 
 const route = apiRoute();
 
+// TODO: Do we remove the 'likes comment' data? (Potential bug)
 const removeComment = async (address, object, objectId, id, tokenId) : Promise<boolean> => {
   const count = await getCommentReplyCount(id);
 
   if (count === 0) { // remove the comment
     const cmds = [
       ['DEL', `comment:${id}`],
+
       ['ZREM', `user:${address}:comments`, id],
+
       ['ZREM', `${object}:${objectId}:comments`, id],
-      ['INCRBY', `token:${tokenId}:comments:count`, -1] // We always decrement the token id's comment count; as this represents the number of top level and sub level comments
+
+      // We always decrement the token id's comment count
+      ['INCRBY', `token:${tokenId}:comments:count`, -1] 
     ];
   
     const success = await runRedisTransaction(cmds);
@@ -34,6 +39,7 @@ const removeComment = async (address, object, objectId, id, tokenId) : Promise<b
   }
 }
 
+// TODO: CSRF
 // user can remove their own comment. 
 // token owner can remove any comment on their token
 route.delete(async (req, res: NextApiResponse) => {

@@ -1,11 +1,8 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
-import apiRoute from "../handler";
-import { GetCommentsValidationSchema } from "../../../validation/comments/getComments";
-import { chunk } from "../../../lib/lodash";
 
-dotenv.config({ path: '../.env' })
+import apiRoute from "../handler";
+import { chunk } from "../../../lib/lodash";
 
 const client = Redis.fromEnv();
 const route = apiRoute();
@@ -14,8 +11,6 @@ const route = apiRoute();
 export const getUserPendingTxs = async (address: string, offset: number, limit: number) => {
 
     try {
-        // const start = new Date();
-
         const total = await client.zcard(`user:${address}:txs:pending`);
 
         // ZRANGE: Out of range indexes do not produce an error.
@@ -32,8 +27,6 @@ export const getUserPendingTxs = async (address: string, offset: number, limit: 
         txs = chunk(txs, 2);
 
         txs = txs.map(([hash, nonce]) => ({hash, nonce}));
-        // const stop = new Date();
-        // console.log('time taken', stop - start);
 
         return {
             items: txs,

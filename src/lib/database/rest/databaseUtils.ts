@@ -14,14 +14,14 @@ export const runRedisTransaction = async (cmds): Promise<boolean> => {
 
     const response = r.data;
 
-    console.log('Upstash REDIS TX', response);
-    
     if (response.error) {
+      console.log('Upstash REDIS TX response error', response);
       return false;
     }
 
     return true;
   } catch (e) {
+    console.log('Upstash REDIS TX error', e.message);
     return false;
   }
 }

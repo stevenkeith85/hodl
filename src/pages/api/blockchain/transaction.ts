@@ -7,7 +7,6 @@ import { Redis } from '@upstash/redis';
 import { TRANSACTION_TIMEOUT, validTxHashFormat } from "../../../lib/utils";
 
 import NFT from '../../../../smart-contracts/artifacts/contracts/HodlNFT.sol/HodlNFT.json';
-import { fromUnixTime } from "date-fns";
 import { tokenMinted } from "../../../lib/transactions/tokenMinted";
 import { tokenListed } from "../../../lib/transactions/tokenListed";
 import { tokenDelisted } from "../../../lib/transactions/tokenDelisted";
@@ -19,34 +18,9 @@ import { BaseProvider } from '@ethersproject/providers'
 import { TransactionResponse, TransactionReceipt} from '@ethersproject/abstract-provider'
 import { LogDescription } from '@ethersproject/abi'
 import { Contract } from '@ethersproject/contracts'
-import { formatEther } from '@ethersproject/units'
 
 const route = apiRoute();
 const client = Redis.fromEnv()
-
-
-const transactionDetails = async (hash,
-    provider: BaseProvider,
-    txReceipt: TransactionReceipt,
-    tx: TransactionResponse) => {
-    console.log('hash', hash);
-    console.log('status', txReceipt.byzantium && txReceipt.status === 1 ? 'success' : 'reverted');
-    console.log('block', txReceipt.blockNumber);
-    console.log('confirmations', txReceipt.confirmations);
-
-    console.log('from', txReceipt.from);
-    console.log('to', txReceipt.to);
-
-    console.log('value', formatEther(tx.value));
-    console.log('total gas fee', formatEther(txReceipt.gasUsed.mul(txReceipt.effectiveGasPrice)));
-
-    console.log('total cost to sender', formatEther(txReceipt.gasUsed.mul(txReceipt.effectiveGasPrice).add(tx.value)));
-
-    console.log('transaction nonce', tx.nonce);
-
-    const block = await provider.getBlock(tx.blockHash);
-    console.log('timestamp', fromUnixTime(block.timestamp));
-}
 
 
 // This route processes a transaction that was added to the queue. 
@@ -68,7 +42,6 @@ const transactionDetails = async (hash,
 // i.e. it would be nice if the notifications were separate; as we could then retry JUST them if anything went wrong.
 //
 route.post(async (req, res: NextApiResponse) => {
-    const start = Date.now();
 
     if (req.query.secret !== process.env.ZEPLO_SECRET) {
         console.log("blockchain/transaction - endpoint not called via our message queue");
@@ -169,13 +142,9 @@ route.post(async (req, res: NextApiResponse) => {
         action = await tokenDelisted(hash, tx, log, req);
     } else if (log.name === 'TokenBought') {
         action = await tokenBought(hash, tx, log, req);
-    } else 
-    if (log.name === 'Transfer') {
+    } else if (log.name === 'Transfer') {
         action = await tokenMinted(hash, provider, tx, log, req);
     }
-
-    const stop = Date.now()
-    console.log('blockchain/transaction time taken', stop - start);
 
     if (action) {
         return res.status(200).json(action);

@@ -13,8 +13,6 @@ import { runRedisTransaction } from "../../../lib/database/rest/databaseUtils";
 const client = Redis.fromEnv()
 const route = apiRoute();
 
-// TODO: CSRF checks - get a library
-
 // data structures:
 //
 // A HASH

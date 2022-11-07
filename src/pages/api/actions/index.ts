@@ -1,6 +1,6 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
+
 import apiRoute from "../handler";
 import { ActionSet, HodlAction, HodlActionViewModel } from "../../../models/HodlAction";
 
@@ -10,8 +10,6 @@ import { User, UserViewModel } from "../../../models/User";
 import { Token } from "../../../models/Token";
 import { HodlComment } from "../../../models/HodlComment";
 import { getToken } from "../../../lib/database/rest/getToken";
-
-dotenv.config({ path: '../.env' })
 
 const client = Redis.fromEnv();
 
@@ -172,11 +170,8 @@ export const getActions = async (
     return map;
   }, {});
 
-  
-
   // The final result we'll give back to the FE
   const result = actions.map(action => {
-
 
     const actionVM: HodlActionViewModel = {
       id: action.id,
@@ -190,12 +185,10 @@ export const getActions = async (
     };
 
     if (action.object === "token") {
-      // console.log('this action has a token attached', action.id, tokenMap)
       actionVM.token = tokenMap[action.objectId];
     }
 
     if (action.object === "comment") {
-      // console.log('this action has a token attached', action.id, tokenMap)
       const comment = commentMap[action.objectId];
       actionVM.comment = comment || null;
 
@@ -236,7 +229,6 @@ route.get(async (req, res: NextApiResponse) => {
   const notifications = await getActions(req.address, set as ActionSet, +offset, +limit);
 
   res.status(200).json(notifications);
-
 });
 
 

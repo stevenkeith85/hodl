@@ -1,13 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import dotenv from 'dotenv'
 import apiRoute from '../../handler';
 import { MutableToken, FullToken } from '../../../../models/Nft';
 import { Redis } from '@upstash/redis';
 import { Token } from '../../../../models/Token';
 import { getListingFromBlockchain } from '../market/listing/[tokenId]';
 import { getTokenFromBlockchain } from '../token/[tokenId]';
-
-dotenv.config({ path: '../.env' })
 
 const route = apiRoute();
 const client = Redis.fromEnv()

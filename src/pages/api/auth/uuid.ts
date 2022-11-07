@@ -1,16 +1,13 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
-import apiRoute from "../handler";
-import memoize from 'memoizee';
 
-dotenv.config({ path: '../.env' })
+import apiRoute from "../handler";
 
 const client = Redis.fromEnv()
 const route = apiRoute();
 
-// Memo cleared on login
-export const getUuidForAddress = memoize(async (address) => {
+// TODO: Convert to edge function
+export const getUuidForAddress = async (address) => {
   const exists = await client.hexists(`user:${address}`, 'uuid');
 
   let uuid = null;
@@ -23,10 +20,7 @@ export const getUuidForAddress = memoize(async (address) => {
   }
 
   return uuid;
-}, {  
-  primitive: true, 
-  max: 10000, // store 10,000 nicknames
-});
+}
 
 route.get(async (req: NextApiRequest, res: NextApiResponse) => {  
   const { address } = req.query;

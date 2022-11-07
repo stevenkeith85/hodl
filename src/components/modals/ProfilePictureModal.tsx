@@ -1,5 +1,5 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { WalletContext } from '../../contexts/WalletContext';
 import { HodlModal } from "./HodlModal";
 import axios from 'axios'
@@ -14,14 +14,20 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
 
     const { address } = useContext(WalletContext);
 
-    const { data: tokenId } = useSWR(
-        profilePictureModalOpen && address ? [`/api/profile/picture`, address] : null,
-        (url, query) => axios.get(`${url}?address=${query}`).then(r => r.data.token)
+    const { data: user } = useSWR(
+        profilePictureModalOpen && address ? [`/api/user`, address] : null,
+        (url, address) => axios.get(`${url}/${address}`).then(r => r.data.user)
     )
-
     const { swr } = useHodling(address, lim, null, profilePictureModalOpen);
 
-    const [token, setToken] = useState(tokenId);
+    const [token, setToken] = useState(null);
+
+    useEffect(() => {
+
+        if(user?.avatar?.id) {
+            setToken(user?.avatar?.id);
+        }
+    }, [user?.avatar?.id])
 
     if (!profilePictureModalOpen) {
         return null
@@ -38,6 +44,7 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                 }}
             >
                 <Stack spacing={3} textAlign="center">
+                    
                     <Typography variant="h2" sx={{ fontSize: '18px' }}>Select Profile Avatar</Typography>
                     <Box
                         sx={{
@@ -47,7 +54,7 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                             display: 'flex',
                             flexWrap: 'wrap'
                         }}>
-
+                            {/* <pre>{JSON.stringify(user, null, 2)}</pre> */}
                         <InfiniteScroll
                             swr={swr}
                             loadingIndicator={<HodlLoadingSpinner sx={{ width: '33%', display: 'flex', alignItems: 'center', justifyContent: 'center' }} />}
