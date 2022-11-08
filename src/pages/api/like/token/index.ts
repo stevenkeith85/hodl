@@ -10,7 +10,8 @@ const route = apiRoute();
 
 const client = Redis.fromEnv()
 
-// Requests that address likes or stops liking a token
+// This could be vulnerable to CSRF. To prevent this we are setting the auth cookies to LAX.
+// https://portswigger.net/web-security/csrf/samesite-cookies
 route.post(async (req, res: NextApiResponse) => {
   if (!req.address) {
     return res.status(403).json({ message: "Not Authenticated" });

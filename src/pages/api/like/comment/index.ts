@@ -1,16 +1,17 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
+
 import apiRoute from "../../handler";
 import { ActionTypes } from "../../../../models/HodlAction";
 import { runRedisTransaction } from "../../../../lib/database/rest/databaseUtils";
 import { addToZeplo } from "../../../../lib/addToZeplo";
 
-dotenv.config({ path: '../.env' })
+
 const route = apiRoute();
 const client = Redis.fromEnv()
 
-// Requests that address likes or stops liking a comment
+// This could be vulnerable to CSRF. To prevent this we are setting the auth cookies to LAX.
+// https://portswigger.net/web-security/csrf/samesite-cookies
 route.post(async (req, res: NextApiResponse) => {
   const start = Date.now();
 

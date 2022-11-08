@@ -1,17 +1,20 @@
 const { ethers } = require("hardhat");
 const fs = require('fs');
-
-const dotenv = require('dotenv');
-dotenv.config({ path: '.env.local' })
+const { getProvider } = require("../../getProvider");
+// const dotenv = require('dotenv');
+// dotenv.config({ path: '.env.local' })
 
 const HodlNFTProxy = process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS;
 const HodlNFTABI = JSON.parse(fs.readFileSync('artifacts/contracts/HodlNFT.sol/HodlNFT.json'));
 
 async function main() {
-  const ownerAccount = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY, ethers.provider);
-  const hodlNFTAsOwner = new ethers.Contract(HodlNFTProxy, HodlNFTABI.abi, ownerAccount);
+  const newOwner = null; // enter new owner's public address here
+  const wallet = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY, getProvider());
+  const contract = new ethers.Contract(HodlNFTProxy, HodlNFTABI.abi, wallet);
 
-  console.log(await hodlNFTAsOwner.owner());
+  if (newOwner) {
+    await contract.transferOwnership(newOwner)
+  }
 }
 
 // We recommend this pattern to be able to use async/await everywhere

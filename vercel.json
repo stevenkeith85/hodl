@@ -1,0 +1,6 @@
+{
+    "redirects": [
+        { "source": "https://www.hodlmymoon.io/.*", "destination": "https://www.hodlmymoon.com/.*" },
+        { "source": "https://www.hodlmymoon.co.uk/.*", "destination": "https://www.hodlmymoon.com/.*" }
+    ]
+}

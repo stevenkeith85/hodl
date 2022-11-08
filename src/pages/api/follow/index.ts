@@ -79,7 +79,8 @@ export const toggleFollow = async (userAddress, targetAddress, req) => {
   return followed;
 }
 
-// <req.address> to follow/unfollow <address>
+// This could be vulnerable to CSRF. To prevent this we are setting the auth cookies to LAX.
+// https://portswigger.net/web-security/csrf/samesite-cookies
 route.post(async (req, res) => {
   if (!req.address) {
     return res.status(403).json({ message: "Not Authenticated" });

@@ -98,8 +98,8 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
       );
 
       res.setHeader('Set-Cookie', [
-        cookie.serialize('accessToken', accessToken, { httpOnly: true, path: '/' }),
-        cookie.serialize('refreshToken', refreshToken, { httpOnly: true, path: '/' })
+        cookie.serialize('accessToken', accessToken, { httpOnly: true, path: '/', sameSite: 'Lax' }), // Setting this to 'lax' should prevent CSRF attacks; as our state changing endpoints use POST or DELETE
+        cookie.serialize('refreshToken', refreshToken, { httpOnly: true, path: '/', sameSite: 'Lax' }) // Setting this to 'lax' should prevent CSRF attacks; as our state changing endpoints use POST or DELETE
       ])
 
       return res.status(200).json({

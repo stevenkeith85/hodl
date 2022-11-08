@@ -5,10 +5,9 @@ import apiRoute from "../handler";
 import { ActionTypes } from "../../../models/HodlAction";
 import { AddCommentValidationSchema } from "../../../validation/comments/addComments";
 import { HodlComment } from "../../../models/HodlComment";
-import { User } from "../../../models/User";
+
 import { addToZeplo } from "../../../lib/addToZeplo";
 import { runRedisTransaction } from "../../../lib/database/rest/databaseUtils";
-
 
 const client = Redis.fromEnv();
 const route = apiRoute();
@@ -92,7 +91,8 @@ export const addComment = async (comment: HodlComment, req) => {
   return true;
 }
 
-// TODO: CSRF
+// This could be vulnerable to CSRF. To prevent this we are setting the auth cookies to LAX.
+// https://portswigger.net/web-security/csrf/samesite-cookies
 route.post(async (req, res: NextApiResponse) => {
   if (!req.address) {
     return res.status(403).json({ message: "Not Authenticated" });

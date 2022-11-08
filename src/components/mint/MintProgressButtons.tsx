@@ -8,7 +8,7 @@ export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, l
   const isVideo = mimeType => mimeType && mimeType.indexOf('video') !== -1;
   const isGif = mimeType => mimeType && mimeType.indexOf('gif') !== -1;
 
-  if (stepComplete < 0 || stepComplete > 3) {
+  if (activeStep === 4) {
     return null;
   }
 
@@ -31,8 +31,8 @@ export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, l
           () => {
             if (
               (
-                isAudio(formData?.mimeType) || 
-                isVideo(formData?.mimeType) || 
+                isAudio(formData?.mimeType) ||
+                isVideo(formData?.mimeType) ||
                 isGif(formData?.mimeType)
               ) && activeStep == 3) {
               setActiveStep(activeStep => activeStep - 3);
@@ -59,10 +59,10 @@ export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, l
         onClick={() => {
           if (
             (
-              isAudio(formData?.mimeType) || 
-              isVideo(formData?.mimeType) || 
+              isAudio(formData?.mimeType) ||
+              isVideo(formData?.mimeType) ||
               isGif(formData?.mimeType)
-              ) && 
+            ) &&
             activeStep == 0) {
             setActiveStep(activeStep => activeStep + 3);
           } else {

@@ -20,6 +20,8 @@ const client = Redis.fromEnv()
 // The transaction nonce must be higher than the last one we successfully processed
 // It must be a valid transaction
 
+// This could be vulnerable to CSRF. To prevent this we are setting the auth cookies to LAX.
+// https://portswigger.net/web-security/csrf/samesite-cookies
 route.post(async (req, res: NextApiResponse) => {
   console.log('TRANSACTION QUEUER CALLED');
 

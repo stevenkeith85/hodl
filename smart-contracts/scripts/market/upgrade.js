@@ -1,15 +1,16 @@
 const { ethers, upgrades } = require("hardhat");
 const { getImplementationAddress } = require('@openzeppelin/upgrades-core');
+const { getProvider } = require("../getProvider");
 const dotenv = require('dotenv');
 const fs = require('fs');
 
-dotenv.config({ path: '.env.local' })
+dotenv.config({ path: '.env.staging.local' })
 
 const HodlMarketProxy = process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS;
 
 // This is cool! We won't have to update the address the FE uses except when we deploy the proxy.
 async function main() {
-  const ownerAccount = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY, ethers.provider);
+  const ownerAccount = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY, getProvider());
 
   const HodlMarketFactoryNew = await ethers.getContractFactory("HodlMarket", ownerAccount);
   const hodlMarketAsOwnerNew = await upgrades.upgradeProxy(HodlMarketProxy, HodlMarketFactoryNew);

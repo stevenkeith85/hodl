@@ -1,3 +1,6 @@
+const hre = require("hardhat");
+const { ethers, upgrades } = require("hardhat");
+
 const getProvider = () => {
     // See https://docs.ethers.io/v5/api/providers/
     if (JSON.parse(process.env.LOCAL_BLOCKCHAIN_NODE)) {

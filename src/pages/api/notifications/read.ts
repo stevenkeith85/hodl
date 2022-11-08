@@ -25,6 +25,9 @@ route.get(async (req, res: NextApiResponse) => {
     return res.status(200).json(time);
 });
 
+// This could be vulnerable to CSRF. To prevent this we are setting the auth cookies to LAX.
+// https://portswigger.net/web-security/csrf/samesite-cookies
+
 // update the time the user last read their notifications
 route.post(async (req, res: NextApiResponse) => {
     if (!req.address) {

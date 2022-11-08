@@ -39,7 +39,7 @@ const PrivateHomePage = dynamic(
 );
 
 
-export async function getServerSideProps({ req, res }) {
+export const getServerSideProps = async ({ req, res }) => {
   await authenticate(req, res);
 
   const limit = 10;
@@ -71,7 +71,7 @@ export async function getServerSideProps({ req, res }) {
       address: req.address || null,
       user,
       limit,
-      prefetchedFeed: [pfeed],
+      prefetchedFeed: [pfeed]
     }
   }
 }
@@ -80,7 +80,7 @@ export default function Home({
   address,
   user,
   limit,
-  prefetchedFeed,
+  prefetchedFeed
 }) {
 
   const { rankings: mostLiked } = useRankings(true, limit, null, "token");
@@ -123,9 +123,8 @@ export default function Home({
                 followingCount
               }}
             >
-              {/* @ts-ignore */}
-              <PrivateHomePage user={user} address={address} />
-              {/* <PrivateHomePageLoading /> */}
+                {/* @ts-ignore */}
+                <PrivateHomePage user={user} address={address} />
             </UserContext.Provider>
           </FeedContext.Provider>
         }

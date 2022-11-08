@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import cookie from 'cookie';
 
 export const accessTokenExpiresIn = 60 * 60; // 1 hour
-export const refreshTokenExpiresIn = 60 * 60 * 2; // 2 hours at the moment until we get things running smoothly
+export const refreshTokenExpiresIn = 60 * 60 * 24 * 1; // need to login once a day. (this can go to weekly or more)
 
 const client = Redis.fromEnv();
 
@@ -38,7 +38,7 @@ export const apiAuthenticate = async (req, res, next) => {
           const accessToken = jwt.sign({ address, sessionId }, process.env.JWT_SECRET, { expiresIn: accessTokenExpiresIn });
 
           res.setHeader('Set-Cookie', [
-            cookie.serialize('accessToken', accessToken, { httpOnly: true, path: '/' }),
+            cookie.serialize('accessToken', accessToken, { httpOnly: true, path: '/', sameSite: 'Lax' }), // Setting this to 'lax' should prevent CSRF attacks; as our state changing endpoints use POST or DELETE
           ])
 
           const timestamp = Date.now();
@@ -113,7 +113,7 @@ export const authenticate = async (req, res): Promise<boolean> => {
 
           console.log(`AUTH: new access token issued for ${address}`)
           res.setHeader('Set-Cookie', [
-            cookie.serialize('accessToken', accessToken, { httpOnly: true, path: '/' }),
+            cookie.serialize('accessToken', accessToken, { httpOnly: true, path: '/' , sameSite: 'Lax' }), // Setting this to 'lax' should prevent CSRF attacks; as our state changing endpoints use POST or DELETE
           ])
 
           return true;
