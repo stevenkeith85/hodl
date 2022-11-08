@@ -27,17 +27,18 @@ export const useAddComment = (): [(comment: HodlComment) => Promise<void>] => {
     return [addComment]
 }
 
-export const useDeleteComment = (): [(comment: HodlCommentViewModel) => Promise<void>] => {
+export const useDeleteComment = (): [Function] => {
+
     const deleteComment = async (comment: HodlCommentViewModel) => {
         try {
             const r = await axios.delete(
                 `/api/comments/delete`,
                 {
                     headers: {
-                        'Accept': 'application/json',
+                        'Accept': 'application/json'
                     },
                     data: {
-                        id: comment.id
+                        id: comment.id,
                     },
                 });
         } catch (error) {

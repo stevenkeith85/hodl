@@ -1,12 +1,10 @@
 import { NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
+
 import apiRoute from "../handler";
 import cookie from 'cookie'
 import { pusher } from "../../../lib/server/pusher";
 
-
-dotenv.config({ path: '../.env' })
 
 const client = Redis.fromEnv()
 const route = apiRoute();
@@ -29,6 +27,8 @@ export const logout = async (req, res) => {
   clearCookies(res);
 }
 
+// This could be vulnerable to CSRF. To prevent this we are setting the auth cookies to LAX.
+// https://portswigger.net/web-security/csrf/samesite-cookies
 route.post(async (req, res: NextApiResponse) => {  
   if (!req.address) {
     return res.status(403).json({ message: "Not authenticated" });

@@ -2,10 +2,10 @@ const hre = require("hardhat");
 const { ethers, upgrades } = require("hardhat");
 
 const dotenv = require('dotenv');
-dotenv.config({ path: '.env.local' })
+dotenv.config({ path: '.env.development.local' }) // change this depending on environment
 
 async function main() {
-  const ownerAccount = new ethers.Wallet(process.env.ACCOUNT0_PRIVATE_KEY, ethers.provider);
+  const ownerAccount = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY, ethers.provider);
 
   const HodlMarketFactory = await ethers.getContractFactory("HodlMarket", ownerAccount);
   const hodlMarketAsOwner = await upgrades.deployProxy(HodlMarketFactory, [], { initializer: 'initialize' })

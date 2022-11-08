@@ -8,7 +8,8 @@ import { getMutableToken } from "../contracts/mutable-token/[tokenId]";
 const client = Redis.fromEnv();
 const route = apiRoute();
 
-// TODO: CSRF
+// This could be vulnerable to CSRF. To prevent this we are setting the auth cookies to LAX.
+// https://portswigger.net/web-security/csrf/samesite-cookies
 route.post(async (req, res: NextApiResponse) => {
   if (!req.address) {
     return res.status(403).json({ message: "Not Authenticated" });

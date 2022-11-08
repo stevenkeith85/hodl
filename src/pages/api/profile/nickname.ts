@@ -1,10 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
+
 import apiRoute from "../handler";
 import { nicknameValidationSchema } from "../../../validation/nickname";
+import { runRedisTransaction } from "../../../lib/database/rest/databaseUtils";
 
-dotenv.config({ path: '../.env' })
 
 const client = Redis.fromEnv()
 const route = apiRoute();
@@ -26,6 +26,9 @@ route.get(async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(200).json({ nickname })
 });
 
+// This could be vulnerable to CSRF. To prevent this we are setting the auth cookies to LAX.
+// https://portswigger.net/web-security/csrf/samesite-cookies
+
 // POST /api/nickname
 route.post(async (req, res) => {
   if (!req.address) {
@@ -46,20 +49,26 @@ route.post(async (req, res) => {
       message: 'Nickname not available'
     });
   } else {
-    // TODO - REDIS TRANSACTION
     const oldNickname = await client.hget(`user:${req.address}`, 'nickname');
 
-    client.set(`nickname:${nickname}`, req.address);
-    client.hset(`user:${req.address}`, {nickname})
-    
-    if (oldNickname) {
-      await client.del(`nickname:${oldNickname}`);
+    const cmds = [
+      ['DEL', `nickname:${oldNickname}`],
+      ['SET', `nickname:${nickname}`, req.address],
+      ['HSET', `user:${req.address}`, 'nickname', nickname],
+    ];
+
+    const success = await runRedisTransaction(cmds);
+
+    if (success) {
+      return res.status(200).json({
+        message: `${req.address} now has the nickname: "${nickname}"`
+      });
+    } else {
+      return res.status(500).json({ message: `error updating nickname` });
     }
   }
 
-  return res.status(200).json({
-    message: `${req.address} now has the nickname: "${nickname}"`
-  });
+
 });
 
 export default route;

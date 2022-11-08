@@ -71,6 +71,9 @@ const PublicHomePage = ({ }) => {
                         xs: 0,
                         sm: 4
                     },
+                    marginBottom: {
+                        sm: 6
+                    },
                     gap: 6,
                 }}
             >

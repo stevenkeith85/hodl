@@ -107,7 +107,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
 
     // When the user tries to delete a comment, we give a visual cue
     const [isDeleting, setIsDeleting] = useState(false);
-
+    
     const onDelete = async () => {
         setIsDeleting(true);
 

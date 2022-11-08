@@ -8,11 +8,16 @@ const fs = require('fs');
 const HodlMarketProxy = process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS;
 const MarketABI = JSON.parse(fs.readFileSync('artifacts/contracts/HodlMarket.sol/HodlMarket.json'));
 
+// BE VERY CAREFUL WITH THIS ONE!
 async function main() {
-  const ownerAccount = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY, getProvider());
-  const hodlNFTAsOwner = new ethers.Contract(HodlMarketProxy, MarketABI.abi, ownerAccount);
+  const newOwner = null; // enter new owner's public address here
 
-  await hodlNFTAsOwner.setMinListingPriceInMatic(ethers.utils.parseEther("0"));
+  const wallet = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY, getProvider());
+  const contract = new ethers.Contract(HodlMarketProxy, MarketABI.abi, wallet);
+
+  if (newOwner) {
+    await contract.transferOwnership(newOwner)
+  }
 }
 
 // We recommend this pattern to be able to use async/await everywhere

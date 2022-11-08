@@ -39,7 +39,9 @@ const removeComment = async (address, object, objectId, id, tokenId) : Promise<b
   }
 }
 
-// TODO: CSRF
+// This could be vulnerable to CSRF. To prevent this we are setting the auth cookies to LAX.
+// https://portswigger.net/web-security/csrf/samesite-cookies
+
 // user can remove their own comment. 
 // token owner can remove any comment on their token
 route.delete(async (req, res: NextApiResponse) => {
