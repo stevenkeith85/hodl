@@ -26,7 +26,7 @@ export default function Contact({ address }) {
                     <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
                         Contact
                     </Typography>
-                    <Typography mb={1} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
+                    <Typography color={theme => theme.palette.text.secondary}>
                         Thanks for reaching out. We&apos;ll get back to you as soon as possible.
                     </Typography>
                 </Box>
