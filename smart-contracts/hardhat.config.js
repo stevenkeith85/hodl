@@ -2,8 +2,9 @@ require("@nomiclabs/hardhat-waffle");
 require('@openzeppelin/hardhat-upgrades');
 require('solidity-coverage');
 require('hardhat-contract-sizer');
-require('dotenv').config();
-// require('./tasks/token');
+
+const dotenv = require('dotenv');
+dotenv.config({ path: '.env.deployment.local' })
 
 module.exports = {
   solidity: {
@@ -20,12 +21,12 @@ module.exports = {
       chainId: 1337,
     },
     // mumbai: {
-    //   url: `https://polygon-mumbai.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
+    //   url: `${process.env.QUICKNODE_URL}/${process.env.QUICKNODE_AUTHENTICATION_TOKEN}/`,
     //   accounts: [process.env.WALLET_PRIVATE_KEY]
     // },
-    // mainnet: {
-    //   url: `https://polygon-mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
-    //   // accounts: [process.env.WALLET_PRIVATE_KEY]
-    // }
+    mainnet: {
+      url: `${process.env.QUICKNODE_URL}/${process.env.QUICKNODE_AUTHENTICATION_TOKEN}/`,
+      accounts: [process.env.WALLET_PRIVATE_KEY],
+    }
   },
 };

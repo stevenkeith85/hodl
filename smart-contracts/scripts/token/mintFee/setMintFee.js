@@ -12,7 +12,7 @@ async function main() {
   const ownerAccount = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY, getProvider());
   const hodlNFTAsOwner = new ethers.Contract(HodlNFTProxy, HodlNFTABI.abi, ownerAccount);
 
-  await hodlNFTAsOwner.setMintFee(ethers.utils.parseEther("0"));
+  await hodlNFTAsOwner.setMintFee(ethers.utils.parseEther("0"), {maxFeePerGas: ethers.utils.parseUnits('950', 'gwei'), maxPriorityFeePerGas: ethers.utils.parseUnits('85', 'gwei') });
 }
 
 // We recommend this pattern to be able to use async/await everywhere
