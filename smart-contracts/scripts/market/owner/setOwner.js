@@ -10,7 +10,7 @@ const MarketABI = JSON.parse(fs.readFileSync('artifacts/contracts/HodlMarket.sol
 
 // BE VERY CAREFUL WITH THIS ONE!
 async function main() {
-  const newOwner = null; // enter new owner's public address here
+  const newOwner = null;
 
   const wallet = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY, getProvider());
   const contract = new ethers.Contract(HodlMarketProxy, MarketABI.abi, wallet);

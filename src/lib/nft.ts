@@ -15,6 +15,11 @@ import { getMetaMaskSigner } from '../lib/connections';
 
 export const listNft = async (token: Token, price: string) => {
   const signer = await getMetaMaskSigner();
+
+  if (!signer) {
+    return;
+  }
+
   const contract = new Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, signer);
   const tokenContract = new Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, signer);
 
@@ -49,6 +54,11 @@ export const listNft = async (token: Token, price: string) => {
 export const buyNft = async (token: Token, mutableToken: MutableToken) => { 
   const signer = await getMetaMaskSigner();
   
+  
+  if (!signer) {
+    return;
+  }
+
   const contract = new Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, signer);
   const price = parseUnits(mutableToken.price.toString(), 'ether')
   
@@ -72,9 +82,14 @@ export const buyNft = async (token: Token, mutableToken: MutableToken) => {
   }
 }
 
-
 export const delistNft = async (token: Token) => {
   const signer = await getMetaMaskSigner();
+
+  
+  if (!signer) {
+    return;
+  }
+
   const contract = new Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, signer);
 
   const { hash } = await contract.delistToken(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, token.id);

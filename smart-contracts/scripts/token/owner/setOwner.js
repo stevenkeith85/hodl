@@ -8,7 +8,7 @@ const HodlNFTProxy = process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS;
 const HodlNFTABI = JSON.parse(fs.readFileSync('artifacts/contracts/HodlNFT.sol/HodlNFT.json'));
 
 async function main() {
-  const newOwner = null; // enter new owner's public address here
+  const newOwner = null;
   const wallet = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY, getProvider());
   const contract = new ethers.Contract(HodlNFTProxy, HodlNFTABI.abi, wallet);
 
