@@ -168,14 +168,12 @@ export const UploadToIpfsAction: FC<MintProps> = ({
                   label={<Typography color={grey[700]}>No License</Typography>}
                 />
                 <FormControlLabel
-                  disabled
                   onClick={() => setFormData(old => ({ ...old, license: nonCommercial }))}
                   value={nonCommercial}
                   control={<Radio size="small" sx={{ paddingY: 1 }} />}
                   label={<Typography color={grey[700]}>Non Commercial License</Typography>}
                 />
                 <FormControlLabel
-                  disabled
                   onClick={() => setFormData(old => ({ ...old, license: commercial }))}
                   value={commercial}
                   control={<Radio size="small" sx={{ paddingY: 1 }} />}

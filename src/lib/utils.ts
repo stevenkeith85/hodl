@@ -6,7 +6,7 @@ import { commercial, nonCommercial, token } from "./copyright";
 export const TAG_PATTERN = /#([\d\w_]{3,25})(\s|$)/g;
 export const MAX_TAGS_PER_TOKEN = 6;
 
-export const TRANSACTION_TIMEOUT = 10000;
+export const TRANSACTION_TIMEOUT = 40000;
 
 export const imageFilters: {
   code: "improve" | "athena" | "aurora" | "hairspray" | "grayscale"
@@ -87,10 +87,10 @@ export const ipfsUriToGatewayUrl = ipfsUri => {
 
 
   if (path) {
-    return `https://hodlmymoon.infura-ipfs.io/ipfs/${cid}/${path}`
+    return `${process.env.NEXT_PUBLIC_IPFS_GATEWAY}/ipfs/${cid}/${path}`
   }
 
-  return `https://hodlmymoon.infura-ipfs.io/ipfs/${cid}/`;
+  return `${process.env.NEXT_PUBLIC_IPFS_GATEWAY}/ipfs/${cid}/`;
 };
 
 export const ipfsUriToCid = ipfsUri => {
@@ -108,7 +108,7 @@ export const cidToGatewayUrl = cid => {
     return '#';
   }
 
-  return `https://hodlmymoon.infura-ipfs.io/ipfs/${cid}/`;
+  return `${process.env.NEXT_PUBLIC_IPFS_GATEWAY}/ipfs/${cid}/`;
 };
 
 export const trim = str => {

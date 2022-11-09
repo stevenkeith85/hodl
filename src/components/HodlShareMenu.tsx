@@ -55,8 +55,7 @@ export const HodlShareMenu = ({ nft }) => {
                 }}
             >
                 <Link sx={{ textDecoration: 'none' }}
-                    // href={`https://twitter.com/intent/tweet?url=${encodeURIComponent('http://hodlmymoon.com/nft/' + nft.id)}`}
-                    href="#"
+                    href={`https://twitter.com/intent/tweet?url=${encodeURIComponent('http://hodlmymoon.com/nft/' + nft.id)}`}
                 >
                     <MenuItem>
                         <ListItemIcon>
@@ -66,8 +65,7 @@ export const HodlShareMenu = ({ nft }) => {
                     </MenuItem>
                 </Link>
                 <Link sx={{ textDecoration: 'none' }}
-                    // href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('http://hodlmymoon.com/nft/' + nft.id)}`}
-                    href="#"
+                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('http://hodlmymoon.com/nft/' + nft.id)}`}
                 >
                     <MenuItem>
                         <ListItemIcon>
