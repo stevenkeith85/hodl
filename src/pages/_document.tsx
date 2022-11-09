@@ -13,12 +13,12 @@ export default class MyDocument extends Document {
         <Head>
           <Script
             id="gtagman"
-            strategy="afterInteractive"
+            strategy="lazyOnload"
             src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_TRACKING_ID}`}
           />
           <Script
             id="gtag"
-            strategy="afterInteractive"
+            strategy="lazyOnload"
             dangerouslySetInnerHTML={{
               __html: `
                       window.dataLayer = window.dataLayer || [];
