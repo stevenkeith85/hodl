@@ -6,6 +6,11 @@ import { getMetaMaskSigner } from '../lib/connections';
 
 export const mintToken = async (url) => {
   const signer = await getMetaMaskSigner();
+
+  if (!signer) {
+    return;
+  }
+  
   const tokenContract = new Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, signer);
 
   const mintFee = await tokenContract.mintFee();
