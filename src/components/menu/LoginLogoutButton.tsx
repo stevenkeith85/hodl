@@ -2,10 +2,11 @@ import CloudOffIcon from '@mui/icons-material/CloudOff';
 
 import { Button } from "@mui/material";
 import { useRouter } from "next/router";
-import { useContext } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useConnect } from "../../hooks/useConnect";
 import { WalletContext } from '../../contexts/WalletContext';
 import { AccountBalanceWalletIcon } from '../icons/AccountBalanceWalletIcon';
+import MetaMaskOnboarding from '@metamask/onboarding'
 
 
 interface LoginLogoutButtonProps {
@@ -22,16 +23,22 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
     sx = null,
 
 }) => {
+    const onboarding = useRef<MetaMaskOnboarding>();
+
     const [connect, disconnect] = useConnect();
     const { address } = useContext(WalletContext);
     const router = useRouter();
+
+    useEffect(() => {
+        if (!onboarding.current) {
+            onboarding.current = new MetaMaskOnboarding();
+        }
+    }, []);
 
     return (
         <>
             {!address &&
                 <Button
-                    // @ts-ignore
-                    disabled={!window.ethereum}
                     color={color}
                     variant={variant}
                     sx={{
@@ -39,16 +46,27 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
                         ...sx,
                     }}
                     onClick={async e => {
-                        e.stopPropagation();
-                        await connect(false);
-                        window.location.href = router.asPath;
+                        if (MetaMaskOnboarding.isMetaMaskInstalled()) {
+                            e.stopPropagation();
+                            e.preventDefault();
+
+                            const connected = await connect(false);
+
+                            if (connected) {
+                                window.location.href = router.asPath;
+                            }
+                        } else {
+                            onboarding.current.startOnboarding();
+                        }
+
+
                     }}
                     startIcon={<AccountBalanceWalletIcon size={22} />}
-                >Connect</Button>}
+                >{
+                        MetaMaskOnboarding.isMetaMaskInstalled() ? 'Connect' : 'Install MetaMask'
+                    }</Button>}
             {address &&
                 <Button
-                    // @ts-ignore
-                    disabled={!window.ethereum}
                     color={color}
                     variant={variant}
                     sx={{
@@ -57,6 +75,8 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
                     }}
                     onClick={async e => {
                         e.stopPropagation();
+                        e.preventDefault();
+
                         await disconnect();
                         router.push('/');
                     }}

@@ -15,6 +15,11 @@ export const useConnect = () => {
   const connect = async (returningUser = true): Promise<Boolean> => {
     try {
       const signer = await getMetaMaskSigner(returningUser);
+
+      if (!signer) {
+        return false;
+      }
+
       const address = await signer.getAddress();
 
       if (!returningUser) {
@@ -37,11 +42,13 @@ export const useConnect = () => {
           );
 
         } catch (error) {
+          return false;
         }
       }
 
       setSigner(signer);
       setAddress(address);
+
       return true;
     } catch (e) {
       return false;
@@ -51,7 +58,7 @@ export const useConnect = () => {
   // Sometimes we only need to disconnect the FE, as the BE has already been disconnected
   const disconnectFE = () => {
     setSigner(null);
-    
+
     // TODO: Perhaps we just refresh the page? I think reducing the reliance on address might be good
     setAddress(null);
 
@@ -61,7 +68,7 @@ export const useConnect = () => {
   }
 
   const disconnect = async () => {
-    
+
     disconnectFE();
 
     try {
