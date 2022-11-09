@@ -82,7 +82,6 @@ export const buyNft = async (token: Token, mutableToken: MutableToken) => {
   }
 }
 
-
 export const delistNft = async (token: Token) => {
   const signer = await getMetaMaskSigner();
 
@@ -90,7 +89,7 @@ export const delistNft = async (token: Token) => {
   if (!signer) {
     return;
   }
-  
+
   const contract = new Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, signer);
 
   const { hash } = await contract.delistToken(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, token.id);
