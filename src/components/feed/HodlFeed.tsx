@@ -5,7 +5,7 @@ import InfiniteScroll from "react-swr-infinite-scroll";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 
 import { HodlAction } from "../../models/HodlAction";
-import { HodlImpactAlert } from "../HodlImpactAlert";
+
 import { FeedContext } from "../../contexts/FeedContext";
 import { useActions } from '../../hooks/useActions';
 import { ActionSet } from '../../models/HodlAction';
@@ -13,6 +13,14 @@ import { ActionSet } from '../../models/HodlAction';
 
 const HodlFeedItem = dynamic(
     () => import('./HodlFeedItem').then(mod => mod.HodlFeedItem),
+    {
+        ssr: false,
+        loading: () => null
+    }
+);
+
+const HodlImpactAlert = dynamic(
+    () => import('../HodlImpactAlert').then(mod => mod.HodlImpactAlert),
     {
         ssr: false,
         loading: () => null

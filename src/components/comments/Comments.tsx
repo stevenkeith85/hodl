@@ -55,10 +55,10 @@ export const Comments: FC<CommentsProps> = ({
             <NftContext.Provider
                 value={{
                     nft,
-                    mutableToken: null
+                    mutableToken
                 }}
             >
-                <HodlCommentsModal open={open} setOpen={setOpen} />
+                {open && <HodlCommentsModal open={open} setOpen={setOpen} />}
                 <Box
                     display="flex"
                     gap={0.5}

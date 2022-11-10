@@ -87,7 +87,7 @@ export default function TokenActionBox({ nft, popUp = false }) {
       >
         <ShareIcon size={20} fill={grey[600]} />
       </IconButton>
-      <HodlShareMenu nft={nft} anchorEl={anchorEl} handleClose={handleClose} open={open} />
+      {open && <HodlShareMenu nft={nft} anchorEl={anchorEl} handleClose={handleClose} open={open} />}
     </div>
   )
 }

@@ -97,6 +97,7 @@ route.get(async (req: NextApiRequest, res: NextApiResponse) => {
 
   try {
     const mutableToken = await getMutableToken(+tokenId);
+    res.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate');
     return res.status(200).json({ mutableToken })
   } catch (e) {
     return res.status(400).json({ message: 'Bad Request' });

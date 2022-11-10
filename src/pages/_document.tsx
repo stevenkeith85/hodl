@@ -11,11 +11,15 @@ export default class MyDocument extends Document {
     return (
       <Html lang='en'>
         <Head>
+          <link rel="preconnect" href="https://res.cloudinary.com/" />
+          <link rel="preconnect" href="https://www.googletagmanager.com/" />
+
           <Script
             id="gtagman"
             strategy="lazyOnload"
             src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_TRACKING_ID}`}
           />
+
           <Script
             id="gtag"
             strategy="lazyOnload"
@@ -30,13 +34,14 @@ export default class MyDocument extends Document {
                       gtag('js', new Date());
                       gtag('config', '${process.env.NEXT_PUBLIC_GA_TRACKING_ID}');`
             }} />
+
           {/* PWA primary color */}
           <meta name="theme-color" content={theme.palette.primary.main} />
           <meta name="emotion-insertion-point" content="" />
 
           <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka&display=swap" />
           <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,500&display=swap" />
-          <link rel="preconnect" href="https://res.cloudinary.com/" />
+
 
           {(this.props as any).emotionStyleTags}
         </Head>

@@ -11,6 +11,8 @@ import { throttle } from '../../lib/lodash';
 
 import HodlFeedLoading from './HodlFeedLoading';
 import PrivateHomePageSidebarLoading from './PrivateHomePageSidebarLoading';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 // import { delayForDemo } from '../../lib/utils';
 const HodlFeed = dynamic(
@@ -36,6 +38,8 @@ interface PrivateHomePageProps {
 }
 
 const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
+    const theme = useTheme();
+    const matches = useMediaQuery(theme.breakpoints.up('sm'));
 
     const [viewSidebar, setViewSidebar] = useState(false);
 
@@ -176,7 +180,7 @@ const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
                     xs={12}
                     md={5}
                 >
-                    <PrivateHomePageSidebar user={user} />
+                  {(matches || viewSidebar) &&  <PrivateHomePageSidebar user={user} />}
                 </Grid>
             </Grid>
         </>
