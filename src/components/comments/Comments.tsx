@@ -3,9 +3,8 @@ import { FC, useState } from "react";
 import dynamic from 'next/dynamic';
 
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 
-import { CommentOutlined } from "@mui/icons-material";
+import CommentOutlinedIcon from "@mui/icons-material/CommentOutlined";
 
 import useSWR, { Fetcher } from "swr";
 import humanize from "humanize-plus";
@@ -14,6 +13,8 @@ import { useCommentCount } from "../../hooks/useComments";
 import { NftContext } from "../../contexts/NftContext";
 
 import { MutableToken } from "../../models/Nft";
+import Skeleton from "@mui/material/Skeleton";
+import Typography from "@mui/material/Typography";
 
 const HodlCommentsModal = dynamic(
     () => import('./HodlCommentsModal'),
@@ -54,7 +55,7 @@ export const Comments: FC<CommentsProps> = ({
             <NftContext.Provider
                 value={{
                     nft,
-                    mutableToken
+                    mutableToken: null
                 }}
             >
                 <HodlCommentsModal open={open} setOpen={setOpen} />
@@ -79,8 +80,11 @@ export const Comments: FC<CommentsProps> = ({
                         }
                     }}
                 >
-                    <CommentOutlined color={color} sx={{ fontSize: size }} />
-                    <p style={{ fontSize, color, margin: 0 }}>{humanize.compactInteger(count || 0, 1)}</p>
+                    <CommentOutlinedIcon color={color} sx={{ fontSize: size }} />
+                    {count === null && <Skeleton variant="text"><Typography>0</Typography></Skeleton>}
+                    {count !== null &&
+                        <Typography sx={{ fontSize, color }}>{humanize.compactInteger(count || 0, 1)}</Typography>
+                    }
                 </Box>
             </NftContext.Provider>
         </>

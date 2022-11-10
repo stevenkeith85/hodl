@@ -1,18 +1,34 @@
-import { Box, NoSsr, Typography } from "@mui/material";
-import Link from "next/link";
 import { FC, useContext } from "react";
+
+import Link from "next/link";
+import dynamic from 'next/dynamic';
+
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import NoSsr from "@mui/material/NoSsr";
+
+import formatDistanceStrict from "date-fns/formatDistanceStrict";
+
 import { WalletContext } from "../../contexts/WalletContext";
 import { ActionTypes, HodlActionViewModel } from "../../models/HodlAction";
-import { ProfileNameOrAddress } from '../avatar/ProfileNameOrAddress';
-import { formatDistanceStrict } from "date-fns";
-import { Likes } from "../Likes";
-import { Comments } from "../comments/Comments";
+
+
 import { insertTagLinks } from "../../lib/templateUtils";
+
 import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
+import { ProfileNameOrAddress } from '../avatar/ProfileNameOrAddress';
+
 import { FeedAsset } from "./FeedAsset";
 import { MaticPrice } from "../MaticPrice";
-import { HodlShareMenu } from "../HodlShareMenu";
-import TokenActionBox from "../nft/TokenActionBox";
+import TokenActionBoxLoading from "../nft/TokenActionBoxLoading";
+
+const TokenActionBox = dynamic(
+    () => import('../nft/TokenActionBox'),
+    {
+      ssr: false,
+      loading: () => <TokenActionBoxLoading />
+    }
+  );
 
 
 interface HodlFeedItemProps {

@@ -6,10 +6,11 @@ import { ActionSet, HodlAction, HodlActionViewModel } from "../../../models/Hodl
 
 import { getComment } from "../comment";
 import { getUser } from "../user/[handle]";
-import { User, UserViewModel } from "../../../models/User";
-import { Token } from "../../../models/Token";
-import { HodlComment } from "../../../models/HodlComment";
 import { getToken } from "../../../lib/database/rest/getToken";
+import { mGetActions } from "../../../lib/database/rest/Actions";
+import { getUsers } from "../../../lib/database/rest/Users";
+import { mGetComments } from "../../../lib/database/rest/Comments";
+import { mGetTokens } from "../../../lib/database/rest/Tokens";
 
 const client = Redis.fromEnv();
 
@@ -17,6 +18,8 @@ const route = apiRoute();
 
 // Gets the HodlAction  and adds the user, token and comment to it to create the HodlActionViewModel
 // We can get some data in parallel, like the user and token as they don't rely on each other
+
+// This is used by the pusher hover notification at the moment
 export const getAction = async (id, viewer): Promise<HodlActionViewModel | null> => {
   const hodlAction: HodlAction = await client.get(`action:${id}`);
 
@@ -67,6 +70,8 @@ export const getActions = async (
     total: number
   }> => {
 
+  console.log('address, set, offset, limit', address, set, offset, limit)
+
   if (!address) {
     return null;
   }
@@ -83,64 +88,46 @@ export const getActions = async (
     };
   }
 
-  const actionIds: string[] = await client.zrange(`user:${address}:${set}`, offset, offset + limit - 1, { rev: true });
+  const zrangeStart = Date.now();
+  
+  // Get the action ids
+  const idsResponse = await fetch(
+    `${process.env.UPSTASH_REDIS_REST_URL}/zrange/user:${address}:${set}/${offset}/${offset + limit - 1}/rev`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
+      }
+    });
 
-  // We get all the action data with one round trip to redis
-  const actionPipeline = client.pipeline();
-  for (let id of actionIds) {
-    actionPipeline.get(`action:${id}`);
-  }
-  const actions: HodlAction[] = actionIds?.length ? await actionPipeline.exec() : [];
+  const { result: ids } = await idsResponse.json();
 
+  const zrangeStop = Date.now()
+  console.log('zrange time taken', zrangeStop - zrangeStart);
+
+  // Get the actions
+  const mgetStart = Date.now();
+  const actions = ids.length ? await mGetActions(ids) : [];
+  const mgetStop = Date.now()
+  console.log('mget time taken', mgetStop - mgetStart);
+  
   // Each action has a subject. This is the address of the user who took the action
-  // We get all the unique user objects from redis in one trip.
   const addresses: string[] = actions.map(action => action.subject);
   const uniqueAddresses = new Set(addresses);
 
-  const userPipeline = client.pipeline();
-  for (let address of Array.from(uniqueAddresses)) {
-    userPipeline.hmget<User>(`user:${address}`, 'address', 'nickname', 'avatar');
-  }
-
-  const users: User[] = uniqueAddresses.size ? await userPipeline.exec() : [];
-
-  // Each user object has a numeric id for their avatar. This represents a token.
-  // We get those tokens in one round trip to redis
-  const avatarIds: number[] = users.filter(user => user.avatar).map(user => user.avatar); // avatars are optional
-  const avatarPipeline = client.pipeline();
-  for (let id of avatarIds) {
-    avatarPipeline.get<Token>(`token:${id}`);
-  }
-  const avatars: Token[] = avatarIds.length ? await avatarPipeline.exec() : [];
-
-  // Create an id to token map so that we can extrapolate the user info for the UI
-  const avatarMap = avatars.reduce((map, token) => {
-    map[token.id] = token;
-    return map;
-  }, {});
-
-  const userVMs: UserViewModel[] = users.map(user => ({
-    address: user.address,
-    nickname: user.nickname,
-    avatar: avatarMap[user.avatar] || null
-  }))
-
+  // We get the view models for the users
+  const userVMs = await getUsers(Array.from(uniqueAddresses));
+  
   const userMap = userVMs.reduce((map, user) => {
     map[user.address] = user;
     return map;
   }, {});
 
-  // Get any comments attached to the actions
-  const commentIds = actions.filter(action => action.object === 'comment').map(action => action.objectId);
+  // Get any comments attached to the actions. 
+  const commentIds: string[] = actions.filter(action => action.object === 'comment').map(action => action.objectId);
   const uniqueCommentIds = new Set(commentIds);
 
-  const commentsPipeline = client.pipeline();
-  for (let id of Array.from(uniqueCommentIds)) {
-    commentsPipeline.get<HodlComment>(`comment:${id}`);
-  }
-
-  let comments: HodlComment[] = uniqueCommentIds.size ? await commentsPipeline.exec() : [];
-
+  let comments = uniqueCommentIds.size ? await mGetComments(Array.from(uniqueCommentIds)) : [];
+  
   // Users can delete comments. So remove any missing comments.
   comments = comments.filter(comment => comment);
 
@@ -154,16 +141,11 @@ export const getActions = async (
   const tokenIdsForComments = comments.map(comment => comment.tokenId);
 
   // Get tokens attached to actions or comments
-  const tokenIds = actions.filter(action => action.object === 'token').map(action => action.objectId).concat(tokenIdsForComments);
-
+  const tokenIds: string[] = actions.filter(action => action.object === 'token').map(action => action.objectId).concat(tokenIdsForComments);
   const uniqueTokenIds = new Set(tokenIds);
 
-  const tokensPipeline = client.pipeline();
-  for (let id of Array.from(uniqueTokenIds)) {
-    tokensPipeline.get<Token>(`token:${id}`);
-  }
-  const tokens: Token[] = uniqueTokenIds.size ? await tokensPipeline.exec() : [];
-
+  const tokens = uniqueTokenIds.size ? await mGetTokens(Array.from(uniqueTokenIds)) : [];
+  
   // Create an id to token map so that we can extrapolate the user info for the UI
   const tokenMap = tokens.reduce((map, token) => {
     map[token.id] = token;
@@ -196,7 +178,6 @@ export const getActions = async (
         // We also retrieved the token the comment was about (as we use the image in the notifications box)
         actionVM.token = tokenMap[comment.tokenId];
       }
-      
     }
 
     return actionVM;
@@ -226,9 +207,9 @@ route.get(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
-  const notifications = await getActions(req.address, set as ActionSet, +offset, +limit);
+  const actions = await getActions(req.address, set as ActionSet, +offset, +limit);
 
-  res.status(200).json(notifications);
+  res.status(200).json(actions);
 });
 
 

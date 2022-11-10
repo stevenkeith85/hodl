@@ -9,6 +9,7 @@ export const useActions = (
   set: ActionSet = ActionSet.Notifications,
   limit: number,
   fallbackData = null,
+  revalidateFirstPage = false,
 ) => {
   const fetcher: Fetcher<{ items: HodlActionViewModel[], next: number, offset: number }, [string, ActionSet, number, number]>
     = (url, set, offset, limit) => axios.get(
@@ -31,7 +32,8 @@ export const useActions = (
     {
       fallbackData,
       revalidateOnMount: true,
-      dedupingInterval: 2000, // default is 2000 - TODO: LOWERED THIS AS IM WORKING ON IT. IT CAN GO UP WHEN WORK IS DONE
+      revalidateFirstPage,
+      dedupingInterval: 5000, // default is 2000 - TODO: LOWERED THIS AS IM WORKING ON IT. IT CAN GO UP WHEN WORK IS DONE
       focusThrottleInterval: 5000, // default is 5000
     }
   );
