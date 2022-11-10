@@ -35,7 +35,7 @@ export const FilteredImage = ({
               effect={code}
               onLoad={onLoad}
               sizes="(min-width: 900px) 50vw, (min-width: 1200px) calc(1200px / 2)"
-              widths={[450, 600, 900, 1200]}
+              widths={[600, 700, 800, 900, 1080]}
             />
           </Box>
         )

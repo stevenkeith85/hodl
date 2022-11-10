@@ -14,7 +14,7 @@ export const HodlImageResponsive = ({
     aspectRatio = null,
     effect = null,
     round = null,
-    widths = [800, 900, 1080], // You should do some experimentation and pick 6 or so
+    widths=[600, 700, 800, 900, 1080], // You should do some experimentation and pick 6 or so
 
     sizes, // e.g. sizes="(min-width: 900px) 50vw, (min-width: 1200px) calc(1200px / 2)"
 

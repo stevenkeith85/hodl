@@ -1,15 +1,13 @@
 import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import { RankingListLoading } from './RankingListLoading';
-import { CircularProgress, Skeleton } from '@mui/material';
-import HodlProfileBadgeLoading from './HodlProfileBadgeLoading';
+import { Skeleton } from '@mui/material';
 import HodlFeedLoading from './HodlFeedLoading';
+import PrivateHomePageSidebarLoading from './PrivateHomePageSidebarLoading';
 
 const PrivateHomePageLoading = ({ }) => {
 
     const [viewSidebar] = useState(false);
-
 
     return (
         <>
@@ -83,31 +81,7 @@ const PrivateHomePageLoading = ({ }) => {
                     xs={12}
                     md={5}
                 >
-                    <Box
-                        display="flex"
-                        flexDirection="column"
-                        sx={{
-                            marginY: {
-                                xs: 2,
-                                md: 4,
-                            },
-                            marginX: {
-                                xs: 0,
-                                sm: 4
-                            },
-                            marginTop: {
-                                xs: 1,
-                                md: 4
-                            },
-                            gap: 4,
-                        }}
-                    >
-                        <HodlProfileBadgeLoading />
-                        <RankingListLoading text="Top Users" />
-                        <RankingListLoading text="Top Tokens" />
-                        <RankingListLoading text="New Users" />
-                        <RankingListLoading text="New Tokens" />
-                    </Box>
+                    <PrivateHomePageSidebarLoading />
                 </Grid>
             </Grid>
         </>

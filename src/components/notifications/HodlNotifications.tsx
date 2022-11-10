@@ -33,7 +33,7 @@ export const HodlNotifications: React.FC<HodlNotificationsProps> = ({
 
     const { address } = useContext(WalletContext);
 
-    const { actions: notifications } = useActions(showNotifications, ActionSet.Notifications, limit);
+    const { actions: notifications } = useActions(showNotifications, ActionSet.Notifications, limit, null, true);
 
     const { data: lastRead, mutate: mutateLastRead } = useSWR(address ? ['/api/notifications/read', address] : null,
         (url, address) => axios.get(url).then(r => r.data),

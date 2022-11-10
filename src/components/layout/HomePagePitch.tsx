@@ -113,7 +113,11 @@ export const HomePagePitch = ({ }) => {
                             width: `400px`,
                             maxWidth: '100%',
                         }}>
-                            <NftWindow nft={mostLiked.data?.[0].items?.[0]} lcp={true} />
+                            <NftWindow 
+                                nft={mostLiked.data?.[0].items?.[0]} lcp={true} 
+                                sizes="(min-width: 900px) 50vw, (min-width: 1200px) calc(1200px / 5 * 2), 100vw"
+                                widths={[600, 700, 800, 900, 1080]}
+                                />
                         </Box>
                     </Box>
                 </Grid>

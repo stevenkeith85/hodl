@@ -1,12 +1,32 @@
-import { HomePagePitch } from "./HomePagePitch"
+import HodlProfileBadgeLoading from './HodlProfileBadgeLoading';
+import { RankingListLoading } from './RankingListLoading';
+
+import { useFollowersCount } from '../../hooks/useFollowersCount';
+import { useFollowingCount } from '../../hooks/useFollowingCount';
+import { useHodlingCount } from '../../hooks/useHodlingCount';
+import { useListedCount } from '../../hooks/useListedCount';
+
 import { useRankings } from '../../hooks/useRankings';
 import { RankingsContext } from '../../contexts/RankingsContext';
 import { useNewUsers } from '../../hooks/useNewUsers';
 import { useNewTokens } from '../../hooks/useNewTokens';
 
+
+import { UserContext } from '../../contexts/UserContext';
+
 import dynamic from 'next/dynamic';
 
-import { RankingListLoading } from './RankingListLoading';
+import Box from '@mui/material/Box';
+
+
+const HodlProfileBadge = dynamic(
+    () => import('../HodlProfileBadge').then(mod => mod.HodlProfileBadge),
+    // () => delayForDemo(import('../HodlProfileBadge').then(mod => mod.HodlProfileBadge)),
+    {
+        ssr: false,
+        loading: () => <HodlProfileBadgeLoading />
+    }
+);
 
 const NewTokens = dynamic(
     () => import('../rankings/NewTokens').then(mod => mod.NewTokens),
@@ -40,11 +60,15 @@ const NewUsers = dynamic(
     }
 );
 
+export default function PrivateHomePageSidebar({ user }) {
 
-import Box from "@mui/material/Box"
-
-const PublicHomePage = ({ }) => {
     const limit = 6;
+
+    const [hodlingCount] = useHodlingCount(user?.address);
+    const [listedCount] = useListedCount(user?.address);
+
+    const [followersCount] = useFollowersCount(user?.address);
+    const [followingCount] = useFollowingCount(user?.address);
 
     const { rankings: mostLiked } = useRankings(true, limit, null, "token");
     const { rankings: mostFollowed } = useRankings(true, limit, null);
@@ -60,50 +84,40 @@ const PublicHomePage = ({ }) => {
             newUsers,
             newTokens
         }}>
-            <div
-                style={{
-                    display: 'flex',
-                    flexDirection: 'column'
+            <UserContext.Provider
+                value={{
+                    hodlingCount,
+                    listedCount,
+                    followersCount,
+                    followingCount
                 }}
             >
-                <div style={{
-                    display: 'flex',
-                }}>
-                    <HomePagePitch />
-                </div>
                 <Box
+                    display="flex"
+                    flexDirection="column"
                     sx={{
-                        display: 'grid',
-                        gridTemplateColumns: {
-                            xs: `1fr`,
-                            sm: `1fr 1fr`,
-                        },
                         marginY: {
                             xs: 2,
-                            sm: 4
+                            md: 4,
                         },
                         marginX: {
                             xs: 0,
                             sm: 4
                         },
                         marginTop: {
-                            xs: 0,
-                            sm: 4
+                            xs: 1,
+                            md: 4
                         },
-                        marginBottom: {
-                            sm: 6
-                        },
-                        gap: 6,
+                        gap: 4,
                     }}
                 >
-                    <TopUsers followButton={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
-                    <TopTokens showLikes={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
-                    <NewUsers followButton={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
-                    <NewTokens showLikes={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
+                    <HodlProfileBadge user={user} />
+                    <TopUsers followButton={false} />
+                    <TopTokens showLikes={false} />
+                    <NewUsers followButton={false} />
+                    <NewTokens showLikes={false} />
                 </Box>
-            </div>
+            </UserContext.Provider>
         </RankingsContext.Provider>
     )
 }
-
-export default PublicHomePage

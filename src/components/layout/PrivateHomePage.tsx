@@ -7,16 +7,12 @@ import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Grid';
 
 import { UserViewModel } from '../../models/User';
-
-
 import { throttle } from '../../lib/lodash';
 
-// import { delayForDemo } from '../../lib/utils';
-
-import HodlProfileBadgeLoading from './HodlProfileBadgeLoading';
-import { RankingListLoading } from './RankingListLoading';
 import HodlFeedLoading from './HodlFeedLoading';
+import PrivateHomePageSidebarLoading from './PrivateHomePageSidebarLoading';
 
+// import { delayForDemo } from '../../lib/utils';
 const HodlFeed = dynamic(
     () => import('../feed/HodlFeed').then(mod => mod.HodlFeed),
     // () => delayForDemo(import('../HodlProfileBadge').then(mod => mod.HodlProfileBadge)),
@@ -26,44 +22,11 @@ const HodlFeed = dynamic(
     }
 );
 
-const HodlProfileBadge = dynamic(
-    () => import('../HodlProfileBadge').then(mod => mod.HodlProfileBadge),
-    // () => delayForDemo(import('../HodlProfileBadge').then(mod => mod.HodlProfileBadge)),
+const PrivateHomePageSidebar = dynamic(
+    () => import('./PrivateHomePageSidebar'),
     {
         ssr: false,
-        loading: () => <HodlProfileBadgeLoading />
-    }
-);
-
-const NewTokens = dynamic(
-    () => import('../rankings/NewTokens').then(mod => mod.NewTokens),
-    {
-        ssr: false,
-        loading: () => <RankingListLoading text="New Tokens" />
-    }
-);
-
-const TopUsers = dynamic(
-    () => import('../rankings/TopUsers').then(mod => mod.TopUsers),
-    {
-        ssr: false,
-        loading: () => <RankingListLoading text="Top Users" />
-    }
-);
-
-const TopTokens = dynamic(
-    () => import('../rankings/TopTokens').then(mod => mod.TopTokens),
-    {
-        ssr: false,
-        loading: () => <RankingListLoading text="Top Tokens" />
-    }
-);
-
-const NewUsers = dynamic(
-    () => import('../rankings/NewUsers').then(mod => mod.NewUsers),
-    {
-        ssr: false,
-        loading: () => <RankingListLoading text="New Users" />
+        loading: () => <PrivateHomePageSidebarLoading />
     }
 );
 
@@ -98,8 +61,8 @@ const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
         )[0];
 
         nearestToTop.current = feedItems[0];
-        console.log('nearest to top', nearestToTop.current)
     }
+
     // We record the feed item at the top of the screen
     //
     // if there's a new item at the top of the screen, we
@@ -199,10 +162,9 @@ const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
                                 sm: 4
                             },
                         }}>
-                        <HodlFeed address={address} />
+                        <HodlFeed />
                     </Box>
                 </Grid>
-
                 <Grid
                     sx={{
                         display: {
@@ -214,33 +176,8 @@ const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
                     xs={12}
                     md={5}
                 >
-                    <Box
-                        display="flex"
-                        flexDirection="column"
-                        sx={{
-                            marginY: {
-                                xs: 2,
-                                md: 4,
-                            },
-                            marginX: {
-                                xs: 0,
-                                sm: 4
-                            },
-                            marginTop: {
-                                xs: 1,
-                                md: 4
-                            },
-                            gap: 4,
-                        }}
-                    >
-                        <HodlProfileBadge user={user} />
-                        <TopUsers followButton={false} />
-                        <TopTokens showLikes={false} />
-                        <NewUsers followButton={false} />
-                        <NewTokens showLikes={false} />
-                    </Box>
+                    <PrivateHomePageSidebar user={user} />
                 </Grid>
-
             </Grid>
         </>
     )

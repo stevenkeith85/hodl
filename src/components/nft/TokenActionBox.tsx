@@ -1,13 +1,62 @@
-import Box from "@mui/material/Box";
-import { Comments } from "../comments/Comments";
-import { HodlShareMenu } from "../HodlShareMenu";
-import { Likes } from "../Likes";
+import { useState } from "react";
+
+import dynamic from 'next/dynamic';
+
+import { grey } from "@mui/material/colors";
+import IconButton from "@mui/material/IconButton";
+
+import theme from "../../theme";
+import { ShareIcon } from '../icons/ShareIcon';
+import Skeleton from "@mui/material/Skeleton";
 
 
-export default function TokenActionBox({ nft, popUp=false }) {
-    return (<Box
-      sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-      <Box gap={1.5} display='flex' alignItems='center'>
+const HodlShareMenu = dynamic(
+  () => import('../HodlShareMenu').then(mod => mod.HodlShareMenu),
+  {
+    ssr: false,
+    loading: () => null
+  }
+);
+
+const Likes = dynamic(
+  () => import('../Likes').then(mod => mod.Likes),
+  {
+    ssr: false,
+    loading: () => <Skeleton variant="rectangular" width="20px" height="20px" animation="wave" />
+  }
+);
+
+const Comments = dynamic(
+  () => import('../comments/Comments').then(mod => mod.Comments),
+  {
+    ssr: false,
+    loading: () => <Skeleton variant="rectangular" width="20px" height="20px" animation="wave" />
+  }
+);
+
+export default function TokenActionBox({ nft, popUp = false }) {
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+      }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: theme.spacing(1.5)
+        }}
+      >
         <Likes
           sx={{
             color: theme => theme.palette.secondary.main,
@@ -25,8 +74,20 @@ export default function TokenActionBox({ nft, popUp=false }) {
           popUp={popUp}
           sx={{ color: '#333', paddingRight: 0 }}
         />
-      </Box>
-      <HodlShareMenu nft={nft} />
-    </Box>
-    )
-  }
+      </div>
+
+      <IconButton
+        className="shareMenu"
+        onClick={handleClick}
+        size="small"
+        sx={{
+          padding: 0,
+          lineHeight: 0,
+        }}
+      >
+        <ShareIcon size={20} fill={grey[600]} />
+      </IconButton>
+      <HodlShareMenu nft={nft} anchorEl={anchorEl} handleClose={handleClose} open={open} />
+    </div>
+  )
+}

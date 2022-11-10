@@ -9,7 +9,6 @@ import { getToken } from '../../../lib/database/rest/getToken';
 const client = Redis.fromEnv()
 
 const getMarketItem = async ([id, price]): Promise<FullToken> => {
-    console.log(`search/tokens/getMarketItem - id: ${id}, price: ${price}`)
     return {
         ...(await getToken(id)),
         forSale: true,

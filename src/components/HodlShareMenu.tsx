@@ -13,18 +13,18 @@ import Menu from '@mui/material/Menu';
 import { ShareIcon } from './icons/ShareIcon';
 import { grey } from "@mui/material/colors";
 
-export const HodlShareMenu = ({ nft }) => {
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const open = Boolean(anchorEl);
-    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+export const HodlShareMenu = ({ nft, anchorEl, open, handleClose }) => {
+    // const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    // const open = Boolean(anchorEl);
+    // const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    //     setAnchorEl(event.currentTarget);
+    // };
+    // const handleClose = () => {
+    //     setAnchorEl(null);
+    // };
 
     return (<>
-        <IconButton
+        {/* <IconButton
             className="shareMenu"
             onClick={handleClick}
             size="small"
@@ -34,7 +34,7 @@ export const HodlShareMenu = ({ nft }) => {
             }}
         >
             <ShareIcon size={20} fill={grey[600]} />
-        </IconButton>
+        </IconButton> */}
         <Menu
             anchorEl={anchorEl}
             anchorOrigin={{

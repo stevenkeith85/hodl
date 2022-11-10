@@ -11,6 +11,7 @@ import { useLikeCount } from "../hooks/useLikeCount";
 import { useLike } from "../hooks/useLike";
 
 import humanize from "humanize-plus";
+import Skeleton from "@mui/material/Skeleton";
 
 
 export interface LikesProps {
@@ -37,10 +38,10 @@ export const Likes: FC<LikesProps> = ({
     prefetchedLikeCount = null,
     likeTooltip = "like",
     unlikeTooltip = "unlike",
-    flexDirection="row",
+    flexDirection = "row",
     sx = {}
 }) => {
-    const {swr: likeCount} = useLikeCount(id, object, prefetchedLikeCount);
+    const { swr: likeCount } = useLikeCount(id, object, prefetchedLikeCount);
     const [userLikesThisToken, toggleLike] = useLike(id, object, likeCount);
 
     return (
@@ -82,13 +83,9 @@ export const Likes: FC<LikesProps> = ({
                             />
                         </Tooltip>
                 }
-                {showCount && (likeCount != undefined) &&
-                    <Typography sx={{ 
-                        fontSize,
-                        color
-                    }}>{
-                        humanize.compactInteger(likeCount?.data || 0, 1)
-                        }</Typography>
+                {showCount && !likeCount?.data && <Skeleton variant="text"><Typography>0</Typography></Skeleton>}
+                {showCount && likeCount?.data &&
+                    <Typography sx={{ fontSize, color }}>{humanize.compactInteger(likeCount?.data || 0, 1)}</Typography>
                 }
             </Box>
         </>
