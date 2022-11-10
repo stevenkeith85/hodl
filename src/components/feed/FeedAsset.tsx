@@ -26,7 +26,7 @@ export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
                     folder="nfts"
                     cid={item.token?.properties?.asset?.uri}
                     aspectRatio={item?.token?.properties?.aspectRatio || "1:1"}
-                    widths={[575, 700, 800, 900, 1000, 1080]}
+                    widths={[600, 700, 800, 900, 1080]}
                     sizes="575w"
                     onLoad={() => setLoading(false)}
                 />

@@ -28,11 +28,15 @@ const NftWindowOverlay = dynamic(
 
 interface NftWindowProps {
     nft: FullToken;
+    sizes?: string;
+    widths?: number [],
     lcp?: boolean; // if this window will be the largest content paint, then set to true
 }
 
 export const NftWindow: React.FC<NftWindowProps> = ({
     nft,
+    sizes="(min-width: 900px) 25vw, (min-width: 1200px) calc(1200px / 5 * 2), 50vw",    
+    widths=[600, 700, 800, 900, 1080],
     lcp = false
 }) => {
     const theme = useTheme();
@@ -75,9 +79,9 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                             assetFolder={"image"}
                             folder="nfts"
                             lcp={lcp}
-                            sizes="(min-width: 900px) 25vw, (min-width: 1200px) calc(1200px / 5 * 2), 50vw"
+                            sizes={sizes}
                             cid={nft?.properties?.asset?.uri}
-                            widths={[400, 800, 1000]}
+                            widths={widths}
                             aspectRatio="1:1"
                             extension="jpg"
                         />
@@ -99,9 +103,9 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                             assetFolder={"image"}
                             folder="nfts"
                             lcp={lcp}
-                            sizes="(min-width: 900px) 25vw, (min-width: 1200px) calc(1200px / 5 * 2), 50vw"
+                            sizes={sizes}
                             cid={nft?.image}
-                            widths={[400, 800, 1000]}
+                            widths={widths}
                             aspectRatio="1:1"
                         />
                     </Box>
@@ -135,9 +139,9 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                             folder="nfts"
                             lcp={true}
                             aspectRatio="1:1"
-                            sizes="(min-width: 900px) 25vw, (min-width: 1200px) calc(1200px / 5 * 2), 50vw, 100vw"
+                            sizes={sizes}
                             cid={nft?.properties?.asset?.uri}
-                            widths={[400, 800, 1000]}
+                            widths={widths}
                         />
                     </Box>
                 }

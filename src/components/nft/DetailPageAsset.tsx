@@ -89,7 +89,7 @@ export const DetailPageAsset: React.FC<DetailPageAssetProps> = ({ token }) => {
                             folder="nfts"
                             lcp={true}
                             cid={token?.properties?.asset?.uri}
-                            widths={[500, 600, 700, 800, 900, 1000, 1080]}
+                            widths={[600, 700, 800, 900, 1080]}
                             sizes="(min-width: 1200px) calc(1200px / 2), (min-width: 900px) calc(50vw / 2), 100vw"
                             onLoad={() => setLoading(false)}
                             aspectRatio={token?.properties?.aspectRatio}
