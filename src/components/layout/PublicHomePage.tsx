@@ -1,4 +1,8 @@
 import { HomePagePitch } from "./HomePagePitch"
+import { useRankings } from '../../hooks/useRankings';
+import { RankingsContext } from '../../contexts/RankingsContext';
+import { useNewUsers } from '../../hooks/useNewUsers';
+import { useNewTokens } from '../../hooks/useNewTokens';
 
 import dynamic from 'next/dynamic';
 
@@ -40,49 +44,65 @@ const NewUsers = dynamic(
 import Box from "@mui/material/Box"
 
 const PublicHomePage = ({ }) => {
+    const limit = 6;
+
+    const { rankings: mostLiked } = useRankings(true, limit, null, "token");
+    const { rankings: mostFollowed } = useRankings(true, limit, null);
+
+    const { results: newUsers } = useNewUsers(limit, null);
+    const { results: newTokens } = useNewTokens(limit, null);
+
     return (
-        <div
-            style={{
-                display: 'flex',
-                flexDirection: 'column'
-            }}
-        >
-            <div style={{
-                display: 'flex',
-            }}>
-                <HomePagePitch />
-            </div>
-            <Box
-                sx={{
-                    display: 'grid',
-                    gridTemplateColumns: {
-                        xs: `1fr`,
-                        sm: `1fr 1fr`,
-                    },
-                    marginY: {
-                        xs: 2,
-                        sm: 4
-                    },
-                    marginX: {
-                        xs: 0,
-                        sm: 4
-                    },
-                    marginTop: {
-                        xs: 0,
-                        sm: 4
-                    },
-                    marginBottom: {
-                        sm: 6
-                    },
-                    gap: 6,
+        <RankingsContext.Provider value={{
+            limit,
+            mostFollowed,
+            mostLiked,
+            newUsers,
+            newTokens
+        }}>
+            <div
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column'
                 }}
             >
-                <TopUsers followButton={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
-                <TopTokens showLikes={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
-                <NewUsers followButton={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
-                <NewTokens showLikes={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
-            </Box>
-        </div>
+                <div style={{
+                    display: 'flex',
+                }}>
+                    <HomePagePitch />
+                </div>
+                <Box
+                    sx={{
+                        display: 'grid',
+                        gridTemplateColumns: {
+                            xs: `1fr`,
+                            sm: `1fr 1fr`,
+                        },
+                        marginY: {
+                            xs: 2,
+                            sm: 4
+                        },
+                        marginX: {
+                            xs: 0,
+                            sm: 4
+                        },
+                        marginTop: {
+                            xs: 0,
+                            sm: 4
+                        },
+                        marginBottom: {
+                            sm: 6
+                        },
+                        gap: 6,
+                    }}
+                >
+                    <TopUsers followButton={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
+                    <TopTokens showLikes={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
+                    <NewUsers followButton={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
+                    <NewTokens showLikes={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
+                </Box>
+            </div>
+        </RankingsContext.Provider>
     )
 }
 

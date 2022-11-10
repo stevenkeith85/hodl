@@ -62,8 +62,8 @@ const NewUsers = dynamic(
 
 export default function PrivateHomePageSidebar({ user }) {
 
-    const limit = 10;
-    
+    const limit = 6;
+
     const [hodlingCount] = useHodlingCount(user?.address);
     const [listedCount] = useListedCount(user?.address);
 
