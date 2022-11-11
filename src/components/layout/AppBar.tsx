@@ -14,30 +14,44 @@ import axios from 'axios'
 
 import useSWR, { mutate } from 'swr';
 
-import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
-
 import { RocketLaunchIcon } from '../icons/RocketLaunchIcon';
-import { CloseIcon } from '../icons/CloseIcon';
 import { AccountBalanceWalletIcon } from '../icons/AccountBalanceWalletIcon';
 import { NotificationsIcon } from '../icons/NotificationsIcon';
 import { NotificationsNoneIcon } from '../icons/NotificationsNoneIcon';
 
 
-// TODO: Can this be dynamically imported?
-import { enqueueSnackbar } from 'notistack'
+import {
+    ActionTypes,
+    HodlAction
+} from '../../models/HodlAction';
 
-import { ActionTypes, HodlAction } from '../../models/HodlAction';
 
-const MobileNav = dynamic(
-    () => import('./MobileNav').then(mod => mod.MobileNav),
+const CloseIcon = dynamic(
+    () => import('../icons/CloseIcon').then(mod => mod.CloseIcon),
     {
         ssr: false,
         loading: () => null
     }
 );
 
+const UserAvatarAndHandle = dynamic(
+    () => import('../avatar/UserAvatarAndHandle').then(mod => mod.UserAvatarAndHandle),
+    {
+        ssr: false,
+        loading: () => <Skeleton variant="circular" animation="wave" width={44} height={44} />
+    }
+);
+
 const DesktopNav = dynamic(
     () => import('./DesktopNav').then(mod => mod.DesktopNav),
+    {
+        ssr: false,
+        loading: () => null
+    }
+);
+
+const MobileNav = dynamic(
+    () => import('./MobileNav').then(mod => mod.MobileNav),
     {
         ssr: false,
         loading: () => null
@@ -92,40 +106,46 @@ const SessionExpiredModal = dynamic(
 );
 
 const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
+    const theme = useTheme();
+
     const [error, setError] = useState('');
+
     const [hoverMenuOpen, setHoverMenuOpen] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
-
     const [sessionExpired, setSessionExpired] = useState(false);
-
-    const theme = useTheme();
+    const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
     const mdUp = useMediaQuery(theme.breakpoints.up('md'));
     const mdDown = useMediaQuery(theme.breakpoints.down('md'));
 
-    const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
-    const [pages] = useState([
-        {
-            label: 'hodl my moon',
-            url: '/',
-            icon: <RocketLaunchIcon size={22} fill={theme.palette.primary.main} />,
-            publicPage: true
-        },
-    ]);
+    const homepage = {
+        label: 'hodl my moon',
+        url: '/',
+        icon: <RocketLaunchIcon size={22} fill={theme.palette.primary.main} />,
+        publicPage: true
+    };
 
 
     useEffect(() => {
-        if (!error) {
-            return;
+
+        const displayError = async () => {
+            const enqueueSnackbar = await import('notistack').then(mod => mod.enqueueSnackbar);
+
+            if (!error) {
+                return;
+            }
+
+            enqueueSnackbar(error, {
+                variant: "error",
+                hideIconVariant: true
+            });
+
+            setError('');
         }
 
-        enqueueSnackbar(error, {
-            variant: "error",
-            hideIconVariant: true
-        });
+        displayError().catch(console.error)
 
-        setError('');
     }, [error]);
 
 
@@ -155,12 +175,15 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
     }, [address]);
 
 
-    const mutateAndNotify = (action: HodlAction) => {
+    const mutateAndNotify = async (action: HodlAction) => {
+
         if (action.action === ActionTypes.Bought ||
             action.action === ActionTypes.Listed ||
             action.action === ActionTypes.Delisted) {
             mutate([`/api/contracts/mutable-token`, action.objectId]);
         }
+
+        const enqueueSnackbar = await import('notistack').then(mod => mod.enqueueSnackbar);
 
         enqueueSnackbar("", {
             // @ts-ignore
@@ -235,10 +258,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                             }}>
-                                <Link
-                                    key={pages[0].url}
-                                    href={pages[0].url}
-                                >
+                                <Link key={homepage.url} href={homepage.url}>
                                     <Box
                                         sx={{
                                             color: theme => theme.palette.primary.main,
@@ -260,7 +280,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                             }}
                                             color="inherit"
                                         >
-                                            {pages[0].icon}
+                                            {homepage.icon}
                                         </IconButton>
                                     </Box>
                                 </Link>
@@ -280,11 +300,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                     gap: { xs: 1, md: 3 },
                                 }}
                             >
-                                {mdUp && <>
-                                    <Box>
-                                        <SearchBox />
-                                    </Box>
-                                </>}
+                                {mdUp && <Box><SearchBox /></Box>}
                                 {mdDown && <MobileSearchIcon
                                     mobileSearchOpen={mobileSearchOpen}
                                     setMobileSearchOpen={setMobileSearchOpen}
@@ -424,7 +440,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                         <AccountBalanceWalletIcon size={22} fill={theme.palette.primary.main} />
                                     </Box>
                                 </IconButton>
-                                { hoverMenuOpen && <HoverMenu hoverMenuOpen={hoverMenuOpen} setHoverMenuOpen={setHoverMenuOpen} /> }
+                                {hoverMenuOpen && <HoverMenu hoverMenuOpen={hoverMenuOpen} setHoverMenuOpen={setHoverMenuOpen} />}
                             </Box>
                         </Box>
                     </Box>

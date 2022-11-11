@@ -1,5 +1,5 @@
-import { Box, Typography } from "@mui/material";
-
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 
 export const DescriptionTooltip = () => (
   <Box padding={2}>

@@ -34,7 +34,12 @@ const Comments = dynamic(
   }
 );
 
-export default function TokenActionBox({ nft, popUp = false }) {
+export default function TokenActionBox({ 
+  nft, 
+  popUp = false, 
+  prefetchedLikeCount=null,
+  prefetchedCommentCount=null 
+}) {
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -66,6 +71,7 @@ export default function TokenActionBox({ nft, popUp = false }) {
           object="token"
           fontSize={12}
           size={20}
+          prefetchedLikeCount={prefetchedLikeCount}
         />
         <Comments
           fontSize={12}
@@ -73,6 +79,7 @@ export default function TokenActionBox({ nft, popUp = false }) {
           nft={nft}
           popUp={popUp}
           sx={{ color: '#333', paddingRight: 0 }}
+          prefetchedCommentCount={prefetchedCommentCount}
         />
       </div>
 

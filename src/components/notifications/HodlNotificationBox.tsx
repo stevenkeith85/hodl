@@ -1,4 +1,5 @@
-import { FC, useContext } from "react";
+import dynamic from 'next/dynamic';
+import { FC, memo, useContext } from "react";
 
 import Link from "next/link";
 
@@ -9,15 +10,30 @@ import formatDistanceStrict from "date-fns/formatDistanceStrict";
 
 import { ActionTypes, HodlActionViewModel } from "../../models/HodlAction";
 
-import { ProfileNameOrAddress } from '../avatar/ProfileNameOrAddress';
-
-import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
-import { AssetThumbnail } from "../AssetThumbnail";
-import { FollowButton } from "../profile/FollowButton";
 import { WalletContext } from "../../contexts/WalletContext";
 import { MaticPrice } from "../MaticPrice";
 
 import { truncateText } from "../../lib/truncateText";
+import Skeleton from "@mui/material/Skeleton";
+import { FollowButtonLoading } from '../profile/FollowButtonLoading';
+import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
+import { ProfileNameOrAddress } from '../avatar/ProfileNameOrAddress';
+
+const AssetThumbnail = dynamic(
+    () => import('../AssetThumbnail').then(mod => mod.AssetThumbnail),
+    {
+        ssr: false,
+        loading: () => <Skeleton variant="rectangular" animation="wave" width={44} height={44} />
+    }
+);
+
+const FollowButton = dynamic(
+    () => import('../profile/FollowButton').then(mod => mod.FollowButton),
+    {
+        ssr: false,
+        loading: () => <FollowButtonLoading />
+    }
+);
 
 // Boolean guards
 
@@ -209,7 +225,7 @@ interface HodlNotificationBoxProps {
     lastRead: number;
     sx?: object;
 }
-export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({
+export const HodlNotificationBox: FC<HodlNotificationBoxProps> = memo(({
     item,
     setShowNotifications,
     lastRead,
@@ -257,7 +273,6 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({
                 </Box>
                 <Box
                     sx={{
-                        // background: 'blue',
                         width: '80px',
                         display: 'flex',
                         alignItems: 'start',
@@ -297,3 +312,6 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = ({
         </Box>
     )
 }
+)
+
+HodlNotificationBox.displayName = "HodlNotificationBox"

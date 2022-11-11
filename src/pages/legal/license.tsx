@@ -1,4 +1,5 @@
-import { Box, Typography } from "@mui/material";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 import Link from "next/link";
 import { HodlBorderedBox } from "../../components/HodlBorderedBox";
 import { authenticate } from "../../lib/jwt";

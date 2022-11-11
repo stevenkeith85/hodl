@@ -31,7 +31,7 @@ export interface CommentsProps {
     size?: number,
     fontSize?: number,
     sx?: any;
-    fallbackData?: any;
+    prefetchedCommentCount?: any;
 }
 
 export const Comments: FC<CommentsProps> = ({
@@ -41,9 +41,9 @@ export const Comments: FC<CommentsProps> = ({
     size = 22,
     fontSize = 14,
     sx = {},
-    fallbackData = null
+    prefetchedCommentCount = null
 }) => {
-    const { data: count } = useCommentCount(nft?.id, "token", fallbackData)
+    const { data: count } = useCommentCount(nft?.id, "token", prefetchedCommentCount)
 
     const mutableTokenFetcher: Fetcher<MutableToken> = (url, id) => fetch(`${url}/${id}`).then(r => r.json()).then(data => data.mutableToken);
     const { data: mutableToken } = useSWR([`/api/contracts/mutable-token`, nft.id], mutableTokenFetcher);

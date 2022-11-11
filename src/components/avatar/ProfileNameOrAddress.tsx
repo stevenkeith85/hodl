@@ -5,9 +5,11 @@ import { UserViewModel } from '../../models/User';
 import { useUser } from '../../hooks/useUser';
 import theme from '../../theme';
 import { truncateText } from '../../lib/truncateText';
+
 import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
+
 
 interface ProfileNameOrAddressProps {
     profileAddress: string;
@@ -62,7 +64,6 @@ export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({
                     <Typography component="span" fontSize={fontSize} fontWeight={fontWeight} color={color}>{getShortAddress(user.address)}</Typography>
                 </Tooltip>
             </Link >
-
         }
     </Box >)
 }

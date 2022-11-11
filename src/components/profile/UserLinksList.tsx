@@ -1,10 +1,22 @@
-import { Box } from "@mui/material";
+import dynamic from 'next/dynamic';
+
 import InfiniteScroll from "react-swr-infinite-scroll";
 import { SWRInfiniteResponse } from "swr/infinite/dist/infinite";
-import { User, UserViewModel } from "../../models/User";
+import { UserViewModel } from "../../models/User";
 import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
-import { FollowButton } from "./FollowButton";
+
+import Box from "@mui/material/Box";
+
+import { FollowButtonLoading } from '../profile/FollowButtonLoading';
+
+const FollowButton = dynamic(
+  () => import('../profile/FollowButton').then(mod => mod.FollowButton),
+  {
+      ssr: false,
+      loading: () => <FollowButtonLoading />
+  }
+);
 
 interface UserLinksListProps {
   swr: SWRInfiniteResponse<any, any>;

@@ -13,7 +13,8 @@ export const useLikeCount = (
     id ? [`/api/like/${object}/count`, id] : null,
     fetcher,
     {
-      fallbackData: prefetchedLikeCount
+      fallbackData: prefetchedLikeCount,
+      revalidateOnMount: !prefetchedLikeCount
     }
   );
 

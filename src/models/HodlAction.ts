@@ -1,5 +1,5 @@
 import { HodlCommentViewModel } from "./HodlComment";
-import { Token } from "./Token";
+import { Token, TokenVM } from "./Token";
 import { UserViewModel } from "./User";
 
 export enum ActionTypes {
@@ -81,7 +81,7 @@ export interface HodlActionViewModel {
 
     // The user who took the action
     user?: UserViewModel;
-    token?: Token;
+    token?: TokenVM;
     comment?: HodlCommentViewModel;    
 
     // Metadata on the action (if any)

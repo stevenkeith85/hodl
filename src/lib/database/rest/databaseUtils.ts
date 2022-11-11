@@ -25,3 +25,24 @@ export const runRedisTransaction = async (cmds): Promise<boolean> => {
     return false;
   }
 }
+
+export const runRedisPipeline = async (cmds): Promise<boolean> => {
+  try {
+    const r = await fetch(
+      `${process.env.UPSTASH_REDIS_REST_URL}/pipeline`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
+      },
+      body: JSON.stringify(cmds)
+    }
+    )
+
+    const data = await r.json()
+
+    return data.map(datum => datum?.result);
+  } catch (e) {
+    console.log('Upstash REDIS Pipeline error', e.message);
+    return false;
+  }
+}

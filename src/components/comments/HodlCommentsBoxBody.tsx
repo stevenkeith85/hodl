@@ -1,4 +1,5 @@
-import { Typography, Box } from "@mui/material";
+import Box from "@mui/material/Box"
+import { Typography } from "@mui/material";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 import { InfiniteScrollComments } from "../profile/InfiniteScrollComments";
 import { HodlCommentBox } from "./HodlCommentBox";

@@ -10,7 +10,7 @@ import { getToken } from "../../../lib/database/rest/getToken";
 import { mGetActions } from "../../../lib/database/rest/Actions";
 import { getUsers } from "../../../lib/database/rest/Users";
 import { mGetComments } from "../../../lib/database/rest/Comments";
-import { mGetTokens } from "../../../lib/database/rest/Tokens";
+import { getTokenVMs, mGetTokens } from "../../../lib/database/rest/Tokens";
 
 const client = Redis.fromEnv();
 
@@ -89,7 +89,7 @@ export const getActions = async (
   }
 
   const zrangeStart = Date.now();
-  
+
   // Get the action ids
   const idsResponse = await fetch(
     `${process.env.UPSTASH_REDIS_REST_URL}/zrange/user:${address}:${set}/${offset}/${offset + limit - 1}/rev`,
@@ -109,14 +109,14 @@ export const getActions = async (
   const actions = ids.length ? await mGetActions(ids) : [];
   const mgetStop = Date.now()
   console.log('mget time taken', mgetStop - mgetStart);
-  
+
   // Each action has a subject. This is the address of the user who took the action
   const addresses: string[] = actions.map(action => action.subject);
   const uniqueAddresses = new Set(addresses);
 
   // We get the view models for the users
   const userVMs = await getUsers(Array.from(uniqueAddresses));
-  
+
   const userMap = userVMs.reduce((map, user) => {
     map[user.address] = user;
     return map;
@@ -127,7 +127,7 @@ export const getActions = async (
   const uniqueCommentIds = new Set(commentIds);
 
   let comments = uniqueCommentIds.size ? await mGetComments(Array.from(uniqueCommentIds)) : [];
-  
+
   // Users can delete comments. So remove any missing comments.
   comments = comments.filter(comment => comment);
 
@@ -144,8 +144,11 @@ export const getActions = async (
   const tokenIds: string[] = actions.filter(action => action.object === 'token').map(action => action.objectId).concat(tokenIdsForComments);
   const uniqueTokenIds = new Set(tokenIds);
 
-  const tokens = uniqueTokenIds.size ? await mGetTokens(Array.from(uniqueTokenIds)) : [];
-  
+  const tokens = uniqueTokenIds.size ?
+    set === ActionSet.Notifications ? await mGetTokens(Array.from(uniqueTokenIds)) : await getTokenVMs(Array.from(uniqueTokenIds))
+    :
+    [];
+
   // Create an id to token map so that we can extrapolate the user info for the UI
   const tokenMap = tokens.reduce((map, token) => {
     map[token.id] = token;

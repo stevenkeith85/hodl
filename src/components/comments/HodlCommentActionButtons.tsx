@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import Box from "@mui/material/Box";
 import { Likes } from "../Likes";
 import React, { useContext } from "react";
 import { HodlCommentViewModel } from "../../models/HodlComment";
