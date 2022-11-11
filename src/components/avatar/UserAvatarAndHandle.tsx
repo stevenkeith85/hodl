@@ -11,8 +11,6 @@ import { AvatarLoadingMemo } from './AvatarLoading';
 import { memo } from 'react';
 
 
-
-
 const UserAvatarAndHandleBody = ({ user, size, fontSize, handle, color }) => {
 
     const UserAvatar = dynamic(

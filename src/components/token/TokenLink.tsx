@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 import Link from 'next/link';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { assetType } from '../../lib/utils';
 import { AssetTypes } from '../../models/AssetType';
 import { Token } from '../../models/Token';
@@ -16,7 +16,7 @@ interface TokenLinkProps {
     fontSize?: number;
 }
 
-export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = 44, fontSize = 14 }) => {
+export const TokenLink: React.FC<TokenLinkProps> = memo(({ token, size = 44, fontSize = 14 }) => {
     const [loading, setLoading] = useState(true);
 
     const asset = <>
@@ -119,4 +119,6 @@ export const TokenLink: React.FC<TokenLinkProps> = ({ token, size = 44, fontSize
             </Link>
         </Box>
     </>)
-}
+})
+
+TokenLink.displayName = "TokenLink"

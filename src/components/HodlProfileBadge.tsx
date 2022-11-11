@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { grey } from '@mui/material/colors';
 import { UserViewModel } from '../models/User';
 import { UserAvatarAndHandle } from './avatar/UserAvatarAndHandle';
-import { useContext } from 'react';
+import { memo, useContext } from 'react';
 import { UserContext } from '../contexts/UserContext';
 import { ProfileNameOrAddress } from './avatar/ProfileNameOrAddress';
 import { CopyText } from './CopyText';
@@ -21,7 +21,7 @@ interface CountAndLinkProps {
     tab: number;
 }
 
-const CountAndLink: React.FC<CountAndLinkProps> = ({ count, user, label, tab }) => {
+const CountAndLink: React.FC<CountAndLinkProps> = memo(({ count, user, label, tab }) => {
 
     return (<>
         {
@@ -42,7 +42,9 @@ const CountAndLink: React.FC<CountAndLinkProps> = ({ count, user, label, tab }) 
             </Link>
         }
     </>)
-}
+})
+
+CountAndLink.displayName = "CountAndLink";
 
 interface HodlProfileBadgeProps {
     user: UserViewModel;
