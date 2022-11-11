@@ -3,19 +3,68 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 
-import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Container from '@mui/material/Container';
-
+import useMediaQuery from '@mui/material/useMediaQuery';
+import Skeleton from '@mui/material/Skeleton';
+import { useTheme } from '@mui/material/styles';
 
 import axios from 'axios'
+
 import useSWR, { mutate } from 'swr';
-import { enqueueSnackbar } from 'notistack'
 
-import { SearchBox } from '../Search';
-import { ActionTypes, HodlAction } from '../../models/HodlAction';
+import { RocketLaunchIcon } from '../icons/RocketLaunchIcon';
+import { AccountBalanceWalletIcon } from '../icons/AccountBalanceWalletIcon';
+import { NotificationsIcon } from '../icons/NotificationsIcon';
+import { NotificationsNoneIcon } from '../icons/NotificationsNoneIcon';
 
+
+import {
+    ActionTypes,
+    HodlAction
+} from '../../models/HodlAction';
+
+
+const CloseIcon = dynamic(
+    () => import('../icons/CloseIcon').then(mod => mod.CloseIcon),
+    {
+        ssr: false,
+        loading: () => null
+    }
+);
+
+const UserAvatarAndHandle = dynamic(
+    () => import('../avatar/UserAvatarAndHandle').then(mod => mod.UserAvatarAndHandle),
+    {
+        ssr: false,
+        loading: () => <Skeleton variant="circular" animation="wave" width={44} height={44} />
+    }
+);
+
+const DesktopNav = dynamic(
+    () => import('./DesktopNav').then(mod => mod.DesktopNav),
+    {
+        ssr: false,
+        loading: () => null
+    }
+);
+
+const MobileNav = dynamic(
+    () => import('./MobileNav').then(mod => mod.MobileNav),
+    {
+        ssr: false,
+        loading: () => null
+    }
+);
+
+const SearchBox = dynamic(
+    () => import('../Search').then(mod => mod.SearchBox),
+    {
+        ssr: false,
+        loading: () => <Skeleton variant="rounded" width={157} height={36} />
+    }
+);
 
 const HoverMenu = dynamic(
     () => import('./../menu/HoverMenu').then(mod => mod.HoverMenu),
@@ -25,6 +74,13 @@ const HoverMenu = dynamic(
     }
 );
 
+const MobileSearchIcon = dynamic(
+    () => import('./MobileSearchIcon').then(mod => mod.MobileSearchIcon),
+    {
+        ssr: false,
+        loading: () => null
+    }
+);
 const MobileSearch = dynamic(
     () => import('../MobileSearch').then(mod => mod.MobileSearch),
     {
@@ -41,62 +97,55 @@ const HodlNotifications = dynamic(
     }
 );
 
-import { SessionExpiredModal } from '../modals/SessionExpiredModal';
-import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
-
-import { RocketLaunchIcon } from '../icons/RocketLaunchIcon';
-import { useTheme } from '@mui/material/styles';
-import { ExploreIcon } from '../icons/ExploreIcon';
-import { AddCircleIcon } from '../icons/AddCircleIcon';
-import { CloseIcon } from '../icons/CloseIcon';
-import { AccountBalanceWalletIcon } from '../icons/AccountBalanceWalletIcon';
-import { SearchIcon } from '../icons/SearchIcon';
-import { NotificationsIcon } from '../icons/NotificationsIcon';
-import { NotificationsNoneIcon } from '../icons/NotificationsNoneIcon';
-
+const SessionExpiredModal = dynamic(
+    () => import('../modals/SessionExpiredModal').then(mod => mod.SessionExpiredModal),
+    {
+        ssr: false,
+        loading: () => null
+    }
+);
 
 const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
-    const [error, setError] = useState('');
-    const [hoverMenuOpen, setHoverMenuOpen] = useState(false);
-    const [showNotifications, setShowNotifications] = useState(false);
-    const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
-    const [sessionExpired, setSessionExpired] = useState(false);
-
     const theme = useTheme();
 
-    const [pages] = useState([
-        {
-            label: 'hodl my moon',
-            url: '/',
-            icon: <RocketLaunchIcon size={22} fill={theme.palette.primary.main} />,
-            publicPage: true
-        },
-        {
-            label: 'explore',
-            url: '/explore',
-            icon: <ExploreIcon size={22} fill={theme.palette.primary.main} />,
-            publicPage: true
-        },
-        {
-            label: 'create',
-            url: '/create',
-            icon: <AddCircleIcon size={22} fill={theme.palette.primary.main} />,
-            publicPage: false
-        },
-    ]);
+    const [error, setError] = useState('');
+
+    const [hoverMenuOpen, setHoverMenuOpen] = useState(false);
+    const [showNotifications, setShowNotifications] = useState(false);
+    const [sessionExpired, setSessionExpired] = useState(false);
+    const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+
+    const mdUp = useMediaQuery(theme.breakpoints.up('md'));
+    const mdDown = useMediaQuery(theme.breakpoints.down('md'));
+
+
+    const homepage = {
+        label: 'hodl my moon',
+        url: '/',
+        icon: <RocketLaunchIcon size={22} fill={theme.palette.primary.main} />,
+        publicPage: true
+    };
 
 
     useEffect(() => {
-        if (!error) {
-            return;
+
+        const displayError = async () => {
+            const enqueueSnackbar = await import('notistack').then(mod => mod.enqueueSnackbar);
+
+            if (!error) {
+                return;
+            }
+
+            enqueueSnackbar(error, {
+                variant: "error",
+                hideIconVariant: true
+            });
+
+            setError('');
         }
 
-        enqueueSnackbar(error, { 
-            variant: "error",
-            hideIconVariant: true
-        });
+        displayError().catch(console.error)
 
-        setError('');
     }, [error]);
 
 
@@ -126,12 +175,15 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
     }, [address]);
 
 
-    const mutateAndNotify = (action: HodlAction) => {
+    const mutateAndNotify = async (action: HodlAction) => {
+
         if (action.action === ActionTypes.Bought ||
             action.action === ActionTypes.Listed ||
             action.action === ActionTypes.Delisted) {
             mutate([`/api/contracts/mutable-token`, action.objectId]);
         }
+
+        const enqueueSnackbar = await import('notistack').then(mod => mod.enqueueSnackbar);
 
         enqueueSnackbar("", {
             // @ts-ignore
@@ -166,7 +218,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
 
     return (
         <>
-            <SessionExpiredModal modalOpen={sessionExpired} setModalOpen={setSessionExpired} />
+            {sessionExpired && <SessionExpiredModal modalOpen={sessionExpired} setModalOpen={setSessionExpired} />}
             <Box
                 sx={{
                     display: 'flex',
@@ -206,10 +258,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                             }}>
-                                <Link
-                                    key={pages[0].url}
-                                    href={pages[0].url}
-                                >
+                                <Link key={homepage.url} href={homepage.url}>
                                     <Box
                                         sx={{
                                             color: theme => theme.palette.primary.main,
@@ -231,55 +280,16 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                             }}
                                             color="inherit"
                                         >
-                                            {pages[0].icon}
+                                            {homepage.icon}
                                         </IconButton>
                                     </Box>
                                 </Link>
                                 {
-                                    pages.slice(1).filter(p => p.publicPage || address).map((page, i) => (
-                                        <Link key={page.url} href={page.url}>
-                                            <Box
-                                                sx={{
-                                                    color: theme => theme.palette.primary.main,
-                                                    cursor: 'pointer',
-                                                    textDecoration: 'none',
-                                                    margin: 0,
-                                                    padding: 0,
-                                                    lineHeight: 0,
-                                                }}
-                                            >
-                                                <Button
-                                                    variant="text"
-                                                    color="inherit"
-                                                    component="span"
-                                                    sx={{
-                                                        fontFamily: theme => theme.logo.fontFamily,
-                                                        padding: '9px',
-                                                        textAlign: 'center',
-                                                        display: {
-                                                            xs: 'none',
-                                                            md: 'flex'
-                                                        }
-                                                    }}>{page.label}</Button>
-                                                <IconButton
-                                                    sx={{
-                                                        margin: 0,
-                                                        padding: 0,
-                                                        lineHeight: 0,
-                                                        width: 44,
-                                                        height: 44,
-                                                        display: {
-                                                            xs: 'flex',
-                                                            md: 'none'
-                                                        }
-                                                    }}
-                                                    color="inherit"
-                                                >
-                                                    {page.icon}
-                                                </IconButton>
-                                            </Box>
-                                        </Link>
-                                    ))}
+                                    mdUp && <DesktopNav address={address} />
+                                }
+                                {
+                                    mdDown && <MobileNav address={address} />
+                                }
                             </Box>
                             <Box
                                 sx={{
@@ -290,68 +300,14 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                     gap: { xs: 1, md: 3 },
                                 }}
                             >
-                                <Box
-                                    sx={{
-                                        display: {
-                                            xs: 'none',
-                                            md: 'flex'
-                                        }
-                                    }}
-                                >
-                                    <SearchBox />
-                                </Box>
-                                <Box
-                                    sx={{
-                                        lineHeight: 0,
-                                        display: {
-                                            xs: 'flex',
-                                            md: 'none',
-                                        }
-                                    }}
-                                >
-                                    {mobileSearchOpen ?
-                                        <IconButton
-                                            sx={{
-                                                width: 44,
-                                                height: 44
-                                            }}
-                                            color="inherit"
-                                            onClick={() => setMobileSearchOpen(false)}
-                                        >
-                                            <CloseIcon size={22} fill={theme.palette.primary.main} />
-                                        </IconButton>
-                                        :
-                                        <IconButton
-                                            sx={{
-                                                width: 44,
-                                                height: 44,
-                                            }}
-                                            color="inherit"
-                                            onClick={
-                                                () => {
-                                                    setMobileSearchOpen(true);
-                                                    setShowNotifications(false);
-                                                }}
-                                        >
-                                            <SearchIcon size={22} fill={theme.palette.primary.main} />
-                                        </IconButton>
-                                    }
-                                </Box>
-
+                                {mdUp && <Box><SearchBox /></Box>}
+                                {mdDown && <MobileSearchIcon
+                                    mobileSearchOpen={mobileSearchOpen}
+                                    setMobileSearchOpen={setMobileSearchOpen}
+                                    setShowNotifications={setShowNotifications}
+                                />
+                                }
                                 {/* Notifications button and menu */}
-                                {/* <IconButton
-                                    sx={{
-                                        margin: 0,
-                                        padding: 0,
-                                        lineHeight: 0,
-                                        width: 44,
-                                        height: 44,
-                                        display: {
-                                            xs: address ? 'flex' : 'none'
-                                        }
-                                    }}
-                                    color="inherit"
-                                > */}
                                 {showNotifications ?
                                     <IconButton
                                         sx={{
@@ -431,10 +387,10 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                         </IconButton>
                                     )
                                 }
-                                <HodlNotifications
+                                {showNotifications && <HodlNotifications
                                     showNotifications={showNotifications}
                                     setShowNotifications={setShowNotifications}
-                                />
+                                />}
 
                                 {/* Wallet button and menu */}
                                 <IconButton
@@ -484,20 +440,13 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                         <AccountBalanceWalletIcon size={22} fill={theme.palette.primary.main} />
                                     </Box>
                                 </IconButton>
-                                <HoverMenu
-                                    hoverMenuOpen={hoverMenuOpen}
-                                    setHoverMenuOpen={setHoverMenuOpen}
-                                />
+                                {hoverMenuOpen && <HoverMenu hoverMenuOpen={hoverMenuOpen} setHoverMenuOpen={setHoverMenuOpen} />}
                             </Box>
                         </Box>
                     </Box>
                 </Container>
                 {
-                    mobileSearchOpen &&
-                    <MobileSearch
-                        mobileSearchOpen={mobileSearchOpen}
-                        setMobileSearchOpen={setMobileSearchOpen}
-                    />
+                    mobileSearchOpen && <MobileSearch mobileSearchOpen={mobileSearchOpen} setMobileSearchOpen={setMobileSearchOpen} />
                 }
             </Box >
             <Box sx={{

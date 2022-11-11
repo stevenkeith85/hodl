@@ -1,3 +1,4 @@
+import dynamic from 'next/dynamic';
 import { useCallback, useContext, useEffect } from "react";
 
 import { useRouter } from "next/router";
@@ -15,8 +16,17 @@ import useSWR from "swr";
 import { WalletContext } from "../../contexts/WalletContext";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 import { useActions } from "../../hooks/useActions";
-import { HodlNotificationBox } from "./HodlNotificationBox";
+
 import { ActionSet, HodlAction } from "../../models/HodlAction";
+
+import { HodlNotificationBoxLoading } from './HodlNotificationBoxLoading';
+const HodlNotificationBox = dynamic(
+    () => import('./HodlNotificationBox').then(mod => mod.HodlNotificationBox),
+    {
+        ssr: false,
+        loading: () => <HodlNotificationBoxLoading />
+    }
+);
 
 interface HodlNotificationsProps {
     showNotifications: boolean;

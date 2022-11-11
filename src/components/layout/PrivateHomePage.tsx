@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 
 import Box from '@mui/material/Box';
-import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Grid';
 
 import { UserViewModel } from '../../models/User';
@@ -11,6 +10,13 @@ import { throttle } from '../../lib/lodash';
 
 import HodlFeedLoading from './HodlFeedLoading';
 import PrivateHomePageSidebarLoading from './PrivateHomePageSidebarLoading';
+
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { ActionSet } from '../../models/HodlAction';
+import { useActions } from '../../hooks/useActions';
+import PrivateHomePageSwitchLoading from './PrivateHomePageSwitchLoading';
+
 
 // import { delayForDemo } from '../../lib/utils';
 const HodlFeed = dynamic(
@@ -22,11 +28,13 @@ const HodlFeed = dynamic(
     }
 );
 
-const PrivateHomePageSidebar = dynamic(
-    () => import('./PrivateHomePageSidebar'),
+
+
+const PrivateHomePageSwitch = dynamic(
+    () => import('./PrivateHomePageSwitch'),
     {
         ssr: false,
-        loading: () => <PrivateHomePageSidebarLoading />
+        loading: () => <PrivateHomePageSwitchLoading />
     }
 );
 
@@ -36,11 +44,23 @@ interface PrivateHomePageProps {
 }
 
 const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
+    const limit = 8; // number of feed items to fetch
+    const theme = useTheme();
+
+    const desktop = useMediaQuery(theme.breakpoints.up('md'), { noSsr: true });
 
     const [viewSidebar, setViewSidebar] = useState(false);
 
     const previousNearestToTop = useRef(null);
     const nearestToTop = useRef(null);
+
+    const PrivateHomePageSidebar = dynamic(
+        () => import('./PrivateHomePageSidebar'),
+        {
+            ssr: false,
+            loading: () => <PrivateHomePageSidebarLoading display={desktop || viewSidebar}/>
+        }
+    );
 
     const updateNearestToTop = () => {
         previousNearestToTop.current = nearestToTop.current;
@@ -97,87 +117,56 @@ const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
         };
     }, []);
 
+    const { actions: feed } = useActions(true, ActionSet.Feed, limit);
+
     return (
         <>
-            <Box
-                sx={{
-                    display: {
-                        xs: 'flex',
-                        md: 'none'
-                    },
-                    justifyContent: 'right',
-                }}>
-                <Box
-                    sx={{
-                        display: 'flex',
-                        gap: 1,
-                        alignItems: 'center',
-                        marginTop: 1,
-                        marginX: {
-                            xs: 0,
-                            sm: 4
-                        }
-                    }}
-                >
-                    <Switch
-                        checked={viewSidebar}
-                        onChange={(e) => {
-                            setViewSidebar(old => !old);
-                        }
-                        }
-                    />
-                </Box>
-            </Box>
+            {!desktop && <PrivateHomePageSwitch viewSidebar={viewSidebar} setViewSidebar={setViewSidebar}/>}
             <Grid container>
                 <Grid
+                    item
                     sx={{
-                        display:
-                        {
-                            xs: !viewSidebar ? 'flex' : 'none',
-                            md: 'flex',
+                        display: {
+                            display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center'
                         }
                     }}
-                    item xs={12}
+                    xs={12}
                     md={7}
                 >
-                    <Box
-                        sx={{
-                            width: '100%',
-                            maxWidth: `min(530px, 100%)`,
-                            marginY: {
-                                xs: 2,
-                                md: 4,
-                            },
-                            marginX: {
-                                xs: 0,
-                            },
-                            marginTop: {
-                                xs: 1,
-                                md: 4
-                            },
-                            marginBottom: {
-                                xs: 0,
-                                sm: 4
-                            },
-                        }}>
-                        <HodlFeed />
-                    </Box>
+                    {(desktop || !viewSidebar) &&
+                        <Box
+                            sx={{
+                                width: '100%',
+                                maxWidth: `min(530px, 100%)`,
+                                marginY: {
+                                    xs: 2,
+                                    md: 4,
+                                },
+                                marginX: {
+                                    xs: 0,
+                                },
+                                marginTop: {
+                                    xs: 1,
+                                    md: 4
+                                },
+                                marginBottom: {
+                                    xs: 0,
+                                    sm: 4
+                                },
+                            }}>
+                            {feed &&
+                                <HodlFeed feed={feed} limit={limit} />
+                            }
+                        </Box>
+                    }
                 </Grid>
-                <Grid
-                    sx={{
-                        display: {
-                            xs: viewSidebar ? 'block' : 'none',
-                            md: 'block'
-                        }
-                    }}
-                    item
-                    xs={12}
-                    md={5}
-                >
-                    <PrivateHomePageSidebar user={user} />
-                </Grid>
+                {(desktop || viewSidebar) &&
+                    <Grid item xs={12} md={5}>
+                        <PrivateHomePageSidebar user={user} />
+                    </Grid>
+                }
             </Grid>
         </>
     )

@@ -1,9 +1,10 @@
-import { Box, Typography } from "@mui/material";
+import Box from "@mui/material/Box";
 import { FC } from "react";
 import { HodlVideo } from "../HodlVideo";
 import { FilteredImageMemo } from "./FilteredImage";
 import { MintProps } from './models';
 import { HodlAudio } from "../HodlAudio";
+
 
 export const AssetPreview: FC<MintProps> = ({
   originalAspectRatio,

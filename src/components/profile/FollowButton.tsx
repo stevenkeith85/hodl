@@ -15,7 +15,6 @@ export const FollowButton: React.FC<FollowButtonProps> = ({ profileAddress, vari
     const { address } = useContext(WalletContext);
     const profileUserSWR = useUser(profileAddress);
 
-
     const [
         follow,
     ] = useFollow(profileAddress);

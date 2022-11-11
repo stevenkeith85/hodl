@@ -15,21 +15,43 @@ import { ActionTypes, HodlActionViewModel } from "../../models/HodlAction";
 
 import { insertTagLinks } from "../../lib/templateUtils";
 
-import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
-import { ProfileNameOrAddress } from '../avatar/ProfileNameOrAddress';
-
 import { FeedAsset } from "./FeedAsset";
-import { MaticPrice } from "../MaticPrice";
+
 import TokenActionBoxLoading from "../nft/TokenActionBoxLoading";
+import Skeleton from "@mui/material/Skeleton";
+
 
 const TokenActionBox = dynamic(
     () => import('../nft/TokenActionBox'),
     {
-      ssr: false,
-      loading: () => <TokenActionBoxLoading />
+        ssr: false,
+        loading: () => <TokenActionBoxLoading />
     }
-  );
+);
 
+const MaticPrice = dynamic(
+    () => import('../MaticPrice').then(mod => mod.MaticPrice),
+    {
+        ssr: false,
+        loading: () => null
+    }
+);
+
+const UserAvatarAndHandle = dynamic(
+    () => import('../avatar/UserAvatarAndHandle').then(mod => mod.UserAvatarAndHandle),
+    {
+        ssr: false,
+        loading: () => <Skeleton variant="circular" animation="wave" width={44} height={44} />
+    }
+);
+
+const ProfileNameOrAddress = dynamic(
+    () => import('../avatar/ProfileNameOrAddress').then(mod => mod.ProfileNameOrAddress),
+    {
+        ssr: false,
+        loading: () => <Skeleton variant="text" animation="wave" width={50}  />
+    }
+);
 
 interface HodlFeedItemProps {
     item: HodlActionViewModel;
@@ -188,7 +210,12 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                         }
                     </Box>
                     {item.token && <div style={{ height: '20px' }}>
-                        <TokenActionBox nft={item?.token} popUp={true} />
+                        <TokenActionBox 
+                            nft={item?.token} 
+                            popUp={true} 
+                            prefetchedLikeCount={item?.token?.likeCount}
+                            prefetchedCommentCount={item?.token?.commentCount}
+                        />
                     </div>
                     }
                     <div>

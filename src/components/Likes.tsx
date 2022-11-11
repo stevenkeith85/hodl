@@ -83,8 +83,8 @@ export const Likes: FC<LikesProps> = ({
                             />
                         </Tooltip>
                 }
-                {showCount && !likeCount?.data && <Skeleton variant="text"><Typography>0</Typography></Skeleton>}
-                {showCount && likeCount?.data &&
+                {showCount && likeCount?.data === null && <Skeleton variant="text"><Typography>0</Typography></Skeleton>}
+                {showCount && likeCount?.data !== null &&
                     <Typography sx={{ fontSize, color }}>{humanize.compactInteger(likeCount?.data || 0, 1)}</Typography>
                 }
             </Box>

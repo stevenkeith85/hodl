@@ -1,15 +1,14 @@
 import dynamic from 'next/dynamic';
 
-import { Box } from "@mui/material";
+import Box from "@mui/material/Box"
 import InfiniteScroll from "react-swr-infinite-scroll";
-import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 
-import { HodlAction } from "../../models/HodlAction";
-import { HodlImpactAlert } from "../HodlImpactAlert";
 import { FeedContext } from "../../contexts/FeedContext";
 import { useActions } from '../../hooks/useActions';
-import { ActionSet } from '../../models/HodlAction';
 
+import { ActionSet, HodlAction } from '../../models/HodlAction';
+
+import HodlFeedLoading from '../layout/HodlFeedLoading';
 
 const HodlFeedItem = dynamic(
     () => import('./HodlFeedItem').then(mod => mod.HodlFeedItem),
@@ -19,9 +18,15 @@ const HodlFeedItem = dynamic(
     }
 );
 
-export const HodlFeed = ({ limit = 4 }) => {
-    const { actions: feed } = useActions(true, ActionSet.Feed, 8);
+const HodlImpactAlert = dynamic(
+    () => import('../HodlImpactAlert').then(mod => mod.HodlImpactAlert),
+    {
+        ssr: false,
+        loading: () => null
+    }
+);
 
+export const HodlFeed = ({ feed, limit = 8 }) => {
     return (
         <FeedContext.Provider value={{ feed }}>
             <Box
@@ -45,7 +50,9 @@ export const HodlFeed = ({ limit = 4 }) => {
                 }
                 <InfiniteScroll
                     swr={feed}
-                    loadingIndicator={<HodlLoadingSpinner sx={{ textAlign: 'center', padding: 2 }} />}
+                    loadingIndicator={
+                        <HodlFeedLoading />
+                    }
                     isReachingEnd={swr => {
                         return swr.data?.[0]?.items?.length == 0 ||
                             swr.data?.[swr.data?.length - 1]?.items?.length < limit
@@ -54,7 +61,7 @@ export const HodlFeed = ({ limit = 4 }) => {
                 >
                     {
                         ({ items }) =>
-                            (items || []).map((item: HodlAction) => <HodlFeedItem key={item.id} item={item} />)
+                            (items || []).map((item: HodlAction) => <>{item && <HodlFeedItem key={item.id} item={item} />}</>)
                     }
                 </InfiniteScroll>
             </Box>

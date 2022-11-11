@@ -1,12 +1,10 @@
-import { Avatar, Box, Skeleton } from "@mui/material";
-import { useState } from "react";
-import { token } from "../../lib/copyright";
+import Avatar from "@mui/material/Avatar";
+
 import { assetType } from "../../lib/utils";
 import { AssetTypes } from "../../models/AssetType";
 import { UserViewModel } from "../../models/User";
 import { HodlAudioBoxMini } from "../HodlAudioBoxMini";
 import { HodlImageResponsive } from "../HodlImageResponsive";
-import { HodlVideo } from "../HodlVideo";
 
 interface UserAvatarProps {
     user: UserViewModel;
@@ -22,7 +20,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({ user, size }) => {
             }}
         >
             {user?.avatar &&
-                <Box sx={{ width: '100%'}}>
+                <div style={{ width: '100%'}}>
                     {assetType(user?.avatar) === AssetTypes.Image &&
                         <HodlImageResponsive
                             assetFolder={"image"}
@@ -59,7 +57,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({ user, size }) => {
                     {assetType(user?.avatar) === AssetTypes.Audio &&
                         <HodlAudioBoxMini size={size} />
                     }
-                </Box>
+                </div>
             }
         </Avatar>
     </>)

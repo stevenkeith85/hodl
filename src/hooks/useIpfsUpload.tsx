@@ -1,58 +1,6 @@
 import axios from 'axios'
-import { HodlMetadata } from '../models/Metadata';
-
 
 export const useIpfsUpload = (): [Function, Function] => {
-  // const uploadToIpfs = async (
-  //   fileName: string,
-  //   {
-  //     name,
-  //     description,
-  //     image,
-  //     properties: {
-  //       asset: {
-  //         license,
-  //         mimeType,
-  //         uri
-  //       },
-  //       filter,
-  //       aspectRatio
-  //     }
-  //   }: HodlMetadata
-  // ) => {
-
-  //   try {
-  //     const r = await axios.post(
-  //       '/api/create/ipfs',
-  //       {
-  //         name,
-  //         description,
-  //         license,
-  //         fileName,
-  //         mimeType,
-  //         filter,
-  //         aspectRatio
-  //       },
-  //       {
-  //         headers: {
-  //           'Accept': 'application/json',
-  //           'Content-Type': 'application/json',
-  //         },
-  //       }
-  //     )
-
-  //     const { imageCid, metadataUrl } = r.data;
-  //     return { success: true, imageCid, metadataUrl };
-  //   } catch (error) {
-  //     if (error.response.status === 400 || error.response.status === 429) {
-  //       const { message } = error.response.data;
-  //       console.log(message);
-
-  //       return { success: false, imageCid: null, metadataUrl: null };
-  //     }
-  //   }
-  // }
-
   const uploadImageAndAsset = async (
     fileName: string,
     filter: string,
@@ -86,8 +34,8 @@ export const useIpfsUpload = (): [Function, Function] => {
     } catch (error) {
       if (error.response.status === 400 || error.response.status === 429) {
         // TODO: Report this somewhere (probably ui)
-        const { message } = error.response.data;
-        console.log('error uploading image and asset', message)
+        // const { message } = error.response.data;
+        
         return {
           success: false,
           imageCid: null,
@@ -136,8 +84,8 @@ export const useIpfsUpload = (): [Function, Function] => {
       };
     } catch (error) {
       if (error.response.status === 400 || error.response.status === 429) {
-        const { message } = error.response.data;
-        console.log(message);
+        // TODO
+        // const { message } = error.response.data;
 
         return { 
           success: false, 

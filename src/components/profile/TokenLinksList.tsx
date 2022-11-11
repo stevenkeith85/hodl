@@ -1,12 +1,21 @@
 import { SWRInfiniteResponse } from "swr/infinite/dist/infinite";
-
+import dynamic from 'next/dynamic';
 import InfiniteScroll from "react-swr-infinite-scroll";
 
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
-import { Likes } from "../Likes";
+
 import { TokenLink } from "../token/TokenLink";
 import { Token } from '../../models/Token';
 import theme from "../../theme";
+
+
+const Likes = dynamic(
+  () => import('../Likes').then(mod => mod.Likes),
+  {
+      ssr: false,
+      loading: () => null
+  }
+);
 
 
 interface TokenLinksListProps {

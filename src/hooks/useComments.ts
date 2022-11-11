@@ -56,7 +56,10 @@ export const useCommentCount = (
     const swr = useSWR(
          id ? [`/api/comments/count`, object, id] : null,
         fetchWithObjectAndId,
-        { fallbackData }
+        { 
+            revalidateOnMount: !fallbackData,
+            fallbackData 
+        }
     );
 
     return swr

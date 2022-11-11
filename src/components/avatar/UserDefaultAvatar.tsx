@@ -1,7 +1,5 @@
 import PersonIcon from '@mui/icons-material/Person';
-import {
-    Avatar
-} from "@mui/material";
+import Avatar from "@mui/material/Avatar";
 
 
 interface UserDefaultAvatarProps {
@@ -30,7 +28,7 @@ export const UserDefaultAvatar: React.FC<UserDefaultAvatarProps> = ({ size, font
                 bgcolor: (theme) => getColor(theme),
             }}
         >
-            <PersonIcon  sx={{ fontSize }} />
+            <PersonIcon sx={{ fontSize }} />
         </Avatar>
     )
 }

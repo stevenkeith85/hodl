@@ -1,33 +1,70 @@
+import dynamic from 'next/dynamic';
 import Link from "next/link";
 
-import Box from "@mui/material/Box";
 import Skeleton from "@mui/material/Skeleton";
 
 import { UserViewModel } from "../../models/User";
-import { UserHandle } from "./UserHandle";
-import { UserDefaultAvatar } from "./UserDefaultAvatar";
 
-import { UserAvatar } from "./UserAvatar";
 import { useUser } from "../../hooks/useUser";
+import theme from '../../theme';
+import { AvatarLoadingMemo } from './AvatarLoading';
+import { memo } from 'react';
 
 
-const UserAvatarAndHandleBody = ({ user, size, fontSize, handle, color }) => (<Box
-    sx={{
-        display: 'flex',
-        cursor: 'pointer'
-    }}
->
-        <Box
-            sx={{
+const UserAvatarAndHandleBody = ({ user, size, fontSize, handle, color }) => {
+
+    const UserAvatar = dynamic(
+        () => import('./UserAvatar').then(mod => mod.UserAvatar),
+        {
+            ssr: false,
+            loading: () => <AvatarLoadingMemo size={size} />
+        }
+    );
+
+    const UserDefaultAvatar = dynamic(
+        () => import('./UserDefaultAvatar').then(mod => mod.UserDefaultAvatar),
+        {
+            ssr: false,
+            loading: () => <AvatarLoadingMemo size={size} />
+        }
+    );
+
+    const UserHandle = dynamic(
+        () => import('./UserHandle').then(mod => mod.UserHandle),
+        {
+            ssr: false,
+            loading: () => <Skeleton variant="text" animation="wave" width={50}></Skeleton>
+        }
+    );
+    
+
+    return (
+        <div
+            style={{
                 display: 'flex',
-                alignItems: 'center',
-                gap: 2,
+                cursor: 'pointer'
             }}
         >
-            {user?.avatar ? <UserAvatar user={user} size={size} /> : <UserDefaultAvatar size={size} fontSize={size - 10} color={color} />}
-            {handle ? <UserHandle user={user} fontSize={fontSize} /> : null}
-        </Box>
-</Box>)
+            <div
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: theme.spacing(2),
+                }}
+            >
+                {
+                    user?.avatar ?
+                        <UserAvatar user={user} size={size} /> :
+                        <UserDefaultAvatar size={size} fontSize={size - 10} color={color} />
+                }
+                {
+                    handle ?
+                        <UserHandle user={user} fontSize={fontSize} /> : null
+                }
+            </div>
+        </div>
+    )
+}
 
 interface UserAvatarProps {
     address: string;
@@ -39,7 +76,7 @@ interface UserAvatarProps {
     color?: "primary" | "secondary" | "greyscale";
 }
 
-export const UserAvatarAndHandle: React.FC<UserAvatarProps> = ({
+export const UserAvatarAndHandle: React.FC<UserAvatarProps> = memo(({
     address,
     fallbackData = null,
     size = 44,
@@ -52,7 +89,7 @@ export const UserAvatarAndHandle: React.FC<UserAvatarProps> = ({
 
     if (!user) {
         return (<>
-            <Skeleton width={size} height={size} variant="circular" animation="wave"></Skeleton>
+            <AvatarLoadingMemo size={size} />
             {handle && <Skeleton width={100} height={14} variant="text" animation="wave"></Skeleton>}
         </>
         )
@@ -79,4 +116,6 @@ export const UserAvatarAndHandle: React.FC<UserAvatarProps> = ({
                 />
         }
     </>)
-}
+})
+
+UserAvatarAndHandle.displayName = "UserAvatarAndHandle"

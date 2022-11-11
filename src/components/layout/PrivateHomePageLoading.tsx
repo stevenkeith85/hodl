@@ -1,50 +1,31 @@
 import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import { Skeleton } from '@mui/material';
+
 import HodlFeedLoading from './HodlFeedLoading';
 import PrivateHomePageSidebarLoading from './PrivateHomePageSidebarLoading';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import theme from '../../theme';
+import PrivateHomePageSwitchLoading from './PrivateHomePageSwitchLoading';
 
 const PrivateHomePageLoading = ({ }) => {
 
-    const [viewSidebar] = useState(false);
+    const desktop = useMediaQuery(theme.breakpoints.up('md'));
 
     return (
         <>
-            <Box
-                sx={{
-                    display: {
-                        xs: 'flex',
-                        md: 'none'
-                    },
-                    justifyContent: 'right',
-                }}>
-                <Box
-                    sx={{
-                        display: 'flex',
-                        gap: 1,
-                        alignItems: 'center',
-                        marginTop: 1,
-                        marginX: {
-                            xs: 0,
-                            sm: 4
-                        }
-                    }}
-                >
-                    <Skeleton variant="rounded" animation="wave" width="35px" height="15px" sx={{ marginY: 2 }} />
-                </Box>
-            </Box>
+            {!desktop && <PrivateHomePageSwitchLoading />}
             <Grid container>
                 <Grid
+                    item
                     sx={{
                         display: {
-                            xs: !viewSidebar ? 'flex' : 'none',
-                            md: 'flex',
+                            display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center'
                         }
                     }}
-                    item xs={12}
+                    xs={12}
                     md={7}
                 >
                     <Box
@@ -67,22 +48,18 @@ const PrivateHomePageLoading = ({ }) => {
                                 sm: 4
                             },
                         }}>
+
                         <HodlFeedLoading />
                     </Box>
                 </Grid>
-                <Grid
-                    sx={{
-                        display: {
-                            xs: viewSidebar ? 'block' : 'none',
-                            md: 'block'
-                        }
-                    }}
+                {desktop && <Grid
                     item
                     xs={12}
                     md={5}
                 >
-                    <PrivateHomePageSidebarLoading />
+                    <PrivateHomePageSidebarLoading display={desktop} />
                 </Grid>
+                }
             </Grid>
         </>
     )

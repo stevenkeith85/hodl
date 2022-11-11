@@ -1,17 +1,21 @@
-import { useTheme } from "@mui/material/styles";
-
-import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
+import { HodlFeedItemLoading } from "../feed/HodlFeedItemLoading";
 
 export default function HodlFeedLoading() {
-    const theme = useTheme();
     return (
-        <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            padding: theme.spacing(2)
-        }}
+        <Box
+            id="hodlfeed"
+            sx={{
+                gap: {
+                    xs: 2,
+                    sm: 4
+                }
+            }}
+            display="flex"
+            flexDirection="column"
         >
-            <CircularProgress size={22} sx={{ margin: 2, color: '#ddd' }} />
-        </div>
+            <HodlFeedItemLoading />
+            <HodlFeedItemLoading />
+        </Box>
     )
 }
