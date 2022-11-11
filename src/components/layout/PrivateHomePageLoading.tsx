@@ -57,7 +57,7 @@ const PrivateHomePageLoading = ({ }) => {
                     xs={12}
                     md={5}
                 >
-                    <PrivateHomePageSidebarLoading />
+                    <PrivateHomePageSidebarLoading display={desktop} />
                 </Grid>
                 }
             </Grid>
