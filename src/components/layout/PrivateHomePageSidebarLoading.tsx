@@ -3,10 +3,10 @@ import HodlProfileBadgeLoading from './HodlProfileBadgeLoading';
 import Box from '@mui/material/Box';
 
 
-export default function PrivateHomePageSidebarLoading() {
+export default function PrivateHomePageSidebarLoading({display}) {
     return (
         <Box
-            display="flex"
+            display={display ? 'flex': 'none'}
             flexDirection="column"
             sx={{
                 marginY: {

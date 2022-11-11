@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 
 import Box from '@mui/material/Box';
-import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Grid';
 
 import { UserViewModel } from '../../models/User';
@@ -16,6 +15,7 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { ActionSet } from '../../models/HodlAction';
 import { useActions } from '../../hooks/useActions';
+import PrivateHomePageSwitchLoading from './PrivateHomePageSwitchLoading';
 
 
 // import { delayForDemo } from '../../lib/utils';
@@ -28,19 +28,13 @@ const HodlFeed = dynamic(
     }
 );
 
-const PrivateHomePageSidebar = dynamic(
-    () => import('./PrivateHomePageSidebar'),
-    {
-        ssr: false,
-        loading: () => <PrivateHomePageSidebarLoading />
-    }
-);
+
 
 const PrivateHomePageSwitch = dynamic(
     () => import('./PrivateHomePageSwitch'),
     {
         ssr: false,
-        loading: () => <PrivateHomePageSidebarLoading />
+        loading: () => <PrivateHomePageSwitchLoading />
     }
 );
 
@@ -52,13 +46,21 @@ interface PrivateHomePageProps {
 const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
     const limit = 8; // number of feed items to fetch
     const theme = useTheme();
-    
-    const desktop = useMediaQuery(theme.breakpoints.up('md'));
+
+    const desktop = useMediaQuery(theme.breakpoints.up('md'), { noSsr: true });
 
     const [viewSidebar, setViewSidebar] = useState(false);
 
     const previousNearestToTop = useRef(null);
     const nearestToTop = useRef(null);
+
+    const PrivateHomePageSidebar = dynamic(
+        () => import('./PrivateHomePageSidebar'),
+        {
+            ssr: false,
+            loading: () => <PrivateHomePageSidebarLoading display={desktop || viewSidebar}/>
+        }
+    );
 
     const updateNearestToTop = () => {
         previousNearestToTop.current = nearestToTop.current;
@@ -119,7 +121,7 @@ const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
 
     return (
         <>
-            {!desktop && <PrivateHomePageSwitch viewSidebar={viewSidebar} setViewSidebar={setViewSidebar} />}
+            {!desktop && <PrivateHomePageSwitch viewSidebar={viewSidebar} setViewSidebar={setViewSidebar}/>}
             <Grid container>
                 <Grid
                     item
@@ -133,7 +135,7 @@ const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
                     xs={12}
                     md={7}
                 >
-                    {feed &&
+                    {(desktop || !viewSidebar) &&
                         <Box
                             sx={{
                                 width: '100%',
@@ -154,8 +156,9 @@ const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
                                     sm: 4
                                 },
                             }}>
-
-                            <HodlFeed feed={feed} limit={limit} />
+                            {feed &&
+                                <HodlFeed feed={feed} limit={limit} />
+                            }
                         </Box>
                     }
                 </Grid>

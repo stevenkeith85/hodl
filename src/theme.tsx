@@ -61,6 +61,11 @@ let theme = createTheme({
     },
   },
   components: {
+    MuiUseMediaQuery: {
+      defaultProps: {
+        noSsr: true,
+      },
+    },
     MuiTypography: {
       styleOverrides: {
         root: {
