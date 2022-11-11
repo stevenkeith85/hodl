@@ -41,7 +41,7 @@ export const HodlImageResponsive = ({
     return (
         <>
             <Head>
-                {/* {lcp ?
+                {lcp ?
                     <link
                         // @ts-ignore
                         fetchpriority="high"
@@ -64,7 +64,7 @@ export const HodlImageResponsive = ({
                         // @ts-ignore
                         imagesizes={sizes}
                     />
-                } */}
+                }
             </Head>
             <div
                 style={{
