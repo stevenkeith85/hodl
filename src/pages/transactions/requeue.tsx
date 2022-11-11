@@ -75,7 +75,6 @@ export default function Transaction({ address }) {
         } catch (e) {
             setErrorMessage(e.response.data.message)
             setFailureModalOpen(true);
-            console.log(e)
         }
     }
     return (
