@@ -34,24 +34,24 @@ body {
 
 /* firefox */
 body {
-  scrollbar-width: 10px;
+  scrollbar-width: 12px;
 }
 /* chrome, edge, safari */
 body::-webkit-scrollbar {
-  width: 10px;
+  width: 12px;
 }
 
 /* other scrollbars */
 
 /* firefox */
 * {
-  scrollbar-width: 6px;
+  scrollbar-width: 8px;
   scrollbar-color: #ddd #eee;
 }
 
 /* chrome, edge, safari */
 *::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 *::-webkit-scrollbar-track {
@@ -60,7 +60,7 @@ body::-webkit-scrollbar {
 
 *::-webkit-scrollbar-thumb {
   background-color: #ddd;
-  border-radius: 6px;
+  border-radius: 8px;
   border: 1px solid #bbb;
 }
 

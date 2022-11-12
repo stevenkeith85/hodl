@@ -12,8 +12,9 @@ export const HodlFeedItemLoading = ({ }) => {
             className={'feedItem'}
             display="flex"
             flexDirection="column"
-            gap={2}
             sx={{
+                gap: 2,
+                marginBottom: 2,
                 borderRadius: 1,
                 padding:
                 {

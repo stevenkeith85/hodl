@@ -34,7 +34,8 @@ export const runRedisPipeline = async (cmds): Promise<boolean> => {
       headers: {
         Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
       },
-      body: JSON.stringify(cmds)
+      body: JSON.stringify(cmds),
+      keepalive: true,
     }
     )
 

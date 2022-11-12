@@ -1,3 +1,4 @@
+import { chunk } from "../../lodash";
 import { runRedisPipeline } from "./databaseUtils";
 
 
@@ -40,8 +41,30 @@ export const mGetTokensCommentCounts = async (tokenIds: string[]) => {
   }
 }
 
+export const mGetTokenAndCommentCount = async (tokenIds: string[]) => {
+  try {
+    const tokenAndComments = tokenIds.map(id => `token:${id}/token:${id}:comments:count`).join('/')
+
+    const r = await fetch(
+      `${process.env.UPSTASH_REDIS_REST_URL}/mget/${tokenAndComments}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
+        },
+        keepalive: true
+      });
+
+    const data = await r.json();
+
+    return data?.result?.map(item => JSON.parse(item));
+  } catch (e) {
+    console.log(e)
+  }
+}
 
 export const getTokenVMs = async (tokenIds: string[]) => {
+  // const start = Date.now();
+
   if (tokenIds.length === 0) {
     return [];
   }
@@ -49,18 +72,21 @@ export const getTokenVMs = async (tokenIds: string[]) => {
   const cmds = tokenIds.map(id => ['zcard', `likes:token:${id}`])
 
   const likeCountsPromise = runRedisPipeline(cmds);
-  const commentCountsPromise = mGetTokensCommentCounts(tokenIds);
-  const tokensPromise = mGetTokens(tokenIds);
+  const tokenAndCommentCountPromise = mGetTokenAndCommentCount(tokenIds)
   
+  const [likeCounts, tokenAndCommentCount] = await Promise.all([likeCountsPromise, tokenAndCommentCountPromise])
 
-  const [likeCounts, commentCounts, tokens] = await Promise.all([likeCountsPromise, commentCountsPromise, tokensPromise])
+  const tokens = chunk(tokenAndCommentCount, 2);
 
-  tokens.map((token, index) => {
+  // console.log('tokens', tokens);
+  const result = tokens.map(([token, commentCount], index) => {
     token.likeCount = likeCounts[index];
-    token.commentCount = commentCounts[index];
+    token.commentCount = commentCount;
     return token
   })
 
-  return tokens;
+  // const stop = Date.now();
+  // console.log('get token vms', stop - start);
 
+  return result;
 }

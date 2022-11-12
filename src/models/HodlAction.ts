@@ -76,7 +76,7 @@ export interface HodlActionViewModel {
     subject: string; // the wallet address that took the action. (i.e. the user)
 
     // This is basically a pointer to what the action was on
-    object: "token" | "comment" | "address"; // the type that was interacted with. We should change "address" to "user" to be more consistent with our terminology / allow us to share types over the app (DDD)
+    object?: "token" | "comment" | "address"; // the type that was interacted with. We should change "address" to "user" to be more consistent with our terminology / allow us to share types over the app (DDD)
     objectId?: number | string; // if object is (token | comment) then it will a numeric id (e.g. liked a token); otherwise it will be a wallet address (e.g. followed an address)
 
     // The user who took the action

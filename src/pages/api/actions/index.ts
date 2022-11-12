@@ -70,13 +70,28 @@ export const getActions = async (
     total: number
   }> => {
 
-  console.log('address, set, offset, limit', address, set, offset, limit)
+  // console.log('address, set, offset, limit', address, set, offset, limit)
 
   if (!address) {
     return null;
   }
 
-  const total = await client.zcard(`user:${address}:${set}`);
+
+  // const zcardStart = Date.now();
+
+  const zcardResponse = await fetch(
+    `${process.env.UPSTASH_REDIS_REST_URL}/zcard/user:${address}:${set}`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
+      },
+      keepalive: true
+    });
+
+  const { result: total } = await zcardResponse.json();
+
+  // const zcardStop = Date.now()
+  // console.log('zcard time taken', zcardStop - zcardStart);
 
   // ZRANGE: Out of range indexes do not produce an error.
   // So we need to check here and return if we are about to do an out of range search
@@ -88,7 +103,7 @@ export const getActions = async (
     };
   }
 
-  const zrangeStart = Date.now();
+  // const zrangeStart = Date.now();
 
   // Get the action ids
   const idsResponse = await fetch(
@@ -96,19 +111,22 @@ export const getActions = async (
     {
       headers: {
         Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-      }
+      },
+      keepalive: true,
     });
 
   const { result: ids } = await idsResponse.json();
 
-  const zrangeStop = Date.now()
-  console.log('zrange time taken', zrangeStop - zrangeStart);
+  // const zrangeStop = Date.now()
+  // console.log('zrange time taken', zrangeStop - zrangeStart);
 
   // Get the actions
-  const mgetStart = Date.now();
+  // const mgetStart = Date.now();
+
   const actions = ids.length ? await mGetActions(ids) : [];
-  const mgetStop = Date.now()
-  console.log('mget time taken', mgetStop - mgetStart);
+  
+  // const mgetStop = Date.now()
+  // console.log('mget time taken', mgetStop - mgetStart);
 
   // Each action has a subject. This is the address of the user who took the action
   const addresses: string[] = actions.map(action => action.subject);
@@ -159,15 +177,18 @@ export const getActions = async (
   const result = actions.map(action => {
 
     const actionVM: HodlActionViewModel = {
-      id: action.id,
       user: userMap[action.subject],
       timestamp: action.timestamp,
-      object: action.object,
-      objectId: action.objectId,
       action: action.action,
       subject: action.subject,
       metadata: action.metadata || null
     };
+
+    if (set === ActionSet.Notifications) {
+        actionVM.id = action.id;
+        actionVM.object = action.object;
+        actionVM.objectId = action.objectId;
+    }
 
     if (action.object === "token") {
       actionVM.token = tokenMap[action.objectId];
