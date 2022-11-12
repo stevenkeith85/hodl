@@ -15,18 +15,18 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import PrivateHomePageSwitchLoading from './PrivateHomePageSwitchLoading';
 import { useActions2 } from '../../hooks/useActions2';
-import { HodlFeed2 } from '../feed/HodlFeed2';
+// import { HodlFeed2 } from '../feed/HodlFeed2';
 
 
 // import { delayForDemo } from '../../lib/utils';
-// const HodlFeed2 = dynamic(
-//     () => import('../feed/HodlFeed2').then(mod => mod.HodlFeed2),
-//     // () => delayForDemo(import('../HodlProfileBadge').then(mod => mod.HodlProfileBadge)),
-//     {
-//         ssr: false,
-//         loading: () => <HodlFeedLoading />
-//     }
-// );
+const HodlFeed2 = dynamic(
+    () => import('../feed/HodlFeed2').then(mod => mod.HodlFeed2),
+    // () => delayForDemo(import('../HodlProfileBadge').then(mod => mod.HodlProfileBadge)),
+    {
+        ssr: false,
+        loading: () => <HodlFeedLoading />
+    }
+);
 
 
 
