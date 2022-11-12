@@ -8,7 +8,6 @@ export const useActions2 = (limit = 14) : [any [], number, number, Function]=> {
   const [next, setNext] = useState(0);
   const [total, setTotal] = useState(null);
 
-  // TODO: can we still use SWR?
   const fetch = () => {
     if (next > total) {
       return;

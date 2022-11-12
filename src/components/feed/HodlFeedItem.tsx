@@ -1,4 +1,4 @@
-import { FC, useContext, useLayoutEffect, useRef } from "react";
+import { FC, memo, useContext, useLayoutEffect, useRef } from "react";
 
 import Link from "next/link";
 import dynamic from 'next/dynamic';
@@ -53,13 +53,99 @@ const ProfileNameOrAddress = dynamic(
     }
 );
 
+interface FeedItemActionProps{
+    action: ActionTypes;
+    price: string;
+}
+export const FeedItemAction: FC<FeedItemActionProps> = memo(({action, price}) => (<>
+    {action === ActionTypes.Listed &&
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                textAlign: 'right',
+                fontFamily: theme => theme.logo.fontFamily,
+                color: theme => theme.palette.secondary.main
+            }}>
+            <Typography>listed</Typography>
+        </Box>
+    }
+    {action === ActionTypes.Bought &&
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                textAlign: 'right',
+                fontFamily: theme => theme.logo.fontFamily,
+                color: theme => theme.palette.secondary.main
+            }}>
+            <Typography>sold</Typography>
+            {
+                price &&
+                <MaticPrice
+                    price={price}
+                    color="black"
+                    size={14}
+                    fontSize={14}
+                />
+            }
+        </Box>
+    }
+    {action === ActionTypes.Delisted &&
+        <Box
+            sx={{
+                textAlign: 'right',
+                fontFamily: theme => theme.logo.fontFamily,
+                color: theme => theme.palette.secondary.main
+            }}>
+            delisted
+        </Box>
+    }
+    {action === ActionTypes.Added &&
+        <Box
+            sx={{
+                textAlign: 'right',
+                fontFamily: theme => theme.logo.fontFamily,
+                color: theme => theme.palette.primary.main,
+                fontSize: {
+                    xs: 12,
+                    sm: 14
+                }
+            }}>
+            new
+        </Box>
+    }</>
+));
+FeedItemAction.displayName = "FeedItemAction"
+
+interface FeedItemBodyProps {
+    action: ActionTypes;
+    id: number;
+    name: string;
+    description: string;
+}
+export const FeedItemBody: FC<FeedItemBodyProps> = memo(({ action, id, name, description }) => (
+    <div>
+        <Link href={action === ActionTypes.Listed ? `/nft/${id}?tab=1` : `/nft/${id}`}>
+            <Typography sx={{ fontWeight: 600 }}>
+                {name}
+            </Typography>
+        </Link>
+        <Box sx={{ whiteSpace: 'pre-line' }}>
+            {
+                insertTagLinks(description)
+            }
+        </Box>
+    </div>
+));
+
+FeedItemBody.displayName = "FeedItemBody"
+
 interface HodlFeedItemProps {
     item: HodlActionViewModel;
-    index?: number;
-    setItemSize?: Function;
 }
 
-export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item, index, setItemSize }) => {
+export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
     const { address } = useContext(WalletContext);
 
     if (!item) {
@@ -131,63 +217,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item, index, setItemSize }
                                             </Typography>
                                         </NoSsr>
                                     </Box>
-                                    {item.action === ActionTypes.Listed &&
-                                        <Box
-                                            sx={{
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                textAlign: 'right',
-                                                fontFamily: theme => theme.logo.fontFamily,
-                                                color: theme => theme.palette.secondary.main
-                                            }}>
-                                            <Typography>listed</Typography>
-                                        </Box>
-                                    }
-                                    {item.action === ActionTypes.Bought &&
-                                        <Box
-                                            sx={{
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                textAlign: 'right',
-                                                fontFamily: theme => theme.logo.fontFamily,
-                                                color: theme => theme.palette.secondary.main
-                                            }}>
-                                            <Typography>sold</Typography>
-                                            {
-                                                item?.metadata?.price &&
-                                                <MaticPrice
-                                                    price={item?.metadata?.price}
-                                                    color="black"
-                                                    size={14}
-                                                    fontSize={14}
-                                                />
-                                            }
-                                        </Box>
-                                    }
-                                    {item.action === ActionTypes.Delisted &&
-                                        <Box
-                                            sx={{
-                                                textAlign: 'right',
-                                                fontFamily: theme => theme.logo.fontFamily,
-                                                color: theme => theme.palette.secondary.main
-                                            }}>
-                                            delisted
-                                        </Box>
-                                    }
-                                    {item.action === ActionTypes.Added &&
-                                        <Box
-                                            sx={{
-                                                textAlign: 'right',
-                                                fontFamily: theme => theme.logo.fontFamily,
-                                                color: theme => theme.palette.primary.main,
-                                                fontSize: {
-                                                    xs: 12,
-                                                    sm: 14
-                                                }
-                                            }}>
-                                            new
-                                        </Box>
-                                    }
+                                   <FeedItemAction action={item.action} price={item?.metadata?.price}/>
                                 </Box>
                             </Box>
                         </Box>
@@ -224,30 +254,12 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item, index, setItemSize }
                         />
                     </div>
                     }
-                    <div>
-                        <Link
-                            href={
-                                item.action === ActionTypes.Listed ?
-                                    `/nft/${item?.token?.id}?tab=1` :
-                                    `/nft/${item?.token?.id}`
-                            }
-                        >
-                            <Typography
-                                sx={{
-                                    fontWeight: 600
-                                }}>
-                                {item.token?.name}
-                            </Typography>
-                        </Link>
-                        <Box
-                            sx={{
-                                whiteSpace: 'pre-line'
-                            }}>
-                            {
-                                insertTagLinks(item.token?.description)
-                            }
-                        </Box>
-                    </div>
+                    <FeedItemBody
+                        action={item.action}
+                        description={item.token.description}
+                        id={item.token.id}
+                        name={item.token.name}
+                    />
                 </Box>}
         </>
     )
