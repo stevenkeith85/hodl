@@ -1,6 +1,6 @@
 {
 	"functions": {
-		"api/actions/index": {
+		"src/api/actions/index.ts": {
 			"memory": 3008
 		}
 	}
