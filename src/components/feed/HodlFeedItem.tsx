@@ -153,7 +153,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
     }
 
     return (
-        <>
+        <Box sx={{ paddingBottom: 2}}>
             {
                 <Box
                     className={`feedItem`}
@@ -161,7 +161,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                     flexDirection="column"
                     sx={{
                         gap: 2,
-                        marginBottom: 2,
+                        // marginBottom: 2,
                         borderRadius: 1,
                         padding: {
                             xs: 1.5,
@@ -261,6 +261,6 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                         name={item.token.name}
                     />
                 </Box>}
-        </>
+        </Box>
     )
 }
