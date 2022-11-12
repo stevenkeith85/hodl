@@ -13,20 +13,20 @@ import PrivateHomePageSidebarLoading from './PrivateHomePageSidebarLoading';
 
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { ActionSet } from '../../models/HodlAction';
-import { useActions } from '../../hooks/useActions';
 import PrivateHomePageSwitchLoading from './PrivateHomePageSwitchLoading';
+import { useActions2 } from '../../hooks/useActions2';
+import { HodlFeed2 } from '../feed/HodlFeed2';
 
 
 // import { delayForDemo } from '../../lib/utils';
-const HodlFeed = dynamic(
-    () => import('../feed/HodlFeed').then(mod => mod.HodlFeed),
-    // () => delayForDemo(import('../HodlProfileBadge').then(mod => mod.HodlProfileBadge)),
-    {
-        ssr: false,
-        loading: () => <HodlFeedLoading />
-    }
-);
+// const HodlFeed2 = dynamic(
+//     () => import('../feed/HodlFeed2').then(mod => mod.HodlFeed2),
+//     // () => delayForDemo(import('../HodlProfileBadge').then(mod => mod.HodlProfileBadge)),
+//     {
+//         ssr: false,
+//         loading: () => <HodlFeedLoading />
+//     }
+// );
 
 
 
@@ -116,9 +116,7 @@ const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
             window.removeEventListener('scroll', fn);
         };
     }, []);
-
-    const { actions: feed } = useActions(true, ActionSet.Feed, limit);
-
+    
     return (
         <>
             {!desktop && <PrivateHomePageSwitch viewSidebar={viewSidebar} setViewSidebar={setViewSidebar}/>}
@@ -156,9 +154,7 @@ const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
                                     sm: 4
                                 },
                             }}>
-                            {feed &&
-                                <HodlFeed feed={feed} limit={limit} />
-                            }
+                            <HodlFeed2 />
                         </Box>
                     }
                 </Grid>

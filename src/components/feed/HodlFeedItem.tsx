@@ -1,4 +1,4 @@
-import { FC, useContext } from "react";
+import { FC, useContext, useLayoutEffect, useRef } from "react";
 
 import Link from "next/link";
 import dynamic from 'next/dynamic';
@@ -49,29 +49,35 @@ const ProfileNameOrAddress = dynamic(
     () => import('../avatar/ProfileNameOrAddress').then(mod => mod.ProfileNameOrAddress),
     {
         ssr: false,
-        loading: () => <Skeleton variant="text" animation="wave" width={50}  />
+        loading: () => <Skeleton variant="text" animation="wave" width={50} />
     }
 );
 
 interface HodlFeedItemProps {
     item: HodlActionViewModel;
+    index?: number;
+    setItemSize?: Function;
 }
 
-export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
+export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item, index, setItemSize }) => {
     const { address } = useContext(WalletContext);
+
+    if (!item) {
+        return null;
+    }
 
     return (
         <>
             {
                 <Box
-                    className={'feedItem'}
+                    className={`feedItem`}
                     display="flex"
                     flexDirection="column"
-                    gap={2}
                     sx={{
+                        gap: 2,
+                        marginBottom: 2,
                         borderRadius: 1,
-                        padding:
-                        {
+                        padding: {
                             xs: 1.5,
                             sm: 2
                         },
@@ -92,9 +98,9 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                             gap={1.5}
                         >
                             <UserAvatarAndHandle
-                                address={item.subject}
+                                address={item?.subject}
                                 handle={false}
-                                fallbackData={item.user}
+                                fallbackData={item?.user}
                             />
                             <Box
                                 flexGrow={1}
@@ -210,9 +216,9 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                         }
                     </Box>
                     {item.token && <div style={{ height: '20px' }}>
-                        <TokenActionBox 
-                            nft={item?.token} 
-                            popUp={true} 
+                        <TokenActionBox
+                            nft={item?.token}
+                            popUp={true}
                             prefetchedLikeCount={item?.token?.likeCount}
                             prefetchedCommentCount={item?.token?.commentCount}
                         />
@@ -222,8 +228,8 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                         <Link
                             href={
                                 item.action === ActionTypes.Listed ?
-                                    `/nft/${item.token.id}?tab=1` :
-                                    `/nft/${item.token.id}`
+                                    `/nft/${item?.token?.id}?tab=1` :
+                                    `/nft/${item?.token?.id}`
                             }
                         >
                             <Typography

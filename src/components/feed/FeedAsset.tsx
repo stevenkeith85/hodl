@@ -17,7 +17,9 @@ interface FeedAssetProps {
 export const FeedAsset: React.FC<FeedAssetProps> = ({ item }) => {
     const [loading, setLoading] = useState(true);
 
-    const asset = <div>
+    const asset = <div
+        style={{ position: 'relative' }}
+    >
         <div>
             {
                 (assetType(item.token) === AssetTypes.Image) &&

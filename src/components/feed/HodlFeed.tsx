@@ -27,6 +27,12 @@ const HodlImpactAlert = dynamic(
 );
 
 export const HodlFeed = ({ feed, limit = 8 }) => {
+
+    const isReachingEnd = swr => {
+        return swr.data?.[0]?.items?.length == 0 ||
+            swr.data?.[swr.data?.length - 1]?.items?.length < limit
+    }
+
     return (
         <FeedContext.Provider value={{ feed }}>
             <Box
@@ -50,14 +56,8 @@ export const HodlFeed = ({ feed, limit = 8 }) => {
                 }
                 <InfiniteScroll
                     swr={feed}
-                    loadingIndicator={
-                        <HodlFeedLoading />
-                    }
-                    isReachingEnd={swr => {
-                        return swr.data?.[0]?.items?.length == 0 ||
-                            swr.data?.[swr.data?.length - 1]?.items?.length < limit
-                    }
-                    }
+                    loadingIndicator={<HodlFeedLoading />}
+                    isReachingEnd={isReachingEnd}
                 >
                     {
                         ({ items }) =>

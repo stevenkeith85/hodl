@@ -3,19 +3,10 @@ import { HodlFeedItemLoading } from "../feed/HodlFeedItemLoading";
 
 export default function HodlFeedLoading() {
     return (
-        <Box
-            id="hodlfeed"
-            sx={{
-                gap: {
-                    xs: 2,
-                    sm: 4
-                }
-            }}
-            display="flex"
-            flexDirection="column"
-        >
+        <div>
             <HodlFeedItemLoading />
             <HodlFeedItemLoading />
-        </Box>
+            <HodlFeedItemLoading />
+        </div>
     )
 }
