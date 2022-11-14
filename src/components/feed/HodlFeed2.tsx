@@ -20,7 +20,7 @@ export const HodlFeed2 = () => {
             data={swr?.data}
             overscan={700}
             endReached={loadMore}
-            itemContent={(index, page) => page?.items.map(item => <HodlFeedItem item={item} />) 
+            itemContent={(index, page) => page?.items.map((item, i) => <HodlFeedItem key={i} item={item} />) 
         }
         />
     </>)
