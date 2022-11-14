@@ -1,7 +1,7 @@
-import { CloudSyncOutlined, Crop } from "@mui/icons-material";
+import { Crop } from "@mui/icons-material";
 import { Box, Button, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 
 
 export const CropAssetAction = ({
@@ -24,7 +24,7 @@ export const CropAssetAction = ({
       textAlign="center"
       gap={4}
     >
-      <Crop sx={{ fontSize: 50, color: grey[400] }} />
+      <Crop sx={{ fontSize: {xs: 36, sm: 40 }, color: grey[400] }} />
       <Typography
         sx={{
           fontSize: '18px',

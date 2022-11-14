@@ -92,9 +92,9 @@ export const MintTokenAction: FC<MintProps> = ({
         alignItems="center"
         justifyContent="center"
         textAlign="center"
-        gap={5}
+        gap={4}
       >
-        <CloudSyncOutlinedIcon sx={{ fontSize: 50, color: grey[400] }} />
+        <CloudSyncOutlinedIcon sx={{ fontSize: { xs: 36, sm: 40 }, color: grey[400] }} />
         <Typography
           sx={{
             fontSize: '18px',

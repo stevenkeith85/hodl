@@ -1,5 +1,7 @@
-import Skeleton from '@mui/material/Skeleton';
 import React from 'react';
+
+import { HodlCommentsBoxLoading } from '../comments/HodlCommentsBoxLoading';
+import { TokenNameAndDescriptionLoading } from './TokenNameAndDescriptionLoading';
 
 const SocialTabLoading = ({ }) => (
     <div
@@ -8,16 +10,8 @@ const SocialTabLoading = ({ }) => (
             padding: '16px',
             border: `1px solid #ddd`
         }}>
-        <div
-            style={{
-                marginBottom: '16px',
-                position: 'relative',
-                paddingBottom: 2,
-            }}
-        >
-            <Skeleton variant="rectangular" width="100%" height="100px" animation="wave" />   
-        </div>
-        <Skeleton variant="rectangular" width="100%" height="300px" animation="wave" />
+        <TokenNameAndDescriptionLoading />
+        <HodlCommentsBoxLoading />
     </div>
 )
 

@@ -8,13 +8,13 @@ export const MintProgressButtons = ({ stepComplete, activeStep, setActiveStep, l
   const isVideo = mimeType => mimeType && mimeType.indexOf('video') !== -1;
   const isGif = mimeType => mimeType && mimeType.indexOf('gif') !== -1;
 
-  if (activeStep === 4) {
+  if (activeStep === 4  || stepComplete === -1) {
     return null;
   }
 
   return (
     <>
-      {stepComplete >= 0 && activeStep > 0 && <Fab
+      {stepComplete >= 0 && stepComplete < 2 && activeStep > 0 && <Fab
         size="small"
         color="secondary"
         sx={{
