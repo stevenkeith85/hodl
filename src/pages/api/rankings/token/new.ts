@@ -2,6 +2,8 @@ import { Token } from "../../../../models/Token";
 import { mGetTokens } from "../../../../lib/database/rest/Tokens";
 import { getAsString } from "../../../../lib/getAsString";
 import { NextRequest, NextResponse } from 'next/server';
+import { zCard } from "../../../../lib/database/rest/zCard";
+import { zRange } from "../../../../lib/database/rest/zRange";
 
 
 export const getNewTokens = async (
@@ -13,15 +15,8 @@ export const getNewTokens = async (
     next: number,
     total: number
   }> => {
-  const zcardResponse = await fetch(
-    `${process.env.UPSTASH_REDIS_REST_URL}/zcard/tokens:new`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-      }
-    });
 
-  const { result: total } = await zcardResponse.json();
+  const total = await zCard('tokens:new');
 
   if (offset >= total) {
     return {
@@ -31,15 +26,7 @@ export const getNewTokens = async (
     };
   }
 
-  const idsResponse = await fetch(
-    `${process.env.UPSTASH_REDIS_REST_URL}/zrange/tokens:new/${offset}/${offset + limit - 1}/rev`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-      }
-    });
-
-  const { result: ids } = await idsResponse.json();
+  const ids = await zRange(`tokens:new`, offset, offset + limit - 1, {rev:true})
   const tokens = await mGetTokens(ids);
 
   return {

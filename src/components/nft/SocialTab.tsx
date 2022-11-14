@@ -1,12 +1,29 @@
-import {
-    Box,
-    Typography
-} from "@mui/material";
-
+import Box from "@mui/material/Box";
+import Skeleton from "@mui/material/Skeleton";
+import dynamic from "next/dynamic";
 
 import React from 'react';
-import { HodlCommentsBox } from "../../components/comments/HodlCommentsBox";
-import { insertTagLinks } from "../../lib/templateUtils";
+
+import { HodlCommentsBoxLoading } from "../comments/HodlCommentsBoxLoading";
+import { TokenNameAndDescriptionLoading } from "./TokenNameAndDescriptionLoading";
+
+
+
+const TokenNameAndDescription = dynamic(
+    () => import('./TokenNameAndDescription').then(mod => mod.TokenNameAndDescription),
+    {
+      ssr: false,
+      loading: () => <TokenNameAndDescriptionLoading />
+    }
+  );
+  
+  const HodlCommentsBox = dynamic(
+    () => import("../../components/comments/HodlCommentsBox").then(mod => mod.HodlCommentsBox),
+    {
+      ssr: false,
+      loading: () => <HodlCommentsBoxLoading />
+    }
+  );
 
 
 const SocialTab = ({ nft, limit }) => (
@@ -19,17 +36,7 @@ const SocialTab = ({ nft, limit }) => (
             },
             border: `1px solid #ddd`
         }}>
-        <Box
-            marginBottom={2}
-            sx={{
-                position: 'relative',
-                paddingBottom: 2,
-                borderBottom: `1px solid #ddd`
-            }}
-        >
-            <Typography mb={1} sx={{ fontWeight: 600 }}>{nft.name}</Typography>
-            <Box sx={{ whiteSpace: 'pre-line' }}>{insertTagLinks(nft.description)}</Box>
-        </Box>
+        <TokenNameAndDescription nft={nft} />
         <HodlCommentsBox limit={limit} />
     </Box>
 )

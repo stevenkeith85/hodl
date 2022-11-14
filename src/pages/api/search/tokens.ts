@@ -19,7 +19,7 @@ export const getTokenSearchResults = async (
         let ids = []
         let total = 0;
 
-        const tag = q.toLowerCase();
+        const tag = q?.toLowerCase();
 
         let tokens;
 

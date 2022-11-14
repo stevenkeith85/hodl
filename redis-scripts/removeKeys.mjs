@@ -1,4 +1,3 @@
-// import { Redis } from '@upstash/redis';
 import { Redis } from "@upstash/redis/with-fetch";
 import dotenv from 'dotenv'
 

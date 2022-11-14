@@ -186,7 +186,6 @@ const NftDetail = ({
               }}>
               <div hidden={value !== 0}>
                 {nft && <SocialTab nft={nft} limit={limit} />}
-                {/* <SocialTabLoading /> */}
               </div>
               <div hidden={value !== 1}>
                 {nft && <MarketTab mutableToken={mutableToken} nft={nft} />}

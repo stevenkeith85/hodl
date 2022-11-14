@@ -30,9 +30,9 @@ export const HodlDropzone = ({ onDrop, loading }) => {
     return (
         <Box
             sx={{
-                borderRadius: 1,
+                // borderRadius: 1,
                 overflow: 'hidden',
-                padding: 2,
+                // padding: 2,
                 margin: 0,
                 cursor: 'pointer',
             }}
@@ -45,16 +45,20 @@ export const HodlDropzone = ({ onDrop, loading }) => {
                     alignItems="center"
                     justifyContent="center"
                     textAlign="center"
-                    gap={3}
+                    gap={4}
                 >
-                    <Box display="flex" gap={2}>
-                    
+                    <Box
+                        display="flex"
+                        gap={{ xs: 1, sm: 2 }}
+                    // sx={{ background: 'yellow'}}
+                    >
+
                         <PhotoOutlinedIcon
                             color="secondary"
                             sx={{
                                 fontSize: {
-                                    xs: 40,
-                                    sm: 50
+                                    xs: 36,
+                                    sm: 40
                                 }
                             }}
                         />
@@ -63,8 +67,8 @@ export const HodlDropzone = ({ onDrop, loading }) => {
                                 color="secondary"
                                 sx={{
                                     fontSize: {
-                                        xs: 40,
-                                        sm: 50
+                                        xs: 36,
+                                        sm: 40
                                     }
                                 }}
                             /></Tooltip>
@@ -73,24 +77,26 @@ export const HodlDropzone = ({ onDrop, loading }) => {
                                 color="secondary"
                                 sx={{
                                     fontSize: {
-                                        xs: 40,
-                                        sm: 50
+                                        xs: 36,
+                                        sm: 40
                                     }
                                 }}
                             /></Tooltip>
                     </Box>
                     <Typography
                         sx={{
-                            marginY: 1,
+                            // background: 'yellow',
                             color: theme => theme.palette.text.secondary,
                             fontSize: {
-                                xs: 16,
-                                sm: 18
+                                xs: 14,
+                                sm: 16
                             }
                         }}>
-                        Image <br></br>Video ( &#8804; 15s ) or Audio ( &#8804; 60s )
+                        Image, video (&#8804; 15s) or audio (&#8804; 60s)
                     </Typography>
-                    <div>
+                    <div
+                    // style={{ background: 'yellow',}}
+                    >
                         <Button
                             disabled={loading}
                             color="primary"
