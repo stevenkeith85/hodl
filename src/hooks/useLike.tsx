@@ -24,7 +24,15 @@ export const useLike = (
     if (!address) {
       return;
     }
-    likeCount.mutate(old => userLikesThisToken ? old -1 : old + 1, { revalidate: false});
+    console.log("userLikesThisToken", userLikesThisToken)
+    likeCount.mutate(old => {
+      console.log('old', old)
+      if (userLikesThisToken) {
+        return old - 1;
+      } else {
+        return old + 1
+      }        
+    }, { revalidate: false });
     mutateUserLikesThisToken(old => !old, { revalidate: false })
 
     try {

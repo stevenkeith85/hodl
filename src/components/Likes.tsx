@@ -44,6 +44,8 @@ export const Likes: FC<LikesProps> = ({
     const { swr: likeCount } = useLikeCount(id, object, prefetchedLikeCount);
     const [userLikesThisToken, toggleLike] = useLike(id, object, likeCount);
 
+    // console.log('prefetchedLikeCount', prefetchedLikeCount)
+    // console.log('likeCount', likeCount)
     return (
         <>
             <Box

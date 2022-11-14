@@ -57,7 +57,7 @@ export const useCommentCount = (
          id ? [`/api/comments/count`, object, id] : null,
         fetchWithObjectAndId,
         { 
-            revalidateOnMount: !fallbackData,
+            // revalidateOnMount: !fallbackData,
             fallbackData 
         }
     );

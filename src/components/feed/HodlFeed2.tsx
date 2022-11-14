@@ -1,31 +1,27 @@
-import { useEffect } from "react"
-
 import { Virtuoso } from 'react-virtuoso'
 import { useActions2 } from '../../hooks/useActions2';
+import { ActionSet } from "../../models/HodlAction";
 import { HodlFeedItem } from './HodlFeedItem';
 
 export const HodlFeed2 = () => {
-
-    const [actions, next, total, fetch] = useActions2();
+    const swr = useActions2(ActionSet.Feed);
 
     const loadMore = () => {
-        fetch();
+        swr.setSize(size => size + 1)
     };
 
-    useEffect(() => {
-        fetch()
-    }, [])
-
+    if (!swr.data) {
+        return null;
+    }
 
     return (<>
         <Virtuoso
             useWindowScroll
-            totalCount={total}
-            overscan={600}
-            data={actions}
+            data={swr?.data}
+            overscan={700}
             endReached={loadMore}
-            itemContent={index => <HodlFeedItem item={actions[index]} />
-            }
+            itemContent={(index, page) => page?.items.map((item, i) => <HodlFeedItem key={i} item={item} />) 
+        }
         />
     </>)
 }
