@@ -27,16 +27,16 @@ export const getListed = async (address: string, offset: number, limit: number, 
     }
 
     const tokenIdsWithPrice: number[] = await client.zrange<number[]>(`user:${address}:listed`, offset, offset + limit - 1, { withScores: true });
-    
+
     const tokenIdToPriceMap = tokenIdsWithPrice.reduce(
         (map, currentValue, currentIndex, array) => {
             console.log('map is ', map)
             if (currentIndex % 2 == 0 && currentIndex < (array.length - 1)) {
-                map[currentValue] = array[currentIndex + 1];   
+                map[currentValue] = array[currentIndex + 1];
             }
 
             return map;
-            
+
         }, {}
     );
 
@@ -73,6 +73,11 @@ route.get(async (req, res) => {
     const limit = getAsString(req.query.limit);
 
     if (!address || !offset || !limit) {
+        return res.status(400).json({ message: 'Bad Request' });
+    }
+
+    // We only allow 100 items at a time
+    if (+limit > 100) {
         return res.status(400).json({ message: 'Bad Request' });
     }
 

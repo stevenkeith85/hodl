@@ -39,7 +39,8 @@ export default function LoginPage({ hasReadPermission }) {
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                padding: 0.5
+                                padding: 0.5,
+                                paddingTop: 0,
                             }}>
                             <Box
                                 component="span"

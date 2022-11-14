@@ -46,7 +46,7 @@ export const getHodling = async (address: string, offset: number, limit: number,
     // We get all the comment data with one round trip to redis
     const pipeline = client.pipeline();
     for (let id of tokenIds) {
-      pipeline.get(`token:${id}`);
+        pipeline.get(`token:${id}`);
     }
     const items: Token[] = tokenIds?.length ? await pipeline.exec() : [];
 
@@ -66,6 +66,11 @@ route.get(async (req, res) => {
     const limit = getAsString(req.query.limit);
 
     if (!address || !offset || !limit) {
+        return res.status(400).json({ message: 'Bad Request' });
+    }
+
+    // We only allow 100 items at a time
+    if (+limit > 100) {
         return res.status(400).json({ message: 'Bad Request' });
     }
 

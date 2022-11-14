@@ -4,7 +4,7 @@ import apiRoute from "../handler";
 import { getProvider } from "../../../lib/server/connections";
 import Market from '../../../../smart-contracts/artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 import { Redis } from '@upstash/redis';
-import { TRANSACTION_TIMEOUT, validTxHashFormat } from "../../../lib/utils";
+import { validTxHashFormat } from "../../../lib/utils";
 
 import NFT from '../../../../smart-contracts/artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import { tokenMinted } from "../../../lib/transactions/tokenMinted";
@@ -74,7 +74,7 @@ route.post(async (req, res: NextApiResponse) => {
     const txReceipt: TransactionReceipt = await provider.waitForTransaction(
         hash,
         +process.env.NUMBER_OF_CONFIRMATIONS_TO_WAIT_FOR,
-        TRANSACTION_TIMEOUT
+        +process.env.TRANSACTION_TIMEOUT,
     );
 
     if (txReceipt === null) {

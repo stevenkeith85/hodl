@@ -1,17 +1,8 @@
-import dynamic from 'next/dynamic';
-
 import { useEffect } from "react"
 
 import { Virtuoso } from 'react-virtuoso'
 import { useActions2 } from '../../hooks/useActions2';
-import HodlFeedLoading from '../layout/HodlFeedLoading';
-
-const HodlFeedItem = dynamic(
-    () => import('./HodlFeedItem').then(mod => mod.HodlFeedItem),
-    {
-        ssr: false,
-    }
-);
+import { HodlFeedItem } from './HodlFeedItem';
 
 export const HodlFeed2 = () => {
 
@@ -25,10 +16,6 @@ export const HodlFeed2 = () => {
         fetch()
     }, [])
 
-
-    if (!actions) {
-        return <HodlFeedLoading />
-    }
 
     return (<>
         <Virtuoso

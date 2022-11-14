@@ -4,7 +4,6 @@ import { WalletContext } from '../../contexts/WalletContext';
 import { HodlModal } from "./HodlModal";
 import axios from 'axios'
 import InfiniteScroll from 'react-swr-infinite-scroll'
-import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 import useSWR, { mutate } from "swr";
 import { useHodling } from "../../hooks/useHodling";
 import { AssetThumbnail } from "../AssetThumbnail";
@@ -44,20 +43,23 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                 }}
             >
                 <Stack spacing={3} textAlign="center">
-                    
-                    <Typography variant="h2" sx={{ fontSize: '18px' }}>Select Profile Avatar</Typography>
+                    <Typography variant="h2" sx={{ fontSize: '18px', fontWeight: 600 }}>Avatar</Typography>
+                    <Typography sx={{
+                        fontSize: '18px',
+                        color: theme => theme.palette.text.secondary,
+                    }}>Select an NFT to use as your profile avatar</Typography>
                     <Box
                         sx={{
-                            height: '450px',
                             maxHeight: '80vh',
                             overflow: 'auto',
-                            display: 'flex',
-                            flexWrap: 'wrap'
+                            display: 'grid',
+                            gap: 1,
+                            gridTemplateColumns: '1fr 1fr 1fr',
+                            gridTemplateRows: 'auto'
                         }}>
                             {/* <pre>{JSON.stringify(user, null, 2)}</pre> */}
                         <InfiniteScroll
                             swr={swr}
-                            loadingIndicator={<HodlLoadingSpinner sx={{ width: '33%', display: 'flex', alignItems: 'center', justifyContent: 'center' }} />}
                             isReachingEnd={
                                 swr => {
                                     return swr.data?.[0]?.items?.length == 0 ||
@@ -68,7 +70,6 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                             {
                                 ({ items }) => items.map((nft, i) => (
                                     <Box
-                                        sx={{ width: '33%' }}
                                         key={i}
                                         onClick={
                                             () => setToken(nft.id)

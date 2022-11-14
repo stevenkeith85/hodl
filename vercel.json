@@ -2,6 +2,24 @@
 	"functions": {
 		"pages/api/actions/index.ts": {
 			"memory": 3008
-		}
+		},
+        "pages/api/contracts/mutable-token/[tokenId].ts": {
+            "memory": 3008
+        },
+        "pages/api/contracts/market/listed/count.ts": {
+            "memory": 3008
+        },
+        "pages/api/contracts/market/hodling/count.ts": {
+            "memory": 3008
+        },
+        "pages/api/create/ipfsImageAndAsset.ts": {
+            "memory": 3008
+        },
+        "pages/api/market/transaction.ts": {
+            "memory": 3008
+        },
+        "pages/api/blockchain/transaction.ts": {
+            "memory": 3008
+        }
 	}
 }

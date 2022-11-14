@@ -63,6 +63,11 @@ export default async function route(req: NextRequest) {
     return new Response(null, { status: 400 });
   }
 
+  // We only allow 100 items at a time
+  if (+limit > 100) {
+    return new Response(null, { status: 400 });
+  }
+
   const tokens = await getNewTokens(+offset, +limit);
 
   return NextResponse.json(tokens, {

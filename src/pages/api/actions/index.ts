@@ -11,6 +11,7 @@ import { mGetActions } from "../../../lib/database/rest/Actions";
 import { getUsers } from "../../../lib/database/rest/Users";
 import { mGetComments } from "../../../lib/database/rest/Comments";
 import { getTokenVMs, mGetTokens } from "../../../lib/database/rest/Tokens";
+import { UserViewModel } from "../../../models/User";
 
 const client = Redis.fromEnv();
 
@@ -70,14 +71,9 @@ export const getActions = async (
     total: number
   }> => {
 
-  // console.log('address, set, offset, limit', address, set, offset, limit)
-
   if (!address) {
     return null;
   }
-
-
-  // const zcardStart = Date.now();
 
   const zcardResponse = await fetch(
     `${process.env.UPSTASH_REDIS_REST_URL}/zcard/user:${address}:${set}`,
@@ -90,8 +86,6 @@ export const getActions = async (
 
   const { result: total } = await zcardResponse.json();
 
-  // const zcardStop = Date.now()
-  // console.log('zcard time taken', zcardStop - zcardStart);
 
   // ZRANGE: Out of range indexes do not produce an error.
   // So we need to check here and return if we are about to do an out of range search
@@ -102,8 +96,6 @@ export const getActions = async (
       total: Number(total)
     };
   }
-
-  // const zrangeStart = Date.now();
 
   // Get the action ids
   const idsResponse = await fetch(
@@ -117,48 +109,26 @@ export const getActions = async (
 
   const { result: ids } = await idsResponse.json();
 
-  // const zrangeStop = Date.now()
-  // console.log('zrange time taken', zrangeStop - zrangeStart);
-
-  // Get the actions
-  // const mgetStart = Date.now();
-
   const actions = ids.length ? await mGetActions(ids) : [];
-  
-  // const mgetStop = Date.now()
-  // console.log('mget time taken', mgetStop - mgetStart);
-
-  // Each action has a subject. This is the address of the user who took the action
   const addresses: string[] = actions.map(action => action.subject);
   const uniqueAddresses = new Set(addresses);
 
-  // We get the view models for the users
-  const userVMs = await getUsers(Array.from(uniqueAddresses));
 
-  const userMap = userVMs.reduce((map, user) => {
-    map[user.address] = user;
-    return map;
-  }, {});
+  // Users
+  const userVMsPromise = uniqueAddresses.size ? getUsers(Array.from(uniqueAddresses)) : [];
 
-  // Get any comments attached to the actions. 
+
+  // Comments
   const commentIds: string[] = actions.filter(action => action.object === 'comment').map(action => action.objectId);
   const uniqueCommentIds = new Set(commentIds);
 
   let comments = uniqueCommentIds.size ? await mGetComments(Array.from(uniqueCommentIds)) : [];
 
-  // Users can delete comments. So remove any missing comments.
-  comments = comments.filter(comment => comment);
+  comments = comments.filter(comment => comment); // Users can delete comments. So remove any missing comments.
 
-  // Create an id to comment map so that we can extrapolate the user info for the UI
-  const commentMap = comments.reduce((map, comment) => {
-    map[comment.id] = comment;
-    return map;
-  }, {});
+  const tokenIdsForComments = comments.map(comment => comment.tokenId); // Get the tokenIds the comments were made on
 
-  // Get the tokenIds the comments were made on
-  const tokenIdsForComments = comments.map(comment => comment.tokenId);
-
-  // Get tokens attached to actions or comments
+  // Tokens
   const tokenIds: string[] = actions.filter(action => action.object === 'token').map(action => action.objectId).concat(tokenIdsForComments);
   const uniqueTokenIds = new Set(tokenIds);
 
@@ -167,7 +137,20 @@ export const getActions = async (
     :
     [];
 
-  // Create an id to token map so that we can extrapolate the user info for the UI
+
+  // Build the response
+  const [userVMs] = await Promise.all([userVMsPromise]);
+
+  const userMap = userVMs.reduce((map, user) => {
+    map[user.address] = user;
+    return map;
+  }, {} as UserViewModel);
+
+  const commentMap = comments.reduce((map, comment) => {
+    map[comment.id] = comment;
+    return map;
+  }, {});
+
   const tokenMap = tokens.reduce((map, token) => {
     map[token.id] = token;
     return map;
@@ -185,9 +168,9 @@ export const getActions = async (
     };
 
     if (set === ActionSet.Notifications) {
-        actionVM.id = action.id;
-        actionVM.object = action.object;
-        actionVM.objectId = action.objectId;
+      actionVM.id = action.id;
+      actionVM.object = action.object;
+      actionVM.objectId = action.objectId;
     }
 
     if (action.object === "token") {
@@ -224,6 +207,11 @@ route.get(async (req, res: NextApiResponse) => {
   const limit = Array.isArray(req.query.limit) ? req.query.limit[0] : req.query.limit;
 
   if (!set || !offset || !limit) {
+    return res.status(400).json({ message: 'Bad Request' });
+  }
+
+  // We only allow 100 items at a time
+  if (+limit > 100) {
     return res.status(400).json({ message: 'Bad Request' });
   }
 

@@ -51,6 +51,10 @@ route.get(async (req, res: NextApiResponse) => {
     const offset = Array.isArray(req.query.offset) ? req.query.offset[0] : req.query.offset;
     const limit = Array.isArray(req.query.limit) ? req.query.limit[0] : req.query.limit;
 
+    if (+limit > 100) {
+        return new Response(null, { status: 400 });
+      }
+
     const txs = await getUserProcessedTxs(req.address, +offset, +limit);
     res.status(200).json(txs);
 });
