@@ -14,7 +14,7 @@ export const useLikeCount = (
     fetcher,
     {
       fallbackData: prefetchedLikeCount,
-      revalidateOnMount: !prefetchedLikeCount
+      // revalidateOnMount: !prefetchedLikeCount // if we don't revalidate on mount for somereason calling mutate doesn't seem to work
     }
   );
 

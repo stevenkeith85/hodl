@@ -27,7 +27,10 @@ route.post(async (req, res: NextApiResponse) => {
 
   const exists = await client.zscore(`liked:tokens:${req.address}`, token);
 
+  console.log("exists", exists)
   if (exists) { // unlike
+
+    console.log("unliking token");
     const cmds = [
       ['ZREM', `liked:tokens:${req.address}`, token],
       ['ZREM', `likes:token:${token}`, req.address]
@@ -39,6 +42,7 @@ route.post(async (req, res: NextApiResponse) => {
       return res.status(510).json({ message: 'Upstream error' });
     }
   } else { // like
+    console.log("liking token")
     const timestamp = Date.now();
 
     const cmds = [
@@ -51,6 +55,8 @@ route.post(async (req, res: NextApiResponse) => {
     if (!success) {
       return res.status(510).json({ message: 'Upstream error' });
     }
+
+    liked = true;
 
     const action = {
       subject: req.address,
@@ -77,6 +83,7 @@ route.post(async (req, res: NextApiResponse) => {
     member: token
   });
 
+  console.log('liked', liked)
   return res.status(200).json({ liked });
 });
 
