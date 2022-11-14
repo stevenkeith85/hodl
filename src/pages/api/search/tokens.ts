@@ -1,20 +1,11 @@
-import apiRoute from '../handler';
-import { Redis } from '@upstash/redis';
+import { NextRequest, NextResponse } from 'next/server';
 
-import { FullToken } from '../../../models/Nft';
-import { chunk } from '../../../lib/lodash';
 import { getAsString } from '../../../lib/getAsString';
-import { getToken } from '../../../lib/database/rest/getToken';
+import { mGetTokens } from '../../../lib/database/rest/Tokens';
+import { zCard } from '../../../lib/database/rest/zCard';
+import { zCount } from '../../../lib/database/rest/zCount';
+import { zRange } from '../../../lib/database/rest/zRange';
 
-const client = Redis.fromEnv()
-
-const getMarketItem = async ([id, price]): Promise<FullToken> => {
-    return {
-        ...(await getToken(id)),
-        forSale: true,
-        price
-    }
-}
 
 export const getTokenSearchResults = async (
     q: string,
@@ -33,15 +24,15 @@ export const getTokenSearchResults = async (
         let tokens;
 
         if (forSale) {
-            if (tag) {                
-                total = await client.zcount(
+            if (tag) {
+                total = await zCount(
                     `market:${tag}`,
                     minPrice || '-inf',
                     maxPrice || '+inf',
                 )
             } else {
-                total = await client.zcount(
-                    "market",
+                total = await zCount(
+                    `market`,
                     minPrice || '-inf',
                     maxPrice || '+inf',
                 )
@@ -52,9 +43,9 @@ export const getTokenSearchResults = async (
             // use the restricted size sets 'tokens:new' and 'tags:new' rather than the larger sets 'tokens' and 'tags'
             // as those can grow infinitely, and would eventually slow down the ui
             if (tag) {
-                total = await client.zcard(`tag:${tag}:new`);
+                total = await zCard(`tag:${tag}:new`);
             } else {
-                total = await client.zcard(`tokens:new`);
+                total = await zCard(`tokens:new`);
             }
         }
 
@@ -67,8 +58,10 @@ export const getTokenSearchResults = async (
         }
 
         if (forSale) {
+            let idsWithPrices = [];
+
             if (tag) {
-                ids = await client.zrange(
+                idsWithPrices = await zRange(
                     `market:${tag}`,
                     minPrice || '-inf',
                     maxPrice || '+inf',
@@ -80,7 +73,7 @@ export const getTokenSearchResults = async (
                     }
                 );
             } else {
-                ids = await client.zrange(
+                idsWithPrices = await zRange(
                     "market",
                     minPrice || '-inf',
                     maxPrice || '+inf',
@@ -93,22 +86,42 @@ export const getTokenSearchResults = async (
                 );
             }
 
-            ids = chunk(ids, 2);
-            const promises = ids.map(item => getMarketItem(item));
-            tokens = await Promise.all(promises);
+            // TODO: THIS IS ALSO USED ON THE PROFILE PAGE. EXTRACT TO COMMON LIB
+            const tokenIdToPriceMap = idsWithPrices.reduce(
+                (map, currentValue, currentIndex, array) => {
+                    if (currentIndex % 2 == 0 && currentIndex < (array.length - 1)) {
+                        map[currentValue] = array[currentIndex + 1];
+                    }
+
+                    return map;
+
+                }, {}
+            );
+
+            tokens = await mGetTokens(Object.keys(tokenIdToPriceMap));
+
+            // append the price
+            tokens = tokens.map((token) => ({
+                ...token,
+                forSale: true,
+                price: tokenIdToPriceMap[token.id]
+            }))
         }
         else {
             // if the user is 'exploring', then we 
             // use the restricted size sets 'tokens:new' and 'tags:new' rather than the larger sets 'tokens' and 'tags'
             // as those can grow infinitely, and would eventually slow down the ui
             if (tag) {
-                ids = await client.zrange(`tag:${tag}:new`, offset, offset + limit - 1, { rev: true });
+                ids = await zRange(`tag:${tag}:new`, offset, offset + limit - 1, { rev: true });
             } else {
-                ids = await client.zrange("tokens:new", offset, offset + limit - 1, { rev: true });
+                ids = await zRange(
+                    "tokens:new",
+                    offset,
+                    offset + limit - 1,
+                    { rev: true }
+                );
             }
-
-            const promises = ids.map(address => getToken(address));
-            tokens = await Promise.all(promises);
+            tokens = await mGetTokens(ids);
         }
 
         return {
@@ -117,6 +130,7 @@ export const getTokenSearchResults = async (
             total: Number(total)
         };
     } catch (e) {
+        console.log(e)
         return {
             items: [],
             next: 1,
@@ -126,25 +140,31 @@ export const getTokenSearchResults = async (
 }
 
 
-const route = apiRoute();
-route.get(async (req, res) => {
-
-    const q = getAsString(req.query.q);
-    const forSale = getAsString(req.query.forSale);
-
-    const offset = getAsString(req.query.offset);
-    const limit = getAsString(req.query.limit);
-
-    const minPrice = getAsString(req.query.minPrice);
-    const maxPrice = getAsString(req.query.maxPrice);
-
-    console.log('minPrice', minPrice)
-
-    if (!offset || !limit) {
-        return res.status(400).json({ message: 'Bad Request' });
+export default async function route(req: NextRequest) {
+    if (req.method !== 'GET') {
+        return new Response(null, { status: 405 });
     }
 
-    // TODO: Add in some yup validation
+    const { searchParams } = new URL(req.url);
+
+    const q = getAsString(searchParams.get('q'));
+    const forSale = getAsString(searchParams.get('forSale'));
+
+    const offset = getAsString(searchParams.get('offset'));
+    const limit = getAsString(searchParams.get('limit'));
+
+    const minPrice = getAsString(searchParams.get('minPrice'));
+    const maxPrice = getAsString(searchParams.get('maxPrice'));
+
+
+    if (!offset || !limit) {
+        return new Response(null, { status: 400 });
+    }
+
+    // We only allow 100 items at a time
+    if (+limit > 100) {
+        return new Response(null, { status: 400 });
+    }
 
     const data = await getTokenSearchResults(
         q || '',
@@ -154,8 +174,14 @@ route.get(async (req, res) => {
         +minPrice || 0,
         +maxPrice || 1000000
     );
-    return res.status(200).json(data);
-});
 
+    return NextResponse.json(data, {
+        headers: {
+            'Cache-Control': 'max-age=0, s-maxage=60'
+        }
+    });
+};
 
-export default route;
+export const config = {
+    runtime: 'experimental-edge',
+}

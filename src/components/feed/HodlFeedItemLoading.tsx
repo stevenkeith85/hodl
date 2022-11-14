@@ -3,9 +3,10 @@ import Typography from "@mui/material/Typography";
 
 import TokenActionBoxLoading from "../nft/TokenActionBoxLoading";
 import Skeleton from "@mui/material/Skeleton";
+import { memo } from "react";
 
 
-export const HodlFeedItemLoading = ({ }) => {
+export const HodlFeedItemLoading = memo(({ }) => {
 
     return (
         <Box
@@ -106,3 +107,6 @@ export const HodlFeedItemLoading = ({ }) => {
         </Box>
     )
 }
+)
+
+HodlFeedItemLoading.displayName = "HodlFeedItemLoading"

@@ -70,8 +70,6 @@ export default async function route (req: NextRequest) {
       'Cache-Control': 'max-age=0, s-maxage=60'
     }
   });
-
-  
 };
 
 export const config = {

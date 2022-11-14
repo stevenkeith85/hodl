@@ -126,11 +126,10 @@ export default function MyApp(props: MyAppProps) {
                 setUserSignedInToPusher
               }}>
                 <SnackbarProvider
-                  anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'left'
-                  }
-                  }
+                  // anchorOrigin={{
+                  //   vertical: 'top',
+                  //   horizontal: 'left'
+                  // }}
                   Components={{
                     // @ts-ignore
                     hodlnotification: HodlNotificationSnackbar

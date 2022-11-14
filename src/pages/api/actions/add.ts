@@ -13,7 +13,6 @@ import { getUser } from "../user/[handle]";
 import { getAction } from ".";
 import { pusher } from "../../../lib/server/pusher";
 import { runRedisTransaction } from "../../../lib/database/rest/databaseUtils";
-import { createHmac } from "crypto";
 import axios from "axios";
 
 const route = apiRoute();
@@ -51,12 +50,20 @@ const addNotification = async (address: string, action: HodlAction): Promise<boo
   const success = await runRedisTransaction(cmds);
 
   if (success) {
-    const promises = [
-      pusher.sendToUser(address, "notification", null),
-      pusher.sendToUser(address, "notification-hover", await getAction(action.id, null))
-    ];
+    try {
+      const promises = [
+        pusher.sendToUser(address, "notification", null),
+        pusher.sendToUser(address, "notification-hover", await getAction(action.id, null))
+      ];
 
-    await Promise.all(promises);
+      await Promise.all(promises);
+    } catch(e) {
+      // We do not want to retry the whole actions system if this fails; as it will populate the database with duplicate actions
+      // TODO: We should split the 'notifications' out into their own sub-system so that we can retry them without impacting the actions
+      
+      // if this DOES fail at the moment; the user WILL still get a notification. It just won't be 'real-time'
+      console.log(e);
+    }
   }
 
   return success;
@@ -73,18 +80,8 @@ const addToFeed = async (address: string, action: HodlAction): Promise<boolean> 
 
   const success = await runRedisTransaction(cmds);
 
-  if (success) {
-    pusher.sendToUser(address, "feed", null);
-  }
-
   return success;
 }
-
-
-// // actions could be referenced (by id) from several places.
-// const storeAction = async (action: HodlAction): Promise<string | HodlAction | null> => {
-//   return await client.set(`action:${action.id}`, action);
-// }
 
 // gets the last <x> actions that address took that can be used in a feed
 const getLastXFeedActions = async (address: string, x: number = 5): Promise<HodlAction[]> => {
@@ -244,8 +241,6 @@ export const addAction = async (action: HodlAction) => {
       console.log(`actions/add - adding a notification for ${(await getUser(commentThatWasRepliedTo.subject, null)).nickname}, as someone replied to their comment`)
       return await addNotification(commentThatWasRepliedTo.subject, action);
     }
-
-    pusher.trigger('comments', 'new', null);
   }
 
   if (action.action === ActionTypes.Followed) { // tell the account someone followed it

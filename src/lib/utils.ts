@@ -6,8 +6,6 @@ import { commercial, nonCommercial, token } from "./copyright";
 export const TAG_PATTERN = /#([\d\w_]{3,25})(\s|$)/g;
 export const MAX_TAGS_PER_TOKEN = 6;
 
-export const TRANSACTION_TIMEOUT = 40000;
-
 export const imageFilters: {
   code: "improve" | "athena" | "aurora" | "hairspray" | "grayscale"
   name: string;

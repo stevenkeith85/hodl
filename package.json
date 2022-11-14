@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "next dev -p 80",
     "dev:staging": "env-cmd -f ./.env.staging.local next dev -p 80",
+    "dev:prod": "env-cmd -f ./.env.production.local next dev -p 80",
     "build": "next build",
     "start": "next start -p 80",
     "lint": "next lint"

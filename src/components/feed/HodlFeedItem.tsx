@@ -161,7 +161,6 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                     flexDirection="column"
                     sx={{
                         gap: 2,
-                        // marginBottom: 2,
                         borderRadius: 1,
                         padding: {
                             xs: 1.5,

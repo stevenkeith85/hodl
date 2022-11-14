@@ -50,7 +50,7 @@ export default function ProcessedTransactionsTable({ limit = 10 }) {
                     {
                         ({ items }) => (items || []).map(({ hash, timestamp }) => (
                             <>
-                                <Link href={`https://mumbai.polygonscan.com/tx/${hash}`}>
+                                <Link href={`${process.env.NEXT_PUBLIC_BLOCKCHAIN_EXPLORER}/tx/${hash}`}>
                                     <Typography
                                         sx={{
                                             display: 'inline-block',

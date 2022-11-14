@@ -10,7 +10,8 @@ export const mGetTokens = async (tokenIds: string[]) => {
       {
         headers: {
           Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-        }
+        },
+        keepalive: true
       });
 
     const data = await r.json();
@@ -30,7 +31,8 @@ export const mGetTokensCommentCounts = async (tokenIds: string[]) => {
       {
         headers: {
           Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-        }
+        },
+        keepalive: true
       });
 
     const data = await r.json();
@@ -63,8 +65,6 @@ export const mGetTokenAndCommentCount = async (tokenIds: string[]) => {
 }
 
 export const getTokenVMs = async (tokenIds: string[]) => {
-  // const start = Date.now();
-
   if (tokenIds.length === 0) {
     return [];
   }
@@ -78,15 +78,11 @@ export const getTokenVMs = async (tokenIds: string[]) => {
 
   const tokens = chunk(tokenAndCommentCount, 2);
 
-  // console.log('tokens', tokens);
   const result = tokens.map(([token, commentCount], index) => {
     token.likeCount = likeCounts[index];
     token.commentCount = commentCount;
     return token
   })
-
-  // const stop = Date.now();
-  // console.log('get token vms', stop - start);
 
   return result;
 }

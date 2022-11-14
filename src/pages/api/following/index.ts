@@ -59,6 +59,11 @@ route.get(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
+  // We only allow 100 items at a time
+  if (+limit > 100) {
+    return res.status(400).json({ message: 'Bad Request' });
+  }
+
   const following = await getFollowing(address, +offset, +limit, req?.address);
 
   res.status(200).json(following);

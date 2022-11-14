@@ -63,6 +63,10 @@ export default async function getLatestUsers (req: NextRequest) {
     return new Response(null, { status: 400 });
   }
 
+  if (+limit > 100) {
+    return new Response(null, { status: 400 });
+  }
+
   const tokens = await getNewUsers(+offset, +limit);
 
   return NextResponse.json(tokens, {
