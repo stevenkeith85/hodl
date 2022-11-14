@@ -25,7 +25,7 @@ const ratelimit = async (req, res, next) => {
     const limited = await isRateLimited(ip, routeKey, limit);
 
     if (limited) {
-      return res.status(429).json({ message: `Slow down a little - ${routeKey}` })
+      return res.status(429).json({ message: `Slow down a little` })
     }
   }
 
