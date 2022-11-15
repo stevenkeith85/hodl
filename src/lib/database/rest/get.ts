@@ -1,11 +1,11 @@
-export const getToken = async (id) => {
-  if (!id) {
+export const get = async (key) => {
+  if (!key) {
     return null;
   }
 
   try {
     const r = await fetch(
-      `${process.env.UPSTASH_REDIS_REST_URL}/get/token:${id}`,
+      `${process.env.UPSTASH_REDIS_REST_URL}/get/${key}`,
       {
         headers: {
           Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
@@ -13,9 +13,9 @@ export const getToken = async (id) => {
         keepalive: true
       });
 
-    const { result: token } = await r.json();
+    const { result } = await r.json();
 
-    return JSON.parse(token);
+    return result;
   } catch (e) {
     console.log(e)
   }

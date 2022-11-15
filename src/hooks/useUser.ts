@@ -2,14 +2,16 @@ import useSWR, { Fetcher, SWRResponse } from 'swr';
 import axios from 'axios'
 import { UserViewModel } from '../models/User';
 
-export const useUser = (address, fallbackData = null): SWRResponse<UserViewModel, any> => {
+export const useUser = (address, fallbackData = null, viewer = null, ): SWRResponse<UserViewModel, any> => {
 
-    const fetcher: Fetcher<UserViewModel, [string, string]> = (url, query) => axios.get(`${url}/${query}`).then(r => r.data.user);
+    const fetcher: Fetcher<UserViewModel, [string, string, string]> = (url, handle, viewer) => axios.get(`${url}/${handle}${viewer ? `?viewer=${viewer}` : ''}`).then(r => r.data.user);
 
     const swr = useSWR(
-        address ? [`/api/user`, address] : null,
+        address ? [`/api/user`, address, viewer] : null,
         fetcher,
         {
+            dedupingInterval: 2000,
+            focusThrottleInterval: 5000,
             fallbackData,
             revalidateOnMount: !fallbackData
         }

@@ -2,10 +2,10 @@ import Head from 'next/head';
 import dynamic from 'next/dynamic';
 
 import { authenticate } from '../lib/jwt';
-import { getUser } from './api/user/[handle]';
 
 import PublicHomePageLoading from '../components/layout/PublicHomeLoading';
 import PrivateHomePageLoading from '../components/layout/PrivateHomePageLoading';
+import { getUser } from '../lib/database/rest/getUser';
 
 
 const PublicHomePage = dynamic(

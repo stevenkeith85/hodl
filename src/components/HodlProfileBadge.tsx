@@ -2,7 +2,6 @@ import humanize from "humanize-plus";
 import Link from 'next/link';
 import { grey } from '@mui/material/colors';
 import { UserViewModel } from '../models/User';
-import { UserAvatarAndHandle } from './avatar/UserAvatarAndHandle';
 import { memo, useContext } from 'react';
 import { UserContext } from '../contexts/UserContext';
 import { ProfileNameOrAddress } from './avatar/ProfileNameOrAddress';
@@ -12,6 +11,8 @@ import { getShortAddress } from '../lib/utils';
 import Typography from "@mui/material/Typography";
 import Skeleton from "@mui/material/Skeleton";
 import Box from "@mui/material/Box";
+import dynamic from 'next/dynamic';
+import { UserAvatarAndHandleBodyLoading } from "./avatar/UserAvatarAndHandleBodyLoading";
 
 
 interface CountAndLinkProps {
@@ -20,6 +21,14 @@ interface CountAndLinkProps {
     label: string;
     tab: number;
 }
+
+const UserAvatarAndHandle = dynamic(
+    () => import('./avatar/UserAvatarAndHandle').then(mod => mod.UserAvatarAndHandle),
+    {
+        ssr: false,
+        loading: () => <UserAvatarAndHandleBodyLoading size={70} handle={false} />
+    }
+);
 
 const CountAndLink: React.FC<CountAndLinkProps> = memo(({ count, user, label, tab }) => {
 

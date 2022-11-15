@@ -19,7 +19,7 @@ import { useFollowingCount } from '../../hooks/useFollowingCount'
 import { useFollowersCount } from '../../hooks/useFollowersCount'
 import { FollowersContext } from '../../contexts/FollowersContext'
 import { FollowingContext } from '../../contexts/FollowingContext'
-import { getUser } from '../api/user/[handle]'
+import { getUserUsingHandle } from '../api/user/[handle]'
 import { useHodlingCount } from '../../hooks/useHodlingCount'
 import { useListedCount } from '../../hooks/useListedCount'
 
@@ -61,7 +61,7 @@ const ProfileTabs = dynamic(
 export async function getServerSideProps({ params, query, req, res }) {
   await authenticate(req, res);
 
-  const owner = await getUser(params.handle, req?.address);
+  const owner = await getUserUsingHandle(params.handle, req?.address);
 
   if (!owner) {
     return {
@@ -75,8 +75,8 @@ export async function getServerSideProps({ params, query, req, res }) {
   const prefetchedFollowingCountPromise = getFollowingCount(owner.address);
   const prefetchedFollowersCountPromise = getFollowersCount(owner.address);
 
-  const prefetchedFollowingPromise = getFollowing(owner.address, 0, limit);
-  const prefetchedFollowersPromise = getFollowers(owner.address, 0, limit);
+  const prefetchedFollowingPromise = getFollowing(owner.address, 0, limit, req?.address);
+  const prefetchedFollowersPromise = getFollowers(owner.address, 0, limit, req?.address);
 
   const [
     prefetchedFollowingCount,
@@ -115,6 +115,8 @@ const Profile = ({
   tab,
   limit
 }) => {
+
+  // return <>{JSON.stringify(prefetchedFollowing, null, 2)}</>
   const router = useRouter();
 
   const [value, setValue] = useState(Number(tab)); // tab

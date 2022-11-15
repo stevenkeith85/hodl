@@ -8,9 +8,7 @@ export const addToZeplo = async (
     trace = '') => {
     try {
         const serverlessFunctionUrl = `https://${process.env.VERCEL_URL || process.env.MESSAGE_HANDLER_HOST}/${endpoint}`;
-        const zeploUrl = `https://zeplo.to/${serverlessFunctionUrl}?secret=${process.env.ZEPLO_SECRET}&_token=${process.env.ZEPLO_TOKEN}&_trace=${trace}&_delay=5&_retry=4|exponential|2`;
-
-        // const start = Date.now();
+        const zeploUrl = `https://zeplo.to/${serverlessFunctionUrl}?secret=${process.env.ZEPLO_SECRET}&_token=${process.env.ZEPLO_TOKEN}&_trace=${trace}&_retry=1|exponential|2`;
 
         const { data } = await axios.post(
             zeploUrl,
@@ -21,8 +19,6 @@ export const addToZeplo = async (
                 },
             });
 
-        // const stop = Date.now()
-        // console.log('addingMessageToZeplo time taken', stop - start, endpoint);
         return true;
     } catch (e) {
         console.log('zeplo call failed', e.message);

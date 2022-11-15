@@ -4,7 +4,7 @@ import apiRoute from '../handler';
 
 import { Redis } from '@upstash/redis';
 import { HodlComment, HodlCommentViewModel } from "../../../models/HodlComment";
-import { getUser } from "../user/[handle]";
+import { getUser } from "../../../lib/database/rest/getUser";
 
 const client = Redis.fromEnv()
 const route = apiRoute();

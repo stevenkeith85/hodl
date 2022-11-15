@@ -154,9 +154,9 @@ export default function Search({
       <Box
         sx={{
           marginY: {
-            xs: 2,
-            sm: 4
-          }
+            xs: 1,
+            md: 2
+          },
         }}
       >
         <div>
@@ -167,7 +167,10 @@ export default function Search({
               gap: 4,
               marginY: {
                 xs: 2,
-                sm: 4
+                md: 2
+              },
+              marginTop: {
+                xs: 0,
               }
             }}
           >
@@ -185,7 +188,6 @@ export default function Search({
                   width: '15%',
                   display: 'flex',
                   justifyContent: 'start'
-
                 }}
               >
                 <IconButton

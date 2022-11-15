@@ -15,9 +15,9 @@ export const updateMutableTokenCache = async (tokenId): Promise<MutableToken> =>
   // If no-one has visited the token in a while, then the cached data will disappear from redis
   // which will keep our storage costs down
   //
-  // TODO: We might listed to generic transfer events in future 
+  // TODO: We might listen to generic transfer events in future 
   // in case stuff happens off-site. (user adds token to another market, etc)
-  const timeToCache = 60 * 30;
+  const timeToCache = 60 * 15;
 
   try {
     const listingPromise = getListingFromBlockchain(tokenId);

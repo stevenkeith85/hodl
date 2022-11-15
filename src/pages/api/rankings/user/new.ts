@@ -40,6 +40,7 @@ export const getNewUsers = async (
     });
 
   const { result: addresses } = await idsResponse.json();
+
   const users = await getUsers(addresses);
 
   return {

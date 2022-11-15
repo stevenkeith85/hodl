@@ -5,13 +5,15 @@ import apiRoute from "../handler";
 import { ActionSet, HodlAction, HodlActionViewModel } from "../../../models/HodlAction";
 
 import { getComment } from "../comment";
-import { getUser } from "../user/[handle]";
 import { getToken } from "../../../lib/database/rest/getToken";
 import { mGetActions } from "../../../lib/database/rest/Actions";
 import { getUsers } from "../../../lib/database/rest/Users";
 import { mGetComments } from "../../../lib/database/rest/Comments";
 import { getTokenVMs, mGetTokens } from "../../../lib/database/rest/Tokens";
 import { UserViewModel } from "../../../models/User";
+import { getUser } from "../../../lib/database/rest/getUser";
+import { zCard } from "../../../lib/database/rest/zCard";
+import { zRange } from "../../../lib/database/rest/zRange";
 
 const client = Redis.fromEnv();
 
@@ -75,17 +77,7 @@ export const getActions = async (
     return null;
   }
 
-  const zcardResponse = await fetch(
-    `${process.env.UPSTASH_REDIS_REST_URL}/zcard/user:${address}:${set}`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-      },
-      keepalive: true
-    });
-
-  const { result: total } = await zcardResponse.json();
-
+  const total = await zCard(`user:${address}:${set}`);
 
   // ZRANGE: Out of range indexes do not produce an error.
   // So we need to check here and return if we are about to do an out of range search
@@ -97,26 +89,14 @@ export const getActions = async (
     };
   }
 
-  // Get the action ids
-  const idsResponse = await fetch(
-    `${process.env.UPSTASH_REDIS_REST_URL}/zrange/user:${address}:${set}/${offset}/${offset + limit - 1}/rev`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-      },
-      keepalive: true,
-    });
-
-  const { result: ids } = await idsResponse.json();
+  const ids = await zRange(`user:${address}:${set}`, offset, offset + limit - 1, { rev: true});
 
   const actions = ids.length ? await mGetActions(ids) : [];
   const addresses: string[] = actions.map(action => action.subject);
   const uniqueAddresses = new Set(addresses);
 
-
   // Users
   const userVMsPromise = uniqueAddresses.size ? getUsers(Array.from(uniqueAddresses)) : [];
-
 
   // Comments
   const commentIds: string[] = actions.filter(action => action.object === 'comment').map(action => action.objectId);

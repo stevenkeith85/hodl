@@ -1,8 +1,8 @@
 import { NextApiResponse } from "next";
 import apiRoute from "../handler";
-import { getUser } from "../user/[handle]";
 import { HodlNextApiRequest } from "../../../models/HodlNextApiRequest";
 import { pusher } from "../../../lib/server/pusher";
+import { getUser } from "../../../lib/database/rest/getUser";
 
 
 const route = apiRoute();

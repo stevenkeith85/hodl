@@ -4,6 +4,7 @@ import { User, UserViewModel } from '../../../models/User';
 
 const client = Redis.fromEnv();
 
+// TODO: Deprecated. User database/rest instead
 export const getUserVMs = async (addresses: string[]) => {
     const usersPipeline = client.pipeline();
     for (let address of addresses) {

@@ -24,9 +24,9 @@ module.exports = {
     //   url: `${process.env.QUICKNODE_URL}/${process.env.QUICKNODE_AUTHENTICATION_TOKEN}/`,
     //   accounts: [process.env.WALLET_PRIVATE_KEY]
     // },
-    mainnet: {
-      url: `${process.env.QUICKNODE_URL}/${process.env.QUICKNODE_AUTHENTICATION_TOKEN}/`,
-      accounts: [process.env.WALLET_PRIVATE_KEY],
-    }
+    // mainnet: {
+    //   url: `${process.env.QUICKNODE_URL}/${process.env.QUICKNODE_AUTHENTICATION_TOKEN}/`,
+    //   accounts: [process.env.WALLET_PRIVATE_KEY],
+    // }
   },
 };

@@ -54,7 +54,6 @@ const makeCloudinaryVideoUrl = (cid, extension = "mp4") => {
 // image/asset differ is we have a video nft
 // we have no image if its an audio nft
 //
-// TODO: Possibly do the async stuff in parallel
 const uploadImageAndAssetToIPFS = async (assetUrl, imageUrl) => {
   if (imageUrl && imageUrl !== assetUrl) { // image and asset are different
 
