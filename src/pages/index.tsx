@@ -2,7 +2,7 @@ import Head from 'next/head';
 import dynamic from 'next/dynamic';
 
 import { authenticate } from '../lib/jwt';
-import { getUser } from './api/user/[handle]';
+import { getUserUsingHandle } from './api/user/[handle]';
 
 import PublicHomePageLoading from '../components/layout/PublicHomeLoading';
 import PrivateHomePageLoading from '../components/layout/PrivateHomePageLoading';
@@ -39,7 +39,7 @@ export const getServerSideProps = async ({ req, res }) => {
   }
 
   // TODO: We should just get the user on the private homepage
-  const user = await getUser(req.address, req.address);
+  const user = await getUserUsingHandle(req.address, req.address);
 
   return {
     props: {

@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
+import { UserAvatarAndHandleBodyLoading } from '../avatar/UserAvatarAndHandleBodyLoading';
 
 
 const AppBarLoading = ({ address }) => {
@@ -217,7 +218,7 @@ const AppBarLoading = ({ address }) => {
                                         display="flex"
                                         alignItems="center"
                                         justifyContent="center">
-                                        <Skeleton variant="circular" animation="wave" width={44} height={44} />
+                                        <UserAvatarAndHandleBodyLoading size={44} handle={false} />
                                     </Box>
                                 </Box>
                             </Box>

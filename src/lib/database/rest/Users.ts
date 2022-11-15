@@ -9,8 +9,6 @@ export const getUsers = async (addresses: string[]) => {
     }
 
     try {
-        // const start = Date.now();
-
         const r = await fetch(
             `${process.env.UPSTASH_REDIS_REST_URL}/pipeline`, {
             method: 'POST',
@@ -22,9 +20,7 @@ export const getUsers = async (addresses: string[]) => {
         });
 
         const data = await r.json();
-        // const stop = Date.now();
-        // console.log('get users', stop - start);
-
+        
         const users = data.filter(item => item.result).map(item => 
             ({
                 address:item.result[0],
@@ -34,11 +30,7 @@ export const getUsers = async (addresses: string[]) => {
 
         const avatarIds = users.filter(user => user.avatar).map(user => user.avatar); // avatars are optional
 
-        // const start2 = Date.now();
-        const avatars = await mGetTokens(avatarIds);
-
-        // const stop2 = Date.now();
-        // console.log('get avatars', stop2 - start2);
+        const avatars = avatarIds.length ? await mGetTokens(avatarIds) : [];
 
         const avatarMap = avatars.reduce((map, token) => {
             map[token.id] = token;
@@ -51,7 +43,6 @@ export const getUsers = async (addresses: string[]) => {
             avatar: avatarMap[user.avatar] || null
         }))
 
-        
         return userVMs;
     } catch (e) {
         console.log(e)

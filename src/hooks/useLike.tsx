@@ -24,9 +24,8 @@ export const useLike = (
     if (!address) {
       return;
     }
-    console.log("userLikesThisToken", userLikesThisToken)
     likeCount.mutate(old => {
-      console.log('old', old)
+      console.log('old', old) // THIS SEEMS TO NOT WORK IF WE DO NOT REVALIDATE THE SWR ON MOUNT
       if (userLikesThisToken) {
         return old - 1;
       } else {

@@ -1,6 +1,6 @@
 import { NextApiResponse } from "next";
 import apiRoute from "../handler";
-import { getUser } from "../user/[handle]";
+import { getUserUsingHandle } from "../user/[handle]";
 import { HodlNextApiRequest } from "../../../models/HodlNextApiRequest";
 import { pusher } from "../../../lib/server/pusher";
 
@@ -16,7 +16,7 @@ route.post(async (req: HodlNextApiRequest, res: NextApiResponse) => {
 
   const socketId = req.body.socket_id;
 
-  const hodlUser = await getUser(req.address, null)
+  const hodlUser = await getUserUsingHandle(req.address, null)
   
   const user = {
     id: hodlUser.address,

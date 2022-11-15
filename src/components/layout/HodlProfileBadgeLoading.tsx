@@ -1,6 +1,7 @@
 import Box from "@mui/material/Box";
 import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
+import { UserAvatarAndHandleBodyLoading } from "../avatar/UserAvatarAndHandleBodyLoading";
 import { HodlBorderedBox } from "../HodlBorderedBox";
 
 
@@ -25,8 +26,15 @@ export default function HodlProfileBadgeLoading() {
                     gap={2}
                     alignItems={"center"}
                 >
-                    <Skeleton variant="circular" animation="wave" width={70} height={70} />
-                    <Skeleton variant="text" animation="wave" width={70} height={18} />
+                    <UserAvatarAndHandleBodyLoading size={70} handle={false} />
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                        }}>
+                        <Skeleton variant="text" height="18px" width={100} />
+                        <Skeleton variant="text" height="14px" width={50} />
+                    </Box>
                 </Box>
                 <Box
                     display="grid"

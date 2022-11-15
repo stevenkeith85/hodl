@@ -9,7 +9,6 @@ import { likesComment } from "../like/comment/likes";
 import { getMutableToken } from "../contracts/mutable-token/[tokenId]";
 import { HodlComment } from "../../../models/HodlComment";
 import { MutableToken } from "../../../models/Nft";
-import { getUser } from "../user/[handle]";
 import { getAction } from ".";
 import { pusher } from "../../../lib/server/pusher";
 import { runRedisTransaction } from "../../../lib/database/rest/databaseUtils";
@@ -238,7 +237,6 @@ export const addAction = async (action: HodlAction) => {
         return; // We've replied to our own comment. No need for a notification.
       }
 
-      console.log(`actions/add - adding a notification for ${(await getUser(commentThatWasRepliedTo.subject, null)).nickname}, as someone replied to their comment`)
       return await addNotification(commentThatWasRepliedTo.subject, action);
     }
   }

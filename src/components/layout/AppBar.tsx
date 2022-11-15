@@ -24,6 +24,7 @@ import {
     ActionTypes,
     HodlAction
 } from '../../models/HodlAction';
+import { UserAvatarAndHandleBodyLoading } from '../avatar/UserAvatarAndHandleBodyLoading';
 
 
 const CloseIcon = dynamic(
@@ -38,7 +39,7 @@ const UserAvatarAndHandle = dynamic(
     () => import('../avatar/UserAvatarAndHandle').then(mod => mod.UserAvatarAndHandle),
     {
         ssr: false,
-        loading: () => <Skeleton variant="circular" animation="wave" width={44} height={44} />
+        loading: () => <UserAvatarAndHandleBodyLoading size={44} handle={false} />
     }
 );
 

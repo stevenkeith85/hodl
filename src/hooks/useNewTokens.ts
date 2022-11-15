@@ -9,7 +9,8 @@ export const useNewTokens = (limit=10, fallbackData=null) => {
     const swr = useSWRInfinite(
         getKey, 
         (url:string, offset: number, limit: number) => axios.get(url, { params: { offset, limit } }).then(r => r.data),
-        { fallbackData });
+        { fallbackData }
+        );
 
     return { results: swr };
 }

@@ -4,7 +4,7 @@ import apiRoute from '../handler';
 
 import { Redis } from '@upstash/redis';
 import { HodlComment, HodlCommentViewModel } from "../../../models/HodlComment";
-import { getUser } from "../user/[handle]";
+import { getUserUsingHandle } from "../user/[handle]";
 
 const client = Redis.fromEnv()
 const route = apiRoute();
@@ -19,7 +19,7 @@ export const getComment = async (id, withUser: boolean = true, viewer: string = 
   if (comment) {
     const vm: HodlCommentViewModel = {
       id: comment.id,
-      user: withUser ? await getUser(comment.subject, viewer) : null,
+      user: withUser ? await getUserUsingHandle(comment.subject, viewer) : null,
       comment: comment.comment,
       timestamp: comment.timestamp,
       object: comment.object,

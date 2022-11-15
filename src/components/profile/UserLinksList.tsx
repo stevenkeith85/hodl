@@ -56,8 +56,8 @@ export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit, follow
         }
       >
         {
-          ({ items }) => items.map((user: UserViewModel) =>
-            <Box
+          ({ items }) => items.map((user: UserViewModel) => //<p>{user.address}</p>
+          <Box
               display="flex"
               width={`100%`}
               alignItems="center"

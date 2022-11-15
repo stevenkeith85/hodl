@@ -6,7 +6,7 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 
 import { UserViewModel } from '../../models/User';
-import { throttle } from '../../lib/lodash';
+// import { throttle } from '../../lib/lodash';
 
 import HodlFeedLoading from './HodlFeedLoading';
 import PrivateHomePageSidebarLoading from './PrivateHomePageSidebarLoading';
@@ -14,7 +14,7 @@ import PrivateHomePageSidebarLoading from './PrivateHomePageSidebarLoading';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import PrivateHomePageSwitchLoading from './PrivateHomePageSwitchLoading';
-import { useActions2 } from '../../hooks/useActions2';
+// import { useActions2 } from '../../hooks/useActions2';
 // import { HodlFeed2 } from '../feed/HodlFeed2';
 
 
@@ -50,8 +50,8 @@ const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
 
     const [viewSidebar, setViewSidebar] = useState(false);
 
-    const previousNearestToTop = useRef(null);
-    const nearestToTop = useRef(null);
+    // const previousNearestToTop = useRef(null);
+    // const nearestToTop = useRef(null);
 
     const PrivateHomePageSidebar = dynamic(
         () => import('./PrivateHomePageSidebar'),
@@ -62,7 +62,7 @@ const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
     );
 
     // TODO: IS THIS EATING UP OUR CLOUDINARY BANDWIDTH??
-    
+
     // const updateNearestToTop = () => {
     //     previousNearestToTop.current = nearestToTop.current;
 

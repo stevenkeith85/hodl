@@ -5,7 +5,7 @@ import apiRoute from "../handler";
 import { ActionSet, HodlAction, HodlActionViewModel } from "../../../models/HodlAction";
 
 import { getComment } from "../comment";
-import { getUser } from "../user/[handle]";
+import { getUserUsingHandle } from "../user/[handle]";
 import { getToken } from "../../../lib/database/rest/getToken";
 import { mGetActions } from "../../../lib/database/rest/Actions";
 import { getUsers } from "../../../lib/database/rest/Users";
@@ -32,7 +32,7 @@ export const getAction = async (id, viewer): Promise<HodlActionViewModel | null>
     ...hodlAction,
   };
 
-  const userPromise = getUser(hodlAction.subject, viewer);
+  const userPromise = getUserUsingHandle(hodlAction.subject, viewer);
 
   let tokenPromise = null;
 

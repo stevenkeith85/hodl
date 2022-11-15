@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-
+// TODO: Switch to fetch
 export const runRedisTransaction = async (cmds): Promise<boolean> => {
   try {
     const r = await axios.post(
@@ -9,7 +9,7 @@ export const runRedisTransaction = async (cmds): Promise<boolean> => {
       {
         headers: {
           Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-        }
+        },
       })
 
     const response = r.data;

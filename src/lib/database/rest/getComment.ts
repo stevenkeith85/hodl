@@ -7,7 +7,8 @@ export const getComment = async (id) : Promise<HodlComment | null> => {
       {
         headers: {
           Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-        }
+        },
+        keepalive: true
       });
   
     const {result: comment } = await r.json();

@@ -1,22 +1,22 @@
-import { NextApiResponse } from "next";
-import { Redis } from '@upstash/redis';
-
-import { User, UserViewModel } from "../../../models/User";
-import { Token } from "../../../models/Token";
+import { NextRequest, NextResponse } from 'next/server';
 
 
-import apiRoute from '../handler';
+
+
+
+
+
+
+
+
+import { UserViewModel } from "../../../models/User";
+
 import { getAsString } from "../../../lib/getAsString";
+import { getToken } from '../../../lib/database/rest/getToken';
+import { getUser } from '../../../lib/database/rest/getUser';
+import { get } from '../../../lib/database/rest/get';
 
-const client = Redis.fromEnv()
-const route = apiRoute();
-
-
-export const getUser = async (
-  handle: string,
-  viewerAddress: string,
-  nonce = false): Promise<UserViewModel | null> => {
-
+export const getUserUsingHandle = async (handle: string, viewerAddress: string): Promise<UserViewModel | null> => {
   if (!handle) {
     return null;
   }
@@ -24,75 +24,40 @@ export const getUser = async (
   let address = handle;
 
   if (!/^0x[0-9A-F]{40}$/i.test(address)) {// An ethereum/polygon address is a 42 character hexadecimal address
-    address = await client.get(`nickname:${handle}`);
+    address = await get(`nickname:${handle}`);
   }
 
   if (!address) {
     return null;
   }
 
-  // TODO - We should check the 'users' collection first; as the user may have a uuid entry; 
-  // but they've not actually signed the message to connect to the site
-  let user = null;
-  if (nonce) {
-    user = await client.hmget<User>(`user:${address}`, 'address', 'nickname', 'avatar', 'nonce', 'blockNumber');
-  } else {
-    user = await client.hmget<User>(`user:${address}`, 'address', 'nickname', 'avatar');
-  }
-
-  if (!user) {
-    return null;
-  }
-
-  const vm: UserViewModel = {
-    address: user.address,
-    nickname: user.nickname,
-    avatar: null,
-    followedByViewer: false,
-    followsViewer: false
-  }
-
-  if (nonce) {
-    vm.nonce = user.nonce;
-    vm.blockNumber = user.blockNumber;
-  }
-
-  const avatarPromise = user?.avatar ? client.get<Token>(`token:${user.avatar}`) : null;
-
-  let viewerAddressPromise = null;
-
-  // if we have a known user viewing this; get their details
-  if (viewerAddress) {
-    const pipeline = client.pipeline();
-
-    pipeline.zscore(`user:${viewerAddress}:following`, user?.address);
-    pipeline.zscore(`user:${user?.address}:following`, viewerAddress);
-
-    viewerAddressPromise = pipeline.exec<[number, number]>();
-  }
-
-  const [avatar, result] = await Promise.all([avatarPromise, viewerAddressPromise]);
-
-  vm.avatar = avatar;
-
-  if (result) {
-    vm.followedByViewer = Boolean(result[0]);
-    vm.followsViewer = Boolean(result[1]);
-  }
-
-  return vm;
+  return await getUser(address, viewerAddress)  
 }
 
-// TODO: Potentially convert to an edge function
-route.get(async (req, res: NextApiResponse) => {
-  const handle = getAsString(req.query.handle);
 
-  if (!handle) {
-    return res.status(400).json({ message: 'Bad Request' });
+export default async function route(req: NextRequest) {
+  if (req.method !== 'GET') {
+    return new Response(null, { status: 405 });
   }
 
-  const user = await getUser(handle, req?.address);
-  res.status(200).json({ user })
-});
+  const { searchParams } = new URL(req.url);
 
-export default route;
+  const handle = getAsString(searchParams.get('handle'));
+  const viewer = getAsString(searchParams.get('viewer'));
+
+  if (!handle) {
+    return new Response(null, { status: 400 });
+  }
+
+  const user = await getUserUsingHandle(handle, viewer);
+
+  return NextResponse.json({user}, {
+    headers: {
+      'Cache-Control': 'max-age=0, s-maxage=60'
+    }
+  });
+};
+
+export const config = {
+  runtime: 'experimental-edge',
+}
