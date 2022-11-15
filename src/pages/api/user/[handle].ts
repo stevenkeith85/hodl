@@ -50,7 +50,7 @@ export default async function route(req: NextRequest) {
 
   return NextResponse.json({user}, {
     headers: {
-      'Cache-Control': 'max-age=0, s-maxage=60'
+      // 'Cache-Control': 'max-age=0, s-maxage=60'
     }
   });
 };
