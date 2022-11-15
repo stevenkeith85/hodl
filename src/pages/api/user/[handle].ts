@@ -7,12 +7,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 
 
-
-
 import { UserViewModel } from "../../../models/User";
 
 import { getAsString } from "../../../lib/getAsString";
-import { getToken } from '../../../lib/database/rest/getToken';
 import { getUser } from '../../../lib/database/rest/getUser';
 import { get } from '../../../lib/database/rest/get';
 

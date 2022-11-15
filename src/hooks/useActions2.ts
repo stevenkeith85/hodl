@@ -1,12 +1,10 @@
 import { ActionSet } from "../models/HodlAction";
 import axios from 'axios';
-import { useContext } from "react";
-import { WalletContext } from "../contexts/WalletContext";
 import useSWRInfinite from 'swr/infinite'
 
 
-export const useActions2 = (set = ActionSet.Feed, limit=14) => {
-  const { address } = useContext(WalletContext);
+// This is really only for the feed at the moment; as it doesn't revalidate the 1st page (notifications would require that)
+export const useActions2 = (address, set = ActionSet.Feed, limit=14) => {
 
   const getKey = (index, previous) => {
     if (previous?.next > previous?.total) {
@@ -29,8 +27,11 @@ export const useActions2 = (set = ActionSet.Feed, limit=14) => {
   }).then(response => response.data);
 
   const swr = useSWRInfinite(
-    getKey,
+    address ? getKey : null,
     fetcher,
+    {
+      revalidateFirstPage: false
+    }
   );
 
   return swr;

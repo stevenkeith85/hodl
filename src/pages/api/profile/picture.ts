@@ -20,6 +20,7 @@ route.post(async (req, res: NextApiResponse) => {
     return res.status(400).json({ error: 'bad request' });
   }
 
+  // TODO: Could we just trust the cache here?
   const mutableToken = await getMutableToken(token, true);
   if (mutableToken.hodler !== req.address) {
     return res.status(400).json({ error: 'bad request' });

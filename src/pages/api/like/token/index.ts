@@ -24,13 +24,11 @@ route.post(async (req, res: NextApiResponse) => {
   }
 
   let liked = false;
+  let notificationPromise = null;
 
   const exists = await client.zscore(`liked:tokens:${req.address}`, token);
 
-  console.log("exists", exists)
   if (exists) { // unlike
-
-    console.log("unliking token");
     const cmds = [
       ['ZREM', `liked:tokens:${req.address}`, token],
       ['ZREM', `likes:token:${token}`, req.address]
@@ -42,7 +40,6 @@ route.post(async (req, res: NextApiResponse) => {
       return res.status(510).json({ message: 'Upstream error' });
     }
   } else { // like
-    console.log("liking token")
     const timestamp = Date.now();
 
     const cmds = [
@@ -65,7 +62,7 @@ route.post(async (req, res: NextApiResponse) => {
       objectId: token
     };
 
-    await addToZeplo(
+    notificationPromise = addToZeplo(
       'api/actions/add',
       action,
       req.cookies.refreshToken,
@@ -83,7 +80,8 @@ route.post(async (req, res: NextApiResponse) => {
     member: token
   });
 
-  console.log('liked', liked)
+  await Promise.all([notificationPromise]);
+
   return res.status(200).json({ liked });
 });
 

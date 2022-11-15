@@ -4,8 +4,8 @@ import { Redis } from '@upstash/redis';
 import apiRoute from "../handler";
 
 import { UserViewModel } from "../../../models/User";
-import { getUserUsingHandle } from "../user/[handle]";
 import { getAsString } from "../../../lib/getAsString";
+import { getUser } from "../../../lib/database/rest/getUser";
 
 
 const client = Redis.fromEnv()
@@ -90,7 +90,7 @@ export const getFollowers = async (
 
     // TODO: We should get the details with a pipeline not promises
     const addresses: string[] = await client.zrange(`user:${address}:followers`, start, stop, { rev: true });
-    const promises = addresses.map(address => getUserUsingHandle(address, viewer));
+    const promises = addresses.map(address => getUser(address, viewer));
     users = await Promise.all(promises);
 
     return {

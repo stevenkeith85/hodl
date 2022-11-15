@@ -175,7 +175,6 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
         });
     }, [address]);
 
-
     const mutateAndNotify = async (action: HodlAction) => {
 
         if (action.action === ActionTypes.Bought ||
@@ -203,7 +202,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
         }
 
         pusher.user.bind('notification-hover', mutateAndNotify);
-        pusher.user.bind('notification', ringNotificationBell);
+        pusher.user.bind('notification', ringNotificationBell);          
 
         return () => {
             pusher.user.unbind('notification-hover', mutateAndNotify);

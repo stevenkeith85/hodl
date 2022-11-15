@@ -56,10 +56,10 @@ const addNotification = async (address: string, action: HodlAction): Promise<boo
       ];
 
       await Promise.all(promises);
-    } catch(e) {
+    } catch (e) {
       // We do not want to retry the whole actions system if this fails; as it will populate the database with duplicate actions
       // TODO: We should split the 'notifications' out into their own sub-system so that we can retry them without impacting the actions
-      
+
       // if this DOES fail at the moment; the user WILL still get a notification. It just won't be 'real-time'
       console.log(e);
     }
@@ -68,35 +68,13 @@ const addNotification = async (address: string, action: HodlAction): Promise<boo
   return success;
 }
 
-// Add the action id to <address>s feed. We'll set the feed entry's timestamp to use the action's timestamp (for now)
-// as we'd probably not want to show something at the top of a chronological feed, if it was actually listed a while ago
-const addToFeed = async (address: string, action: HodlAction): Promise<boolean> => {
-
-  const cmds = [
-    ['ZADD', `user:${address}:feed`, action.timestamp, action.id],
-    ["ZREMRANGEBYRANK", `user:${address}:feed`, 0, -(500 + 1)]
-  ];
-
-  const success = await runRedisTransaction(cmds);
-
-  return success;
-}
 
 // gets the last <x> actions that address took that can be used in a feed
 const getLastXFeedActions = async (address: string, x: number = 5): Promise<HodlAction[]> => {
   const actionIds = await client.zrange(`user:${address}:actions:feed`, 0, x, { rev: true });
 
-  const actions: HodlAction[] = [];
-
-  for (const id of actionIds) {
-    const data: HodlAction = await client.get(`action:${id}`);
-
-    // If the set has an id of an action that no longer exists, then we do not want to add it.
-    // Ideally, we'd never be in this situation
-    if (data) {
-      actions.push(data);
-    }
-  }
+  const params = actionIds.map(id => `action:${id}`)
+  const actions: HodlAction[] = params.length ? await client.mget(...params) : [];
 
   return actions;
 }
@@ -176,9 +154,6 @@ export const addAction = async (action: HodlAction) => {
     return; // TODO: Handle this
   }
 
-  // console.log('added action with id', action.id)
-  // console.log('actions/add - Stored Action');
-
   if (action.action === ActionTypes.Liked) { // tell the token owner you liked it
     if (action.object === "token") {
 
@@ -187,9 +162,12 @@ export const addAction = async (action: HodlAction) => {
         return;
       }
 
-      // Potentially, we might be safe to just read our cached value here
-      // if our cache update strategy is bulletproof.
-      const mutableToken = await getMutableToken(action.objectId, true);
+      // We just use the cache value here; as the worst thing that could happen is we tell
+      // the old token hodler someone liked their token. (if it happens within the cache timeout - 15 mins)
+
+      // our cache invalidation strategy is pretty good; so the only way this would happen is if someone
+      // transfers the token outwith our site
+      const mutableToken = await getMutableToken(action.objectId);
 
       if (mutableToken.hodler === action.subject) {
         return; // We've liked our own token. No need for a notification.
@@ -220,15 +198,18 @@ export const addAction = async (action: HodlAction) => {
     const comment: HodlComment = await client.get(`comment:${action.objectId}`);
 
     if (comment?.object === "token") { // the comment was about a token, tell the token owner.
-      // Potentially, we might be safe to just read our cached value here
-      // if our cache update strategy is bulletproof.
-      const mutableToken = await getMutableToken(comment.tokenId, true);
+
+      // We just use the cache value here; as the worst thing that could happen is we tell
+      // the old token hodler someone commented on their token. (if it happens within the cache timeout - 15 mins)
+
+      // our cache invalidation strategy is pretty good; so the only way this would happen is if someone
+      // transfers the token outwith our site
+      const mutableToken = await getMutableToken(comment.tokenId);
 
       if (mutableToken.hodler === action.subject) {
         return; // We've commented on our own token. No need for a notification.
       }
 
-      console.log(`actions/add - adding a notification for ${mutableToken.hodler}, as someone commented on their token`)
       return await addNotification(mutableToken.hodler, action);
     } else if (comment?.object === "comment") { // the comment was a reply, tell the comment author. 
       const commentThatWasRepliedTo: HodlComment = await client.get(`comment:${comment.objectId}`);
@@ -255,8 +236,23 @@ export const addAction = async (action: HodlAction) => {
     // and add it to the <user>s feed
     const lastActions = await getLastXFeedActions(followed as string)
 
-    for (const a of lastActions) {
-      await addToFeed(`${user}`, a);
+    if (lastActions.length) {
+      const timeStampAndActions = lastActions.flatMap(action => [action.timestamp, action.id]);
+
+      const cmds = [
+        ['ZADD', `user:${user}:feed`, ...timeStampAndActions],
+        ["ZREMRANGEBYRANK", `user:${user}:feed`, 0, -(500 + 1)]
+      ];
+
+      const success = await runRedisTransaction(cmds);
+
+      if (success) {
+        try {
+          pusher.sendToUser(user, "feed", null); // we want the ui to update when the user has followed someone; so they can immediately see their content
+        } catch (e) {
+          console.log(e);
+        }
+      }
     }
 
     // tell <followed>, that <user> followed them

@@ -75,8 +75,8 @@ export async function getServerSideProps({ params, query, req, res }) {
   const prefetchedFollowingCountPromise = getFollowingCount(owner.address);
   const prefetchedFollowersCountPromise = getFollowersCount(owner.address);
 
-  const prefetchedFollowingPromise = getFollowing(owner.address, 0, limit);
-  const prefetchedFollowersPromise = getFollowers(owner.address, 0, limit);
+  const prefetchedFollowingPromise = getFollowing(owner.address, 0, limit, req?.address);
+  const prefetchedFollowersPromise = getFollowers(owner.address, 0, limit, req?.address);
 
   const [
     prefetchedFollowingCount,
@@ -115,6 +115,8 @@ const Profile = ({
   tab,
   limit
 }) => {
+
+  // return <>{JSON.stringify(prefetchedFollowing, null, 2)}</>
   const router = useRouter();
 
   const [value, setValue] = useState(Number(tab)); // tab

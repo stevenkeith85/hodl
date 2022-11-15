@@ -16,6 +16,9 @@ import cookie from 'cookie'
 import '../styles/globals.css'
 import { PusherContext } from '../contexts/PusherContext';
 import { WalletContext } from '../contexts/WalletContext';
+import { FeedContext } from '../contexts/FeedContext';
+import { useActions2 } from '../hooks/useActions2';
+import { ActionSet } from '../models/HodlAction';
 
 import { HodlNotificationSnackbar } from '../components/snackbars/HodlNotificationSnackbar';
 
@@ -32,6 +35,7 @@ import createEmotionCache from '../createEmotionCache';
 
 // Also loads a lot of deps
 import Layout from '../components/layout/Layout';
+
 
 
 // Client-side cache, shared for the whole session of the user in the browser.
@@ -93,6 +97,8 @@ export default function MyApp(props: MyAppProps) {
 
   }, [address])
 
+  const feed = useActions2(props?.pageProps?.address, ActionSet.Feed);
+  
   // Whole site is currently password protected
   // @ts-ignore
   if (!pageProps.hasReadPermission) {
@@ -109,8 +115,8 @@ export default function MyApp(props: MyAppProps) {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <SWRConfig value={{
-            dedupingInterval: 15000, // default is 2000
-            focusThrottleInterval: 15000, // default is 5000
+            dedupingInterval: 4000,
+            focusThrottleInterval: 5000,
             errorRetryCount: 0
           }}>
             <WalletContext.Provider value={{
@@ -126,15 +132,12 @@ export default function MyApp(props: MyAppProps) {
                 setUserSignedInToPusher
               }}>
                 <SnackbarProvider
-                  // anchorOrigin={{
-                  //   vertical: 'top',
-                  //   horizontal: 'left'
-                  // }}
                   Components={{
                     // @ts-ignore
                     hodlnotification: HodlNotificationSnackbar
                   }}
                 >
+                  <FeedContext.Provider value={{ feed }}>
                   <Layout
                     address={address}
                     pusher={pusher}
@@ -142,6 +145,7 @@ export default function MyApp(props: MyAppProps) {
                   >
                     <Component {...pageProps} />
                   </Layout>
+                  </FeedContext.Provider>
                 </SnackbarProvider>
               </PusherContext.Provider>
             </WalletContext.Provider>

@@ -26,7 +26,7 @@ export const runRedisTransaction = async (cmds): Promise<boolean> => {
   }
 }
 
-export const runRedisPipeline = async (cmds): Promise<boolean> => {
+export const runRedisPipeline = async (cmds) => {
   try {
     const r = await fetch(
       `${process.env.UPSTASH_REDIS_REST_URL}/pipeline`, {

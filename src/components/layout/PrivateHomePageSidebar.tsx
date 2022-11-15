@@ -112,7 +112,7 @@ export default function PrivateHomePageSidebar({ user }) {
                     }}
                 >
                     <HodlProfileBadge user={user} />
-                    <TopUsers followButton={false} />
+                    <TopUsers followButton={true} />
                     <TopTokens showLikes={false} />
                     <NewUsers followButton={false} />
                     <NewTokens showLikes={false} />
