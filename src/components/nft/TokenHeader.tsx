@@ -8,8 +8,19 @@ import Tab from '@mui/material/Tab';
 import { DataObjectIcon } from '../icons/DataObjectIcon';
 import { InsightsIcon } from '../icons/InsightsIcon';
 import { ForumIcon } from "../icons/ForumIcon";
-import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
 
+import dynamic from 'next/dynamic';
+import { UserAvatarAndHandleBodyLoading } from "../avatar/UserAvatarAndHandleBodyLoading";
+
+
+
+const UserAvatarAndHandle = dynamic(
+    () => import('../avatar/UserAvatarAndHandle').then(mod => mod.UserAvatarAndHandle),
+    {
+        ssr: false,
+        loading: () => <UserAvatarAndHandleBodyLoading size={50} handle={false} />
+    }
+);
 
 export default function TokenHeader({
     mutableToken,

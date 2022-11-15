@@ -1,12 +1,9 @@
 import Link from "next/link";
 
-
 import { UserViewModel } from "../../models/User";
-
 import { useUser } from "../../hooks/useUser";
-
-import dynamic from 'next/dynamic';
 import { UserAvatarAndHandleBodyLoading } from "./UserAvatarAndHandleBodyLoading";
+import { UserAvatarAndHandleBody } from "./UserAvatarAndHandleBody";
 
 
 interface UserAvatarProps {
@@ -28,15 +25,12 @@ export const UserAvatarAndHandle: React.FC<UserAvatarProps> = (({
     withLink = true,
     color = "secondary"
 }) => {
-    const UserAvatarAndHandleBody = dynamic(
-        () => import('./UserAvatarAndHandleBody').then(mod => mod.UserAvatarAndHandleBody),
-        {
-            ssr: false,
-            loading: () => <UserAvatarAndHandleBodyLoading size={size} handle={handle} />
-        }
-    );
-
+    
     const { data: user } = useUser(address, fallbackData);
+
+    if(!user) {
+        return <UserAvatarAndHandleBodyLoading size={size} handle={handle} />
+    }
 
     return (<>
         {
