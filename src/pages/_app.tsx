@@ -99,7 +99,7 @@ export default function MyApp(props: MyAppProps) {
   
   // Prod is currently password protected. Will switch this to staging
   // @ts-ignore
-  if (process.env.NODE_ENV === 'production' && !pageProps.hasReadPermission) {
+  if (process.env.NEXT_PUBLIC_VERCEL_ENV === 'production' && !pageProps.hasReadPermission) {
     // @ts-ignore
     return <ThemeProvider theme={theme}><LoginPage {...pageProps} /></ThemeProvider>
   }
