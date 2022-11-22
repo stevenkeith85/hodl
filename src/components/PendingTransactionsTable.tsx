@@ -64,7 +64,7 @@ export default function PendingTransactionsTable({ limit = 10 }) {
                                         {hash}
                                     </Typography>
                                 </Link>
-                                <TableCell>{nonce}</TableCell>
+                                <Typography sx={{ textAlign: 'right' }}>{nonce}</Typography>
                             </>
                         ))
                     }

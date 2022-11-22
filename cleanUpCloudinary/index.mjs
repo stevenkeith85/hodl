@@ -2,7 +2,7 @@ import { Redis } from "@upstash/redis/with-fetch";
 import dotenv from 'dotenv'
 import readline from "readline-sync";
 
-dotenv.config({ path: '.env.development.local' })
+dotenv.config({ path: '.env.staging.local' })
 
 const client = Redis.fromEnv();
 import cloudinary from 'cloudinary'
@@ -59,10 +59,11 @@ const main = async () => {
     let d1 = new Date(resource.created_at);
     let d2 = Date.now()
 
-    return +d2 > d1.setDate(d1.getDate());
+    return +d2 >= d1.setDate(d1.getDate());
   });
-  console.log("Number of orphaned resources older than one week", orphanedResourcesOlderThanAWeek.length);
-  console.log("orphanedResourcesOlderThanAWeek", orphanedResourcesOlderThanAWeek)
+
+
+  console.log("Number of items to delete", orphanedResourcesOlderThanAWeek.length);
 
   const publicIdsToDelete = orphanedResourcesOlderThanAWeek.map(resource => resource.public_id)
 

@@ -36,8 +36,6 @@ import createEmotionCache from '../createEmotionCache';
 // Also loads a lot of deps
 import Layout from '../components/layout/Layout';
 
-
-
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
@@ -99,9 +97,9 @@ export default function MyApp(props: MyAppProps) {
 
   const feed = useActions2(props?.pageProps?.address, ActionSet.Feed);
   
-  // Whole site is currently password protected
+  // Prod is currently password protected. Will switch this to staging
   // @ts-ignore
-  if (!pageProps.hasReadPermission) {
+  if (process.env.NODE_ENV === 'production' && !pageProps.hasReadPermission) {
     // @ts-ignore
     return <ThemeProvider theme={theme}><LoginPage {...pageProps} /></ThemeProvider>
   }
