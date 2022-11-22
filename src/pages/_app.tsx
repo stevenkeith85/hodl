@@ -97,9 +97,9 @@ export default function MyApp(props: MyAppProps) {
 
   const feed = useActions2(props?.pageProps?.address, ActionSet.Feed);
   
-  // Prod is currently password protected. Will switch this to staging
+  // Staging is password protected. Will switch this to staging
   // @ts-ignore
-  if (process.env.NEXT_PUBLIC_VERCEL_ENV === 'production' && !pageProps.hasReadPermission) {
+  if (process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview' && !pageProps.hasReadPermission) {
     // @ts-ignore
     return <ThemeProvider theme={theme}><LoginPage {...pageProps} /></ThemeProvider>
   }
