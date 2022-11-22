@@ -7,7 +7,7 @@ import { RocketLaunchIcon } from "../icons/RocketLaunchIcon";
 
 
 const Footer = ({
-    // address 
+    address 
 }) => {
     return (
         <div>
@@ -88,7 +88,7 @@ const Footer = ({
                                 <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>tokens</Typography>
                                 <Link href="/explore">explore</Link>
                                 {
-                                    // address &&
+                                    address &&
                                     <Link href="/create">create</Link>
                                 }
                             </Box>

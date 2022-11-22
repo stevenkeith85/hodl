@@ -107,15 +107,6 @@ const updateCloudinary = async (
     : null;
 
   await Promise.all([uploadAssetPromise, uploadImagePromise]);
-
-  // 3. Delete the asset (and its variants) from the upload folder.
-  const deleted = await new Promise((resolve, reject) => {
-    cloudinary.v2.uploader.destroy(
-      fileName,
-      { resource_type: resourceType },
-      (error: any, result: any) => error ? reject(error) : resolve(result)
-    );
-  });
 }
 
 // We start uploading the image and asset data as soon as the user gets to the IPFS screen.

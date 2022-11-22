@@ -41,7 +41,7 @@ export const UploadToIpfsAction: FC<MintProps> = ({
   const imageAndAssetUploaded = useRef(false);
   useEffect(() => {
 
-    if (formData?.fileName && !imageAndAssetUploaded.current) { // only do this if we haven't already. (react strict mode runs useEffect twice.)
+    if (formData?.fileName && !(imageAndAssetUploaded.current)) { // only do this if we haven't already. (react strict mode runs useEffect twice.)
       ipfsImageAndAssetUpload();
     }
   }, [formData?.fileName]);

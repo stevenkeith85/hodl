@@ -3,6 +3,7 @@ import PhotoOutlinedIcon from '@mui/icons-material/PhotoOutlined';
 import VideocamOutlinedIcon from '@mui/icons-material/VideocamOutlined';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import grey from '@mui/material/colors/grey';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 
@@ -32,7 +33,6 @@ export const HodlDropzone = ({ onDrop, loading }) => {
             sx={{
                 // borderRadius: 1,
                 overflow: 'hidden',
-                // padding: 2,
                 margin: 0,
                 cursor: 'pointer',
             }}
@@ -50,9 +50,7 @@ export const HodlDropzone = ({ onDrop, loading }) => {
                     <Box
                         display="flex"
                         gap={{ xs: 1, sm: 2 }}
-                    // sx={{ background: 'yellow'}}
                     >
-
                         <PhotoOutlinedIcon
                             color="secondary"
                             sx={{
@@ -62,20 +60,26 @@ export const HodlDropzone = ({ onDrop, loading }) => {
                                 }
                             }}
                         />
-                        <Tooltip title="We recommend trimming your video to 15s before upload">
+                        <Tooltip
+                            title="Coming soon"
+                        // title="We recommend trimming your video to 15s before upload"
+                        >
                             <VideocamOutlinedIcon
-                                color="secondary"
                                 sx={{
+                                    color: grey[300],
                                     fontSize: {
                                         xs: 36,
                                         sm: 40
                                     }
                                 }}
                             /></Tooltip>
-                        <Tooltip title="We recommend trimming your audio to 60s before upload">
+                        <Tooltip
+                            title="Coming soon"
+                        // title="We recommend trimming your audio to 60s before upload"
+                        >
                             <AudiotrackOutlinedIcon
-                                color="secondary"
                                 sx={{
+                                    color: grey[300],
                                     fontSize: {
                                         xs: 36,
                                         sm: 40
@@ -85,18 +89,16 @@ export const HodlDropzone = ({ onDrop, loading }) => {
                     </Box>
                     <Typography
                         sx={{
-                            // background: 'yellow',
                             color: theme => theme.palette.text.secondary,
                             fontSize: {
                                 xs: 14,
                                 sm: 16
                             }
                         }}>
-                        Image, video (&#8804; 15s) or audio (&#8804; 60s)
+                        {/* Image, video (&#8804; 15s) or audio (&#8804; 60s) */}
+                        Create an Image NFT
                     </Typography>
-                    <div
-                    // style={{ background: 'yellow',}}
-                    >
+                    <div>
                         <Button
                             disabled={loading}
                             color="primary"
@@ -105,7 +107,7 @@ export const HodlDropzone = ({ onDrop, loading }) => {
                                 paddingX: 3,
                                 paddingY: 1
                             }}>
-                            Select Asset
+                            Select asset
                         </Button>
                     </div>
                 </Box>

@@ -43,6 +43,12 @@ export default function About({ address }) {
                         <Typography component="li" mb={1}>
                             Click &quot;Connect&quot; on the homepage
                         </Typography>
+                        <Typography component="li" mb={1}>
+                            Switch to Polygon Mainnet
+                        </Typography>
+                        <Typography component="li" mb={1}>
+                            Get some Matic
+                        </Typography>
                     </Typography>
                 </Box>
                 <Box marginY={4}>
@@ -72,7 +78,7 @@ export default function About({ address }) {
                         Minting a token is easy. No need to know anything about smart contracts or blockchains.
                     </Typography>
                     <Typography mb={0} color={theme => theme.palette.text.secondary}>
-                        We add a small minting fee to cover our costs, and 
+                        We add a small minting fee to help cover our costs, and 
                         deter spam.
                     </Typography>
                 </Box>
@@ -101,7 +107,6 @@ export default function About({ address }) {
                     <Typography mb={1} variant="h2" >Do your own research</Typography>
                     <Typography component="ol" color={theme => theme.palette.text.secondary}>
                         <Typography component="li" mb={1}>Check the IPFS links </Typography>
-                        <Typography component="li" mb={1}>Check the selling history of the token</Typography>
                         <Typography component="li" mb={1}>Check for social validation (likes / comments)</Typography>
                         <Typography component="li" mb={1}>Check the license (if any) assigned to the asset attached to the token</Typography>
                     </Typography>

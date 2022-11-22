@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import cookie from 'cookie';
 
 export const accessTokenExpiresIn = 60 * 60; // 1 hour
-export const refreshTokenExpiresIn = 60 * 60 * 24 * 1; // need to login once a day. (this can go to weekly or more)
+export const refreshTokenExpiresIn = 60 * 60 * 24 * 30; // need to login once a month
 
 const client = Redis.fromEnv();
 
