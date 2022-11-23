@@ -142,11 +142,13 @@ export const WalletMenuPage: React.FC<WalletMenuPageProps> = ({
                             flexDirection="column"
                             gap={3}
                         >
-                            <Typography sx={{ fontSize: 16 }}>Connect with MetaMask</Typography>
+                            <Typography sx={{ fontSize: 16 }}>Connect to create a social profile</Typography>
                             <Typography sx={{ color: theme => theme.palette.text.secondary }}>
-                                Don&apos;t have MetaMask? Get it <Link href="https://metamask.io/download/">here</Link>
+                                In web3 your wallet is your identity. We use it to authenticate you.
                             </Typography>
-                            
+                            <Typography sx={{ color: theme => theme.palette.text.secondary }}>
+                                Unlike web2, you do not need to provide an email and password.
+                            </Typography>
                             <div>
                                 <LoginLogoutButton
                                     sx={{
