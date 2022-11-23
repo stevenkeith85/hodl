@@ -10,8 +10,6 @@ export const useUser = (address, fallbackData = null, viewer = null, ): SWRRespo
         address ? [`/api/user`, address, viewer] : null,
         fetcher,
         {
-            dedupingInterval: 2000,
-            focusThrottleInterval: 5000,
             fallbackData,
             revalidateOnMount: !fallbackData
         }
