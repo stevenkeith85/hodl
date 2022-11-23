@@ -149,9 +149,6 @@ export const WalletMenuPage: React.FC<WalletMenuPageProps> = ({
                             <Typography sx={{ color: theme => theme.palette.text.secondary }}>
                                 Unlike web2, you do not need to provide an email and password.
                             </Typography>
-                            <Typography sx={{ color: theme => theme.palette.text.secondary }}>
-                                You are in control and will have to approve any future transactions.
-                            </Typography>
                             <div>
                                 <LoginLogoutButton
                                     sx={{
