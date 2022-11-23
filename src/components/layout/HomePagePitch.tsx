@@ -65,9 +65,9 @@ export const HomePagePitch = ({ }) => {
                                 },
                                 color: '#999'
                             }}>
-                            a web3 social network<br /> and marketplace
+                            is a web3 social network<br /> and nft marketplace
                         </Typography>
-                        <Box
+                        {/* <Box
                             sx={{
                                 marginTop: { xs: '32px', md: '50px' },
                             }}>
@@ -89,7 +89,7 @@ export const HomePagePitch = ({ }) => {
                                     }
                                 }}
                             />
-                        </Box>
+                        </Box> */}
                     </Box>
                 </Grid>
                 <Grid

@@ -61,7 +61,7 @@ const PublicHomePageLoading = ({ }) => {
                                                 sm: 22,
                                             },
                                         }}>
-                                        a web3 social network</Typography>
+                                        is a web3 social network</Typography>
                                 </Skeleton>
                                 <Skeleton variant="text" animation="wave">
                                     <Typography
@@ -71,9 +71,9 @@ const PublicHomePageLoading = ({ }) => {
                                                 xs: 20,
                                                 sm: 22,
                                             },
-                                        }}>and marketplace</Typography>
+                                        }}>and nft marketplace</Typography>
                                 </Skeleton>
-                                <Box
+                                {/* <Box
                                     sx={{
                                         marginTop: { xs: '40px', md: '50px' },
                                     }}>
@@ -93,7 +93,7 @@ const PublicHomePageLoading = ({ }) => {
                                             },
                                         }}>Connect</Button>
                                     </Skeleton>
-                                </Box>
+                                </Box> */}
                             </Box>
                         </Grid>
                         <Grid
