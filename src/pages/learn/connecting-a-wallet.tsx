@@ -23,7 +23,7 @@ export default function ConnectingAWallet({ address }) {
                     <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
                         Connecting a wallet
                     </Typography>
-                    <Typography mb={1} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
+                    <Typography mb={1} color={theme => theme.palette.text.secondary}>
                         Connecting a wallet is safe and secure. It will create a profile (if you don&apos;t have one); or just redirect you to your feed page.
                     </Typography>
                 </Box>
@@ -37,7 +37,7 @@ export default function ConnectingAWallet({ address }) {
                         We need to verify your identity so that you get data specific to you when you log in. i.e. your feed will look different to another user&apos;s feed.
                     </Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                        We verify your identity by asking you to sign a message with your wallet so that you do not need to remember anouther username/password pair.
+                        We verify your identity by asking you to sign a message with your wallet so that you do not need to remember another username/password pair.
                     </Typography>
                 </Box>
                 <Box marginY={4}>
