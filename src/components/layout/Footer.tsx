@@ -85,6 +85,22 @@ const Footer = ({
                                     gap: 1,
                                 }}
                             >
+                                <Typography
+                                    sx={{
+                                        fontWeight: 600,
+                                        marginBottom: 0.5,
+                                    }}>
+                                    learn
+                                </Typography>
+                                <Link href="/learn/connecting-a-wallet">connecting a wallet</Link>
+                            </Box>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: 1,
+                                }}
+                            >
                                 <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>tokens</Typography>
                                 <Link href="/explore">explore</Link>
                                 {
