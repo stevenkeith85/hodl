@@ -1,13 +1,16 @@
-// module.exports = {
-//   reactStrictMode: true,
-// }
-
-
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
+
 module.exports = withBundleAnalyzer({
-  // reactStrictMode: true,
+    async rewrites() {
+      return [
+        {
+          source: '/sitemap.xml',
+          destination: '/api/sitemap',
+        },
+      ]
+    },
   experimental: {
     scrollRestoration: true,
   },
