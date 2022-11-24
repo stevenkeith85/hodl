@@ -109,7 +109,7 @@ const NftDetail = ({
         }}
       >
         <Head>
-          <title>{nft?.name} · Hodl My Moon</title>
+          <title>{`${nft?.name || ''} | NFT | Hodl My Moon`}</title>
         </Head>
         <Grid
           container
