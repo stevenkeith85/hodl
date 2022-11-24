@@ -38,7 +38,6 @@ export const getServerSideProps = async ({ req, res }) => {
     }
   }
 
-  // TODO: We should just get the user on the private homepage
   const user = await getUser(req.address, req.address);
 
   return {
@@ -56,17 +55,17 @@ export default function Home({
   return (
     <>
       <Head>
-        <title>Hodl My Moon, a web3 social network and NFT marketplace</title>
+        <title>Hodl My Moon, an NFT Social Network and NFT Marketplace</title>
 
-        <meta content="Hodl My Moon, a web3 social network and NFT marketplace" property="og:title"/>
+        <meta content="Hodl My Moon, an NFT Social Network and NFT marketplace" property="og:title"/>
         <meta content="website" property="og:type"/>
         <meta content="https://www.hodlmymoon.com/" property="og:url"/>
         <meta content="en_US" property="og:locale"/>
         <meta content="Hodl My Moon" property="og:site_name"/>
 
-        <meta content="Hodl My Moon is a web3 social network and NFT marketplace. Mint free Polygon NFTs as social media posts. Follow digital artists, photographers and other web3 creators. Like or Comment on their latest NFTs. Sell your NFTs on the marketplace" property="og:description"/>
-        <meta content="Hodl My Moon is a web3 social network and NFT marketplace. Mint free Polygon NFTs as social media posts. Follow digital artists, photographers and other web3 creators. Like or Comment on their latest NFTs. Sell your NFTs on the marketplace" name="description"/>
-        
+        <meta content="Hodl My Moon is an NFT Social Network and NFT marketplace. Mint free Polygon NFTs as social media posts. Follow digital artists, photographers and other crypto enthusiasts. Like or Comment on their latest NFTs. Sell your NFTs on the marketplace" property="og:description"/>
+        <meta content="Hodl My Moon is an NFT Social Network and NFT marketplace. Mint free Polygon NFTs as social media posts. Follow digital artists, photographers and other crypto enthusiasts. Like or Comment on their latest NFTs. Sell your NFTs on the marketplace" name="description"/>
+
         <link href="https://www.hodlmymoon.com" rel="canonical"/>
       </Head>
         {!address && <PublicHomePage /> }

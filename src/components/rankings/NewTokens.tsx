@@ -20,7 +20,7 @@ export const NewTokens = ({ showLikes = true, titleSize = 16, height = 250, size
                     padding: 0,
                     fontSize: titleSize
                 }}>
-                New Tokens
+                New NFTs
             </Typography>
             }>
             <TokenLinksList limit={limit} swr={newTokens} width={`100%`} showLikes={showLikes} size={size} fontSize={fontSize} />
