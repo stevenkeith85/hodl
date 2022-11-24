@@ -57,7 +57,7 @@ export default function About({ address }) {
                     >
                         Wallets</Typography>
                     <Typography mb={0} color={theme => theme.palette.text.secondary}>
-                        We officially support <Link href="https://metamask.io/">MetaMask</Link>, and recommend connecting with that.
+                        We officially support <Link href="https://metamask.io/">MetaMask</Link>, and recommend connecting with that. You can purchase Matic directly from there.
                     </Typography>
                 </Box>
                 <Box marginY={4}>
@@ -78,8 +78,7 @@ export default function About({ address }) {
                         Minting a token is easy. No need to know anything about smart contracts or blockchains.
                     </Typography>
                     <Typography mb={0} color={theme => theme.palette.text.secondary}>
-                        We add a small minting fee to help cover our costs, and 
-                        deter spam.
+                        We do not add a minting fee. You only pas the gas (a fraction of a penny on Polygon)
                     </Typography>
                 </Box>
                 <Box marginY={4}>
