@@ -142,13 +142,11 @@ const Profile = ({
 
   return <>
     <Head>
-      <link href={`/profile/${owner.nickname || owner.address}`} />
+      <link rel="canonical" href={`https://www.hodlmymoon.com/profile/${owner.nickname || owner.address}`} />
+      <title>{`${owner?.nickname || owner?.address} | Hodl My Moon`}</title>
     </Head>
     <FollowersContext.Provider value={{ followers }}>
       <FollowingContext.Provider value={{ following }}>
-        <Head>
-          <title>{owner.nickname || owner.address} · Hodl My Moon</title>
-        </Head>
         <Box sx={{
           height: {
             md:'120px',
