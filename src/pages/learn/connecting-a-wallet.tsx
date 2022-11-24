@@ -24,7 +24,7 @@ export default function ConnectingAWallet({ address }) {
                         Connecting a wallet
                     </Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
-                        Connecting a wallet is safe and secure. It will create a profile (if you don't have one); or just redirect you to your feed page.
+                        Connecting a wallet is safe and secure. It will create a profile (if you don&apos;t have one); or just redirect you to your feed page.
                     </Typography>
                 </Box>
 
@@ -55,13 +55,13 @@ export default function ConnectingAWallet({ address }) {
                 <Box marginY={4}>
                     <Typography mb={1} variant="h2">How are transaction&apos;s initiated?</Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                        We use JavaScript to trigger MetaMask to ask you to if you'd like to confirm a transaction on the blockchain. You'll get a pop up window.
+                        We use JavaScript to trigger MetaMask to ask you to if you&apos;d like to confirm a transaction on the blockchain. You&apos;ll get a pop up window.
                     </Typography>
                 </Box>
                 <Box marginY={4}>
                     <Typography mb={1} variant="h2">When might I be asked to confirm a transaction on Hodl My Moon?</Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                        You could be asked if you'd like to confirm a transaction if you:</Typography>
+                        You could be asked if you&apos;d like to confirm a transaction if you:</Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary} component="ul">
                         <li>Want to create a post (nft). Every post on our website is an nft.</li>
                         <li>Want to list or delist an nft on the marketplace.</li>
@@ -71,7 +71,7 @@ export default function ConnectingAWallet({ address }) {
                 <Box marginY={4}>
                     <Typography mb={1} variant="h2">When won&apos;t I be asked to confirm a transaction on Hodl My Moon?</Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                        When you do anything "web2", such as:
+                        When you do anything web2, such as:
                         </Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary} component="ul">
                         <li>Change your nickname</li>
@@ -86,19 +86,19 @@ export default function ConnectingAWallet({ address }) {
                 <Box marginY={4}>
                     <Typography mb={1} variant="h2">And I can reject every transaction?</Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                        Yes. I'm not sure why you&apos;d want to; but you can.
+                        Yes. I&apos;m not sure why you&apos;d want to; but you can.
                     </Typography>
                 </Box>
                 <Box marginY={4}>
                     <Typography mb={1} variant="h2">Do you have any technical links I can read?</Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                        Yes. If you are a programmer than I'd suggest starting with <Link target="_new" href="https://www.toptal.com/ethereum/one-click-login-flows-a-metamask-tutorial">this article on TopTal</Link> which describes the process
+                        Yes. If you are a programmer than I&apos;d suggest starting with <Link target="_new" href="https://www.toptal.com/ethereum/one-click-login-flows-a-metamask-tutorial">this article on TopTal</Link> which describes the process
                     </Typography>
                 </Box>
                 <Box marginY={4}>
                     <Typography mb={1} variant="h2">Do other sites do this?</Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                        Yes. "Sign in with Ethereum (SIWE)" / "Sign in with MetaMask" is very common.
+                        Yes. &quot;Sign in with Ethereum (SIWE)&quot; / &quot;Sign in with MetaMask&quot; is very common.
                     </Typography>
                 </Box>
             </HodlBorderedBox>

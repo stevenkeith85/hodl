@@ -96,25 +96,13 @@ export default function About({ address }) {
                         You can delist your token at any point, and only pay the gas.
                     </Typography>
                     <Typography mb={0} color={theme => theme.palette.text.secondary}>
-                        There's no obligation to use the marketplace.
+                        There&apos;s no obligation to use the marketplace.
                     </Typography>
                 </Box>
                 <Box marginY={4}>
                     <Typography mb={1} variant="h2">Trust</Typography>
                     <Typography mb={0} color={theme => theme.palette.text.secondary}>
-                        Connecting your wallet is a one-click, cryptographically-secure way to verify your identity.
-                    </Typography>
-                    <Typography mb={0} color={theme => theme.palette.text.secondary}>
-                        It allows us to log you in to the website without requiring the traditional username / password combination.
-                    </Typography>
-                    <Typography mb={0} color={theme => theme.palette.text.secondary}>
-                        You will still have to verify any proposed transactions yourself via your wallet.
-                    </Typography>
-                    <Typography mb={0} color={theme => theme.palette.text.secondary}>
-                        We do not hold you keys. We do not want your keys.
-                    </Typography>
-                    <Typography mb={0} color={theme => theme.palette.text.secondary}>
-                        Transactions that you can initiate (if you'd like) are: minting a token (you only pass gas); listing a token on the market (you only pas gas); delisting a token on the market (you only pay gas); or buying a token. (you pay gas + the seller&apos;s token fee)
+                        Connecting your wallet is a one-click, cryptographically-secure way to verify your identity. Please read <Link href="/learn/connecting-your-wallet">this article</Link> for more information.
                     </Typography>
                 </Box>
                 <Box marginY={4}>
