@@ -21,7 +21,7 @@ export const TopTokens = ({ showLikes = true, titleSize = 16,  height = 250, siz
                     padding: 0,
                     fontSize: titleSize
                 }}>
-                Top Tokens
+                Top NFTs
             </Typography>
             }>
             <TokenLinksList

@@ -99,7 +99,7 @@ export const TokenLink: React.FC<TokenLinkProps> = memo(({ token, size = 44, fon
         <Box sx={{
             display: loading ? 'none' : 'block'
         }}>
-            <Link href={`/nft/${token.id}`} passHref>
+            <Link href={`/nft/${token.id}`}>
                 <Typography component="span" sx={{
                     textDecoration: 'none',
                     color: '#333'
