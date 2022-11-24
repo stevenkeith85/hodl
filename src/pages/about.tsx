@@ -41,13 +41,13 @@ export default function About({ address }) {
                             </Link>
                         </Typography>
                         <Typography component="li" mb={1}>
-                            Click &quot;Connect&quot; on the homepage
+                            Click the wallet icon and connect to create your profile.
                         </Typography>
                         <Typography component="li" mb={1}>
-                            Switch to Polygon Mainnet
+                            Switch to Polygon Mainnet in MetaMask
                         </Typography>
                         <Typography component="li" mb={1}>
-                            Get some Matic
+                            Get some Matic via MetaMask
                         </Typography>
                     </Typography>
                 </Box>
@@ -78,7 +78,7 @@ export default function About({ address }) {
                         Minting a token is easy. No need to know anything about smart contracts or blockchains.
                     </Typography>
                     <Typography mb={0} color={theme => theme.palette.text.secondary}>
-                        We do not add a minting fee. You only pas the gas (a fraction of a penny on Polygon)
+                        We do not charge a minting fee. You only pay the gas (a fraction of a penny on Polygon). We do not receive this fee.
                     </Typography>
                 </Box>
                 <Box marginY={4}>
@@ -95,11 +95,26 @@ export default function About({ address }) {
                     <Typography mb={0} color={theme => theme.palette.text.secondary}>
                         You can delist your token at any point, and only pay the gas.
                     </Typography>
+                    <Typography mb={0} color={theme => theme.palette.text.secondary}>
+                        There's no obligation to use the marketplace.
+                    </Typography>
                 </Box>
                 <Box marginY={4}>
                     <Typography mb={1} variant="h2">Trust</Typography>
                     <Typography mb={0} color={theme => theme.palette.text.secondary}>
-                        We don&apos;t tolerate plageurism.
+                        Connecting your wallet is a one-click, cryptographically-secure way to verify your identity.
+                    </Typography>
+                    <Typography mb={0} color={theme => theme.palette.text.secondary}>
+                        It allows us to log you in to the website without requiring the traditional username / password combination.
+                    </Typography>
+                    <Typography mb={0} color={theme => theme.palette.text.secondary}>
+                        You will still have to verify any proposed transactions yourself via your wallet.
+                    </Typography>
+                    <Typography mb={0} color={theme => theme.palette.text.secondary}>
+                        We do not hold you keys. We do not want your keys.
+                    </Typography>
+                    <Typography mb={0} color={theme => theme.palette.text.secondary}>
+                        Transactions that you can initiate (if you'd like) are: minting a token (you only pass gas); listing a token on the market (you only pas gas); delisting a token on the market (you only pay gas); or buying a token. (you pay gas + the seller&apos;s token fee)
                     </Typography>
                 </Box>
                 <Box marginY={4}>
