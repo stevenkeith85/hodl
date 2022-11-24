@@ -3,7 +3,7 @@ import { zRange } from "../../lib/database/rest/zRange";
 
 
 export default async function route (req: NextRequest) {
-    const domain = process.env.VERCEL_URL || "https://www.hodlmymoon.com";
+    const domain = `https://${process.env.VERCEL_URL || 'www.hodlmymoon.com'}`;
 
     const pages = ['/', '/explore', '/about', '/contact'];
 
