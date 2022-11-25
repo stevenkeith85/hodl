@@ -92,6 +92,7 @@ const Footer = ({
                                     }}>
                                     learn
                                 </Typography>
+                                <Link href="/learn">overview</Link>
                                 <Link href="/learn/connecting-a-wallet">connecting a wallet</Link>
                             </Box>
                             <Box
@@ -101,7 +102,7 @@ const Footer = ({
                                     gap: 1,
                                 }}
                             >
-                                <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>tokens</Typography>
+                                <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>NFTs</Typography>
                                 <Link href="/explore">explore</Link>
                                 {
                                     address &&

@@ -15,8 +15,9 @@ import { assetType } from '../lib/utils';
 import { AssetTypes } from '../models/AssetType';
 import { HodlImageResponsive } from './HodlImageResponsive';
 import { HodlAudioBox } from './HodlAudioBox';
-import { FullToken } from '../models/Nft';
+import { FullToken, MutableToken } from '../models/Nft';
 import { PriceSticker } from './PriceSticker';
+import { Token } from '../models/Token';
 
 const NftWindowOverlay = dynamic(
     () => import('./NftWindowOverlay').then(mod => mod.NftWindowOverlay),
@@ -46,6 +47,7 @@ export const NftWindow: React.FC<NftWindowProps> = ({
         return <Skeleton sx={{ width: '100%', height: 0, paddingTop: '100%' }} variant="rectangular" animation="wave" />
     }
 
+    // return JSON.stringify(assetType(nft))
     return (
         <Link
             key={nft.id}
