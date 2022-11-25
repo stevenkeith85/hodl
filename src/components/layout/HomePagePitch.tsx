@@ -65,31 +65,8 @@ export const HomePagePitch = ({ }) => {
                                 },
                                 color: '#999'
                             }}>
-                            is a web3 social network<br /> and nft marketplace
+                            an NFT social network<br /> and marketplace
                         </Typography>
-                        {/* <Box
-                            sx={{
-                                marginTop: { xs: '32px', md: '50px' },
-                            }}>
-                            <LoginLogoutButton
-                                variant="contained"
-                                sx={{
-                                    fontFamily: theme => theme.logo.fontFamily,
-                                    fontSize: {
-                                        xs: '16px',
-                                        sm: '18px',
-                                    },
-                                    paddingY: {
-                                        xs: 1,
-                                        sm: 1.5
-                                    },
-                                    paddingX: {
-                                        xs: 2,
-                                        sm: 4
-                                    }
-                                }}
-                            />
-                        </Box> */}
                     </Box>
                 </Grid>
                 <Grid

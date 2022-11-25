@@ -1,9 +1,15 @@
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
+import { UserAvatarAndHandle } from "../components/avatar/UserAvatarAndHandle";
 
 import { HodlBorderedBox } from "../components/HodlBorderedBox";
+import { HodlProfileBadge } from "../components/HodlProfileBadge";
+import { NftWindow } from "../components/NftWindow";
+import { useUser } from "../hooks/useUser";
 import { authenticate } from "../lib/jwt";
+import { FullToken } from "../models/Nft";
 
 export async function getServerSideProps({ req, res }) {
     await authenticate(req, res);
@@ -16,107 +22,177 @@ export async function getServerSideProps({ req, res }) {
 }
 
 export default function About({ address }) {
+    const { data: steve } = useUser("steve");
+    const { data: dug } = useUser("dug");
+
     return (
-        <Box 
-            marginX={2} 
+        <Box
+            marginX={2}
             marginY={4}
-            >
+        >
             <HodlBorderedBox>
                 <Box mb={4}>
                     <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
                         About
                     </Typography>
-                    <Typography mb={1} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
-                        Hodl My Moon is a web3 social network and marketplace.
+                    <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                        Hodl My Moon is an NFT social network and marketplace.
+                    </Typography>
+
+                </Box>
+                <Box mb={4}>
+                    <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
+                        Joining
+                    </Typography>
+
+                    <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                        Users sign in with their MetaMask wallet to create a profile. This is quick, easy, and crytographically secure.
+                    </Typography>
+
+
+                </Box>
+                <Box mb={4}>
+                    <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
+                        Social Interactions
+                    </Typography>
+                    <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                        Users can follow other NFT artists; and like and comment on their posts. This does not trigger a blockchain transaction and is 100% free.
                     </Typography>
                 </Box>
-                <Box marginY={4}>
-                    <Typography variant="h2" mb={2}>
-                        Quick Start
+                <Box mb={4}>
+                    <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
+                        Posting / Minting NFTs.
+                    </Typography>
+                    <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                        Every post on HodlMyMoon is an NFT.
+                    </Typography>
+                    <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                        Users mint their posts via the website.The process is quick and easy and requires no technical knowledge.
+                    </Typography>
+
+
+                </Box>
+                <Box mb={4}>
+                    <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
+                        Polygon / Matic
+                    </Typography>
+                    <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                        Posts are minted on the Polygon Blockchain
+                    </Typography>
+                    <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                        To confirm a transaction on the blockchain requires paying a tiny amount of Matic. (fractions of a penny). Hodl My Moon does not receive this fee.
+                    </Typography>
+                    <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                        User&apos;s can obtain Matic from wherever they like. Directly from MetaMask, via an exchange, or just ask a friend to transfer them some.
+                    </Typography>
+
+                </Box>
+                <Box mb={4}>
+                    <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
+                        Who owns the NFTs
+                    </Typography>
+                    <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                        The user&apos;s do!
+                    </Typography>
+                    <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                        This is why we ask the user&apos;s to mint them at post time.
+                    </Typography>
+                    <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                        You, the user, are free to do whatever you want with that NFT. (e.g. Cross sharing it as an instagram digital collectable is common.)
+                    </Typography>
+                </Box>
+                <Box mb={4}>
+                    <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
+                        What makes you different
                     </Typography>
                     <Typography component="ul">
-                    <Typography component="li" mb={1}>
-                            <Link target="_blank" href="https://metamask.io/download/">
-                                Install Metamask
+                        <Typography component="li" mb={1} color={theme => theme.palette.text.secondary}>
+                            Our website is very fast and easy to use. No technical knowledge required!
+                        </Typography>
+                        <Typography component="li" mb={1} color={theme => theme.palette.text.secondary}>
+                            Your community is where you mint. It&apos;s a very social place.
+                        </Typography>
+                        <Typography component="li" mb={1} color={theme => theme.palette.text.secondary}>
+                            We have an integrated marketplace
+                        </Typography>
+                        <Typography component="li" mb={1} color={theme => theme.palette.text.secondary}>
+                            We have plans to allow user&apos;s to earn without having to sell their NFTs.
+                        </Typography>
+                        <Typography component="li" mb={1} color={theme => theme.palette.text.secondary}>
+                            Minting an NFT is fast and easy.  (You can add filters to your images, and crop them directly on the website)
+                        </Typography>
+                        <Typography component="li" mb={1} color={theme => theme.palette.text.secondary}>
+                            Our Metadata is frozen and always uploaded to IPFS, which is a decentralized and content addressed file system.
+                        </Typography>
+                        <Typography component="li" mb={1} color={theme => theme.palette.text.secondary}>
+                            We ask user&apos;s to pick a license for the asset attached to the token at mint time; and write this information into the metadata.
+                        </Typography>
+                    </Typography>
+                </Box>
+                <Box mb={4}>
+                    <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
+                        Where can I learn about web3 and hodl my moon?
+                    </Typography>
+                    <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                        We have a learning hub that we are expanding...
+                    </Typography>
+                    <Link href="/learn" sx={{ color: theme => theme.palette.primary.main, textDecoration: 'none' }}>
+                        <Button sx={{ marginY: 2 }}>Take Me To The Knowledge</Button>
+                    </Link>
+                </Box>
+                <Box marginY={6} sx={{ display: 'flex', flexDirection: 'column' }}>
+                    <Typography mb={2} sx={{ fontSize: 18, fontWeight: 500 }}>
+                        Meet Hodl My Moon
+                    </Typography>
+
+                    <Box sx={{ display: 'grid', gap: 4 }}>
+
+                        <div>
+                            <UserAvatarAndHandle fallbackData={steve} address={steve?.address} size={70} fontSize={18} />
+                        </div>
+                        <Box mb={2}>
+                            <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
+                                Founder and Lead Developer
+                            </Typography>
+                            <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                                Steve has been writing software for a long time now. He graduated with an MEng in Software Engineering (distinction) from Heriot-Watt University in Scotland.
+                            </Typography>
+                            <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                                Since then, he&apos;s worked with many organisations such as Skyscanner, Coats, and Standard Life Aberdeen.
+                            </Typography>
+                            <Link href="https://www.linkedin.com/in/stevenkeith85/" sx={{ color: theme => theme.palette.primary.main, textDecoration: 'none' }}>
+                                <Button sx={{ marginY: 2 }}>View LinkedIn Profile</Button>
                             </Link>
-                        </Typography>
-                        <Typography component="li" mb={1}>
-                            Click the wallet icon and connect to create your profile.
-                        </Typography>
-                        <Typography component="li" mb={1}>
-                            Switch to Polygon Mainnet in MetaMask
-                        </Typography>
-                        <Typography component="li" mb={1}>
-                            Get some Matic via MetaMask
-                        </Typography>
-                    </Typography>
+                        </Box>
+                        <div>
+                            <UserAvatarAndHandle fallbackData={dug} address={dug?.address} size={70} fontSize={18} />
+                        </div>
+                        <Box mb={2}>
+                            <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
+                                Director of Photography
+                            </Typography>
+                            <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                                Dug has never written software. He doesn&apos;t really know how technology works either.
+                            </Typography>
+                            <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                                He understands that &quot;looks&quot; are all that matters in life; and that humans seem to think he looks good. If his looks fail him; he plans to go back to offering &quot;big big paw&quot; for a biscuit instead.
+                            </Typography>
+                            <Link href="https://www.instagram.com/dug_keith/" sx={{ color: theme => theme.palette.primary.main, textDecoration: 'none' }}>
+                                <Button sx={{ marginY: 2 }}>View Instagram Profile</Button>
+                            </Link>
+                        </Box>
+                        <Box mb={4}>
+                            <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
+                                Other
+                            </Typography>
+                            <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                                Team profiles coming soon
+                            </Typography>
+                        </Box>
+                    </Box>
+
                 </Box>
-                <Box marginY={4}>
-                    <Typography mb={1}
-                        variant="h2"
-                    >
-                        Wallets</Typography>
-                    <Typography mb={0} color={theme => theme.palette.text.secondary}>
-                        We officially support <Link href="https://metamask.io/">MetaMask</Link>, and recommend connecting with that. You can purchase Matic directly from there.
-                    </Typography>
-                </Box>
-                <Box marginY={4}>
-                    <Typography mb={1} variant="h2">Decentralized storage</Typography>
-                    <Typography mb={0} color={theme => theme.palette.text.secondary}>
-                        We upload and pin your assets to the <Link href="https://ipfs.io/">Interplanatary File System</Link>. This ensures the longterm survival of your assets.
-                    </Typography>
-                </Box>
-                <Box marginY={4}>
-                    <Typography mb={1} variant="h2">Blockchain</Typography>
-                    <Typography mb={0} color={theme => theme.palette.text.secondary}>
-                        We run on the <Link href="https://polygon.technology/">Polygon</Link> blockchain for incredibly low gas fees and quick transaction confirmations.
-                    </Typography>
-                </Box>
-                <Box marginY={4}>
-                    <Typography mb={1} variant="h2">Minting</Typography>
-                    <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                        Minting a token is easy. No need to know anything about smart contracts or blockchains.
-                    </Typography>
-                    <Typography mb={0} color={theme => theme.palette.text.secondary}>
-                        We do not charge a minting fee. You only pay the gas (a fraction of a penny on Polygon). We do not receive this fee.
-                    </Typography>
-                </Box>
-                <Box marginY={4}>
-                    <Typography mb={1} variant="h2">Trading</Typography>
-                    <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                        Trading is straight-forward. You list your token for the price you are willing to sell it for.
-                    </Typography>
-                    <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                        If it sells, we charge a commision at the point of sale.
-                    </Typography>
-                    <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                        Typically this will be 3%
-                    </Typography>
-                    <Typography mb={0} color={theme => theme.palette.text.secondary}>
-                        You can delist your token at any point, and only pay the gas.
-                    </Typography>
-                    <Typography mb={0} color={theme => theme.palette.text.secondary}>
-                        There&apos;s no obligation to use the marketplace.
-                    </Typography>
-                </Box>
-                <Box marginY={4}>
-                    <Typography mb={1} variant="h2">Trust</Typography>
-                    <Typography mb={0} color={theme => theme.palette.text.secondary}>
-                        Connecting your wallet is a one-click, cryptographically-secure way to verify your identity. Please read <Link href="/learn/connecting-your-wallet">this article</Link> for more information.
-                    </Typography>
-                </Box>
-                <Box marginY={4}>
-                    <Typography mb={1} variant="h2" >Do your own research</Typography>
-                    <Typography component="ol" color={theme => theme.palette.text.secondary}>
-                        <Typography component="li" mb={1}>Check the IPFS links </Typography>
-                        <Typography component="li" mb={1}>Check for social validation (likes / comments)</Typography>
-                        <Typography component="li" mb={1}>Check the license (if any) assigned to the asset attached to the token</Typography>
-                    </Typography>
-                </Box>
-                <Box marginY={4}>
-                    <Typography id="hodler-privilege" mb={1} variant="h2">Asset License</Typography>
-                    <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ span: { fontWeight: 600 } }}>When an author mints an NFT, they <span>must</span> specify what any future hodler can do with the attached asset. <Link href="/asset-license">read more</Link></Typography>
-                </Box>
+
             </HodlBorderedBox>
         </Box >)
 }
