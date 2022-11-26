@@ -1,62 +1,18 @@
-import { 
-  getAccount, 
-  connect as _connect, 
-  fetchSigner, 
-  createClient, 
-  configureChains
- } from '@wagmi/core'
-
-import { 
-  polygon, 
-  polygonMumbai 
-} from '@wagmi/core/chains'
-
-import { 
-  MetaMaskConnector 
-} from '@wagmi/core/connectors/metaMask'
-
-import { 
-  publicProvider
-} from '@wagmi/core/providers/public'
-
-const { chains, provider, webSocketProvider } = configureChains(
-  [polygon, polygonMumbai],
-  [publicProvider()],
-)
- 
-const client = createClient({
-  autoConnect: true,
-  provider,
-  webSocketProvider,
-  connectors: [
-    new MetaMaskConnector({ 
-      chains, 
-      options: {
-        shimDisconnect: true,
-        shimChainChangedDisconnect: false,
-        // UNSTABLE_shimOnConnectSelectAccount: true,
-      }
-    }),
-  ]
-})
-
-
 export const getSigner = async () => {
-  const { isDisconnected } = getAccount();
+  const { Web3Provider } = await import('@ethersproject/providers');
 
-  if (isDisconnected) {
-    const result = await _connect({
-      chainId: polygon.id,
-      connector: new MetaMaskConnector({
-        chains: [polygon, polygonMumbai],
-        options: {
-          shimDisconnect: true,
-          shimChainChangedDisconnect: false,
-          UNSTABLE_shimOnConnectSelectAccount: true,
-        }
-      }),
-    });
-  }
+  // A Web3Provider wraps a standard Web3 provider, which is
+  // what MetaMask injects as window.ethereum into each page
+  // @ts-ignore
+  const provider = new Web3Provider(window.ethereum)
 
-  return await fetchSigner();
+  // MetaMask requires requesting permission to connect users accounts
+  await provider.send("eth_requestAccounts", []);
+
+  // The MetaMask plugin also allows signing transactions to
+  // send ether and pay to change state within the blockchain.
+  // For this, you need the account signer...
+  const signer = provider.getSigner()
+
+  return signer;
 }

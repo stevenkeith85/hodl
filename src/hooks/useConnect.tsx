@@ -5,8 +5,6 @@ import { PusherContext } from '../contexts/PusherContext';
 import { messageToSign } from '../lib/messageToSign';
 import { getSigner } from '../lib/connections';
 
-import { disconnect as _disconnect } from '@wagmi/core'
-
 export const useConnect = () => {
   const { pusher, setPusher, setUserSignedInToPusher } = useContext(PusherContext);
   const { setSigner, setAddress } = useContext(WalletContext);
@@ -15,7 +13,6 @@ export const useConnect = () => {
   // we can also connect returningusers to update their jwt
   const connect = async (returningUser = true): Promise<Boolean> => {
     try {
-      // debugger;
       const signer = await getSigner();
 
       if (!signer) {
@@ -60,14 +57,7 @@ export const useConnect = () => {
   }
 
   const disconnectFE = async () => {
-
-    // MetaMask doesn't actually allow us to programatically disconnect. 
-    // WalletConnect does though; so its worth doing. MM might support this in the future.
-    await _disconnect();
-
     setSigner(null);
-
-    // We set the address with what's set in the backend; so don't use wagmi here
     setAddress(null);
 
     pusher?.disconnect();
