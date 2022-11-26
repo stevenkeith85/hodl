@@ -25,7 +25,6 @@ import {
     HodlAction
 } from '../../models/HodlAction';
 import { UserAvatarAndHandleBodyLoading } from '../avatar/UserAvatarAndHandleBodyLoading';
-import { HoverMenu } from '../menu/HoverMenu';
 
 
 const CloseIcon = dynamic(
@@ -68,13 +67,13 @@ const SearchBox = dynamic(
     }
 );
 
-// const HoverMenu = dynamic(
-//     () => import('./../menu/HoverMenu').then(mod => mod.HoverMenu),
-//     {
-//         ssr: false,
-//         loading: () => null
-//     }
-// );
+const HoverMenu = dynamic(
+    () => import('./../menu/HoverMenu').then(mod => mod.HoverMenu),
+    {
+        ssr: false,
+        loading: () => null
+    }
+);
 
 const MobileSearchIcon = dynamic(
     () => import('./MobileSearchIcon').then(mod => mod.MobileSearchIcon),
