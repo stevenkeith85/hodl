@@ -34,7 +34,7 @@ const client = createClient({
       options: {
         shimDisconnect: true,
         shimChainChangedDisconnect: false,
-        UNSTABLE_shimOnConnectSelectAccount: true,
+        // UNSTABLE_shimOnConnectSelectAccount: true,
       }
     }),
   ]
