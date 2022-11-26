@@ -102,7 +102,7 @@ const Footer = ({
                                     gap: 1,
                                 }}
                             >
-                                <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>NFTs</Typography>
+                                <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>nfts</Typography>
                                 <Link href="/explore">explore</Link>
                                 {
                                     address &&
