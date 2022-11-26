@@ -1,37 +1,62 @@
-const metaMaskInstalled = () => {
-  // @ts-ignore
-  const { ethereum } = window;
-  return Boolean(ethereum && ethereum.isMetaMask);
-}
+import { 
+  getAccount, 
+  connect as _connect, 
+  fetchSigner, 
+  createClient, 
+  configureChains
+ } from '@wagmi/core'
 
-export const getMetaMaskSigner = async (returningUser = true) => {
-  
-  if (metaMaskInstalled()) {
+import { 
+  polygon, 
+  polygonMumbai 
+} from '@wagmi/core/chains'
 
-    const { Web3Provider } = await import('@ethersproject/providers');
+import { 
+  MetaMaskConnector 
+} from '@wagmi/core/connectors/metaMask'
 
-    // A Web3Provider wraps a standard Web3 provider, which is
-    // what MetaMask injects as window.ethereum into each page
+import { 
+  publicProvider
+} from '@wagmi/core/providers/public'
 
-    // @ts-ignore
-    const provider = new Web3Provider(window.ethereum);
-
-
-    // This lets them select which account to connect with if they have multiple
-    if (!returningUser) {
-      try {
-        await provider.send("wallet_requestPermissions", [{ eth_accounts: {} }]);
-      } catch (e) {
-        // This RPC method is not yet available in MetaMask Mobile. 
+const { chains, provider, webSocketProvider } = configureChains(
+  [polygon, polygonMumbai],
+  [publicProvider()],
+)
+ 
+const client = createClient({
+  autoConnect: true,
+  provider,
+  webSocketProvider,
+  connectors: [
+    new MetaMaskConnector({ 
+      chains, 
+      options: {
+        shimDisconnect: true,
+        shimChainChangedDisconnect: false,
+        UNSTABLE_shimOnConnectSelectAccount: true,
       }
-    }
+    }),
+  ]
+})
 
-    // if we've remembered the user, then just connect
-    await provider.send("eth_requestAccounts", []);
 
-    return provider.getSigner();
+export const getSigner = async () => {
+  const { isDisconnected } = getAccount();
 
-  } else {
-    return false;
+  if (isDisconnected) {
+    const result = await _connect({
+      chainId: polygon.id,
+      connector: new MetaMaskConnector({
+        chains: [polygon, polygonMumbai],
+        options: {
+          shimDisconnect: true,
+          shimChainChangedDisconnect: false,
+          UNSTABLE_shimOnConnectSelectAccount: true,
+        }
+      }),
+    });
   }
+
+  return await fetchSigner();
 }

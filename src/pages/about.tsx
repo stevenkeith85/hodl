@@ -5,11 +5,8 @@ import Typography from "@mui/material/Typography";
 import { UserAvatarAndHandle } from "../components/avatar/UserAvatarAndHandle";
 
 import { HodlBorderedBox } from "../components/HodlBorderedBox";
-import { HodlProfileBadge } from "../components/HodlProfileBadge";
-import { NftWindow } from "../components/NftWindow";
 import { useUser } from "../hooks/useUser";
 import { authenticate } from "../lib/jwt";
-import { FullToken } from "../models/Nft";
 
 export async function getServerSideProps({ req, res }) {
     await authenticate(req, res);
@@ -83,7 +80,7 @@ export default function About({ address }) {
                         To confirm a transaction on the blockchain requires paying a tiny amount of Matic. (fractions of a penny). Hodl My Moon does not receive this fee.
                     </Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                        User&apos;s can obtain Matic from wherever they like. Directly from MetaMask, via an exchange, or just ask a friend to transfer them some.
+                        Users can obtain Matic from wherever they like. Directly from MetaMask, via an exchange, or just ask a friend to transfer them some.
                     </Typography>
 
                 </Box>
@@ -92,13 +89,13 @@ export default function About({ address }) {
                         Who owns the NFTs
                     </Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                        The user&apos;s do!
+                        The users do!
                     </Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                        This is why we ask the user&apos;s to mint them at post time.
+                        This is why we ask the users to mint them at post time.
                     </Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                        You, the user, are free to do whatever you want with that NFT. (e.g. Cross sharing it as an instagram digital collectable is common.)
+                        You, the user, are free to do whatever you want with that NFT. (e.g. Cross sharing it as an Instagram digital collectable is common.)
                     </Typography>
                 </Box>
                 <Box mb={4}>

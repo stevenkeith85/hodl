@@ -63,7 +63,7 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
                     }}
                     startIcon={<AccountBalanceWalletIcon size={22} />}
                 >{
-                        MetaMaskOnboarding.isMetaMaskInstalled() ? 'Connect' : 'Install MetaMask'
+                        MetaMaskOnboarding.isMetaMaskInstalled() ? 'Sign in with MetaMask' : 'Install a MetaMask Wallet'
                     }</Button>}
             {address &&
                 <Button
@@ -82,7 +82,7 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
                     }}
                     startIcon={<CloudOffIcon />}
                 >
-                    Disconnect
+                    Sign Out
                 </Button>}
         </>);
 };

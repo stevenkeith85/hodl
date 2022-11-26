@@ -3,8 +3,9 @@ import { WalletContext } from '../contexts/WalletContext';
 import axios from 'axios'
 import { PusherContext } from '../contexts/PusherContext';
 import { messageToSign } from '../lib/messageToSign';
-import { getMetaMaskSigner } from '../lib/connections';
+import { getSigner } from '../lib/connections';
 
+import { disconnect as _disconnect } from '@wagmi/core'
 
 export const useConnect = () => {
   const { pusher, setPusher, setUserSignedInToPusher } = useContext(PusherContext);
@@ -14,7 +15,8 @@ export const useConnect = () => {
   // we can also connect returningusers to update their jwt
   const connect = async (returningUser = true): Promise<Boolean> => {
     try {
-      const signer = await getMetaMaskSigner(returningUser);
+      // debugger;
+      const signer = await getSigner();
 
       if (!signer) {
         return false;
@@ -42,6 +44,7 @@ export const useConnect = () => {
           );
 
         } catch (error) {
+          console.log(error)
           return false;
         }
       }
@@ -51,15 +54,20 @@ export const useConnect = () => {
 
       return true;
     } catch (e) {
+      console.log(e)
       return false;
     }
   }
 
-  // Sometimes we only need to disconnect the FE, as the BE has already been disconnected
-  const disconnectFE = () => {
+  const disconnectFE = async () => {
+
+    // MetaMask doesn't actually allow us to programatically disconnect. 
+    // WalletConnect does though; so its worth doing. MM might support this in the future.
+    await _disconnect();
+
     setSigner(null);
 
-    // TODO: Perhaps we just refresh the page? I think reducing the reliance on address might be good
+    // We set the address with what's set in the backend; so don't use wagmi here
     setAddress(null);
 
     pusher?.disconnect();
@@ -67,9 +75,10 @@ export const useConnect = () => {
     setPusher(null);
   }
 
+
   const disconnect = async () => {
 
-    disconnectFE();
+    await disconnectFE();
 
     try {
       const r = await axios.post(
@@ -84,5 +93,5 @@ export const useConnect = () => {
     }
   }
 
-  return [connect, disconnect, disconnectFE];
+  return [connect, disconnect];
 }

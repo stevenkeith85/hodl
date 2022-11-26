@@ -2,10 +2,10 @@ import { Contract } from '@ethersproject/contracts'
 
 import NFT from '../../smart-contracts/artifacts/contracts/HodlNFT.sol/HodlNFT.json'
 import axios from 'axios';
-import { getMetaMaskSigner } from '../lib/connections';
+import { getSigner } from '../lib/connections';
 
 export const mintToken = async (url) => {
-  const signer = await getMetaMaskSigner();
+  const signer = await getSigner();
 
   if (!signer) {
     return;

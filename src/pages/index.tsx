@@ -57,7 +57,7 @@ export default function Home({
       <Head>
         <title>Hodl My Moon, an NFT Social Network and NFT Marketplace</title>
 
-        <meta content="Hodl My Moon, an NFT Social Network and NFT marketplace" property="og:title"/>
+        <meta content="Hodl My Moon, an NFT Social Network and NFT marketplace. Mint Polygon NFTs" property="og:title"/>
         <meta content="website" property="og:type"/>
         <meta content="https://www.hodlmymoon.com/" property="og:url"/>
         <meta content="en_US" property="og:locale"/>
