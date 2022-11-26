@@ -3,8 +3,7 @@ import { WalletContext } from '../contexts/WalletContext';
 import axios from 'axios'
 import { PusherContext } from '../contexts/PusherContext';
 import { messageToSign } from '../lib/messageToSign';
-import { getMetaMaskSigner } from '../lib/connections';
-
+import { getSigner } from '../lib/connections';
 
 export const useConnect = () => {
   const { pusher, setPusher, setUserSignedInToPusher } = useContext(PusherContext);
@@ -14,7 +13,7 @@ export const useConnect = () => {
   // we can also connect returningusers to update their jwt
   const connect = async (returningUser = true): Promise<Boolean> => {
     try {
-      const signer = await getMetaMaskSigner(returningUser);
+      const signer = await getSigner();
 
       if (!signer) {
         return false;
@@ -42,6 +41,7 @@ export const useConnect = () => {
           );
 
         } catch (error) {
+          console.log(error)
           return false;
         }
       }
@@ -51,21 +51,20 @@ export const useConnect = () => {
 
       return true;
     } catch (e) {
+      console.log(e)
       return false;
     }
   }
 
-  // Sometimes we only need to disconnect the FE, as the BE has already been disconnected
-  const disconnectFE = () => {
+  const disconnectFE = async () => {
     setSigner(null);
-
-    // TODO: Perhaps we just refresh the page? I think reducing the reliance on address might be good
     setAddress(null);
 
     pusher?.disconnect();
     setUserSignedInToPusher(null);
     setPusher(null);
   }
+
 
   const disconnect = async () => {
 
@@ -84,5 +83,5 @@ export const useConnect = () => {
     }
   }
 
-  return [connect, disconnect, disconnectFE];
+  return [connect, disconnect];
 }

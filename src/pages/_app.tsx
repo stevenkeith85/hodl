@@ -39,6 +39,7 @@ import Layout from '../components/layout/Layout';
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
+
 interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
 }
@@ -96,7 +97,7 @@ export default function MyApp(props: MyAppProps) {
   }, [address])
 
   const feed = useActions2(props?.pageProps?.address, ActionSet.Feed);
-  
+
   // Staging is password protected. Will switch this to staging
   // @ts-ignore
   if (process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview' && !pageProps.hasReadPermission) {
@@ -106,51 +107,52 @@ export default function MyApp(props: MyAppProps) {
 
   return (
     <>
-      <CacheProvider value={emotionCache}>
-        <Head>
-          <meta name="viewport" content="initial-scale=1, width=device-width" />
-        </Head>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <SWRConfig value={{
-            dedupingInterval: 2000, // default
-            focusThrottleInterval: 5000, // default
-            errorRetryCount: 0
-          }}>
-            <WalletContext.Provider value={{
-              signer,
-              setSigner,
-              address,
-              setAddress,
+        <CacheProvider value={emotionCache}>
+          <Head>
+            <meta name="viewport" content="initial-scale=1, width=device-width" />
+          </Head>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <SWRConfig value={{
+              dedupingInterval: 2000, // default
+              focusThrottleInterval: 5000, // default
+              errorRetryCount: 0
             }}>
-              <PusherContext.Provider value={{
-                pusher,
-                setPusher,
-                userSignedInToPusher,
-                setUserSignedInToPusher
+              <WalletContext.Provider value={{
+                signer,
+                setSigner,
+                address,
+                setAddress,
               }}>
-                <SnackbarProvider
-                  Components={{
-                    // @ts-ignore
-                    hodlnotification: HodlNotificationSnackbar
-                  }}
-                >
-                  <FeedContext.Provider value={{ feed }}>
-                  <Layout
-                    address={address}
-                    pusher={pusher}
-                    userSignedInToPusher={userSignedInToPusher}
+                <PusherContext.Provider value={{
+                  pusher,
+                  setPusher,
+                  userSignedInToPusher,
+                  setUserSignedInToPusher
+                }}>
+                  <SnackbarProvider
+                    Components={{
+                      // @ts-ignore
+                      hodlnotification: HodlNotificationSnackbar
+                    }}
                   >
-                    <Component {...pageProps} />
-                  </Layout>
-                  </FeedContext.Provider>
-                </SnackbarProvider>
-              </PusherContext.Provider>
-            </WalletContext.Provider>
-          </SWRConfig>
-        </ThemeProvider>
-      </CacheProvider>
-      <Analytics /></>
+                    <FeedContext.Provider value={{ feed }}>
+                      <Layout
+                        address={address}
+                        pusher={pusher}
+                        userSignedInToPusher={userSignedInToPusher}
+                      >
+                        <Component {...pageProps} />
+                      </Layout>
+                    </FeedContext.Provider>
+                  </SnackbarProvider>
+                </PusherContext.Provider>
+              </WalletContext.Provider>
+            </SWRConfig>
+          </ThemeProvider>
+        </CacheProvider>
+        <Analytics />
+    </>
   )
 }
 

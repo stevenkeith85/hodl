@@ -142,19 +142,27 @@ export const WalletMenuPage: React.FC<WalletMenuPageProps> = ({
                             flexDirection="column"
                             gap={3}
                         >
-                            <Typography sx={{ fontSize: 16 }}>Connect to create a social profile</Typography>
+                            <Typography sx={{ fontSize: 16 }}>Sign in with your Wallet</Typography>
+                            
                             <Typography sx={{ color: theme => theme.palette.text.secondary }}>
-                                In web3 your wallet is your identity. We use it to authenticate you.
+                                Your wallet is your digital identity. We use it to sign you in.
                             </Typography>
                             <Typography sx={{ color: theme => theme.palette.text.secondary }}>
-                                Unlike web2, you do not need to provide an email and password.
+                                This is a passwordless, cryptographically secure, login flow.
                             </Typography>
+                            <Typography sx={{ color: theme => theme.palette.text.secondary }}>
+                                You&apos;ll be asked to sign a message to prove you are the owner of your wallet.
+                            </Typography>
+                            <Typography sx={{ color: theme => theme.palette.text.secondary }}>
+                                Signing in will create your Hodl My Moon profile.
+                            </Typography>
+                            <Link href="/learn/connecting-a-wallet">Read More</Link>
+                            
                             <div>
                                 <LoginLogoutButton
                                     sx={{
                                         paddingY: 1,
                                         paddingX: 2,
-                                        textTransform: 'lowercase'
                                     }} />
                             </div>
                         </Box>

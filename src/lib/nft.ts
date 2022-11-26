@@ -11,10 +11,10 @@ import NFT from '../../smart-contracts/artifacts/contracts/HodlNFT.sol/HodlNFT.j
 import axios from 'axios'
 import { MutableToken } from '../models/Nft.js';
 import { Token } from '../models/Token';
-import { getMetaMaskSigner } from '../lib/connections';
+import { getSigner } from '../lib/connections';
 
 export const listNft = async (token: Token, price: string) => {
-  const signer = await getMetaMaskSigner();
+  const signer = await getSigner();
 
   if (!signer) {
     return;
@@ -52,7 +52,7 @@ export const listNft = async (token: Token, price: string) => {
 }
 
 export const buyNft = async (token: Token, mutableToken: MutableToken) => { 
-  const signer = await getMetaMaskSigner();
+  const signer = await getSigner();
   
   
   if (!signer) {
@@ -83,7 +83,7 @@ export const buyNft = async (token: Token, mutableToken: MutableToken) => {
 }
 
 export const delistNft = async (token: Token) => {
-  const signer = await getMetaMaskSigner();
+  const signer = await getSigner();
 
   
   if (!signer) {
