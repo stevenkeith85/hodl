@@ -68,7 +68,7 @@ export const useConnect = () => {
 
   const disconnect = async () => {
 
-    await disconnectFE();
+    disconnectFE();
 
     try {
       const r = await axios.post(
