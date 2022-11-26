@@ -4,6 +4,7 @@ export const getSigner = async () => {
   
   const { Web3Provider } = await import('@ethersproject/providers');
 
+  // @ts-ignore
   if (window?.ethereum) {
     alert("window.ethereum is available")
   } else {
