@@ -22,7 +22,6 @@ export const useAddComment = (): [(comment: HodlComment) => Promise<void>] => {
                     }
                 });
         } catch (error) {
-            alert(error)
         }
     }
 
