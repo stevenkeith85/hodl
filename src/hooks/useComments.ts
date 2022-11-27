@@ -18,9 +18,11 @@ export const useAddComment = (): [(comment: HodlComment) => Promise<void>] => {
                 {
                     headers: {
                         'Accept': 'application/json',
+                        'Content-Type': 'application/json;charset=utf-8'
                     }
                 });
         } catch (error) {
+            alert(error)
         }
     }
 

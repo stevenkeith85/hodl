@@ -112,7 +112,7 @@ route.post(async (req, res: NextApiResponse) => {
   // to constantly get error messages like 'must be a trimmed string' as they type on the UI
   const hodlComment: HodlComment = {
     subject: req.address,
-    comment: comment.trim(),
+    comment: comment,
     object, // the comment's parent can be a token or a comment
     objectId,
     tokenId,

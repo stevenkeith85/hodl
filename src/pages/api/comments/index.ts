@@ -38,13 +38,14 @@ export const getCommentsForObject = async (
       }
     });
 
+    // TODO: We can't json parse the scotland flag and stuff breaks. the website wont fall over; but a user adding a scotland flag will effectively 'delete' the comments section. noooooo!
   const { result: ids } = await idsResponse.json();
   const comments = await mGetComments(ids);
 
-  const addresses: string[] = comments.map(comment => comment.subject);
+  const addresses: string[] = comments?.map(comment => comment.subject);
   const uniqueAddresses = new Set(addresses);
 
-  const userVMs = await getUsers(Array.from(uniqueAddresses));
+  const userVMs = uniqueAddresses.size ? await getUsers(Array.from(uniqueAddresses)) : [];
 
   // Create an address to user map so that we can extrapolate the comment info for the UI
   const userMap = userVMs.reduce((map, user) => {
