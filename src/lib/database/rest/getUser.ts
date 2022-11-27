@@ -1,5 +1,5 @@
 import { UserViewModel } from "../../../models/User";
-import { runRedisPipeline } from "./databaseUtils";
+import { runRedisPipeline } from "./pipeline";
 import { getToken } from "./getToken";
 
 

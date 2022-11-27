@@ -1,5 +1,5 @@
 import { chunk } from "../../lodash";
-import { runRedisPipeline } from "./databaseUtils";
+import { runRedisPipeline } from "./pipeline";
 
 
 export const mGetTokens = async (tokenIds: string[]) => {
