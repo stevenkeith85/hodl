@@ -8,7 +8,7 @@ import { HodlComment } from "../../../models/HodlComment";
 
 import { addToZeplo } from "../../../lib/addToZeplo";
 import { runRedisTransaction } from "../../../lib/database/rest/databaseUtils";
-import { codepointsToSurrogatePairs } from "../../../lib/utils";
+import { jsonEscapeUTF } from "../../../lib/utils";
 
 const client = Redis.fromEnv();
 const route = apiRoute();
@@ -57,13 +57,14 @@ export const addComment = async (comment: HodlComment, req) => {
 
   const commentId = await client.incr("commentId")
   comment.id = commentId;
-
-  comment.comment = codepointsToSurrogatePairs(comment.comment); // This converts code points to surrogate pairs.
   
+  // Safer to store unicode code points for the astral plane; as just storing what comes from the UI caused us problems.
+  let commentPayload = jsonEscapeUTF(JSON.stringify(comment)); 
 
+  // return ;
   const cmds = [
     // Store the comment
-    ['SET', `comment:${commentId}`, JSON.stringify(comment)],
+    ['SET', `comment:${commentId}`, commentPayload],
 
     // Add the comment to the users collection
     ['ZADD', `user:${comment.subject}:comments`, comment.timestamp, commentId],

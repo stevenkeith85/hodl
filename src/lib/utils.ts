@@ -183,13 +183,18 @@ export function delayForDemo(promise) {
 }
 
 
-// We escape the unicode strings and convert to the surrogate pair BEFORE storing in redis (https://stackoverflow.com/questions/12271547/shouldnt-json-stringify-escape-unicode-characters)
-export function codepointsToSurrogatePairs(s) {
-  return s.replace(/[^\x20-\x7F]/g, x => "\\u" + ("000"+x.codePointAt(0).toString(16)).slice(-4))
-}
-
-// And we convert back to a string on retrieving it (https://stackoverflow.com/questions/35166758/react-javascript-displaying-decoding-unicode-characters)
-export function convertUnicode(input) {
-  return input.replace(/\\+u([0-9a-fA-F]{4})/g, (a,b) =>
-    String.fromCharCode(parseInt(b, 16)));
+// unicode escape all non-ascii and non-visible characters.
+//
+// The unicode astral plane caused us issues. i.e. emojis.
+//
+// We just stored whatever the UI gave us and that seemed to cause an issue when we tried a JSON parse of what we got back from redis.
+//
+// Things seem much more reliable when we escape the characters.
+//
+// See here for general info:
+// https://stackoverflow.com/a/64401147
+// https://dmitripavlutin.com/what-every-javascript-developer-should-know-about-unicode/#:~:text=Surrogate%20pair%20is%20a%20representation,code%20units%20%E2%80%94%20a%20surrogate%20pair.
+export function jsonEscapeUTF(s) {
+  let result =  s.replace(/[^\x20-\x7F]/g, x => "\\u" + ("000"+x.codePointAt(0).toString(16)).slice(-4))
+  return result;
 }

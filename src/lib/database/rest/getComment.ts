@@ -1,5 +1,4 @@
 import { HodlComment } from "../../../models/HodlComment";
-import { convertUnicode } from "../../utils";
 
 export const getComment = async (id): Promise<HodlComment | null> => {
   try {
@@ -14,10 +13,7 @@ export const getComment = async (id): Promise<HodlComment | null> => {
 
     const { result } = await r.json();
 
-    let comment = JSON.parse(result);
-    comment.comment = convertUnicode(comment.comment); // convert unicode '\u1234' characters back to string
-
-    return comment;
+    return JSON.parse(result);
   }
   catch (e) {
     console.log(e);

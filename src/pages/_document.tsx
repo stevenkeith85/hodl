@@ -38,6 +38,7 @@ export default class MyDocument extends Document {
           {/* PWA primary color */}
           <meta name="theme-color" content={theme.palette.primary.main} />
           <meta name="emotion-insertion-point" content="" />
+          <meta charset="UTF-8"></meta>
 
           <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka&display=swap" />
           <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,500&display=swap" />
