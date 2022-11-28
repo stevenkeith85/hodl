@@ -5,16 +5,18 @@ import apiRoute from '../handler';
 import { Redis } from '@upstash/redis';
 import { HodlComment, HodlCommentViewModel } from "../../../models/HodlComment";
 import { getUser } from "../../../lib/database/rest/getUser";
+import { getComment as _getComment} from "../../../lib/database/rest/getComment";
 
 const client = Redis.fromEnv()
 const route = apiRoute();
 
-export const getComment = async (id, withUser: boolean = true, viewer: string = null): Promise<HodlCommentViewModel | null> => {
+export const getCommentVM = async (id, withUser: boolean = true, viewer: string = null): Promise<HodlCommentViewModel | null> => {
   if (!id) {
     return null;
   }
 
-  const comment: HodlComment = await client.get(`comment:${id}`);
+  const comment: HodlComment = await _getComment(id);
+  
 
   if (comment) {
     const vm: HodlCommentViewModel = {
@@ -33,7 +35,7 @@ export const getComment = async (id, withUser: boolean = true, viewer: string = 
   return null;
 }
 
-// TODO: Potentially convert to edge function
+// TODO: Convert to edge function
 route.get(async (req, res: NextApiResponse) => {
   const { id } = req.query;
 
@@ -41,7 +43,7 @@ route.get(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
-  const comment = await getComment(id, true, req?.address);
+  const comment = await getCommentVM(id, true, req?.address);
 
   // You can't edit comments but.. we edit them on the users behalf sometimes. 
   // i.e. when they delete a comment that has replies we change the comment to [deleted]

@@ -181,3 +181,15 @@ export function delayForDemo(promise) {
       setTimeout(resolve, 5000);
   }).then(() => promise);
 }
+
+
+// We escape the unicode strings and convert to the surrogate pair BEFORE storing in redis (https://stackoverflow.com/questions/12271547/shouldnt-json-stringify-escape-unicode-characters)
+export function codepointsToSurrogatePairs(s) {
+  return s.replace(/[^\x20-\x7F]/g, x => "\\u" + ("000"+x.codePointAt(0).toString(16)).slice(-4))
+}
+
+// And we convert back to a string on retrieving it (https://stackoverflow.com/questions/35166758/react-javascript-displaying-decoding-unicode-characters)
+export function convertUnicode(input) {
+  return input.replace(/\\+u([0-9a-fA-F]{4})/g, (a,b) =>
+    String.fromCharCode(parseInt(b, 16)));
+}

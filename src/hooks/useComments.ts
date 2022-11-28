@@ -82,7 +82,10 @@ export const useComments = (
     const swr = useSWRInfinite(
         load ? getKey : null,
         fetcher,
-        { fallbackData }
+        { 
+            fallbackData,
+            shouldRetryOnError: false
+        }
     );
 
     return swr;

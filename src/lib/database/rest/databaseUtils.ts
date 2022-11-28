@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from 'axios'
 
 // TODO: Switch to fetch
 export const runRedisTransaction = async (cmds): Promise<boolean> => {
@@ -26,3 +26,4 @@ export const runRedisTransaction = async (cmds): Promise<boolean> => {
     return false;
   }
 }
+

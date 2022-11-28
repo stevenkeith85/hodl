@@ -13,6 +13,7 @@ import { getAction } from ".";
 import { pusher } from "../../../lib/server/pusher";
 import { runRedisTransaction } from "../../../lib/database/rest/databaseUtils";
 import axios from "axios";
+import { getComment } from "../../../lib/database/rest/getComment";
 
 const route = apiRoute();
 const client = Redis.fromEnv()
@@ -182,7 +183,7 @@ export const addAction = async (action: HodlAction) => {
         return;
       }
 
-      const comment: HodlComment = await client.get(`comment:${action.objectId}`);
+      const comment: HodlComment = await getComment(action.objectId);
 
       if (action.subject === comment.subject) {
         return; // We've liked our own comment. No need for a notification.
@@ -195,7 +196,7 @@ export const addAction = async (action: HodlAction) => {
   // Who: The token author if the action is about a token; or the comment author if the action is about the comment
   if (action.action === ActionTypes.Commented) {
 
-    const comment: HodlComment = await client.get(`comment:${action.objectId}`);
+    const comment: HodlComment = await getComment(action.objectId);
 
     if (comment?.object === "token") { // the comment was about a token, tell the token owner.
 
@@ -212,7 +213,7 @@ export const addAction = async (action: HodlAction) => {
 
       return await addNotification(mutableToken.hodler, action);
     } else if (comment?.object === "comment") { // the comment was a reply, tell the comment author. 
-      const commentThatWasRepliedTo: HodlComment = await client.get(`comment:${comment.objectId}`);
+      const commentThatWasRepliedTo: HodlComment = await getComment(comment.objectId);
 
       if (action.subject === commentThatWasRepliedTo.subject) {
         return; // We've replied to our own comment. No need for a notification.

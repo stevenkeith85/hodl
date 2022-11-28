@@ -8,6 +8,7 @@ import { HodlComment } from "../../../models/HodlComment";
 
 import { addToZeplo } from "../../../lib/addToZeplo";
 import { runRedisTransaction } from "../../../lib/database/rest/databaseUtils";
+import { codepointsToSurrogatePairs } from "../../../lib/utils";
 
 const client = Redis.fromEnv();
 const route = apiRoute();
@@ -56,6 +57,9 @@ export const addComment = async (comment: HodlComment, req) => {
 
   const commentId = await client.incr("commentId")
   comment.id = commentId;
+
+  comment.comment = codepointsToSurrogatePairs(comment.comment); // This converts code points to surrogate pairs.
+  
 
   const cmds = [
     // Store the comment

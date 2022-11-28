@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { mGetComments } from '../../../lib/database/rest/Comments';
+import { mGetComments } from '../../../lib/database/rest/mGetComments';
 import { getUsers } from '../../../lib/database/rest/Users';
 import { getAsString } from '../../../lib/getAsString';
 import { GetCommentsValidationSchema } from '../../../validation/comments/getComments';

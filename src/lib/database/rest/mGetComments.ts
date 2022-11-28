@@ -1,3 +1,5 @@
+import { convertUnicode } from "../../utils";
+
 export const mGetComments = async (ids: string[]) => {
   if (ids.length === 0) {
     return [];
@@ -17,10 +19,16 @@ export const mGetComments = async (ids: string[]) => {
       });
 
 
-      
     const data = await r.json();
+
+    let result = data?.result?.map(i => JSON.parse(i));
     
-    const result = data?.result?.map(item => JSON.parse(item));
+    result = result.map(comment => {
+      comment.comment = convertUnicode(comment.comment); // convert unicode '\u1234' characters back to string
+      return comment;
+    })
+    
+
     return result || [];
   } catch (e) {
     console.log(e)

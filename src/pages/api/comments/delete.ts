@@ -64,7 +64,7 @@ route.delete(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
-  const { object, objectId, subject, tokenId } = comment as HodlComment;
+  const { object, objectId, subject, tokenId } = comment;
 
   // Read the blockchain to ensure what we are about to do is correct. (Potentially, we could rely on the cache at some point)
   const token: MutableToken = await getMutableToken(tokenId, true);

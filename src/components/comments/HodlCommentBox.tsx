@@ -107,7 +107,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
 
     // When the user tries to delete a comment, we give a visual cue
     const [isDeleting, setIsDeleting] = useState(false);
-    
+
     const onDelete = async () => {
         setIsDeleting(true);
 
@@ -225,8 +225,10 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                             whiteSpace: 'pre-line',
                                             marginTop: 0,
                                             marginBottom: 0
-                                        }}>
-                                        {comment.comment}
+                                        }}
+
+                                        >
+                                        { comment.comment }
                                     </Typography>
                                 </div>
                                 <div
