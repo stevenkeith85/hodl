@@ -22,7 +22,10 @@ export const useSearchTokens = (
     const swr = useSWRInfinite(
         getKey, 
         fetcher,
-        { fallbackData });
+        { 
+            fallbackData,
+            shouldRetryOnError: false 
+        });
 
 
     return { results: swr };

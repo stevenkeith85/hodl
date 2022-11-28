@@ -11,7 +11,9 @@ export const useTransactions = (limit = 10, processed=true, fallbackData = null,
         getKey,
         (url, offset, limit) => axios.get(`${url}?offset=${offset}&limit=${limit}`).then(r => r.data),
         {
-            fallbackData
+            fallbackData,
+            shouldRetryOnError: true,
+            errorRetryCount: 1
         }
     );
 

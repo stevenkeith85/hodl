@@ -33,6 +33,7 @@ export const useActions = (
       fallbackData,
       revalidateOnMount: true,
       revalidateFirstPage,
+      shouldRetryOnError: false
     }
   );
 

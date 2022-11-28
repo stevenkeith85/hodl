@@ -30,7 +30,9 @@ export const useActions2 = (address, set = ActionSet.Feed, limit=14) => {
     address ? getKey : null,
     fetcher,
     {
-      revalidateFirstPage: false
+      revalidateFirstPage: false,
+      shouldRetryOnError: true,
+      errorRetryCount: 1
     }
   );
 

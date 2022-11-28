@@ -9,7 +9,10 @@ export const useNewUsers = (limit=10, fallbackData=null) => {
     const swr = useSWRInfinite(
         getKey, 
         fetchWithOffsetLimit, 
-        { fallbackData }
+        { 
+            fallbackData,
+            shouldRetryOnError: false 
+        }
         );
 
     return { results: swr };
