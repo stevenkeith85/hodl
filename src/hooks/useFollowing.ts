@@ -21,7 +21,8 @@ export const useFollowing = (getData, address, limit = 10, fallbackData = null) 
         getKey,
         fetcher,
         {
-            fallbackData
+            fallbackData,
+            shouldRetryOnError: false
         }
     );
 

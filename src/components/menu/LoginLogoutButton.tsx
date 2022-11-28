@@ -1,12 +1,16 @@
 import CloudOffIcon from '@mui/icons-material/CloudOff';
 
-import { Button } from "@mui/material";
+import Button from "@mui/material/Button";
+import Link from "@mui/material/Link";
+
 import { useRouter } from "next/router";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useConnect } from "../../hooks/useConnect";
 import { WalletContext } from '../../contexts/WalletContext';
 import { AccountBalanceWalletIcon } from '../icons/AccountBalanceWalletIcon';
 import MetaMaskOnboarding from '@metamask/onboarding'
+import { isMobileDevice } from '../../lib/utils';
+import { Typography } from '@mui/material';
 
 
 interface LoginLogoutButtonProps {
@@ -29,6 +33,14 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
     const { address } = useContext(WalletContext);
     const router = useRouter();
 
+    const getButtonText = () => {
+        if (MetaMaskOnboarding.isMetaMaskInstalled()) {
+            return 'Sign in with MetaMask';
+        } else {
+            return 'Install a MetaMask Wallet'
+        }
+    }
+
     useEffect(() => {
         if (!onboarding.current) {
             onboarding.current = new MetaMaskOnboarding();
@@ -37,35 +49,53 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
 
     return (
         <>
-            {!address &&
-                <Button
-                    color={color}
-                    variant={variant}
-                    sx={{
-                        fontSize,
-                        ...sx,
-                    }}
-                    onClick={async e => {
-                        if (MetaMaskOnboarding.isMetaMaskInstalled()) {
-                            e.stopPropagation();
-                            e.preventDefault();
+        {/* if its a mobile and its not the metamask mobile browser give the user the deeplink button */}
+            {
+                isMobileDevice() &&
+                (!/MetaMaskMobile/.test(navigator.userAgent)) &&
+                <>
+                    <Button
+                        onClick={() => location.href = `https://metamask.app.link/dapp/${window.location.href}`}
+                        color={color}
+                        variant={variant}
+                        sx={{
+                            fontSize,
+                            ...sx,
+                        }}
+                        startIcon={<AccountBalanceWalletIcon size={22} />}>Open MetaMask Mobile</Button>
+                </>
+            }
+            {
+                (!address && !isMobileDevice() || (!address && isMobileDevice() && (/MetaMaskMobile/.test(navigator.userAgent)))) &&
+                <>
+                    <Button
+                        color={color}
+                        variant={variant}
+                        sx={{
+                            fontSize,
+                            ...sx,
+                        }}
+                        startIcon={<AccountBalanceWalletIcon size={22} />}
+                        onClick={async e => {
+                            if (MetaMaskOnboarding.isMetaMaskInstalled()) {
+                                e.stopPropagation();
+                                e.preventDefault();
 
-                            const connected = await connect(false);
+                                const connected = await connect(false);
 
-                            if (connected) {
-                                window.location.href = router.asPath;
+                                if (connected) {
+                                    window.location.href = router.asPath;
+                                }
+                            } else {
+                                onboarding.current.startOnboarding();
                             }
-                        } else {
-                            onboarding.current.startOnboarding();
-                        }
+                        }}
+                    >{getButtonText()}</Button>
 
-
-                    }}
-                    startIcon={<AccountBalanceWalletIcon size={22} />}
-                >{
-                        MetaMaskOnboarding.isMetaMaskInstalled() ? 'Sign in with MetaMask' : 'Install a MetaMask Wallet'
-                    }</Button>}
-            {address &&
+                </>
+            }
+            {
+                address &&
                 <Button
                     color={color}
                     variant={variant}
@@ -83,6 +113,7 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
                     startIcon={<CloudOffIcon />}
                 >
                     Sign Out
-                </Button>}
+                </Button>
+            }
         </>);
 };

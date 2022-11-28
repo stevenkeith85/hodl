@@ -33,7 +33,10 @@ export const useRankings = (
   const swr = useSWRInfinite(
     getKey,
     fetcher,
-    { fallbackData }
+    { 
+      fallbackData,
+      shouldRetryOnError: false
+    }
   );
 
   return {

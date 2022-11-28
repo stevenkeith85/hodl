@@ -11,7 +11,8 @@ export const useHodling = (address, limit = 10, fallbackData = null, load=true) 
         getKey,
         fetchWithAddressOffsetLimit,
         {
-            fallbackData
+            fallbackData,
+            shouldRetryOnError: false
         });
 
 

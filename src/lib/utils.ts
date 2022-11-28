@@ -178,7 +178,7 @@ export const getInfuraIPFSAuth = () => {
 
 export function delayForDemo(promise) {
   return new Promise(resolve => {
-      setTimeout(resolve, 5000);
+    setTimeout(resolve, 5000);
   }).then(() => promise);
 }
 
@@ -195,6 +195,37 @@ export function delayForDemo(promise) {
 // https://stackoverflow.com/a/64401147
 // https://dmitripavlutin.com/what-every-javascript-developer-should-know-about-unicode/#:~:text=Surrogate%20pair%20is%20a%20representation,code%20units%20%E2%80%94%20a%20surrogate%20pair.
 export function jsonEscapeUTF(s) {
-  let result =  s.replace(/[^\x20-\x7F]/g, x => "\\u" + ("000"+x.codePointAt(0).toString(16)).slice(-4))
+  let result = s.replace(/[^\x20-\x7F]/g, x => "\\u" + ("000" + x.codePointAt(0).toString(16)).slice(-4))
   return result;
+}
+
+
+// We use a combination here; as I personally have a touch screen laptop; so I don't think thats a good enough check
+// https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent#considerations_before_using_browser_detection
+export const isMobileDevice = () => {
+  const UA = navigator.userAgent;
+
+  let hasTouchScreen = false;
+  let hasMobileUA = false;
+
+  if ("maxTouchPoints" in navigator) {
+    hasTouchScreen = navigator.maxTouchPoints > 0;
+  } else if ("msMaxTouchPoints" in navigator) {
+    // @ts-ignore
+    hasTouchScreen = navigator.msMaxTouchPoints > 0;
+  } else {
+    const mQ = window.matchMedia && matchMedia("(pointer:coarse)");
+    if (mQ && mQ.media === "(pointer:coarse)") {
+      hasTouchScreen = !!mQ.matches;
+    } else if ('orientation' in window) {
+      hasTouchScreen = true; // deprecated, but good fallback
+    }
+  }
+
+  hasMobileUA = (
+    /\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test(UA) ||
+    /\b(Android|Windows Phone|iPad|iPod)\b/i.test(UA)
+  );
+
+  return hasTouchScreen && hasMobileUA;
 }

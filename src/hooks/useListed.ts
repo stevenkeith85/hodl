@@ -11,7 +11,8 @@ export const useListed = (address, limit = 10, fallbackData=null, load=true) => 
         getKey, 
         fetchWithAddressOffsetLimit, 
         { 
-            fallbackData
+            fallbackData,
+            shouldRetryOnError: false
         });
 
 
