@@ -11,16 +11,16 @@ export const mGetComments = async (ids: string[]) => {
       {
         headers: {
           Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`,
-          Accept: 'application/json;charset=utf-8'
+          Accept: 'application/json'
         },
         keepalive: true
       });
 
 
-      
     const data = await r.json();
-    
-    const result = data?.result?.map(item => JSON.parse(item));
+
+    let result = data?.result?.map(i => JSON.parse(i));
+
     return result || [];
   } catch (e) {
     console.log(e)

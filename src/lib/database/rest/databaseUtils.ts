@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from 'axios'
 
 // TODO: Switch to fetch
 export const runRedisTransaction = async (cmds): Promise<boolean> => {
@@ -9,7 +9,7 @@ export const runRedisTransaction = async (cmds): Promise<boolean> => {
       {
         headers: {
           Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`,
-          'Content-Type': 'application/json;charset=utf-8'
+          'Content-Type': 'application/json'
         },
       })
 
@@ -26,3 +26,4 @@ export const runRedisTransaction = async (cmds): Promise<boolean> => {
     return false;
   }
 }
+

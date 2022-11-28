@@ -18,7 +18,7 @@ export const useAddComment = (): [(comment: HodlComment) => Promise<void>] => {
                 {
                     headers: {
                         'Accept': 'application/json',
-                        'Content-Type': 'application/json;charset=utf-8'
+                        'Content-Type': 'application/json'
                     }
                 });
         } catch (error) {
@@ -58,7 +58,6 @@ export const useCommentCount = (
          id ? [`/api/comments/count`, object, id] : null,
         fetchWithObjectAndId,
         { 
-            // revalidateOnMount: !fallbackData,
             fallbackData 
         }
     );
@@ -82,7 +81,10 @@ export const useComments = (
     const swr = useSWRInfinite(
         load ? getKey : null,
         fetcher,
-        { fallbackData }
+        { 
+            fallbackData,
+            shouldRetryOnError: false
+        }
     );
 
     return swr;

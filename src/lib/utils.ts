@@ -181,3 +181,20 @@ export function delayForDemo(promise) {
       setTimeout(resolve, 5000);
   }).then(() => promise);
 }
+
+
+// unicode escape all non-ascii and non-visible characters.
+//
+// The unicode astral plane caused us issues. i.e. emojis.
+//
+// We just stored whatever the UI gave us and that seemed to cause an issue when we tried a JSON parse of what we got back from redis.
+//
+// Things seem much more reliable when we escape the characters.
+//
+// See here for general info:
+// https://stackoverflow.com/a/64401147
+// https://dmitripavlutin.com/what-every-javascript-developer-should-know-about-unicode/#:~:text=Surrogate%20pair%20is%20a%20representation,code%20units%20%E2%80%94%20a%20surrogate%20pair.
+export function jsonEscapeUTF(s) {
+  let result =  s.replace(/[^\x20-\x7F]/g, x => "\\u" + ("000"+x.codePointAt(0).toString(16)).slice(-4))
+  return result;
+}
