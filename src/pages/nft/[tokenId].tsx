@@ -116,12 +116,20 @@ const NftDetail = ({
       >
         <Head>
           <title>{`${nft?.name || ''} | NFT | Hodl My Moon`}</title>
+
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:site" content="@hodlmymoon" />
           <meta name="twitter:creator" content="@hodlmymoon" />
           <meta name="twitter:title" content={`${nft?.name || ''} | NFT | Hodl My Moon`} />
           <meta name="twitter:description" content={nft?.description} />
           <meta name="twitter:image" content={getImage(nft)} />
+
+          <meta property="og:type" content="website" />
+          <meta property="og:url" content={`https://www.hodlmymoon.com/nft/${nft?.id}`} />
+          <meta property="og:title" content={`${nft?.name || ''} | NFT | Hodl My Moon`} />
+          <meta property="og:image" content={getImage(nft)} />
+          <meta property="og:description" content={nft?.description} />
+
         </Head>
         <Grid
           container
