@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { memo, useState } from 'react';
 import { assetType } from '../../lib/utils';
 import { AssetTypes } from '../../models/AssetType';
-import { Token } from '../../models/Token';
+import { Token } from "../../models/Token";
 import { HodlAudioBoxMini } from '../HodlAudioBoxMini';
 import { HodlImageResponsive } from '../HodlImageResponsive';
 

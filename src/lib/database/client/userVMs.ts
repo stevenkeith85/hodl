@@ -1,5 +1,5 @@
 import { Redis } from '@upstash/redis';
-import { Token } from '../../../models/Token';
+import { Token } from "../../../models/Token";
 import { User, UserViewModel } from '../../../models/User';
 
 const client = Redis.fromEnv();

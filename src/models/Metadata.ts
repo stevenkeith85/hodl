@@ -21,7 +21,6 @@ export interface ERC721Metadata {
 // We MAY switch over to the ERC-1155 contract at some point
 export interface HodlMetadata extends ERC721Metadata {
     properties: {
-        
         aspectRatio: "1:1" | "4:5" | "16:9";
         filter: "e_improve" | "e_art:athena" | "e_art:aurora" | "e_art:hairspray" | "e_grayscale";
 

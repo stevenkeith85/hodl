@@ -15,9 +15,10 @@ import { assetType } from '../lib/utils';
 import { AssetTypes } from '../models/AssetType';
 import { HodlImageResponsive } from './HodlImageResponsive';
 import { HodlAudioBox } from './HodlAudioBox';
-import { FullToken, MutableToken } from '../models/Nft';
+import { FullToken } from "../models/FullToken";
+import { MutableToken } from "../models/MutableToken";
 import { PriceSticker } from './PriceSticker';
-import { Token } from '../models/Token';
+import { Token } from "../models/Token";
 
 const NftWindowOverlay = dynamic(
     () => import('./NftWindowOverlay').then(mod => mod.NftWindowOverlay),

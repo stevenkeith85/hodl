@@ -9,7 +9,7 @@ import useSWR, { Fetcher } from "swr";
 import { authenticate } from "../../lib/jwt";
 import { NftContext } from "../../contexts/NftContext";
 
-import { MutableToken } from "../../models/Nft";
+import { MutableToken } from "../../models/MutableToken";
 import { Token } from "../../models/Token";
 import { DetailPageAsset } from "../../components/nft/DetailPageAsset";
 
@@ -18,6 +18,7 @@ import Box from '@mui/material/Box';
 import Skeleton from '@mui/material/Skeleton';
 import TokenActionBoxLoading from '../../components/nft/TokenActionBoxLoading';
 import SocialTabLoading from '../../components/nft/SocialTabLoading';
+import { makeCloudinaryUrl } from '../../lib/cloudinaryUrl';
 
 
 const TokenHeader = dynamic(
@@ -95,10 +96,13 @@ const NftDetail = ({
   const [value, setValue] = useState(Number(tab)); // tab
 
   const tokenFetcher: Fetcher<Token> = (url, id) => fetch(`${url}/${id}`).then(r => r.json()).then(data => data.token);
-  const { data: nft } = useSWR(tokenId ? [`/api/token`, tokenId]: null, tokenFetcher);
+  const { data: nft } = useSWR(tokenId ? [`/api/token`, tokenId] : null, tokenFetcher);
 
   const mutableTokenFetcher: Fetcher<MutableToken> = (url, id) => fetch(`${url}/${id}`).then(r => r.json()).then(data => data.mutableToken);
-  const { data: mutableToken } = useSWR(tokenId ? [`/api/contracts/mutable-token`, tokenId]: null, mutableTokenFetcher);
+  const { data: mutableToken } = useSWR(tokenId ? [`/api/contracts/mutable-token`, tokenId] : null, mutableTokenFetcher);
+
+  const getImage = (nft) => makeCloudinaryUrl("image", "nfts", nft?.image, { crop: 'fill', aspect_ratio: nft?.properties?.aspectRatio, width: '1080'});
+
 
   return (
     <>
@@ -110,6 +114,17 @@ const NftDetail = ({
       >
         <Head>
           <title>{`${nft?.name || ''} | NFT | Hodl My Moon`}</title>
+
+          {nft && <>
+            <meta name="twitter:card" content="summary_large_image" />
+            <meta name="twitter:site" content="@hodlmymoon" />
+            <meta name="twitter:creator" content="@hodlmymoon" />
+            <meta name="twitter:title" content={`${nft?.name || ''} | NFT | Hodl My Moon`} />
+            <meta name="twitter:description" content={nft?.description} />
+            <meta name="twitter:image" content={getImage(nft)} />
+          </>
+          }
+
         </Head>
         <Grid
           container

@@ -6,7 +6,7 @@ import { LogDescription } from '@ethersproject/abi'
 
 import { Redis } from '@upstash/redis';
 import { getTagsForToken } from "../../pages/api/tags";
-import { MutableToken } from "../../models/Nft";
+import { MutableToken } from "../../models/MutableToken";
 import { getMutableToken } from "../../pages/api/contracts/mutable-token/[tokenId]";
 
 import { updateHodlingCache } from "../../pages/api/contracts/token/hodling/count";

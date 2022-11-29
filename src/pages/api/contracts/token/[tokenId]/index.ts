@@ -6,7 +6,7 @@ import { Contract } from '@ethersproject/contracts'
 import { NextApiRequest, NextApiResponse } from "next";
 
 import apiRoute from '../../../handler';
-import { TokenSolidity } from '../../../../../models/Token';
+import { TokenSolidity } from "../../../../../models/TokenSolidity";
 
 
 const route = apiRoute();

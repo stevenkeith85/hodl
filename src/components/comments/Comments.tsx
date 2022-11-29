@@ -12,7 +12,7 @@ import humanize from "humanize-plus";
 import { useCommentCount } from "../../hooks/useComments";
 import { NftContext } from "../../contexts/NftContext";
 
-import { MutableToken } from "../../models/Nft";
+import { MutableToken } from "../../models/MutableToken";
 import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
 

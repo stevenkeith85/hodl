@@ -1,6 +1,6 @@
 import { createContext } from 'react';
-import { MutableToken } from '../models/Nft';
-import { Token } from '../models/Token';
+import { MutableToken } from "../models/MutableToken";
+import { Token } from "../models/Token";
 
 
 export const NftContext = createContext<{

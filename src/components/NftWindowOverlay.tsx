@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 
 import { Likes } from './Likes';
 import { Comments } from './comments/Comments';
-import { FullToken } from '../models/Nft';
+import { FullToken } from "../models/FullToken";
 
 
 interface NftWindowOverlayProps {

@@ -1,8 +1,8 @@
 import apiRoute from '../../../handler';
-import { Token } from '../../../../../models/Token';
+import { Token } from "../../../../../models/Token";
 import { Redis } from '@upstash/redis';
 import { updateListedCache } from './count';
-import { FullToken } from '../../../../../models/Nft';
+import { FullToken } from "../../../../../models/FullToken";
 import { getAsString } from '../../../../../lib/getAsString';
 
 const client = Redis.fromEnv();
@@ -30,7 +30,6 @@ export const getListed = async (address: string, offset: number, limit: number, 
 
     const tokenIdToPriceMap = tokenIdsWithPrice.reduce(
         (map, currentValue, currentIndex, array) => {
-            console.log('map is ', map)
             if (currentIndex % 2 == 0 && currentIndex < (array.length - 1)) {
                 map[currentValue] = array[currentIndex + 1];
             }

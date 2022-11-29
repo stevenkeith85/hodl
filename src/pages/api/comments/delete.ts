@@ -4,7 +4,7 @@ import apiRoute from "../handler";
 import { DeleteCommentValidationSchema } from "../../../validation/comments/deleteComment";
 import { HodlComment } from "../../../models/HodlComment";
 import { getMutableToken } from "../contracts/mutable-token/[tokenId]";
-import { MutableToken } from "../../../models/Nft";
+import { MutableToken } from "../../../models/MutableToken";
 import { runRedisTransaction } from "../../../lib/database/rest/databaseUtils";
 import { getComment } from "../../../lib/database/rest/getComment";
 import { setComment } from "../../../lib/database/rest/setComment";
