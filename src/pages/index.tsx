@@ -53,6 +53,7 @@ export default function Home({
   user,
 }) {
 
+  const homepage = "https://www.hodlmymoon.com";
   const description = "Hodl My Moon is an NFT Social Network and NFT marketplace. Mint free Polygon NFTs as social media posts. Follow digital artists, photographers and other crypto enthusiasts. Like or Comment on their latest NFTs. Sell your NFTs on the marketplace";
   const title = "Hodl My Moon is an NFT Social Network and NFT Marketplace | Posts are Polygon NFTs | Sign in with MetaMask";
   const shareImage = "https://res.cloudinary.com/dyobirj7r/image/upload/ar_216:253,c_fill,w_1080/prod/nfts/bafkreihuew5ij6lvc2k7vjqr65hit7fljl7fsxlikrkndcdyp47xbi6pvy" // nft 36
@@ -61,7 +62,7 @@ export default function Home({
     <>
       <Head>
         <title>{title}</title>
-        <link href="https://www.hodlmymoon.com" rel="canonical" />
+        <link href={homepage} rel="canonical" />
         
         <meta name="description" content={description}/>
 
@@ -73,7 +74,7 @@ export default function Home({
         <meta name="twitter:image" content={shareImage} />
 
         <meta property="og:type" content="website" />
-        <meta property="og:url" content={`https://www.hodlmymoon.com`} />
+        <meta property="og:url" content={homepage} />
         <meta property="og:title" content={title} />
         <meta property="og:image" content={shareImage} />
         <meta property="og:description" content={description} />
