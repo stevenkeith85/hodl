@@ -3,7 +3,7 @@ import axios from 'axios'
 import { assetTypeFromMimeType } from '../lib/utils';
 import { AssetTypes } from '../models/AssetType';
 import calculateAspectRatios from 'calculate-aspect-ratio';
-import { readAndCompressImage } from 'browser-image-resizer';
+import { resizeImage } from 'simple-image-resize';
 
 export const useCloudinaryUpload = (): [Function, string, Function] => {
   const [error, setError] = useState('');
@@ -29,15 +29,17 @@ export const useCloudinaryUpload = (): [Function, string, Function] => {
     // Resize Image before upload to make it faster
     if (assetType === AssetTypes.Image) {
       const config = {
-        quality: 0.8,
+        quality: 0.92,
         maxWidth: 1080,
         maxHeight: 1350,
       };
 
-      file = await readAndCompressImage(file, config);
+      console.log('before', file.size)
+      file = await resizeImage(file, config);
+      console.log('after', file.size)
 
-      if (file.size > 10 * 1024 * 1024) {
-        setError(`Images can be up to 10MB`);
+      if (file.size > 20 * 1024 * 1024) {
+        setError(`Images can be up to 20MB`);
         return {
           success: false,
           fileName: null,
