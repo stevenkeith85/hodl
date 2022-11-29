@@ -52,24 +52,35 @@ export default function Home({
   address,
   user,
 }) {
+
+  const description = "Hodl My Moon is an NFT Social Network and NFT marketplace. Mint free Polygon NFTs as social media posts. Follow digital artists, photographers and other crypto enthusiasts. Like or Comment on their latest NFTs. Sell your NFTs on the marketplace";
+  const title = "Hodl My Moon is an NFT Social Network and NFT Marketplace | Posts are Polygon NFTs | Sign in with MetaMask";
+  const shareImage = "https://res.cloudinary.com/dyobirj7r/image/upload/ar_216:253,c_fill,w_1080/prod/nfts/bafkreihuew5ij6lvc2k7vjqr65hit7fljl7fsxlikrkndcdyp47xbi6pvy" // nft 36
+
   return (
     <>
       <Head>
-        <title>Hodl My Moon, an NFT Social Network and NFT Marketplace</title>
+        <title>{title}</title>
+        <link href="https://www.hodlmymoon.com" rel="canonical" />
+        
+        <meta name="description" content={description}/>
 
-        <meta content="Hodl My Moon, an NFT Social Network and NFT marketplace. Mint Polygon NFTs" property="og:title"/>
-        <meta content="website" property="og:type"/>
-        <meta content="https://www.hodlmymoon.com/" property="og:url"/>
-        <meta content="en_US" property="og:locale"/>
-        <meta content="Hodl My Moon" property="og:site_name"/>
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@hodlmymoon" />
+        <meta name="twitter:creator" content="@hodlmymoon" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={shareImage} />
 
-        <meta content="Hodl My Moon is an NFT Social Network and NFT marketplace. Mint free Polygon NFTs as social media posts. Follow digital artists, photographers and other crypto enthusiasts. Like or Comment on their latest NFTs. Sell your NFTs on the marketplace" property="og:description"/>
-        <meta content="Hodl My Moon is an NFT Social Network and NFT marketplace. Mint free Polygon NFTs as social media posts. Follow digital artists, photographers and other crypto enthusiasts. Like or Comment on their latest NFTs. Sell your NFTs on the marketplace" name="description"/>
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`https://www.hodlmymoon.com`} />
+        <meta property="og:title" content={title} />
+        <meta property="og:image" content={shareImage} />
+        <meta property="og:description" content={description} />
 
-        <link href="https://www.hodlmymoon.com" rel="canonical"/>
       </Head>
-        {!address && <PublicHomePage /> }
-        {address && <PrivateHomePage user={user} address={address} />}      
+      {!address && <PublicHomePage />}
+      {address && <PrivateHomePage user={user} address={address} />}
     </>
   )
 }
