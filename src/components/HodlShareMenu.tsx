@@ -28,7 +28,7 @@ export const HodlShareMenu = ({ nft, anchorEl, open, handleClose }) => {
             <MenuList sx={{ padding: 0 }}>
                 <Link 
                     sx={{ textDecoration: 'none' }} 
-                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent('Check out this #nft on hodlmymoon.com (@hodlmymoon)')}&url=${encodeURIComponent('https://www.hodlmymoon.com/nft/' + nft.id)}`}>
+                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent('Check out this #nft')}&url=${encodeURIComponent('https://www.hodlmymoon.com/nft/' + nft.id)}`}>
                     <MenuItem>
                         <ListItemIcon>
                             <TwitterIcon />
