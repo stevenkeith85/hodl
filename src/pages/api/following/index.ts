@@ -32,7 +32,6 @@ export const getFollowing = async (address: string, offset: number = 0, limit: n
     const start = offset;
     const stop = offset + limit - 1;
 
-    // console.log('get following for x with user y', address, viewer)
     // TODO: We should get the details with a pipeline not promises
     const addresses: string[] = await client.zrange(`user:${address}:following`, start, stop, { rev: true });
 

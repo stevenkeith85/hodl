@@ -25,7 +25,7 @@ export const useLike = (
       return;
     }
     likeCount.mutate(old => {
-      console.log('old', old) // THIS SEEMS TO NOT WORK IF WE DO NOT REVALIDATE THE SWR ON MOUNT
+      // THIS SEEMS TO NOT WORK IF WE DO NOT REVALIDATE THE SWR ON MOUNT
       if (userLikesThisToken) {
         return old - 1;
       } else {

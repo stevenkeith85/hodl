@@ -34,9 +34,7 @@ export const useCloudinaryUpload = (): [Function, string, Function] => {
         maxHeight: 1350,
       };
 
-      console.log('before', file.size)
       file = await resizeImage(file, config);
-      console.log('after', file.size)
 
       if (file.size > 20 * 1024 * 1024) {
         setError(`Images can be up to 20MB`);
