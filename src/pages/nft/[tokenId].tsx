@@ -10,7 +10,6 @@ import { authenticate } from "../../lib/jwt";
 import { NftContext } from "../../contexts/NftContext";
 
 import { MutableToken } from "../../models/MutableToken";
-import { Token } from "../../models/Token";
 import { DetailPageAsset } from "../../components/nft/DetailPageAsset";
 
 import Grid from '@mui/material/Grid';
@@ -76,13 +75,18 @@ export async function getServerSideProps({ params, query, req, res }) {
   const limit = 10;
   const tab = Number(query.tab) || 0;
 
+  // Call via the API (rather than just hit the database) as we heavily cache this data at the edge; so it should be faster and reduce our costs
+  const host = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : `http://hodlmymoon`;
+  const nft = await fetch(`${host}/api/token/${params.tokenId}`).then(r => r.json()).then(data => data.token);
+
 
   return {
     props: {
       address: req.address || null, // This is actually used to populate the address context in _app.ts. The app bar needs it
       tokenId: params.tokenId,
       limit,
-      tab
+      tab,
+      nft
     },
   }
 }
@@ -91,17 +95,15 @@ const NftDetail = ({
   address,
   tokenId,
   limit,
-  tab
+  tab,
+  nft
 }) => {
   const [value, setValue] = useState(Number(tab)); // tab
-
-  const tokenFetcher: Fetcher<Token> = (url, id) => fetch(`${url}/${id}`).then(r => r.json()).then(data => data.token);
-  const { data: nft } = useSWR(tokenId ? [`/api/token`, tokenId] : null, tokenFetcher);
 
   const mutableTokenFetcher: Fetcher<MutableToken> = (url, id) => fetch(`${url}/${id}`).then(r => r.json()).then(data => data.mutableToken);
   const { data: mutableToken } = useSWR(tokenId ? [`/api/contracts/mutable-token`, tokenId] : null, mutableTokenFetcher);
 
-  const getImage = (nft) => makeCloudinaryUrl("image", "nfts", nft?.image, { crop: 'fill', aspect_ratio: nft?.properties?.aspectRatio, width: '1080'});
+  const getImage = (nft) => makeCloudinaryUrl("image", "nfts", nft?.image, { crop: 'fill', aspect_ratio: nft?.properties?.aspectRatio, width: '1080' });
 
 
   return (
@@ -114,17 +116,12 @@ const NftDetail = ({
       >
         <Head>
           <title>{`${nft?.name || ''} | NFT | Hodl My Moon`}</title>
-
-          {nft && <>
-            <meta name="twitter:card" content="summary_large_image" />
-            <meta name="twitter:site" content="@hodlmymoon" />
-            <meta name="twitter:creator" content="@hodlmymoon" />
-            <meta name="twitter:title" content={`${nft?.name || ''} | NFT | Hodl My Moon`} />
-            <meta name="twitter:description" content={nft?.description} />
-            <meta name="twitter:image" content={getImage(nft)} />
-          </>
-          }
-
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:site" content="@hodlmymoon" />
+          <meta name="twitter:creator" content="@hodlmymoon" />
+          <meta name="twitter:title" content={`${nft?.name || ''} | NFT | Hodl My Moon`} />
+          <meta name="twitter:description" content={nft?.description} />
+          <meta name="twitter:image" content={getImage(nft)} />
         </Head>
         <Grid
           container

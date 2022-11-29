@@ -3,7 +3,6 @@ import { getToken } from '../../../lib/database/rest/getToken';
 import { getAsString } from '../../../lib/getAsString';
 
 
-
 export default async function route (req: NextRequest) {
   if (req.method !== 'GET') {
     return new Response(null, { status: 405 });
