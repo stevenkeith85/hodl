@@ -1,5 +1,6 @@
 import { HodlCommentViewModel } from "./HodlComment";
-import { Token, TokenVM } from "./Token";
+import { Token } from "./Token";
+import { TokenVM } from "./TokenVM";
 import { UserViewModel } from "./User";
 
 export enum ActionTypes {

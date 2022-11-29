@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import InfiniteScroll from 'react-swr-infinite-scroll'
 
 import { HodlLoadingSpinner } from "./HodlLoadingSpinner";
-import { FullToken } from "../models/Nft";
+import { FullToken } from "../models/FullToken";
 
 
 import { NftWindow } from "./NftWindow";

@@ -1,5 +1,5 @@
 import { AssetTypes } from "../models/AssetType";
-import { FullToken } from "../models/Nft";
+import { FullToken } from "../models/FullToken";
 import { Token } from "../models/Token";
 import { commercial, nonCommercial, token } from "./copyright";
 

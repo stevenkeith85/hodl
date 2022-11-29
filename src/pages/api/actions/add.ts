@@ -8,7 +8,7 @@ import { isFollowing } from "../follows";
 import { likesComment } from "../like/comment/likes";
 import { getMutableToken } from "../contracts/mutable-token/[tokenId]";
 import { HodlComment } from "../../../models/HodlComment";
-import { MutableToken } from "../../../models/Nft";
+import { MutableToken } from "../../../models/MutableToken";
 import { getAction } from ".";
 import { pusher } from "../../../lib/server/pusher";
 import { runRedisTransaction } from "../../../lib/database/rest/databaseUtils";

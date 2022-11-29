@@ -6,7 +6,7 @@ import { buyNft, delistNft } from "../../lib/nft";
 import { ListModal } from "../modals/ListModal";
 import { SuccessModal } from "../modals/SuccessModal";
 import { Token } from "../../models/Token";
-import { MutableToken } from "../../models/Nft";
+import { MutableToken } from "../../models/MutableToken";
 
 
 interface NftActionButtons {

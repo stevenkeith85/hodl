@@ -4,7 +4,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { assetType } from "../lib/utils";
 import { AssetTypes } from "../models/AssetType";
-import { Token } from "../models/Token"
+import { Token } from "../models/Token";
 import { HodlAudioBoxMini } from "./HodlAudioBoxMini";
 import { HodlImageResponsive } from "./HodlImageResponsive";
 

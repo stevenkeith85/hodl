@@ -1,5 +1,5 @@
 import apiRoute from '../../../handler';
-import { Token } from '../../../../../models/Token';
+import { Token } from "../../../../../models/Token";
 import { Redis } from '@upstash/redis';
 import { updateHodlingCache } from './count';
 import { getAsString } from '../../../../../lib/getAsString';

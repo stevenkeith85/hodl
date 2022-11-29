@@ -9,8 +9,8 @@ import Market from '../../smart-contracts/artifacts/contracts/HodlMarket.sol/Hod
 import NFT from '../../smart-contracts/artifacts/contracts/HodlNFT.sol/HodlNFT.json'
 
 import axios from 'axios'
-import { MutableToken } from '../models/Nft.js';
-import { Token } from '../models/Token';
+import { MutableToken } from "../models/MutableToken"
+import { Token } from "../models/Token"
 import { getSigner } from '../lib/connections';
 
 export const listNft = async (token: Token, price: string) => {

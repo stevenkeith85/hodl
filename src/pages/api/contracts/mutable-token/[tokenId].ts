@@ -1,8 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import apiRoute from '../../handler';
-import { MutableToken, FullToken } from '../../../../models/Nft';
+import { FullToken } from "../../../../models/FullToken";
+import { MutableToken } from "../../../../models/MutableToken";
 import { Redis } from '@upstash/redis';
-import { Token } from '../../../../models/Token';
+import { Token } from "../../../../models/Token";
 import { getListingFromBlockchain } from '../market/listing/[tokenId]';
 import { getTokenFromBlockchain } from '../token/[tokenId]';
 

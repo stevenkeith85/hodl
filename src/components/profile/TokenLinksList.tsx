@@ -5,7 +5,7 @@ import InfiniteScroll from "react-swr-infinite-scroll";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 
 import { TokenLink } from "../token/TokenLink";
-import { Token } from '../../models/Token';
+import { Token } from "../../models/Token";
 import theme from "../../theme";
 
 
