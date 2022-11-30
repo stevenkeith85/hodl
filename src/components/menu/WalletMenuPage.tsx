@@ -11,13 +11,14 @@ import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 
 import { useRouter } from "next/router";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useNickname } from "../../hooks/useNickname";
 import { WalletContext } from '../../contexts/WalletContext';
 import { NicknameModal } from "../modals/NicknameModal";
 import { ProfilePictureModal } from "../modals/ProfilePictureModal";
 import { LoginLogoutButton } from "./LoginLogoutButton";
 import { ProfileNameOrAddress } from "../avatar/ProfileNameOrAddress";
+import MetaMaskOnboarding from '@metamask/onboarding'
 
 
 interface WalletMenuPageProps {
@@ -56,6 +57,13 @@ export const WalletMenuPage: React.FC<WalletMenuPageProps> = ({
 
     }, [router.events, handleRouteChange]);
 
+    const onboarding = useRef<MetaMaskOnboarding>();
+
+    useEffect(() => {
+        if (!onboarding.current) {
+            onboarding.current = new MetaMaskOnboarding();
+        }
+    }, []);
 
     return (
         <ClickAwayListener
@@ -69,8 +77,8 @@ export const WalletMenuPage: React.FC<WalletMenuPageProps> = ({
             <Box sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                flexGrow: 1,
-                height: '100%'
+                // flexGrow: 1,
+                // height: '100%'
             }}>
                 <NicknameModal nicknameModalOpen={nicknameModalOpen} setNicknameModalOpen={setNicknameModalOpen}></NicknameModal>
                 <ProfilePictureModal profilePictureModalOpen={profilePictureModalOpen} setProfilePictureModalOpen={setProfilePictureModalOpen}></ProfilePictureModal>
@@ -136,46 +144,56 @@ export const WalletMenuPage: React.FC<WalletMenuPageProps> = ({
                         </Stack>
                     }
                     {
-                        !address &&
-                        <Box
-                            display="flex"
-                            flexDirection="column"
-                            gap={3}
-                        >
-                            <Typography sx={{ fontSize: 16 }}>Sign in with your Wallet</Typography>
-                            
-                            <Typography sx={{ color: theme => theme.palette.text.secondary }}>
-                                Your wallet is your digital identity. We use it to sign you in.
-                            </Typography>
-                            <Typography sx={{ color: theme => theme.palette.text.secondary }}>
-                                This is a passwordless, cryptographically secure, login flow.
-                            </Typography>
-                            <Typography sx={{ color: theme => theme.palette.text.secondary }}>
-                                You&apos;ll be asked to sign a message to prove you are the owner of your wallet.
-                            </Typography>
-                            <Typography sx={{ color: theme => theme.palette.text.secondary }}>
-                                Signing in will create your Hodl My Moon profile.
-                            </Typography>
-                            <Link href="/learn/connecting-a-wallet">Read More</Link>
-                            
-                            <div>
-                                <LoginLogoutButton
-                                    sx={{
-                                        paddingY: 1,
-                                        paddingX: 2,
-                                    }} />
-                            </div>
-                        </Box>
+                        !address && <>
+
+                            <Box
+                                display="flex"
+                                flexDirection="column"
+                            >
+                                <Typography mb={2} sx={{ fontSize: 18 }}>Sign in</Typography>
+
+                                <Typography mb={2} sx={{ fontSize: 16, color: theme => theme.palette.text.secondary }}>
+                                    Your wallet is your digital identity. We use it to sign you in.
+                                </Typography>
+                                <Typography mb={2} sx={{ fontSize: 14, color: theme => theme.palette.text.secondary }}>
+                                    <Link target="_blank" href="/learn/connecting-a-wallet">Read more</Link>
+                                </Typography>
+                                {
+                                    !(MetaMaskOnboarding.isMetaMaskInstalled()) &&
+                                    <Typography mb={2} component="a" onClick={e => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        onboarding.current.startOnboarding()
+                                    }}>
+                                        <Link href="#">Install metamask</Link>
+                                    </Typography>
+
+                                }
+                                <div>
+                                    <LoginLogoutButton
+                                        variant='contained'
+                                        closeMenu={() => setHoverMenuOpen(false)}
+                                        sx={{
+                                            fontSize: 16,
+                                            paddingY: 0.75,
+                                            paddingX: 3,
+                                        }} />
+                                </div>
+                            </Box>
+                        </>
                     }
                 </Box>
-                {address && <LoginLogoutButton
-                    variant="text"
-                    sx={{
-                        paddingX: 2,
-                        paddingY: 1.5,
-                        justifyContent: "flex-start",
-                        textTransform: 'lowercase'
-                    }} />}
+                {address &&
+                    <Box margin={1.5}>
+                        <LoginLogoutButton
+                            variant='outlined'
+                            sx={{
+                                paddingY: 0.75,
+                                paddingX: 3,
+                            }}
+                        />
+                    </Box>
+                }
             </Box>
         </ClickAwayListener >
     )

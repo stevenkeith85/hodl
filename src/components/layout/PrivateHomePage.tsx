@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 
 import dynamic from 'next/dynamic';
 
@@ -14,6 +14,7 @@ import PrivateHomePageSidebarLoading from './PrivateHomePageSidebarLoading';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import PrivateHomePageSwitchLoading from './PrivateHomePageSwitchLoading';
+// import { WalletContext } from '../../contexts/WalletContext';
 // import { useActions2 } from '../../hooks/useActions2';
 // import { HodlFeed2 } from '../feed/HodlFeed2';
 
@@ -44,14 +45,13 @@ interface PrivateHomePageProps {
 }
 
 const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
+    // const { provider, signer } = useContext(WalletContext);
+
     const theme = useTheme();
 
     const desktop = useMediaQuery(theme.breakpoints.up('md'), { noSsr: true });
 
     const [viewSidebar, setViewSidebar] = useState(false);
-
-    // const previousNearestToTop = useRef(null);
-    // const nearestToTop = useRef(null);
 
     const PrivateHomePageSidebar = dynamic(
         () => import('./PrivateHomePageSidebar'),
@@ -60,104 +60,14 @@ const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
             loading: () => <PrivateHomePageSidebarLoading display={desktop || viewSidebar}/>
         }
     );
-
-    // TODO: IS THIS EATING UP OUR CLOUDINARY BANDWIDTH??
-
-    // const updateNearestToTop = () => {
-    //     previousNearestToTop.current = nearestToTop.current;
-
-    //     const feedItems = Array.from(document.querySelectorAll('.feedItem'));
-    //     feedItems.sort(
-    //         (a, b) => {
-    //             const aPosition = Math.abs(a.getBoundingClientRect().top);
-    //             const bPosition = Math.abs(b.getBoundingClientRect().top);
-
-    //             if (aPosition < bPosition) {
-    //                 return -1;
-    //             }
-    //             else {
-    //                 return 1;
-    //             }
-    //         }
-    //     )[0];
-
-    //     nearestToTop.current = feedItems[0];
-    // }
-
-    // // We record the feed item at the top of the screen
-    // //
-    // // if there's a new item at the top of the screen, we
-    // // pause the old items media (if it had any playing)
-    // //
-    // // and start the new items media playing (if it has any)
-    // const playMediaAssetNearestTopOfViewport = () => {
-    //     updateNearestToTop();
-
-    //     // if we have a new top video
-    //     if (nearestToTop.current !== previousNearestToTop.current) {
-    //         // pause the previous
-    //         const previousMedia = previousNearestToTop?.current?.querySelector('video,audio');
-    //         previousMedia?.pause();
-
-
-    //         // start the new one
-    //         const nearestToTopAsset = nearestToTop?.current?.querySelector('video,audio');
-    //         if (nearestToTopAsset) {
-    //             ((nearestToTopAsset) as HTMLMediaElement).muted = JSON.parse(localStorage.getItem('muted'));
-    //             nearestToTopAsset?.play();
-    //         }
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     const fn = throttle(playMediaAssetNearestTopOfViewport, 500);
-    //     window.addEventListener('scroll', fn);
-
-    //     return () => {
-    //         window.removeEventListener('scroll', fn);
-    //     };
-    // }, []);
     
-    useEffect(() => {
+    // useEffect(() => {
 
-        const switchToPolygon = async () => {
-            try {
-                // @ts-ignore
-                await ethereum.request({
-                  method: 'wallet_switchEthereumChain',
-                  params: [{ chainId: '0x89' }],
-                });
-              } catch (switchError) {
-                // This error code indicates that the chain has not been added to MetaMask.
-                if (switchError.code === 4902) {
-                  try {
-                    // @ts-ignore
-                    await ethereum.request({
-                      method: 'wallet_addEthereumChain',
-                      params: [
-                        {
-                          chainId: '0x89',
-                          chainName: 'Polygon Mainnet',
-                          rpcUrls: ["https://polygon-mainnet.infura.io"],
-                          nativeCurrency: {
-                            name: "MATIC",
-                            symbol: "MATIC",
-                            decimals: 18
-                          },
-                          blockExplorerUrls: ["https://polygonscan.com/"]
-                        },
-                      ],
-                    });
-                  } catch (addError) {
-                    // handle "add" error
-                  }
-                }
-                // handle other "switch" errors
-              }
-        }
+        
       
-        switchToPolygon();
-    }, [])
+    //     switchToPolygon();
+    // }, [provider]);
+
     return (
         <>
             {!desktop && <PrivateHomePageSwitch viewSidebar={viewSidebar} setViewSidebar={setViewSidebar}/>}

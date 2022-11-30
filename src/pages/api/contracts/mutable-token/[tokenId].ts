@@ -78,7 +78,7 @@ export const getFullToken = async (id: number, skipCache = false): Promise<FullT
     throw new Error('Error retrieving token');
   }
 
-  console.log('api/nft retrieved token', token);
+  // console.log('api/nft retrieved token', token);
 
   const result: FullToken = {
     ...token,

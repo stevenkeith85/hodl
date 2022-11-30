@@ -35,6 +35,8 @@ import createEmotionCache from '../createEmotionCache';
 
 // Also loads a lot of deps
 import Layout from '../components/layout/Layout';
+import { connect } from 'http2';
+import { useConnect } from '../hooks/useConnect';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -51,13 +53,16 @@ export default function MyApp(props: MyAppProps) {
     pageProps } = props;
 
   // WalletContext state
+  const [provider, setProvider] = useState(null);
+  const [signer, setSigner] = useState(null);
   // @ts-ignore
   const [address, setAddress] = useState(props?.pageProps?.address);
-  const [signer, setSigner] = useState('');
 
   // PusherContext state
   const [pusher, setPusher] = useState(null);
   const [userSignedInToPusher, setUserSignedInToPusher] = useState(false); // TODO
+
+  // const [connect, disconnect] = useConnect();
 
   const setPusherSignInSuccess = () => {
     setUserSignedInToPusher(true);
@@ -91,8 +96,12 @@ export default function MyApp(props: MyAppProps) {
       return;
     }
 
-    loadPusher()
-      .catch(console.error);
+    // The are logged in to the BE, so connect FE
+    // connect(false);
+    
+    loadPusher();
+    
+      // .catch(console.error);
 
   }, [address])
 
@@ -107,51 +116,53 @@ export default function MyApp(props: MyAppProps) {
 
   return (
     <>
-        <CacheProvider value={emotionCache}>
-          <Head>
-            <meta name="viewport" content="initial-scale=1, width=device-width" />
-          </Head>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <SWRConfig value={{
-              dedupingInterval: 2000, // default
-              focusThrottleInterval: 5000, // default
-              errorRetryCount: 0
+      <CacheProvider value={emotionCache}>
+        <Head>
+          <meta name="viewport" content="initial-scale=1, width=device-width" />
+        </Head>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <SWRConfig value={{
+            dedupingInterval: 2000, // default
+            focusThrottleInterval: 5000, // default
+            errorRetryCount: 0
+          }}>
+            <WalletContext.Provider value={{
+              provider,
+              setProvider,
+              signer,
+              setSigner,
+              address,
+              setAddress,
             }}>
-              <WalletContext.Provider value={{
-                signer,
-                setSigner,
-                address,
-                setAddress,
+              <PusherContext.Provider value={{
+                pusher,
+                setPusher,
+                userSignedInToPusher,
+                setUserSignedInToPusher
               }}>
-                <PusherContext.Provider value={{
-                  pusher,
-                  setPusher,
-                  userSignedInToPusher,
-                  setUserSignedInToPusher
-                }}>
-                  <SnackbarProvider
-                    Components={{
-                      // @ts-ignore
-                      hodlnotification: HodlNotificationSnackbar
-                    }}
-                  >
-                    <FeedContext.Provider value={{ feed }}>
-                      <Layout
-                        address={address}
-                        pusher={pusher}
-                        userSignedInToPusher={userSignedInToPusher}
-                      >
-                        <Component {...pageProps} />
-                      </Layout>
-                    </FeedContext.Provider>
-                  </SnackbarProvider>
-                </PusherContext.Provider>
-              </WalletContext.Provider>
-            </SWRConfig>
-          </ThemeProvider>
-        </CacheProvider>
-        <Analytics />
+                <SnackbarProvider
+                  Components={{
+                    // @ts-ignore
+                    hodlnotification: HodlNotificationSnackbar
+                  }}
+                >
+                  <FeedContext.Provider value={{ feed }}>
+                    <Layout
+                      address={address}
+                      pusher={pusher}
+                      userSignedInToPusher={userSignedInToPusher}
+                    >
+                      <Component {...pageProps} />
+                    </Layout>
+                  </FeedContext.Provider>
+                </SnackbarProvider>
+              </PusherContext.Provider>
+            </WalletContext.Provider>
+          </SWRConfig>
+        </ThemeProvider>
+      </CacheProvider>
+      <Analytics />
     </>
   )
 }

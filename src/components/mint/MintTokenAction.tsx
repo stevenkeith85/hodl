@@ -1,5 +1,5 @@
 import CloudSyncOutlinedIcon from '@mui/icons-material/CloudSyncOutlined';
-import { FC, useState } from 'react';
+import { FC, useContext, useState } from 'react';
 import { enqueueSnackbar } from 'notistack';
 import { mintToken } from '../../lib/mint';
 import { MintProps } from './models';
@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
+import { WalletContext } from '../../contexts/WalletContext';
 
 
 export const MintTokenAction: FC<MintProps> = ({
@@ -20,12 +21,13 @@ export const MintTokenAction: FC<MintProps> = ({
   setFormData
 }: MintProps) => {
   const [successModalOpen, setSuccessModalOpen] = useState(false);
+  const { provider, signer } = useContext(WalletContext);
 
   async function mint() {
     setLoading(true);
 
     enqueueSnackbar(
-      'Please confirm the transaction in MetaMask',
+      'Please confirm the transaction in your Wallet',
       {
         variant: "info",
         hideIconVariant: true
@@ -42,15 +44,13 @@ export const MintTokenAction: FC<MintProps> = ({
         });
     }
 
-    try {
-      await mintToken(metadataUrl);
-      setLoading(false);
+    const success = await mintToken(metadataUrl, signer);
 
+    setLoading(false);
 
+    if (success) {
       setStepComplete(4);
       setSuccessModalOpen(true);
-    } catch (e) {
-      setLoading(false);
     }
   }
 
@@ -102,15 +102,15 @@ export const MintTokenAction: FC<MintProps> = ({
             span: { fontWeight: 600 }
           }}>Click the button to mint your NFT <span>{formData.name}</span> on the polygon blockchain</Typography>
         <div>
-            <Button
-              color="primary"
-              disabled={loading || stepComplete === 4}
-              onClick={mint}
-              sx={{ paddingY: 1, paddingX: 3 }}
-              variant="contained"
-            >
-              Mint Your Token
-            </Button>
+          <Button
+            color="primary"
+            disabled={loading || stepComplete === 4}
+            onClick={mint}
+            sx={{ paddingY: 1, paddingX: 3 }}
+            variant="contained"
+          >
+            Mint Your Token
+          </Button>
         </div>
       </Box>
     </>

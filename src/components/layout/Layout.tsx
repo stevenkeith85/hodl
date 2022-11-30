@@ -7,6 +7,7 @@ import Footer from './Footer';
 
 
 export default function Layout({ children, address, pusher, userSignedInToPusher }) {
+
     const AppBar = dynamic(
         () => import('./AppBar'),
         {
