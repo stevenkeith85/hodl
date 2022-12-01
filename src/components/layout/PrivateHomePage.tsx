@@ -6,7 +6,6 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 
 import { UserViewModel } from '../../models/User';
-// import { throttle } from '../../lib/lodash';
 
 import HodlFeedLoading from './HodlFeedLoading';
 import PrivateHomePageSidebarLoading from './PrivateHomePageSidebarLoading';
@@ -14,21 +13,17 @@ import PrivateHomePageSidebarLoading from './PrivateHomePageSidebarLoading';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import PrivateHomePageSwitchLoading from './PrivateHomePageSwitchLoading';
-// import { WalletContext } from '../../contexts/WalletContext';
-// import { useActions2 } from '../../hooks/useActions2';
-// import { HodlFeed2 } from '../feed/HodlFeed2';
+import { switchToPolygon } from '../../lib/switchToPolygon';
+import { WalletContext } from '../../contexts/WalletContext';
 
 
-// import { delayForDemo } from '../../lib/utils';
 const HodlFeed2 = dynamic(
     () => import('../feed/HodlFeed2').then(mod => mod.HodlFeed2),
-    // () => delayForDemo(import('../HodlProfileBadge').then(mod => mod.HodlProfileBadge)),
     {
         ssr: false,
         loading: () => <HodlFeedLoading />
     }
 );
-
 
 
 const PrivateHomePageSwitch = dynamic(
@@ -45,7 +40,7 @@ interface PrivateHomePageProps {
 }
 
 const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
-    // const { provider, signer } = useContext(WalletContext);
+    const { provider, signer } = useContext(WalletContext);
 
     const theme = useTheme();
 
@@ -61,12 +56,11 @@ const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
         }
     );
     
-    // useEffect(() => {
-
-        
-      
-    //     switchToPolygon();
-    // }, [provider]);
+    useEffect(() => {
+        if (provider) {
+            switchToPolygon(provider);
+        }
+    }, [provider]);
 
     return (
         <>

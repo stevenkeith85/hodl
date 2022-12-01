@@ -4,6 +4,8 @@ import Web3Modal from "web3modal";
 import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
 import WalletConnect from '@walletconnect/web3-provider';
 
+import { Web3Provider } from '@ethersproject/providers';
+
 export const providerOptions = {
   coinbasewallet: {
     package: CoinbaseWalletSDK,
@@ -13,11 +15,11 @@ export const providerOptions = {
     options: {
       appName: "Hodl My Moon",
       infuraId: {
-        137: `https://polygon-mainnet.infura.io/v3/{process.env.NEXT_PUBLIC_INFURA_NODE_API_KEY}`
+        137: `https://polygon-mainnet.infura.io/v3/{process.env.NEXT_PUBLIC_INFURA_NODE_API_KEY}`,
+        80001: `https://polygon-mumbai.infura.io/v3/{process.env.NEXT_PUBLIC_INFURA_NODE_API_KEY}`,
       }
     }
   },
-
   // https://stackoverflow.com/questions/69494765/wallet-connect-no-rpc-url-available-for-chainid-137
   walletconnect: {
     display: {
@@ -25,7 +27,7 @@ export const providerOptions = {
     },
     package: WalletConnect,
     options: {
-      rpc: { 
+      rpc: {
         137: "https://matic-mainnet.chainstacklabs.com",
         80001: "https://matic-mumbai.chainstacklabs.com",
       },
@@ -62,11 +64,10 @@ export const providerOptions = {
 };
 
 
-export const getSigner = async (dialog) => {
+export const getProviderSignerAddress = async (dialog = false) => {
   try {
-    const { Web3Provider } = await import('@ethersproject/providers');
-
     const web3Modal = new Web3Modal({
+      network: "polygon",
       // disableInjectedProvider: true,
       cacheProvider: true,
       providerOptions,
@@ -75,19 +76,39 @@ export const getSigner = async (dialog) => {
     if (dialog) {
       web3Modal.clearCachedProvider();
     }
-    
 
     const instance = await web3Modal.connect();
 
     const provider = new Web3Provider(instance);
-    const signer = provider.getSigner();
+
+    // TODO: Do we need this. 
+    //   provider.on("network", (newNetwork, oldNetwork) => {
+    //     // When a Provider makes its initial connection, it emits a "network"
+    //     // event with a null oldNetwork along with the newNetwork. So, if the
+    //     // oldNetwork exists, it represents a changing network
+    //     // alert("old " + oldNetwork?.name);
+    //     // alert("new " + newNetwork.name);
+
+    //     if (oldNetwork) {
+    //         window.location.reload();
+    //     }
+    // });
+
+    const signer = provider?.getSigner();
+    const address = await signer?.getAddress();
 
     return ({
       provider,
-      signer
+      signer,
+      address
     });
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
+    return ({
+      provider: null,
+      signer: null,
+      address: null
+    });
   }
 
 

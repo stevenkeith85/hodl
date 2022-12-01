@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
@@ -25,8 +25,6 @@ import {
     HodlAction
 } from '../../models/HodlAction';
 import { UserAvatarAndHandleBodyLoading } from '../avatar/UserAvatarAndHandleBodyLoading';
-import { HoverMenu } from '../menu/HoverMenu';
-
 
 const CloseIcon = dynamic(
     () => import('../icons/CloseIcon').then(mod => mod.CloseIcon),
@@ -68,13 +66,13 @@ const SearchBox = dynamic(
     }
 );
 
-// const HoverMenu = dynamic(
-//     () => import('./../menu/HoverMenu').then(mod => mod.HoverMenu),
-//     {
-//         ssr: false,
-//         loading: () => null
-//     }
-// );
+const HoverMenu = dynamic(
+    () => import('./../menu/HoverMenu').then(mod => mod.HoverMenu),
+    {
+        ssr: false,
+        loading: () => null
+    }
+);
 
 const MobileSearchIcon = dynamic(
     () => import('./MobileSearchIcon').then(mod => mod.MobileSearchIcon),
@@ -128,7 +126,6 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
         publicPage: true
     };
 
-
     useEffect(() => {
 
         const displayError = async () => {
@@ -176,8 +173,8 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
         });
     }, [address]);
 
-    const mutateAndNotify = async (action: HodlAction) => {
 
+    const mutateAndNotify = async (action: HodlAction) => {
         if (action.action === ActionTypes.Bought ||
             action.action === ActionTypes.Listed ||
             action.action === ActionTypes.Delisted) {
@@ -203,7 +200,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
         }
 
         pusher.user.bind('notification-hover', mutateAndNotify);
-        pusher.user.bind('notification', ringNotificationBell);          
+        pusher.user.bind('notification', ringNotificationBell);
 
         return () => {
             pusher.user.unbind('notification-hover', mutateAndNotify);
@@ -259,6 +256,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                             }}>
+
                                 <Link key={homepage.url} href={homepage.url}>
                                     <Box
                                         sx={{

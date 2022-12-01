@@ -6,6 +6,8 @@ import { authenticate } from '../lib/jwt';
 import PublicHomePageLoading from '../components/layout/PublicHomeLoading';
 import PrivateHomePageLoading from '../components/layout/PrivateHomePageLoading';
 import { getUser } from '../lib/database/rest/getUser';
+import { useContext } from 'react';
+import { WalletContext } from '../contexts/WalletContext';
 
 
 const PublicHomePage = dynamic(
@@ -58,6 +60,8 @@ export default function Home({
   const description = "Hodl My Moon is an NFT Social Network and Marketplace. Mint free Polygon NFTs as social media posts. Follow digital artists, photographers and other crypto enthusiasts. Like or Comment on their latest NFTs. Sell your NFTs on the marketplace. Sign in with MetaMask";
   const shareImage = "https://res.cloudinary.com/dyobirj7r/image/upload/ar_216:253,c_fill,w_1080/prod/nfts/bafkreihuew5ij6lvc2k7vjqr65hit7fljl7fsxlikrkndcdyp47xbi6pvy" // nft 36
 
+  const { address: walletAddress } = useContext(WalletContext);
+
   return (
     <>
       <Head>
@@ -80,8 +84,8 @@ export default function Home({
         <meta property="og:description" content={description} />
 
       </Head>
-      {!address && <PublicHomePage />}
-      {address && <PrivateHomePage user={user} address={address} />}
+      {!walletAddress && <PublicHomePage />}
+      {walletAddress && <PrivateHomePage user={user} address={walletAddress} />}
     </>
   )
 }

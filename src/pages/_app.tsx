@@ -37,6 +37,9 @@ import createEmotionCache from '../createEmotionCache';
 import Layout from '../components/layout/Layout';
 import { connect } from 'http2';
 import { useConnect } from '../hooks/useConnect';
+import { getProviderSignerAddress } from '../lib/getSigner';
+import { useDisconnect } from '../hooks/useDisconnect';
+import { Router, useRouter } from 'next/router';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -55,14 +58,11 @@ export default function MyApp(props: MyAppProps) {
   // WalletContext state
   const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null);
-  // @ts-ignore
-  const [address, setAddress] = useState(props?.pageProps?.address);
-
+  const [address, setAddress] = useState(null);
+  
   // PusherContext state
   const [pusher, setPusher] = useState(null);
   const [userSignedInToPusher, setUserSignedInToPusher] = useState(false); // TODO
-
-  // const [connect, disconnect] = useConnect();
 
   const setPusherSignInSuccess = () => {
     setUserSignedInToPusher(true);
@@ -95,17 +95,54 @@ export default function MyApp(props: MyAppProps) {
     if (!address) {
       return;
     }
-
-    // The are logged in to the BE, so connect FE
-    // connect(false);
     
-    loadPusher();
-    
-      // .catch(console.error);
+    loadPusher().catch(console.error);
 
   }, [address])
 
-  const feed = useActions2(props?.pageProps?.address, ActionSet.Feed);
+  const feed = useActions2(address, ActionSet.Feed);
+
+  const router = useRouter();
+
+  const [_connect, connectBE] = useConnect();
+  const disconnect = useDisconnect();
+
+  const autoConnect = async (backendAddress) => {
+    const {provider, signer, address } = await getProviderSignerAddress(false);
+
+    console.log(provider, signer, address);
+
+    if (!provider || !signer || !address) {
+      await disconnect();
+      router.push('/');
+    }
+    
+    if (signer && address && backendAddress !== address) {
+      const enqueueSnackbar = await import('notistack').then(mod => mod.enqueueSnackbar);
+
+      enqueueSnackbar("Your logged in address does not match your wallet address. Switching Now", {
+          variant: "error",
+          hideIconVariant: true
+      });
+
+      await connectBE(signer, address);
+      router.push('/');
+    }
+  
+    setProvider(provider);
+    setSigner(signer);
+    setAddress(address);  
+  }
+
+  useEffect(() => {
+    // if the BE is connected, connect the FE is the addresses match
+    if (props?.pageProps?.address && !address) {
+      autoConnect(props?.pageProps?.address);
+    }
+
+    
+
+  }, [props?.pageProps?.address])
 
   // Staging is password protected. Will switch this to staging
   // @ts-ignore

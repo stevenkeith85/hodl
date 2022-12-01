@@ -8,8 +8,8 @@ import { MintTokenModal } from '../modals/MintTokenModal';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
 import { WalletContext } from '../../contexts/WalletContext';
+import { getProviderSignerAddress } from '../../lib/getSigner';
 
 
 export const MintTokenAction: FC<MintProps> = ({
@@ -21,13 +21,14 @@ export const MintTokenAction: FC<MintProps> = ({
   setFormData
 }: MintProps) => {
   const [successModalOpen, setSuccessModalOpen] = useState(false);
-  const { provider, signer } = useContext(WalletContext);
+
+  const { signer } = useContext(WalletContext);
 
   async function mint() {
     setLoading(true);
 
     enqueueSnackbar(
-      'Please confirm the transaction in your Wallet',
+      'Confirm the transaction in your Wallet to mint',
       {
         variant: "info",
         hideIconVariant: true

@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useContext } from "react";
 import { useConnect } from "../../hooks/useConnect";
 import { WalletContext } from '../../contexts/WalletContext';
+import { useDisconnect } from "../../hooks/useDisconnect";
 
 
 
@@ -25,7 +26,9 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
 }) => {
 
 
-    const [connect, disconnect] = useConnect();
+    const [connect] = useConnect();
+    const disconnect = useDisconnect();
+    
     const { address } = useContext(WalletContext);
     const router = useRouter();
 
@@ -52,7 +55,7 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
                             router.push('/');
                         }}
                     >
-                        Connect Wallet
+                        Connect wallet
                     </Button>
 
                 </>
@@ -74,7 +77,7 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
                         router.push('/');
                     }}
                 >
-                    Sign out
+                    sign out
                 </Button>
             }
         </>);

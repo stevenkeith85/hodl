@@ -1,5 +1,4 @@
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { Button, IconButton } from '@mui/material';
 import Box from '@mui/material/Box';
 import Fab from '@mui/material/Fab';
 import { useContext, useEffect, useState } from 'react';
@@ -25,9 +24,7 @@ export const HodlFeed2 = () => {
             return;
         }
 
-
         pusher.user.bind("feed", displayMutateButton);
-
 
         return () => {
             pusher.user.unbind('feed', displayMutateButton);

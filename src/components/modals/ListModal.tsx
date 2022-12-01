@@ -1,7 +1,7 @@
 import { listNft } from "../../lib/nft";
 import { enqueueSnackbar } from 'notistack';
 import { MaticSymbol } from "../MaticSymbol";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { HodlModal } from "./HodlModal";
 
 import Box from "@mui/material/Box";
@@ -9,18 +9,21 @@ import Typography from "@mui/material/Typography";
 import InputAdornment from "@mui/material/InputAdornment";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import { WalletContext } from "../../contexts/WalletContext";
 
 
-export const ListModal = ({ 
-    listModalOpen, 
-    setListModalOpen, 
-    setListedModalOpen, 
-    price, 
+
+export const ListModal = ({
+    listModalOpen,
+    setListModalOpen,
+    setListedModalOpen,
+    price,
     setPrice,
     token,
- }) => {
+}) => {
     const [listButtonDisabled, setListButtonDisabled] = useState(false);
-
+    const { signer } = useContext(WalletContext);
+    
     // Possibly extract a hook (or something) for this
     const smartContractError = e => {
         enqueueSnackbar(
@@ -28,7 +31,7 @@ export const ListModal = ({
             {
                 variant: "error",
                 hideIconVariant: true
-              });
+            });
     }
 
     return (
@@ -60,17 +63,20 @@ export const ListModal = ({
                             try {
                                 setListButtonDisabled(true);
                                 enqueueSnackbar(
-                                    'Please confirm the transaction in MetaMask',
+                                    'Confirm the transaction in your wallet to list',
                                     {
                                         variant: "info",
                                         hideIconVariant: true
-                                      });
+                                    });
 
-                                await listNft(token, price);
+                                const success = await listNft(token, price, signer);
 
                                 setListModalOpen(false);
-                                setListedModalOpen(true);
                                 setListButtonDisabled(false);
+
+                                if (success) {
+                                    setListedModalOpen(true);
+                                }
                             } catch (e) {
                                 setListButtonDisabled(false);
                                 if (e.code === -32603) {

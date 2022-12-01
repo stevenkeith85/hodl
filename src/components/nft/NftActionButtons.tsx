@@ -7,6 +7,7 @@ import { ListModal } from "../modals/ListModal";
 import { SuccessModal } from "../modals/SuccessModal";
 import { Token } from "../../models/Token";
 import { MutableToken } from "../../models/MutableToken";
+import { getProviderSignerAddress } from "../../lib/getSigner";
 
 
 interface NftActionButtons {
@@ -17,14 +18,13 @@ interface NftActionButtons {
 export const NftActionButtons = ({
     token,
     mutableToken }) => {
-    const { address } = useContext(WalletContext);
-
+    const { address, signer } = useContext(WalletContext);
     const [listModalOpen, setListModalOpen] = useState(false);
     const [delistModalOpen, setDelistModalOpen] = useState(false);
     const [listedModalOpen, setListedModalOpen] = useState(false);
     const [boughtModalOpen, setBoughtModalOpen] = useState(false);
 
-    const [price, setPrice] = useState(null);
+    const [price, setPrice] = useState('');
 
     const isHodler = () => Boolean(mutableToken?.hodler?.toLowerCase() === address?.toLowerCase());
 
@@ -155,12 +155,13 @@ export const NftActionButtons = ({
                         onClick={async () => {
                             try {
                                 enqueueSnackbar(
-                                    'Please confirm the transaction in Metamask',
+                                    'Confirm the transaction in your wallet to buy',
                                     {
                                         variant: "info",
                                         hideIconVariant: true
                                     });
-                                await buyNft(token, mutableToken);
+
+                                await buyNft(token, mutableToken, signer);
                                 setBoughtModalOpen(true);
                             } catch (e) {
                                 if (e.code === -32603) {
@@ -181,13 +182,13 @@ export const NftActionButtons = ({
                         onClick={async () => {
                             try {
                                 enqueueSnackbar(
-                                    'Please confirm the transaction in MetaMask',
+                                    'Confirm the transaction in your wallet to delist',
                                     {
                                         variant: "info",
                                         hideIconVariant: true
                                     });
 
-                                await delistNft(token);
+                                await delistNft(token, signer);
                                 setDelistModalOpen(true);
                             } catch (e) {
                                 if (e.code === -32603) {

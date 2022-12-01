@@ -281,9 +281,8 @@ export const HodlNotificationBox: FC<HodlNotificationBoxProps> = memo(({
                 >
                     {
                         item.token && item.token &&
-                        <Link href={`/nft/${item.token.id}`} passHref>
+                        <Link href={`/nft/${item.token.id}`}>
                             <Typography
-                                component="a"
                                 sx={{
                                     display: 'block',
                                     width: 44,
