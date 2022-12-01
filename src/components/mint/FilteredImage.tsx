@@ -36,7 +36,6 @@ export const FilteredImage = ({
               onLoad={onLoad}
               sizes="(min-width: 900px) 50vw, (min-width: 1200px) calc(1200px / 2)"
               widths={[600, 700, 800, 900, 1080]}
-              sx={{ maxWidth: '100%', maxHeight:'100%'}}
             />
           </Box>
         )

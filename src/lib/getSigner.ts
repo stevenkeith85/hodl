@@ -1,71 +1,68 @@
-// import detectEthereumProvider from '@metamask/detect-provider'
+export const getProviderSignerAddress = async (dialog = false) => {
+  const { default: CoinbaseWalletSDK } = await import("@coinbase/wallet-sdk");
+  const { default: WalletConnect } = await import('@walletconnect/web3-provider');
 
-import Web3Modal from "web3modal";
-import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
-import WalletConnect from '@walletconnect/web3-provider';
-
-import { Web3Provider } from '@ethersproject/providers';
-
-export const providerOptions = {
-  coinbasewallet: {
-    package: CoinbaseWalletSDK,
-    display: {
-      description: "Connect to your coinbase wallet"
+  const providerOptions = {
+    coinbasewallet: {
+      package: CoinbaseWalletSDK,
+      display: {
+        description: "Connect to your coinbase wallet"
+      },
+      options: {
+        appName: "Hodl My Moon",
+        infuraId: {
+          137: `https://polygon-mainnet.infura.io/v3/{process.env.NEXT_PUBLIC_INFURA_NODE_API_KEY}`,
+          80001: `https://polygon-mumbai.infura.io/v3/{process.env.NEXT_PUBLIC_INFURA_NODE_API_KEY}`,
+        }
+      }
     },
-    options: {
-      appName: "Hodl My Moon",
-      infuraId: {
-        137: `https://polygon-mainnet.infura.io/v3/{process.env.NEXT_PUBLIC_INFURA_NODE_API_KEY}`,
-        80001: `https://polygon-mumbai.infura.io/v3/{process.env.NEXT_PUBLIC_INFURA_NODE_API_KEY}`,
+    // https://stackoverflow.com/questions/69494765/wallet-connect-no-rpc-url-available-for-chainid-137
+    walletconnect: {
+      display: {
+        description: "Connect to other wallets"
+      },
+      package: WalletConnect,
+      options: {
+        rpc: {
+          137: "https://matic-mainnet.chainstacklabs.com",
+          80001: "https://matic-mumbai.chainstacklabs.com",
+        },
+        qrcodeModalOptions: {
+          desktopLinks: [
+            'ledger',
+            'tokenary',
+            'wallet',
+            'wallet 3',
+            'secuX',
+            'ambire',
+            'wallet3',
+            'apolloX',
+            'zerion',
+            'sequence',
+            'punkWallet',
+            'kryptoGO',
+            'nft',
+            'riceWallet',
+            'vision',
+            'keyring'
+          ],
+          mobileLinks: [
+            "rainbow",
+            "metamask",
+            "argent",
+            "trust",
+            "imtoken",
+            "pillar",
+          ],
+        },
       }
     }
-  },
-  // https://stackoverflow.com/questions/69494765/wallet-connect-no-rpc-url-available-for-chainid-137
-  walletconnect: {
-    display: {
-      description: "Connect to other wallets"
-    },
-    package: WalletConnect,
-    options: {
-      rpc: {
-        137: "https://matic-mainnet.chainstacklabs.com",
-        80001: "https://matic-mumbai.chainstacklabs.com",
-      },
-      qrcodeModalOptions: {
-        desktopLinks: [
-          'ledger',
-          'tokenary',
-          'wallet',
-          'wallet 3',
-          'secuX',
-          'ambire',
-          'wallet3',
-          'apolloX',
-          'zerion',
-          'sequence',
-          'punkWallet',
-          'kryptoGO',
-          'nft',
-          'riceWallet',
-          'vision',
-          'keyring'
-        ],
-        mobileLinks: [
-          "rainbow",
-          "metamask",
-          "argent",
-          "trust",
-          "imtoken",
-          "pillar",
-        ],
-      },
-    }
-  }
-};
+  };
 
-
-export const getProviderSignerAddress = async (dialog = false) => {
   try {
+    const { default: Web3Modal } = await import("web3modal");
+    const { Web3Provider } = await import('@ethersproject/providers');
+
     const web3Modal = new Web3Modal({
       network: "polygon",
       // disableInjectedProvider: true,

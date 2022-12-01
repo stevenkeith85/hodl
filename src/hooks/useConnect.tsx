@@ -8,7 +8,7 @@ import { enqueueSnackbar } from 'notistack';
 import { getProviderSignerAddress } from '../lib/getSigner';
 
 
-export const useConnect = () => {
+export const useConnect = () : [Function, Function]=> {
   // const { pusher, setPusher, setUserSignedInToPusher } = useContext(PusherContext);
   const { setProvider, setSigner, setAddress } = useContext(WalletContext);
 

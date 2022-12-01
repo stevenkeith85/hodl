@@ -35,11 +35,11 @@ import createEmotionCache from '../createEmotionCache';
 
 // Also loads a lot of deps
 import Layout from '../components/layout/Layout';
-import { connect } from 'http2';
+
 import { useConnect } from '../hooks/useConnect';
 import { getProviderSignerAddress } from '../lib/getSigner';
 import { useDisconnect } from '../hooks/useDisconnect';
-import { Router, useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
