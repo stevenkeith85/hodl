@@ -1,31 +1,25 @@
-import { useState, useEffect } from 'react';
-
+import { useState, useEffect, useContext } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Container from '@mui/material/Container';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Skeleton from '@mui/material/Skeleton';
 import { useTheme } from '@mui/material/styles';
-
 import axios from 'axios'
-
 import useSWR, { mutate } from 'swr';
-
 import { RocketLaunchIcon } from '../icons/RocketLaunchIcon';
 import { AccountBalanceWalletIcon } from '../icons/AccountBalanceWalletIcon';
 import { NotificationsIcon } from '../icons/NotificationsIcon';
 import { NotificationsNoneIcon } from '../icons/NotificationsNoneIcon';
-
 
 import {
     ActionTypes,
     HodlAction
 } from '../../models/HodlAction';
 import { UserAvatarAndHandleBodyLoading } from '../avatar/UserAvatarAndHandleBodyLoading';
-
+import { WalletContext } from '../../contexts/WalletContext';
 
 const CloseIcon = dynamic(
     () => import('../icons/CloseIcon').then(mod => mod.CloseIcon),
@@ -39,7 +33,7 @@ const UserAvatarAndHandle = dynamic(
     () => import('../avatar/UserAvatarAndHandle').then(mod => mod.UserAvatarAndHandle),
     {
         ssr: false,
-        loading: () => <UserAvatarAndHandleBodyLoading size={44} handle={false} />
+        loading: () => <UserAvatarAndHandleBodyLoading size={40} handle={false} />
     }
 );
 
@@ -119,14 +113,14 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
     const mdUp = useMediaQuery(theme.breakpoints.up('md'));
     const mdDown = useMediaQuery(theme.breakpoints.down('md'));
 
+    const {provider} = useContext(WalletContext)
 
     const homepage = {
         label: 'hodl my moon',
         url: '/',
-        icon: <RocketLaunchIcon size={22} fill={theme.palette.primary.main} />,
+        icon: <RocketLaunchIcon size={20} fill={theme.palette.primary.main} />,
         publicPage: true
     };
-
 
     useEffect(() => {
 
@@ -175,8 +169,8 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
         });
     }, [address]);
 
-    const mutateAndNotify = async (action: HodlAction) => {
 
+    const mutateAndNotify = async (action: HodlAction) => {
         if (action.action === ActionTypes.Bought ||
             action.action === ActionTypes.Listed ||
             action.action === ActionTypes.Delisted) {
@@ -202,7 +196,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
         }
 
         pusher.user.bind('notification-hover', mutateAndNotify);
-        pusher.user.bind('notification', ringNotificationBell);          
+        pusher.user.bind('notification', ringNotificationBell);
 
         return () => {
             pusher.user.unbind('notification-hover', mutateAndNotify);
@@ -258,6 +252,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                             }}>
+
                                 <Link key={homepage.url} href={homepage.url}>
                                     <Box
                                         sx={{
@@ -274,8 +269,8 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                                 margin: 0,
                                                 padding: 0,
                                                 lineHeight: 0,
-                                                width: 44,
-                                                height: 44,
+                                                width: 40,
+                                                height: 40,
                                                 textAlign: 'center'
                                             }}
                                             color="inherit"
@@ -314,15 +309,15 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                             margin: 0,
                                             padding: 0,
                                             lineHeight: 0,
-                                            width: 44,
-                                            height: 44,
+                                            width: 40,
+                                            height: 40,
                                             display: {
                                                 xs: address ? 'flex' : 'none'
                                             }
                                         }}
                                         color="inherit"
                                     >
-                                        <CloseIcon size={22} fill={theme.palette.primary.main} />
+                                        <CloseIcon size={20} fill={theme.palette.primary.main} />
                                     </IconButton> :
                                     (unread ?
                                         <IconButton
@@ -330,8 +325,8 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                                 margin: 0,
                                                 padding: 0,
                                                 lineHeight: 0,
-                                                width: 44,
-                                                height: 44,
+                                                width: 40,
+                                                height: 40,
                                                 display: {
                                                     xs: address ? 'flex' : 'none'
                                                 }
@@ -354,7 +349,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                                 animationTimingFunction: 'ease-in'
                                             }}>
                                                 <NotificationsIcon
-                                                    size={22}
+                                                    size={20}
                                                     fill={theme.palette.primary.main}
                                                 />
                                             </div>
@@ -364,8 +359,8 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                                 margin: 0,
                                                 padding: 0,
                                                 lineHeight: 0,
-                                                width: 44,
-                                                height: 44,
+                                                width: 40,
+                                                height: 40,
                                                 display: {
                                                     xs: address ? 'flex' : 'none'
                                                 }
@@ -382,7 +377,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                         >
                                             <NotificationsNoneIcon
                                                 fill={theme.palette.primary.main}
-                                                size={22}
+                                                size={20}
                                             />
                                         </IconButton>
                                     )
@@ -411,18 +406,19 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                         sx={{
                                             display: hoverMenuOpen ? 'flex' : 'none'
                                         }}
-                                        width={44}
-                                        height={44}
+                                        width={40}
+                                        height={40}
                                         display="flex"
                                         alignItems="center"
                                         justifyContent="center">
-                                        <CloseIcon size={22} fill={theme.palette.primary.main} />
+                                        <CloseIcon size={20} fill={theme.palette.primary.main} />
                                     </Box>
                                     <Box
                                         sx={{
                                             display: !hoverMenuOpen && address ? 'flex' : 'none'
                                         }} >
                                         <UserAvatarAndHandle
+                                        size={40}
                                             address={address}
                                             withLink={false}
                                             handle={false}
@@ -432,12 +428,12 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                         sx={{
                                             display: !hoverMenuOpen && !address ? 'flex' : 'none'
                                         }}
-                                        width={44}
-                                        height={44}
+                                        width={40}
+                                        height={40}
                                         display="flex"
                                         alignItems="center"
                                         justifyContent="center">
-                                        <AccountBalanceWalletIcon size={22} fill={theme.palette.primary.main} />
+                                        <AccountBalanceWalletIcon size={20} fill={theme.palette.primary.main} />
                                     </Box>
                                 </IconButton>
                                 {hoverMenuOpen && <HoverMenu hoverMenuOpen={hoverMenuOpen} setHoverMenuOpen={setHoverMenuOpen} />}

@@ -8,6 +8,7 @@ interface HoverMenuProps {
     setHoverMenuOpen: Function;
 }
 
+// TODO: Combine with WalletMenuPage
 export const HoverMenu: React.FC<HoverMenuProps> = ({ 
     hoverMenuOpen, 
     setHoverMenuOpen 

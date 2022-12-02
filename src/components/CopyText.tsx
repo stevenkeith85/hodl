@@ -3,7 +3,11 @@ import { useState } from 'react';
 import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
 
-export const CopyText = ({ text, children }) => {
+export const CopyText = ({ 
+    text, 
+    placement="top" as "top" | "right" | "bottom" | "left" | "bottom-end" | "bottom-start" | "left-end" | "left-start" | "right-end" | "right-start" | "top-end" | "top-start", 
+    children 
+}) => {
     const [copied, setCopied] = useState(false);
 
     return (
@@ -16,7 +20,7 @@ export const CopyText = ({ text, children }) => {
                 }, 2000)
             }}
         >
-            <Tooltip title={copied ? "Copied!" : "Copy"} arrow={true}>
+            <Tooltip title={copied ? "Copied!" : "Copy"} arrow={true} placement={placement}>
                 <Box component="span" sx={{ cursor: 'pointer' }}>
                     { children }
                 </Box>

@@ -1,11 +1,36 @@
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useUser } from "../../hooks/useUser";
 
 
 export const DesktopNav = ({ address }) => {
-    const [pages] = useState([
+    const { data: user } = useUser(address);
+
+    useEffect(() => {
+        if (user?.nickname) {
+            setPages([
+                {
+                    label: 'explore',
+                    url: '/explore',
+                    publicPage: true
+                },
+                {
+                    label: 'create',
+                    url: '/create',
+                    publicPage: false
+                },
+                {
+                    label: 'profile',
+                    url: `/profile/${user?.nickname}`,
+                    publicPage: false
+                },
+            ])
+        }
+    }, [user?.nickname])
+
+    const [pages, setPages] = useState([
         {
             label: 'explore',
             url: '/explore',
@@ -14,6 +39,11 @@ export const DesktopNav = ({ address }) => {
         {
             label: 'create',
             url: '/create',
+            publicPage: false
+        },
+        {
+            label: 'profile',
+            url: `/profile/${address}`,
             publicPage: false
         },
     ]);

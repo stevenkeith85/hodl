@@ -13,7 +13,7 @@ export default class MyDocument extends Document {
         <Head>
           <link rel="preconnect" href="https://res.cloudinary.com/" />
           <link rel="preconnect" href="https://www.googletagmanager.com/" />
-
+          <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
           <Script
             id="gtagman"
             strategy="lazyOnload"

@@ -15,7 +15,6 @@ export const useActions2 = (address, set = ActionSet.Feed, limit=14) => {
       return [address, `/api/actions`, set, 0, limit]
     }
 
-    console.log('offset is ', previous.next)
     return [address, `/api/actions`, set, previous.next, limit]
   }
 

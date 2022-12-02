@@ -8,7 +8,6 @@ export const HodlImpactAlert = ({ title, message, action = null, sx = null }) =>
     return (
         <div
             style={{
-                gap: 2,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: "center",
@@ -17,8 +16,8 @@ export const HodlImpactAlert = ({ title, message, action = null, sx = null }) =>
                 padding: `${theme.spacing(16)} 0`,
                 ...sx
             }}>
-            <Typography variant="h1" color="secondary">{title}</Typography>
-            <p>{message}</p>
+            <Typography mb={1} variant="h1" color="secondary">{title}</Typography>
+            <Typography>{message}</Typography>
             {action}
         </div>
     )

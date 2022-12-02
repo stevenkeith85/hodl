@@ -4,10 +4,25 @@ import { useNickname } from "../../hooks/useNickname";
 import { Formik, Form, Field } from 'formik';
 import { nicknameValidationSchema } from "../../validation/nickname";
 import { InputBase } from "formik-mui";
+import { useContext, useState } from "react";
+import { WalletContext } from "../../contexts/WalletContext";
+import { useUser } from "../../hooks/useUser";
+import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 
 
 export const NicknameModal = ({ nicknameModalOpen, setNicknameModalOpen }) => {
-    const [update, apiError, setApiError, nickname] = useNickname();
+    const updateNickname = useNickname();
+
+    const { address } = useContext(WalletContext);
+    const userSWR = useUser(address);
+
+    const [message, setMessage] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    if (!userSWR?.data) {
+        return null;
+    }
+
 
     return (
         <>
@@ -18,53 +33,56 @@ export const NicknameModal = ({ nicknameModalOpen, setNicknameModalOpen }) => {
                     maxWidth: '90vw'
                 }}
             >
-                <Stack spacing={3} textAlign="center">
-                    <Typography variant="h2" sx={{ fontSize: '18px', fontWeight: 600 }}>Nickname</Typography>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center'}}>
+                    <Typography variant="h2" sx={{ fontSize: '18px', fontWeight: 600, marginBottom: 2 }}>Nickname</Typography>
                     <Typography sx={{
-                        fontSize: '18px',
+                        marginBottom: 2,
                         color: theme => theme.palette.text.secondary,
                     }}>Enter a nickname to use as an alias for your wallet address</Typography>
                     <Formik
-                        initialValues={{ nickname: nickname }}
+                        initialValues={{ nickname: userSWR?.data?.nickname }}
                         validationSchema={nicknameValidationSchema}
-                        onSubmit={async (values, { setSubmitting }) => {
-                            setSubmitting(true);
-                            const success = await update(values.nickname);
-                            setSubmitting(false);
-
+                        onSubmit={async (values) => {
+                            setLoading(true);
+                            const { success, message } = await updateNickname(values.nickname);
                             if (success) {
-                                setNicknameModalOpen(false);
+                                userSWR.mutate(old => ({...old, nickname: values.nickname}), {revalidate: false});
                             }
+                            setLoading(false);
+                            setMessage(message);
                         }}
                     >
-                        {({ isSubmitting, errors, setFieldValue }) => (
+                        {({ isSubmitting, errors, setFieldValue, values }) => (
                             <Form>
                                 <Stack spacing={2}>
-                                    <Tooltip title={errors?.nickname || apiError || ''} >
-                                        <Field
-                                            validateOnChange
-                                            autoComplete='off'
-                                            component={InputBase}
-                                            sx={{
-                                                border: (errors.nickname || apiError) ? theme => `1px solid ${theme.palette.error.main}` : `1px solid #ccc`,
-                                                borderRadius: 1,
-                                                paddingY: 1,
-                                                paddingX: 1.5
-                                            }}
-                                            fullWidth
-                                            placeholder=""
-                                            name="nickname"
-                                            type="text"
-                                            onChange={e => {
-                                                const value = e.target.value || "";
-                                                setFieldValue('nickname', value.toLowerCase());
-                                            }}
-                                        />
-
-                                    </Tooltip>
+                                    <Field
+                                        validateOnChange
+                                        autoComplete='off'
+                                        component={InputBase}
+                                        sx={{
+                                            border: (errors.nickname) ? theme => `1px solid ${theme.palette.error.main}` : `1px solid #ccc`,
+                                            borderRadius: 1,
+                                            paddingY: 1,
+                                            paddingX: 1.5
+                                        }}
+                                        fullWidth
+                                        placeholder=""
+                                        name="nickname"
+                                        type="text"
+                                        onChange={e => {
+                                            setMessage('');
+                                            const value = e.target.value || "";
+                                            setFieldValue('nickname', value.toLowerCase());
+                                        }}
+                                    />
+                                    <Box sx={{ height: '20px', marginBottom: '16px', color: 'text.secondary' }}>
+                                        {loading ? <HodlLoadingSpinner />
+                                            : message || errors?.nickname
+                                        }
+                                    </Box>
                                     <Box display="grid" gridTemplateColumns={"1fr 1fr"} gap={4}>
                                         <Button
-                                            disabled={isSubmitting || apiError}
+                                            disabled={loading || values.nickname === userSWR?.data?.nickname}
                                             type="submit"
                                             variant="contained"
                                             color="primary"
@@ -83,10 +101,11 @@ export const NicknameModal = ({ nicknameModalOpen, setNicknameModalOpen }) => {
                                                 paddingX: 3
                                             }}
                                             onClick={() => {
+                                                setMessage('');
                                                 setNicknameModalOpen(false)
                                             }}
                                         >
-                                            Cancel
+                                            Close
                                         </Button>
                                     </Box>
 
@@ -94,9 +113,7 @@ export const NicknameModal = ({ nicknameModalOpen, setNicknameModalOpen }) => {
                             </Form>
                         )}
                     </Formik>
-
-
-                </Stack>
+                </div>
             </HodlModal>
         </>
     )

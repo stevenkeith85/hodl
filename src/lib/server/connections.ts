@@ -1,11 +1,22 @@
 import { JsonRpcProvider } from '@ethersproject/providers'
 import { getDefaultProvider } from "@ethersproject/providers";
 
-export const getProvider = () => {
-    // See https://docs.ethers.io/v5/api/providers/
+let provider = null;
+
+const createProvider = () => {
     if (JSON.parse(process.env.LOCAL_BLOCKCHAIN_NODE)) {
-        return getDefaultProvider(process.env.DEFAULT_PROVIDER_NETWORK);
+        provider = getDefaultProvider(process.env.DEFAULT_PROVIDER_NETWORK);
     } else {
-        return new JsonRpcProvider(`${process.env.QUICKNODE_URL}/${process.env.QUICKNODE_AUTHENTICATION_TOKEN}`);
+        provider = new JsonRpcProvider(`${process.env.QUICKNODE_URL}/${process.env.QUICKNODE_AUTHENTICATION_TOKEN}`);
     }
+}
+
+
+export const getProvider = () => {
+
+    if (!provider) {
+        createProvider();
+    }
+
+    return provider;
 }

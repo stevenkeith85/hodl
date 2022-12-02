@@ -32,8 +32,8 @@ export const AssetThumbnail: React.FC<AssetThumbnailProps> = ({ token, size = 44
         <Box
             sx={{
                 cursor: 'pointer',
-                width: `100%`,
-                height: '100%'
+                width: "100%",
+                height: "auto"
             }}
         >
             {assetType(token) === AssetTypes.Image &&

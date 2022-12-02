@@ -24,6 +24,8 @@ import { useHodlingCount } from '../../hooks/useHodlingCount'
 import { useListedCount } from '../../hooks/useListedCount'
 
 import Box from '@mui/material/Box'
+import axios from 'axios';
+import useSWR from 'swr';
 
 
 const InfiniteScrollNftWindows = dynamic(
@@ -92,7 +94,7 @@ export async function getServerSideProps({ params, query, req, res }) {
 
   return {
     props: {
-      owner,
+      owner: owner,
       address: req.address || null,
       prefetchedFollowingCount,
       prefetchedFollowing: [prefetchedFollowing],
@@ -132,6 +134,7 @@ const Profile = ({
 
   const [followersCount] = useFollowersCount(owner.address, prefetchedFollowersCount);
   const { swr: followers } = useFollowers(true, owner.address, limit, prefetchedFollowers);
+
 
   useEffect(() => {
     if (!router?.query?.tab) {

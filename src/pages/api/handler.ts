@@ -43,6 +43,8 @@ const rateLimits = {
   'POST:/api/like/comment': 10,
   'POST:/api/follow': 10,
   'POST:/api/comments/add': 10,
+
+  'POST:/api/profile/nickname': 6,
   'DELETE:/api/comments/delete': 10,
 }
 

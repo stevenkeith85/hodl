@@ -26,7 +26,9 @@ export const AssetPreview: FC<MintProps> = ({
   return (
     <Box
       className="assetPreview"
-      sx={{ width: '100%' }}
+      sx={{ 
+        width: '100%',
+      }}
     >
       {fileName && isImage() && !isGif() &&
         <FilteredImageMemo
