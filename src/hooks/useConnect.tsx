@@ -16,7 +16,6 @@ export const useConnect = () : [Function, Function]=> {
   // we can also connect returningusers to update their jwt
   const connect = async (authenticateWithBE = false, dialog = false): Promise<Boolean> => {
     try {
-
       const { provider, signer, address } = await getProviderSignerAddress(dialog);
       
       // We need the signer to log them in to the backend

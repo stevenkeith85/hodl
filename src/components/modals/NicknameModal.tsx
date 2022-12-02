@@ -33,28 +33,26 @@ export const NicknameModal = ({ nicknameModalOpen, setNicknameModalOpen }) => {
                     maxWidth: '90vw'
                 }}
             >
-                <Stack spacing={3} textAlign="center">
-                    <Typography variant="h2" sx={{ fontSize: '18px', fontWeight: 600 }}>Nickname</Typography>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center'}}>
+                    <Typography variant="h2" sx={{ fontSize: '18px', fontWeight: 600, marginBottom: 2 }}>Nickname</Typography>
                     <Typography sx={{
+                        marginBottom: 2,
                         color: theme => theme.palette.text.secondary,
                     }}>Enter a nickname to use as an alias for your wallet address</Typography>
                     <Formik
                         initialValues={{ nickname: userSWR?.data?.nickname }}
                         validationSchema={nicknameValidationSchema}
-                        onSubmit={async (values, { setSubmitting }) => {
-                            setSubmitting(true);
+                        onSubmit={async (values) => {
                             setLoading(true);
                             const { success, message } = await updateNickname(values.nickname);
-                            setLoading(false);
                             if (success) {
-                                userSWR.mutate();
+                                userSWR.mutate(old => ({...old, nickname: values.nickname}), {revalidate: false});
                             }
-
+                            setLoading(false);
                             setMessage(message);
-                            setSubmitting(false);
                         }}
                     >
-                        {({ isSubmitting, errors, setFieldValue }) => (
+                        {({ isSubmitting, errors, setFieldValue, values }) => (
                             <Form>
                                 <Stack spacing={2}>
                                     <Field
@@ -72,18 +70,19 @@ export const NicknameModal = ({ nicknameModalOpen, setNicknameModalOpen }) => {
                                         name="nickname"
                                         type="text"
                                         onChange={e => {
+                                            setMessage('');
                                             const value = e.target.value || "";
                                             setFieldValue('nickname', value.toLowerCase());
                                         }}
                                     />
-                                    <div style={{ height: '20px', marginBottom: '16px' }}>
+                                    <Box sx={{ height: '20px', marginBottom: '16px', color: 'text.secondary' }}>
                                         {loading ? <HodlLoadingSpinner />
-                                            : message
+                                            : message || errors?.nickname
                                         }
-                                    </div>
+                                    </Box>
                                     <Box display="grid" gridTemplateColumns={"1fr 1fr"} gap={4}>
                                         <Button
-                                            disabled={isSubmitting}
+                                            disabled={loading || values.nickname === userSWR?.data?.nickname}
                                             type="submit"
                                             variant="contained"
                                             color="primary"
@@ -114,7 +113,7 @@ export const NicknameModal = ({ nicknameModalOpen, setNicknameModalOpen }) => {
                             </Form>
                         )}
                     </Formik>
-                </Stack>
+                </div>
             </HodlModal>
         </>
     )

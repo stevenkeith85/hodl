@@ -13,12 +13,12 @@ export const useDisconnect = () => {
   } = useContext(WalletContext);
 
   const disconnectFE = async () => {
-
-    // alert("connected?" + provider?.provider?.connected);
-
-    // disconnect our session with the provider if they handle that
-    // wallet connect does :)
+    try {
     provider?.provider?.disconnect()
+    } catch(e) {
+      // some providers don't support this
+      console.log("provider doesn't support disconnect");
+    }
     
     localStorage.removeItem("walletconnect");
     localStorage.removeItem("WEB3_CONNECT_CACHED_PROVIDER");
@@ -26,11 +26,6 @@ export const useDisconnect = () => {
     setProvider(null);
     setSigner(null);
     setAddress(null);
-
-    // TODO: do this somewhere
-    // pusher?.disconnect();
-    // setUserSignedInToPusher(null);
-    // setPusher(null);
   }
 
   const disconnectBE = async () => {

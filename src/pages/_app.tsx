@@ -40,6 +40,8 @@ import { useConnect } from '../hooks/useConnect';
 import { getProviderSignerAddress } from '../lib/getSigner';
 import { useDisconnect } from '../hooks/useDisconnect';
 import { useRouter } from 'next/router';
+import { switchToPolygon } from '../lib/switchToPolygon';
+import { chains } from '../lib/chains';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -59,7 +61,7 @@ export default function MyApp(props: MyAppProps) {
   const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null);
   const [address, setAddress] = useState(null);
-  
+
   // PusherContext state
   const [pusher, setPusher] = useState(null);
   const [userSignedInToPusher, setUserSignedInToPusher] = useState(false); // TODO
@@ -95,7 +97,7 @@ export default function MyApp(props: MyAppProps) {
     if (!address) {
       return;
     }
-    
+
     loadPusher().catch(console.error);
 
   }, [address])
@@ -108,30 +110,78 @@ export default function MyApp(props: MyAppProps) {
   const disconnect = useDisconnect();
 
   const autoConnect = async (backendAddress) => {
-    const {provider, signer, address } = await getProviderSignerAddress(false);
+    const enqueueSnackbar = await import('notistack').then(mod => mod.enqueueSnackbar);
+
+    const { provider, signer, address } = await getProviderSignerAddress(false);
 
     console.log(provider, signer, address);
 
     if (!provider || !signer || !address) {
       await disconnect();
+
+      // TODO: We need to test the pusher disconnect actually works correctly and perhaps do this somewhere centralised
+      pusher?.disconnect();
+      setPusher(null);
+      setUserSignedInToPusher(null);
+
       router.push('/');
     }
-    
+
+    provider.on("network", async (newNetwork, oldNetwork) => {
+      // When a Provider makes its initial connection, it emits a "network"
+      // event with a null oldNetwork along with the newNetwork. So, if the
+      // oldNetwork exists, it represents a changing network
+
+      // alert('old Network ' + oldNetwork?.name);
+      // alert('new Network ' + newNetwork?.name);
+
+      const switchIfOnUnsupportedNetwork = async () => {
+        const enqueueSnackbar = await import('notistack').then(mod => mod.enqueueSnackbar);
+        provider?.getNetwork()
+          .then(network => chains[network?.name])
+          .then(chain => {
+            if (!chain) {
+              enqueueSnackbar(`Switching Networks. Check Your Wallet.`, {
+                // @ts-ignore
+                variant: 'info',
+              });
+              switchToPolygon(provider);
+            } else {
+              enqueueSnackbar(`Connected to ${chain.chainName}`, {
+                // @ts-ignore
+                variant: 'info',
+              });
+            }
+          })
+      }
+
+      await switchIfOnUnsupportedNetwork();
+
+      // TODO: Not sure this is needed
+      // if (oldNetwork) {
+      //   enqueueSnackbar("Your changed network. Reloading.", {
+      //     variant: "info",
+      //     hideIconVariant: true
+      //   });
+      //   setTimeout(() => window.location.reload(), 3000);
+      // }
+    });
+
     if (signer && address && backendAddress !== address) {
-      const enqueueSnackbar = await import('notistack').then(mod => mod.enqueueSnackbar);
+
 
       enqueueSnackbar("Your logged in address does not match your wallet address. Switching Now", {
-          variant: "error",
-          hideIconVariant: true
+        variant: "error",
+        hideIconVariant: true
       });
 
       await connectBE(signer, address);
       router.push('/');
     }
-  
+
     setProvider(provider);
     setSigner(signer);
-    setAddress(address);  
+    setAddress(address);
   }
 
   useEffect(() => {
@@ -140,7 +190,7 @@ export default function MyApp(props: MyAppProps) {
       autoConnect(props?.pageProps?.address);
     }
 
-    
+
 
   }, [props?.pageProps?.address])
 

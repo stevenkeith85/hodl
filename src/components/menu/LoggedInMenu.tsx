@@ -1,15 +1,7 @@
-// import DisplaySettingsOutlinedIcon from '@mui/icons-material/DisplaySettingsOutlined';
-// import CameraAltOutlinedIcon from '@mui/icons-material/CameraAltOutlined';
-// import ReceiptOutlinedIcon from '@mui/icons-material/ReceiptOutlined';
-// import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
-
-import Button from '@mui/material/Button';
-
 import { useRouter } from "next/router";
 import { useContext, useState } from "react";
 import { WalletContext } from '../../contexts/WalletContext';
 import { LoginLogoutButton } from "./LoginLogoutButton";
-import { ProfileNameOrAddress } from "../avatar/ProfileNameOrAddress";
 import { useUser } from '../../hooks/useUser';
 import dynamic from 'next/dynamic';
 import { WalletDetails } from '../WalletDetails';
@@ -34,15 +26,11 @@ const ProfilePictureModal = dynamic(
 export const LoggedInMenu = () => {
     const [walletPages] = useState([
         {
-            label: 'profile',
-            action: () => router.push(`/profile/${user?.nickname || user?.address}`)
-        },
-        {
             label: 'nickname',
             action: () => setNicknameModalOpen(true),
         },
         {
-            label: 'avatar',
+            label: 'avatar nft',
             action: () => setProfilePictureModalOpen(true),
         },
         {
@@ -69,7 +57,7 @@ export const LoggedInMenu = () => {
 
             <div style={{ display: 'flex', 'flexDirection': 'column' }}>
                 <WalletDetails />
-                <div style={{ padding: '8px 0' }}>
+                <div style={{ padding: '8px 0 0 0' }}>
                     {walletPages.map((page, i) => (
                         <div
                             key={i}
@@ -98,7 +86,6 @@ export const LoggedInMenu = () => {
                         sx={{
                             marginLeft: 1,
                             marginTop: 2,
-                            // marginLeft: -1,
                             paddingY: 0.75,
                             paddingX: 3,
                         }}

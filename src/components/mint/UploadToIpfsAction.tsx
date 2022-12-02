@@ -1,4 +1,4 @@
-import { TextField, Box, Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Stack, Tooltip, Typography } from "@mui/material";
+import { TextField, Box, Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Stack, Tooltip, Typography, FormHelperText, Link } from "@mui/material";
 
 import { FC, useEffect, useRef } from "react";
 import { useSnackbar } from 'notistack';
@@ -114,50 +114,44 @@ export const UploadToIpfsAction: FC<MintProps> = ({
     <Box width="100%">
 
       <Stack spacing={3}>
-        <FormControl>
-          <Tooltip title={<NameTooltip />}
-            placement="right-start"
-            arrow>
-            <TextField
-              disabled={stepComplete >= 3}
-              label="Name"
-              type="text"
-              autoComplete='off'
-              sx={{
-                background: 'white'
-              }}
-              value={formData.name}
-              onChange={e => setFormData(old => ({ ...old, name: e.target.value }))}
-            />
-          </Tooltip>
-        </FormControl>
-        <FormControl>
-          <Tooltip title={<DescriptionTooltip />}
-            placement="right-start"
-            arrow>
-            <TextField
-              disabled={stepComplete >= 3}
-              multiline
-              minRows={4}
-              label="Description"
-              type="text"
-              autoComplete='off'
-              sx={{
-                background: 'white'
-              }}
-              value={formData.description}
-              onChange={e => setFormData(old => ({ ...old, description: e.target.value }))}
-            />
-          </Tooltip>
-        </FormControl>
-        <HodlBorderedBox>
-          <Tooltip
-            title={<AssetLicenseTooltip />}
-            placement="right-start"
-            arrow>
-            <FormControl disabled={stepComplete >= 3}>
+        <FormControl
 
-              <FormLabel sx={{ marginBottom: 2 }}>Asset</FormLabel>
+        >
+          <TextField
+            disabled={stepComplete >= 3}
+            label="Name"
+            type="text"
+            autoComplete='off'
+            sx={{
+              background: 'white'
+            }}
+            value={formData.name}
+            onChange={e => setFormData(old => ({ ...old, name: e.target.value }))}
+          />
+
+        </FormControl>
+        <FormControl>
+          <TextField
+            disabled={stepComplete >= 3}
+            multiline
+            minRows={4}
+            label="Description"
+            type="text"
+            autoComplete='off'
+            sx={{
+              background: 'white'
+            }}
+            value={formData.description}
+            onChange={e => setFormData(old => ({ ...old, description: e.target.value }))}
+            helperText={"A description of your NFT plus up to 6 #tags to help users find it"}
+          />
+
+        </FormControl>
+        <FormControl disabled={stepComplete >= 3}>
+
+          <HodlBorderedBox sx={{ marginBottom: 0 }}>
+            <FormLabel>Asset</FormLabel>
+            <Box marginTop={1}>
               <RadioGroup
                 name="asset-license"
               >
@@ -180,11 +174,12 @@ export const UploadToIpfsAction: FC<MintProps> = ({
                   label={<Typography color={grey[700]}>Commercial License</Typography>}
                 />
               </RadioGroup>
-            </FormControl>
-          </Tooltip>
-        </HodlBorderedBox>
-        <div>
-          <Tooltip title={<UploadTooltip />} placement="right" arrow>
+            </Box>
+          </HodlBorderedBox>
+          <FormHelperText>How can the future hodler use the asset attached to this token. See details <Link target="_blank" href="/asset-license">here</Link></FormHelperText>
+        </FormControl>
+        <FormControl>
+          <div>
             <Button
               color="primary"
               variant="contained"
@@ -198,8 +193,9 @@ export const UploadToIpfsAction: FC<MintProps> = ({
             >
               Upload Metadata
             </Button>
-          </Tooltip>
-        </div>
+          </div>
+          <FormHelperText>Upload to IPFS. <Box color="error.main" component="span">Once uploaded, this content cannot change.</Box></FormHelperText>
+        </FormControl>
       </Stack>
     </Box>
   )

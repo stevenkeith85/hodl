@@ -1,14 +1,47 @@
-import { Button, Typography } from "@mui/material";
-import { useContext, useState } from "react";
+import { Box, Button, FormControl, FormHelperText, Typography } from "@mui/material";
+import { useContext, useEffect, useState } from "react";
 import { WalletContext } from '../../contexts/WalletContext';
 import { enqueueSnackbar } from 'notistack';
-import { buyNft, delistNft } from "../../lib/nft";
+import { buyNft, delistNft, listNft } from "../../lib/nft";
 import { ListModal } from "../modals/ListModal";
 import { SuccessModal } from "../modals/SuccessModal";
 import { Token } from "../../models/Token";
 import { MutableToken } from "../../models/MutableToken";
-import { getProviderSignerAddress } from "../../lib/getSigner";
 
+
+const TransactionModal = ({ modalOpen, setModalOpen }) => {
+    return (
+        <SuccessModal
+            modalOpen={modalOpen}
+            setModalOpen={setModalOpen} >
+            <Typography
+                sx={{
+                    fontSize: 16,
+                    color: theme => theme.palette.text.secondary,
+                    span: {
+                        fontWeight: 600
+                    }
+                }}>
+                When your transaction has been <span>confirmed</span> on the blockchain,
+                we&apos;ll update our database and send you a notification.
+            </Typography>
+            <Typography
+                sx={{
+                    fontSize: 16,
+                    color: theme => theme.palette.text.secondary
+                }}>
+                Please wait until this process completes before triggering another transaction.
+            </Typography>
+            <Typography
+                sx={{
+                    fontSize: 16,
+                    color: theme => theme.palette.text.secondary
+                }}>
+                You can continue browsing the site whilst waiting.
+            </Typography>
+        </SuccessModal >
+    )
+}
 
 interface NftActionButtons {
     token: Token;
@@ -26,16 +59,56 @@ export const NftActionButtons = ({
 
     const [price, setPrice] = useState('');
 
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+
     const isHodler = () => Boolean(mutableToken?.hodler?.toLowerCase() === address?.toLowerCase());
 
-    const smartContractError = e => {
-        enqueueSnackbar(
-            e?.data?.message,
-            {
+    // if this changes then the user has successfully, listed/delisted/bought reenable the button
+    useEffect(() => {
+        setLoading(false);
+    }, [mutableToken.forSale])
+
+    useEffect(() => {
+        const displayError = async () => {
+            const enqueueSnackbar = await import('notistack').then(mod => mod.enqueueSnackbar);
+
+            if (!error) {
+                return;
+            }
+
+            enqueueSnackbar(error, {
                 variant: "error",
                 hideIconVariant: true
             });
+
+            setError('');
+        }
+
+        displayError().catch(console.error)
+
+    }, [error]);
+
+    const doList = async () => {
+        try {
+            enqueueSnackbar(
+                'Confirm the transaction in your wallet to list',
+                {
+                    variant: "info",
+                    hideIconVariant: true
+                });
+
+            await listNft(token, price, signer);
+
+            setListModalOpen(false);
+            setListedModalOpen(true);
+            setLoading(true); // disable the outer button?
+        } catch (e) {
+            setLoading(false);
+            setError(e.message);
+        }
     }
+
 
     if (!address) {
         return null;
@@ -43,36 +116,9 @@ export const NftActionButtons = ({
 
     return (
         <>
-            {/* Bought */}
-            <SuccessModal
-                modalOpen={boughtModalOpen}
-                setModalOpen={setBoughtModalOpen}>
-                <Typography
-                    sx={{
-                        fontSize: 16,
-                        color: theme => theme.palette.text.secondary,
-                        span: {
-                            fontWeight: 600
-                        }
-                    }}>
-                    When your transaction has been <span>confirmed</span> on the blockchain,
-                    we&apos;ll update our database and send you a notification.
-                </Typography>
-                <Typography
-                    sx={{
-                        fontSize: 16,
-                        color: theme => theme.palette.text.secondary
-                    }}>
-                    Please wait until this process completes before triggering another transaction.
-                </Typography>
-                <Typography
-                    sx={{
-                        fontSize: 16,
-                        color: theme => theme.palette.text.secondary
-                    }}>
-                    You can continue browsing the site whilst waiting.
-                </Typography>
-            </SuccessModal>
+            <TransactionModal modalOpen={boughtModalOpen} setModalOpen={setBoughtModalOpen} />
+            <TransactionModal modalOpen={delistModalOpen} setModalOpen={setDelistModalOpen} />
+            <TransactionModal modalOpen={listedModalOpen} setModalOpen={setListedModalOpen} />
 
             {/* List */}
             <ListModal
@@ -82,134 +128,98 @@ export const NftActionButtons = ({
                 price={price}
                 setPrice={setPrice}
                 token={token}
+                doList={doList}
             />
-
-            {/* Listed */}
-            <SuccessModal
-                modalOpen={listedModalOpen}
-                setModalOpen={setListedModalOpen}>
-                <Typography
-                    sx={{
-                        fontSize: 16,
-                        color: theme => theme.palette.text.secondary,
-                        span: {
-                            fontWeight: 600
-                        }
-                    }}>
-                    When your transaction has been <span>confirmed</span> on the blockchain,
-                    we&apos;ll update our database and send you a notification.
-                </Typography>
-                <Typography
-                    sx={{
-                        fontSize: 16,
-                        color: theme => theme.palette.text.secondary
-                    }}>
-                    Please wait until this process completes before triggering another transaction.
-                </Typography>
-                <Typography
-                    sx={{
-                        fontSize: 16,
-                        color: theme => theme.palette.text.secondary
-                    }}>
-                    You can continue browsing the site whilst waiting.
-                </Typography>
-            </SuccessModal>
-
-
-            {/* Delisted */}
-            <SuccessModal
-                modalOpen={delistModalOpen}
-                setModalOpen={setDelistModalOpen}>
-                <Typography
-                    sx={{
-                        fontSize: 16,
-                        color: theme => theme.palette.text.secondary,
-                        span: {
-                            fontWeight: 600
-                        }
-                    }}>
-                    When your transaction has been <span>confirmed</span> on the blockchain,
-                    we&apos;ll update our database and send you a notification.
-                </Typography>
-                <Typography
-                    sx={{
-                        fontSize: 16,
-                        color: theme => theme.palette.text.secondary
-                    }}>
-                    Please wait until this process completes before triggering another transaction.
-                </Typography>
-                <Typography
-                    sx={{
-                        fontSize: 16,
-                        color: theme => theme.palette.text.secondary
-                    }}>
-                    You can continue browsing the site whilst waiting.
-                </Typography>
-            </SuccessModal>
             {
                 mutableToken?.forSale && !isHodler() &&
-                <div>
-                    <Button
-                        variant="contained"
-                        sx={{ paddingY: 1.5, paddingX: 3 }}
-                        onClick={async () => {
-                            try {
-                                enqueueSnackbar(
-                                    'Confirm the transaction in your wallet to buy',
-                                    {
-                                        variant: "info",
-                                        hideIconVariant: true
-                                    });
 
-                                await buyNft(token, mutableToken, signer);
-                                setBoughtModalOpen(true);
-                            } catch (e) {
-                                if (e.code === -32603) {
-                                    smartContractError(e);
-                                }
-                            }
-                        }}>
-                        Buy NFT
-                    </Button>
-                </div>
+                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                    <FormControl>
+                        <div>
+                            <Button
+                                disabled={loading}
+                                variant="contained"
+                                sx={{ paddingY: 1.5, paddingX: 3 }}
+                                onClick={async () => {
+                                    try {
+                                        setLoading(true);
+                                        enqueueSnackbar(
+                                            'Confirm the transaction in your wallet to buy',
+                                            {
+                                                variant: "info",
+                                                hideIconVariant: true
+                                            });
+
+                                        await buyNft(token, mutableToken, signer);
+                                        setBoughtModalOpen(true);
+                                    } catch (e) {
+                                        setLoading(false);
+                                        setError(e.message)
+                                    }
+                                }}>
+                                Buy NFT
+                            </Button>
+                        </div>
+                        <FormHelperText sx={{ margin: 0, marginTop: 0.5 }}>Connected to Polygon and have Matic for gas?</FormHelperText>
+                    </FormControl>
+                </Box>
+
             }
             {
                 mutableToken?.forSale && isHodler() &&
-                <div>
-                    <Button
-                        variant="contained"
-                        sx={{ paddingY: 1.5, paddingX: 3 }}
-                        onClick={async () => {
-                            try {
-                                enqueueSnackbar(
-                                    'Confirm the transaction in your wallet to delist',
-                                    {
-                                        variant: "info",
-                                        hideIconVariant: true
-                                    });
+                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                    <FormControl>
+                        <div>
+                            <Button
+                                disabled={loading}
+                                variant="contained"
+                                sx={{ paddingY: 1.5, paddingX: 3 }}
+                                onClick={async () => {
+                                    try {
+                                        setLoading(true);
+                                        enqueueSnackbar(
+                                            'Confirm the transaction in your wallet to delist',
+                                            {
+                                                variant: "info",
+                                                hideIconVariant: true
+                                            });
 
-                                await delistNft(token, signer);
-                                setDelistModalOpen(true);
-                            } catch (e) {
-                                if (e.code === -32603) {
-                                    smartContractError(e);
-                                }
-                            }
-                        }}>
-                        Delist NFT
-                    </Button>
-                </div>
+                                        await delistNft(token, signer);
+                                        setDelistModalOpen(true);
+                                    } catch (e) {
+                                        setLoading(false);
+                                        setError(e.message)
+                                    }
+                                }}>
+                                Delist NFT
+                            </Button>
+                        </div>
+                    </FormControl>
+                    <FormHelperText sx={{ margin: 0, marginTop: 0.5 }}>Connected to Polygon and have Matic for gas?</FormHelperText>
+                </Box>
+
             }
             {
                 !mutableToken?.forSale && isHodler() &&
-                <div>
-                    <Button
-                        variant="contained"
-                        sx={{ paddingY: 1.5, paddingX: 3 }}
-                        onClick={() => setListModalOpen(true)}>
-                        List NFT
-                    </Button>
-                </div>
+                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                    <FormControl>
+                        <div>
+                            <Button
+                                disabled={loading}
+                                variant="contained"
+                                sx={{ paddingY: 1.5, paddingX: 3 }}
+                                onClick={() => {
+                                    setLoading(true);
+                                    setListModalOpen(true);
+                                    setLoading(false);
+                                }
+                                }>
+                                List NFT
+                            </Button>
+                        </div>
+                    </FormControl>
+                    <FormHelperText sx={{ margin: 0, marginTop: 0.5 }}>Connected to Polygon and have Matic for gas?</FormHelperText>
+                </Box>
             }
         </>
     )

@@ -15,7 +15,7 @@ export const useNickname = () => {
 
       return {
         success: true,
-        message: 'Successfully updated nickname'
+        message: 'Nickname successfully updated'
       }
 
     } catch (error) {

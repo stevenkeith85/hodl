@@ -10,6 +10,8 @@ import InputAdornment from "@mui/material/InputAdornment";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { WalletContext } from "../../contexts/WalletContext";
+import FormControl from "@mui/material/FormControl";
+import FormHelperText from "@mui/material/FormHelperText";
 
 
 
@@ -20,19 +22,21 @@ export const ListModal = ({
     price,
     setPrice,
     token,
+    doList
 }) => {
     const [listButtonDisabled, setListButtonDisabled] = useState(false);
     const { signer } = useContext(WalletContext);
-    
+
     // Possibly extract a hook (or something) for this
-    const smartContractError = e => {
-        enqueueSnackbar(
-            e.data?.message || e.data?.details,
-            {
-                variant: "error",
-                hideIconVariant: true
-            });
-    }
+    // const smartContractError = e => {
+    //     enqueueSnackbar(
+    //         e.data?.message || e.data?.details,
+    //         {
+    //             variant: "error",
+    //             hideIconVariant: true
+    //         });
+    // }
+
 
     return (
         <HodlModal
@@ -44,7 +48,8 @@ export const ListModal = ({
                 gap={4}
                 textAlign="center"
             >
-                <Typography variant="h2" sx={{ fontSize: '18px', fontWeight: 600 }}>List Your Token</Typography>
+                <Typography variant="h2" sx={{ fontSize: '18px', fontWeight: 600 }}>List your NFT</Typography>
+                <FormControl>
                 <TextField
                     label="Price (in Matic)"
                     value={price}
@@ -55,40 +60,39 @@ export const ListModal = ({
                         </InputAdornment>,
                     }}
                 />
-                <div>
-                    <Button
-                        variant="contained"
-                        sx={{ paddingY: 1.5, paddingX: 3 }}
-                        onClick={async () => {
-                            try {
+                <FormHelperText sx={{ textAlign: 'center'}}>Connected to Polygon and have Matic for gas?</FormHelperText>
+                </FormControl>
+
+                <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2}}>
+                    <div>
+                        <Button
+                            variant="contained"
+                            sx={{ paddingY: 1.5, paddingX: 3 }}
+                            onClick={async () => {
                                 setListButtonDisabled(true);
-                                enqueueSnackbar(
-                                    'Confirm the transaction in your wallet to list',
-                                    {
-                                        variant: "info",
-                                        hideIconVariant: true
-                                    });
-
-                                const success = await listNft(token, price, signer);
-
-                                setListModalOpen(false);
+                                await doList();
                                 setListButtonDisabled(false);
-
-                                if (success) {
-                                    setListedModalOpen(true);
-                                }
-                            } catch (e) {
-                                setListButtonDisabled(false);
-                                if (e.code === -32603) {
-                                    smartContractError(e);
-                                }
                             }
-                        }}
-                        disabled={!price || listButtonDisabled}
-                    >
-                        List
-                    </Button>
-                </div>
+                            }
+                            disabled={!price || listButtonDisabled}
+                        >
+                            List
+                        </Button>
+                    </div>
+                    <div>
+                        <Button
+                            variant="outlined"
+                            sx={{ paddingY: 1.5, paddingX: 3 }}
+                            onClick={async () => {
+                                setListButtonDisabled(false);
+                                setListModalOpen(false);
+                            }
+                            }
+                        >
+                            Close
+                        </Button>
+                    </div>
+                </Box>
             </Box>
         </HodlModal>
     )

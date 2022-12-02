@@ -1,25 +1,57 @@
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ExploreIcon } from '../icons/ExploreIcon';
 import { AddCircleIcon } from '../icons/AddCircleIcon';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+
 import IconButton from "@mui/material/IconButton";
+import { useUser } from "../../hooks/useUser";
 
 
 export const MobileNav = ({ address }) => {
     const theme = useTheme();
 
-    const [pages] = useState([
+    const { data: user } = useUser(address);
+
+    useEffect(() => {
+        if (user?.nickname) {
+            setPages([
+                {
+                    icon: <ExploreIcon size={22} fill={theme.palette.primary.main} />,
+                    url: '/explore',
+                    publicPage: true
+                },
+                {
+                    icon: <AddCircleIcon size={22} fill={theme.palette.primary.main} />,
+                    url: '/create',
+                    publicPage: false
+                },
+                {
+                    icon: <AccountCircleIcon sx={{fontSize:22}} />,
+                    url: `/profile/${user?.nickname}`,
+                    publicPage: false
+                },
+            ])
+        }
+    }, [user?.nickname])
+
+    const [pages, setPages] = useState([
         {
-            url: '/explore',
             icon: <ExploreIcon size={22} fill={theme.palette.primary.main} />,
+            url: '/explore',
             publicPage: true
         },
         {
-            url: '/create',
             icon: <AddCircleIcon size={22} fill={theme.palette.primary.main} />,
+            url: '/create',
+            publicPage: false
+        },
+        {
+            icon: <AccountCircleIcon sx={{fontSize:22}} />,
+            url: `/profile/${address}`,
             publicPage: false
         },
     ]);

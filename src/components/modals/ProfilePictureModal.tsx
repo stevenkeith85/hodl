@@ -9,6 +9,7 @@ import { useHodling } from "../../hooks/useHodling";
 import { AssetThumbnail } from "../AssetThumbnail";
 import { useRouter } from "next/router";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
+import { FolderCopyOutlined } from "@mui/icons-material";
 
 
 export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePictureModalOpen, lim = 10 }) => {
@@ -34,8 +35,6 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
         }
     }, [userSWR?.data?.avatar?.id])
 
-
-
     if (!profilePictureModalOpen || !swr?.data || !userSWR?.data) {
         return null
     }
@@ -50,13 +49,13 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                     maxWidth: '90%'
                 }}
             >
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <Typography variant="h2" sx={{ fontWeight: 600 }}>Avatar NFT</Typography>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+                    <Typography variant="h2" sx={{ marginBottom: 2, fontWeight: 600 }}>Avatar NFT</Typography>
 
                     {
                         swr.data?.[0]?.items?.length === 0 && <>
                             <Typography sx={{
-                                margin: 4,
+                                marginBottom: 2,
                                 color: theme => theme.palette.text.secondary,
                             }}>Sorry, you aren&apos;t hodling any NFTs at the moment</Typography>
                             <div><Button variant="contained" sx={{ paddingY: 1.5, paddingX: 3, }} onClick={() => router.push('/create')}>Create an NFT</Button></div>
@@ -65,17 +64,13 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                     {
                         swr.data?.[0]?.items?.length !== 0 && <>
                             <Typography sx={{
-                                margin: 4,
+                                marginBottom: 2,
                                 color: theme => theme.palette.text.secondary,
-                            }}>Select an NFT to use as your profile avatar</Typography>
-
-
+                            }}>Select an NFT to use as your avatar</Typography>
                             <Box
                                 sx={{
-                                    width: '450px',
+                                    width: '350px',
                                     height: '350px',
-                                    border: '1px solid #ddd',
-                                    marginTop: 4,
                                     marginBottom: 2,
                                     overflow: 'auto',
                                     display: 'grid',
@@ -107,11 +102,16 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                                                     sx={{
                                                         lineHeight: 0,
                                                         border: token === nft?.id ?
-                                                            theme => `1px solid ${theme.palette.secondary.main}` :
-                                                            "1px solid transparent"
+                                                            theme => `2px solid ${theme.palette.secondary.main}` :
+                                                            "2px solid #ddd"
                                                     }}
                                                 >
-                                                    <AssetThumbnail token={nft} size={150} />
+
+                                                    <AssetThumbnail
+                                                        token={nft}
+                                                        size={150}
+                                                    />
+
                                                 </Box>
                                             </Box>
                                         )
@@ -119,11 +119,11 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                                     }
                                 </InfiniteScroll>
                             </Box>
-                            <div style={{ height: '20px', marginBottom: '16px' }}>
+                            <Box sx={{ height: '20px', marginBottom: '16px', color: 'text.secondary' }}>
                                 {loading ? <HodlLoadingSpinner />
                                     : message
                                 }
-                            </div>
+                            </Box>
                             <Box display="grid" gridTemplateColumns={"1fr 1fr"} gap={4}>
                                 <Button
                                     disabled={!token || loading}
@@ -147,10 +147,12 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                                                     }
                                                 );
                                                 setLoading(false);
-                                                userSWR?.mutate();
                                                 setMessage("Avatar successfully updated");
                                             } catch (error) {
+                                                setLoading(false);
                                                 setMessage("Unable to update avatar at this time");
+                                            } finally {
+                                                userSWR?.mutate();
                                             }
                                         }
                                     }}
@@ -166,6 +168,7 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                                         paddingX: 3
                                     }}
                                     onClick={() => {
+                                        setMessage('');
                                         setProfilePictureModalOpen(false);
                                     }}
                                 >

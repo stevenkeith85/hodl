@@ -1,4 +1,6 @@
 import Avatar from "@mui/material/Avatar";
+import axios from "axios";
+import useSWR from "swr";
 
 import { assetType } from "../../lib/utils";
 import { AssetTypes } from "../../models/AssetType";
@@ -12,6 +14,11 @@ interface UserAvatarProps {
 }
 
 export const UserAvatar: React.FC<UserAvatarProps> = ({ user, size }) => {
+    let {data: userData } = useSWR(
+        [`/api/user`, user?.address] ,
+       (url, address) => axios.get(`${url}/${address}`).then(r => r.data.user),
+       { fallbackData: user}
+   )
     return (<>
         <Avatar
             sx={{
@@ -19,42 +26,42 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({ user, size }) => {
                 height: size
             }}
         >
-            {user?.avatar &&
+            {userData?.avatar &&
                 <div style={{ width: '100%'}}>
-                    {assetType(user?.avatar) === AssetTypes.Image &&
+                    {assetType(userData?.avatar) === AssetTypes.Image &&
                         <HodlImageResponsive
                             assetFolder={"image"}
                             folder="nfts"
-                            cid={user.avatar.image}
+                            cid={userData.avatar.image}
                             widths={[size, size * 2]}
                             sizes={size}
                             aspectRatio="1:1"
                             round="max"
                         />
                     }
-                    {assetType(user?.avatar) === AssetTypes.Video &&
+                    {assetType(userData?.avatar) === AssetTypes.Video &&
                         <HodlImageResponsive
                             assetFolder={"image"}
                             folder="nfts"
-                            cid={user?.avatar?.image}
+                            cid={userData?.avatar?.image}
                             widths={[size, size * 2]}
                             sizes={size}
                             aspectRatio="1:1"
                             round="max"
                         />
                     }
-                    {assetType(user?.avatar) === AssetTypes.Gif &&
+                    {assetType(userData?.avatar) === AssetTypes.Gif &&
                         <HodlImageResponsive
                             assetFolder={"image"}
                             folder="nfts"
-                            cid={user?.avatar?.properties?.asset?.uri}
+                            cid={userData?.avatar?.properties?.asset?.uri}
                             widths={[size, size * 2]}
                             sizes={size}
                             aspectRatio="1:1"
                             round="max"
                         />
                     }
-                    {assetType(user?.avatar) === AssetTypes.Audio &&
+                    {assetType(userData?.avatar) === AssetTypes.Audio &&
                         <HodlAudioBoxMini size={size} />
                     }
                 </div>

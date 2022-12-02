@@ -45,7 +45,7 @@ export const updateMutableTokenCache = async (tokenId): Promise<MutableToken> =>
 
     return mutableToken;
   } catch (e) {
-    console.log('unable to update mutable token cache', e)
+    console.log('unable to update mutable token cache')
   }
 }
 

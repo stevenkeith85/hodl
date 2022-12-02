@@ -11,7 +11,7 @@ export const useUser = (address, fallbackData = null, viewer = null, ): SWRRespo
         fetcher,
         {
             fallbackData,
-            revalidateOnMount: !fallbackData
+            // revalidateOnMount: !fallbackData
         }
     )
 

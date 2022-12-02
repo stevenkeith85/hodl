@@ -13,8 +13,8 @@ import PrivateHomePageSidebarLoading from './PrivateHomePageSidebarLoading';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import PrivateHomePageSwitchLoading from './PrivateHomePageSwitchLoading';
-import { switchToPolygon } from '../../lib/switchToPolygon';
 import { WalletContext } from '../../contexts/WalletContext';
+
 
 
 const HodlFeed2 = dynamic(
@@ -52,19 +52,13 @@ const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
         () => import('./PrivateHomePageSidebar'),
         {
             ssr: false,
-            loading: () => <PrivateHomePageSidebarLoading display={desktop || viewSidebar}/>
+            loading: () => <PrivateHomePageSidebarLoading display={desktop || viewSidebar} />
         }
     );
-    
-    useEffect(() => {
-        if (provider) {
-            switchToPolygon(provider);
-        }
-    }, [provider]);
 
     return (
         <>
-            {!desktop && <PrivateHomePageSwitch viewSidebar={viewSidebar} setViewSidebar={setViewSidebar}/>}
+            {!desktop && <PrivateHomePageSwitch viewSidebar={viewSidebar} setViewSidebar={setViewSidebar} />}
             <Grid container>
                 <Grid
                     item

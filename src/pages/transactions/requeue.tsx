@@ -128,10 +128,10 @@ export default function Transaction({ address }) {
                                 paddingY: 2,
                             }}
                         >
-                            Please read carefully; and only use this if support asks you to
+                            Please read carefully; and only use this if support asks you to.
                         </Alert>
                         <Typography marginY={2} sx={{ fontSize: 18, fontWeight: 500 }}>
-                            Requeue a lost transaction
+                            Requeue a transaction
                         </Typography>
                         <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ span: { fontWeight: 600 } }}>
                             We only update our website once a transaction is confirmed on the blockchain.
@@ -140,13 +140,10 @@ export default function Transaction({ address }) {
                             We automatically process that transaction; and usually do not require any user intervention.
                         </Typography>
                         <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ span: { fontWeight: 600 } }}>
-                            On very rare occurrences, we may fail to process the transaction. e.g. It took an exceptionally long time to confirm on the blockchain.
+                            On very rare occurrences, we may fail to process the transaction. e.g. An application error may have prevented us from being informed about the transaction or it took an exceptionally long time to confirm on the blockchain.
                         </Typography>
                         <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ span: { fontWeight: 600 } }}>
-                            If your transaction <span>was</span> confirmed on the blockchain, and we haven&apos;t processed the transaction; please contact support!!
-                        </Typography>
-                        <Typography mb={2} color={theme => theme.palette.text.secondary} sx={{ span: { fontWeight: 600 } }}>
-                            They can likely resolve the issue for you.
+                            If you think yourtransaction <span>was</span> confirmed on the blockchain (by inspecting your wallet or Polygonscan), and we haven&apos;t processed that transaction; please contact support!!
                         </Typography>
                         <Typography mb={2} color={theme => theme.palette.text.secondary}>
                             If support has directed you to this page, then they&apos;ve determined you need to requeue the transaction. You should use the form below to do this.
@@ -156,10 +153,11 @@ export default function Transaction({ address }) {
                         </Typography>
                         <Typography component="ul" mb={2}>
                             <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >You&apos;ve contacted support!</Typography>
-                            <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >We haven&apos;t already processed that transaction.</Typography>
-                            <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >The transaction has been confirmed on the blockchain.</Typography>
+                            <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >The transaction isn&apos;t currently queued for processing (see tranaction section).</Typography>
+                            <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >We haven&apos;t already processed that transaction (see transaction section).</Typography>
+                            <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >The transaction has been confirmed on the blockchain.(check your wallet or polygonscan)</Typography>
                             <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >The transaction is for one of our contracts.</Typography>
-                            <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >The transaction you are about to submit is the first one we&apos;ve missed. This will be the first one in the pending queue; or if that is empty; the one with the lowest nonce value in MetaMask</Typography>
+                            <Typography component="li" mb={1} color={theme => theme.palette.text.secondary} >The transaction you are about to submit is the first one we&apos;ve missed. The one with the lowest nonce value in your wallet</Typography>
                         </Typography>
                         <Box
                             sx={{
