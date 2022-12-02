@@ -34,7 +34,7 @@ const CountAndLink: React.FC<CountAndLinkProps> = memo(({ count, user, label, ta
 
     return (<>
         {
-            <Link href={`/profile/${user.nickname || user.address}?tab=${tab}`}>
+            <Link href={`/profile/${user?.nickname || user?.address}?tab=${tab}`}>
                 <Typography
                     sx={{
                         color: grey[700],
@@ -62,6 +62,10 @@ interface HodlProfileBadgeProps {
 export const HodlProfileBadge: React.FC<HodlProfileBadgeProps> = ({ user }) => {
     const { hodlingCount, listedCount, followersCount, followingCount } = useContext(UserContext);
 
+    if (!user) {
+        return null;
+    }
+    
     return (
         <HodlBorderedBox
             sx={{
@@ -93,9 +97,9 @@ export const HodlProfileBadge: React.FC<HodlProfileBadgeProps> = ({ user }) => {
                             display: "flex",
                             flexDirection: "column",
                         }}>
-                        <ProfileNameOrAddress profileAddress={user.address} fallbackData={user} fontSize={'18px'} />
-                        <CopyText text={user.address}>
-                            <Typography sx={{ fontSize: 14 }}>{getShortAddress(user.address)}</Typography>
+                        <ProfileNameOrAddress profileAddress={user?.address} fallbackData={user} fontSize={'18px'} />
+                        <CopyText text={user?.address}>
+                            <Typography sx={{ fontSize: 14 }}>{getShortAddress(user?.address)}</Typography>
                         </CopyText>
                     </Box>
                 </Box>

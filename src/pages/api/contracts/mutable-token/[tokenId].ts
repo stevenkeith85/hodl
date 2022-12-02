@@ -45,7 +45,7 @@ export const updateMutableTokenCache = async (tokenId): Promise<MutableToken> =>
 
     return mutableToken;
   } catch (e) {
-    console.log('unable to update mutable token cache', e)
+    console.log('unable to update mutable token cache')
   }
 }
 
@@ -78,7 +78,7 @@ export const getFullToken = async (id: number, skipCache = false): Promise<FullT
     throw new Error('Error retrieving token');
   }
 
-  console.log('api/nft retrieved token', token);
+  // console.log('api/nft retrieved token', token);
 
   const result: FullToken = {
     ...token,

@@ -1,14 +1,13 @@
-import CloudSyncOutlinedIcon from '@mui/icons-material/CloudSyncOutlined';
-import { FC, useState } from 'react';
+import { FC, useContext, useEffect, useState } from 'react';
 import { enqueueSnackbar } from 'notistack';
-import { mintToken } from '../../lib/mint';
+import { mintToken } from '../../lib/nft';
 import { MintProps } from './models';
 import { grey } from '@mui/material/colors';
 import { MintTokenModal } from '../modals/MintTokenModal';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
+import { WalletContext } from '../../contexts/WalletContext';
 
 
 export const MintTokenAction: FC<MintProps> = ({
@@ -21,36 +20,61 @@ export const MintTokenAction: FC<MintProps> = ({
 }: MintProps) => {
   const [successModalOpen, setSuccessModalOpen] = useState(false);
 
-  async function mint() {
-    setLoading(true);
+  const { signer } = useContext(WalletContext);
+  const [error, setError] = useState('');
 
-    enqueueSnackbar(
-      'Please confirm the transaction in MetaMask',
-      {
-        variant: "info",
+
+  useEffect(() => {
+    const displayError = async () => {
+      const enqueueSnackbar = await import('notistack').then(mod => mod.enqueueSnackbar);
+
+      if (!error) {
+        return;
+      }
+
+      enqueueSnackbar(error, {
+        variant: "error",
         hideIconVariant: true
       });
 
-    const { metadataUrl } = formData;
-
-    if (metadataUrl.indexOf('ipfs://') === -1) {
-      enqueueSnackbar(
-        'Expected metadata to be on IPFS. Aborting',
-        {
-          variant: "error",
-          hideIconVariant: true
-        });
+      setError('');
     }
 
-    try {
-      await mintToken(metadataUrl);
-      setLoading(false);
+    displayError().catch(console.error)
 
+  }, [error]);
+
+
+  async function mint() {
+    try {
+      setLoading(true);
+
+      enqueueSnackbar(
+        'Confirm the transaction in your Wallet to mint',
+        {
+          variant: "info",
+          hideIconVariant: true
+        });
+
+      const { metadataUrl } = formData;
+
+      if (metadataUrl.indexOf('ipfs://') === -1) {
+        enqueueSnackbar(
+          'Expected metadata to be on IPFS. Aborting',
+          {
+            variant: "error",
+            hideIconVariant: true
+          });
+          return;
+      }
+
+      await mintToken(metadataUrl, signer);
 
       setStepComplete(4);
       setSuccessModalOpen(true);
     } catch (e) {
       setLoading(false);
+      setError(e.message);
     }
   }
 
@@ -94,23 +118,22 @@ export const MintTokenAction: FC<MintProps> = ({
         textAlign="center"
         gap={4}
       >
-        <CloudSyncOutlinedIcon sx={{ fontSize: { xs: 36, sm: 40 }, color: grey[400] }} />
         <Typography
           sx={{
             fontSize: '18px',
             color: grey[600],
             span: { fontWeight: 600 }
-          }}>Click the button to mint your NFT <span>{formData.name}</span> on the polygon blockchain</Typography>
+          }}>You will be asked to confirm the transaction in your wallet</Typography>
         <div>
-            <Button
-              color="primary"
-              disabled={loading || stepComplete === 4}
-              onClick={mint}
-              sx={{ paddingY: 1, paddingX: 3 }}
-              variant="contained"
-            >
-              Mint Your Token
-            </Button>
+          <Button
+            color="primary"
+            disabled={loading || stepComplete === 4}
+            onClick={mint}
+            sx={{ paddingY: 1, paddingX: 3 }}
+            variant="contained"
+          >
+            Mint Your Token
+          </Button>
         </div>
       </Box>
     </>

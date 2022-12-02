@@ -21,29 +21,56 @@ export default function ConnectingAWallet({ address }) {
             <HodlBorderedBox>
                 <Box mb={4}>
                     <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
-                        Connecting a wallet
+                        Signing in to Hodl My Moon with your wallet
+                    </Typography>
+
+                    <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                        Connecting your wallet is a cryptographically-secure way to verify your identity.
                     </Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                        Connecting a wallet is safe and secure. It will create a profile (if you don&apos;t have one); or just redirect you to your feed page.
+                        When your connect your wallet we create your profile, and redirect you to your feed page.
                     </Typography>
                 </Box>
 
                 <Box marginY={4}>
-                    <Typography mb={1} variant="h2">Sign in with MetaMask</Typography>
+                    <Typography mb={1} variant="h2">How to Connect</Typography>
+                    <Typography color={theme => theme.palette.text.secondary}>
+                        You can connect to our website on your desktop or on your mobile in a normal web browser.
+                    </Typography>
+                    <Typography mt={3} mb={1} variant="h3">Wallet Connect</Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                        Connecting your wallet is a one-click, cryptographically-secure way to verify your identity.
+                        Select this to connect with MetaMask or <Link href="https://explorer.walletconnect.com/?type=wallet" target="_blank">any other supported wallet</Link>
                     </Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                        We need to verify your identity so that you get data specific to you when you log in. i.e. your feed will look different to another user&apos;s feed.
+                        You scan a QR code from your wallet.
                     </Typography>
+                    <Typography mt={3} mb={1} variant="h3">Coinbase Wallet. </Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                        We verify your identity by asking you to sign a message with your wallet so that you do not need to remember another username/password pair.
+                        Coinbase provide their own implementation that lets you connect to your mobile or desktop wallet.
+                    </Typography>
+                    <Typography color={theme => theme.palette.text.secondary}>
+                        It works similar to Wallet Connect
                     </Typography>
                 </Box>
                 <Box marginY={4}>
-                    <Typography mb={1} variant="h2">Can you access my private key or secret recovery phrase?</Typography>
+                    <Typography mb={1} variant="h2">Signing a Message</Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                        No. We do not hold your keys. We do not want your keys. Signing a message does not give us access to your private key or secret recovery phrase.
+                        We authenticate you by asking you to sign a message with your wallet.
+                    </Typography>
+                    <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                        This does not trigger a blockchain transaction; is secure; and does not cost you are money.
+                    </Typography>
+                </Box>
+                <Box marginY={4}>
+                    <Typography mb={1} variant="h2">Can you access my private keys or secret recovery phrase?</Typography>
+                    <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                        No.
+                    </Typography>
+                    <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                        We do not hold your keys. We do not want your keys.
+                    </Typography>
+                    <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                        Signing a message to log in to our website does not give us access to your private key or secret recovery phrase.
                     </Typography>
                 </Box>
                 <Box marginY={4}>
@@ -72,7 +99,7 @@ export default function ConnectingAWallet({ address }) {
                     <Typography mb={1} variant="h2">When won&apos;t I be asked to confirm a transaction on Hodl My Moon?</Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary}>
                         When you do anything web2, such as:
-                        </Typography>
+                    </Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary} component="ul">
                         <li>Change your nickname</li>
                         <li>Change your avatar (this is also an nft btw)</li>
@@ -98,7 +125,7 @@ export default function ConnectingAWallet({ address }) {
                 <Box marginY={4}>
                     <Typography mb={1} variant="h2">Do other sites do this?</Typography>
                     <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                        Yes. &quot;Sign in with Ethereum (SIWE)&quot; / &quot;Sign in with MetaMask&quot; is very common.
+                        Yes. The process is called SIWE (Sign in with Ethereum) and is common with decentralized applications.
                     </Typography>
                 </Box>
             </HodlBorderedBox>

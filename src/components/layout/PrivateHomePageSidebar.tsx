@@ -11,7 +11,6 @@ import { RankingsContext } from '../../contexts/RankingsContext';
 import { useNewUsers } from '../../hooks/useNewUsers';
 import { useNewTokens } from '../../hooks/useNewTokens';
 
-
 import { UserContext } from '../../contexts/UserContext';
 
 import dynamic from 'next/dynamic';
@@ -111,11 +110,12 @@ export default function PrivateHomePageSidebar({ user }) {
                         gap: 4,
                     }}
                 >
+
                     <HodlProfileBadge user={user} />
-                    <TopUsers followButton={true} />
+                    <NewTokens showLikes={false} />
                     <TopTokens showLikes={false} />
                     <NewUsers followButton={false} />
-                    <NewTokens showLikes={false} />
+                    <TopUsers followButton={true} />
                 </Box>
             </UserContext.Provider>
         </RankingsContext.Provider>

@@ -36,6 +36,13 @@ import createEmotionCache from '../createEmotionCache';
 // Also loads a lot of deps
 import Layout from '../components/layout/Layout';
 
+import { useConnect } from '../hooks/useConnect';
+import { getProviderSignerAddress } from '../lib/getSigner';
+import { useDisconnect } from '../hooks/useDisconnect';
+import { useRouter } from 'next/router';
+import { switchToPolygon } from '../lib/switchToPolygon';
+import { chains } from '../lib/chains';
+
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
@@ -51,9 +58,9 @@ export default function MyApp(props: MyAppProps) {
     pageProps } = props;
 
   // WalletContext state
-  // @ts-ignore
-  const [address, setAddress] = useState(props?.pageProps?.address);
-  const [signer, setSigner] = useState('');
+  const [provider, setProvider] = useState(null);
+  const [signer, setSigner] = useState(null);
+  const [address, setAddress] = useState(null);
 
   // PusherContext state
   const [pusher, setPusher] = useState(null);
@@ -91,12 +98,101 @@ export default function MyApp(props: MyAppProps) {
       return;
     }
 
-    loadPusher()
-      .catch(console.error);
+    loadPusher().catch(console.error);
 
   }, [address])
 
-  const feed = useActions2(props?.pageProps?.address, ActionSet.Feed);
+  const feed = useActions2(address, ActionSet.Feed);
+
+  const router = useRouter();
+
+  const [_connect, connectBE] = useConnect();
+  const disconnect = useDisconnect();
+
+  const autoConnect = async (backendAddress) => {
+    const enqueueSnackbar = await import('notistack').then(mod => mod.enqueueSnackbar);
+
+    const { provider, signer, address } = await getProviderSignerAddress(false);
+
+    console.log(provider, signer, address);
+
+    if (!provider || !signer || !address) {
+      await disconnect();
+
+      // TODO: We need to test the pusher disconnect actually works correctly and perhaps do this somewhere centralised
+      pusher?.disconnect();
+      setPusher(null);
+      setUserSignedInToPusher(null);
+
+      router.push('/');
+    }
+
+    provider.on("network", async (newNetwork, oldNetwork) => {
+      // When a Provider makes its initial connection, it emits a "network"
+      // event with a null oldNetwork along with the newNetwork. So, if the
+      // oldNetwork exists, it represents a changing network
+
+      // alert('old Network ' + oldNetwork?.name);
+      // alert('new Network ' + newNetwork?.name);
+
+      const switchIfOnUnsupportedNetwork = async () => {
+        const enqueueSnackbar = await import('notistack').then(mod => mod.enqueueSnackbar);
+        provider?.getNetwork()
+          .then(network => chains[network?.name])
+          .then(chain => {
+            if (!chain) {
+              enqueueSnackbar(`Switching Networks. Check Your Wallet.`, {
+                // @ts-ignore
+                variant: 'info',
+              });
+              switchToPolygon(provider);
+            } else {
+              enqueueSnackbar(`Connected to ${chain.chainName}`, {
+                // @ts-ignore
+                variant: 'info',
+              });
+            }
+          })
+      }
+
+      await switchIfOnUnsupportedNetwork();
+
+      // TODO: Not sure this is needed
+      // if (oldNetwork) {
+      //   enqueueSnackbar("Your changed network. Reloading.", {
+      //     variant: "info",
+      //     hideIconVariant: true
+      //   });
+      //   setTimeout(() => window.location.reload(), 3000);
+      // }
+    });
+
+    if (signer && address && backendAddress !== address) {
+
+
+      enqueueSnackbar("Your logged in address does not match your wallet address. Switching Now", {
+        variant: "error",
+        hideIconVariant: true
+      });
+
+      await connectBE(signer, address);
+      router.push('/');
+    }
+
+    setProvider(provider);
+    setSigner(signer);
+    setAddress(address);
+  }
+
+  useEffect(() => {
+    // if the BE is connected, connect the FE is the addresses match
+    if (props?.pageProps?.address && !address) {
+      autoConnect(props?.pageProps?.address);
+    }
+
+
+
+  }, [props?.pageProps?.address])
 
   // Staging is password protected. Will switch this to staging
   // @ts-ignore
@@ -107,51 +203,53 @@ export default function MyApp(props: MyAppProps) {
 
   return (
     <>
-        <CacheProvider value={emotionCache}>
-          <Head>
-            <meta name="viewport" content="initial-scale=1, width=device-width" />
-          </Head>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <SWRConfig value={{
-              dedupingInterval: 2000, // default
-              focusThrottleInterval: 5000, // default
-              errorRetryCount: 0
+      <CacheProvider value={emotionCache}>
+        <Head>
+          <meta name="viewport" content="initial-scale=1, width=device-width" />
+        </Head>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <SWRConfig value={{
+            dedupingInterval: 2000, // default
+            focusThrottleInterval: 5000, // default
+            errorRetryCount: 0
+          }}>
+            <WalletContext.Provider value={{
+              provider,
+              setProvider,
+              signer,
+              setSigner,
+              address,
+              setAddress,
             }}>
-              <WalletContext.Provider value={{
-                signer,
-                setSigner,
-                address,
-                setAddress,
+              <PusherContext.Provider value={{
+                pusher,
+                setPusher,
+                userSignedInToPusher,
+                setUserSignedInToPusher
               }}>
-                <PusherContext.Provider value={{
-                  pusher,
-                  setPusher,
-                  userSignedInToPusher,
-                  setUserSignedInToPusher
-                }}>
-                  <SnackbarProvider
-                    Components={{
-                      // @ts-ignore
-                      hodlnotification: HodlNotificationSnackbar
-                    }}
-                  >
-                    <FeedContext.Provider value={{ feed }}>
-                      <Layout
-                        address={address}
-                        pusher={pusher}
-                        userSignedInToPusher={userSignedInToPusher}
-                      >
-                        <Component {...pageProps} />
-                      </Layout>
-                    </FeedContext.Provider>
-                  </SnackbarProvider>
-                </PusherContext.Provider>
-              </WalletContext.Provider>
-            </SWRConfig>
-          </ThemeProvider>
-        </CacheProvider>
-        <Analytics />
+                <SnackbarProvider
+                  Components={{
+                    // @ts-ignore
+                    hodlnotification: HodlNotificationSnackbar
+                  }}
+                >
+                  <FeedContext.Provider value={{ feed }}>
+                    <Layout
+                      address={address}
+                      pusher={pusher}
+                      userSignedInToPusher={userSignedInToPusher}
+                    >
+                      <Component {...pageProps} />
+                    </Layout>
+                  </FeedContext.Provider>
+                </SnackbarProvider>
+              </PusherContext.Provider>
+            </WalletContext.Provider>
+          </SWRConfig>
+        </ThemeProvider>
+      </CacheProvider>
+      <Analytics />
     </>
   )
 }

@@ -1,16 +1,12 @@
-import CloudOffIcon from '@mui/icons-material/CloudOff';
-
 import Button from "@mui/material/Button";
-import Link from "@mui/material/Link";
 
 import { useRouter } from "next/router";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext } from "react";
 import { useConnect } from "../../hooks/useConnect";
 import { WalletContext } from '../../contexts/WalletContext';
-import { AccountBalanceWalletIcon } from '../icons/AccountBalanceWalletIcon';
-import MetaMaskOnboarding from '@metamask/onboarding'
-import { isMobileDevice } from '../../lib/utils';
-import { Typography } from '@mui/material';
+import { useDisconnect } from "../../hooks/useDisconnect";
+import { PusherContext } from "../../contexts/PusherContext";
+
 
 
 interface LoginLogoutButtonProps {
@@ -18,6 +14,7 @@ interface LoginLogoutButtonProps {
     variant?: 'text' | 'outlined' | 'contained';
     fontSize?: string;
     sx?: object;
+    closeMenu?: Function;
 }
 
 export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
@@ -25,48 +22,23 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
     variant = "outlined",
     fontSize = '14px',
     sx = null,
+    closeMenu = null
 
 }) => {
-    const onboarding = useRef<MetaMaskOnboarding>();
 
-    const [connect, disconnect] = useConnect();
+
+    const [connect] = useConnect();
+    const disconnect = useDisconnect();
+
     const { address } = useContext(WalletContext);
     const router = useRouter();
 
-    const getButtonText = () => {
-        if (MetaMaskOnboarding.isMetaMaskInstalled()) {
-            return 'Sign in with MetaMask';
-        } else {
-            return 'Install a MetaMask Wallet'
-        }
-    }
-
-    useEffect(() => {
-        if (!onboarding.current) {
-            onboarding.current = new MetaMaskOnboarding();
-        }
-    }, []);
+    const {pusher, setPusher, setUserSignedInToPusher} = useContext(PusherContext);
 
     return (
         <>
-        {/* if its a mobile and its not the metamask mobile browser give the user the deeplink button */}
             {
-                isMobileDevice() &&
-                (!/MetaMaskMobile/.test(navigator.userAgent)) &&
-                <>
-                    <Button
-                        onClick={() => location.href = `https://metamask.app.link/dapp/${window.location.href}`}
-                        color={color}
-                        variant={variant}
-                        sx={{
-                            fontSize,
-                            ...sx,
-                        }}
-                        startIcon={<AccountBalanceWalletIcon size={22} />}>Open MetaMask Mobile</Button>
-                </>
-            }
-            {
-                (!address && !isMobileDevice() || (!address && isMobileDevice() && (/MetaMaskMobile/.test(navigator.userAgent)))) &&
+                !address &&
                 <>
                     <Button
                         color={color}
@@ -75,22 +47,19 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
                             fontSize,
                             ...sx,
                         }}
-                        startIcon={<AccountBalanceWalletIcon size={22} />}
                         onClick={async e => {
-                            if (MetaMaskOnboarding.isMetaMaskInstalled()) {
-                                e.stopPropagation();
-                                e.preventDefault();
+                            e.stopPropagation();
+                            e.preventDefault();
 
-                                const connected = await connect(false);
+                            closeMenu();
+                            // They are clicking the sign in button, so authenticate with the BE
+                            const connected = await connect(true, true);
 
-                                if (connected) {
-                                    window.location.href = router.asPath;
-                                }
-                            } else {
-                                onboarding.current.startOnboarding();
-                            }
+                            router.push('/');
                         }}
-                    >{getButtonText()}</Button>
+                    >
+                        Connect wallet
+                    </Button>
 
                 </>
             }
@@ -108,11 +77,15 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
                         e.preventDefault();
 
                         await disconnect();
+
+                        // TODO: We need to test the pusher disconnect actually works correctly and perhaps do this somewhere centralised
+                        pusher?.disconnect();
+                        setPusher(null);
+                        setUserSignedInToPusher(null);
                         router.push('/');
                     }}
-                    startIcon={<CloudOffIcon />}
                 >
-                    Sign Out
+                    sign out
                 </Button>
             }
         </>);

@@ -80,6 +80,7 @@ let theme = createTheme({
       },
       styleOverrides: {
         root: {
+          borderRadius: '12px',
           textTransform: 'none',
           padding: '5px 10px',
           boxShadow: 'none',
