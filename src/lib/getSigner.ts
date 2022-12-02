@@ -20,7 +20,6 @@ export const getProviderSignerAddress = async (dialog = false) => {
         },
       }
     },
-    // https://stackoverflow.com/questions/69494765/wallet-connect-no-rpc-url-available-for-chainid-137
     walletconnect: {
       display: {
         description: "Connect to other wallets"
