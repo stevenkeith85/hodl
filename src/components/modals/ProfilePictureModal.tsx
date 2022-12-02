@@ -72,7 +72,6 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                                     maxWidth: '100%',
                                     maxHeight: '100%',
                                     width: '350px',
-                                    height: '350px',
                                     marginBottom: 2,
                                     overflow: 'auto',
                                     display: 'grid',
