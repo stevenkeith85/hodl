@@ -69,6 +69,8 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
                             }}>Select an NFT to use as your avatar</Typography>
                             <Box
                                 sx={{
+                                    maxWidth: '100%',
+                                    maxHeight: '100%',
                                     width: '350px',
                                     height: '350px',
                                     marginBottom: 2,

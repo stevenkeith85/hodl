@@ -20,17 +20,17 @@ export const MobileNav = ({ address }) => {
         if (user?.nickname) {
             setPages([
                 {
-                    icon: <ExploreIcon size={22} fill={theme.palette.primary.main} />,
+                    icon: <ExploreIcon size={20} fill={theme.palette.primary.main} />,
                     url: '/explore',
                     publicPage: true
                 },
                 {
-                    icon: <AddCircleIcon size={22} fill={theme.palette.primary.main} />,
+                    icon: <AddCircleIcon size={20} fill={theme.palette.primary.main} />,
                     url: '/create',
                     publicPage: false
                 },
                 {
-                    icon: <AccountCircleIcon sx={{fontSize:22}} />,
+                    icon: <AccountCircleIcon sx={{fontSize:20}} />,
                     url: `/profile/${user?.nickname}`,
                     publicPage: false
                 },
@@ -40,17 +40,17 @@ export const MobileNav = ({ address }) => {
 
     const [pages, setPages] = useState([
         {
-            icon: <ExploreIcon size={22} fill={theme.palette.primary.main} />,
+            icon: <ExploreIcon size={20} fill={theme.palette.primary.main} />,
             url: '/explore',
             publicPage: true
         },
         {
-            icon: <AddCircleIcon size={22} fill={theme.palette.primary.main} />,
+            icon: <AddCircleIcon size={20} fill={theme.palette.primary.main} />,
             url: '/create',
             publicPage: false
         },
         {
-            icon: <AccountCircleIcon sx={{fontSize:22}} />,
+            icon: <AccountCircleIcon sx={{fontSize:20}} />,
             url: `/profile/${address}`,
             publicPage: false
         },
@@ -76,8 +76,8 @@ export const MobileNav = ({ address }) => {
                                 margin: 0,
                                 padding: 0,
                                 lineHeight: 0,
-                                width: 44,
-                                height: 44,
+                                width: 40,
+                                height: 40,
                             }}
                             color="inherit"
                         >

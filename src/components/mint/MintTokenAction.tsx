@@ -127,7 +127,7 @@ export const MintTokenAction: FC<MintProps> = ({
         <div>
           <Button
             color="primary"
-            disabled={loading || stepComplete === 4}
+            // disabled={loading || stepComplete === 4}
             onClick={mint}
             sx={{ paddingY: 1, paddingX: 3 }}
             variant="contained"

@@ -141,7 +141,7 @@ export default function MyApp(props: MyAppProps) {
           .then(network => chains[network?.name])
           .then(chain => {
             if (!chain) {
-              enqueueSnackbar(`Switching Networks. Check Your Wallet.`, {
+              enqueueSnackbar(`Switching Networks. You may need to approve in your wallet.`, {
                 // @ts-ignore
                 variant: 'info',
               });

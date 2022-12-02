@@ -1,8 +1,6 @@
 import { chains } from "./chains";
 
 export const switchToPolygon = async (provider) => {
-    alert("asking to switch");
-
     try {
         // @ts-ignore
         await provider.provider.request({
