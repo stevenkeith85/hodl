@@ -90,7 +90,7 @@ export default function SignUp({ address }) {
                     </Box>
                     <Box mb={3}>
                         <Typography sx={{ fontSize: 14 }} mb={0} color={theme => theme.palette.text.secondary}>
-                            6) You will initially get up to 5 posts from each person you followed.feed.
+                            6) Your feed will populate with recent posts (nfts) from the accounts you just followed.
                         </Typography>
                         <Typography sx={{ fontSize: 14 }} mb={2} color={theme => theme.palette.text.secondary}>
                             You will receive their new nfts in your feed; as well as their market activity.
