@@ -100,7 +100,7 @@ export default function ConnectingAWallet({ address }) {
                             Select this to connect with a mobile wallet. (i.e. desktop chrome to metamask mobile)
                         </Typography>
                         <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            You'll be prompted to scan a QR code from your mobile wallet (if you are on a desktop browser)
+                            You&apos;ll be prompted to scan a QR code from your mobile wallet (if you are on a desktop browser)
                         </Typography>
 
                     </Box>
