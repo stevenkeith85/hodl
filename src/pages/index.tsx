@@ -56,7 +56,7 @@ export default function Home({
 }) {
 
   const homepage = "https://www.hodlmymoon.com";
-  const title = "Hodl My Moon | NFT Social Network and Marketplace";
+  const title = "Polygon NFT Marketplace and Web3 Social Network - Hodl My Moon";
   const description = "Hodl My Moon is an NFT Social Network and Marketplace. Mint free Polygon NFTs as social media posts. Follow digital artists, photographers and other crypto enthusiasts. Like or Comment on their latest NFTs. Sell your NFTs on the marketplace. Sign in with MetaMask";
   const shareImage = "https://res.cloudinary.com/dyobirj7r/image/upload/ar_216:253,c_fill,w_1080/prod/nfts/bafkreihuew5ij6lvc2k7vjqr65hit7fljl7fsxlikrkndcdyp47xbi6pvy" // nft 36
 

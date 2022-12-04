@@ -72,6 +72,7 @@ export default function Search({
   maxPrice,
   fallbackData,
 }) {
+  const title = "NFT Art - Explore Polygon NFTs"
   const [qChip, setQChip] = useState(q);
   const [forSaleToggle, setForSaleToggle] = useState(forSale);
   const [minPriceUI, setMinPriceUI] = useState(minPrice);
@@ -149,7 +150,7 @@ export default function Search({
   return (
     <>
       <Head>
-        <title>Explore · Hodl My Moon</title>
+        <title>{title}</title>
       </Head>
       <Box
         sx={{
