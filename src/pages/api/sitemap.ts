@@ -14,6 +14,7 @@ export default async function route (req: NextRequest) {
         '/explore', 
         '/learn',
         '/learn/connecting-a-wallet',
+        '/learn/sign-up-with-coinbase-mobile'
     ];
 
     const tokenIds = await zRange("tokens", 0, -1, { rev: true });
