@@ -93,6 +93,7 @@ const Footer = ({
                                     learn
                                 </Typography>
                                 <Link href="/learn">overview</Link>
+                                <Link href="/learn/sign-up-with-coinbase-mobile">how to join</Link>
                                 <Link href="/learn/connecting-a-wallet">connecting a wallet</Link>
                             </Box>
                             <Box
