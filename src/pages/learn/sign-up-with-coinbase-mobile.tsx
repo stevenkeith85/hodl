@@ -69,7 +69,7 @@ export default function SignUp({ address }) {
                     </Box>
                     <Box mb={3}>
                         <Typography sx={{ fontSize: 14 }} mb={0} color={theme => theme.palette.text.secondary}>
-                            3) You'll be asked to sign a message to prove your identity.
+                            3) You will be asked to sign a message to prove your identity.
                         </Typography>
                         <Typography sx={{ fontSize: 14 }} mb={2} color={theme => theme.palette.text.secondary}>
                             This is a cryptographically-secure way to log in to dApps.
