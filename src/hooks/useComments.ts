@@ -60,7 +60,6 @@ export const useCommentCount = (
         {
             revalidateOnMount: fallbackData === null,
             revalidateOnFocus: false,
-            revalidateIfStale: false,
             revalidateOnReconnect: false,
             fallbackData
         }

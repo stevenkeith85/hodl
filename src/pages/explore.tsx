@@ -86,8 +86,7 @@ export const NFTGrid: React.FC<NFTGridProps> = ({ nfts }) => {
       sx={{
         display: "grid",
         gridTemplateColumns: {
-          xs: "1fr",
-          sm: "1fr 1fr",
+          xs: "1fr 1fr",
           md: "1fr 1fr 1fr"
         },
         margin: -1,
@@ -179,38 +178,37 @@ const Search: React.FC<SearchProps> = ({
       revalidateFirstPage: false,
       revalidateOnMount: false,
       revalidateOnFocus: false,
-      revalidateIfStale: false,
       revalidateOnReconnect: false,
       fallbackData: isOriginalSearchQuery() ? fallbackData : null
     }
   )
 
-  useEffect(() => {
-    if (isOriginalSearchQuery()) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (isOriginalSearchQuery()) {
+  //     return;
+  //   }
 
-    router.push(
-      {
-        pathname: '/explore',
-        query: {
-          q: searchQuery?.q,
-          forSale: forSaleChecked, // the setState call won't have completed yet, so we'll need the value it WILL be set to
-          minPrice: searchQuery?.minPrice,
-          maxPrice: searchQuery?.maxPrice,
-        }
-      },
-      undefined,
-      {
-        shallow: true
-      }
-    )
-  }, [
-    searchQuery.q,
-    searchQuery.forSale,
-    searchQuery.minPrice,
-    searchQuery.maxPrice
-  ]);
+  //   router.push(
+  //     {
+  //       pathname: '/explore',
+  //       query: {
+  //         q: searchQuery?.q,
+  //         forSale: forSaleChecked, // the setState call won't have completed yet, so we'll need the value it WILL be set to
+  //         minPrice: searchQuery?.minPrice,
+  //         maxPrice: searchQuery?.maxPrice,
+  //       }
+  //     },
+  //     undefined,
+  //     {
+  //       shallow: true
+  //     }
+  //   )
+  // }, [
+  //   searchQuery.q,
+  //   searchQuery.forSale,
+  //   searchQuery.minPrice,
+  //   searchQuery.maxPrice
+  // ]);
 
   useEffect(() => {
 
@@ -336,7 +334,7 @@ const Search: React.FC<SearchProps> = ({
             <Virtuoso
               useWindowScroll
               data={data}
-              overscan={400}
+              overscan={500}
               endReached={loadMore}
               itemContent={(index) => <NFTGrid nfts={data[index]?.items} />}
             />
