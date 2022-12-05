@@ -183,32 +183,32 @@ const Search: React.FC<SearchProps> = ({
     }
   )
 
-  // useEffect(() => {
-  //   if (isOriginalSearchQuery()) {
-  //     return;
-  //   }
+  useEffect(() => {
+    if (isOriginalSearchQuery()) {
+      return;
+    }
 
-  //   router.push(
-  //     {
-  //       pathname: '/explore',
-  //       query: {
-  //         q: searchQuery?.q,
-  //         forSale: forSaleChecked, // the setState call won't have completed yet, so we'll need the value it WILL be set to
-  //         minPrice: searchQuery?.minPrice,
-  //         maxPrice: searchQuery?.maxPrice,
-  //       }
-  //     },
-  //     undefined,
-  //     {
-  //       shallow: true
-  //     }
-  //   )
-  // }, [
-  //   searchQuery.q,
-  //   searchQuery.forSale,
-  //   searchQuery.minPrice,
-  //   searchQuery.maxPrice
-  // ]);
+    router.push(
+      {
+        pathname: '/explore',
+        query: {
+          q: searchQuery?.q,
+          forSale: forSaleChecked, // the setState call won't have completed yet, so we'll need the value it WILL be set to
+          minPrice: searchQuery?.minPrice,
+          maxPrice: searchQuery?.maxPrice,
+        }
+      },
+      undefined,
+      {
+        shallow: true
+      }
+    )
+  }, [
+    searchQuery.q,
+    searchQuery.forSale,
+    searchQuery.minPrice,
+    searchQuery.maxPrice
+  ]);
 
   useEffect(() => {
 
