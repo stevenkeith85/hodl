@@ -5,8 +5,9 @@ import { styled, alpha, useTheme } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
 
 import { SearchValidationSchema } from '../validation/search';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SearchIcon } from './icons/SearchIcon';
+import { getAsString } from '../lib/getAsString';
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -60,6 +61,11 @@ export const SearchBox = ({
     const [q, setQ] = useState('');
     const [valid, setValid] = useState(true);
 
+    useEffect(() => {
+        if(router?.query?.q) {
+            setQ(getAsString(router?.query?.q))
+        }
+    }, [router?.query?.q])
     return (
         <form onSubmit={(e) => {
             e.stopPropagation();
@@ -97,6 +103,7 @@ export const SearchBox = ({
                         SearchValidationSchema.isValid({ q: value }).then(setValid);
                     }}
                     autoComplete='off'
+                    value={q}
                 />
             </Search>
         </form>

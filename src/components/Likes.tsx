@@ -12,6 +12,7 @@ import { useLike } from "../hooks/useLike";
 
 import humanize from "humanize-plus";
 import Skeleton from "@mui/material/Skeleton";
+import { useUserLikesObject } from "../hooks/useUserLikesObject";
 
 
 export interface LikesProps {
@@ -41,8 +42,9 @@ export const Likes: FC<LikesProps> = ({
     flexDirection = "row",
     sx = {}
 }) => {
-    const { swr: likeCount } = useLikeCount(id, object, prefetchedLikeCount);
-    const [userLikesThisToken, toggleLike] = useLike(id, object, likeCount);
+    const likeCount = useLikeCount(id, object, prefetchedLikeCount);
+    const userLikesThisObject = useUserLikesObject(id, object);
+    const toggleLike = useLike(id, object);
 
     return (
         <>
@@ -60,11 +62,20 @@ export const Likes: FC<LikesProps> = ({
                 onClick={async (e) => {
                     e.preventDefault();
                     e.stopPropagation();
+                    likeCount.mutate(old => {
+                        if (old === undefined) { // if we use a fallback value we seem to get 'undefined' as the old value for the mutate function
+                            return userLikesThisObject?.data ? prefetchedLikeCount - 1 : prefetchedLikeCount + 1;
+                        } else {
+                            return userLikesThisObject?.data ? old -1 : old +1;
+                        }
+                    }, {revalidate: false});
+                    userLikesThisObject.mutate(old => !old, {revalidate: false});
+                    
                     await toggleLike();
                 }}
             >
                 {
-                    !userLikesThisToken ?
+                    !userLikesThisObject.data ?
                         <Tooltip title={likeTooltip}>
                             <FavoriteBorderIcon
                                 color={color}

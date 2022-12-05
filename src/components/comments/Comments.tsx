@@ -45,9 +45,6 @@ export const Comments: FC<CommentsProps> = ({
 }) => {
     const { data: count } = useCommentCount(nft?.id, "token", prefetchedCommentCount)
 
-    const mutableTokenFetcher: Fetcher<MutableToken> = (url, id) => fetch(`${url}/${id}`).then(r => r.json()).then(data => data.mutableToken);
-    const { data: mutableToken } = useSWR([`/api/contracts/mutable-token`, nft.id], mutableTokenFetcher);
-
     const [open, setOpen] = useState(false);
 
     return (
@@ -55,7 +52,6 @@ export const Comments: FC<CommentsProps> = ({
             <NftContext.Provider
                 value={{
                     nft,
-                    mutableToken
                 }}
             >
                 {open && <HodlCommentsModal open={open} setOpen={setOpen} />}

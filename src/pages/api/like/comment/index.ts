@@ -13,7 +13,7 @@ const client = Redis.fromEnv()
 // This could be vulnerable to CSRF. To prevent this we are setting the auth cookies to LAX.
 // https://portswigger.net/web-security/csrf/samesite-cookies
 route.post(async (req, res: NextApiResponse) => {
-  const start = Date.now();
+  // const start = Date.now();
 
   if (!req.address) {
     return res.status(403).json({ message: "Not Authenticated" });
@@ -63,8 +63,8 @@ route.post(async (req, res: NextApiResponse) => {
     );
   }
 
-  const stop = Date.now()
-  console.log('like/comment time taken', stop - start);
+  // const stop = Date.now()
+  // console.log('like/comment time taken', stop - start);
 
   return res.status(200).json({ liked });
 });

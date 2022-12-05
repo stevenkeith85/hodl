@@ -5,7 +5,7 @@ import { Token } from "../models/Token";
 
 export const NftContext = createContext<{
     nft: Token,
-    mutableToken: MutableToken
+    mutableToken?: MutableToken
 }>({
     nft: null,
     mutableToken: null

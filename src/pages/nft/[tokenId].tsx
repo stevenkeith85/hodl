@@ -105,7 +105,6 @@ const NftDetail = ({
 
   const getImage = (nft) => makeCloudinaryUrl("image", "nfts", nft?.image, { crop: 'fill', aspect_ratio: nft?.properties?.aspectRatio, width: '1080' });
 
-
   return (
     <>
       <NftContext.Provider

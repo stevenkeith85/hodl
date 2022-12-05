@@ -34,18 +34,18 @@ const ratelimit = async (req, res, next) => {
 
 const rateLimits = {
   // We can be rate limited on these routes; so need to be fairly strict
-  'POST:/api/create/ipfsImageAndAsset': 3,
-  'POST:/api/create/ipfsMetadata': 3,
+  'POST:/api/create/ipfsImageAndAsset': 6,
+  'POST:/api/create/ipfsMetadata': 6,
 
   // These are the state changing routes in the app that a bot might try to manipulate
   // limit the user to one state changing action every 3 seconds
-  'POST:/api/like/token': 10,
-  'POST:/api/like/comment': 10,
-  'POST:/api/follow': 10,
-  'POST:/api/comments/add': 10,
+  'POST:/api/like/token': 15,
+  'POST:/api/like/comment': 15,
+  'POST:/api/follow': 15,
+  'POST:/api/comments/add': 15,
 
-  'POST:/api/profile/nickname': 6,
-  'DELETE:/api/comments/delete': 10,
+  'POST:/api/profile/nickname': 10,
+  'DELETE:/api/comments/delete': 15,
 }
 
 

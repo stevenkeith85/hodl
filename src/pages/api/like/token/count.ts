@@ -8,7 +8,8 @@ export const getLikeCount = async (token) => {
     {
       headers: {
         Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-      }
+      },
+      keepalive: true
     });
 
   const { result: count } = await zcardResponse.json();

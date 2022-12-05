@@ -5,11 +5,11 @@ import Box from '@mui/material/Box';
 
 import { Likes } from './Likes';
 import { Comments } from './comments/Comments';
-import { FullToken } from "../models/FullToken";
+import { TokenVM } from '../models/TokenVM';
 
 
 interface NftWindowOverlayProps {
-    nft: FullToken;
+    nft: TokenVM;
 }
 
 export const NftWindowOverlay: React.FC<NftWindowOverlayProps> = ({
@@ -77,7 +77,9 @@ export const NftWindowOverlay: React.FC<NftWindowOverlayProps> = ({
                                 color: 'white',
 
                             }}
+                            prefetchedLikeCount={nft?.likeCount}
                         />
+                            
                         <Comments
                             nft={nft}
                             color='inherit'
@@ -86,7 +88,7 @@ export const NftWindowOverlay: React.FC<NftWindowOverlayProps> = ({
                             sx={{
                                 paddingRight: 0,
                             }}
-
+                            prefetchedCommentCount={nft?.commentCount}
                         />
                     </Box>
                 </Box>

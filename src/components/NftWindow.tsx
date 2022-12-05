@@ -16,9 +16,8 @@ import { AssetTypes } from '../models/AssetType';
 import { HodlImageResponsive } from './HodlImageResponsive';
 import { HodlAudioBox } from './HodlAudioBox';
 import { FullToken } from "../models/FullToken";
-import { MutableToken } from "../models/MutableToken";
 import { PriceSticker } from './PriceSticker';
-import { Token } from "../models/Token";
+import { TokenVM } from '../models/TokenVM';
 
 const NftWindowOverlay = dynamic(
     () => import('./NftWindowOverlay').then(mod => mod.NftWindowOverlay),
@@ -29,7 +28,7 @@ const NftWindowOverlay = dynamic(
 );
 
 interface NftWindowProps {
-    nft: FullToken;
+    nft: any;
     sizes?: string;
     widths?: number [],
     lcp?: boolean; // if this window will be the largest content paint, then set to true
@@ -48,7 +47,6 @@ export const NftWindow: React.FC<NftWindowProps> = ({
         return <Skeleton sx={{ width: '100%', height: 0, paddingTop: '100%' }} variant="rectangular" animation="wave" />
     }
 
-    // return JSON.stringify(assetType(nft))
     return (
         <Link
             key={nft.id}
