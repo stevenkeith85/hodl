@@ -113,12 +113,10 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
     const mdUp = useMediaQuery(theme.breakpoints.up('md'));
     const mdDown = useMediaQuery(theme.breakpoints.down('md'));
 
-    const {provider} = useContext(WalletContext)
-
     const homepage = {
         label: 'hodl my moon',
         url: '/',
-        icon: <RocketLaunchIcon size={20} fill={theme.palette.primary.main} />,
+        icon: <RocketLaunchIcon size={22} fill={theme.palette.primary.main} />,
         publicPage: true
     };
 
@@ -317,7 +315,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                         }}
                                         color="inherit"
                                     >
-                                        <CloseIcon size={20} fill={theme.palette.primary.main} />
+                                        <CloseIcon size={22} fill={theme.palette.primary.main} />
                                     </IconButton> :
                                     (unread ?
                                         <IconButton
@@ -349,7 +347,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                                 animationTimingFunction: 'ease-in'
                                             }}>
                                                 <NotificationsIcon
-                                                    size={20}
+                                                    size={22}
                                                     fill={theme.palette.primary.main}
                                                 />
                                             </div>
@@ -377,7 +375,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                         >
                                             <NotificationsNoneIcon
                                                 fill={theme.palette.primary.main}
-                                                size={20}
+                                                size={22}
                                             />
                                         </IconButton>
                                     )
@@ -411,7 +409,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                         display="flex"
                                         alignItems="center"
                                         justifyContent="center">
-                                        <CloseIcon size={20} fill={theme.palette.primary.main} />
+                                        <CloseIcon size={22} fill={theme.palette.primary.main} />
                                     </Box>
                                     <Box
                                         sx={{
@@ -433,7 +431,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                         display="flex"
                                         alignItems="center"
                                         justifyContent="center">
-                                        <AccountBalanceWalletIcon size={20} fill={theme.palette.primary.main} />
+                                        <AccountBalanceWalletIcon size={22} fill={theme.palette.primary.main} />
                                     </Box>
                                 </IconButton>
                                 {hoverMenuOpen && <HoverMenu hoverMenuOpen={hoverMenuOpen} setHoverMenuOpen={setHoverMenuOpen} />}

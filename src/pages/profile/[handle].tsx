@@ -24,8 +24,6 @@ import { useHodlingCount } from '../../hooks/useHodlingCount'
 import { useListedCount } from '../../hooks/useListedCount'
 
 import Box from '@mui/material/Box'
-import axios from 'axios';
-import useSWR from 'swr';
 
 
 const InfiniteScrollNftWindows = dynamic(

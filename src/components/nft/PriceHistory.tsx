@@ -1,4 +1,4 @@
-import { Typography, Box, Skeleton } from "@mui/material"
+
 import { indigo } from "@mui/material/colors";
 import axios from "axios";
 import useSWR from "swr";
@@ -7,6 +7,9 @@ import { ResponsiveContainer, CartesianGrid, Line, LineChart, Tooltip, XAxis, YA
 import { Fetcher } from "swr";
 import { PriceHistory } from "../../models/PriceHistory";
 import { HodlBorderedBox } from "../HodlBorderedBox";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Skeleton from "@mui/material/Skeleton";
 
 const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {

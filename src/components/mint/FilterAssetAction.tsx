@@ -1,4 +1,3 @@
-import { Box } from "@mui/material";
 import { FC, useEffect } from "react";
 import { FilterButtons } from "./FilterButtons";
 

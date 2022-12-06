@@ -1,4 +1,9 @@
-import { Typography, Stack, Tooltip, Link, Box } from "@mui/material";
+import Box from "@mui/material/Box";
+import Link from "@mui/material/Link";
+import Stack from "@mui/material/Stack";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
+
 import { cidToGatewayUrl } from "../../lib/utils";
 import { Token } from "../../models/Token";
 import { IpfsTooltip } from "../tooltips/IpfsTooltip";
