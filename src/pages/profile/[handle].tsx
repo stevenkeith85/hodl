@@ -141,9 +141,9 @@ const Profile = ({
   }, [router.asPath, router?.query?.tab]);
 
 
-  const title = `NFT creator on Hodl My Moon - ${`${owner?.nickname || owner?.address}`}`;
-  const description = `View the Polygon NFTs of ${`${owner.nickname || owner.address}`} on hodlmymoon.com`;
-  const canonical = `${`https://www.hodlmymoon.com/profile/${owner.nickname || owner.address}`}`;
+  const title = `NFT creator on Hodl My Moon - ${owner?.nickname || owner?.address}`;
+  const description = `View the Polygon NFTs of ${owner.nickname || owner.address} on hodlmymoon.com`;
+  const canonical = `https://www.hodlmymoon.com/profile/${owner.nickname || owner.address}`;
   const shareImage = `https://res.cloudinary.com/dyobirj7r/image/upload/ar_216:253,c_fill,w_1080/prod/nfts/${owner.avatar ? owner.avatar.image : 'bafkreihuew5ij6lvc2k7vjqr65hit7fljl7fsxlikrkndcdyp47xbi6pvy'}`;
 
   return <>
