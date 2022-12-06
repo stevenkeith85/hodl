@@ -94,6 +94,7 @@ export const NFTGrid: React.FC<NFTGridProps> = ({ nfts }) => {
           md: "1fr 1fr 1fr"
         },
         margin: -1,
+        marginBottom: 1
       }}
     >
       {nfts?.map(nft => (<NFTDetail key={nft?.id} nft={nft} />))}
