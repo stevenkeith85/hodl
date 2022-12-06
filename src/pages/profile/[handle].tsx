@@ -141,16 +141,34 @@ const Profile = ({
   }, [router.asPath, router?.query?.tab]);
 
 
+  const title = `${`${owner?.nickname || owner?.address}, NFT creator on Hodl My Moon`}`;
+  const description = `View the Polygon NFTS of ${`${owner.nickname || owner.address}`} on hodlmymoon.com`;
+  const canonical = `${`https://www.hodlmymoon.com/profile/${owner.nickname || owner.address}`}`;
+  const shareImage = `https://res.cloudinary.com/dyobirj7r/image/upload/ar_216:253,c_fill,w_1080/prod/nfts/${owner.avatar ? owner.avatar.image : 'bafkreihuew5ij6lvc2k7vjqr65hit7fljl7fsxlikrkndcdyp47xbi6pvy'}`;
+
   return <>
     <Head>
-      <link rel="canonical" href={`https://www.hodlmymoon.com/profile/${owner.nickname || owner.address}`} />
-      <title>{`${owner?.nickname || owner?.address} | Hodl My Moon`}</title>
+      <title>{title}</title>
+      <meta name="description" content={description} />
+      <link rel="canonical" href={canonical} />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:site" content="@hodlmymoon" />
+      <meta name="twitter:creator" content="@hodlmymoon" />
+      <meta name="twitter:title" content={title} />
+      <meta name="twitter:description" content={description} />
+      <meta name="twitter:image" content={shareImage} />
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content={canonical} />
+      <meta property="og:title" content={title} />
+      <meta property="og:image" content={shareImage} />
+      <meta property="og:description" content={description} />
     </Head>
+
     <FollowersContext.Provider value={{ followers }}>
       <FollowingContext.Provider value={{ following }}>
         <Box sx={{
           height: {
-            md:'120px',
+            md: '120px',
           },
           marginTop: { xs: 2, sm: 4 }
         }}>

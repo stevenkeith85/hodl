@@ -72,9 +72,6 @@ export const ProfileHeader = ({
             </Box>
 
           </Box>
-
-
-
           {/* name and address */}
           <Box
             sx={{
