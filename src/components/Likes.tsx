@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useContext } from "react";
 
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
@@ -13,6 +13,7 @@ import { useLike } from "../hooks/useLike";
 import humanize from "humanize-plus";
 import Skeleton from "@mui/material/Skeleton";
 import { useUserLikesObject } from "../hooks/useUserLikesObject";
+import { WalletContext } from "../contexts/WalletContext";
 
 
 export interface LikesProps {
@@ -42,6 +43,8 @@ export const Likes: FC<LikesProps> = ({
     flexDirection = "row",
     sx = {}
 }) => {
+    const { address } = useContext(WalletContext);
+    
     const likeCount = useLikeCount(id, object, prefetchedLikeCount);
     const userLikesThisObject = useUserLikesObject(id, object);
     const toggleLike = useLike(id, object);
@@ -62,6 +65,11 @@ export const Likes: FC<LikesProps> = ({
                 onClick={async (e) => {
                     e.preventDefault();
                     e.stopPropagation();
+
+                    if (!address) {
+                        return;
+                    }
+
                     likeCount.mutate(old => {
                         console.log('old', old)
                         if (old === undefined) { // if we use a fallback value we seem to get 'undefined' as the old value for the mutate function
@@ -96,8 +104,7 @@ export const Likes: FC<LikesProps> = ({
                         </Tooltip>
                 }
                 {showCount && likeCount?.data === null && <Skeleton variant="text"><Typography>0</Typography></Skeleton>}
-                {showCount && likeCount?.data !== null &&
-                    <Typography sx={{ fontSize, color }}>{humanize.compactInteger(likeCount?.data || 0, 1)}</Typography>
+                {showCount && likeCount?.data !== null && <Typography sx={{ fontSize, color }}>{humanize.compactInteger(likeCount?.data || 0, 1)}</Typography>
                 }
             </Box>
         </>

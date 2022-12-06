@@ -338,7 +338,7 @@ const Search: React.FC<SearchProps> = ({
             <Virtuoso
               useWindowScroll
               data={data}
-              overscan={500}
+              overscan={600}
               endReached={loadMore}
               itemContent={(index) => <NFTGrid nfts={data[index]?.items} />}
             />
