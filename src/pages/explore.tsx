@@ -244,7 +244,7 @@ const Search: React.FC<SearchProps> = ({
       <Head>
         <title>{title}</title>
         <meta name="description" content={description} />
-        <link rel="canonical" href={`/explore?page=${page}`} />
+        <link rel="canonical" href={`https://www.hodlmymoon.com/explore?page=${page}`} />
         {page < totalPages && <link rel="next" href={`/explore?page=${Number(page) + 1}`} />}
         {page > 1 && <link rel="prev" href={`/explore?page=${Number(page) - 1}`} />}
       </Head>
