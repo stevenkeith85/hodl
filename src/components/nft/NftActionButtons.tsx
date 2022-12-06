@@ -1,4 +1,11 @@
-import { Box, Button, FormControl, FormHelperText, Typography } from "@mui/material";
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import FormHelperText from '@mui/material/FormHelperText';
+import FormControl from '@mui/material/FormControl';
+import Button from '@mui/material/Button';
+
+import React from 'react';
+
 import { useContext, useEffect, useState } from "react";
 import { WalletContext } from '../../contexts/WalletContext';
 import { enqueueSnackbar } from 'notistack';
@@ -163,7 +170,6 @@ export const NftActionButtons = ({
                         <FormHelperText sx={{ margin: 0, marginTop: 0.5 }}>Connected to Polygon and have Matic for gas?</FormHelperText>
                     </FormControl>
                 </Box>
-
             }
             {
                 mutableToken?.forSale && isHodler() &&

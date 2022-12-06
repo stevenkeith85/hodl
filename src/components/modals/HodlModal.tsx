@@ -1,5 +1,5 @@
-import { Box, Modal } from "@mui/material";
-
+import Box from "@mui/material/Box";
+import Modal from "@mui/material/Modal";
 
 export const HodlModal = ({ 
     open, 
@@ -7,40 +7,38 @@ export const HodlModal = ({
     children,
     ref = null, 
     sx = {} 
-}) => {
-    return (
-        <Modal
-            disableRestoreFocus={true}
-            open={open}
-            onClose={(e) => { 
-                // @ts-ignore
-                e.stopPropagation();
+}) => (
+    <Modal
+        disableRestoreFocus={true}
+        open={open}
+        onClose={(e) => {
+            // @ts-ignore
+            e.stopPropagation();
 
-                // @ts-ignore
-                e.preventDefault();
+            // @ts-ignore
+            e.preventDefault();
 
-                setOpen(false);
+            setOpen(false);
+        } }
+        ref={ref}
+    >
+        <Box
+            sx={{
+                position: 'absolute' as 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: 400,
+                bgcolor: 'background.paper',
+                borderRadius: 1,
+                boxShadow: 24,
+                p: 4,
+                ...sx
             }}
-            ref={ref}
-        >
-            <Box
-                sx={{
-                    position: 'absolute' as 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    width: 400,
-                    bgcolor: 'background.paper',
-                    borderRadius: 1,
-                    boxShadow: 24,
-                    p: 4,
-                    ...sx
-                }}
-                onClick={e => {
-                    e.stopPropagation();
-                }}>
-                {children}
-            </Box>
-        </Modal>
-    )
-}
+            onClick={e => {
+                e.stopPropagation();
+            } }>
+            {children}
+        </Box>
+    </Modal>
+)

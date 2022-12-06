@@ -1,4 +1,8 @@
-import { Typography, Tooltip, Chip, Box } from "@mui/material";
+import Box from "@mui/material/Box";
+import Chip from "@mui/material/Chip";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
+
 import { token, nonCommercial, commercial } from "../../lib/copyright";
 import { CommercialText } from "../tooltips/CommercialTooltip";
 import { AssetLicenseTooltip } from "../tooltips/HodlerPrivilegeTooltip";

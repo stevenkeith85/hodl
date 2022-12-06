@@ -1,4 +1,5 @@
-import { Typography, Box } from "@mui/material";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 import useSWR from "swr";
 import { HighlightOffOutlined } from "@mui/icons-material";
 import { fetchWithId } from "../../lib/swrFetchers";

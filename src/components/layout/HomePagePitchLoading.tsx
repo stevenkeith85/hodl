@@ -1,10 +1,8 @@
-import { Skeleton } from "@mui/material";
+import Skeleton from "@mui/material/Skeleton";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
-import { useContext } from "react";
 
-import { RankingsContext } from "../../contexts/RankingsContext";
 
 export const HomePagePitchLoading = ({ }) => {
     return (

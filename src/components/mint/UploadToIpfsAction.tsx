@@ -1,4 +1,16 @@
-import { TextField, Box, Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Stack, Tooltip, Typography, FormHelperText, Link } from "@mui/material";
+import TextField from "@mui/material/TextField";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import FormControl from "@mui/material/FormControl";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormLabel from "@mui/material/FormLabel";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import FormHelperText from "@mui/material/FormHelperText";
+import Link from "@mui/material/Link";
+import { grey } from "@mui/material/colors";
 
 import { FC, useEffect, useRef } from "react";
 import { useSnackbar } from 'notistack';
@@ -7,26 +19,8 @@ import { MintProps } from "./models";
 
 import { commercial, nonCommercial, token } from "../../lib/copyright";
 
-import { grey } from "@mui/material/colors";
-import { AssetLicenseTooltip } from "../tooltips/HodlerPrivilegeTooltip";
 import { HodlBorderedBox } from "../HodlBorderedBox";
-import { DescriptionTooltip } from "../tooltips/DescriptionTooltip";
-import { NameTooltip } from "../tooltips/NameTooltip";
 
-
-const UploadTooltip = () => (
-  <Box padding={2}>
-    <Typography mb={2}>
-      Upload the metadata to IPFS.
-    </Typography>
-    <Typography mb={2}>
-      This decentralizes the content.
-    </Typography>
-    <Typography>
-      Once uploaded to IPFS; the asset and its metadata cannot change.
-    </Typography>
-  </Box>
-)
 
 export const UploadToIpfsAction: FC<MintProps> = ({
   formData,

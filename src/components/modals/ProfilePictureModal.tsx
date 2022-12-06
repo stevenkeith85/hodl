@@ -1,15 +1,16 @@
-import { Box, Button, Stack, Typography } from "@mui/material";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import { useContext, useEffect, useState } from "react";
 import { WalletContext } from '../../contexts/WalletContext';
 import { HodlModal } from "./HodlModal";
 import axios from 'axios'
 import InfiniteScroll from 'react-swr-infinite-scroll'
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 import { useHodling } from "../../hooks/useHodling";
 import { AssetThumbnail } from "../AssetThumbnail";
 import { useRouter } from "next/router";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
-import { FolderCopyOutlined } from "@mui/icons-material";
 
 
 export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePictureModalOpen, lim = 10 }) => {

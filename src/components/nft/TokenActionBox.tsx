@@ -3,10 +3,11 @@ import { useState } from "react";
 import dynamic from 'next/dynamic';
 
 import { grey } from "@mui/material/colors";
-import IconButton from "@mui/material/IconButton";
 
-import theme from "../../theme";
+import IconButton from "@mui/material/IconButton";
 import { ShareIcon } from '../icons/ShareIcon';
+import theme from "../../theme";
+
 import Skeleton from "@mui/material/Skeleton";
 
 
@@ -34,17 +35,15 @@ const Comments = dynamic(
   }
 );
 
-export default function TokenActionBox({ 
-  nft, 
-  popUp = false, 
-  prefetchedLikeCount=null,
-  prefetchedCommentCount=null 
+export default function TokenActionBox({
+  nft,
+  popUp = false,
+  prefetchedLikeCount = null,
+  prefetchedCommentCount = null
 }) {
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
   const open = Boolean(anchorEl);
-
   const handleClick = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
@@ -94,7 +93,15 @@ export default function TokenActionBox({
       >
         <ShareIcon size={20} fill={grey[600]} />
       </IconButton>
-      {open && <HodlShareMenu nft={nft} anchorEl={anchorEl} handleClose={handleClose} open={open} />}
+      {
+        open &&
+        <HodlShareMenu
+          relativeUrl={'nft/' + nft?.id}
+          anchorEl={anchorEl}
+          handleClose={handleClose}
+          open={open}
+        />
+      }
     </div>
   )
 }

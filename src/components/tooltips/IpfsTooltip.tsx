@@ -1,4 +1,5 @@
-import { Box, Typography } from "@mui/material";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 
 export const IpfsTooltip = () => (
     <Box padding={2}>
@@ -12,5 +13,4 @@ export const IpfsTooltip = () => (
             It uses content-addressing to uniquely identify each file.
         </Typography>
     </Box>
-
 )
