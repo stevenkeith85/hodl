@@ -14,11 +14,11 @@ export const useLikeCount = (
     fetcher,
     {
       fallbackData: prefetchedLikeCount,
-      // revalidateOnMount: !prefetchedLikeCount // if we don't revalidate on mount for somereason calling mutate doesn't seem to work
+      revalidateOnMount: prefetchedLikeCount === null, // if we don't revalidate on mount for somereason calling mutate doesn't seem to work
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
     }
   );
 
-  return {
-    swr
-  }
+  return swr
 }

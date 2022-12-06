@@ -8,7 +8,8 @@ export const likesToken = async (address, token) => {
     {
       headers: {
         Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-      }
+      },
+      keepalive: true
     });
 
   const { result: likes } = await zscoreResponse.json();
@@ -17,6 +18,7 @@ export const likesToken = async (address, token) => {
 }
 
 
+// TODO: We NEED a batch lookup for this
 // TODO: We should perhaps add auth here
 // TODO: We'd need to migrate away from jsonwebtoken though as that uses node libs. (jose perhaps)
 export default async function route(req: NextRequest) {

@@ -6,33 +6,15 @@ import axios from 'axios'
 
 export const useLike = (
   id: number,
-  object: "token" | "comment",
-  likeCount: SWRResponse
-): [boolean, Function] => {
+  object: "token" | "comment"
+) => {
   const { address } = useContext(WalletContext);
-
   const baseUrl = `/api/like/${object}`;
-
-  const {
-    data: userLikesThisToken,
-    mutate: mutateUserLikesThisToken } = useSWR(
-      address && id ? [baseUrl + '/likes', address, id] : null,
-      (url, address, id) => axios.get(`${url}?address=${address}&id=${id}`).then(r => Boolean(r.data.likes))
-    );
 
   const toggleLike = async () => {
     if (!address) {
       return;
     }
-    likeCount.mutate(old => {
-      // THIS SEEMS TO NOT WORK IF WE DO NOT REVALIDATE THE SWR ON MOUNT
-      if (userLikesThisToken) {
-        return old - 1;
-      } else {
-        return old + 1
-      }        
-    }, { revalidate: false });
-    mutateUserLikesThisToken(old => !old, { revalidate: false })
 
     try {
       const r = await axios.post(
@@ -45,10 +27,8 @@ export const useLike = (
         }
       )
     } catch (error) {
-      likeCount.mutate();
-      mutateUserLikesThisToken();
     }
   }
 
-  return [userLikesThisToken, toggleLike];
+  return toggleLike;
 }

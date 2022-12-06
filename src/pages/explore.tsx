@@ -1,21 +1,21 @@
-import { useEffect, useState } from 'react';
-
-import Head from 'next/head';
-import { useRouter } from 'next/router';
-import dynamic from 'next/dynamic';
-
 import Box from '@mui/material/Box';
 import Switch from '@mui/material/Switch';
-import IconButton from '@mui/material/IconButton';
-
-import { HodlImpactAlert } from '../components/HodlImpactAlert';
-import { useSearchTokens } from '../hooks/useSearchTokens';
-
+import Head from 'next/head';
+import { useEffect, useState } from 'react';
+import { Virtuoso } from 'react-virtuoso';
+import useSWRInfinite from 'swr/infinite'
+import { HodlLoadingSpinner } from '../components/HodlLoadingSpinner';
+import { NftWindow } from '../components/NftWindow';
 import { authenticate } from '../lib/jwt';
 import { getTokenSearchResults } from './api/search/tokens';
-import theme from '../theme';
-
+import dynamic from 'next/dynamic';
+import { useRouter } from 'next/router';
+import { getAsString } from "../lib/getAsString";
+import IconButton from '@mui/material/IconButton';
 import { CloseIcon } from '../components/icons/CloseIcon';
+import theme from '../theme';
+import { Button, Link } from '@mui/material';
+
 
 const ForSaleFields = dynamic(
   () => import('../components/explore/ForSaleFields').then(mod => mod.ForSaleFields),
@@ -25,113 +25,178 @@ const ForSaleFields = dynamic(
   }
 );
 
-const InfiniteScrollNftWindows = dynamic(
-  () => import('../components/InfiniteScrollNftWindows').then((module) => module.InfiniteScrollNftWindows),
-  {
-    ssr: false,
-    loading: () => null
-  }
-);
-
-
 export async function getServerSideProps({ query, req, res }) {
-  let { q, forSale, minPrice, maxPrice } = query;
-
   await authenticate(req, res);
 
-  const limit = 11;
+  const page = query.page || 1;
+  const limit = 12;
+  const offset = (page - 1) * limit;
 
-  const prefetchedResults = await getTokenSearchResults(
-    q,
-    0,
+  const initalData = await getTokenSearchResults(
+    query?.q || "",
+    offset,
     limit,
-    JSON.parse(forSale || "false"),
-    minPrice,
-    maxPrice
+    JSON.parse(query?.forSale || "false"),
+    query?.minPrice || null,
+    query?.maxPrice || null
   );
+
+  let totalPages = Math.floor(Number(initalData?.total) / limit); // Number of full pages
+  totalPages = (Number(initalData?.total) % limit !== 0) ? totalPages + 1 : totalPages; // add 1 if we have a partially filled page
+
+  if (page > totalPages) {
+    return {
+      notFound: true
+    }
+  }
 
   return {
     props: {
       address: req.address || null,
-      q: q || '',
+      q: query?.q || '',
+      page,
+      totalPages,
       limit,
-      forSale: JSON.parse(forSale || "false"),
-      minPrice: minPrice || null,
-      maxPrice: maxPrice || null,
-      fallbackData: [prefetchedResults],
+      forSale: JSON.parse(query?.forSale || "false"),
+      minPrice: query?.minPrice || null,
+      maxPrice: query?.maxPrice || null,
+      fallbackData: [initalData]
     },
   }
 }
 
+// components
+export const NFTDetail = ({ nft }) => (
+  <Box sx={{
+    margin: {
+      xs: 0.5,
+      sm: 1,
+      md: 1.5,
+      lg: 2
+    }
+  }}>
+    <NftWindow nft={nft} />
+  </Box>
+)
 
-export default function Search({
+
+// grid and loading screen
+interface NFTGridProps {
+  nfts: any[]
+}
+export const NFTGrid: React.FC<NFTGridProps> = ({ nfts }) => {
+  return (
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: {
+          xs: "1fr 1fr",
+          md: "1fr 1fr 1fr"
+        },
+        margin: -1,
+        marginBottom: 1
+      }}
+    >
+      {nfts?.map(nft => (<NFTDetail key={nft?.id} nft={nft} />))}
+    </Box>
+  )
+}
+
+const Footer = () => {
+  return (
+    <div
+      style={{
+        padding: '2rem',
+        display: 'flex',
+        justifyContent: 'center',
+      }}
+    >
+      <HodlLoadingSpinner />
+    </div>
+  )
+}
+
+interface SearchProps {
+  address: string,
+  q: string,
+  page: number,
+  totalPages: number,
+  limit: number,
+  forSale: boolean,
+  minPrice: string,
+  maxPrice: string,
+  fallbackData: { items: any[], next: number, total: number }[],
+}
+
+const Search: React.FC<SearchProps> = ({
+  address,
   q,
+  page,
+  totalPages,
   limit,
   forSale,
   minPrice,
   maxPrice,
   fallbackData,
-}) {
-  const title = "NFT Art - Explore Polygon NFTs"
-  const [qChip, setQChip] = useState(q);
-  const [forSaleToggle, setForSaleToggle] = useState(forSale);
-  const [minPriceUI, setMinPriceUI] = useState(minPrice);
-  const [maxPriceUI, setMaxPriceUI] = useState(maxPrice);
+}) => {
 
-  const [searchQ, setSearchQ] = useState({
+  const title = "Explore and Buy Polygon NFT Art"
+  const description = "Browse the latests NFTs added to Hodl My Moon, and buy your favourite."
+
+  const [forSaleChecked, setForSaleChecked] = useState(forSale);
+  const [minPriceUI, setMinPriceUI] = useState(minPrice ?? '');
+  const [maxPriceUI, setMaxPriceUI] = useState(maxPrice ?? '');
+
+  const [searchQuery, setSearchQuery] = useState({
     q,
-    limit,
     forSale,
     minPrice,
-    maxPrice
+    maxPrice,
   });
 
-
   const isOriginalSearchQuery = () => {
-    return searchQ.q === q &&
-      searchQ.limit === limit &&
-      searchQ.forSale === forSale &&
-      searchQ.minPrice === minPrice &&
-      searchQ.maxPrice === maxPrice;
+    return searchQuery.q === q && searchQuery.forSale === forSale && searchQuery.minPrice === minPrice && searchQuery.maxPrice === maxPrice;
   }
-
-  const { results } = useSearchTokens(
-    searchQ,
-    isOriginalSearchQuery() ? fallbackData : null
-  );
 
   const router = useRouter();
 
-  useEffect(() => {
+  const loadMore = () => {
+    setSize(size => size + 1)
+  }
 
-    if (!router.query.q) {
-      return;
+  const getKey = (pageIndex, previousPageData) => {
+    const offset = ((Number(page) + Number(pageIndex)) - 1) * Number(limit);
+
+    if (offset > previousPageData?.total) {
+      return null;
     }
 
-    setQChip(router.query.q);
-    setSearchQ(old => ({
-      ...old,
-      q: router.query.q,
-    }))
+    const key = `/api/search/tokens?q=${searchQuery?.q}&forSale=${searchQuery?.forSale}&offset=${offset}&limit=${Number(limit)}&minPrice=${searchQuery?.minPrice}&maxPrice=${searchQuery?.maxPrice}`;
 
-  }, [router.query.q]);
+    return key;
+  }
 
-  // update the url when a search happens
-  // TODO: Check if the search query is the original search query, and early return. (to keep the url pretty)
-  useEffect(() => {
-
-    if (isOriginalSearchQuery()) {
-      return;
+  const { data, error, isValidating, mutate, size, setSize } = useSWRInfinite(
+    getKey,
+    (key) => fetch(key, { keepalive: true }).then(response => response.json()),
+    {
+      revalidateFirstPage: false,
+      revalidateOnMount: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      fallbackData: isOriginalSearchQuery() ? fallbackData : null
     }
+  )
 
+  useEffect(() => {
     router.push(
       {
         pathname: '/explore',
         query: {
-          q: qChip,
-          forSale: forSaleToggle, // the setState call won't have completed yet, so we'll need the value it WILL be set to
-          minPrice: minPriceUI,
-          maxPrice: maxPriceUI
+          q: searchQuery?.q,
+          forSale: forSaleChecked, // the setState call won't have completed yet, so we'll need the value it WILL be set to
+          minPrice: searchQuery?.minPrice,
+          maxPrice: searchQuery?.maxPrice,
         }
       },
       undefined,
@@ -140,17 +205,48 @@ export default function Search({
       }
     )
   }, [
-    searchQ.q,
-    searchQ.limit,
-    searchQ.forSale,
-    searchQ.minPrice,
-    searchQ.maxPrice
+    searchQuery.q,
+    searchQuery.forSale,
+    searchQuery.minPrice,
+    searchQuery.maxPrice
   ]);
+
+  useEffect(() => {
+    if (!router?.query?.q) {
+      return;
+    }
+
+    if (router?.query?.q === searchQuery?.q) {
+      return;
+    }
+
+    if (isOriginalSearchQuery()) {
+      return;
+    }
+
+    setSearchQuery(old => ({
+      ...old,
+      q: getAsString(router.query.q),
+    }))
+
+  }, [router.query.q]);
+
+  const isEmpty = data?.[0]?.items?.length === 0;
+  const isLoadingInitialData = !data && !error;
+  const isLoadingMore =
+    isLoadingInitialData ||
+    (size > 0 && data && data[size - 1]?.items?.length !== 0);
+  const isReachingEnd =
+    isEmpty || (data && data[data.length - 1]?.items?.length < limit);
 
   return (
     <>
       <Head>
         <title>{title}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={`/explore?page=${page}`} />
+        {page < totalPages && <link rel="next" href={`/explore?page=${Number(page) + 1}`} />}
+        {page > 1 && <link rel="prev" href={`/explore?page=${Number(page) - 1}`} />}
       </Head>
       <Box
         sx={{
@@ -179,30 +275,25 @@ export default function Search({
               sx={{
                 display: 'flex',
                 flexGrow: 1,
-                gap: 4,
+                gap: 1,
                 alignItems: 'center',
                 justifyContent: { xs: 'space-between' },
               }}
             >
-              <Box
-                sx={{
-                  width: '15%',
-                  display: 'flex',
-                  justifyContent: 'start'
-                }}
-              >
+              <Box sx={{
+                textAlign: "left"
+              }}>
                 <IconButton
                   onClick={e => {
-                    setQChip('');
-                    setMinPriceUI('');
-                    setMaxPriceUI('');
-
-                    setSearchQ(old => ({
+                    setSearchQuery(old => ({
                       ...old,
                       q: '',
                       minPrice: null,
                       maxPrice: null
                     }))
+
+                    setMinPriceUI('');
+                    setMaxPriceUI('');
                   }}
                 >
                   <CloseIcon
@@ -211,29 +302,24 @@ export default function Search({
                   />
                 </IconButton>
               </Box>
-
-              {forSaleToggle && <ForSaleFields
-                setSearchQ={setSearchQ}
-                minPriceUI={minPriceUI}
-                setMinPriceUI={setMinPriceUI}
-                maxPriceUI={maxPriceUI}
-                setMaxPriceUI={setMaxPriceUI}
-              />
+              {
+                forSaleChecked &&
+                <ForSaleFields
+                  setSearchQuery={setSearchQuery}
+                  minPriceUI={minPriceUI}
+                  setMinPriceUI={setMinPriceUI}
+                  maxPriceUI={maxPriceUI}
+                  setMaxPriceUI={setMaxPriceUI}
+                />
               }
-              <Box
-                sx={{
-                  width: '15%',
-                  display: 'flex',
-                  justifyContent: 'end'
-                }}
-              >
+              <Box sx={{ textAlign: 'right' }}>
                 <Switch
-                  checked={forSaleToggle}
+                  checked={forSaleChecked}
                   onChange={(e) => {
-                    setForSaleToggle(old => !old);
-                    setSearchQ(old => ({
-                      ...old,
-                      forSale: !old.forSale
+                    setForSaleChecked(e.target.checked);
+                    setSearchQuery(query => ({
+                      ...query,
+                      forSale: e.target.checked
                     }))
                   }
                   }
@@ -242,13 +328,52 @@ export default function Search({
             </Box>
           </Box>
         </div>
-        <div>
-          {!results.isValidating && results.data && results.data[0] && results.data[0].total === 0 &&
-            <HodlImpactAlert message={"We can't find anything at the moment"} title="Sorry" />
+        <Box sx={{
+          minHeight: {
+            xs: 970,
+            sm: 1900,
+            md: 1480,
           }
-          <InfiniteScrollNftWindows swr={results} limit={limit} pattern={false} />
-        </div>
+        }}>
+          {data &&
+            <Virtuoso
+              useWindowScroll
+              data={data}
+              overscan={600}
+              endReached={loadMore}
+              itemContent={(index) => <NFTGrid nfts={data[index]?.items} />}
+            />
+          }
+
+          <noscript>
+            <NFTGrid nfts={data?.[0]?.items} />
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', margin: 1 }}>
+              <Button
+                color="secondary"
+                variant="contained"
+                disabled={Number(page) < 2}
+              >
+                <Link sx={{ color: 'white', textDecoration: 'none' }} rel="prev" href={page > 1 ? `/explore?page=${Number(page) - 1}` : "#"}>
+                  Previous
+                </Link>
+              </Button>
+              <Button
+                color="primary"
+                variant="contained"
+                disabled={Number(page) === Number(totalPages)}
+              >
+                <Link sx={{ color: 'white', textDecoration: 'none' }} rel="prev" href={page < totalPages ? `/explore?page=${Number(page) + 1}` : "#"}>
+                  Next
+                </Link>
+              </Button>
+            </Box>
+          </noscript>
+
+          {isLoadingMore && !isReachingEnd && <Footer />}
+        </Box>
       </Box>
     </>
   )
 }
+
+export default Search;

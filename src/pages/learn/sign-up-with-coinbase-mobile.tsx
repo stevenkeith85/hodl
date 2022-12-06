@@ -32,12 +32,13 @@ const ImageBox = ({ public_id }) => (<Box
 </Box>)
 
 export default function SignUp({ address }) {
-    const title = "Sign up to Hodl My Moon With Coinbase Mobile Wallet";
-
+    const title = "Sign up to our dApp with Coinbase Mobile Wallet";
+    const description = "Learn how to create your profile on Hodl My Moon"
     return (
         <>
             <Head>
                 <title>{title}</title>
+                <meta name="description" content={description} />
             </Head>
             <Box marginX={2} marginY={4}>
                 <HodlBorderedBox>
@@ -93,7 +94,7 @@ export default function SignUp({ address }) {
                             6) Your feed will populate with recent posts (nfts) from the accounts you just followed.
                         </Typography>
                         <Typography sx={{ fontSize: 14 }} mb={2} color={theme => theme.palette.text.secondary}>
-                            You will receive their new nfts in your feed; as well as their market activity.
+                            You will receive their new polygon nfts in your feed; as well as their market activity.
                         </Typography>
                         <ImageBox public_id={"bq7ukmhlmq3eawkykbcl"} />
                     </Box>

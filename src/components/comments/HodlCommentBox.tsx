@@ -25,6 +25,8 @@ import { pluralize } from "../../lib/utils";
 
 import { ExpandMoreIcon } from "../icons/ExpandMoreIcon";
 import { ExpandLessIcon } from "../icons/ExpandLessIcon";
+import useSWR, { Fetcher } from "swr";
+import { MutableToken } from "../../models/MutableToken";
 
 const HodlCommentPopUpMenu = dynamic(
     () => import('./HodlCommentPopUpMenu'),
@@ -100,7 +102,10 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
     const router = useRouter();
 
     const { address } = useContext(WalletContext);
-    const { mutableToken } = useContext(NftContext);
+    const { nft } = useContext(NftContext);
+
+    const mutableTokenFetcher: Fetcher<MutableToken> = (url, id) => fetch(`${url}/${id}`).then(r => r.json()).then(data => data.mutableToken);
+    const { data: mutableToken } = useSWR(nft?.id ? [`/api/contracts/mutable-token`, nft.id] : null, mutableTokenFetcher);
 
     const canDeleteComment = (comment: HodlCommentViewModel) => comment.user.address === address || mutableToken?.hodler === address;
     const [deleteComment] = useDeleteComment();

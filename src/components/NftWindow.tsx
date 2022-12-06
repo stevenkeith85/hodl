@@ -16,9 +16,8 @@ import { AssetTypes } from '../models/AssetType';
 import { HodlImageResponsive } from './HodlImageResponsive';
 import { HodlAudioBox } from './HodlAudioBox';
 import { FullToken } from "../models/FullToken";
-import { MutableToken } from "../models/MutableToken";
 import { PriceSticker } from './PriceSticker';
-import { Token } from "../models/Token";
+import { TokenVM } from '../models/TokenVM';
 
 const NftWindowOverlay = dynamic(
     () => import('./NftWindowOverlay').then(mod => mod.NftWindowOverlay),
@@ -29,7 +28,7 @@ const NftWindowOverlay = dynamic(
 );
 
 interface NftWindowProps {
-    nft: FullToken;
+    nft: any;
     sizes?: string;
     widths?: number [],
     lcp?: boolean; // if this window will be the largest content paint, then set to true
@@ -48,12 +47,8 @@ export const NftWindow: React.FC<NftWindowProps> = ({
         return <Skeleton sx={{ width: '100%', height: 0, paddingTop: '100%' }} variant="rectangular" animation="wave" />
     }
 
-    // return JSON.stringify(assetType(nft))
     return (
-        <Link
-            key={nft.id}
-            href={nft?.forSale ? `/nft/${nft.id}?tab=1` : `/nft/${nft.id}`}
-        >
+        
             <Box
                 sx={{
                     position: 'relative',
@@ -66,6 +61,10 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                         '.nftItemOverlay': { opacity: 1 }
                     }
                 }}>
+                    <Link
+            key={nft.id}
+            href={nft?.forSale ? `/nft/${nft.id}?tab=1` : `/nft/${nft.id}`}
+        >
                 {
                     assetType(nft) === AssetTypes.Gif &&
                     <Box
@@ -148,11 +147,12 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                         />
                     </Box>
                 }
-                {!xs && <NftWindowOverlay nft={nft} />}
                 {nft?.forSale && <PriceSticker price={nft?.price} />}
+                {!xs && <NftWindowOverlay nft={nft} />}
+                </Link>
             </Box>
 
-        </Link>
+        
 
     )
 }

@@ -56,8 +56,8 @@ export default function Home({
 }) {
 
   const homepage = "https://www.hodlmymoon.com";
-  const title = "Polygon NFT Marketplace and Web3 Social Network - Hodl My Moon";
-  const description = "Hodl My Moon is an NFT Social Network and Marketplace. Mint free Polygon NFTs as social media posts. Follow digital artists, photographers and other crypto enthusiasts. Like or Comment on their latest NFTs. Sell your NFTs on the marketplace. Sign in with MetaMask";
+  const title = "Polygon NFT Marketplace and Social Network";
+  const description = "Discover our NFT Marketplace and Social Network. Mint free Polygon NFTs as social media posts. Follow other NFT enthusiasts, or sell your digital art on the marketplace.";
   const shareImage = "https://res.cloudinary.com/dyobirj7r/image/upload/ar_216:253,c_fill,w_1080/prod/nfts/bafkreihuew5ij6lvc2k7vjqr65hit7fljl7fsxlikrkndcdyp47xbi6pvy" // nft 36
 
   const { address: walletAddress } = useContext(WalletContext);
@@ -66,9 +66,9 @@ export default function Home({
     <>
       <Head>
         <title>{title}</title>
-        <link href={homepage} rel="canonical" />
-        
         <meta name="description" content={description}/>
+        
+        <link href={homepage} rel="canonical" />
 
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@hodlmymoon" />
@@ -82,8 +82,8 @@ export default function Home({
         <meta property="og:title" content={title} />
         <meta property="og:image" content={shareImage} />
         <meta property="og:description" content={description} />
-
       </Head>
+
       {!walletAddress && <PublicHomePage />}
       {walletAddress && <PrivateHomePage user={user} address={walletAddress} />}
     </>

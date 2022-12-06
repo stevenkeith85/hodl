@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { getAsString } from '../../../lib/getAsString';
-import { mGetTokens } from '../../../lib/database/rest/Tokens';
+import { getTokenVMs } from '../../../lib/database/rest/Tokens';
 import { zCard } from '../../../lib/database/rest/zCard';
 import { zCount } from '../../../lib/database/rest/zCount';
 import { zRange } from '../../../lib/database/rest/zRange';
@@ -15,6 +15,7 @@ export const getTokenSearchResults = async (
     minPrice: number = null,
     maxPrice: number = null
 ) => {
+    // const start = Date.now();
     try {
         let ids = []
         let total = 0;
@@ -98,7 +99,8 @@ export const getTokenSearchResults = async (
                 }, {}
             );
 
-            tokens = await mGetTokens(Object.keys(tokenIdToPriceMap));
+            // tokens = await mGetTokens(Object.keys(tokenIdToPriceMap));
+            tokens = await getTokenVMs(Object.keys(tokenIdToPriceMap));
 
             // append the price
             tokens = tokens.map((token) => ({
@@ -121,9 +123,11 @@ export const getTokenSearchResults = async (
                     { rev: true }
                 );
             }
-            tokens = await mGetTokens(ids);
+            // tokens = await mGetTokens(ids);
+            tokens = await getTokenVMs(ids)
         }
-
+        // const stop = Date.now()
+        // console.log('get data', stop - start);
         return {
             items: tokens,
             next: Number(offset) + Number(limit),

@@ -6,7 +6,6 @@ import { AddCommentValidationSchema } from "../../validation/comments/addComment
 import { useAddComment } from "../../hooks/useComments";
 import { HodlComment } from "../../models/HodlComment";
 import { QuoteComment } from "./QuoteComment";
-import { NftContext } from "../../contexts/NftContext";
 import { green, red } from "@mui/material/colors";
 import Box from "@mui/material/Box";
 import Tooltip from "@mui/material/Tooltip";
@@ -41,7 +40,6 @@ export const AddComment: FC<AddCommentProps> = ({
 }) => {
     const { address } = useContext(WalletContext);
     const [addComment] = useAddComment();
-    const { nft } = useContext(NftContext);
     const theme = useTheme();
     const [open, setOpen] = useState(false);
 

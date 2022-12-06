@@ -21,10 +21,12 @@ export async function getServerSideProps({ req, res }) {
 
 export default function Contact({ address }) {
     const title = "Contact Hodl My Moon";
+    const description = "Like or website, or need some help with it? Get in touch with us on one."
     return (
         <>
             <Head>
                 <title>{title}</title>
+                <meta name="description" content={description} />
             </Head>
             <Box marginX={2} marginY={4}>
                 <HodlBorderedBox>

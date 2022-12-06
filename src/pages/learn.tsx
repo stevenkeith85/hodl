@@ -20,10 +20,13 @@ export async function getServerSideProps({ req, res }) {
 export default function Learn({ address }) {
 
     const title = "Learn about NFTs, minting, blockchains, smart contracts and everything else";
+    const description = "Get an overview of key web3 terms and start your nft journey today";
+
     return (
         <>
             <Head>
                 <title>{title}</title>
+                <meta name="description" content={description} />
             </Head>
             <Box
                 marginX={2}
@@ -32,7 +35,7 @@ export default function Learn({ address }) {
                 <HodlBorderedBox>
                     <Box mb={4}>
                         <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
-                            Learn about Hodl My Moon and NFTs
+                            Learn about NFTs and Hodl My Moon
                         </Typography>
                         <Typography mb={1} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
                             Hodl My Moon is a Web3 Social Network, and NFT Marketplace. Posts are Polygon NFTs.

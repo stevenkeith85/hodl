@@ -55,10 +55,13 @@ export const useCommentCount = (
     fallbackData = null,
 ) => {
     const swr = useSWR(
-         id ? [`/api/comments/count`, object, id] : null,
+        id ? [`/api/comments/count`, object, id] : null,
         fetchWithObjectAndId,
-        { 
-            fallbackData 
+        {
+            revalidateOnMount: fallbackData === null,
+            revalidateOnFocus: false,
+            revalidateOnReconnect: false,
+            fallbackData
         }
     );
 
@@ -81,7 +84,7 @@ export const useComments = (
     const swr = useSWRInfinite(
         load ? getKey : null,
         fetcher,
-        { 
+        {
             fallbackData,
             shouldRetryOnError: false
         }

@@ -64,25 +64,42 @@ export const mGetTokenAndCommentCount = async (tokenIds: string[]) => {
   }
 }
 
-export const getTokenVMs = async (tokenIds: string[]) => {
+export const getTokenVMs = async (tokenIds: string[], address: string = null) => {
   if (tokenIds.length === 0) {
     return [];
   }
 
+  // for each token get the count of addresses that like it
   const cmds = tokenIds.map(id => ['zcard', `likes:token:${id}`])
-
   const likeCountsPromise = runRedisPipeline(cmds);
+
   const tokenAndCommentCountPromise = mGetTokenAndCommentCount(tokenIds)
-  
+
   const [likeCounts, tokenAndCommentCount] = await Promise.all([likeCountsPromise, tokenAndCommentCountPromise])
 
   const tokens = chunk(tokenAndCommentCount, 2);
 
   const result = tokens.map(([token, commentCount], index) => {
     token.likeCount = likeCounts[index];
-    token.commentCount = commentCount;
+    token.commentCount = commentCount || 0;
     return token
   })
 
   return result;
+}
+
+
+export const likesToken = async (address, token) => {
+  const zscoreResponse = await fetch(
+    `${process.env.UPSTASH_REDIS_REST_URL}/zscore/liked:tokens:${address}/${token}`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
+      },
+      keepalive: true
+    });
+
+  const { result: likes } = await zscoreResponse.json();
+
+  return Boolean(likes);
 }

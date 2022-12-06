@@ -10,7 +10,13 @@ interface SearchQuery {
 }
 
 export const useSearchTokens = (
-    {q, limit, forSale, minPrice, maxPrice}: SearchQuery,
+    {
+        q, 
+        limit, 
+        forSale, 
+        minPrice, 
+        maxPrice
+    }: SearchQuery,
     fallbackData=null) => {
 
     const getKey = (index, _previous) => {
