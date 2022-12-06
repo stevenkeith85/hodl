@@ -18,13 +18,14 @@ import Skeleton from '@mui/material/Skeleton';
 import TokenActionBoxLoading from '../../components/nft/TokenActionBoxLoading';
 import SocialTabLoading from '../../components/nft/SocialTabLoading';
 import { makeCloudinaryUrl } from '../../lib/cloudinaryUrl';
+import TokenHeaderLoading from '../../components/nft/TokenHeaderLoading';
 
 
 const TokenHeader = dynamic(
   () => import('../../components/nft/TokenHeader'),
   {
     ssr: false,
-    loading: () => null
+    loading: () => <TokenHeaderLoading mutableToken={undefined} value={undefined} setValue={undefined} nft={undefined} />
   }
 );
 
@@ -36,16 +37,6 @@ const TokenActionBox = dynamic(
     loading: () => <TokenActionBoxLoading />
   }
 );
-
-
-const SocialTab = dynamic(
-  () => import('../../components/nft/SocialTab'),
-  {
-    ssr: false,
-    loading: () => <SocialTabLoading />
-  }
-);
-
 
 const MarketTab = dynamic(
   () => import('../../components/nft/MarketTab'),
@@ -86,7 +77,7 @@ export async function getServerSideProps({ params, query, req, res }) {
       tokenId: params.tokenId,
       limit,
       tab,
-      nft
+      nft,
     },
   }
 }
@@ -96,14 +87,26 @@ const NftDetail = ({
   tokenId,
   limit,
   tab,
-  nft
+  nft,
 }) => {
+  const SocialTab = dynamic(
+    () => import('../../components/nft/SocialTab'),
+    {
+      ssr: false,
+      loading: () => <SocialTabLoading nft={nft}/>
+    }
+  );
+
   const [value, setValue] = useState(Number(tab)); // tab
 
   const mutableTokenFetcher: Fetcher<MutableToken> = (url, id) => fetch(`${url}/${id}`).then(r => r.json()).then(data => data.mutableToken);
   const { data: mutableToken } = useSWR(tokenId ? [`/api/contracts/mutable-token`, tokenId] : null, mutableTokenFetcher);
 
   const getImage = (nft) => makeCloudinaryUrl("image", "nfts", nft?.image, { crop: 'fill', aspect_ratio: nft?.properties?.aspectRatio, width: '1080' });
+
+  const title = `${nft?.name || ''} - Polygon Matic NFT `;
+  const description = nft?.description || 'An NFT minted on the polygon blockchain';
+  const canonical = `https://www.hodlmymoon.com/nft/${nft.id}`;
 
   return (
     <>
@@ -114,7 +117,9 @@ const NftDetail = ({
         }}
       >
         <Head>
-          <title>{`${nft?.name || ''} | NFT | Hodl My Moon`}</title>
+          <title>{title}</title>
+          <meta name="description" content={description}/>
+          <link rel="canonical" href={canonical} />
 
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:site" content="@hodlmymoon" />
@@ -128,7 +133,6 @@ const NftDetail = ({
           <meta property="og:title" content={`${nft?.name || ''} | NFT | Hodl My Moon`} />
           <meta property="og:image" content={getImage(nft)} />
           <meta property="og:description" content={nft?.description} />
-
         </Head>
         <Grid
           container

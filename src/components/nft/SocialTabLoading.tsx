@@ -3,14 +3,14 @@ import React from 'react';
 import { HodlCommentsBoxLoading } from '../comments/HodlCommentsBoxLoading';
 import { TokenNameAndDescriptionLoading } from './TokenNameAndDescriptionLoading';
 
-const SocialTabLoading = ({ }) => (
+const SocialTabLoading = ({ nft }) => (
     <div
         style={{
             background: 'white',
             padding: '16px',
             border: `1px solid #ddd`
         }}>
-        <TokenNameAndDescriptionLoading />
+        <TokenNameAndDescriptionLoading nft={nft}/>
         <HodlCommentsBoxLoading />
     </div>
 )

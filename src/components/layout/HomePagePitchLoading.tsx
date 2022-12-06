@@ -1,3 +1,4 @@
+import { Skeleton } from "@mui/material";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
@@ -5,11 +6,7 @@ import { useContext } from "react";
 
 import { RankingsContext } from "../../contexts/RankingsContext";
 
-import { NftWindow } from "../NftWindow"
-
-export const HomePagePitch = ({ }) => {
-    const { mostLiked } = useContext(RankingsContext);
-
+export const HomePagePitchLoading = ({ }) => {
     return (
         <Box
             sx={{
@@ -98,16 +95,7 @@ export const HomePagePitch = ({ }) => {
                             height: { sm: "100%" },
                         }}
                     >
-                        <Box sx={{
-                            width: `400px`,
-                            maxWidth: '100%',
-                        }}>
-                            <NftWindow
-                                nft={mostLiked.data?.[0].items?.[0]} lcp={true}
-                                sizes="(min-width: 900px) 50vw, (min-width: 1200px) calc(1200px / 5 * 2), 100vw"
-                                widths={[600, 700, 800, 900, 1080]}
-                            />
-                        </Box>
+                        <Skeleton variant="rectangular" width="400px" height="400px" sx={{ maxWidth: "100%" }}></Skeleton>
                     </Box>
                 </Grid>
             </Grid>

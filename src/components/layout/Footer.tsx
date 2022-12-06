@@ -31,7 +31,7 @@ const Footer = ({
                                 md: 'row'
                             },
                             gap: {
-                                xs: 4,
+                                xs: 6,
                                 md: 10
                             },
                             justifyContent: {
@@ -55,7 +55,7 @@ const Footer = ({
                                     md: 'row'
                                 },
                                 gap: {
-                                    xs: 4,
+                                    xs: 6,
                                     md: 12
                                 }
                             }}
@@ -74,8 +74,8 @@ const Footer = ({
                                     }}>
                                     hodl my moon
                                 </Typography>
-                                <Link href="/about">about</Link>
-                                <Link href="/contact">contact</Link>
+                                <Link href="/about">about this dApp</Link>
+                                <Link href="/contact">contact hodl my moon</Link>
 
                             </Box>
                             <Box
@@ -90,10 +90,10 @@ const Footer = ({
                                         fontWeight: 600,
                                         marginBottom: 0.5,
                                     }}>
-                                    learn
+                                    nfts and hodl my moon
                                 </Typography>
-                                <Link href="/learn">overview</Link>
-                                <Link href="/learn/sign-up-with-coinbase-mobile">how to join</Link>
+                                <Link href="/learn">learn about nfts</Link>
+                                <Link href="/learn/sign-up-with-coinbase-mobile">join this dApp</Link>
                                 <Link href="/learn/connecting-a-wallet">connecting a wallet</Link>
                             </Box>
                             <Box
@@ -103,8 +103,9 @@ const Footer = ({
                                     gap: 1,
                                 }}
                             >
-                                <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>nfts</Typography>
-                                <Link href="/explore">explore</Link>
+                                <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>polygon nfts</Typography>
+                                <Link href="/explore">explore polygon nfts</Link>
+                                <Link href="/explore?forSale=true">buy polygon nfts</Link>
                                 {
                                     address &&
                                     <Link href="/create">create</Link>
@@ -113,18 +114,31 @@ const Footer = ({
                         </Box>
                         <Box
                             display="flex"
-                            justifyContent="center"
-                            alignItems="center"
-                            textAlign="center"
-                            gap={1}
+                            flexDirection={"column"}
+                            gap={0.5}
+                            sx={{
+                                textAlign: {
+                                    xs: 'center',
+                                    md: 'right'
+                                }
+                            }}
                         >
                             <Typography
+                                variant="h2"
                                 sx={{
                                     fontFamily: theme => theme.logo.fontFamily,
                                     fontSize: theme => theme.logo.fontSize,
                                     color: theme => theme.palette.primary.main
                                 }}>
                                 Hodl My Moon
+                            </Typography>
+                            <Typography
+                                variant="h3"
+                                sx={{
+                                    fontFamily: theme => theme.logo.fontFamily,
+                                    fontSize: 12
+                                }}>
+                                <Link href="/">Polygon NFT Marketplace</Link>
                             </Typography>
                         </Box>
                     </Box>

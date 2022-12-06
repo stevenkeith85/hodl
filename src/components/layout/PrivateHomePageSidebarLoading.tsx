@@ -25,10 +25,10 @@ export default function PrivateHomePageSidebarLoading({display}) {
             }}
         >
             <HodlProfileBadgeLoading />
-            <RankingListLoading text="New NFTs" />
-            <RankingListLoading text="Top NFTs" />
-            <RankingListLoading text="New Users" />
-            <RankingListLoading text="Top Users" />
+            <RankingListLoading text="New Polygon NFTs" />
+            <RankingListLoading text="Top Polygon NFTs" />
+            <RankingListLoading text="New NFT Creators" />
+            <RankingListLoading text="Top NFT Creators" />
         </Box>
     )
 }

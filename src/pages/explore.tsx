@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box';
 import Switch from '@mui/material/Switch';
 import Head from 'next/head';
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 import useSWRInfinite from 'swr/infinite'
@@ -15,6 +14,7 @@ import { getAsString } from "../lib/getAsString";
 import IconButton from '@mui/material/IconButton';
 import { CloseIcon } from '../components/icons/CloseIcon';
 import theme from '../theme';
+import { Button, Link } from '@mui/material';
 
 
 const ForSaleFields = dynamic(
@@ -29,10 +29,9 @@ export async function getServerSideProps({ query, req, res }) {
   await authenticate(req, res);
 
   const page = query.page || 1;
-  const limit = 9;
+  const limit = 12;
   const offset = (page - 1) * limit;
 
-  console.log('query?.q', query?.q)
   const initalData = await getTokenSearchResults(
     query?.q || "",
     offset,
@@ -68,8 +67,13 @@ export async function getServerSideProps({ query, req, res }) {
 
 // components
 export const NFTDetail = ({ nft }) => (
-  <Box style={{
-    margin: 8
+  <Box sx={{
+    margin: {
+      xs: 0.5,
+      sm: 1,
+      md: 1.5,
+      lg: 2
+    }
   }}>
     <NftWindow nft={nft} />
   </Box>
@@ -92,12 +96,7 @@ export const NFTGrid: React.FC<NFTGridProps> = ({ nfts }) => {
         margin: -1,
       }}
     >
-      {nfts?.map(nft => (
-        <Link key={nft?.id} href={`/nft/${nft.id}`}>
-          <NFTDetail nft={nft} />
-        </Link>
-      )
-      )}
+      {nfts?.map(nft => (<NFTDetail key={nft?.id} nft={nft} />))}
     </Box>
   )
 }
@@ -123,8 +122,8 @@ interface SearchProps {
   totalPages: number,
   limit: number,
   forSale: boolean,
-  minPrice: number,
-  maxPrice: number,
+  minPrice: string,
+  maxPrice: string,
   fallbackData: { items: any[], next: number, total: number }[],
 }
 
@@ -139,10 +138,13 @@ const Search: React.FC<SearchProps> = ({
   maxPrice,
   fallbackData,
 }) => {
-  const title = "Explore Polygon NFTs on Hodl My Moon"
+
+  const title = "Explore and Buy Polygon NFT Art"
+  const description = "Browse the latests NFTs added to Hodl My Moon, and buy your favourite."
+
   const [forSaleChecked, setForSaleChecked] = useState(forSale);
-  const [minPriceUI, setMinPriceUI] = useState(minPrice);
-  const [maxPriceUI, setMaxPriceUI] = useState(maxPrice);
+  const [minPriceUI, setMinPriceUI] = useState(minPrice ?? '');
+  const [maxPriceUI, setMaxPriceUI] = useState(maxPrice ?? '');
 
   const [searchQuery, setSearchQuery] = useState({
     q,
@@ -168,7 +170,9 @@ const Search: React.FC<SearchProps> = ({
       return null;
     }
 
-    return `/api/search/tokens?q=${searchQuery?.q}&forSale=${searchQuery?.forSale}&offset=${offset}&limit=${Number(limit)}&minPrice=${searchQuery?.minPrice}&maxPrice=${searchQuery?.maxPrice}`                    // SWR key
+    const key = `/api/search/tokens?q=${searchQuery?.q}&forSale=${searchQuery?.forSale}&offset=${offset}&limit=${Number(limit)}&minPrice=${searchQuery?.minPrice}&maxPrice=${searchQuery?.maxPrice}`;
+
+    return key;
   }
 
   const { data, error, isValidating, mutate, size, setSize } = useSWRInfinite(
@@ -184,10 +188,6 @@ const Search: React.FC<SearchProps> = ({
   )
 
   useEffect(() => {
-    if (isOriginalSearchQuery()) {
-      return;
-    }
-
     router.push(
       {
         pathname: '/explore',
@@ -211,7 +211,6 @@ const Search: React.FC<SearchProps> = ({
   ]);
 
   useEffect(() => {
-
     if (!router?.query?.q) {
       return;
     }
@@ -239,12 +238,11 @@ const Search: React.FC<SearchProps> = ({
   const isReachingEnd =
     isEmpty || (data && data[data.length - 1]?.items?.length < limit);
 
-
-
   return (
     <>
       <Head>
         <title>{title}</title>
+        <meta name="description" content={description} />
         <link rel="canonical" href={`/explore?page=${page}`} />
         {page < totalPages && <link rel="next" href={`/explore?page=${Number(page) + 1}`} />}
         {page > 1 && <link rel="prev" href={`/explore?page=${Number(page) - 1}`} />}
@@ -293,8 +291,8 @@ const Search: React.FC<SearchProps> = ({
                       maxPrice: null
                     }))
 
-                    setMinPriceUI(null);
-                    setMaxPriceUI(null);
+                    setMinPriceUI('');
+                    setMaxPriceUI('');
                   }}
                 >
                   <CloseIcon
@@ -329,7 +327,13 @@ const Search: React.FC<SearchProps> = ({
             </Box>
           </Box>
         </div>
-        <div>
+        <Box sx={{
+          minHeight: {
+            xs: 970,
+            sm: 1900,
+            md: 1480,
+          }
+        }}>
           {data &&
             <Virtuoso
               useWindowScroll
@@ -339,8 +343,33 @@ const Search: React.FC<SearchProps> = ({
               itemContent={(index) => <NFTGrid nfts={data[index]?.items} />}
             />
           }
+
+          <noscript>
+            <NFTGrid nfts={data?.[0]?.items} />
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', margin: 1 }}>
+              <Button
+                color="secondary"
+                variant="contained"
+                disabled={Number(page) < 2}
+              >
+                <Link sx={{ color: 'white', textDecoration: 'none' }} rel="prev" href={page > 1 ? `/explore?page=${Number(page) - 1}` : "#"}>
+                  Previous
+                </Link>
+              </Button>
+              <Button
+                color="primary"
+                variant="contained"
+                disabled={Number(page) === Number(totalPages)}
+              >
+                <Link sx={{ color: 'white', textDecoration: 'none' }} rel="prev" href={page < totalPages ? `/explore?page=${Number(page) + 1}` : "#"}>
+                  Next
+                </Link>
+              </Button>
+            </Box>
+          </noscript>
+
           {isLoadingMore && !isReachingEnd && <Footer />}
-        </div>
+        </Box>
       </Box>
     </>
   )

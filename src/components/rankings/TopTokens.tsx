@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 
 
 
-export const TopTokens = ({ showLikes = true, titleSize = 16,  height = 250, size=44, fontSize=14, titleMargin=2}) => {
+export const TopTokens = ({ showLikes = true, titleSize = 16,  height = 325, size=44, fontSize=14, titleMargin=2}) => {
     const { limit, mostLiked } = useContext(RankingsContext);
 
     return (
@@ -21,7 +21,7 @@ export const TopTokens = ({ showLikes = true, titleSize = 16,  height = 250, siz
                     padding: 0,
                     fontSize: titleSize
                 }}>
-                Top NFTs
+                Top Polygon NFTs
             </Typography>
             }>
             <TokenLinksList

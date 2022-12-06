@@ -18,11 +18,12 @@ export async function getServerSideProps({ req, res }) {
 
 export default function ConnectingAWallet({ address }) {
     const title = "Logging in to dApps with your wallet, metamask coinbase, or walletconnect";
-
+    const description = "Learn how to connect to dApps with your web3 wallet";
     return (
         <>
             <Head>
                 <title>{title}</title>
+                <meta name="description" content={description} />
             </Head>
             <Box marginX={2} marginY={4}>
                 <HodlBorderedBox>

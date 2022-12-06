@@ -23,11 +23,14 @@ export default function About({ address }) {
     const { data: steve } = useUser("steve");
     const { data: dug } = useUser("dug");
 
-    const title = "About Hodl My Moon"
+    const title = "About Hodl My Moon";
+    const description = "Learn about Hodl My Moon, and why you should join us today."
+
     return (
         <>
             <Head>
                 <title>{title}</title>
+                <meta name="description" content={description} />
             </Head>
             <Box
                 marginX={2}

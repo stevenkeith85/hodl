@@ -63,6 +63,7 @@ export const Likes: FC<LikesProps> = ({
                     e.preventDefault();
                     e.stopPropagation();
                     likeCount.mutate(old => {
+                        console.log('old', old)
                         if (old === undefined) { // if we use a fallback value we seem to get 'undefined' as the old value for the mutate function
                             return userLikesThisObject?.data ? prefetchedLikeCount - 1 : prefetchedLikeCount + 1;
                         } else {

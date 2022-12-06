@@ -4,6 +4,7 @@ import Container from '@mui/material/Container';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 import { UserAvatarAndHandleBodyLoading } from '../avatar/UserAvatarAndHandleBodyLoading';
+import { Link } from '@mui/material';
 
 
 const AppBarLoading = ({ address }) => {
@@ -15,13 +16,13 @@ const AppBarLoading = ({ address }) => {
             publicPage: true
         },
         {
-            label: <Skeleton variant="text" animation="wave"><Typography>explore</Typography></Skeleton>,
+            label: <Typography>explore</Typography>,
             url: '/explore',
             icon: <Skeleton variant="circular" animation="wave" width={22} height={22} />,
             publicPage: true
         },
         {
-            label: <Skeleton variant="text" animation="wave"><Typography>create</Typography></Skeleton>,
+            label: <Typography>create</Typography>,
             url: '/create',
             icon: <Skeleton variant="circular" animation="wave" width={22} height={22} />,
             publicPage: false
@@ -91,7 +92,9 @@ const AppBarLoading = ({ address }) => {
                                             justifyContent: 'center'
                                         }}
                                     >
-                                        {pages[0].icon}
+                                        <Link key={pages[0].url} href={pages[0].url}>
+                                            {pages[0].icon}
+                                        </Link>
                                     </Box>
                                 </Box>
                                 {
@@ -115,7 +118,11 @@ const AppBarLoading = ({ address }) => {
                                                         xs: 'none',
                                                         md: 'block'
                                                     }
-                                                }}>{page.label}</Box>
+                                                }}>
+                                                <Link sx={{ textDecoration: 'none' }} key={page.url} href={page.url}>
+                                                    {page.label}
+                                                </Link>
+                                            </Box>
                                             <Box
                                                 sx={{
                                                     margin: 0,
@@ -132,7 +139,9 @@ const AppBarLoading = ({ address }) => {
                                                 }}
                                                 color="inherit"
                                             >
-                                                {page.icon}
+                                                <Link key={page.url} href={page.url}>
+                                                    {page.icon}
+                                                </Link>
                                             </Box>
                                         </Box>
                                     ))}
@@ -167,7 +176,7 @@ const AppBarLoading = ({ address }) => {
                                         display: {
                                             xs: 'flex',
                                             md: 'none',
-                                            
+
                                         }
                                     }}
                                 >

@@ -5,7 +5,7 @@ import { HodlScrollBox } from '../HodlScrollBox';
 import Typography from '@mui/material/Typography';
 
 
-export const NewTokens = ({ showLikes = true, titleSize = 16, height = 250, size=44, fontSize=14, titleMargin=2}) => {
+export const NewTokens = ({ showLikes = true, titleSize = 16, height = 325, size=44, fontSize=14, titleMargin=2}) => {
     const { limit, newTokens } = useContext(RankingsContext);
 
     return (
@@ -20,7 +20,7 @@ export const NewTokens = ({ showLikes = true, titleSize = 16, height = 250, size
                     padding: 0,
                     fontSize: titleSize
                 }}>
-                New NFTs
+                New Polygon NFTs
             </Typography>
             }>
             <TokenLinksList limit={limit} swr={newTokens} width={`100%`} showLikes={showLikes} size={size} fontSize={fontSize} />

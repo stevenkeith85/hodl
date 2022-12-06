@@ -5,7 +5,7 @@ import { HodlScrollBox } from '../HodlScrollBox';
 import Typography from '@mui/material/Typography';
 
 
-export const TopUsers = ({ followButton=true, titleSize=16, height=250, size=44, fontSize=14, titleMargin=2 }) => {
+export const TopUsers = ({ followButton=true, titleSize=16, height=325, size=44, fontSize=14, titleMargin=2 }) => {
     const { limit, mostFollowed: rankings } = useContext(RankingsContext);
 
     return (
@@ -20,7 +20,7 @@ export const TopUsers = ({ followButton=true, titleSize=16, height=250, size=44,
                     padding: 0,
                     fontSize: titleSize
                 }}>
-                Top Users
+                Top NFT Creators
             </Typography>
             }>
             <UserLinksList swr={rankings} limit={limit} width={`100%`} followButton={followButton} size={size} fontSize={fontSize}/>

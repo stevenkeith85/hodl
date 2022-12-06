@@ -2,7 +2,6 @@ import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
 
 export const RankingListLoading = ({ text }) => (<div>
-    <Skeleton variant="text" animation="wave" >
         <Typography
             variant='h2'
             color="primary"
@@ -14,6 +13,5 @@ export const RankingListLoading = ({ text }) => (<div>
             }}>
             {text}
         </Typography>
-    </Skeleton>
-    <Skeleton variant="rounded" animation="wave" height={250}></Skeleton>
+    <Skeleton variant="rounded" animation="wave" height={325}></Skeleton>
 </div>)

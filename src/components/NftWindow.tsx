@@ -48,10 +48,7 @@ export const NftWindow: React.FC<NftWindowProps> = ({
     }
 
     return (
-        <Link
-            key={nft.id}
-            href={nft?.forSale ? `/nft/${nft.id}?tab=1` : `/nft/${nft.id}`}
-        >
+        
             <Box
                 sx={{
                     position: 'relative',
@@ -64,6 +61,10 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                         '.nftItemOverlay': { opacity: 1 }
                     }
                 }}>
+                    <Link
+            key={nft.id}
+            href={nft?.forSale ? `/nft/${nft.id}?tab=1` : `/nft/${nft.id}`}
+        >
                 {
                     assetType(nft) === AssetTypes.Gif &&
                     <Box
@@ -146,11 +147,12 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                         />
                     </Box>
                 }
-                {!xs && <NftWindowOverlay nft={nft} />}
                 {nft?.forSale && <PriceSticker price={nft?.price} />}
+                </Link>
+                {!xs && <NftWindowOverlay nft={nft} />}
             </Box>
 
-        </Link>
+        
 
     )
 }
