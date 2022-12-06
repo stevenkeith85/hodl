@@ -148,8 +148,8 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                     </Box>
                 }
                 {nft?.forSale && <PriceSticker price={nft?.price} />}
-                </Link>
                 {!xs && <NftWindowOverlay nft={nft} />}
+                </Link>
             </Box>
 
         

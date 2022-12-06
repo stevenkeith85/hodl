@@ -31,7 +31,7 @@ const NewTokens = dynamic(
     () => import('../rankings/NewTokens').then(mod => mod.NewTokens),
     {
         ssr: false,
-        loading: () => <RankingListLoading text="New Tokens" />
+        loading: () => <RankingListLoading text="New Polygon NFTs" />
     }
 );
 
@@ -47,7 +47,7 @@ const TopTokens = dynamic(
     () => import('../rankings/TopTokens').then(mod => mod.TopTokens),
     {
         ssr: false,
-        loading: () => <RankingListLoading text="Top Tokens" />
+        loading: () => <RankingListLoading text="Top Polygon NFTs" />
     }
 );
 
