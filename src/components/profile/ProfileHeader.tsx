@@ -146,7 +146,6 @@ export const ProfileHeader = ({
       </Box>
       <Box
         sx={{
-          marginTop: 2,
           display: {
             xs: 'flex',
             sm: 'none'
@@ -160,6 +159,7 @@ export const ProfileHeader = ({
           profileAddress={owner.address}
           variant="outlined"
           sx={{
+            marginTop: 2,
             maxWidth: '100%',
             width: '100%',
             height: '40px'
