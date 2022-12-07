@@ -74,7 +74,7 @@ const Footer = ({
                                     }}>
                                     hodl my moon
                                 </Typography>
-                                <Link href="/about">about this dApp</Link>
+                                <Link href="/about">about this dapp</Link>
                                 <Link href="/contact">contact hodl my moon</Link>
 
                             </Box>
@@ -90,11 +90,13 @@ const Footer = ({
                                         fontWeight: 600,
                                         marginBottom: 0.5,
                                     }}>
-                                    nfts and hodl my moon
+                                    learn
                                 </Typography>
-                                <Link href="/learn">learn about nfts</Link>
-                                <Link href="/learn/sign-up-with-coinbase-mobile">join this dApp</Link>
-                                <Link href="/learn/connecting-a-wallet">connecting a wallet</Link>
+                                <Link href="/learn">nfts and dapps</Link>
+                                <Link href="/learn/nfts/what-are-nfts">what are nfts</Link>
+                                <Link href="/learn/dapps/what-are-dapps">what are dapps</Link>
+                                <Link href="/learn/dapps/interact-with-dapps">interact with dapps</Link>
+                                <Link href="/learn/sign-in/coinbase-wallet">sign in with coinbase wallet</Link>
                             </Box>
                             <Box
                                 sx={{

@@ -1,7 +1,5 @@
 // These functions are called client side 
 // as they need the user to sign the transaction with a signer (wallet)
-
-
 import { Contract } from '@ethersproject/contracts'
 import { parseUnits } from '@ethersproject/units'
 

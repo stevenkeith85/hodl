@@ -133,22 +133,20 @@ export default function About({ address }) {
                     </Box>
                     <Box mb={4}>
                         <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
-                            Where can I learn about web3 and hodl my moon?
+                            Where can I learn about nfts and dapps?
                         </Typography>
                         <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            We have a learning hub that we are expanding...
+                            We have a web3 learning hub that we are expanding.
                         </Typography>
                         <Link href="/learn" sx={{ color: theme => theme.palette.primary.main, textDecoration: 'none' }}>
-                            <Button sx={{ marginY: 2 }}>Take Me To The Knowledge</Button>
+                            <Button sx={{ marginY: 2 }}>Learn about NFTs and DApps</Button>
                         </Link>
                     </Box>
                     <Box marginY={6} sx={{ display: 'flex', flexDirection: 'column' }}>
                         <Typography mb={2} sx={{ fontSize: 18, fontWeight: 500 }}>
                             Meet Hodl My Moon
                         </Typography>
-
                         <Box sx={{ display: 'grid', gap: 4 }}>
-
                             <div>
                                 <UserAvatarAndHandle fallbackData={steve} address={steve?.address} size={70} fontSize={18} />
                             </div>
