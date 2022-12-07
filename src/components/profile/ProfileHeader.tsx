@@ -25,9 +25,6 @@ export const ProfileHeader = ({
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        // flexDirection: 'row',
-        // justifyContent: 'space-between',
-        // alignItems: 'center',
       }}>
       <Box
         display="flex"

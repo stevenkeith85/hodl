@@ -24,7 +24,7 @@ const addressToTokenIds = async (address, offset, limit) => {
   // in case stuff happens off-site. (user adds token to another market, etc)
   // This would allow us to cache for longer periods, as we'd be more sure of things
 export const updateHodlingCache = async (address) => {
-  const timeToCache = 60 * 30;
+  const timeToCache = 60 * 60 * 2; // cache for two hours
 
   const cmds = [
     ['DEL', `user:${address}:hodling`, `user:${address}:hodlingCount`]
