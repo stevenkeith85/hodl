@@ -37,12 +37,26 @@ const Comparison = ({ item1, item2 }) => (
 export default function WhatAreNFTs({ address }) {
     const title = "What are NFTs";
     const description = "Learn what non fungible tokens are, and avoid the pitfalls";
-
+    const canonical = "https://www.hodlmymoon.com/learn/nfts/what-are-nfts"
+    const shareImage = "https://res.cloudinary.com/dyobirj7r/image/upload/ar_216:253,c_fill,w_1080/prod/nfts/bafkreihuew5ij6lvc2k7vjqr65hit7fljl7fsxlikrkndcdyp47xbi6pvy" // nft 36
     return (
         <>
             <Head>
                 <title>{title}</title>
                 <meta name="description" content={description} />
+                <link href={canonical} rel="canonical" />
+
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:site" content="@hodlmymoon" />
+                <meta name="twitter:creator" content="@hodlmymoon" />
+                <meta name="twitter:title" content={title} />
+                <meta name="twitter:description" content={description} />
+                <meta name="twitter:image" content={shareImage} />
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content={canonical} />
+                <meta property="og:title" content={title} />
+                <meta property="og:image" content={shareImage} />
+                <meta property="og:description" content={description} />
             </Head>
             <Box
                 marginX={2}
