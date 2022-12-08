@@ -22,8 +22,8 @@ const addressToListings = async (address, offset, limit) => {
 export const updateListedCache = async (address) => {
   const timeToCache = 60 * 60 * 2; // cache for two hours
 
-  console.log('updating listed cache');
-  const start = Date.now();
+  // console.log('updating listed cache');
+  // const start = Date.now();
 
   const cmds = [
     ['DEL', `user:${address}:listed`, `user:${address}:listedCount`]
@@ -59,9 +59,9 @@ export const updateListedCache = async (address) => {
   
   const success = await runRedisTransaction(cmds);
 
-  console.log('did we successfully update the listing cache?', success)
-  const stop = Date.now();
-  console.log('updateListedCache time taken', stop - start);
+  // console.log('did we successfully update the listing cache?', success)
+  // const stop = Date.now();
+  // console.log('updateListedCache time taken', stop - start);
 }
 
 export const getListedCount = async (address, skipCache = false): Promise<number> => {

@@ -9,11 +9,7 @@ import { DataObjectIcon } from '../icons/DataObjectIcon';
 import { InsightsIcon } from '../icons/InsightsIcon';
 import { ForumIcon } from "../icons/ForumIcon";
 
-import dynamic from 'next/dynamic';
 import { UserAvatarAndHandleBodyLoading } from "../avatar/UserAvatarAndHandleBodyLoading";
-
-
-
 
 export default function TokenHeader({
     mutableToken,

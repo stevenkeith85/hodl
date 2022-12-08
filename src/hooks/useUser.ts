@@ -11,7 +11,10 @@ export const useUser = (address, fallbackData = null, viewer = null, ): SWRRespo
         fetcher,
         {
             fallbackData,
-            // revalidateOnMount: !fallbackData
+            revalidateOnMount: fallbackData === null,
+            dedupingInterval: 20000, // default is 2000. we can set this pretty high, as we call mutate as the correct time
+            focusThrottleInterval: 20000, // default is 5000.  we can set this pretty high, as we call mutate as the correct time
+            errorRetryCount: 0
         }
     )
 

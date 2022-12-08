@@ -40,8 +40,7 @@ import { useConnect } from '../hooks/useConnect';
 import { getProviderSignerAddress } from '../lib/getSigner';
 import { useDisconnect } from '../hooks/useDisconnect';
 import { useRouter } from 'next/router';
-import { switchToPolygon } from '../lib/switchToPolygon';
-import { chains } from '../lib/chains';
+
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -132,11 +131,11 @@ export default function MyApp(props: MyAppProps) {
       // event with a null oldNetwork along with the newNetwork. So, if the
       // oldNetwork exists, it represents a changing network
 
-      // alert('old Network ' + oldNetwork?.name);
-      // alert('new Network ' + newNetwork?.name);
-
       const switchIfOnUnsupportedNetwork = async () => {
+        const switchToPolygon = await import('../lib/switchToPolygon').then(mod => mod.switchToPolygon);
+        const chains = await import('../lib/chains').then(mod => mod.chains);
         const enqueueSnackbar = await import('notistack').then(mod => mod.enqueueSnackbar);
+
         provider?.getNetwork()
           .then(network => chains[network?.name])
           .then(chain => {
@@ -156,15 +155,6 @@ export default function MyApp(props: MyAppProps) {
       }
 
       await switchIfOnUnsupportedNetwork();
-
-      // TODO: Not sure this is needed
-      // if (oldNetwork) {
-      //   enqueueSnackbar("Your changed network. Reloading.", {
-      //     variant: "info",
-      //     hideIconVariant: true
-      //   });
-      //   setTimeout(() => window.location.reload(), 3000);
-      // }
     });
 
     if (signer && address && backendAddress !== address) {
@@ -210,8 +200,8 @@ export default function MyApp(props: MyAppProps) {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <SWRConfig value={{
-            dedupingInterval: 2000, // default
-            focusThrottleInterval: 5000, // default
+            dedupingInterval: 10000, // default is 2000. This is a little higher incase we have multiple hooks on the same page asking for the same thing. 10 seconds should be long enough for a page load.
+            focusThrottleInterval: 10000, // default is 5000. this is how many seconds user needs to focussed in another window before we'd revalidate on focus
             errorRetryCount: 0
           }}>
             <WalletContext.Provider value={{

@@ -102,10 +102,19 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
     const router = useRouter();
 
     const { address } = useContext(WalletContext);
-    const { nft } = useContext(NftContext);
+    const { nft, mutableToken: mutableTokenFallback } = useContext(NftContext);
 
+    // We have the mutable token on the nft page already; so use the context value as a fallback.
+    // We don't have it on the pop up comments
+    // TODO: Extract hook
     const mutableTokenFetcher: Fetcher<MutableToken> = (url, id) => fetch(`${url}/${id}`).then(r => r.json()).then(data => data.mutableToken);
-    const { data: mutableToken } = useSWR(nft?.id ? [`/api/contracts/mutable-token`, nft.id] : null, mutableTokenFetcher);
+    const { data: mutableToken } = useSWR(
+        nft?.id ? [`/api/contracts/mutable-token`, nft.id] : null,
+        mutableTokenFetcher, {
+        fallbackData: mutableTokenFallback,
+        dedupingInterval: 15000,
+        focusThrottleInterval: 15000,
+    });
 
     const canDeleteComment = (comment: HodlCommentViewModel) => comment.user.address === address || mutableToken?.hodler === address;
     const [deleteComment] = useDeleteComment();
@@ -232,8 +241,8 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                             marginBottom: 0
                                         }}
 
-                                        >
-                                        { comment.comment }
+                                    >
+                                        {comment.comment}
                                     </Typography>
                                 </div>
                                 <div

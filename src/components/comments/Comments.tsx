@@ -6,14 +6,11 @@ import Box from "@mui/material/Box";
 
 import CommentOutlinedIcon from "@mui/icons-material/CommentOutlined";
 
-import useSWR, { Fetcher } from "swr";
 import humanize from "humanize-plus";
 
 import { useCommentCount } from "../../hooks/useComments";
 import { NftContext } from "../../contexts/NftContext";
 
-import { MutableToken } from "../../models/MutableToken";
-import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
 
 const HodlCommentsModal = dynamic(
@@ -77,7 +74,6 @@ export const Comments: FC<CommentsProps> = ({
                     }}
                 >
                     <CommentOutlinedIcon color={color} sx={{ fontSize: size }} />
-                    {count === null && <Skeleton variant="text"><Typography>0</Typography></Skeleton>}
                     {count !== null &&
                         <Typography sx={{ fontSize, color }}>{humanize.compactInteger(count || 0, 1)}</Typography>
                     }

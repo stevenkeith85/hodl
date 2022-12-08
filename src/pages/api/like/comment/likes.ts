@@ -1,30 +1,34 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { Redis } from '@upstash/redis';
-import dotenv from 'dotenv'
-import apiRoute from "../../handler";
+import { NextRequest, NextResponse } from 'next/server';
+import { zScore } from '../../../../lib/database/rest/zScore';
+import { getAsString } from '../../../../lib/getAsString';
 
-dotenv.config({ path: '../.env' })
 
-const client = Redis.fromEnv()
-const route = apiRoute();
-
-// Find out if address likes comment
 export const likesComment = async (address, comment) => {
-  const likes = await client.zscore(`liked:comments:${address}`, comment);
-  return Boolean(likes);
+  const score = await zScore(`liked:comments:${address}`, comment)
+  return Boolean(score);
 }
 
-route.get(async (req: NextApiRequest, res: NextApiResponse) => {
-  const { address, id: comment } = req.query;
+// TODO: Potentially could be auth'd. Would require us having a jwt implementation that supports the edge runtime though
+export default async function route(req: NextRequest) {
+  if (req.method !== 'GET') {
+    return new Response(null, { status: 405 });
+  }
 
-  if (!address || !comment) {
-    return res.status(400).json({message: 'Bad Request'});
+  const { searchParams } = new URL(req.url);
+
+  const comment = getAsString(searchParams.get('id'));
+  const address = getAsString(searchParams.get('address'));
+
+  if (!comment || !address) {
+    return new Response(null, { status: 400 });
   }
 
   const likes = await likesComment(address, comment);
-  res.status(200).json({likes});
-  
-});
+
+  return NextResponse.json({ likes });
+};
 
 
-export default route;
+export const config = {
+  runtime: 'experimental-edge',
+}

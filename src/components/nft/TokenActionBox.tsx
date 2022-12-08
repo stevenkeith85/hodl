@@ -8,14 +8,15 @@ import IconButton from "@mui/material/IconButton";
 import { ShareIcon } from '../icons/ShareIcon';
 import theme from "../../theme";
 
-import Skeleton from "@mui/material/Skeleton";
+import { LikesLoading } from "../LikesLoading";
+import { CommentsLoading } from "../CommentsLoading";
 
 
 const HodlShareMenu = dynamic(
   () => import('../HodlShareMenu').then(mod => mod.HodlShareMenu),
   {
     ssr: false,
-    loading: () => null
+    loading: () => <ShareIcon size={20} fill={'#ddd'} />
   }
 );
 
@@ -23,7 +24,7 @@ const Likes = dynamic(
   () => import('../Likes').then(mod => mod.Likes),
   {
     ssr: false,
-    loading: () => <Skeleton variant="rectangular" width="20px" height="20px" animation="wave" />
+    loading: () => <LikesLoading />
   }
 );
 
@@ -31,7 +32,7 @@ const Comments = dynamic(
   () => import('../comments/Comments').then(mod => mod.Comments),
   {
     ssr: false,
-    loading: () => <Skeleton variant="rectangular" width="20px" height="20px" animation="wave" />
+    loading: () => <CommentsLoading />
   }
 );
 

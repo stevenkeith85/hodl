@@ -8,6 +8,7 @@ import { get } from '../../../lib/database/rest/get';
 
 
 export const getUserUsingHandle = async (handle: string, viewerAddress: string): Promise<UserViewModel | null> => {
+  
   if (!handle) {
     return null;
   }
@@ -22,7 +23,11 @@ export const getUserUsingHandle = async (handle: string, viewerAddress: string):
     return null;
   }
 
-  return await getUser(address, viewerAddress)  
+  // const start = Date.now();
+  const user = await getUser(address, viewerAddress);
+  // const stop = Date.now()
+  // console.log('time taken', stop - start);
+  return user;
 }
 
 
@@ -42,11 +47,7 @@ export default async function route(req: NextRequest) {
 
   const user = await getUserUsingHandle(handle, viewer);
 
-  return NextResponse.json({user}, {
-    headers: {
-      // 'Cache-Control': 'max-age=0, s-maxage=60'
-    }
-  });
+  return NextResponse.json({user});
 };
 
 export const config = {

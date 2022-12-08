@@ -39,6 +39,7 @@ export default function WhatAreNFTs({ address }) {
     const description = "Learn what non fungible tokens are, and avoid the pitfalls";
     const canonical = "https://www.hodlmymoon.com/learn/nfts/what-are-nfts"
     const shareImage = "https://res.cloudinary.com/dyobirj7r/image/upload/ar_216:253,c_fill,w_1080/prod/nfts/bafkreihuew5ij6lvc2k7vjqr65hit7fljl7fsxlikrkndcdyp47xbi6pvy" // nft 36
+    
     return (
         <>
             <Head>

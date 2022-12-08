@@ -1,22 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { zCard } from '../../../../lib/database/rest/zCard';
 import { getAsString } from '../../../../lib/getAsString';
 
 
 export const getLikeCount = async (token) => {    
-  const zcardResponse = await fetch(
-    `${process.env.UPSTASH_REDIS_REST_URL}/zcard/likes:token:${token}`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-      },
-      keepalive: true
-    });
-
-  const { result: count } = await zcardResponse.json();
-
+  const count = await zCard(`likes:token:${token}`);
   return count || 0;
 }
-
 
 export default async function route (req: NextRequest) {
   if (req.method !== 'GET') {
@@ -24,7 +14,6 @@ export default async function route (req: NextRequest) {
   }
 
   const { searchParams } = new URL(req.url);
-
   const token = getAsString(searchParams.get('id'));
 
   if (!token) {

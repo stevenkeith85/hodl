@@ -64,7 +64,9 @@ export const mGetTokenAndCommentCount = async (tokenIds: string[]) => {
   }
 }
 
-export const getTokenVMs = async (tokenIds: string[], address: string = null) => {
+
+// TODO: Possibly might be able to further optimise this
+export const getTokenVMs = async (tokenIds: string[]) => {
   if (tokenIds.length === 0) {
     return [];
   }
@@ -86,20 +88,4 @@ export const getTokenVMs = async (tokenIds: string[], address: string = null) =>
   })
 
   return result;
-}
-
-
-export const likesToken = async (address, token) => {
-  const zscoreResponse = await fetch(
-    `${process.env.UPSTASH_REDIS_REST_URL}/zscore/liked:tokens:${address}/${token}`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-      },
-      keepalive: true
-    });
-
-  const { result: likes } = await zscoreResponse.json();
-
-  return Boolean(likes);
 }

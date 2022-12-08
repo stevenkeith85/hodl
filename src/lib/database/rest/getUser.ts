@@ -1,52 +1,52 @@
 import { UserViewModel } from "../../../models/User";
 import { runRedisPipeline } from "./pipeline";
 import { getToken } from "./getToken";
+import { hmGet } from "./hmGet";
 
-
-export const getUser = async (address: string, viewerAddress: string = null) => {
+// TODO: This could be enhanced accepting the user fields we are interested in. 
+// At the moment we just toggle between asking for the nonce or not.
+// This is mostly used by the UI, so I'm not sure that we even need to return the nonce; potentially can go at some point.
+export const getUser = async (address: string, viewer: string = null, nonce = false) => {
     try {
-        const r = await fetch(
-            `${process.env.UPSTASH_REDIS_REST_URL}/HMGET/user:${address}/nickname/avatar/nonce`, {
-            headers: {
-                Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-            },
-            keepalive: true
-        });
-
-        const data = await r.json();
-
-        const [nickname, avatar, nonce] = data.result;
+        const user = nonce ?
+            await hmGet<{ nickname, avatar, nonce }>(`user:${address}`, 'nickname', 'avatar', 'nonce') :
+            await hmGet<{ nickname, avatar }>(`user:${address}`, 'nickname', 'avatar');
 
         const vm: UserViewModel = {
             address,
-            nickname,
-            avatar,
-            nonce,
+            ...user,
             followedByViewer: false,
             followsViewer: false
         }
 
-        const avatarTokenPromise = avatar ? getToken(avatar) : '';
+        if (!vm.avatar && !viewer) {
+            // no more database calls to make
+            return vm;
+        }
 
-        let viewerAddressPromise = null;
-        if (viewerAddress) {
+        if (vm.avatar && !viewer) {
+            // one database call to make
+            vm.avatar = await getToken(vm.avatar);
+            return vm;
+        }
+
+        if (vm.avatar && viewer) {
+            // three database calls to make
             const cmds = [
-                ['ZSCORE', `user:${viewerAddress}:following`, address],
-                ['ZSCORE', `user:${address}:following`, viewerAddress]
+                ['GET', `token:${vm.avatar}`],
+                ['ZSCORE', `user:${viewer}:following`, address],
+                ['ZSCORE', `user:${address}:following`, viewer]
             ]
 
-            viewerAddressPromise = runRedisPipeline(cmds)
+            const [avatarToken, followedByViewer, followsViewer] = await runRedisPipeline(cmds);
+
+            vm.avatar = JSON.parse(avatarToken);
+            vm.followedByViewer = Boolean(followedByViewer);
+            vm.followsViewer = Boolean(followsViewer);
+            return vm;
         }
 
-        const [avatarToken, viewerAddressResult] = await Promise.all([avatarTokenPromise, viewerAddressPromise]);
-
-        vm.avatar = avatarToken;
-
-        if (viewerAddressResult) {
-          vm.followedByViewer = Boolean(viewerAddressResult[0]);
-          vm.followsViewer = Boolean(viewerAddressResult[1]);
-        }
-
+        // we shouldn't actually reach this
         return vm;
     } catch (e) {
         console.log(e)
