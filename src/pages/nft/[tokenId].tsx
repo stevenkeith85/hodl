@@ -170,7 +170,7 @@ const NftDetail = ({
             <div
               style={{ height: '50px' }}
             >
-              {mutableToken && <TokenHeader mutableToken={mutableToken} nft={nft} setValue={setValue} value={value} />}
+              <TokenHeader mutableToken={mutableToken} nft={nft} setValue={setValue} value={value} />
             </div>
           </Grid>
           <Grid
@@ -221,10 +221,10 @@ const NftDetail = ({
                 {value === 0 && <SocialTab nft={nft} limit={limit} />}
               </div>
               <div hidden={value !== 1}>
-                {value === 1 && mutableToken && <MarketTab mutableToken={mutableToken} nft={nft} />}
+                {value === 1 && <MarketTab mutableToken={mutableToken} nft={nft} />}
               </div>
               <div hidden={value !== 2}>
-                {value === 2 && mutableToken && <TokenDataTab mutableToken={mutableToken} nft={nft} />}
+                {value === 2 && <TokenDataTab mutableToken={mutableToken} nft={nft} />}
               </div>
             </Box>
           </Grid>
