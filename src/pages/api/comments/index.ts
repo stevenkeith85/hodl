@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { mGetComments } from '../../../lib/database/rest/mGetComments';
 import { getUsers } from '../../../lib/database/rest/Users';
+import { zCard } from '../../../lib/database/rest/zCard';
+import { zRange } from '../../../lib/database/rest/zRange';
 import { getAsString } from '../../../lib/getAsString';
 import { GetCommentsValidationSchema } from '../../../validation/comments/getComments';
 
@@ -12,15 +14,8 @@ export const getCommentsForObject = async (
   limit: number,
   reverse = false
 ) => {
-  const zcardResponse = await fetch(
-    `${process.env.UPSTASH_REDIS_REST_URL}/zcard/${object}:${objectId}:comments`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-      }
-    });
 
-  const { result: total } = await zcardResponse.json();
+  const total = await zCard(`${object}:${objectId}:comments`);
 
   if (offset >= total) {
     return {
@@ -30,16 +25,7 @@ export const getCommentsForObject = async (
     };
   }
 
-  const idsResponse = await fetch(
-    `${process.env.UPSTASH_REDIS_REST_URL}/zrange/${object}:${objectId}:comments/${offset}/${offset + limit - 1}${reverse ? '/rev' : ''}`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-      }
-    });
-
-    // TODO: We can't json parse the scotland flag and stuff breaks. the website wont fall over; but a user adding a scotland flag will effectively 'delete' the comments section. noooooo!
-  const { result: ids } = await idsResponse.json();
+  const ids = await zRange(`${object}:${objectId}:comments`, offset, offset + limit - 1, { rev: reverse});
   const comments = await mGetComments(ids);
 
   const addresses: string[] = comments?.map(comment => comment.subject);

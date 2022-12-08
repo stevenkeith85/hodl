@@ -1,7 +1,6 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
-import TableCell from "@mui/material/TableCell";
 import InfiniteScroll from "react-swr-infinite-scroll";
 import { useTransactions } from "../hooks/useTransactions";
 import { HodlLoadingSpinner } from "./HodlLoadingSpinner";

@@ -15,10 +15,14 @@ import { DetailPageAsset } from "../../components/nft/DetailPageAsset";
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Skeleton from '@mui/material/Skeleton';
+
 import TokenActionBoxLoading from '../../components/nft/TokenActionBoxLoading';
 import SocialTabLoading from '../../components/nft/SocialTabLoading';
-import { makeCloudinaryUrl } from '../../lib/cloudinaryUrl';
 import TokenHeaderLoading from '../../components/nft/TokenHeaderLoading';
+
+import { makeCloudinaryUrl } from '../../lib/cloudinaryUrl';
+
+import { getTokenVM } from '../../lib/database/rest/getTokenVM';
 
 
 const TokenHeader = dynamic(
@@ -66,10 +70,11 @@ export async function getServerSideProps({ params, query, req, res }) {
   const limit = 10;
   const tab = Number(query.tab) || 0;
 
-  // Call via the API (rather than just hit the database) as we heavily cache this data at the edge; so it should be faster and reduce our costs
-  const host = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : `http://hodlmymoon`;
-  const nft = await fetch(`${host}/api/token/${params.tokenId}`).then(r => r.json()).then(data => data.token);
+  // const start = Date.now();
 
+  const nft = await getTokenVM(params.tokenId);
+  // const stop = Date.now();
+  // console.log('time taken', stop - start);
 
   return {
     props: {
@@ -77,7 +82,7 @@ export async function getServerSideProps({ params, query, req, res }) {
       tokenId: params.tokenId,
       limit,
       tab,
-      nft,
+      nft
     },
   }
 }
@@ -93,14 +98,22 @@ const NftDetail = ({
     () => import('../../components/nft/SocialTab'),
     {
       ssr: false,
-      loading: () => <SocialTabLoading nft={nft}/>
+      loading: () => <SocialTabLoading nft={nft} />
     }
   );
 
   const [value, setValue] = useState(Number(tab)); // tab
 
+  // TODO: Extract hook
   const mutableTokenFetcher: Fetcher<MutableToken> = (url, id) => fetch(`${url}/${id}`).then(r => r.json()).then(data => data.mutableToken);
-  const { data: mutableToken } = useSWR(tokenId ? [`/api/contracts/mutable-token`, tokenId] : null, mutableTokenFetcher);
+  const { data: mutableToken } = useSWR(
+    tokenId ? [`/api/contracts/mutable-token`, tokenId] : null,
+    mutableTokenFetcher,
+    {
+      dedupingInterval: 15000,
+      focusThrottleInterval: 15000,
+    }
+  );
 
   const getImage = (nft) => makeCloudinaryUrl("image", "nfts", nft?.image, { crop: 'fill', aspect_ratio: nft?.properties?.aspectRatio, width: '1080' });
 
@@ -118,7 +131,7 @@ const NftDetail = ({
       >
         <Head>
           <title>{title}</title>
-          <meta name="description" content={description}/>
+          <meta name="description" content={description} />
           <link rel="canonical" href={canonical} />
 
           <meta name="twitter:card" content="summary_large_image" />
@@ -157,9 +170,8 @@ const NftDetail = ({
             <div
               style={{ height: '50px' }}
             >
-              {nft && <TokenHeader mutableToken={mutableToken} nft={nft} setValue={setValue} value={value} />}
+              {mutableToken && <TokenHeader mutableToken={mutableToken} nft={nft} setValue={setValue} value={value} />}
             </div>
-
           </Grid>
           <Grid
             item
@@ -185,12 +197,10 @@ const NftDetail = ({
                   }
                 }}
               >
-                {nft && <>
-                  <DetailPageAsset token={nft} />
-                  <div style={{ height: '20px' }}>
-                    <TokenActionBox nft={nft} />
-                  </div>
-                </>}
+                <DetailPageAsset token={nft} />
+                <div style={{ height: '20px' }}>
+                  <TokenActionBox nft={nft} prefetchedCommentCount={nft?.commentCount} prefetchedLikeCount={nft?.likeCount} />
+                </div>
               </Box>
             </Box>
           </Grid>
@@ -208,13 +218,13 @@ const NftDetail = ({
                 }
               }}>
               <div hidden={value !== 0}>
-                {nft && <SocialTab nft={nft} limit={limit} />}
+                {value === 0 && <SocialTab nft={nft} limit={limit} />}
               </div>
               <div hidden={value !== 1}>
-                {nft && <MarketTab mutableToken={mutableToken} nft={nft} />}
+                {value === 1 && mutableToken && <MarketTab mutableToken={mutableToken} nft={nft} />}
               </div>
               <div hidden={value !== 2}>
-                {nft && <TokenDataTab mutableToken={mutableToken} nft={nft} />}
+                {value === 2 && mutableToken && <TokenDataTab mutableToken={mutableToken} nft={nft} />}
               </div>
             </Box>
           </Grid>

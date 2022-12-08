@@ -1,20 +1,29 @@
+import { useEffect, useState } from 'react';
+
 import Box from '@mui/material/Box';
 import Switch from '@mui/material/Switch';
+import Button from '@mui/material/Button';
+import Link from '@mui/material/Link';
+
+import theme from '../theme';
+
+import IconButton from '@mui/material/IconButton';
+
+import dynamic from 'next/dynamic';
 import Head from 'next/head';
-import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+
+import { authenticate } from '../lib/jwt';
+
 import { Virtuoso } from 'react-virtuoso';
 import useSWRInfinite from 'swr/infinite'
 import { HodlLoadingSpinner } from '../components/HodlLoadingSpinner';
-import { NftWindow } from '../components/NftWindow';
-import { authenticate } from '../lib/jwt';
+
 import { getTokenSearchResults } from './api/search/tokens';
-import dynamic from 'next/dynamic';
-import { useRouter } from 'next/router';
+
 import { getAsString } from "../lib/getAsString";
-import IconButton from '@mui/material/IconButton';
+import { NftWindow } from '../components/NftWindow';
 import { CloseIcon } from '../components/icons/CloseIcon';
-import theme from '../theme';
-import { Button, Link } from '@mui/material';
 
 
 const ForSaleFields = dynamic(

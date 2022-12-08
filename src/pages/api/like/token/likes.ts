@@ -1,26 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { zScore } from '../../../../lib/database/rest/zScore';
 import { getAsString } from '../../../../lib/getAsString';
 
 
 export const likesToken = async (address, token) => {
-  const zscoreResponse = await fetch(
-    `${process.env.UPSTASH_REDIS_REST_URL}/zscore/liked:tokens:${address}/${token}`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-      },
-      keepalive: true
-    });
-
-  const { result: likes } = await zscoreResponse.json();
-
-  return Boolean(likes);
+  const score = await zScore(`liked:tokens:${address}`, token)
+  return Boolean(score);
 }
 
-
-// TODO: We NEED a batch lookup for this
-// TODO: We should perhaps add auth here
-// TODO: We'd need to migrate away from jsonwebtoken though as that uses node libs. (jose perhaps)
+// TODO: Potentially could be auth'd. Would require us having a jwt implementation that supports the edge runtime though
 export default async function route(req: NextRequest) {
   if (req.method !== 'GET') {
     return new Response(null, { status: 405 });

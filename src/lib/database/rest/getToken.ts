@@ -1,8 +1,4 @@
 export const getToken = async (id) => {
-  if (!id) {
-    return null;
-  }
-
   try {
     const r = await fetch(
       `${process.env.UPSTASH_REDIS_REST_URL}/get/token:${id}`,

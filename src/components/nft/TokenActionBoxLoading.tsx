@@ -1,5 +1,6 @@
-import Skeleton from '@mui/material/Skeleton';
-
+import { LikesLoading } from '../LikesLoading';
+import { CommentsLoading } from '../CommentsLoading';
+import { ShareIcon } from '../icons/ShareIcon';
 
 export default function TokenActionBoxLoading({ }) {
   return (<div
@@ -15,10 +16,10 @@ export default function TokenActionBoxLoading({ }) {
         gap: '12px'
       }}
     >
-      <Skeleton variant="rectangular" width="20px" height="20px" animation="wave" />
-      <Skeleton variant="rectangular" width="20px" height="20px" animation="wave" />
+      <LikesLoading />
+      <CommentsLoading />
     </div>
-    <Skeleton variant="rectangular" width="20px" height="20px" animation="wave" />
+    <ShareIcon size={20} fill={'#ddd'} />
   </div>
   )
 }

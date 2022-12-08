@@ -11,7 +11,6 @@ import { useLikeCount } from "../hooks/useLikeCount";
 import { useLike } from "../hooks/useLike";
 
 import humanize from "humanize-plus";
-import Skeleton from "@mui/material/Skeleton";
 import { useUserLikesObject } from "../hooks/useUserLikesObject";
 import { WalletContext } from "../contexts/WalletContext";
 
@@ -44,7 +43,7 @@ export const Likes: FC<LikesProps> = ({
     sx = {}
 }) => {
     const { address } = useContext(WalletContext);
-    
+
     const likeCount = useLikeCount(id, object, prefetchedLikeCount);
     const userLikesThisObject = useUserLikesObject(id, object);
     const toggleLike = useLike(id, object);
@@ -75,11 +74,11 @@ export const Likes: FC<LikesProps> = ({
                         if (old === undefined) { // if we use a fallback value we seem to get 'undefined' as the old value for the mutate function
                             return userLikesThisObject?.data ? prefetchedLikeCount - 1 : prefetchedLikeCount + 1;
                         } else {
-                            return userLikesThisObject?.data ? old -1 : old +1;
+                            return userLikesThisObject?.data ? old - 1 : old + 1;
                         }
-                    }, {revalidate: false});
-                    userLikesThisObject.mutate(old => !old, {revalidate: false});
-                    
+                    }, { revalidate: false });
+                    userLikesThisObject.mutate(old => !old, { revalidate: false });
+
                     await toggleLike();
                 }}
             >
@@ -103,8 +102,9 @@ export const Likes: FC<LikesProps> = ({
                             />
                         </Tooltip>
                 }
-                {showCount && likeCount?.data === null && <Skeleton variant="text"><Typography>0</Typography></Skeleton>}
-                {showCount && likeCount?.data !== null && <Typography sx={{ fontSize, color }}>{humanize.compactInteger(likeCount?.data || 0, 1)}</Typography>
+                {
+                    showCount && likeCount?.data !== null && 
+                    <Typography sx={{ fontSize, color }}>{humanize.compactInteger(likeCount?.data || 0, 1)}</Typography>
                 }
             </Box>
         </>
