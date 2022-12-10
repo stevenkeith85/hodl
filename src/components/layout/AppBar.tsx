@@ -11,6 +11,7 @@ import axios from 'axios'
 import useSWR, { mutate } from 'swr';
 import { RocketLaunchIcon } from '../icons/RocketLaunchIcon';
 import { AccountBalanceWalletIcon } from '../icons/AccountBalanceWalletIcon';
+import MenuIcon from '@mui/icons-material/Menu';
 import { NotificationsIcon } from '../icons/NotificationsIcon';
 import { NotificationsNoneIcon } from '../icons/NotificationsNoneIcon';
 
@@ -416,7 +417,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                             display: !hoverMenuOpen && address ? 'flex' : 'none'
                                         }} >
                                         <UserAvatarAndHandle
-                                        size={40}
+                                            size={40}
                                             address={address}
                                             withLink={false}
                                             handle={false}
@@ -431,7 +432,7 @@ const ResponsiveAppBar = ({ address, pusher, userSignedInToPusher }) => {
                                         display="flex"
                                         alignItems="center"
                                         justifyContent="center">
-                                        <AccountBalanceWalletIcon size={22} fill={theme.palette.primary.main} />
+                                        <MenuIcon sx={{ fontSize: 22 }} />
                                     </Box>
                                 </IconButton>
                                 {hoverMenuOpen && <HoverMenu hoverMenuOpen={hoverMenuOpen} setHoverMenuOpen={setHoverMenuOpen} />}

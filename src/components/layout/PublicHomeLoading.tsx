@@ -2,6 +2,7 @@
 import Box from "@mui/material/Box"
 import { RankingListLoading } from "./RankingListLoading"
 import { HomePagePitchLoading } from "./HomePagePitchLoading"
+import { HomepageQuickstart } from "./HomepageQuickstart"
 
 
 const PublicHomePageLoading = ({ }) => {
@@ -40,6 +41,7 @@ const PublicHomePageLoading = ({ }) => {
                 <RankingListLoading text="New NFT Creators" />
                 <RankingListLoading text="New Polygon NFTs" />
             </Box>
+            <HomepageQuickstart />
         </Box >
     )
 }
