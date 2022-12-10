@@ -32,35 +32,36 @@ export const HomePagePitchLoading = ({ }) => {
                         height="100%"
                         sx={{
                             paddingTop: { xs: 0, sm: '25px', md: '50px', lg: '70px', xl: '90px' },
-                            paddingBottom: { xs: '64px', sm: '75px', md: `100px`, lg: '120px', xl: '140px' },
+                            paddingBottom: { xs: '70px', sm: '75px', md: `100px`, lg: '120px', xl: '140px' },
                         }}
                     >
                         <Box
-                            component="span"
+                            component="h1"
                             sx={{
                                 fontFamily: theme => theme.logo.fontFamily,
                                 fontSize: {
-                                    xs: 30,
+                                    xs: 26,
                                     sm: 35,
                                     md: 40
                                 },
-                                fontWeight: 600,
-                                color: theme => theme.palette.primary.main,
-                                marginBottom: 1,
+                                fontWeight: 500,
+                                color: theme => theme.palette.primary.dark,
+                                marginBottom: 2,
                             }}>
-                            Hodl My Moon
+                            The social NFT marketplace for Polygon
                         </Box>
                         <Typography
-                            component="h1"
+                            component="h2"
                             sx={{
                                 fontFamily: theme => theme.logo.fontFamily,
                                 fontSize: {
                                     xs: 18,
                                     sm: 22,
                                 },
+                                marginBottom: 1,
                                 color: '#999'
                             }}>
-                            Polygon NFT Marketplace
+                            Connect with NFT creators
                         </Typography>
                         <Typography
                             component="h2"
@@ -72,7 +73,8 @@ export const HomePagePitchLoading = ({ }) => {
                                 },
                                 color: '#999'
                             }}>
-                            and Social Network
+                                Mint, buy or sell NFTs on Polygon
+                            
                         </Typography>
                     </Box>
                 </Grid>

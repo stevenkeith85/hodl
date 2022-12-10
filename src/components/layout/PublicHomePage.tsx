@@ -8,6 +8,7 @@ import { useNewTokens } from '../../hooks/useNewTokens';
 import dynamic from 'next/dynamic';
 
 import { RankingListLoading } from './RankingListLoading';
+import { HomepageQuickstart } from "./HomepageQuickstart";
 
 const NewTokens = dynamic(
     () => import('../rankings/NewTokens').then(mod => mod.NewTokens),
@@ -99,6 +100,7 @@ const PublicHomePage = ({ }) => {
                     <NewUsers followButton={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
                     <NewTokens showLikes={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
                 </Box>
+               <HomepageQuickstart />
             </div>
         </RankingsContext.Provider>
     )
