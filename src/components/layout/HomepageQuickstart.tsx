@@ -27,7 +27,7 @@ export const HomepageQuickstart = () => (
                 padding: 0,
                 fontSize: 20
             }}>
-            Join our NFT platform
+            Join our Polygon NFT platform
         </Typography>
         <Box sx={{
             display: 'grid',
@@ -46,8 +46,9 @@ export const HomepageQuickstart = () => (
                         padding: 0,
                         fontSize: 16
                     }}>
-                    Install a web3 wallet
+                    Install a polygon wallet
                 </Typography>
+                <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>Install a wallet with access to the polygon blockchain.</Typography>
                 <Typography sx={{ color: theme => theme.palette.text.secondary }}>We support MetaMask, Coinbase Wallet or WalletConnect</Typography>
             </HodlBorderedBox>
             <HodlBorderedBox sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -60,7 +61,8 @@ export const HomepageQuickstart = () => (
                     }}>
                     Open a dApp browser
                 </Typography>
-                <Typography sx={{ color: theme => theme.palette.text.secondary }}>You log in to this site with the browser in your wallet</Typography>
+                <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>You can log in to Hodl My Moon with the dApp browser in your polygon wallet</Typography>
+                <Typography sx={{ color: theme => theme.palette.text.secondary }}>Or with WalletConnect</Typography>
             </HodlBorderedBox>
             <HodlBorderedBox sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <Typography
@@ -72,6 +74,7 @@ export const HomepageQuickstart = () => (
                     }}>
                     Click connect
                 </Typography>
+                <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>Locate the connect button in our main menu and click it.</Typography>
                 <Typography sx={{ color: theme => theme.palette.text.secondary }}>Sign the message to verify your identity</Typography>
             </HodlBorderedBox>
             <HodlBorderedBox sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -82,9 +85,10 @@ export const HomepageQuickstart = () => (
                         padding: 0,
                         fontSize: 16
                     }}>
-                    Follow NFT creators
+                    Follow polygon NFT creators
                 </Typography>
-                <Typography sx={{ color: theme => theme.palette.text.secondary }}>See what others mint and list on the polygon marketplace</Typography>
+                <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>Like and comment on your favourite polygon NFTs</Typography>
+                <Typography sx={{ color: theme => theme.palette.text.secondary }}>Or buy and sell on our polygon nft marketplace</Typography>
             </HodlBorderedBox>
         </Box>
         <Box sx={{ margin: 4 }}>

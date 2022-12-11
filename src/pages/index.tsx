@@ -56,8 +56,8 @@ export default function Home({
 }) {
 
   const homepage = "https://www.hodlmymoon.com";
-  const title = "Polygon NFT Marketplace";
-  const description = "Mint, buy, and sell NFTs on our Polygon Marketplace. Follow your favourite NFT artists";
+  const title = "The Social Polygon NFT Marketplace - Mint, buy and sell NFTs on the Polygon Blockchain";
+  const description = "Explore NFTs on our Polygon Marketplace. Follow your favourite NFT creators. Mint for Free.";
   const shareImage = "https://res.cloudinary.com/dyobirj7r/image/upload/ar_216:253,c_fill,w_1080/prod/nfts/bafkreihuew5ij6lvc2k7vjqr65hit7fljl7fsxlikrkndcdyp47xbi6pvy" // nft 36
 
   const { address: walletAddress } = useContext(WalletContext);

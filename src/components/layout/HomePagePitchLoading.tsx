@@ -45,10 +45,10 @@ export const HomePagePitchLoading = ({ }) => {
                                     md: 40
                                 },
                                 fontWeight: 500,
-                                color: theme => theme.palette.primary.dark,
+                                color: theme => theme.palette.primary.main,
                                 marginBottom: 2,
                             }}>
-                            The social NFT marketplace for Polygon
+                            The social polygon NFT marketplace
                         </Box>
                         <Typography
                             component="h2"
@@ -61,20 +61,7 @@ export const HomePagePitchLoading = ({ }) => {
                                 marginBottom: 1,
                                 color: '#999'
                             }}>
-                            Connect with NFT creators
-                        </Typography>
-                        <Typography
-                            component="h2"
-                            sx={{
-                                fontFamily: theme => theme.logo.fontFamily,
-                                fontSize: {
-                                    xs: 18,
-                                    sm: 22,
-                                },
-                                color: '#999'
-                            }}>
-                                Mint, buy or sell NFTs on Polygon
-                            
+                            Mint, buy and sell NFTs on the polygon blockchain
                         </Typography>
                     </Box>
                 </Grid>
@@ -99,6 +86,6 @@ export const HomePagePitchLoading = ({ }) => {
                     </Box>
                 </Grid>
             </Grid>
-        </Box>
+        </Box >
     )
 }

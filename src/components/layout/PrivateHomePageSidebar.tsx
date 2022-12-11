@@ -39,7 +39,7 @@ const TopUsers = dynamic(
     () => import('../rankings/TopUsers').then(mod => mod.TopUsers),
     {
         ssr: false,
-        loading: () => <RankingListLoading text="Top NFT Creators" />
+        loading: () => <RankingListLoading text="Top Polygon NFT Creators" />
     }
 );
 
@@ -55,7 +55,7 @@ const NewUsers = dynamic(
     () => import('../rankings/NewUsers').then(mod => mod.NewUsers),
     {
         ssr: false,
-        loading: () => <RankingListLoading text="New NFT Creators" />
+        loading: () => <RankingListLoading text="New Polygon NFT Creators" />
     }
 );
 
