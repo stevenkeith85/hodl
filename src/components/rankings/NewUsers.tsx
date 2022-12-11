@@ -19,7 +19,7 @@ export const NewUsers = ({ followButton = true, titleSize = 16, height = 325, si
                     padding: 0,
                     fontSize: titleSize
                 }}>
-                New NFT Creators
+                New Polygon NFT Creators
             </Typography>
             }>
             <UserLinksList swr={newUsers} limit={limit} width={`100%`} followButton={followButton} size={size} fontSize={fontSize}/>

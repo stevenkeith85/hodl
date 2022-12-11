@@ -36,9 +36,9 @@ const PublicHomePageLoading = ({ }) => {
                     gap: 4,
                 }}
             >
-                <RankingListLoading text="Top NFT Creators" />
+                <RankingListLoading text="Top Polygon NFT Creators" />
                 <RankingListLoading text="Top Polygon NFTs" />
-                <RankingListLoading text="New NFT Creators" />
+                <RankingListLoading text="New Polygon NFT Creators" />
                 <RankingListLoading text="New Polygon NFTs" />
             </Box>
             <HomepageQuickstart />
