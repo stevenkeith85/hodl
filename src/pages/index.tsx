@@ -116,38 +116,23 @@ export default function Home({
           }}
         >
           <HomePagePitch />
-          <Box sx={{
-            marginY: 2,
-            textAlign: 'center',
-          }}>
-            <Typography
-              variant='h2'
-              color="primary"
-              sx={{
-                fontFamily: theme => theme.logo.fontFamily,
-                marginBottom: 4,
-                padding: 0,
-                fontSize: 20
-              }}>
-              Rankings
-            </Typography>
-            <Box
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: {
-                  xs: `1fr`,
-                  sm: `1fr 1fr`,
-                },
-                gap: 4,
-                rowGap: 8,
-                marginY: 4
-              }}
-            >
-              <TopUsers followButton={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
-              <TopTokens showLikes={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
-              <NewUsers followButton={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
-              <NewTokens showLikes={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
-            </Box>
+
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: {
+                xs: `1fr`,
+                sm: `1fr 1fr`,
+              },
+              gap: 4,
+              rowGap: 8,
+              marginY: 4
+            }}
+          >
+            <TopUsers followButton={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
+            <TopTokens showLikes={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
+            <NewUsers followButton={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
+            <NewTokens showLikes={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
           </Box>
           <HomepageQuickstart />
         </div>
