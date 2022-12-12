@@ -92,7 +92,7 @@ const ResponsiveAppBar = ({ address }) => {
     const homepage = {
         label: 'hodl my moon',
         url: '/',
-        icon: <img src="https://res.cloudinary.com/dyobirj7r/image/upload/w_80,h_80/static/logo.png" width={40} height={40} />,
+        icon: <img src="https://res.cloudinary.com/dyobirj7r/image/upload/w_70,h_70/static/logo.png" width={35} height={35} />,
         publicPage: true
     };
 
