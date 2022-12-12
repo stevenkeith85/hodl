@@ -1,6 +1,4 @@
 import { AssetTypes } from "../models/AssetType";
-import { FullToken } from "../models/FullToken";
-import { Token } from "../models/Token";
 import { commercial, nonCommercial, token } from "./copyright";
 
 export const TAG_PATTERN = /#([\d\w_]{3,25})(\s|$)/g;
@@ -22,15 +20,6 @@ export const validFilter = (filter) => {
   const codes = imageFilters.map(f => f.code);
 
   return codes.find(code => code === filter);
-}
-
-export const getTopPadding = (ratio) => {
-  if (!ratio) {
-    return 0;
-  }
-
-  const [width, height] = ratio.split(':');
-  return (height / width) * 100;
 }
 
 export const aspectRatios = [
@@ -72,6 +61,9 @@ export const createCloudinaryUrl = (
 export const srcSet = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1400, 1500];
 
 export const getShortAddress = address => {
+  if (!address) {
+    return ''
+  }
   return (address?.slice(0, 5) + '...' + address?.slice(-4)).toLowerCase();
 }
 
@@ -122,31 +114,6 @@ export const pluralize = (n: number, item: string) => {
 export const validTxHashFormat = (addr) => {
   return /^0x([A-Fa-f0-9]{64})$/.test(addr);
 }
-
-export const assetType = (nft: Token | FullToken): AssetTypes => {
-  if (!nft?.properties?.asset?.mimeType) {
-    return AssetTypes.Image;
-  }
-
-  if (nft?.properties?.asset?.mimeType === 'image/gif') {
-    return AssetTypes.Gif;
-  }
-
-  if (nft?.properties?.asset?.mimeType?.indexOf('video') !== -1) {
-    return AssetTypes.Video;
-  }
-
-  if (nft?.properties?.asset?.mimeType?.indexOf('image') !== -1) {
-    return AssetTypes.Image;
-  }
-
-  if (nft?.properties?.asset?.mimeType?.indexOf('audio') !== -1) {
-    return AssetTypes.Audio;
-  }
-
-  return null;
-}
-
 
 export const assetTypeFromMimeType = (mimeType: string): AssetTypes | null => {
   if (!mimeType) {

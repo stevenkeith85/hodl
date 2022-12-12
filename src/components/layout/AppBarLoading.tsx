@@ -4,7 +4,7 @@ import Container from '@mui/material/Container';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 import { UserAvatarAndHandleBodyLoading } from '../avatar/UserAvatarAndHandleBodyLoading';
-import { Link } from '@mui/material';
+import Link from '@mui/material/Link';
 
 
 const AppBarLoading = ({ address }) => {

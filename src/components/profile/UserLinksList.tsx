@@ -68,6 +68,7 @@ export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit, follow
               }}
             >
               <Box flexGrow={1}>
+              {/* <>{ JSON.stringify(user)}</> */}
                 <UserAvatarAndHandle
                   address={user?.address}
                   fallbackData={user}
@@ -76,7 +77,6 @@ export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit, follow
                 />
               </Box>
               {followButton && <Box flexShrink={1}>
-                {/* <>{ JSON.stringify(user)}</> */}
                 <FollowButton profileAddress={user?.address} variant="text" />
               </Box>}
             </Box>

@@ -1,4 +1,4 @@
-import { assetType } from "../../lib/utils";
+import { assetType } from "../../lib/assetType";
 
 import { AssetTypes } from "../../models/AssetType";
 

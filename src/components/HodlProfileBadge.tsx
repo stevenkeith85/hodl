@@ -62,10 +62,6 @@ interface HodlProfileBadgeProps {
 export const HodlProfileBadge: React.FC<HodlProfileBadgeProps> = ({ user }) => {
     const { hodlingCount, listedCount, followersCount, followingCount } = useContext(UserContext);
 
-    if (!user) {
-        return null;
-    }
-    
     return (
         <HodlBorderedBox
             sx={{

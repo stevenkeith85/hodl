@@ -1,11 +1,9 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
 import dynamic from 'next/dynamic';
 
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-
-import { UserViewModel } from '../../models/User';
 
 import HodlFeedLoading from './HodlFeedLoading';
 import PrivateHomePageSidebarLoading from './PrivateHomePageSidebarLoading';
@@ -13,8 +11,6 @@ import PrivateHomePageSidebarLoading from './PrivateHomePageSidebarLoading';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import PrivateHomePageSwitchLoading from './PrivateHomePageSwitchLoading';
-import { WalletContext } from '../../contexts/WalletContext';
-
 
 
 const HodlFeed2 = dynamic(
@@ -35,13 +31,9 @@ const PrivateHomePageSwitch = dynamic(
 );
 
 interface PrivateHomePageProps {
-    user: UserViewModel;
-    address: string;
 }
 
-const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
-    const { provider, signer } = useContext(WalletContext);
-
+const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ }) => {
     const theme = useTheme();
 
     const desktop = useMediaQuery(theme.breakpoints.up('md'), { noSsr: true });
@@ -99,7 +91,7 @@ const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ user, address }) => {
                 </Grid>
                 {(desktop || viewSidebar) &&
                     <Grid item xs={12} md={5}>
-                        <PrivateHomePageSidebar user={user} />
+                        <PrivateHomePageSidebar />
                     </Grid>
                 }
             </Grid>

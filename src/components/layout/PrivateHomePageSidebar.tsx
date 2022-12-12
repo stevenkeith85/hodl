@@ -16,6 +16,9 @@ import { UserContext } from '../../contexts/UserContext';
 import dynamic from 'next/dynamic';
 
 import Box from '@mui/material/Box';
+import { useContext } from 'react';
+import { WalletContext } from '../../contexts/WalletContext';
+import { useUser } from '../../hooks/useUser';
 
 
 const HodlProfileBadge = dynamic(
@@ -59,9 +62,12 @@ const NewUsers = dynamic(
     }
 );
 
-export default function PrivateHomePageSidebar({ user }) {
+export default function PrivateHomePageSidebar({  }) {
 
-    const limit = 6;
+    const { address } = useContext(WalletContext);
+    const { data: user } = useUser(address);
+
+    const limit = 8;
 
     const [hodlingCount] = useHodlingCount(user?.address);
     const [listedCount] = useListedCount(user?.address);

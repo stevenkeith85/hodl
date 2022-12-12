@@ -20,7 +20,7 @@ const addressToListings = async (address, offset, limit) => {
 }
 
 export const updateListedCache = async (address) => {
-  const timeToCache = 60 * 60 * 2; // cache for two hours
+  const timeToCache = 60 * 60 * 12; // cache for twelve hours
 
   // console.log('updating listed cache');
   // const start = Date.now();

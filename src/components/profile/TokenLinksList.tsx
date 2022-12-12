@@ -12,8 +12,8 @@ import theme from "../../theme";
 const Likes = dynamic(
   () => import('../Likes').then(mod => mod.Likes),
   {
-      ssr: false,
-      loading: () => null
+    ssr: false,
+    loading: () => null
   }
 );
 

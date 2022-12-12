@@ -2,20 +2,18 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
+
 import { HodlBorderedBox } from "../HodlBorderedBox";
+
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import OpenInBrowserIcon from '@mui/icons-material/OpenInBrowser';
+import LoginIcon from '@mui/icons-material/Login';
+import FeedIcon from '@mui/icons-material/Feed';
+
 
 export const HomepageQuickstart = () => (
     <Box sx={{
-        marginY: {
-            xs: 2,
-        },
-        marginX: {
-            xs: 0,
-            sm: 4
-        },
-        marginBottom: {
-            xs: 4,
-        },
+        marginY: 2,
         textAlign: 'center',
     }}>
         <Typography
@@ -23,22 +21,22 @@ export const HomepageQuickstart = () => (
             color="primary"
             sx={{
                 fontFamily: theme => theme.logo.fontFamily,
-                marginBottom: 2,
+                marginBottom: 4,
                 padding: 0,
-                fontSize: 20
+                fontSize: 16
             }}>
-            Join our Polygon NFT platform
+            Join our Polygon NFT Platform
         </Typography>
         <Box sx={{
             display: 'grid',
             gridTemplateColumns: {
                 xs: '1fr',
                 sm: '1fr 1fr',
-                md: '1fr 1fr 1fr 1fr',
             },
-            gap: 2
+            gap: 4
         }}>
-            <HodlBorderedBox sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <HodlBorderedBox sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 4 }}>
+                <AccountBalanceWalletIcon color="primary" sx={{ fontSize: 40, marginBottom: 2}}></AccountBalanceWalletIcon>
                 <Typography
                     sx={{
                         fontFamily: theme => theme.logo.fontFamily,
@@ -46,12 +44,14 @@ export const HomepageQuickstart = () => (
                         padding: 0,
                         fontSize: 16
                     }}>
-                    Install a polygon wallet
+                    Install a Polygon Wallet
                 </Typography>
+
                 <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>Install a wallet with access to the polygon blockchain.</Typography>
-                <Typography sx={{ color: theme => theme.palette.text.secondary }}>We support MetaMask, Coinbase Wallet or WalletConnect</Typography>
+                <Typography sx={{ color: theme => theme.palette.text.secondary }}>We recommend MetaMask or Coinbase Wallet</Typography>
             </HodlBorderedBox>
-            <HodlBorderedBox sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <HodlBorderedBox sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 4 }}>
+                <OpenInBrowserIcon color="primary" sx={{ fontSize: 40, marginBottom: 2}}></OpenInBrowserIcon>
                 <Typography
                     sx={{
                         fontFamily: theme => theme.logo.fontFamily,
@@ -59,12 +59,14 @@ export const HomepageQuickstart = () => (
                         padding: 0,
                         fontSize: 16
                     }}>
-                    Open a dApp browser
+                    Open a dApp Browser
                 </Typography>
-                <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>You can log in to Hodl My Moon with the dApp browser in your polygon wallet</Typography>
-                <Typography sx={{ color: theme => theme.palette.text.secondary }}>Or with WalletConnect</Typography>
+
+                <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>Open the dApp browser in your polygon wallet</Typography>
+                <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>And visit this website</Typography>
             </HodlBorderedBox>
-            <HodlBorderedBox sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <HodlBorderedBox sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 4 }}>
+            <LoginIcon color="primary" sx={{ fontSize: 40, marginBottom: 2}}></LoginIcon>
                 <Typography
                     sx={{
                         fontFamily: theme => theme.logo.fontFamily,
@@ -72,12 +74,13 @@ export const HomepageQuickstart = () => (
                         padding: 0,
                         fontSize: 16
                     }}>
-                    Click connect
+                    Log in
                 </Typography>
-                <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>Locate the connect button in our main menu and click it.</Typography>
-                <Typography sx={{ color: theme => theme.palette.text.secondary }}>Sign the message to verify your identity</Typography>
+                <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>Click the Connect wallet button</Typography>
+                <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>And sign the message</Typography>
             </HodlBorderedBox>
-            <HodlBorderedBox sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <HodlBorderedBox sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 4 }}>
+                <FeedIcon color="primary" sx={{ fontSize: 40, marginBottom: 2}}></FeedIcon>
                 <Typography
                     sx={{
                         fontFamily: theme => theme.logo.fontFamily,
@@ -85,14 +88,14 @@ export const HomepageQuickstart = () => (
                         padding: 0,
                         fontSize: 16
                     }}>
-                    Follow polygon NFT creators
+                    Build your feed
                 </Typography>
-                <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>Like and comment on your favourite polygon NFTs</Typography>
-                <Typography sx={{ color: theme => theme.palette.text.secondary }}>Or buy and sell on our polygon nft marketplace</Typography>
+                <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>Follow other polygon NFT creators</Typography>
+                <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>See what they mint and list on the marketplace</Typography>
             </HodlBorderedBox>
         </Box>
         <Box sx={{ margin: 4 }}>
-            <Link href="/learn/sign-in/coinbase-wallet" sx={{ textDecoration: 'none'}}>
+            <Link href="/learn/sign-in/coinbase-wallet" sx={{ textDecoration: 'none' }}>
                 <Button color="secondary" variant="contained" sx={{ paddingY: 1.5, paddingX: 3 }}>
                     Quickstart with Coinbase Wallet
                 </Button>

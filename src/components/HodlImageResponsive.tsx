@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import Head from "next/head";
 
 import { makeCloudinaryUrl } from "../lib/cloudinaryUrl";
-import { getTopPadding } from "../lib/utils";
+import { getTopPadding } from "../lib/getTopPadding";
 
 
 export const HodlImageResponsive = ({

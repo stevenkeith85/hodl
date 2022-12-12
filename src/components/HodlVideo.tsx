@@ -2,7 +2,7 @@ import NoSsr from "@mui/material/NoSsr";
 import { useEffect, useRef } from "react";
 
 import { makeCloudinaryUrl } from "../lib/cloudinaryUrl";
-import { getTopPadding } from "../lib/utils";
+import { getTopPadding } from "../lib/getTopPadding";
 
 interface HodlVideoProps {
     cid: string;
