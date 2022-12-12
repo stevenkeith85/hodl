@@ -2,6 +2,8 @@ import { getAsString } from "../../../../lib/getAsString";
 import { NextRequest, NextResponse } from 'next/server';
 import { UserViewModel } from "../../../../models/User";
 import { getUsers } from "../../../../lib/database/rest/Users";
+import { zCard } from "../../../../lib/database/rest/zCard";
+import { zRange } from "../../../../lib/database/rest/zRange";
 
 export const getNewUsers = async (
   offset: number = 0,
@@ -13,15 +15,8 @@ export const getNewUsers = async (
     next: number,
     total: number
   }> => {
-  const zcardResponse = await fetch(
-    `${process.env.UPSTASH_REDIS_REST_URL}/zcard/users:new`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-      }
-    });
 
-  const { result: total } = await zcardResponse.json();
+  const total = await zCard('users:new');
 
   if (offset >= total) {
     return {
@@ -31,16 +26,7 @@ export const getNewUsers = async (
     };
   }
 
-  const idsResponse = await fetch(
-    `${process.env.UPSTASH_REDIS_REST_URL}/zrange/users:new/${offset}/${offset + limit - 1}/rev`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-      }
-    });
-
-  const { result: addresses } = await idsResponse.json();
-
+  const addresses = await zRange(`users:new`, offset, offset + limit - 1, {rev:true});
   const users = await getUsers(addresses);
 
   return {

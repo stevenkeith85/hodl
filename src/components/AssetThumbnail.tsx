@@ -2,7 +2,7 @@
 import Box from "@mui/material/Box";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import { assetType } from "../lib/utils";
+import { assetType } from "../lib/assetType";
 import { AssetTypes } from "../models/AssetType";
 import { Token } from "../models/Token";
 import { HodlAudioBoxMini } from "./HodlAudioBoxMini";

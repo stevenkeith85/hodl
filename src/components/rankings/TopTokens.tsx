@@ -4,8 +4,6 @@ import { TokenLinksList } from '../profile/TokenLinksList';
 import { HodlScrollBox } from '../HodlScrollBox';
 import Typography from '@mui/material/Typography';
 
-
-
 export const TopTokens = ({ showLikes = true, titleSize = 16,  height = 325, size=44, fontSize=14, titleMargin=2}) => {
     const { limit, mostLiked } = useContext(RankingsContext);
 

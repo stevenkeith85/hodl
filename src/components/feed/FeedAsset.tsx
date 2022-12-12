@@ -3,7 +3,8 @@ import Skeleton from "@mui/material/Skeleton";
 import Box from "@mui/material/Box";
 
 import { HodlActionViewModel } from "../../models/HodlAction";
-import { assetType, getTopPadding } from "../../lib/utils";
+import { getTopPadding } from "../../lib/getTopPadding";
+import { assetType } from "../../lib/assetType";
 import { AssetTypes } from "../../models/AssetType";
 import { HodlVideo } from "../HodlVideo";
 import { HodlImageResponsive } from "../HodlImageResponsive";

@@ -8,7 +8,6 @@ import { useDisconnect } from "../../hooks/useDisconnect";
 import { PusherContext } from "../../contexts/PusherContext";
 
 
-
 interface LoginLogoutButtonProps {
     color?: "secondary" | "inherit" | "primary" | "success" | "error" | "info" | "warning";
     variant?: 'text' | 'outlined' | 'contained';
@@ -23,10 +22,7 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
     fontSize = '14px',
     sx = null,
     closeMenu = null
-
 }) => {
-
-
     const [connect] = useConnect();
     const disconnect = useDisconnect();
 
@@ -51,11 +47,11 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
                             e.stopPropagation();
                             e.preventDefault();
 
-                            closeMenu();
+                            closeMenu && closeMenu();
                             // They are clicking the sign in button, so authenticate with the BE
                             const connected = await connect(true, true);
 
-                            router.push('/');
+                            router.push('/feed');
                         }}
                     >
                         Connect wallet

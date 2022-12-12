@@ -16,9 +16,6 @@ import cookie from 'cookie'
 import '../styles/globals.css'
 import { PusherContext } from '../contexts/PusherContext';
 import { WalletContext } from '../contexts/WalletContext';
-import { FeedContext } from '../contexts/FeedContext';
-import { useActions2 } from '../hooks/useActions2';
-import { ActionSet } from '../models/HodlAction';
 
 import { HodlNotificationSnackbar } from '../components/snackbars/HodlNotificationSnackbar';
 
@@ -39,12 +36,10 @@ import Layout from '../components/layout/Layout';
 import { useConnect } from '../hooks/useConnect';
 import { getProviderSignerAddress } from '../lib/getSigner';
 import { useDisconnect } from '../hooks/useDisconnect';
-import { useRouter } from 'next/router';
 
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
-
 
 interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
@@ -101,9 +96,6 @@ export default function MyApp(props: MyAppProps) {
 
   }, [address])
 
-  const feed = useActions2(address, ActionSet.Feed);
-
-  const router = useRouter();
 
   const [_connect, connectBE] = useConnect();
   const disconnect = useDisconnect();
@@ -113,8 +105,6 @@ export default function MyApp(props: MyAppProps) {
 
     const { provider, signer, address } = await getProviderSignerAddress(false);
 
-    console.log(provider, signer, address);
-
     if (!provider || !signer || !address) {
       await disconnect();
 
@@ -123,7 +113,7 @@ export default function MyApp(props: MyAppProps) {
       setPusher(null);
       setUserSignedInToPusher(null);
 
-      router.push('/');
+      window.location.replace('/')
     }
 
     provider.on("network", async (newNetwork, oldNetwork) => {
@@ -153,20 +143,17 @@ export default function MyApp(props: MyAppProps) {
             }
           })
       }
-
       await switchIfOnUnsupportedNetwork();
     });
 
     if (signer && address && backendAddress !== address) {
-
-
       enqueueSnackbar("Your logged in address does not match your wallet address. Switching Now", {
         variant: "error",
         hideIconVariant: true
       });
 
       await connectBE(signer, address);
-      router.push('/');
+      window.location.replace('/')
     }
 
     setProvider(provider);
@@ -179,9 +166,6 @@ export default function MyApp(props: MyAppProps) {
     if (props?.pageProps?.address && !address) {
       autoConnect(props?.pageProps?.address);
     }
-
-
-
   }, [props?.pageProps?.address])
 
   // Staging is password protected. Will switch this to staging
@@ -224,7 +208,6 @@ export default function MyApp(props: MyAppProps) {
                     hodlnotification: HodlNotificationSnackbar
                   }}
                 >
-                  <FeedContext.Provider value={{ feed }}>
                     <Layout
                       address={address}
                       pusher={pusher}
@@ -232,7 +215,6 @@ export default function MyApp(props: MyAppProps) {
                     >
                       <Component {...pageProps} />
                     </Layout>
-                  </FeedContext.Provider>
                 </SnackbarProvider>
               </PusherContext.Provider>
             </WalletContext.Provider>

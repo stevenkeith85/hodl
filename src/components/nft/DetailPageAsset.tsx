@@ -4,10 +4,8 @@ import dynamic from 'next/dynamic';
 
 import Skeleton from "@mui/material/Skeleton";
 
-import { 
-    assetType, 
-    getTopPadding 
-} from "../../lib/utils";
+import { getTopPadding } from "../../lib/getTopPadding";
+import { assetType } from "../../lib/assetType";
 
 
 import { AssetTypes } from "../../models/AssetType";

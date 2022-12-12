@@ -1,15 +1,11 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 import { WalletContext } from '../contexts/WalletContext';
-import axios from 'axios'
-// import { PusherContext } from '../contexts/PusherContext';
 import { messageToSign } from '../lib/messageToSign';
 
-import { enqueueSnackbar } from 'notistack';
 import { getProviderSignerAddress } from '../lib/getSigner';
 
 
 export const useConnect = () : [Function, Function]=> {
-  // const { pusher, setPusher, setUserSignedInToPusher } = useContext(PusherContext);
   const { setProvider, setSigner, setAddress } = useContext(WalletContext);
 
   // we ask which account they want if they aren't a returning user (i.e. they've logged out)
@@ -48,7 +44,9 @@ export const useConnect = () : [Function, Function]=> {
   }
 
   const connectBE = async (signer, address) => {
+    const enqueueSnackbar = await import('notistack').then(mod => mod.enqueueSnackbar);
     try {
+      const {default: axios} = await import('axios');
       const { uuid } = await axios.get(`/api/auth/uuid?address=${address}`).then(r => r.data);
 
       enqueueSnackbar("Sign the message in your wallet to log in", {

@@ -2,7 +2,7 @@ import Avatar from "@mui/material/Avatar";
 import axios from "axios";
 import useSWR from "swr";
 
-import { assetType } from "../../lib/utils";
+import { assetType } from "../../lib/assetType";
 import { AssetTypes } from "../../models/AssetType";
 import { UserViewModel } from "../../models/User";
 import { HodlAudioBoxMini } from "../HodlAudioBoxMini";
@@ -14,11 +14,12 @@ interface UserAvatarProps {
 }
 
 export const UserAvatar: React.FC<UserAvatarProps> = ({ user, size }) => {
-    let {data: userData } = useSWR(
-        [`/api/user`, user?.address] ,
-       (url, address) => axios.get(`${url}/${address}`).then(r => r.data.user),
-       { fallbackData: user}
-   )
+    let { data: userData } = useSWR(
+        [`/api/user`, user?.address],
+        (url, address) => axios.get(`${url}/${address}`).then(r => r.data.user),
+        { fallbackData: user }
+    )
+
     return (<>
         <Avatar
             sx={{
@@ -27,7 +28,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({ user, size }) => {
             }}
         >
             {userData?.avatar &&
-                <div style={{ width: '100%'}}>
+                <div style={{ width: '100%' }}>
                     {assetType(userData?.avatar) === AssetTypes.Image &&
                         <HodlImageResponsive
                             assetFolder={"image"}

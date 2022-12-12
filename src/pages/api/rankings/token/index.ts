@@ -2,6 +2,8 @@ import { Token } from "../../../../models/Token";
 import { mGetTokens } from "../../../../lib/database/rest/Tokens";
 import { getAsString } from "../../../../lib/getAsString";
 import { NextRequest, NextResponse } from 'next/server';
+import { zCard } from "../../../../lib/database/rest/zCard";
+import { zRange } from "../../../../lib/database/rest/zRange";
 
 
 export const getMostLikedTokens = async (
@@ -13,15 +15,7 @@ export const getMostLikedTokens = async (
     next: number,
     total: number
   }> => {
-  const zcardResponse = await fetch(
-    `${process.env.UPSTASH_REDIS_REST_URL}/zcard/rankings:token:likes:count`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-      }
-    });
-
-  const { result: total } = await zcardResponse.json();
+  const total = await zCard('rankings:token:likes:count');
 
   if (offset >= total) {
     return {
@@ -31,15 +25,7 @@ export const getMostLikedTokens = async (
     };
   }
 
-  const idsResponse = await fetch(
-    `${process.env.UPSTASH_REDIS_REST_URL}/zrange/rankings:token:likes:count/${offset}/${offset + limit - 1}/rev`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-      }
-    });
-
-  const { result: ids } = await idsResponse.json();
+  const ids = await zRange(`rankings:token:likes:count`, offset, offset + limit - 1, {rev:true});
   const tokens = await mGetTokens(ids);
 
   return {

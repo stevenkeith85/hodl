@@ -1,5 +1,4 @@
 import { HodlCommentViewModel } from "./HodlComment";
-import { Token } from "./Token";
 import { TokenVM } from "./TokenVM";
 import { UserViewModel } from "./User";
 

@@ -1,9 +1,6 @@
 import { useContext } from 'react';
 import { WalletContext } from '../contexts/WalletContext';
 
-import axios from 'axios'
-
-
 export const useDisconnect = () => {
   const { 
     setSigner, 
@@ -30,6 +27,7 @@ export const useDisconnect = () => {
 
   const disconnectBE = async () => {
     try {
+      const {default: axios} = await import('axios');
       const r = await axios.post(
         '/api/auth/logout',
         {
