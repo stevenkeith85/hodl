@@ -208,11 +208,7 @@ export default function MyApp(props: MyAppProps) {
                     hodlnotification: HodlNotificationSnackbar
                   }}
                 >
-                    <Layout
-                      address={address}
-                      pusher={pusher}
-                      userSignedInToPusher={userSignedInToPusher}
-                    >
+                    <Layout address={address}>
                       <Component {...pageProps} />
                     </Layout>
                 </SnackbarProvider>

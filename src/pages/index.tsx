@@ -22,7 +22,6 @@ import { RankingsContext } from '../contexts/RankingsContext';
 import { useNewTokens } from '../hooks/useNewTokens';
 import { useNewUsers } from '../hooks/useNewUsers';
 import { useRankings } from '../hooks/useRankings';
-import Typography from '@mui/material/Typography';
 
 
 export const getServerSideProps = async ({ req, res }) => {

@@ -14,14 +14,13 @@ import FeedIcon from '@mui/icons-material/Feed';
 export const HomepageQuickstart = () => (
     <Box sx={{
         marginY: 2,
-        textAlign: 'center',
     }}>
         <Typography
             variant='h2'
             color="primary"
             sx={{
                 fontFamily: theme => theme.logo.fontFamily,
-                marginBottom: 4,
+                marginBottom: 2,
                 padding: 0,
                 fontSize: 16
             }}>
@@ -94,7 +93,7 @@ export const HomepageQuickstart = () => (
                 <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>See what they mint and list on the marketplace</Typography>
             </HodlBorderedBox>
         </Box>
-        <Box sx={{ margin: 4 }}>
+        <Box sx={{ margin: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Link href="/learn/sign-in/coinbase-wallet" sx={{ textDecoration: 'none' }}>
                 <Button color="secondary" variant="contained" sx={{ paddingY: 1.5, paddingX: 3 }}>
                     Quickstart with Coinbase Wallet

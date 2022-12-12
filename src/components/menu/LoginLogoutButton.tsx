@@ -81,7 +81,7 @@ export const LoginLogoutButton: React.FC<LoginLogoutButtonProps> = ({
                         router.push('/');
                     }}
                 >
-                    sign out
+                    Sign out
                 </Button>
             }
         </>);

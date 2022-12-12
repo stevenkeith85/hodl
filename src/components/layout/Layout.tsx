@@ -1,19 +1,8 @@
 import Container from '@mui/material/Container';
-import dynamic from 'next/dynamic';
-
-import AppBarLoading from './AppBarLoading';
+import ResponsiveAppBar from './AppBar';
 import Footer from './Footer';
 
-
-export default function Layout({ children, address, pusher, userSignedInToPusher }) {
-
-    const AppBar = dynamic(
-        () => import('./AppBar'),
-        {
-            ssr: false,
-            loading: () => <AppBarLoading address={address} />
-        }
-    );
+export default function Layout({ children, address }) {
 
     return (
         <div
@@ -28,8 +17,7 @@ export default function Layout({ children, address, pusher, userSignedInToPusher
                     flexShrink: 0,
                     flexBasis: 'auto'
                 }}>
-                {/* @ts-ignore */}
-                <AppBar address={address} pusher={pusher} userSignedInToPusher={userSignedInToPusher} />
+                <ResponsiveAppBar address={address} />
             </header>
             <main
                 style={
