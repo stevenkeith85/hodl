@@ -1,15 +1,18 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import Link from '@mui/material/Link';
 
 import { useEffect, useRef } from "react";
 import { LoginLogoutButton } from "./LoginLogoutButton";
 import MetaMaskOnboarding from '@metamask/onboarding'
+import Link from 'next/link';
 
-
-export const LoggedOutMenu = ({setHoverMenuOpen}) => {
+export const LoggedOutMenu = ({ setHoverMenuOpen }) => {
     const onboarding = useRef<MetaMaskOnboarding>();
 
+    const pages = [
+        { title: "Home", url: '/' },
+        { title: "Explore", url: '/explore' }
+    ]
     useEffect(() => {
         if (!onboarding.current) {
             onboarding.current = new MetaMaskOnboarding();
@@ -18,40 +21,36 @@ export const LoggedOutMenu = ({setHoverMenuOpen}) => {
 
     return (
         <Box
-            display="flex"
-            flexDirection="column"
+        sx={{
+            display:"flex",
+            flexDirection:"column",
+        }}
         >
-            <Typography mb={2} sx={{ fontSize: 18 }}>Sign in</Typography>
-
-            <Typography mb={2} sx={{ fontSize: 16, color: theme => theme.palette.text.secondary }}>
-                Your wallet is your digital identity.
-            </Typography>
-            <Typography marginY={1} sx={{ fontSize: 14, color: theme => theme.palette.text.secondary }}>
-                <Link sx={{textDecoration: 'none'}} target="_blank" href="/learn/connecting-a-wallet">Read more</Link>
-            </Typography>
-            {
-                !(MetaMaskOnboarding.isMetaMaskInstalled()) &&
-                <Box component="span" marginY={1}
-                    onClick={e => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        onboarding.current.startOnboarding()
-                    }}>
-                    <Link sx={{textDecoration: 'none'}} href="#">Install metamask</Link>
-                </Box>
-
-            }
-            <div>
-                <LoginLogoutButton
-                    variant='contained'
-                    closeMenu={() => setHoverMenuOpen(false)}
-                    sx={{
-                        marginTop: 4,
-                        fontSize: 16,
-                        paddingY: 0.75,
-                        paddingX: 3,
-                    }} />
-            </div>
+            <Box>
+                {pages.map(({ title, url }) => <Link href={url} key={url}>
+                    <Typography
+                        sx={{
+                            fontSize: 16,
+                            marginLeft: 2,
+                            marginY: 2,
+                            '&:hover': {
+                                color: "secondary.main",
+                                cursor: 'pointer'
+                            }
+                        }}>
+                        {title}
+                    </Typography>
+                </Link>
+                )}
+            </Box>
+            <LoginLogoutButton
+                variant='contained'
+                closeMenu={() => setHoverMenuOpen(false)}
+                sx={{
+                    marginTop: 4,
+                    paddingY: 0.75,
+                    paddingX: 3,
+                }} />
         </Box>
     )
 }

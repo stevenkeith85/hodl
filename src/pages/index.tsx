@@ -22,7 +22,6 @@ import { RankingsContext } from '../contexts/RankingsContext';
 import { useNewTokens } from '../hooks/useNewTokens';
 import { useNewUsers } from '../hooks/useNewUsers';
 import { useRankings } from '../hooks/useRankings';
-import Typography from '@mui/material/Typography';
 
 
 export const getServerSideProps = async ({ req, res }) => {
@@ -126,7 +125,11 @@ export default function Home({
               },
               gap: 4,
               rowGap: 8,
-              marginY: 4
+              marginY: 4,
+              textAlign: {
+                xs: 'center',
+                sm: 'left'
+            }
             }}
           >
             <TopUsers followButton={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />

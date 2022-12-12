@@ -58,17 +58,17 @@ export const WalletDetails = () => {
                         }}
                         component="legend"
                     >
-                        wallet
+                        Wallet
                     </Typography>
-                    <Typography sx={{ color: 'text.primary' }} mb={1}>address</Typography>
+                    <Typography sx={{ color: 'text.primary' }} mb={1}>Address</Typography>
                     <CopyText text={address} placement="top-start">
                         <Typography color="success.dark" mb={1}>{getShortAddress(address)}</Typography>
                     </CopyText>
                     {chains[network?.name] && <>
-                        <Typography sx={{ color: 'text.primary' }} mb={1}>chain</Typography>
+                        <Typography sx={{ color: 'text.primary' }} mb={1}>Chain</Typography>
                         <Typography color="success.dark" mb={1}>{chains[network?.name]?.chainName || network?.name}</Typography>
 
-                        <Typography sx={{ color: 'text.primary' }} mb={0}>balance</Typography>
+                        <Typography sx={{ color: 'text.primary' }} mb={0}>Balance</Typography>
                         <Typography color={Number(balance) > 0 ? "success.dark" : "error"} mb={0}>{`${balance} ${chains[network?.name]?.nativeCurrency?.symbol}`}</Typography>
                     </>
                     }

@@ -12,20 +12,8 @@ const AppBarLoading = ({ address }) => {
         {
             label: 'hodl my moon',
             url: '/',
-            icon: <Skeleton variant="circular" animation="wave" width={22} height={22} />,
+            icon: <img src="https://res.cloudinary.com/dyobirj7r/image/upload/w_80,h_80/static/logo.png" width={40} height={40}/>,
             publicPage: true
-        },
-        {
-            label: <Typography>explore</Typography>,
-            url: '/explore',
-            icon: <Skeleton variant="circular" animation="wave" width={22} height={22} />,
-            publicPage: true
-        },
-        {
-            label: <Typography>create</Typography>,
-            url: '/create',
-            icon: <Skeleton variant="circular" animation="wave" width={22} height={22} />,
-            publicPage: false
         },
     ]);
 
@@ -152,7 +140,7 @@ const AppBarLoading = ({ address }) => {
                                     display: 'flex',
                                     alignItems: 'center',
                                     color: theme => theme.palette.primary.main,
-                                    gap: { xs: 1, md: 3 },
+                                    gap: { xs: 1 },
                                 }}
                             >
                                 {/* Search box desktop */}
@@ -212,22 +200,12 @@ const AppBarLoading = ({ address }) => {
                                     }}
                                 >
                                     <Box
-                                        sx={{ display: !address ? 'flex' : 'none' }}
                                         width={44}
                                         height={44}
                                         display="flex"
                                         alignItems="center"
                                         justifyContent="center">
                                         <Skeleton variant="rounded" animation="wave" width={22} height={22} />
-                                    </Box>
-                                    <Box
-                                        sx={{ display: address ? 'flex' : 'none' }}
-                                        width={44}
-                                        height={44}
-                                        display="flex"
-                                        alignItems="center"
-                                        justifyContent="center">
-                                        <UserAvatarAndHandleBodyLoading size={44} handle={false} />
                                     </Box>
                                 </Box>
                             </Box>

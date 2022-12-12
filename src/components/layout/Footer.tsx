@@ -3,7 +3,6 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Link from 'next/link';
-import { RocketLaunchIcon } from "../icons/RocketLaunchIcon";
 
 
 const Footer = ({
@@ -153,27 +152,8 @@ const Footer = ({
                         boxSizing: 'border-box',
                         padding: 2
                     }}>
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            flexDirection: {
-                                xs: 'column',
-                                md: 'row',
-                            },
-                            gap: 1,
-                            justifyContent: {
-                                xs: 'center',
-                                md: 'space-between'
-                            },
-                            alignItems: {
-                                xs: 'center',
-                            },
-                        }}>
-                        <RocketLaunchIcon
-                            size={14}
-                            fill={grey[500]}
-                        />
-                        <Typography sx={{ color: grey[500], fontSize: '12px' }}>Copyright © 2022 Pony Powered Limited.</Typography>
+                    <Box>
+                        <Typography sx={{ color: grey[500], fontSize: '12px', textAlign: {xs:'center', md: 'right'} }}>Copyright © 2022 Pony Powered Limited.</Typography>
                     </Box>
                 </Container>
             </Box>

@@ -11,41 +11,41 @@ export const DesktopNav = ({ address }) => {
     useEffect(() => {
         if (user?.nickname) {
             setPages([
-                {
-                    label: 'explore',
-                    url: '/explore',
-                    publicPage: true
-                },
-                {
-                    label: 'create',
-                    url: '/create',
-                    publicPage: false
-                },
-                {
-                    label: 'profile',
-                    url: `/profile/${user?.nickname}`,
-                    publicPage: false
-                },
+                // {
+                //     label: 'explore',
+                //     url: '/explore',
+                //     publicPage: true
+                // },
+                // {
+                //     label: 'create',
+                //     url: '/create',
+                //     publicPage: false
+                // },
+                // {
+                //     label: 'profile',
+                //     url: `/profile/${user?.nickname}`,
+                //     publicPage: false
+                // },
             ])
         }
     }, [user?.nickname])
 
     const [pages, setPages] = useState([
-        {
-            label: 'explore',
-            url: '/explore',
-            publicPage: true
-        },
-        {
-            label: 'create',
-            url: '/create',
-            publicPage: false
-        },
-        {
-            label: 'profile',
-            url: `/profile/${address}`,
-            publicPage: false
-        },
+        // {
+        //     label: 'explore',
+        //     url: '/explore',
+        //     publicPage: true
+        // },
+        // {
+        //     label: 'create',
+        //     url: '/create',
+        //     publicPage: false
+        // },
+        // {
+        //     label: 'profile',
+        //     url: `/profile/${address}`,
+        //     publicPage: false
+        // },
     ]);
 
     return (

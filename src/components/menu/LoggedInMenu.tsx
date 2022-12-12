@@ -26,15 +26,32 @@ const ProfilePictureModal = dynamic(
 export const LoggedInMenu = () => {
     const [walletPages] = useState([
         {
-            label: 'nickname',
+            label: 'Feed',
+            action: () => router.push('/feed'),
+        },
+        {
+            label: 'Explore',
+            action: () => router.push('/explore'),
+
+        },
+        {
+            label: 'Create',
+            action: () => router.push('/create'),
+        },
+        {
+            label: 'Profile',
+            action: () => router.push(user?.nickname ? `/profile/${user.nickname}` : `/profile/${user.address}`),
+        },
+        {
+            label: 'Nickname',
             action: () => setNicknameModalOpen(true),
         },
         {
-            label: 'avatar nft',
+            label: 'Avatar NFT',
             action: () => setProfilePictureModalOpen(true),
         },
         {
-            label: 'transactions',
+            label: 'Transactions',
             action: () => router.push('/transactions'),
         },
     ]);
@@ -80,17 +97,16 @@ export const LoggedInMenu = () => {
                             </Typography>
                         </div>
                     ))}
-
-                    <LoginLogoutButton
-                        variant='outlined'
+                </div>
+                <LoginLogoutButton
+                        variant='contained'
                         sx={{
                             marginLeft: 1,
-                            marginTop: 2,
+                            marginTop: 4,
                             paddingY: 0.75,
                             paddingX: 3,
                         }}
                     />
-                </div>
             </div>
         </>)
 }
