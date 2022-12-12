@@ -22,7 +22,11 @@ export const HomepageQuickstart = () => (
                 fontFamily: theme => theme.logo.fontFamily,
                 marginBottom: 2,
                 padding: 0,
-                fontSize: 16
+                fontSize: 16,
+                textAlign: {
+                    xs: 'center',
+                    sm: 'left'
+                }
             }}>
             Join our Polygon NFT Platform
         </Typography>
