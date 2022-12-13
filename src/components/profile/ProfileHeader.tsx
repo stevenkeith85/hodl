@@ -133,7 +133,7 @@ export const ProfileHeader = ({
           {
             open &&
             <HodlShareMenu
-              relativeUrl={'profile/' + owner.nickname || owner.address}
+              relativeUrl={'/profile/' + owner.nickname || owner.address}
               anchorEl={anchorEl}
               handleClose={handleClose}
               open={open}

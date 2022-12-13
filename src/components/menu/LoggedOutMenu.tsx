@@ -11,7 +11,8 @@ export const LoggedOutMenu = ({ setHoverMenuOpen }) => {
 
     const pages = [
         { title: "Home", url: '/' },
-        { title: "Explore", url: '/explore' }
+        { title: "Explore", url: '/explore' },
+        { title: "Learn", url: '/learn' }
     ]
     useEffect(() => {
         if (!onboarding.current) {

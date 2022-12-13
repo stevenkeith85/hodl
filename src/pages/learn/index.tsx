@@ -1,175 +1,181 @@
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Link from "@mui/material/Link";
-import Typography from "@mui/material/Typography";
-import Head from "next/head";
+import fs from 'fs';
+import matter from 'gray-matter';
+import Link from 'next/link';
+import Box from '@mui/material/Box';
+import { HodlBorderedBox } from '../../components/HodlBorderedBox';
+import Button from '@mui/material/Button';
+import { HodlShareButton } from '../../components/HodlShareButton';
+import Head from 'next/head';
 
-import { HodlBorderedBox } from "../../components/HodlBorderedBox";
-import { authenticate } from "../../lib/jwt";
+const getData = (root) => {
+    const data = new Map;
+    const stack = [root];
 
-export async function getServerSideProps({ req, res }) {
-    await authenticate(req, res);
+    while (stack.length !== 0) {
+        const folder = stack.pop();
+
+        const dirents = fs.readdirSync(folder, { withFileTypes: true });
+
+        dirents.map(dirent => {
+            if (dirent.isDirectory()) {
+                stack.push(`${folder}/${dirent.name}`);
+            } else {
+                if (data.has(folder)) {
+                    data.set(folder, [...data.get(folder), dirent.name]);
+                } else {
+                    data.set(folder, [dirent.name])
+                }
+            }
+        })
+    }
+    return data;
+}
+
+export async function getStaticProps() {
+    const root = 'src/posts/learn';
+
+    const data = getData(root);
+
+    const posts = {};
+    const categories = {
+        'src/posts/learn/nfts': {
+            name: 'Non Fungible Tokens',
+            description: 'Non Fungible Tokens are digital assets with their ownership recorded on a digital ledger.'
+        },
+        'src/posts/learn/sign-in': {
+            name: 'Sign in to dApps',
+            description: 'Sign in to dApps with our visual guides'
+        },
+        'src/posts/learn/dapps': {
+            name: 'Decentralized Applications',
+            description: 'Decentralized applications store your data on a blockchain.'
+        },
+    };
+    let re = new RegExp(`${root}\/?`, "g");
+
+    // @ts-ignore
+    for (let key of data.keys()) {
+        posts[key] = [];
+    }
+
+    // @ts-ignore
+    for (let [folder, files] of data.entries()) {
+        for (let file of files) {
+            const relativeFolder = folder.replace(re, '');
+            const slug = file.replace('.md', '');
+
+            const url = relativeFolder ? relativeFolder + '/' + slug : slug;
+            const readFile = fs.readFileSync(`${folder}/${file}`, 'utf-8');
+            const { data: frontmatter } = matter(readFile);
+
+            posts[folder] = posts[folder].concat([{ url, frontmatter: frontmatter }]);
+        }
+    }
 
     return {
         props: {
-            address: req.address || null,
+            categories,
+            posts
         }
     }
 }
 
-export default function Learn({ address }) {
+export default function Learn({ categories, posts }) {
 
     const title = "Learn about NFTs, minting, blockchains, smart contracts and everything else";
     const description = "Get an overview of key web3 terms and start your nft journey today";
+    const canonical = "https://www.hodlmymoon.com/learn";
+    const socialImage = "https://res.cloudinary.com/dyobirj7r/image/upload/ar_216:253,c_fill,w_1080/prod/nfts/bafkreihuew5ij6lvc2k7vjqr65hit7fljl7fsxlikrkndcdyp47xbi6pvy"
 
-    return (
-        <>
-            <Head>
-                <title>{title}</title>
-                <meta name="description" content={description} />
-            </Head>
-            <Box
-                marginX={2}
-                marginY={4}
-            >
-                <HodlBorderedBox>
-                    <Box mb={4}>
-                        <Typography component="h1" mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
-                            Learn about NFTs and dApps
-                        </Typography>
-                        <Typography mb={1} color={theme => theme.palette.text.secondary} sx={{ fontSize: 16 }}>
-                            Welcome to the wonderful word of Non Fungible Tokens and Decentralized Applications.
-                        </Typography>
+    return (<>
+        <Head>
+            <title>{title}</title>
+            <meta name="description" content={description} />
+            <link href={canonical} rel="canonical" />
+
+            <meta name="twitter:card" content="summary_large_image" />
+            <meta name="twitter:site" content="@hodlmymoon" />
+            <meta name="twitter:creator" content="@hodlmymoon" />
+            <meta name="twitter:title" content={title} />
+            <meta name="twitter:description" content={description} />
+            <meta name="twitter:image" content={socialImage} />
+
+            <meta property="og:type" content="website" />
+            <meta property="og:url" content={canonical} />
+            <meta property="og:title" content={title} />
+            <meta property="og:image" content={socialImage} />
+            <meta property="og:description" content={description} />
+        </Head>
+        <HodlBorderedBox sx={{ marginY: 4 }}>
+            <h1 className='primary-main'>Learn about Web3</h1>
+            <div style={{ margin: '0 0 16px 0', display: 'flex', gap: '16px' }}>
+                <HodlShareButton />
+            </div>
+            <p>
+                We have beginner friendly guides on NFTs, dApps, and everything you need to know to get up to speed with Web3.
+            </p>
+            <p>
+                This section of the website will be continually growing, so bookmark it now
+            </p>
+            {Object.keys(categories).map(category => (
+                <div key={category}>
+                    <h2>{categories[category].name}</h2>
+                    <p>{categories[category].description}</p>
+                    <Box
+                        sx={{
+                            display: 'grid',
+                            gridTemplateColumns: {
+                                xs: '1fr',
+                                md: '1fr 1fr 1fr',
+                            },
+                            gap: 3,
+                            marginBottom: 3,
+                            width: '100%',
+                        }}>
+                        {
+                            posts[category]?.map(({ url, frontmatter }) => (<div
+                                key={url}
+                                style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    boxSizing: 'border-box',
+                                    border: '1px solid #ddd',
+                                    borderRadius: 8,
+                                    overflow: 'hidden'
+                                }}>
+
+                                <img src={frontmatter.socialImage} width="100%" style={{ height: 300 }} />
+                                <div style={{
+                                    padding: `16px`,
+                                    flexGrow: 1,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                }}>
+                                    <div
+                                        style={{ flexGrow: 1 }}
+                                    >
+                                        <p style={{ fontWeight: 600 }}>{frontmatter.title}</p>
+                                        <p>{frontmatter.metaDescription}</p>
+                                    </div>
+                                    <div style={{ textAlign: 'right' }}>
+                                        <Link href={`/learn/${url}`}>
+                                            <Button color="secondary" sx={{ paddingX: 2, paddingY: 1 }}>
+                                                Read
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                            ))
+                        }
                     </Box>
-                    <Box marginY={4}>
-                        <Typography mb={1} variant="h2">What are NFTs?</Typography>
-                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            Non Fungible Tokens are digital assets with their ownership recorded on a digital ledger.
-                        </Typography>
-                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            You can read all about them and what to look out for in our section linked below.
-                        </Typography>
-                        <Link href="/learn/nfts/what-are-nfts" sx={{ color: theme => theme.palette.primary.main, textDecoration: 'none' }}>
-                            <Button sx={{ marginY: 2 }}>What are NFTs</Button>
-                        </Link>
-                    </Box>
-                    <Box marginY={4}>
-                        <Typography mb={1} variant="h2">What are dApps?</Typography>
-                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            A decentralized application facilitates storing your data on a blockchain.
-                        </Typography>
-                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            You can read all about them and why you should care in our section linked below.
-                        </Typography>
-                        <Link href="/learn/dapps/what-are-dapps" sx={{ color: theme => theme.palette.primary.main, textDecoration: 'none' }}>
-                            <Button sx={{ marginY: 2 }}>What are dApps</Button>
-                        </Link>
-                    </Box>
-                    <Box marginY={4}>
-                        <Typography mb={1} variant="h2">How do I interact with dApps?</Typography>
-                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            You will need a dApp browser to access and interact with decentralized applications.
-                        </Typography>
-                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            Read how to get one, and what to do with it in our section linked below.
-                        </Typography>
-                        <Link href="/learn/dapps/interact-with-dapps" sx={{ color: theme => theme.palette.primary.main, textDecoration: 'none' }}>
-                            <Button sx={{ marginY: 2 }}>Interact With dApps</Button>
-                        </Link>
-                    </Box>
-                    <Box marginY={4}>
-                        <Typography mb={1} variant="h2">How can I easily connect to dApps?</Typography>
-                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            No time for the long answers, eh?
-                        </Typography>
-                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            View our visual, quick start guide to connecting to a dApp with coinbase wallet.
-                        </Typography>
-                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            The example dApp is none other than Hodl My Moon, but the process is similar for all.
-                        </Typography>
-                        <Link href="/learn/sign-in/coinbase-wallet" sx={{ color: theme => theme.palette.primary.main, textDecoration: 'none' }}>
-                            <Button sx={{ marginY: 2 }}>Coinbase Wallet Quickstart</Button>
-                        </Link>
-                    </Box>
-                    {/* <Box marginY={4}>
-                        <Typography mb={1} variant="h2">About Blockchains and Smart Contracts</Typography>
-                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            A blockchain can be thought of like a shared database. A smart contract is a way to execute code that alters the state of this shared database.
-                        </Typography>
-                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            We have 2 smart contracts that run on the Polygon blockchain. One allows us to mint NFTs, and the other to trade them.
-                        </Typography>
-                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            We run on Polygon because it costs a miniscule amount of cryptocurrency to confirm a transaction there.
-                        </Typography>
-                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            The other reason is that transactions are confirmed much quicker there than many other blockchains. i.e. less waiting around for the user.
-                        </Typography>
-                        <Link href="https://polygon.technology/" sx={{ color: theme => theme.palette.primary.main, textDecoration: 'none' }}>
-                            <Button sx={{ marginY: 2 }}>Read about Polygon</Button>
-                        </Link>
-                    </Box> */}
-                    {/* <Box marginY={4}>
-                        <Typography mb={1} variant="h2">How do I mint, is it easy?</Typography>
-                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            Minting a token is easy. No need to know anything about smart contracts or blockchains. (but read on if you are curious)
-                        </Typography>
-                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            We do not charge a minting fee. You only pay the gas (a fraction of a penny on Polygon). We do not receive this fee.
-                        </Typography>
-                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            Minting a token essentially writes an entry into that shared database we talked about. (the blockchain).
-                        </Typography>
-                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            To do that, you need to call a function in a smart contract and pass the url of the metadata. (Well, we do that for you)
-                        </Typography>
-                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            The smart contract takes care of issuing a tokenId and assigning the url you passed to the tokenUri field, before adding this information to the database.
-                        </Typography>
-                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            To confirm this transaction costs some gas (a transaction fee to keep the network running). This is miniscule on Polygon compared to ethereum.
-                        </Typography>
-                    </Box> */}
-                    {/* <Box marginY={4}>
-                        <Typography mb={1} variant="h2">What is Trading. Can I do it here?</Typography>
-                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            Trading is the process of listing your NFT on a marketplace; so that another user can purchase it.
-                        </Typography>
-                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            We have an integrated marketplace so you can do that very easily here.
-                        </Typography>
-                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            Trading is straight-forward. You list your token for the price you are willing to sell it for.
-                        </Typography>
-                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            If it sells, we charge a commision at the point of sale (3%).
-                        </Typography>
-                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            You can delist your token at any point, and only pay the gas.
-                        </Typography>
-                        <Typography mb={0} color={theme => theme.palette.text.secondary}>
-                            There&apos;s no obligation to use the marketplace.
-                        </Typography>
-                    </Box> */}
-                    {/* <Box marginY={4}>
-                        <Typography mb={1} variant="h2" >Researching an NFT on Hodl My Moon</Typography>
-                        <Typography component="ol" color={theme => theme.palette.text.secondary}>
-                            <Typography component="li" mb={1}>Check the IPFS links in the data section of the nft detail page </Typography>
-                            <Typography component="li" mb={1}>Check for social validation (likes / comments)</Typography>
-                            <Typography component="li" mb={1}>Check the license (if any) assigned to the asset attached to the token</Typography>
-                            <Typography component="li" mb={1}>If you aren&apos;t sure; don&apos;t buy</Typography>
-                        </Typography>
-                    </Box>
-                    <Box marginY={4}>
-                        <Typography id="hodler-privilege" mb={1} variant="h2">Asset License</Typography>
-                        <Typography mb={1} color={theme => theme.palette.text.secondary} sx={{ span: { fontWeight: 600 } }}>When an author mints an NFT, they <span>must</span> specify what any future hodler can do with the attached asset.</Typography>
-                        <Link href="/asset-license" sx={{ color: theme => theme.palette.primary.main, textDecoration: 'none' }}>
-                            <Button sx={{ marginY: 2 }}>Read about the asset license</Button>
-                        </Link>
-                    </Box> */}
-                </HodlBorderedBox>
-            </Box >
-        </>
-    )
+                </div>
+            )
+            )
+            }
+            <div style={{ margin: '32px 0 16px 0', display: 'flex', gap: '16px' }}>
+                <HodlShareButton />
+            </div>
+        </HodlBorderedBox >
+    </>)
 }
