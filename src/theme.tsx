@@ -33,22 +33,22 @@ let theme = createTheme({
   typography: {
     fontFamily: "Nunito Sans, sans-serif",
     h1: {
-      fontSize: 18,
+      fontSize: '18px',
       fontWeight: 600
     },
     h2: {
-      fontSize: 16,
+      fontSize: '16px',
       fontWeight: 500
     },
     h3: {
-      fontSize: 15,
+      fontSize: '14px',
       fontWeight: 500
     },
     body1: {
-      fontSize: 14,
+      fontSize: '14px',
     },
     body2: {
-      fontSize: 14,
+      fontSize: '14px',
     },
   },
   breakpoints: {

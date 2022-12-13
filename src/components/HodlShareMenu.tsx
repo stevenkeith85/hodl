@@ -14,7 +14,6 @@ import Menu from '@mui/material/Menu';
 import { CopyText } from './CopyText';
 
 export const HodlShareMenu = ({ 
-    // nft, 
     anchorEl, 
     open, 
     handleClose,
@@ -39,13 +38,13 @@ export const HodlShareMenu = ({
                     <ListItemIcon>
                         <ContentCopyIcon />
                     </ListItemIcon>
-                    <CopyText text={`https://www.hodlmymoon.com/${relativeUrl}`}>
+                    <CopyText text={`https://www.hodlmymoon.com${relativeUrl}`}>
                         <ListItemText sx={{color:"primary.main"}}>Copy Link</ListItemText>
                     </CopyText>
                 </MenuItem>
                 <Link
                     sx={{ textDecoration: 'none' }}
-                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent('#nft #nfts #nftcommunity #nftcollectors #polygonnft')}&url=${encodeURIComponent('https://www.hodlmymoon.com/' + relativeUrl)}`}>
+                    href={`https://twitter.com/intent/tweet?url=${encodeURIComponent('https://www.hodlmymoon.com' + relativeUrl)}`}>
                     <MenuItem>
                         <ListItemIcon>
                             <TwitterIcon />
@@ -55,7 +54,7 @@ export const HodlShareMenu = ({
                 </Link>
                 <Link
                     sx={{ textDecoration: 'none' }}
-                    href={`https://www.facebook.com/sharer/sharer.php?display=page&u=${encodeURIComponent('https://www.hodlmymoon.com/' + relativeUrl)}`}>
+                    href={`https://www.facebook.com/sharer/sharer.php?display=page&u=${encodeURIComponent('https://www.hodlmymoon.com' + relativeUrl)}`}>
                     <MenuItem>
                         <ListItemIcon>
                             <FacebookIcon />
@@ -65,7 +64,7 @@ export const HodlShareMenu = ({
                 </Link>
                 <Link
                     sx={{ textDecoration: 'none' }}
-                    href={`https://telegram.me/share/?url=${encodeURIComponent('https://www.hodlmymoon.com/' + relativeUrl)}`}>
+                    href={`https://telegram.me/share/?url=${encodeURIComponent('https://www.hodlmymoon.com' + relativeUrl)}`}>
                     <MenuItem>
                         <ListItemIcon>
                             <TelegramIcon />

@@ -97,7 +97,7 @@ export default function TokenActionBox({
       {
         open &&
         <HodlShareMenu
-          relativeUrl={'nft/' + nft?.id}
+          relativeUrl={'/nft/' + nft?.id}
           anchorEl={anchorEl}
           handleClose={handleClose}
           open={open}

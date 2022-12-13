@@ -32,7 +32,6 @@ export const LoggedInMenu = () => {
         {
             label: 'Explore',
             action: () => router.push('/explore'),
-
         },
         {
             label: 'Create',
@@ -53,6 +52,10 @@ export const LoggedInMenu = () => {
         {
             label: 'Transactions',
             action: () => router.push('/transactions'),
+        },
+        {
+            label: 'Learn',
+            action: () => router.push('/learn'),
         },
     ]);
 
