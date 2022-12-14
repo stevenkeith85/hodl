@@ -1,71 +1,40 @@
-import { FC, useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { enqueueSnackbar } from 'notistack';
 import { mintToken } from '../../lib/nft';
-import { MintProps } from './models';
-import { grey } from '@mui/material/colors';
 import { MintTokenModal } from '../modals/MintTokenModal';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { WalletContext } from '../../contexts/WalletContext';
+import { AssetPreview } from './AssetPreview';
 
 
-export const MintTokenAction: FC<MintProps> = ({
+export const MintTokenAction = ({
   stepComplete,
   loading,
   setLoading,
   setStepComplete,
   formData,
-  setFormData
-}: MintProps) => {
+  setFormData,
+  originalAspectRatio,
+  metadata
+}) => {
   const [successModalOpen, setSuccessModalOpen] = useState(false);
 
   const { signer } = useContext(WalletContext);
-  const [error, setError] = useState('');
-
-
-  useEffect(() => {
-    const displayError = async () => {
-      const enqueueSnackbar = await import('notistack').then(mod => mod.enqueueSnackbar);
-
-      if (!error) {
-        return;
-      }
-
-      enqueueSnackbar(error, {
-        variant: "error",
-        hideIconVariant: true
-      });
-
-      setError('');
-    }
-
-    displayError().catch(console.error)
-
-  }, [error]);
-
 
   async function mint() {
+    setLoading(true);
+
     try {
-      setLoading(true);
-
-      enqueueSnackbar(
-        'Confirm the transaction in your Wallet to mint',
-        {
-          variant: "info",
-          hideIconVariant: true
-        });
-
       const { metadataUrl } = formData;
 
+      if (!metadataUrl) {
+        throw new Error("Metadata URL is blank");
+      }
+
       if (metadataUrl.indexOf('ipfs://') === -1) {
-        enqueueSnackbar(
-          'Expected metadata to be on IPFS. Aborting',
-          {
-            variant: "error",
-            hideIconVariant: true
-          });
-          return;
+        throw new Error("Metadata URL is not an IPFS url");
       }
 
       await mintToken(metadataUrl, signer);
@@ -73,9 +42,14 @@ export const MintTokenAction: FC<MintProps> = ({
       setStepComplete(4);
       setSuccessModalOpen(true);
     } catch (e) {
-      setLoading(false);
-      setError(e.message);
+      enqueueSnackbar(
+        e.message,
+        {
+          variant: "error",
+          hideIconVariant: true
+        });
     }
+    setLoading(false);
   }
 
   return (
@@ -110,24 +84,23 @@ export const MintTokenAction: FC<MintProps> = ({
         </Typography>
       </MintTokenModal>
 
-      <Box
-        display="flex"
-        flexDirection={"column"}
-        alignItems="center"
-        justifyContent="center"
-        textAlign="center"
-        gap={4}
-      >
-        <Typography
-          sx={{
-            fontSize: '18px',
-            color: grey[600],
-            span: { fontWeight: 600 }
-          }}>You will be asked to confirm the transaction in your wallet</Typography>
+      <Box sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <AssetPreview originalAspectRatio={originalAspectRatio} formData={formData} setFormData={setFormData} />
+        <Box sx={{ margin: 2, textAlign: 'center' }}>
+          <Typography component="h1" variant="h1" mb={2}>{metadata?.name}</Typography>
+          <Box mb={1} sx={{ whiteSpace: 'pre-line' }}>{metadata?.description}</Box>
+          <Typography component="p" mb={1} >{metadata?.license}</Typography>
+        </Box>
+
         <div>
           <Button
             color="primary"
-            // disabled={loading || stepComplete === 4}
             onClick={mint}
             sx={{ paddingY: 1, paddingX: 3 }}
             variant="contained"

@@ -1,40 +1,27 @@
-import { FC, useCallback, useEffect, useState } from "react";
-import { enqueueSnackbar } from 'notistack';
-import { Form, Formik } from "formik";
+import { useSnackbar } from 'notistack';
 
 import { useCloudinaryUpload } from "../../hooks/useCloudinaryUpload";
-import { MintProps } from "./models";
 import { HodlDropzone } from "../formFields/HodlDropZone";
+import Box from "@mui/material/Box";
 
 
-export const SelectAssetAction: FC<MintProps> = ({
+export const SelectAssetAction = ({
   loading,
   setLoading,
   setFormData,
   setStepComplete,
+  setActiveStep,
   setOriginalAspectRatio
 }) => {
-  const [uploadToCloudinary, error, setError] = useCloudinaryUpload();
+  const { enqueueSnackbar } = useSnackbar();
+  const uploadToCloudinary = useCloudinaryUpload();
 
-  useEffect(() => {
-    if (error !== '') {
-      enqueueSnackbar(
-        error,
-        {
-          variant: "error",
-          hideIconVariant: true
-        });
-
-      setError('');
-    }
-  }, [error, enqueueSnackbar]) //  Warning: React Hook useEffect has a missing dependency: 'enqueueSnackbar'. Either include it or remove the dependency array.
-
-  const cloudinaryUpload = useCallback(async (file) => {
+  const cloudinaryUpload = async file => {
     setLoading(true);
 
-    const { success, fileName, mimeType, aspectRatio } = await uploadToCloudinary(file);
+    try {
+      const { fileName, mimeType, aspectRatio } = await uploadToCloudinary(file);
 
-    if (success) {
       setOriginalAspectRatio(aspectRatio);
 
       setFormData(prev => ({
@@ -43,14 +30,20 @@ export const SelectAssetAction: FC<MintProps> = ({
         mimeType,
         aspectRatio
       }))
-
       setStepComplete(0);
-    } else {
-      setLoading(false);
+      setActiveStep(1);
+    } catch (e) {
+      enqueueSnackbar(
+        e.message,
+        {
+          variant: "error",
+          hideIconVariant: true
+        });
     }
-  }, [enqueueSnackbar, setFormData, setLoading, setStepComplete, uploadToCloudinary]);
+    setLoading(false);
+  }
 
-  const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
+  const onDrop = (acceptedFiles, rejectedFiles) => {
     if (rejectedFiles.length === 1) {
       enqueueSnackbar(
         rejectedFiles?.[0]?.errors?.[0]?.message,
@@ -62,21 +55,20 @@ export const SelectAssetAction: FC<MintProps> = ({
     else if (acceptedFiles.length === 1) {
       cloudinaryUpload(acceptedFiles[0]);
     }
-  }, [cloudinaryUpload, enqueueSnackbar]);
+  };
 
-  return (<>
-    <Formik
-      initialValues={{
-        fileName: ''
-      }}
-      onSubmit={() => { }}
-    >
-      {() => (
-        <Form>
-          <HodlDropzone onDrop={onDrop} loading={loading} />
-        </Form>
-      )}
-    </Formik>
-  </>
+  return (
+    <Box sx={{
+      width: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+    }}>
+      <HodlDropzone
+        onDrop={onDrop}
+        loading={loading}
+      />
+    </Box>
   )
 }
