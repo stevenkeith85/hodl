@@ -81,7 +81,9 @@ export const HodlImageResponsive = ({
                     }}>
                     {lcp ?
                         <img
-                            style={{ width: '100%' }}
+                            style={{ 
+                                width: '100%' 
+                            }}
                             // @ts-ignore
                             fetchpriority="high"
                             onLoad={() => {

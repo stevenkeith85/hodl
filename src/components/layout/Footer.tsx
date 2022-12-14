@@ -124,6 +124,7 @@ const Footer = ({
                                 }
                             }}
                         >
+                            <Link href="/">
                             <Typography
                                 variant="h2"
                                 sx={{
@@ -133,14 +134,7 @@ const Footer = ({
                                 }}>
                                 Hodl My Moon
                             </Typography>
-                            <Typography
-                                variant="h3"
-                                sx={{
-                                    fontFamily: theme => theme.logo.fontFamily,
-                                    fontSize: 12
-                                }}>
-                                <Link href="/">Polygon NFT Marketplace</Link>
-                            </Typography>
+                            </Link>
                         </Box>
                     </Box>
                 </Container>
@@ -153,7 +147,7 @@ const Footer = ({
                         padding: 2
                     }}>
                     <Box>
-                        <Typography sx={{ color: grey[500], fontSize: '12px', textAlign: {xs:'center', md: 'right'} }}>Copyright © 2022 Pony Powered Limited.</Typography>
+                        <Typography sx={{ color: grey[500], fontSize: '12px', textAlign: {xs:'center', md: 'left'} }}>Copyright © 2022 Pony Powered Limited.</Typography>
                     </Box>
                 </Container>
             </Box>

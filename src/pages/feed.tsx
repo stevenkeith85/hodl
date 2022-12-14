@@ -21,7 +21,12 @@ export const getServerSideProps = async ({ req, res }) => {
   await authenticate(req, res);
 
   if (!req.address) {
-    return { notFound: true }
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      }
+    }
   }
 
   return {

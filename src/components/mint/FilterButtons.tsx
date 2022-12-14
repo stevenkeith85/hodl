@@ -1,52 +1,36 @@
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
 import { imageFilters } from '../../lib/utils';
-import { HodlImageResponsive } from '../HodlImageResponsive';
+
 
 export const FilterButtons = ({ formData, setFormData }) => (
   <Box
     sx={{
-      width: '100%',
       display: 'grid',
-      gap: {
-        xs: 2,
-        sm: 3
-      },
       gridTemplateColumns: {
         xs: '1fr 1fr',
-      }
-    }}>
+        sm: '1fr 1fr',
+      },
+      gap: 3
+    }}
+  >
     {imageFilters.map(({ code, name }, index) => (
-      <Box
-        key={index}
-        onClick={() => setFormData(prev => ({
-          ...prev,
-          filter: code
-        }))}
-        sx={{
-          cursor: 'pointer',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center'
-        }}
-      >
-        {formData.fileName &&
-          <HodlImageResponsive
-            assetFolder={"image"}
-            folder="uploads"
-            cid={formData.fileName.split('/')[2]}
-            effect={code}
-            widths={[125, 250]}
-            sizes="125px"
-            aspectRatio={formData.aspectRatio}
-          />
-        }
-        <Typography
+      <Box key={code} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Button
+          key={index}
+          variant={formData.filter === code ? 'contained' : 'outlined'}
+          onClick={() => setFormData(prev => ({
+            ...prev,
+            filter: code
+          }))}
           sx={{
-            fontWeight: formData.filter === code ? '600' : '200',
-            margin: 2
-          }}>{name}</Typography>
+            paddingX: 2.5,
+            paddingY: 1.25,
+            minWidth: '100px',
+            textTransform: 'capitalize'
+          }}>{name}</Button>
       </Box>
     ))}
+
   </Box>
 );

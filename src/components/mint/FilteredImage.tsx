@@ -1,15 +1,12 @@
 import { memo, useEffect, useState } from 'react';
 import { aspectRatios, imageFilters } from '../../lib/utils';
-import { HodlImageResponsive } from '../HodlImageResponsive';
 import Box from '@mui/material/Box';
+import { HodlPreviewImage } from '../HodlPreviewImage';
 
 
 export const FilteredImage = ({
   originalAspectRatio,
-  aspectRatio,
-  filter,
-  fileName,
-  onLoad
+  formData,
 }) => {
   const [fullAspectRatios, setFullAspectRatios] = useState(aspectRatios);
 
@@ -25,17 +22,19 @@ export const FilteredImage = ({
           <Box
             key={`${code}-${ratio}`}
             sx={{
-              display: ratio == aspectRatio && filter == code ? 'block' : 'none'
+              alignItems:'center',
+              justifyContent: 'center',
+              width: '100%',
+              height: '100%',
+              display: ratio == formData.aspectRatio && formData.filter == code ? 'flex' : 'none'
             }}>
-            <HodlImageResponsive
+            <HodlPreviewImage
               assetFolder={"image"}
-              cid={fileName.split('/')[2]}
+              cid={formData?.fileName?.split('/')?.[2]}
               folder="uploads"
               aspectRatio={ratio}
               effect={code}
-              onLoad={onLoad}
-              sizes="(min-width: 900px) 50vw, (min-width: 1200px) calc(1200px / 2)"
-              widths={[600, 700, 800, 900, 1080]}
+              sizes="100vw"
             />
           </Box>
         )
@@ -43,4 +42,5 @@ export const FilteredImage = ({
     </>
   );
 };
+
 export const FilteredImageMemo = memo(FilteredImage);
