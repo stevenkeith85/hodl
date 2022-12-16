@@ -21,7 +21,7 @@ export default function PrivateHomePageSidebarLoading({display}) {
                     xs: 1,
                     md: 4
                 },
-                gap: 4,
+                gap: 8,
             }}
         >
             <HodlProfileBadgeLoading />

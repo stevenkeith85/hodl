@@ -125,14 +125,14 @@ body::-webkit-scrollbar {
 /*********/
 a {
   text-decoration: none;
-  /* color: #05778A; */
+  color: rgba(0, 0, 0, 0.6);
 }
 
 a:hover {
-  color: #05778A;
+  color: rgba(0, 0, 0, 0.87);
 }
 
 a:visited {
-  color: #05778A;
+  color: rgba(0, 0, 0, 0.6);
 }
 

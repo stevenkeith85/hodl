@@ -113,7 +113,7 @@ export default function PrivateHomePageSidebar({  }) {
                             xs: 1,
                             md: 4
                         },
-                        gap: 4,
+                        gap: 8,
                     }}
                 >
 

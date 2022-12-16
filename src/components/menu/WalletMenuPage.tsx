@@ -9,13 +9,13 @@ import { HodlLoadingSpinner } from '../HodlLoadingSpinner';
 
 
 const LoggedInMenuLoading = () => (
-    <div style={{ height: 288 }}>
+    <div>
         <HodlLoadingSpinner sx={{ display: 'flex', justifyContent: 'center', width: '100%', padding: 1, height: '100%', alignItems: 'center' }} />
     </div>
 )
 
 const LoggedOutMenuLoading = () => (
-    <div style={{ height: 245 }}>
+    <div>
         <HodlLoadingSpinner sx={{ display: 'flex', justifyContent: 'center', width: '100%', padding: 1, height: '100%', alignItems: 'center' }} />
     </div>
 )
