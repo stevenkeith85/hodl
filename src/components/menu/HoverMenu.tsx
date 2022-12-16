@@ -23,14 +23,14 @@ export const HoverMenu: React.FC<HoverMenuProps> = ({
                             xs: 'fixed', 
                             sm: 'absolute' 
                         },
-                        zIndex: 100,
                         background: 'white',
                         color: theme.palette.text.primary,
                         top: 64,
                         right: 0,
-                        minWidth: '300px',
+                        minWidth: '350px',
+                        maxWidth: '100%',
                         height: { 
-                            xs: 'calc(100vh - 64px)', 
+                            xs: 'calc(100% - 64px)',
                             sm: 'auto' 
                         },
                         width: { 

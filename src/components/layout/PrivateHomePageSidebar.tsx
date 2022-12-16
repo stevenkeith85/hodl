@@ -17,8 +17,8 @@ import dynamic from 'next/dynamic';
 
 import Box from '@mui/material/Box';
 import { useContext } from 'react';
-import { WalletContext } from '../../contexts/WalletContext';
 import { useUser } from '../../hooks/useUser';
+import { SignedInContext } from '../../contexts/SignedInContext';
 
 
 const HodlProfileBadge = dynamic(
@@ -64,7 +64,7 @@ const NewUsers = dynamic(
 
 export default function PrivateHomePageSidebar({  }) {
 
-    const { address } = useContext(WalletContext);
+    const { signedInAddress: address } = useContext(SignedInContext);
     const { data: user } = useUser(address);
 
     const limit = 8;

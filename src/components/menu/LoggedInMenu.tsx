@@ -1,11 +1,9 @@
 import { useRouter } from "next/router";
 import { useContext, useState } from "react";
-import { WalletContext } from '../../contexts/WalletContext';
 import { useUser } from '../../hooks/useUser';
 import dynamic from 'next/dynamic';
-import { WalletDetails } from '../WalletDetails';
-import Typography from '@mui/material/Typography';
 import Box from "@mui/material/Box";
+import { SignedInContext } from "../../contexts/SignedInContext";
 
 const NicknameModal = dynamic(
     () => import('../modals/NicknameModal').then(mod => mod.NicknameModal),
@@ -26,14 +24,6 @@ const ProfilePictureModal = dynamic(
 export const LoggedInMenu = () => {
     const [pages] = useState([
         {
-            label: 'Feed',
-            action: () => router.push('/feed'),
-        },
-        {
-            label: 'Explore',
-            action: () => router.push('/explore'),
-        },
-        {
             label: 'Create',
             action: () => router.push('/create'),
         },
@@ -53,18 +43,14 @@ export const LoggedInMenu = () => {
             label: 'Transactions',
             action: () => router.push('/transactions'),
         },
-        {
-            label: 'Learn',
-            action: () => router.push('/learn'),
-        },
     ]);
 
     const [nicknameModalOpen, setNicknameModalOpen] = useState(false);
     const [profilePictureModalOpen, setProfilePictureModalOpen] = useState(false);
 
     const router = useRouter();
-    const { address } = useContext(WalletContext);
-    const { data: user } = useUser(address);
+    const { signedInAddress } = useContext(SignedInContext);
+    const { data: user } = useUser(signedInAddress);
 
     if (!user) {
         return null;
@@ -80,11 +66,6 @@ export const LoggedInMenu = () => {
                     display: 'flex',
                     flexDirection: 'column'
                 }}>
-                <Box sx={{
-                    marginBottom: 2
-                }}>
-                    <WalletDetails />
-                </Box>
                 {pages.map((page, i) => (
                     <Box
                         key={i}
@@ -95,7 +76,8 @@ export const LoggedInMenu = () => {
                     >
                         <Box
                             sx={{
-                                fontSize: 16,
+                                fontSize: 18,
+                                color: theme => theme.palette.text.secondary,
                                 margin: 1,
                                 '&:hover': {
                                     color: "secondary.main",

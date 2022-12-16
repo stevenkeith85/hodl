@@ -1,55 +1,36 @@
 import { useContext } from 'react';
 import { WalletContext } from '../contexts/WalletContext';
 
+// TODO:
+// We need a hook to disconnect pusher and call it from the correct places at the correct time
+// import { PusherContext } from "../../contexts/PusherContext";
+// const { pusher, setPusher, setUserSignedInToPusher } = useContext(PusherContext);
+// pusher?.disconnect();
+// setPusher(null);
+// setUserSignedInToPusher(null);
+
 export const useDisconnect = () => {
-  const { 
-    setSigner, 
-    setProvider, 
-    setAddress, 
-    provider, 
+  const {
+    setSigner,
+    setProvider,
+    setWalletAddress,
+    provider,
   } = useContext(WalletContext);
 
-  const disconnectFE = async () => {
+  const disconnect = async () => {
     try {
-    provider?.provider?.disconnect()
-    } catch(e) {
+      provider?.provider?.disconnect()
+    } catch (e) {
       // some providers don't support this
       console.log("provider doesn't support disconnect");
     }
-    
+
     localStorage.removeItem("walletconnect");
     localStorage.removeItem("WEB3_CONNECT_CACHED_PROVIDER");
 
     setProvider(null);
     setSigner(null);
-    setAddress(null);
-  }
-
-  const disconnectBE = async () => {
-    try {
-      const {default: axios} = await import('axios');
-      const r = await axios.post(
-        '/api/auth/logout',
-        {
-          headers: {
-            'Accept': 'application/json',
-          },
-        }
-      )
-      return true;
-    } catch (error) {
-      console.log("Unable to log out of the BE");
-      console.log(error);
-
-      // TODO: If we don't manage to log the user out for whatever reason, we could perhaps clear their cookies on the FE?
-      return false;
-    }
-  }
-
-  // TODO: Perhaps we can do this async?
-  const disconnect = async () => {
-    await disconnectFE();
-    await disconnectBE();
+    setWalletAddress(null);
   }
 
   return disconnect;

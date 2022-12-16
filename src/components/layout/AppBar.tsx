@@ -8,6 +8,18 @@ import Container from '@mui/material/Container';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { PusherContext } from '../../contexts/PusherContext';
+import { useConnect } from '../../hooks/useConnect';
+import { WalletContext } from '../../contexts/WalletContext';
+import { SignedInContext } from '../../contexts/SignedInContext';
+
+
+const SignInDialog = dynamic(
+    () => import('../menu/SignInDialog').then(mod => mod.SignInDialog),
+    {
+        ssr: false,
+        loading: () => null
+    }
+);
 
 
 const CloseIcon = dynamic(
@@ -83,11 +95,16 @@ const ResponsiveAppBar = ({ address }) => {
     const [showNotifications, setShowNotifications] = useState(false);
     const [sessionExpired, setSessionExpired] = useState(false);
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+    const [signInModalOpen, setSignInModalOpen] = useState(false);
 
     const mdUp = useMediaQuery(theme.breakpoints.up('md'));
     const mdDown = useMediaQuery(theme.breakpoints.down('md'));
 
     const { pusher } = useContext(PusherContext);
+    const { walletAddress } = useContext(WalletContext);
+    const { signedInAddress } = useContext(SignedInContext);
+
+    const connect = useConnect();
 
     const homepage = {
         label: 'hodl my moon',
@@ -119,11 +136,11 @@ const ResponsiveAppBar = ({ address }) => {
 
 
     useEffect(() => {
-        const setUpAxios = async () => {
-            if (!address) {
-                return;
-            }
+        if (!address) {
+            return;
+        }
 
+        const setUpAxios = async () => {
             const { default: axios } = await import('axios');
 
             axios.interceptors.response.use(null, async (error) => {
@@ -151,10 +168,21 @@ const ResponsiveAppBar = ({ address }) => {
         }
 
         setUpAxios();
+        connect(false);
     }, [address]);
+
+    useEffect(() => {
+        // if the user isn't signed in to the BE, they will need to sign a message
+        // also; if they switch wallets outside the app. (vie metamask ui or something) then we will make them sign in again
+        if (walletAddress && !signedInAddress ||
+            (walletAddress && signedInAddress && walletAddress !== signedInAddress)) {
+            setSignInModalOpen(true);
+        }
+    }, [walletAddress, signedInAddress]);
 
     return (
         <>
+            <SignInDialog setSignInModalOpen={setSignInModalOpen} signInModalOpen={signInModalOpen} />
             {sessionExpired && <SessionExpiredModal modalOpen={sessionExpired} setModalOpen={setSessionExpired} />}
             <Box
                 sx={{

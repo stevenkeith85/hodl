@@ -2,7 +2,6 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { useContext, useEffect, useState } from "react";
-import { WalletContext } from '../../contexts/WalletContext';
 import { HodlModal } from "./HodlModal";
 import axios from 'axios'
 import InfiniteScroll from 'react-swr-infinite-scroll'
@@ -11,11 +10,12 @@ import { useHodling } from "../../hooks/useHodling";
 import { AssetThumbnail } from "../AssetThumbnail";
 import { useRouter } from "next/router";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
+import { SignedInContext } from "../../contexts/SignedInContext";
 
 
 export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePictureModalOpen, lim = 10 }) => {
 
-    const { address } = useContext(WalletContext);
+    const { signedInAddress: address } = useContext(SignedInContext);
 
     const userSWR = useSWR(
         profilePictureModalOpen && address ? [`/api/user`, address] : null,

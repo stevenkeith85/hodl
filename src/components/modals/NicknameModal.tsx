@@ -4,19 +4,19 @@ import { Formik, Form, Field } from 'formik';
 import { nicknameValidationSchema } from "../../validation/nickname";
 import { InputBase } from "formik-mui";
 import { useContext, useState } from "react";
-import { WalletContext } from "../../contexts/WalletContext";
 import { useUser } from "../../hooks/useUser";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import { SignedInContext } from "../../contexts/SignedInContext";
 
 
 export const NicknameModal = ({ nicknameModalOpen, setNicknameModalOpen }) => {
     const updateNickname = useNickname();
 
-    const { address } = useContext(WalletContext);
+    const { signedInAddress: address } = useContext(SignedInContext);
     const userSWR = useUser(address);
 
     const [message, setMessage] = useState('');

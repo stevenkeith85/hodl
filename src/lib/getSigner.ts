@@ -63,6 +63,7 @@ export const getProviderSignerAddress = async (dialog = false) => {
     }
 
     const instance = await web3Modal.connect();
+    
     const provider = new Web3Provider(instance, 'any');
     const signer = provider?.getSigner();
     const address = await signer?.getAddress();

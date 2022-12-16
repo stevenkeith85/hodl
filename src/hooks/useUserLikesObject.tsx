@@ -1,14 +1,14 @@
 import { useContext } from 'react';
 import useSWR from 'swr';
-import { WalletContext } from '../contexts/WalletContext';
 import axios from 'axios'
+import { SignedInContext } from '../contexts/SignedInContext';
 
 
 export const useUserLikesObject = (
   id: number,
   object: "token" | "comment",
 ) => {
-  const { address } = useContext(WalletContext);
+  const { signedInAddress: address } = useContext(SignedInContext);
   const baseUrl = `/api/like/${object}`;
 
   const swr = useSWR(

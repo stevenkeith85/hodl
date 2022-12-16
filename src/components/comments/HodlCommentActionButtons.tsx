@@ -2,9 +2,9 @@ import Box from "@mui/material/Box";
 import { Likes } from "../Likes";
 import React, { useContext } from "react";
 import { HodlCommentViewModel } from "../../models/HodlComment";
-import { WalletContext } from "../../contexts/WalletContext";
 import { SWRInfiniteResponse } from "swr/infinite/dist/infinite";
 import { SWRResponse } from "swr";
+import { SignedInContext } from "../../contexts/SignedInContext";
 
 
 interface HodlCommentActionButtonsProps {
@@ -23,7 +23,7 @@ interface HodlCommentActionButtonsProps {
 export const HodlCommentActionButtons: React.FC<HodlCommentActionButtonsProps> = ({
     comment,
 }) => {
-    const { address } = useContext(WalletContext);
+    const { signedInAddress: address } = useContext(SignedInContext);
 
     return (<Box display="flex" alignItems="center" gap={1} marginX={1}>
         {address &&

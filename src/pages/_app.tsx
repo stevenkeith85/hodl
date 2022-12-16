@@ -33,9 +33,7 @@ import createEmotionCache from '../createEmotionCache';
 // Also loads a lot of deps
 import Layout from '../components/layout/Layout';
 
-import { useConnect } from '../hooks/useConnect';
-import { getProviderSignerAddress } from '../lib/getSigner';
-import { useDisconnect } from '../hooks/useDisconnect';
+import { SignedInContext } from '../contexts/SignedInContext';
 
 
 // Client-side cache, shared for the whole session of the user in the browser.
@@ -54,117 +52,56 @@ export default function MyApp(props: MyAppProps) {
   // WalletContext state
   const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null);
-  const [address, setAddress] = useState(null);
+  const [walletAddress, setWalletAddress] = useState(null);
+
+  // SignedInContext state
+  const [signedInAddress, setSignedInAddress] = useState(null);
 
   // PusherContext state
   const [pusher, setPusher] = useState(null);
   const [userSignedInToPusher, setUserSignedInToPusher] = useState(false); // TODO
 
-  const setPusherSignInSuccess = () => {
-    setUserSignedInToPusher(true);
-  };
-
-  const loadPusher = async () => {
-    const { default: Pusher } = await import('pusher-js');
-
-    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY, {
-      cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER,
-      forceTLS: true,
-      userAuthentication: {
-        endpoint: "/api/pusher/user-auth",
-        transport: "ajax"
-      }
-    });
-    setPusher(pusher);
-
-    pusher.bind('pusher:signin_success', setPusherSignInSuccess);
-    pusher.signin();
-
-    return () => {
-      pusher.unbind('pusher:signin_success', setPusherSignInSuccess);
-      setPusher(null);
-      setUserSignedInToPusher(false);
-    };
-  }
-
   useEffect(() => {
-    if (!address) {
+    const setPusherSignInSuccess = () => {
+      setUserSignedInToPusher(true);
+    };
+
+    const loadPusher = async () => {
+      const { default: Pusher } = await import('pusher-js');
+
+      const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY, {
+        cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER,
+        forceTLS: true,
+        userAuthentication: {
+          endpoint: "/api/pusher/user-auth",
+          transport: "ajax"
+        }
+      });
+      setPusher(pusher);
+
+      pusher.bind('pusher:signin_success', setPusherSignInSuccess);
+      pusher.signin();
+
+      return () => {
+        pusher.unbind('pusher:signin_success', setPusherSignInSuccess);
+        setPusher(null);
+        setUserSignedInToPusher(false);
+      };
+    }
+
+    if (!signedInAddress) {
       return;
     }
 
     loadPusher().catch(console.error);
 
-  }, [address])
+  }, [signedInAddress])
 
 
-  const [_connect, connectBE] = useConnect();
-  const disconnect = useDisconnect();
-
-  const autoConnect = async (backendAddress) => {
-    const enqueueSnackbar = await import('notistack').then(mod => mod.enqueueSnackbar);
-
-    const { provider, signer, address } = await getProviderSignerAddress(false);
-
-    if (!provider || !signer || !address) {
-      await disconnect();
-
-      // TODO: We need to test the pusher disconnect actually works correctly and perhaps do this somewhere centralised
-      pusher?.disconnect();
-      setPusher(null);
-      setUserSignedInToPusher(null);
-
-      window.location.replace('/')
-    }
-
-    provider.on("network", async (newNetwork, oldNetwork) => {
-      // When a Provider makes its initial connection, it emits a "network"
-      // event with a null oldNetwork along with the newNetwork. So, if the
-      // oldNetwork exists, it represents a changing network
-
-      const switchIfOnUnsupportedNetwork = async () => {
-        const switchToPolygon = await import('../lib/switchToPolygon').then(mod => mod.switchToPolygon);
-        const chains = await import('../lib/chains').then(mod => mod.chains);
-        const enqueueSnackbar = await import('notistack').then(mod => mod.enqueueSnackbar);
-
-        provider?.getNetwork()
-          .then(network => chains[network?.name])
-          .then(chain => {
-            if (!chain) {
-              enqueueSnackbar(`Switching Networks. You may need to approve in your wallet.`, {
-                // @ts-ignore
-                variant: 'info',
-              });
-              switchToPolygon(provider);
-            } else {
-              enqueueSnackbar(`Connected to ${chain.chainName}`, {
-                // @ts-ignore
-                variant: 'info',
-              });
-            }
-          })
-      }
-      await switchIfOnUnsupportedNetwork();
-    });
-
-    if (signer && address && backendAddress !== address) {
-      enqueueSnackbar("Your logged in address does not match your wallet address. Switching Now", {
-        variant: "error",
-        hideIconVariant: true
-      });
-
-      await connectBE(signer, address);
-      window.location.replace('/')
-    }
-
-    setProvider(provider);
-    setSigner(signer);
-    setAddress(address);
-  }
-
+  // We reconnect the wallet in the app bar, as that has access to the context
   useEffect(() => {
-    // if the BE is connected, connect the FE is the addresses match
-    if (props?.pageProps?.address && !address) {
-      autoConnect(props?.pageProps?.address);
+    if (props?.pageProps?.address && !signedInAddress) {
+      setSignedInAddress(props?.pageProps?.address);
     }
   }, [props?.pageProps?.address])
 
@@ -193,26 +130,31 @@ export default function MyApp(props: MyAppProps) {
               setProvider,
               signer,
               setSigner,
-              address,
-              setAddress,
+              walletAddress,
+              setWalletAddress,
             }}>
-              <PusherContext.Provider value={{
-                pusher,
-                setPusher,
-                userSignedInToPusher,
-                setUserSignedInToPusher
+              <SignedInContext.Provider value={{
+                signedInAddress,
+                setSignedInAddress
               }}>
-                <SnackbarProvider
-                  Components={{
-                    // @ts-ignore
-                    hodlnotification: HodlNotificationSnackbar
-                  }}
-                >
-                    <Layout address={address}>
+                <PusherContext.Provider value={{
+                  pusher,
+                  setPusher,
+                  userSignedInToPusher,
+                  setUserSignedInToPusher
+                }}>
+                  <SnackbarProvider
+                    Components={{
+                      // @ts-ignore
+                      hodlnotification: HodlNotificationSnackbar
+                    }}
+                  >
+                    <Layout address={signedInAddress}>
                       <Component {...pageProps} />
                     </Layout>
-                </SnackbarProvider>
-              </PusherContext.Provider>
+                  </SnackbarProvider>
+                </PusherContext.Provider>
+              </SignedInContext.Provider>
             </WalletContext.Provider>
           </SWRConfig>
         </ThemeProvider>
@@ -234,3 +176,35 @@ MyApp.getInitialProps = async (appContext) => {
 
   return { ...appProps }
 }
+
+
+// TODO
+// provider.on("network", async (newNetwork, oldNetwork) => {
+//   // When a Provider makes its initial connection, it emits a "network"
+//   // event with a null oldNetwork along with the newNetwork. So, if the
+//   // oldNetwork exists, it represents a changing network
+
+//   const switchIfOnUnsupportedNetwork = async () => {
+//     const switchToPolygon = await import('../lib/switchToPolygon').then(mod => mod.switchToPolygon);
+//     const chains = await import('../lib/chains').then(mod => mod.chains);
+//     const enqueueSnackbar = await import('notistack').then(mod => mod.enqueueSnackbar);
+
+//     provider?.getNetwork()
+//       .then(network => chains[network?.name])
+//       .then(chain => {
+//         if (!chain) {
+//           enqueueSnackbar(`Switching Networks. You may need to approve in your wallet.`, {
+//             // @ts-ignore
+//             variant: 'info',
+//           });
+//           switchToPolygon(provider);
+//         } else {
+//           enqueueSnackbar(`Connected to ${chain.chainName}`, {
+//             // @ts-ignore
+//             variant: 'info',
+//           });
+//         }
+//       })
+//   }
+//   await switchIfOnUnsupportedNetwork();
+// });
