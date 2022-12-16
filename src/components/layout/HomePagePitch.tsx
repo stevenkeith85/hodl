@@ -3,7 +3,7 @@ import Typography from "@mui/material/Typography";
 import { useContext } from "react";
 
 import { RankingsContext } from "../../contexts/RankingsContext";
-import { LoginLogoutButton } from "../menu/LoginLogoutButton";
+import { SignInButton } from "../menu/SignInButton";
 
 import { NftWindow } from "../NftWindow"
 

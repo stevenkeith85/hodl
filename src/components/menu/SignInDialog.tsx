@@ -1,79 +1,38 @@
-import Button from "@mui/material/Button";
-
-import { useRouter } from "next/router";
-import { useContext } from "react";
-import { WalletContext } from '../../contexts/WalletContext';
-import { Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
-import { signIn } from "../../lib/signIn";
+import { Box, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { useDisconnect } from "../../hooks/useDisconnect";
+import { DisconnectButton } from "./DisconnectButton";
+import { SignInButton } from "./SignInButton";
+
 
 export const SignInDialog = ({ signInModalOpen, setSignInModalOpen }) => {
 
-    const { signer, address } = useContext(WalletContext);
-
     const disconnect = useDisconnect();
-    const router = useRouter();
-
-    const signInOnUI = async () => {
-        try {
-            await signIn(address, signer);
-            router.push('/feed');
-        } catch (e) {
-            if (e.code == "ACTION_REJECTED") {
-                alert("You need to sign the message to log in");
-            }
-
-            disconnect();
-        }
-    }
 
     return (
         <Dialog
             open={signInModalOpen}
-            onClose={(e) => {
+            onClose={async (e) => {
                 // @ts-ignore
                 e.stopPropagation();
 
                 // @ts-ignore
                 e.preventDefault();
 
-                // alert("You need to sign the message to log in")
-                // disconnect();
+                await disconnect();
                 setSignInModalOpen(false)
             }}
         >
             <DialogTitle>
-                <h1>Sign In</h1>
+                Sign In
             </DialogTitle>
             <DialogContent>
-                <p>To continue, sign a message with your wallet</p>
+                To continue, sign a message with your wallet
             </DialogContent>
             <DialogActions>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    sx={{
-                        paddingX: 2,
-                        paddingY: 1,
-                        fontWeight: 500
-                    }}
-                    onClick={async () => {
-                        await signInOnUI();
-                        setSignInModalOpen(false);
-                    }
-                    }>
-                    Sign Message</Button>
-                <Button
-                    color="inherit"
-                    sx={{
-                        paddingX: 2,
-                        paddingY: 1
-                    }}
-                    onClick={() => {
-                        disconnect();
-                        setSignInModalOpen(false);
-                    }}
-                >Disconnect</Button>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                    <SignInButton onSignedIn={() => setSignInModalOpen(false)} />
+                    <DisconnectButton onDisconnected={() => setSignInModalOpen(false)} />
+                </Box>
             </DialogActions>
         </Dialog>
     )

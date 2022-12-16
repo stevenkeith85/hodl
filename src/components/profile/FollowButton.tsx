@@ -1,10 +1,9 @@
 
 import Button from "@mui/material/Button";
 import { useContext } from "react";
-import { WalletContext } from "../../contexts/WalletContext";
+import { SignedInContext } from "../../contexts/SignedInContext";
 import { useFollow } from "../../hooks/useFollow";
 import { useUser } from "../../hooks/useUser";
-import { UserViewModel } from "../../models/User";
 
 interface FollowButtonProps {
     profileAddress: string;
@@ -13,7 +12,7 @@ interface FollowButtonProps {
 }
 
 export const FollowButton: React.FC<FollowButtonProps> = ({ profileAddress, variant = "contained", sx = {} }) => {
-    const { address } = useContext(WalletContext); // the logged in user
+    const { signedInAddress: address } = useContext(SignedInContext);// the logged in user
     
     const profileUserSWR = useUser(profileAddress, null, address); // this is the user the follow / unfollow action will operate on
 

@@ -1,6 +1,5 @@
 import { FC, useContext, useState } from "react";
 
-import { WalletContext } from "../../contexts/WalletContext";
 import { Formik, Form } from "formik";
 import { AddCommentValidationSchema } from "../../validation/comments/addComments";
 import { useAddComment } from "../../hooks/useComments";
@@ -14,6 +13,7 @@ import TextareaAutosize from "@mui/material/TextareaAutosize";
 import Typography from "@mui/material/Typography";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import Button from "@mui/material/Button";
+import { SignedInContext } from "../../contexts/SignedInContext";
 
 interface AddCommentProps {
     tokenId?: number, // we always store the tokenId this comment was made against to allow us to link to it; give the token owner permission to delete, etc
@@ -38,7 +38,7 @@ export const AddComment: FC<AddCommentProps> = ({
     mutateCount,
     newTagRef
 }) => {
-    const { address } = useContext(WalletContext);
+    const { signedInAddress: address } = useContext(SignedInContext);
     const [addComment] = useAddComment();
     const theme = useTheme();
     const [open, setOpen] = useState(false);

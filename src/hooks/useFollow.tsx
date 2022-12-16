@@ -1,15 +1,15 @@
 import { useContext } from 'react';
 import { mutate } from 'swr';
-import { WalletContext } from '../contexts/WalletContext';
 import axios from 'axios';
 import { FollowersContext } from '../contexts/FollowersContext';
 import { RankingsContext } from '../contexts/RankingsContext';
 import { useUser } from './useUser';
 import { FollowingContext } from '../contexts/FollowingContext';
+import { SignedInContext } from '../contexts/SignedInContext';
 
 // profileUser is the user SWR for the profileAddress. We want to mutate it when someone follows/unfollows them so that the UI updates in real time
 export const useFollow = (profileAddress) => {
-  const { address } = useContext(WalletContext);
+  const { signedInAddress: address } = useContext(SignedInContext);
 
   // Logged in user values. TODO: Migrate this to the user view model
   const user = useUser(address, null, address); // TODO: Once we add the counts to the UserViewModel, we can just mutate that. (simpler)

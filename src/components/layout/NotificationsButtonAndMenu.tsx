@@ -16,7 +16,7 @@ import {
     HodlAction
 } from '../../models/HodlAction';
 import { PusherContext } from '../../contexts/PusherContext';
-import { WalletContext } from '../../contexts/WalletContext';
+import { SignedInContext } from '../../contexts/SignedInContext';
 
 
 export const NotificationsButtonAndMenu = ({
@@ -27,7 +27,7 @@ export const NotificationsButtonAndMenu = ({
 }) => {
 
     const { pusher, userSignedInToPusher } = useContext(PusherContext);
-    const { address } = useContext(WalletContext);
+    const { signedInAddress: address } = useContext(SignedInContext);
 
     const theme = useTheme();
 

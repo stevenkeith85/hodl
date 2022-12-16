@@ -34,7 +34,7 @@ export default function PendingTransactionsTable({ limit = 10 }) {
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
             width: `100%`,
-            height: '500px',
+            maxHeight: '500px',
             overflow: 'auto',
             gap: 2,
             padding: 1

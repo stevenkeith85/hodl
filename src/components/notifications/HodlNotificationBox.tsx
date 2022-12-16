@@ -10,7 +10,6 @@ import formatDistanceStrict from "date-fns/formatDistanceStrict";
 
 import { ActionTypes, HodlActionViewModel } from "../../models/HodlAction";
 
-import { WalletContext } from "../../contexts/WalletContext";
 import { MaticPrice } from "../MaticPrice";
 
 import { truncateText } from "../../lib/truncateText";
@@ -18,6 +17,7 @@ import Skeleton from "@mui/material/Skeleton";
 import { FollowButtonLoading } from '../profile/FollowButtonLoading';
 import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
 import { ProfileNameOrAddress } from '../avatar/ProfileNameOrAddress';
+import { SignedInContext } from '../../contexts/SignedInContext';
 
 const AssetThumbnail = dynamic(
     () => import('../AssetThumbnail').then(mod => mod.AssetThumbnail),
@@ -63,7 +63,7 @@ const MintedToken = () => <>minted a token on the blockchain</>
 const ListedToken = ({ item }) => <>listed a token on the market for <MaticPrice price={item?.metadata?.price} color="black" fontSize={14} size={14} sx={{ marginLeft: 0.5 }} /></>
 const DelistedToken = ({ item }) => <>delisted a token from the market</>
 const BoughtToken = ({ item }) => {
-    const { address } = useContext(WalletContext);
+    const { signedInAddress: address } = useContext(SignedInContext);
 
     if (address === item?.metadata?.seller) {
         return <Typography component={"span"}>
@@ -107,7 +107,7 @@ interface NotificationLinkProps {
     item: HodlActionViewModel;
 }
 const NotificationLink: React.FC<NotificationLinkProps> = ({ item }) => {
-    const { address } = useContext(WalletContext);
+    const { signedInAddress: address } = useContext(SignedInContext);
 
     return (<Box
         sx={{

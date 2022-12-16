@@ -12,7 +12,7 @@ import { useLike } from "../hooks/useLike";
 
 import humanize from "humanize-plus";
 import { useUserLikesObject } from "../hooks/useUserLikesObject";
-import { WalletContext } from "../contexts/WalletContext";
+import { SignedInContext } from "../contexts/SignedInContext";
 
 
 export interface LikesProps {
@@ -42,7 +42,7 @@ export const Likes: FC<LikesProps> = ({
     flexDirection = "row",
     sx = {}
 }) => {
-    const { address } = useContext(WalletContext);
+    const { signedInAddress: address } = useContext(SignedInContext);
 
     const likeCount = useLikeCount(id, object, prefetchedLikeCount);
     const userLikesThisObject = useUserLikesObject(id, object);

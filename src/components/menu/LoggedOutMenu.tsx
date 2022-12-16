@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import Link from 'next/link';
 
 
@@ -14,7 +13,7 @@ export const LoggedOutMenu = ({ }) => {
         <Box
             sx={{
                 display: 'flex',
-                flexDirection: 'column'
+                flexDirection: 'column',
             }}
         >
             {pages.map(({ title, url }) =>
@@ -24,7 +23,7 @@ export const LoggedOutMenu = ({ }) => {
                 >
                     <Box
                         sx={{
-                            fontSize: 16,
+                            fontSize: 18,
                             margin: 1,
                             '&:hover': {
                                 color: "secondary.main",

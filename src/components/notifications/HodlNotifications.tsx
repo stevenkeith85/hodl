@@ -13,13 +13,13 @@ import axios from "axios";
 import InfiniteScroll from "react-swr-infinite-scroll";
 import useSWR from "swr";
 
-import { WalletContext } from "../../contexts/WalletContext";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 import { useActions } from "../../hooks/useActions";
 
 import { ActionSet, HodlAction } from "../../models/HodlAction";
 
 import { HodlNotificationBoxLoading } from './HodlNotificationBoxLoading';
+import { SignedInContext } from '../../contexts/SignedInContext';
 const HodlNotificationBox = dynamic(
     () => import('./HodlNotificationBox').then(mod => mod.HodlNotificationBox),
     {
@@ -41,7 +41,7 @@ export const HodlNotifications: React.FC<HodlNotificationsProps> = ({
 }) => {
     const router = useRouter();
 
-    const { address } = useContext(WalletContext);
+    const { signedInAddress: address } = useContext(SignedInContext);
 
     const { actions: notifications } = useActions(showNotifications, ActionSet.Notifications, limit, null, true);
 

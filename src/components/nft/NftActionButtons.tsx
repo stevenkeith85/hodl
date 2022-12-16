@@ -58,7 +58,7 @@ interface NftActionButtons {
 export const NftActionButtons = ({
     token,
     mutableToken }) => {
-    const { address, signer } = useContext(WalletContext);
+    const { walletAddress: address, signer } = useContext(WalletContext);
     const [listModalOpen, setListModalOpen] = useState(false);
     const [delistModalOpen, setDelistModalOpen] = useState(false);
     const [listedModalOpen, setListedModalOpen] = useState(false);

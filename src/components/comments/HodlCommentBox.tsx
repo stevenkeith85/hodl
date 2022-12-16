@@ -10,7 +10,6 @@ import Typography from "@mui/material/Typography";
 import formatDistanceStrict from "date-fns/formatDistanceStrict";
 
 import { NftContext } from "../../contexts/NftContext";
-import { WalletContext } from "../../contexts/WalletContext";
 
 import { HodlCommentViewModel } from "../../models/HodlComment";
 
@@ -27,6 +26,7 @@ import { ExpandMoreIcon } from "../icons/ExpandMoreIcon";
 import { ExpandLessIcon } from "../icons/ExpandLessIcon";
 import useSWR, { Fetcher } from "swr";
 import { MutableToken } from "../../models/MutableToken";
+import { SignedInContext } from "../../contexts/SignedInContext";
 
 const HodlCommentPopUpMenu = dynamic(
     () => import('./HodlCommentPopUpMenu'),
@@ -101,7 +101,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
 
     const router = useRouter();
 
-    const { address } = useContext(WalletContext);
+    const { signedInAddress: address } = useContext(SignedInContext);
     const { nft, mutableToken: mutableTokenFallback } = useContext(NftContext);
 
     // We have the mutable token on the nft page already; so use the context value as a fallback.

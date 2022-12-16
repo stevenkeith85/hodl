@@ -9,7 +9,6 @@ import NoSsr from "@mui/material/NoSsr";
 
 import formatDistanceStrict from "date-fns/formatDistanceStrict";
 
-import { WalletContext } from "../../contexts/WalletContext";
 import { ActionTypes, HodlActionViewModel } from "../../models/HodlAction";
 
 
@@ -19,6 +18,7 @@ import { FeedAsset } from "./FeedAsset";
 
 import TokenActionBoxLoading from "../nft/TokenActionBoxLoading";
 import Skeleton from "@mui/material/Skeleton";
+import { SignedInContext } from "../../contexts/SignedInContext";
 
 
 const TokenActionBox = dynamic(
@@ -146,7 +146,7 @@ interface HodlFeedItemProps {
 }
 
 export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
-    const { address } = useContext(WalletContext);
+    const { signedInAddress: address } = useContext(SignedInContext);
 
     if (!item) {
         return null;

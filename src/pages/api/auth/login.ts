@@ -53,9 +53,11 @@ route.post(async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(200).json({ error: 'Bad request' });
   }
 
+  console.log('address is: ', address)
   const uuid = await client.hget(`user:${address}`, 'uuid');
 
   if (uuid) {
+    console.log("verifying against: ", messageToSign + uuid)
     const signerAddress = verifyMessage(messageToSign + uuid, signature);
 
     if (address == signerAddress) {

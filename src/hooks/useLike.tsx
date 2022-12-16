@@ -1,13 +1,13 @@
 import { useContext } from 'react';
-import { WalletContext } from '../contexts/WalletContext';
 import axios from 'axios'
+import { SignedInContext } from '../contexts/SignedInContext';
 
 
 export const useLike = (
   id: number,
   object: "token" | "comment"
 ) => {
-  const { address } = useContext(WalletContext);
+  const { signedInAddress: address } = useContext(SignedInContext);
   const baseUrl = `/api/like/${object}`;
 
   const toggleLike = async () => {

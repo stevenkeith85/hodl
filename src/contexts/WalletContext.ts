@@ -7,8 +7,8 @@ export const WalletContext = createContext<{
   signer: any,
   setSigner: Function,
 
-  address: any,
-  setAddress: Function,
+  walletAddress: any,
+  setWalletAddress: Function,
 }>({
   provider: null,
   setProvider: () => { },
@@ -16,6 +16,6 @@ export const WalletContext = createContext<{
   signer: null,
   setSigner: () => { },
 
-  address: null,
-  setAddress: () => { }
+  walletAddress: null,
+  setWalletAddress: () => { }
 });

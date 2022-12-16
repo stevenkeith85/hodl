@@ -3,19 +3,19 @@ import Box from '@mui/material/Box';
 
 import { useRouter } from "next/router";
 import { useCallback, useContext, useEffect } from "react";
-import { WalletContext } from '../../contexts/WalletContext';
+
 import dynamic from 'next/dynamic';
 import { HodlLoadingSpinner } from '../HodlLoadingSpinner';
-import { LoginLogoutButton } from './LoginLogoutButton';
+import { SignInButton } from './SignInButton';
+import { WalletDetails } from '../WalletDetails';
+import { SignedInContext } from '../../contexts/SignedInContext';
+import { LoggedOutMenu } from './LoggedOutMenu';
+import { ConnectButton } from './ConnectButton';
+import { DisconnectButton } from './DisconnectButton';
+
 
 
 const LoggedInMenuLoading = () => (
-    <div>
-        <HodlLoadingSpinner sx={{ display: 'flex', justifyContent: 'center', width: '100%', padding: 1, height: '100%', alignItems: 'center' }} />
-    </div>
-)
-
-const LoggedOutMenuLoading = () => (
     <div>
         <HodlLoadingSpinner sx={{ display: 'flex', justifyContent: 'center', width: '100%', padding: 1, height: '100%', alignItems: 'center' }} />
     </div>
@@ -29,13 +29,7 @@ const LoggedInMenu = dynamic(
     }
 );
 
-const LoggedOutMenu = dynamic(
-    () => import('./LoggedOutMenu').then(mod => mod.LoggedOutMenu),
-    {
-        ssr: false,
-        loading: () => <LoggedOutMenuLoading />
-    }
-);
+
 
 
 interface WalletMenuPageProps {
@@ -48,7 +42,6 @@ export const WalletMenuPage: React.FC<WalletMenuPageProps> = ({
     hoverMenuOpen,
 }) => {
     const router = useRouter();
-    const { address } = useContext(WalletContext);
 
     const handleRouteChange = useCallback(() => {
         if (hoverMenuOpen) {
@@ -64,6 +57,7 @@ export const WalletMenuPage: React.FC<WalletMenuPageProps> = ({
 
     }, [router.events, handleRouteChange]);
 
+    const { signedInAddress } = useContext(SignedInContext);
 
     return (
         <ClickAwayListener
@@ -80,30 +74,29 @@ export const WalletMenuPage: React.FC<WalletMenuPageProps> = ({
                 display: 'flex',
                 flexDirection: 'column',
                 height: '100%',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
+                gap: 4
             }}>
                 <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
                     flexGrow: 1,
                     flexShrink: 0,
                     flexBasis: 'auto',
-                    boxSizing: 'border-box',
-                    marginBottom: 4
+                    gap: 4
                 }}>
-                    {address &&
-                        <LoggedInMenu />
-                    }
-                    {!address &&
-                        <LoggedOutMenu />
-                    }
+                    <WalletDetails />
+                    <LoggedOutMenu />
+                    <LoggedInMenu />
                 </Box>
-
-                <LoginLogoutButton
-                    variant='contained'
-                    closeMenu={() => setHoverMenuOpen(false)}
-                    sx={{
-                        paddingY: 1,
-                        paddingX: 2,
-                    }} />
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginTop: 1
+                }}>
+                    <ConnectButton onConnected={() =>setHoverMenuOpen(false)} />
+                    <DisconnectButton  onDisconnected={() =>setHoverMenuOpen(false)} />
+                </Box>
             </Box>
         </ClickAwayListener >
     )
