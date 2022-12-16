@@ -3,7 +3,6 @@ import Typography from "@mui/material/Typography";
 import { useContext } from "react";
 
 import { RankingsContext } from "../../contexts/RankingsContext";
-import { SignInButton } from "../menu/SignInButton";
 
 import { NftWindow } from "../NftWindow"
 
@@ -59,14 +58,8 @@ export const HomePagePitch = ({ }) => {
                         marginBottom: 4,
                         color: theme => theme.palette.text.secondary
                     }}>
-                    Mint, buy and sell NFTs on the polygon blockchain
+                    Mint, buy and sell NFTs on the Polygon blockchain
                 </Typography>
-                {/* <LoginLogoutButton
-                variant="contained"
-                    sx={{
-                        paddingY: 1,
-                        paddingX: 3
-                    }} /> */}
             </Box>
             <Box
                 sx={{

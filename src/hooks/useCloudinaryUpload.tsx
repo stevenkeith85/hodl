@@ -1,4 +1,3 @@
-// import axios from 'axios'
 import { assetTypeFromMimeType } from '../lib/utils';
 import { AssetTypes } from '../models/AssetType';
 import calculateAspectRatios from 'calculate-aspect-ratio';

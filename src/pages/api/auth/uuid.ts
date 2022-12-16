@@ -8,7 +8,6 @@ const route = apiRoute();
 
 // TODO: Convert to edge function
 export const getUuidForAddress = async (address) => {
-  console.log("asking for uuid for :", address)
   const exists = await client.hexists(`user:${address}`, 'uuid');
 
   let uuid = null;

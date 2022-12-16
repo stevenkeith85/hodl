@@ -9,9 +9,17 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { PusherContext } from '../../contexts/PusherContext';
 import { useConnect } from '../../hooks/useConnect';
-import { SignInDialog } from '../menu/SignInDialog';
 import { WalletContext } from '../../contexts/WalletContext';
 import { SignedInContext } from '../../contexts/SignedInContext';
+
+
+const SignInDialog = dynamic(
+    () => import('../menu/SignInDialog').then(mod => mod.SignInDialog),
+    {
+        ssr: false,
+        loading: () => null
+    }
+);
 
 
 const CloseIcon = dynamic(
@@ -171,7 +179,7 @@ const ResponsiveAppBar = ({ address }) => {
             setSignInModalOpen(true);
         }
     }, [walletAddress, signedInAddress]);
-    
+
     return (
         <>
             <SignInDialog setSignInModalOpen={setSignInModalOpen} signInModalOpen={signInModalOpen} />
