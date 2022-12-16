@@ -61,12 +61,12 @@ export const HomePagePitch = ({ }) => {
                     }}>
                     Mint, buy and sell NFTs on the polygon blockchain
                 </Typography>
-                <LoginLogoutButton
+                {/* <LoginLogoutButton
                 variant="contained"
                     sx={{
                         paddingY: 1,
                         paddingX: 3
-                    }} />
+                    }} /> */}
             </Box>
             <Box
                 sx={{

@@ -1,11 +1,11 @@
 import { useRouter } from "next/router";
 import { useContext, useState } from "react";
 import { WalletContext } from '../../contexts/WalletContext';
-import { LoginLogoutButton } from "./LoginLogoutButton";
 import { useUser } from '../../hooks/useUser';
 import dynamic from 'next/dynamic';
 import { WalletDetails } from '../WalletDetails';
 import Typography from '@mui/material/Typography';
+import Box from "@mui/material/Box";
 
 const NicknameModal = dynamic(
     () => import('../modals/NicknameModal').then(mod => mod.NicknameModal),
@@ -24,7 +24,7 @@ const ProfilePictureModal = dynamic(
 );
 
 export const LoggedInMenu = () => {
-    const [walletPages] = useState([
+    const [pages] = useState([
         {
             label: 'Feed',
             action: () => router.push('/feed'),
@@ -75,41 +75,37 @@ export const LoggedInMenu = () => {
             <NicknameModal nicknameModalOpen={nicknameModalOpen} setNicknameModalOpen={setNicknameModalOpen}></NicknameModal>
             <ProfilePictureModal profilePictureModalOpen={profilePictureModalOpen} setProfilePictureModalOpen={setProfilePictureModalOpen}></ProfilePictureModal>
 
-            <div style={{ display: 'flex', 'flexDirection': 'column' }}>
-                <WalletDetails />
-                <div style={{ padding: '8px 0 0 0' }}>
-                    {walletPages.map((page, i) => (
-                        <div
-                            key={i}
-                            onClick={e => {
-                                e.stopPropagation();
-                                page.action();
-                            }}
-                        >
-                            <Typography
-                                sx={{
-                                    fontSize: 16,
-                                    marginLeft: 2,
-                                    marginY: 2,
-                                    '&:hover': {
-                                        color: "secondary.main",
-                                        cursor: 'pointer'
-                                    }
-                                }}>
-                                {page.label}
-                            </Typography>
-                        </div>
-                    ))}
-                </div>
-                <LoginLogoutButton
-                        variant='contained'
-                        sx={{
-                            marginLeft: 1,
-                            marginTop: 4,
-                            paddingY: 0.75,
-                            paddingX: 3,
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column'
+                }}>
+                <Box sx={{
+                    marginBottom: 2
+                }}>
+                    <WalletDetails />
+                </Box>
+                {pages.map((page, i) => (
+                    <Box
+                        key={i}
+                        onClick={e => {
+                            e.stopPropagation();
+                            page.action();
                         }}
-                    />
-            </div>
+                    >
+                        <Box
+                            sx={{
+                                fontSize: 16,
+                                margin: 1,
+                                '&:hover': {
+                                    color: "secondary.main",
+                                    cursor: 'pointer'
+                                }
+                            }}>
+                            {page.label}
+                        </Box>
+                    </Box>
+                ))}
+            </Box>
         </>)
 }
