@@ -1,10 +1,8 @@
-export const messageToSign = `Welcome to HodlMyMoon!
+export const messageToSign = `Welcome to Hodl My Moon
 
-To connect, please sign this message. 
+Sign this message to log in.
 
-This request will not trigger a blockchain transaction or cost any gas fees.
-
-Please review hodlmymoon.com/legal/license before minting or trading tokens.
+Please review https://www.hodlmymoon.com/legal/license.
 
 uuid:
 `
