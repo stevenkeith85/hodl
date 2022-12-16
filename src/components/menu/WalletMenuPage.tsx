@@ -6,6 +6,7 @@ import { useCallback, useContext, useEffect } from "react";
 import { WalletContext } from '../../contexts/WalletContext';
 import dynamic from 'next/dynamic';
 import { HodlLoadingSpinner } from '../HodlLoadingSpinner';
+import { LoginLogoutButton } from './LoginLogoutButton';
 
 
 const LoggedInMenuLoading = () => (
@@ -78,15 +79,31 @@ export const WalletMenuPage: React.FC<WalletMenuPageProps> = ({
             <Box sx={{
                 display: 'flex',
                 flexDirection: 'column',
+                height: '100%',
+                boxSizing: 'border-box'
             }}>
                 <Box sx={{
                     flexGrow: 1,
                     flexShrink: 0,
                     flexBasis: 'auto',
+                    boxSizing: 'border-box',
+                    marginBottom: 4
                 }}>
-                    {address && <LoggedInMenu />}
-                    {!address && <LoggedOutMenu setHoverMenuOpen={setHoverMenuOpen} />}
+                    {address &&
+                        <LoggedInMenu />
+                    }
+                    {!address &&
+                        <LoggedOutMenu />
+                    }
                 </Box>
+
+                <LoginLogoutButton
+                    variant='contained'
+                    closeMenu={() => setHoverMenuOpen(false)}
+                    sx={{
+                        paddingY: 1,
+                        paddingX: 2,
+                    }} />
             </Box>
         </ClickAwayListener >
     )
