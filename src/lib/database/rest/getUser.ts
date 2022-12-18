@@ -18,15 +18,29 @@ export const getUser = async (address: string, viewer: string = null, nonce = fa
             followedByViewer: false,
             followsViewer: false
         }
-
+        
         if (!vm.avatar && !viewer) {
             // no more database calls to make
             return vm;
         }
-
+        
         if (vm.avatar && !viewer) {
             // one database call to make
             vm.avatar = await getToken(vm.avatar);
+            return vm;
+        }
+        
+        if (!vm.avatar && viewer) {            
+            // two database calls to make
+            const cmds = [
+                ['ZSCORE', `user:${viewer}:following`, address],
+                ['ZSCORE', `user:${address}:following`, viewer]
+            ]
+
+            const [followedByViewer, followsViewer] = await runRedisPipeline(cmds);
+
+            vm.followedByViewer = Boolean(followedByViewer);
+            vm.followsViewer = Boolean(followsViewer);
             return vm;
         }
 
