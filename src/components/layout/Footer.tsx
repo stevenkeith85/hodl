@@ -20,7 +20,7 @@ const Footer = ({
                     maxWidth="xl"
                     sx={{
                         boxSizing: 'border-box',
-                        paddingY: 3
+                        paddingY: 4
                     }}>
                     <Box
                         sx={{
@@ -63,7 +63,7 @@ const Footer = ({
                                 sx={{
                                     display: 'flex',
                                     flexDirection: 'column',
-                                    gap: 1,
+                                    gap: 1.5,
                                 }}
                             >
                                 <Typography
@@ -81,7 +81,7 @@ const Footer = ({
                                 sx={{
                                     display: 'flex',
                                     flexDirection: 'column',
-                                    gap: 1,
+                                    gap: 1.5,
                                 }}
                             >
                                 <Typography
@@ -101,7 +101,7 @@ const Footer = ({
                                 sx={{
                                     display: 'flex',
                                     flexDirection: 'column',
-                                    gap: 1,
+                                    gap: 1.5,
                                 }}
                             >
                                 <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>polygon nfts</Typography>

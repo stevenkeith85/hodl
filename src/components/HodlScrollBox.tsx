@@ -10,7 +10,7 @@ export const HodlScrollBox = ({ title, height = 250, children }) => {
         {title}
         <HodlBorderedBox
             sx={{
-                paddingY: 1,
+                padding: 2,
                 height,
                 overflowY: 'auto',
             }}

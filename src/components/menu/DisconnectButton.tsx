@@ -25,8 +25,8 @@ export const DisconnectButton = ({ onDisconnected=() => {}}) => {
     const signOut = useSignOut();
 
     return (<>
-        {walletAddress && 
             <Button
+                disabled={!walletAddress}
                 variant="contained"
                 color="primary"
                 sx={{
@@ -48,13 +48,10 @@ export const DisconnectButton = ({ onDisconnected=() => {}}) => {
                         // i.e. the backend would return an error
                     }
 
-                    
-
                     router.push('/');
                 }}
             >
                 Disconnect
             </Button>
-        }
     </>)
 }

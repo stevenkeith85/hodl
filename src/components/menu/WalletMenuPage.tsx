@@ -6,13 +6,11 @@ import { useCallback, useContext, useEffect } from "react";
 
 import dynamic from 'next/dynamic';
 import { HodlLoadingSpinner } from '../HodlLoadingSpinner';
-import { SignInButton } from './SignInButton';
 import { WalletDetails } from '../WalletDetails';
-import { SignedInContext } from '../../contexts/SignedInContext';
 import { LoggedOutMenu } from './LoggedOutMenu';
 import { ConnectButton } from './ConnectButton';
 import { DisconnectButton } from './DisconnectButton';
-
+import { WalletContext } from '../../contexts/WalletContext';
 
 
 const LoggedInMenuLoading = () => (
@@ -28,9 +26,6 @@ const LoggedInMenu = dynamic(
         loading: () => <LoggedInMenuLoading />
     }
 );
-
-
-
 
 interface WalletMenuPageProps {
     hoverMenuOpen: boolean;
@@ -57,7 +52,7 @@ export const WalletMenuPage: React.FC<WalletMenuPageProps> = ({
 
     }, [router.events, handleRouteChange]);
 
-    const { signedInAddress } = useContext(SignedInContext);
+    const { walletAddress } = useContext(WalletContext);
 
     return (
         <ClickAwayListener
@@ -94,8 +89,8 @@ export const WalletMenuPage: React.FC<WalletMenuPageProps> = ({
                     flexDirection: 'column',
                     marginTop: 1
                 }}>
-                    <ConnectButton onConnected={() =>setHoverMenuOpen(false)} />
-                    <DisconnectButton  onDisconnected={() =>setHoverMenuOpen(false)} />
+                    { !walletAddress && <ConnectButton onConnected={() =>setHoverMenuOpen(false)} /> }
+                    { walletAddress && <DisconnectButton  onDisconnected={() =>setHoverMenuOpen(false)} />}
                 </Box>
             </Box>
         </ClickAwayListener >

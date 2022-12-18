@@ -9,7 +9,6 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import OpenInBrowserIcon from '@mui/icons-material/OpenInBrowser';
 import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact';
 import LoginIcon from '@mui/icons-material/Login';
-// import FeedIcon from '@mui/icons-material/Feed';
 
 
 export const HomepageQuickstart = () => (
@@ -52,7 +51,7 @@ export const HomepageQuickstart = () => (
                     Install a Polygon Wallet
                 </Typography>
 
-                <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>From the Play store, App store or as a Chrome Extension.</Typography>
+                <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>Get a wallet from the play store, app store, or as a chrome extension.</Typography>
                 <Typography sx={{ color: theme => theme.palette.text.secondary }}>We recommend MetaMask or Coinbase Wallet.</Typography>
             </HodlBorderedBox>
             <HodlBorderedBox sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 4, textAlign: 'center' }}>
@@ -66,8 +65,8 @@ export const HomepageQuickstart = () => (
                     }}>
                     Open a Web Browser
                 </Typography>
-                <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>i.e. Google Chrome or your wallet&apos;s browser.</Typography>
-                <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>And visit https://www.hodlmymoon.com</Typography>
+                <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>Open Google Chrome or your wallet&apos;s integrated browser.</Typography>
+                <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>Visit https://www.hodlmymoon.com</Typography>
             </HodlBorderedBox>
             <HodlBorderedBox sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 4, textAlign: 'center' }}>
                 <ConnectWithoutContactIcon color="primary" sx={{ fontSize: 40, marginBottom: 2 }}></ConnectWithoutContactIcon>
@@ -81,8 +80,7 @@ export const HomepageQuickstart = () => (
                     Connect
                 </Typography>
                 <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>Click the Connect Wallet button</Typography>
-                <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>Select your wallet&apos;s logo, or</Typography>
-                <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>WalletConnect for Mobile Chrome to Mobile Wallet</Typography>
+                <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>Select your wallet&apos;s logo, or WalletConnect for Mobile Chrome to Mobile Wallet</Typography>
             </HodlBorderedBox>
             <HodlBorderedBox sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 4, textAlign: 'center' }}>
                 <LoginIcon color="primary" sx={{ fontSize: 40, marginBottom: 2 }}></LoginIcon>
@@ -96,8 +94,7 @@ export const HomepageQuickstart = () => (
                     Sign In
                 </Typography>
                 <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>Click the Sign Message button</Typography>
-                <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>And sign the message when prompted by your wallet</Typography>
-                <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>to create an account</Typography>
+                <Typography mb={2} sx={{ color: theme => theme.palette.text.secondary }}>Sign the message when prompted by your wallet to create an account</Typography>
             </HodlBorderedBox>
         </Box>
     </Box>
