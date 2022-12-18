@@ -7,7 +7,7 @@ export const RankingListLoading = ({ text }) => (<div>
             color="primary"
             sx={{
                 fontFamily: theme => theme.logo.fontFamily,
-                marginBottom: 2,
+                marginBottom: 3,
                 padding: 0,
                 fontSize: 16
             }}>

@@ -70,8 +70,8 @@ export default function Home({
   limit
 }) {
   const homepage = "https://www.hodlmymoon.com";
-  const title = "Polygon NFT Marketplace - Mint, buy and sell NFTs on the Polygon Blockchain";
-  const description = "Explore NFTs on our Polygon Marketplace. Follow your favourite NFT creators. Mint for Free.";
+  const title = "Hodl My Moon - Social Polygon NFT Platform - Make Frens. Mint, Buy, and Sell NFTs.";
+  const description = "Join our social platform for Polygon NFT creators. Quickly, and easily mint NFTs. Connect with other NFT creators. Buy and Sell on the Marketplace.";
   const shareImage = "https://res.cloudinary.com/dyobirj7r/image/upload/ar_216:253,c_fill,w_1080/prod/nfts/bafkreihuew5ij6lvc2k7vjqr65hit7fljl7fsxlikrkndcdyp47xbi6pvy" // nft 36
 
   const { rankings: mostLiked } = useRankings(true, limit, prefetchedTopTokens, "token");
@@ -123,7 +123,7 @@ export default function Home({
                 xs: `1fr`,
                 sm: `1fr 1fr`,
               },
-              gap: 4,
+              gap: 8,
               rowGap: 8,
               marginY: 4,
               textAlign: {
@@ -132,10 +132,10 @@ export default function Home({
             }
             }}
           >
-            <TopUsers followButton={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
-            <TopTokens showLikes={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
-            <NewUsers followButton={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
-            <NewTokens showLikes={false} titleSize={16} size={54} fontSize={14} titleMargin={2} />
+            <TopUsers followButton={false} />
+            <TopTokens showLikes={false}  />
+            <NewUsers followButton={false}  />
+            <NewTokens showLikes={false}  />
           </Box>
           <HomepageQuickstart />
         </div>

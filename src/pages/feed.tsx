@@ -41,8 +41,8 @@ export default function Feed({
 }) {
 
   const homepage = "https://www.hodlmymoon.com";
-  const title = "The Social Polygon NFT Marketplace - Mint, buy and sell NFTs on the Polygon Blockchain";
-  const description = "Explore NFTs on our Polygon Marketplace. Follow your favourite NFT creators. Mint for Free.";
+  const title = "Hodl My Moon - Social Polygon NFT Platform - Make Frens. Mint, Buy, and Sell NFTs.";
+  const description = "Join our social platform for Polygon NFT creators. Quickly, and easily mint NFTs. Connect with other NFT creators. Buy and Sell on the Marketplace.";
   const shareImage = "https://res.cloudinary.com/dyobirj7r/image/upload/ar_216:253,c_fill,w_1080/prod/nfts/bafkreihuew5ij6lvc2k7vjqr65hit7fljl7fsxlikrkndcdyp47xbi6pvy" // nft 36
 
   const feed = useActions2(address, ActionSet.Feed);

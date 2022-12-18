@@ -18,15 +18,15 @@ export default function HodlProfileBadgeLoading() {
                 justifyContent="space-evenly"
                 alignItems={"start"}
                 sx={{
-                    gap: 2,
+                    gap: 3,
                 }}
             >
                 <Box
                     display="flex"
-                    gap={2}
+                    gap={3}
                     alignItems={"center"}
                 >
-                    <UserAvatarAndHandleBodyLoading size={70} handle={false} />
+                    <UserAvatarAndHandleBodyLoading size={80} handle={false} />
                     <Box
                         sx={{
                             display: "flex",

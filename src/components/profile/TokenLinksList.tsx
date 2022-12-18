@@ -35,7 +35,7 @@ export const TokenLinksList: React.FC<TokenLinksListProps> = ({ swr, limit, show
           style={{
             display: 'flex',
             flexDirection: 'column',
-            width: '100%'
+            width: '100%',
           }}
         >
           <InfiniteScroll
@@ -54,9 +54,8 @@ export const TokenLinksList: React.FC<TokenLinksListProps> = ({ swr, limit, show
                     display: 'flex',
                     width: '100%',
                     alignItems: 'center',
-                    margin: `${theme.spacing(1.5)} 0`
+                    margin: `0 0 ${theme.spacing(4)} 0`,
                   }}
-
                   key={token.id}
                 >
                   <div

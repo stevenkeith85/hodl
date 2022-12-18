@@ -22,7 +22,7 @@ export const HodlFeedItemLoading = memo(({ }) => {
                     xs: 1.5,
                     sm: 2
                 },
-                border: `1px solid #ddd`,
+                boxShadow: '1px 1px 8px #eee',
                 background: 'white'
             }
             }

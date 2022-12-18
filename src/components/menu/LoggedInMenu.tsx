@@ -76,7 +76,7 @@ export const LoggedInMenu = () => {
                     >
                         <Box
                             sx={{
-                                fontSize: 18,
+                                fontSize: 16,
                                 color: theme => theme.palette.text.secondary,
                                 margin: 1,
                                 '&:hover': {

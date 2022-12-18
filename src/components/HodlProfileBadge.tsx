@@ -26,7 +26,7 @@ const UserAvatarAndHandle = dynamic(
     () => import('./avatar/UserAvatarAndHandle').then(mod => mod.UserAvatarAndHandle),
     {
         ssr: false,
-        loading: () => <UserAvatarAndHandleBodyLoading size={70} handle={false} />
+        loading: () => <UserAvatarAndHandleBodyLoading size={80} handle={false} />
     }
 );
 
@@ -74,7 +74,7 @@ export const HodlProfileBadge: React.FC<HodlProfileBadgeProps> = ({ user }) => {
                 justifyContent="space-evenly"
                 alignItems={"start"}
                 sx={{
-                    gap: 2,
+                    gap: 3,
                 }}
             >
                 <Box
@@ -85,7 +85,7 @@ export const HodlProfileBadge: React.FC<HodlProfileBadgeProps> = ({ user }) => {
                     <UserAvatarAndHandle
                         address={user?.address}
                         fallbackData={user}
-                        size={70}
+                        size={80}
                         handle={false}
                     />
                     <Box

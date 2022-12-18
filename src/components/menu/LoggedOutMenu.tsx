@@ -23,7 +23,7 @@ export const LoggedOutMenu = ({ }) => {
                 >
                     <Box
                         sx={{
-                            fontSize: 18,
+                            fontSize: 16,
                             margin: 1,
                             '&:hover': {
                                 color: "secondary.main",

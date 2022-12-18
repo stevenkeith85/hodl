@@ -3,6 +3,7 @@ import Typography from "@mui/material/Typography";
 import { useContext } from "react";
 
 import { RankingsContext } from "../../contexts/RankingsContext";
+import { ConnectButton } from "../menu/ConnectButton";
 
 import { NftWindow } from "../NftWindow"
 
@@ -17,11 +18,15 @@ export const HomePagePitch = ({ }) => {
                     xs: '1fr',
                     sm: '1fr 1fr'
                 },
-                marginY: 4,
+                marginY: {
+                    xs: 4,
+                    sm: 6
+                },
                 paddingX: 4,
                 paddingY: 4,
                 gap: 4,
-                background: '#f6f6f6',
+                background: 'white',
+                boxShadow: '1px 1px 8px #eee',
                 borderRadius: 2,
                 textAlign: {
                     xs: 'center',
@@ -40,26 +45,26 @@ export const HomePagePitch = ({ }) => {
                             md: 28,
                         },
                         fontWeight: 500,
-                        margin: 0,
-                        marginBottom: 2,
+                        marginY: 2,
                         color: theme => theme.palette.primary.main,
                     }}>
-                    The Social Polygon NFT Marketplace
+                    The Social Polygon NFT Platform
                 </Box>
                 <Typography
                     component="h2"
                     sx={{
                         fontFamily: theme => theme.logo.fontFamily,
                         fontSize: {
-                            xs: 14,
+                            xs: 15,
                             sm: 16,
                             md: 18,
                         },
                         marginBottom: 4,
                         color: theme => theme.palette.text.secondary
                     }}>
-                    Mint, buy and sell NFTs on the Polygon blockchain
+                    Make frens. Mint NFTs. Buy and sell on the Marketplace.
                 </Typography>
+                <ConnectButton />
             </Box>
             <Box
                 sx={{

@@ -5,7 +5,7 @@ import { HodlScrollBox } from '../HodlScrollBox';
 import Typography from '@mui/material/Typography';
 
 
-export const NewTokens = ({ showLikes = true, titleSize = 16, height = 325, size=44, fontSize=14, titleMargin=2}) => {
+export const NewTokens = ({ showLikes = true, titleSize = 16, height = 325, size=60, fontSize=14, titleMargin=3}) => {
     const { limit, newTokens } = useContext(RankingsContext);
 
     return (
