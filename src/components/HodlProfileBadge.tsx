@@ -79,7 +79,7 @@ export const HodlProfileBadge: React.FC<HodlProfileBadgeProps> = ({ user }) => {
             >
                 <Box
                     display="flex"
-                    gap={3}
+                    gap={2}
                     alignItems={"center"}
                 >
                     <UserAvatarAndHandle

@@ -19,7 +19,7 @@ export default function PrivateHomePageSidebarLoading({display}) {
                 },
                 marginTop: {
                     xs: 1,
-                    md: 4
+                    md: 6
                 },
                 gap: 8,
             }}

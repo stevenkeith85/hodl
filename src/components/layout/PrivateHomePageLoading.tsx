@@ -41,7 +41,7 @@ const PrivateHomePageLoading = ({ }) => {
                             },
                             marginTop: {
                                 xs: 1,
-                                md: 4
+                                md: 6
                             },
                             marginBottom: {
                                 xs: 0,
