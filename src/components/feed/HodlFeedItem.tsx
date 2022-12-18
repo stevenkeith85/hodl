@@ -128,11 +128,19 @@ interface FeedItemBodyProps {
 export const FeedItemBody: FC<FeedItemBodyProps> = memo(({ action, id, name, description }) => (
     <div>
         <Link href={action === ActionTypes.Listed ? `/nft/${id}?tab=1` : `/nft/${id}`}>
-            <Typography sx={{ fontWeight: 600 }}>
+            <Typography
+                sx={{ 
+                    fontWeight: 600,
+                    marginBottom: 0.5
+                    }}>
                 {name}
             </Typography>
         </Link>
-        <Box sx={{ whiteSpace: 'pre-line' }}>
+        <Box 
+            sx={{ 
+                whiteSpace: 'pre-line',
+                color: theme => theme.palette.text.secondary
+            }}>
             {
                 insertTagLinks(description)
             }
@@ -167,7 +175,6 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                             xs: 1.5,
                             sm: 2
                         },
-                        // border: `1px solid #ddd`,
                         boxShadow: '1px 1px 8px #eee',
                         background: 'white'
                     }
