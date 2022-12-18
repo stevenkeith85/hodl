@@ -44,7 +44,7 @@ export const HomePagePitch = ({ }) => {
                         marginBottom: 2,
                         color: theme => theme.palette.primary.main,
                     }}>
-                    The Social Polygon NFT Marketplace
+                    The Social Polygon NFT Platform
                 </Box>
                 <Typography
                     component="h2"
@@ -58,7 +58,7 @@ export const HomePagePitch = ({ }) => {
                         marginBottom: 4,
                         color: theme => theme.palette.text.secondary
                     }}>
-                    Mint, buy and sell NFTs on the Polygon blockchain
+                    Make frens. Mint NFTs. Buy and sell on the Marketplace.
                 </Typography>
             </Box>
             <Box

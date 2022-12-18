@@ -54,7 +54,7 @@ export const TokenLinksList: React.FC<TokenLinksListProps> = ({ swr, limit, show
                     display: 'flex',
                     width: '100%',
                     alignItems: 'center',
-                    margin: `${theme.spacing(1.5)} 0`
+                    margin: `${theme.spacing(3)} 0`
                   }}
 
                   key={token.id}

@@ -20,6 +20,8 @@ import { ActionSet, HodlAction } from "../../models/HodlAction";
 
 import { HodlNotificationBoxLoading } from './HodlNotificationBoxLoading';
 import { SignedInContext } from '../../contexts/SignedInContext';
+
+
 const HodlNotificationBox = dynamic(
     () => import('./HodlNotificationBox').then(mod => mod.HodlNotificationBox),
     {

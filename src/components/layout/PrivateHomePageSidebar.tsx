@@ -23,7 +23,6 @@ import { SignedInContext } from '../../contexts/SignedInContext';
 
 const HodlProfileBadge = dynamic(
     () => import('../HodlProfileBadge').then(mod => mod.HodlProfileBadge),
-    // () => delayForDemo(import('../HodlProfileBadge').then(mod => mod.HodlProfileBadge)),
     {
         ssr: false,
         loading: () => <HodlProfileBadgeLoading />
@@ -116,7 +115,6 @@ export default function PrivateHomePageSidebar({  }) {
                         gap: 8,
                     }}
                 >
-
                     <HodlProfileBadge user={user} />
                     <NewTokens showLikes={false} />
                     <TopTokens showLikes={false} />

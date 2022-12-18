@@ -101,7 +101,7 @@ export const FeedItemAction: FC<FeedItemActionProps> = memo(({action, price}) =>
             delisted
         </Box>
     }
-    {action === ActionTypes.Added &&
+    {/* {action === ActionTypes.Added &&
         <Box
             sx={{
                 textAlign: 'right',
@@ -114,7 +114,8 @@ export const FeedItemAction: FC<FeedItemActionProps> = memo(({action, price}) =>
             }}>
             new
         </Box>
-    }</>
+    } */}
+    </>
 ));
 FeedItemAction.displayName = "FeedItemAction"
 
@@ -153,7 +154,7 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
     }
 
     return (
-        <Box sx={{ paddingBottom: 2}}>
+        <Box sx={{ paddingBottom: 3}}>
             {
                 <Box
                     className={`feedItem`}
@@ -166,7 +167,8 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                             xs: 1.5,
                             sm: 2
                         },
-                        border: `1px solid #ddd`,
+                        // border: `1px solid #ddd`,
+                        boxShadow: '1px 1px 8px #eee',
                         background: 'white'
                     }
                     }
