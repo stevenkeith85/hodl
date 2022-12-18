@@ -12,15 +12,15 @@ interface FollowButtonProps {
 }
 
 export const FollowButton: React.FC<FollowButtonProps> = ({ profileAddress, variant = "contained", sx = {} }) => {
-    const { signedInAddress: address } = useContext(SignedInContext);// the logged in user
+    const { signedInAddress } = useContext(SignedInContext);// the logged in user
     
-    const profileUserSWR = useUser(profileAddress, null, address); // this is the user the follow / unfollow action will operate on
+    const profileUserSWR = useUser(profileAddress, null, signedInAddress); // this is the user the follow / unfollow action will operate on
 
     const [
         follow,
     ] = useFollow(profileAddress);
 
-    if (!address || address === profileAddress) {
+    if (!signedInAddress || signedInAddress === profileAddress) {
         return null;
     }
     if (!profileUserSWR.data) {
