@@ -1,12 +1,11 @@
 import { FC } from 'react';
-import { getShortAddress } from '../../lib/utils';
+import { getShortAddress } from "../../lib/getShortAddress";
 import Link from 'next/link';
 import { UserViewModel } from '../../models/User';
 import { useUser } from '../../hooks/useUser';
 import theme from '../../theme';
 import { truncateText } from '../../lib/truncateText';
 
-import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
@@ -24,7 +23,7 @@ interface ProfileNameOrAddressProps {
 export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({
     profileAddress,
     fontSize = '14px',
-    fontWeight =  500,
+    fontWeight = 500,
     color = "inherit",
     sx = null,
     fallbackData = null,
@@ -60,9 +59,7 @@ export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({
             </Link>
             :
             <Link href={`/profile/${user.address}`}>
-                <Tooltip title={user.address} arrow placement="right">
-                    <Typography component="span" fontSize={fontSize} fontWeight={fontWeight} color={color}>{getShortAddress(user.address)}</Typography>
-                </Tooltip>
+                <Typography component="span" fontSize={fontSize} fontWeight={fontWeight} color={color}>{getShortAddress(user.address)}</Typography>
             </Link >
         }
     </Box >)

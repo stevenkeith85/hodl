@@ -41,7 +41,7 @@ export const InfiniteScrollNftWindows: React.FC<InfiniteScrollNftWindowsProps> =
           isReachingEnd={isReachingEnd}
         >
           {
-            ({ items }) => items.map((nft: FullToken) => nft ? <Box key={nft.id} sx={{
+            ({ items }) => items?.map((nft: FullToken) => nft ? <Box key={nft.id} sx={{
               width: {
                 xs: '50%',
                 md: '33.3%'

@@ -4,7 +4,7 @@ import { WalletContext } from "../contexts/WalletContext";
 import { formatEther } from '@ethersproject/units'
 
 import Typography from "@mui/material/Typography";
-import { getShortAddress } from "../lib/utils";
+import { getShortAddress } from "../lib/getShortAddress";
 import { CopyText } from "./CopyText";
 import { chains } from "../lib/chains";
 

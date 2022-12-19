@@ -8,13 +8,11 @@ import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 
 import Box from "@mui/material/Box";
 
-import { FollowButtonLoading } from '../profile/FollowButtonLoading';
-
 const FollowButton = dynamic(
   () => import('../profile/FollowButton').then(mod => mod.FollowButton),
   {
       ssr: false,
-      loading: () => <FollowButtonLoading />
+      loading: () => null
   }
 );
 

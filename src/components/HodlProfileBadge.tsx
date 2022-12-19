@@ -7,7 +7,7 @@ import { UserContext } from '../contexts/UserContext';
 import { ProfileNameOrAddress } from './avatar/ProfileNameOrAddress';
 import { CopyText } from './CopyText';
 import { HodlBorderedBox } from './HodlBorderedBox';
-import { getShortAddress } from '../lib/utils';
+import { getShortAddress } from "../lib/getShortAddress";
 import Typography from "@mui/material/Typography";
 import Skeleton from "@mui/material/Skeleton";
 import Box from "@mui/material/Box";

@@ -9,10 +9,9 @@ import { getTagsForToken } from "../../pages/api/tags";
 import { MutableToken } from "../../models/MutableToken";
 import { getMutableToken } from "../../pages/api/contracts/mutable-token/[tokenId]";
 
-import { updateHodlingCache } from "../../pages/api/contracts/token/hodling/count";
 import { updateTransactionRecords } from "./updateTransactionRecords";
 import { runRedisTransaction } from "../database/rest/databaseUtils";
-import { updateListedCache } from "../../pages/api/contracts/market/listed/count";
+import { addToZeplo } from "../addToZeplo";
 
 const client = Redis.fromEnv()
 
@@ -87,10 +86,23 @@ export const tokenBought = async (
         return false;
     }
 
-    const updateHodlingCachePromise = updateHodlingCache(req.address);
-    const updateListedCachePromise = updateListedCache(seller);
-
-    Promise.all([updateHodlingCachePromise, updateListedCachePromise]);
+    addToZeplo(
+        'api/contracts/token/hodling/updateCache',
+        {
+            address: req.address
+        },
+        req.cookies.refreshToken,
+        req.cookies.accessToken
+    )
+    
+    addToZeplo(
+        'api/contracts/market/listed/updateCache',
+        {
+            address: seller
+        },
+        req.cookies.refreshToken,
+        req.cookies.accessToken
+    );
 
     const action = {
         action: ActionTypes.Bought,

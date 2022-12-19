@@ -1,39 +1,41 @@
 import apiRoute from '../../../handler';
 import { Token } from "../../../../../models/Token";
-import { Redis } from '@upstash/redis';
-import { updateHodlingCache } from './count';
 import { getAsString } from '../../../../../lib/getAsString';
 
+import { mGetTokens } from '../../../../../lib/database/rest/Tokens';
+import { zRange } from '../../../../../lib/database/rest/zRange';
+import { get } from '../../../../../lib/database/rest/get';
+import { addToZeplo } from '../../../../../lib/addToZeplo';
 
-const client = Redis.fromEnv();
-
-export const getHodling = async (address: string, offset: number, limit: number, skipCache = false): Promise<{ items: Token[], next: number; total: number }> => {
+export const getHodling = async (
+    address: string,
+    offset: number,
+    limit: number,
+    req
+): Promise<{ items: Token[], next: number; total: number }> => {
     if (!address) {
         return null;
     }
 
-    // Why we store 2 keys, rather than just a ZSET (and do a ZCARD to get the count)..
+    let hodlingCount = await get(`user:${address}:hodlingCount`);
 
-    // if hodlingCount (via a zcard lookup) was 0 then the set isn't present. (as REDIS does not allow empty sets)
-    // that could mean its expired (and we'd need to recache it via the blockchain)...
-    // 
-    // if the user 'actually' is hodling 0 (when we read the blockchain) then we need a way of saying that (again -> redis doesn't allow empty sets)
+    if (hodlingCount === null) {
+        // Previously, we emptied the cached data after a TTL; 
+        // So there's a chance the cache is empty on prod. 
+        // We'll probably ping all the profiles before going live to fill the cache
+        // But if for some reason we don't have this users cached data, we should request it
+        // They should get the updated data on a refresh or after a SWR revalidation :)
 
-    // if we can't say 'we checked but this user really does have nothing' then we'll effectively lose the ability to cache 'hodling 0 tokens'
-
-    // so we've decided to have holding -> ZSET, AND hodlingCount -> number; and update them / expire them together
-
-    // when we do a GET hodlingCount, we can differentiate between 0 (user has nothing) and null (the cache has expired); and then update both during the caching process
-
-    let hodlingCount = skipCache ? null : await client.get<number>(`user:${address}:hodlingCount`);
-
-    if (hodlingCount === null) { // repopulate the cache  
-        await updateHodlingCache(address);
-    } else {
-        console.log('using hodling cached data')
-    }
-
-    if (hodlingCount === 0) {
+        // Longer term, this can probably go; although it might be nice to have if we decide to bring back a TTL
+        // on data. (with a high value; maybe 30 days or something)
+        addToZeplo(
+            'api/contracts/token/hodling/updateCache',
+            {
+                address
+            },
+            req.cookies.refreshToken,
+            req.cookies.accessToken
+        );
         return {
             items: [],
             next: Number(offset) + Number(limit),
@@ -41,15 +43,16 @@ export const getHodling = async (address: string, offset: number, limit: number,
         };
     }
 
-    const tokenIds: number[] = await client.zrange<number[]>(`user:${address}:hodling`, offset, offset + limit - 1);
-
-    // We get all the comment data with one round trip to redis
-    const pipeline = client.pipeline();
-    for (let id of tokenIds) {
-        pipeline.get(`token:${id}`);
+    if (Number(hodlingCount) === 0 || hodlingCount === null) {
+        return {
+            items: [],
+            next: Number(offset) + Number(limit),
+            total: Number(0)
+        };
     }
-    const items: Token[] = tokenIds?.length ? await pipeline.exec() : [];
 
+    const tokenIds = await zRange(`user:${address}:hodling`, offset, offset + limit - 1, {});
+    const items = tokenIds?.length ? await mGetTokens(tokenIds) : [];
 
     return {
         items,
@@ -59,7 +62,6 @@ export const getHodling = async (address: string, offset: number, limit: number,
 }
 
 const route = apiRoute();
-
 route.get(async (req, res) => {
     const address = getAsString(req.query.address);
     const offset = getAsString(req.query.offset);
@@ -74,7 +76,7 @@ route.get(async (req, res) => {
         return res.status(400).json({ message: 'Bad Request' });
     }
 
-    const data = await getHodling(address, +offset, +limit)
+    const data = await getHodling(address, +offset, +limit, req);
 
     return res.status(200).json(data);
 });
