@@ -20,8 +20,8 @@ import axios from 'axios';
 import { Token } from "../../models/Token";
 import { HodlMetadata } from "../../models/Metadata";
 
-import { updateHodlingCache } from "../../pages/api/contracts/token/hodling/count";
 import { updateTransactionRecords } from "./updateTransactionRecords";
+import { addToZeplo } from "../addToZeplo";
 
 
 const client = Redis.fromEnv()
@@ -147,7 +147,7 @@ export const tokenMinted = async (
             cmds.push(["ZADD", `tag:${tagLC}:new`, block.timestamp, token.id])
 
             // TODO: We probably want to extract the trim to some sort of scheduled task, rather than doing it in the request. Possibyl batch trim a bunch of tag sets
-            cmds.push(["ZREMRANGEBYRANK", `tag:${tagLC}:new`, 0, -(500 + 1)]); 
+            cmds.push(["ZREMRANGEBYRANK", `tag:${tagLC}:new`, 0, -(500 + 1)]);
 
             // update the tag rankings. 
             // We do not trim this as we don't need this on the UI at the moment. 
@@ -184,8 +184,14 @@ export const tokenMinted = async (
         return false;
     }
 
-    // We should possibly split this off into its own serverless function, and call it as part of our 'steps' ?
-    await updateHodlingCache(req.address);
+    addToZeplo(
+        'api/contracts/token/hodling/updateCache',
+        {
+            address: req.address
+        },
+        req.cookies.refreshToken,
+        req.cookies.accessToken
+    )
 
     const action = {
         subject: req.address,

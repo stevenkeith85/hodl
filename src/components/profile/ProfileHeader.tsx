@@ -1,15 +1,35 @@
+import { useState } from "react";
+
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import { getShortAddress } from '../../lib/utils'
-import { ProfileNameOrAddress } from '../avatar/ProfileNameOrAddress'
-import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle'
+
 import { CopyText } from '../CopyText'
-import { HodlShareMenu } from '../HodlShareMenu'
-import { FollowButton } from './FollowButton'
-import IconButton from "@mui/material/IconButton";
+import Typography from '@mui/material/Typography'
+import { getShortAddress } from "../../lib/getShortAddress";
+
 import { ShareIcon } from '../icons/ShareIcon';
 import { grey } from "@mui/material/colors";
-import { useState } from "react";
+
+import dynamic from 'next/dynamic'
+
+import { ProfileNameOrAddress } from '../avatar/ProfileNameOrAddress'
+import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle'
+
+
+const FollowButton = dynamic(
+  () => import('./FollowButton').then(mod => mod.FollowButton),
+  {
+    ssr: false,
+    loading: () => null
+  }
+);
+
+const HodlShareMenu = dynamic(
+  () => import('../HodlShareMenu').then((module) => module.HodlShareMenu),
+  {
+    ssr: false,
+    loading: () => null
+  }
+);
 
 
 export const ProfileHeader = ({
@@ -67,7 +87,6 @@ export const ProfileHeader = ({
                 handle={false}
               />
             </Box>
-
           </Box>
           {/* name and address */}
           <Box
@@ -75,8 +94,8 @@ export const ProfileHeader = ({
               display: "flex",
               flexDirection: "column",
               margin: {
-                xs: 2,
-                sm: 3
+                xs: 3,
+                sm: 4
               }
             }}>
             <ProfileNameOrAddress
@@ -103,12 +122,12 @@ export const ProfileHeader = ({
                 {getShortAddress(owner.address)}
               </Typography>
             </CopyText>
-
           </Box>
         </Box>
         {/* share */}
         <Box
           display="flex"
+          alignItems={"center"}
           gap={2}
         >
           <Box sx={{
@@ -119,17 +138,17 @@ export const ProfileHeader = ({
           }}>
             <FollowButton profileAddress={owner.address} variant="outlined" />
           </Box>
-          <IconButton
+          <div
             className="shareMenu"
             onClick={handleClick}
-            size="small"
-            sx={{
+            style={{
+              cursor: 'pointer',
               padding: 0,
               lineHeight: 0,
             }}
           >
             <ShareIcon size={20} fill={grey[800]} />
-          </IconButton>
+          </div>
           {
             open &&
             <HodlShareMenu
@@ -163,7 +182,6 @@ export const ProfileHeader = ({
           }}
         />
       </Box>
-
     </Box>
   )
 }

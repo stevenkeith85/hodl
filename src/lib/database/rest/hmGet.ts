@@ -1,5 +1,4 @@
 export const hmGet = async <Type extends Object>(key: string, ...fields: string[]) : Promise<Type> => {
-
   try {
     const r = await fetch(
       `${process.env.UPSTASH_REDIS_REST_URL}/HMGET/${key}/${fields.join('/')}`, {

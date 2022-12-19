@@ -31,9 +31,10 @@ import theme from '../theme';
 import createEmotionCache from '../createEmotionCache';
 
 // Also loads a lot of deps
-import Layout from '../components/layout/Layout';
+// import Layout from '../components/layout/Layout';
 
 import { SignedInContext } from '../contexts/SignedInContext';
+import Layout from '../components/layout/Layout';
 
 
 // Client-side cache, shared for the whole session of the user in the browser.
