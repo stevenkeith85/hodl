@@ -49,7 +49,7 @@ export const getListed = async (
         };
     }
 
-    if (listedCount === 0) {
+    if (Number(listedCount) === 0) {
         return {
             items: [],
             next: Number(offset) + Number(limit),
