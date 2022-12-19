@@ -7,51 +7,61 @@ import Head from 'next/head'
 import { authenticate } from '../../lib/jwt';
 
 import { getFollowersCount } from '../api/followers/count'
+import { getFollowingCount } from '../api/following/count'
 import { getFollowing } from '../api/following'
 import { getFollowers } from '../api/followers'
-import { useFollowing } from '../../hooks/useFollowing';
-import { useFollowers } from '../../hooks/useFollowers';
-import { useListed } from '../../hooks/useListed';
-import { useHodling } from '../../hooks/useHodling';
+import { getHodling } from '../api/contracts/token/hodling';
+import { getUserUsingHandle } from '../api/user/[handle]';
 
-import { getFollowingCount } from '../api/following/count'
 import { useFollowingCount } from '../../hooks/useFollowingCount'
 import { useFollowersCount } from '../../hooks/useFollowersCount'
-import { FollowersContext } from '../../contexts/FollowersContext'
-import { FollowingContext } from '../../contexts/FollowingContext'
-import { getUserUsingHandle } from '../api/user/[handle]'
-import { useHodlingCount } from '../../hooks/useHodlingCount'
-import { useListedCount } from '../../hooks/useListedCount'
+import { useHodlingCount } from '../../hooks/useHodlingCount';
+import { useListedCount } from '../../hooks/useListedCount';
 
 import Box from '@mui/material/Box'
-
-
-const InfiniteScrollNftWindows = dynamic(
-  () => import('../../components/InfiniteScrollNftWindows').then((module) => module.InfiniteScrollNftWindows),
-  {
-    ssr: false,
-    loading: () => null
-  }
-);
-
-const UserLinksList = dynamic(
-  () => import('../../components/profile/UserLinksList').then((module) => module.UserLinksList),
-  {
-    ssr: false,
-    loading: () => null
-  }
-);
 
 const ProfileHeader = dynamic(
   () => import('../../components/profile/ProfileHeader').then((module) => module.ProfileHeader),
   {
-    ssr: false,
+    ssr: true,
     loading: () => null
   }
 );
 
 const ProfileTabs = dynamic(
   () => import('../../components/profile/ProfileTabs').then((module) => module.ProfileTabs),
+  {
+    ssr: true,
+    loading: () => null
+  }
+);
+
+const HodlingList = dynamic(
+  () => import('../../components/profile/HodlingList').then((module) => module.HodlingList),
+  {
+    ssr: true,
+    loading: () => null
+  }
+);
+
+const ListedList = dynamic(
+  () => import('../../components/profile/ListedList').then((module) => module.ListedList),
+  {
+    ssr: false,
+    loading: () => null
+  }
+);
+
+const FollowersList = dynamic(
+  () => import('../../components/profile/FollowersList').then((module) => module.FollowersList),
+  {
+    ssr: false,
+    loading: () => null
+  }
+);
+
+const FollowingList = dynamic(
+  () => import('../../components/profile/FollowingList').then((module) => module.FollowingList),
   {
     ssr: false,
     loading: () => null
@@ -75,15 +85,19 @@ export async function getServerSideProps({ params, query, req, res }) {
   const prefetchedFollowingCountPromise = getFollowingCount(owner.address);
   const prefetchedFollowersCountPromise = getFollowersCount(owner.address);
 
-  const prefetchedFollowingPromise = getFollowing(owner.address, 0, limit, req?.address);
-  const prefetchedFollowersPromise = getFollowers(owner.address, 0, limit, req?.address);
+  // we only need to prefetch these if we are on that specific tab
+  const prefetchedHodlingPromise = tab == 0 ? getHodling(owner.address, 0, limit, req) : null;
+  const prefetchedFollowingPromise = tab == 2 ? getFollowing(owner.address, 0, limit, req?.address) : null;
+  const prefetchedFollowersPromise = tab == 3 ? getFollowers(owner.address, 0, limit, req?.address) : null;
 
   const [
+    prefetchedHodling,
     prefetchedFollowingCount,
     prefetchedFollowersCount,
     prefetchedFollowing,
     prefetchedFollowers,
   ] = await Promise.all([
+    prefetchedHodlingPromise,
     prefetchedFollowingCountPromise,
     prefetchedFollowersCountPromise,
     prefetchedFollowingPromise,
@@ -94,20 +108,21 @@ export async function getServerSideProps({ params, query, req, res }) {
     props: {
       owner: owner,
       address: req.address || null,
+      prefetchedHodling: prefetchedHodling ? [prefetchedHodling] : null,
       prefetchedFollowingCount,
-      prefetchedFollowing: [prefetchedFollowing],
+      prefetchedFollowing: prefetchedFollowing ? [prefetchedFollowing] : null,
       prefetchedFollowersCount,
-      prefetchedFollowers: [prefetchedFollowers],
+      prefetchedFollowers: prefetchedFollowers ? [prefetchedFollowers] : null,
       tab,
       limit
     },
   }
 }
 
-// TODO: getting the hodling count and list can both trigger cache updates. we'd like to prevent the double update
 const Profile = ({
   owner,
   address,
+  prefetchedHodling,
   prefetchedFollowingCount = null,
   prefetchedFollowing = null,
   prefetchedFollowersCount = null,
@@ -115,24 +130,13 @@ const Profile = ({
   tab,
   limit
 }) => {
-
-  // return <>{JSON.stringify(prefetchedFollowing, null, 2)}</>
   const router = useRouter();
-
   const [value, setValue] = useState(Number(tab)); // tab
 
   const [hodlingCount] = useHodlingCount(owner.address);
-  const { swr: hodling } = useHodling(owner.address, limit, null, value == 0);
-
   const [listedCount] = useListedCount(owner.address);
-  const { swr: listed } = useListed(owner.address, limit, null, value == 1);
-
   const [followingCount] = useFollowingCount(owner.address, prefetchedFollowingCount);
-  const { swr: following } = useFollowing(true, owner.address, limit, prefetchedFollowing);
-
   const [followersCount] = useFollowersCount(owner.address, prefetchedFollowersCount);
-  const { swr: followers } = useFollowers(true, owner.address, limit, prefetchedFollowers);
-
 
   useEffect(() => {
     if (!router?.query?.tab) {
@@ -164,72 +168,68 @@ const Profile = ({
       <meta property="og:description" content={description} />
     </Head>
 
-    <FollowersContext.Provider value={{ followers }}>
-      <FollowingContext.Provider value={{ following }}>
-        <Box sx={{
-          height: {
-            md: '120px',
-          },
-          marginTop: { xs: 2, sm: 4 }
-        }}>
-          <ProfileHeader owner={owner} />
-        </Box>
-        <Box sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          height: '49.5px',
-          marginTop: {
-            xs: 2,
-            sm: 4,
-          },
-          marginBottom: {
-            xs: 2,
-            sm: 4
-          }
-        }}>
-          <ProfileTabs
-            owner={owner}
-            followersCount={followersCount}
-            followingCount={followingCount}
-            hodlingCount={hodlingCount}
-            listedCount={listedCount}
-            value={value}
-            setValue={setValue}
-          />
-        </Box>
+    <Box sx={{
+      height: {
+        md: '120px',
+      },
+      marginTop: { xs: 3, sm: 5 }
+    }}>
+      <ProfileHeader owner={owner} />
+    </Box>
+    <Box sx={{
+      display: 'flex',
+      justifyContent: 'space-between',
+      height: '49.5px',
+      marginTop: {
+        xs: 2,
+        sm: 4,
+      },
+      marginBottom: {
+        xs: 2,
+        sm: 4
+      }
+    }}>
+      <ProfileTabs
+        owner={owner}
+        followersCount={followersCount}
+        followingCount={followingCount}
+        hodlingCount={hodlingCount}
+        listedCount={listedCount}
+        value={value}
+        setValue={setValue}
+      />
+    </Box>
 
-        <Box sx={{ marginBottom: 4 }}>
-          <div hidden={value !== 0}>
-            <InfiniteScrollNftWindows swr={hodling} limit={limit} pattern={false} />
-          </div>
-          <div hidden={value !== 1}>
-            <InfiniteScrollNftWindows swr={listed} limit={limit} pattern={false} />
-          </div>
-          <Box
-            hidden={value !== 2}
-            width={
-              {
-                xs: '100%',
-                md: '50%',
-              }
-            }
-          >
-            <UserLinksList swr={following} limit={limit} />
-          </Box>
-          <Box
-            hidden={value !== 3}
-            width={
-              {
-                xs: '100%',
-                md: '50%'
-              }
-            }
-          >
-            <UserLinksList swr={followers} limit={limit} />
-          </Box>
-        </Box>
-      </FollowingContext.Provider>
-    </FollowersContext.Provider>
+    <Box sx={{ marginBottom: 4 }}>
+      <div hidden={value !== 0}>
+        {value == 0 && <HodlingList address={owner.address} limit={limit} prefetchedHodling={prefetchedHodling} />}
+      </div>
+      <div hidden={value !== 1}>
+        {value == 1 && <ListedList address={owner.address} limit={limit} prefetchedListed={null} />}
+      </div>
+      <Box
+        hidden={value !== 2}
+        width={
+          {
+            xs: '100%',
+            md: '50%',
+          }
+        }
+      >
+        {value === 2 && <FollowingList address={owner.address} limit={limit} prefetchedFollowing={prefetchedFollowing} />}
+      </Box>
+      <Box
+        hidden={value !== 3}
+        width={
+          {
+            xs: '100%',
+            md: '50%'
+          }
+        }
+      >
+        {value === 3 && <FollowersList address={owner.address} limit={limit} prefetchedFollowers={prefetchedFollowers} />}
+      </Box>
+    </Box>
   </>;
 }
 

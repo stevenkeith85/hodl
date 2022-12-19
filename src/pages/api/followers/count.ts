@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAsString } from '../../../lib/getAsString';
 
 
-
 export const getFollowersCount = async (address) => {    
   const zcardResponse = await fetch(
     `${process.env.UPSTASH_REDIS_REST_URL}/zcard/user:${address}:followers`,

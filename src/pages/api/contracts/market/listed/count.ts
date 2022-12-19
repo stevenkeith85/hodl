@@ -20,7 +20,7 @@ const addressToListings = async (address, offset, limit) => {
 }
 
 export const updateListedCache = async (address) => {
-  const timeToCache = 60 * 60 * 12; // cache for twelve hours
+  const secondsToCacheFor = 60 * 60 * 24;
 
   // console.log('updating listed cache');
   // const start = Date.now();
@@ -52,8 +52,8 @@ export const updateListedCache = async (address) => {
 
   cmds.push(
     ["SET", `user:${address}:listedCount`, `${scoreMemberPairs.length / 2}`],
-    ["EXPIRE", `user:${address}:listed`, `${timeToCache}`],
-    ["EXPIRE", `user:${address}:listedCount`, `${timeToCache}`],
+    ["EXPIRE", `user:${address}:listed`, `${secondsToCacheFor}`],
+    ["EXPIRE", `user:${address}:listedCount`, `${secondsToCacheFor}`],
   );
 
   

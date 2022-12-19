@@ -4,11 +4,10 @@ import { UserHandleLoadingMemo } from './UserHandleLoading';
 
 
 export const UserAvatarAndHandleBodyLoading = ({
-    size, 
-    handle, 
+    size,
+    handle,
 }) => {
 
-    
     return (
         <div
             style={{

@@ -18,7 +18,7 @@ export const updateMutableTokenCache = async (tokenId): Promise<MutableToken> =>
   //
   // TODO: We might listen to generic transfer events in future 
   // in case stuff happens off-site. (user adds token to another market, etc)
-  const timeToCache = 60 * 60 * 12; // just cache for 12 hours at the moment. the site isn't busy
+  const secondsToCacheFor = 60 * 60 * 24;
 
   try {
     const listingPromise = getListingFromBlockchain(tokenId);
@@ -41,7 +41,7 @@ export const updateMutableTokenCache = async (tokenId): Promise<MutableToken> =>
         price: null
       }
     }
-    await client.setex(`token:${tokenId}:mutable`, timeToCache, mutableToken);
+    await client.setex(`token:${tokenId}:mutable`, secondsToCacheFor, mutableToken);
 
     return mutableToken;
   } catch (e) {

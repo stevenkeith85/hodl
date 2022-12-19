@@ -28,7 +28,7 @@ export const UserAvatarAndHandle: React.FC<UserAvatarProps> = (({
     
     const { data: user } = useUser(address, fallbackData);
 
-    if(!user) {
+    if (!user) {
         return <UserAvatarAndHandleBodyLoading size={size} handle={handle} />
     }
 

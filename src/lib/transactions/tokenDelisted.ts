@@ -6,12 +6,13 @@ import { MutableToken } from "../../models/MutableToken";
 import { getMutableToken } from "../../pages/api/contracts/mutable-token/[tokenId]";
 
 import { updateTransactionRecords } from "./updateTransactionRecords";
-import { updateHodlingCache } from "../../pages/api/contracts/token/hodling/count";
+import { updateHodlingCache } from "../../pages/api/contracts/token/hodling/updateCache";
 import { runRedisTransaction } from "../database/rest/databaseUtils";
 import { updateListedCache } from "../../pages/api/contracts/market/listed/count";
 
 import { TransactionResponse } from '@ethersproject/abstract-provider'
 import { LogDescription } from '@ethersproject/abi'
+import { addToZeplo } from "../addToZeplo";
 
 const client = Redis.fromEnv()
 
@@ -73,10 +74,17 @@ export const tokenDelisted = async (
         return false;
     }
 
-    const updateHodlingCachePromise = updateHodlingCache(req.address);
-    const updateListedCachePromise = updateListedCache(req.address);
-
-    Promise.all([updateHodlingCachePromise, updateListedCachePromise]);
+    addToZeplo(
+        'api/contracts/token/hodling/updateCache',
+        {
+            address: req.address
+        },
+        req.cookies.refreshToken,
+        req.cookies.accessToken
+    )
+    
+    // TODO: Via Message Queue
+    await updateListedCache(req.address);
 
     const action = {
         subject: req.address,

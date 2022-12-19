@@ -1,8 +1,6 @@
 import Badge from "@mui/material/Badge";
-import Skeleton from "@mui/material/Skeleton";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
-import Link from "next/link";
 
 import humanize from "humanize-plus";
 
@@ -43,9 +41,7 @@ export const ProfileTabs = ({
               showZero
               max={Number.MAX_SAFE_INTEGER}
               badgeContent={
-                hodlingCount === null ?
-                  <Skeleton width={10} variant="text" animation="wave" /> :
-                  humanize.compactInteger(hodlingCount, 1)
+                  humanize.compactInteger(hodlingCount || 0, 1)
               }
             >
             </Badge>
@@ -83,9 +79,7 @@ export const ProfileTabs = ({
               showZero
               max={Number.MAX_SAFE_INTEGER}
               badgeContent={
-                listedCount === null ?
-                  <Skeleton width={10} variant="text" animation="wave" /> :
-                  humanize.compactInteger(listedCount, 1)
+                  humanize.compactInteger(listedCount || 0, 1)
               }
             >
             </Badge>
