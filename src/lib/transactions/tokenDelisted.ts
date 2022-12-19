@@ -6,9 +6,7 @@ import { MutableToken } from "../../models/MutableToken";
 import { getMutableToken } from "../../pages/api/contracts/mutable-token/[tokenId]";
 
 import { updateTransactionRecords } from "./updateTransactionRecords";
-import { updateHodlingCache } from "../../pages/api/contracts/token/hodling/updateCache";
 import { runRedisTransaction } from "../database/rest/databaseUtils";
-import { updateListedCache } from "../../pages/api/contracts/market/listed/count";
 
 import { TransactionResponse } from '@ethersproject/abstract-provider'
 import { LogDescription } from '@ethersproject/abi'
@@ -83,8 +81,14 @@ export const tokenDelisted = async (
         req.cookies.accessToken
     )
     
-    // TODO: Via Message Queue
-    await updateListedCache(req.address);
+    addToZeplo(
+        'api/contracts/market/listed/updateCache',
+        {
+            address: req.address
+        },
+        req.cookies.refreshToken,
+        req.cookies.accessToken
+    );
 
     const action = {
         subject: req.address,

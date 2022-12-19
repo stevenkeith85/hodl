@@ -1,16 +1,12 @@
 import apiRoute from "../../../handler";
-import { Redis } from '@upstash/redis';
-import { updateHodlingCache } from "./updateCache";
 import { get } from "../../../../../lib/database/rest/get";
 
 const route = apiRoute();
-const client = Redis.fromEnv()
-
 
 // TODO: This should never read from the blockchain, so that we get predictable response times for the UI
 // This will allow us to offer a better experience for users
 // Blockchain updates should happen async via the message queue
-export const getHodlingCount = async (address, skipCache = false): Promise<number> => {
+export const getHodlingCount = async (address): Promise<number> => {
   if (!address) {
     return null;
   }
@@ -31,10 +27,8 @@ export const getHodlingCount = async (address, skipCache = false): Promise<numbe
   // let hodlingCount = skipCache ? null : await client.get<number>(`user:${address}:hodlingCount`);
   let hodlingCount = await get(`user:${address}:hodlingCount`);
 
-  if (hodlingCount === null) { // repopulate the cache  
-    // TODO: We haven't got this data. We should trigger an async update of the cache
-    // await updateHodlingCache(address);
-    // console.log("cannot get the hodling count");
+  if (hodlingCount === null) {
+    // This won't really happen, but we've handled it in 'index'
     return 0;
   }
 

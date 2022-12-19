@@ -19,6 +19,9 @@ import { useHodlingCount } from '../../hooks/useHodlingCount';
 import { useListedCount } from '../../hooks/useListedCount';
 
 import Box from '@mui/material/Box'
+import { getHodlingCount } from '../api/contracts/token/hodling/count';
+import { getListedCount } from '../api/contracts/market/listed/count';
+import { getListed } from '../api/contracts/market/listed';
 
 const ProfileHeader = dynamic(
   () => import('../../components/profile/ProfileHeader').then((module) => module.ProfileHeader),
@@ -47,7 +50,7 @@ const HodlingList = dynamic(
 const ListedList = dynamic(
   () => import('../../components/profile/ListedList').then((module) => module.ListedList),
   {
-    ssr: false,
+    ssr: true,
     loading: () => null
   }
 );
@@ -55,7 +58,7 @@ const ListedList = dynamic(
 const FollowersList = dynamic(
   () => import('../../components/profile/FollowersList').then((module) => module.FollowersList),
   {
-    ssr: false,
+    ssr: true,
     loading: () => null
   }
 );
@@ -63,7 +66,7 @@ const FollowersList = dynamic(
 const FollowingList = dynamic(
   () => import('../../components/profile/FollowingList').then((module) => module.FollowingList),
   {
-    ssr: false,
+    ssr: true,
     loading: () => null
   }
 );
@@ -82,22 +85,31 @@ export async function getServerSideProps({ params, query, req, res }) {
   const tab = Number(query.tab) || 0;
   const limit = 9;
 
+  const prefetchedHodlingCountPromise = getHodlingCount(owner.address);
+  const prefetchedListedCountPromise = getListedCount(owner.address);
   const prefetchedFollowingCountPromise = getFollowingCount(owner.address);
   const prefetchedFollowersCountPromise = getFollowersCount(owner.address);
 
   // we only need to prefetch these if we are on that specific tab
   const prefetchedHodlingPromise = tab == 0 ? getHodling(owner.address, 0, limit, req) : null;
+  const prefetchedListedPromise = tab == 1 ? getListed(owner.address, 0, limit, req) : null;
   const prefetchedFollowingPromise = tab == 2 ? getFollowing(owner.address, 0, limit, req?.address) : null;
   const prefetchedFollowersPromise = tab == 3 ? getFollowers(owner.address, 0, limit, req?.address) : null;
 
   const [
+    prefetchedHodlingCount,
     prefetchedHodling,
+    prefetchedListedCount,
+    prefetchedListed,
     prefetchedFollowingCount,
     prefetchedFollowersCount,
     prefetchedFollowing,
     prefetchedFollowers,
   ] = await Promise.all([
+    prefetchedHodlingCountPromise,
     prefetchedHodlingPromise,
+    prefetchedListedCountPromise,
+    prefetchedListedPromise,
     prefetchedFollowingCountPromise,
     prefetchedFollowersCountPromise,
     prefetchedFollowingPromise,
@@ -108,7 +120,10 @@ export async function getServerSideProps({ params, query, req, res }) {
     props: {
       owner: owner,
       address: req.address || null,
+      prefetchedHodlingCount,
       prefetchedHodling: prefetchedHodling ? [prefetchedHodling] : null,
+      prefetchedListedCount,
+      prefetchedListed: prefetchedListed ? [prefetchedListed] : null,
       prefetchedFollowingCount,
       prefetchedFollowing: prefetchedFollowing ? [prefetchedFollowing] : null,
       prefetchedFollowersCount,
@@ -122,7 +137,10 @@ export async function getServerSideProps({ params, query, req, res }) {
 const Profile = ({
   owner,
   address,
+  prefetchedHodlingCount = null,
   prefetchedHodling,
+  prefetchedListedCount = null,
+  prefetchedListed,
   prefetchedFollowingCount = null,
   prefetchedFollowing = null,
   prefetchedFollowersCount = null,
@@ -133,8 +151,8 @@ const Profile = ({
   const router = useRouter();
   const [value, setValue] = useState(Number(tab)); // tab
 
-  const [hodlingCount] = useHodlingCount(owner.address);
-  const [listedCount] = useListedCount(owner.address);
+  const [hodlingCount] = useHodlingCount(owner.address, prefetchedHodlingCount);
+  const [listedCount] = useListedCount(owner.address, prefetchedListedCount);
   const [followingCount] = useFollowingCount(owner.address, prefetchedFollowingCount);
   const [followersCount] = useFollowersCount(owner.address, prefetchedFollowersCount);
 
@@ -205,7 +223,7 @@ const Profile = ({
         {value == 0 && <HodlingList address={owner.address} limit={limit} prefetchedHodling={prefetchedHodling} />}
       </div>
       <div hidden={value !== 1}>
-        {value == 1 && <ListedList address={owner.address} limit={limit} prefetchedListed={null} />}
+        {value == 1 && <ListedList address={owner.address} limit={limit} prefetchedListed={prefetchedListed} />}
       </div>
       <Box
         hidden={value !== 2}

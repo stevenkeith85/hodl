@@ -1,21 +1,52 @@
 import apiRoute from '../../../handler';
 import { Token } from "../../../../../models/Token";
 import { Redis } from '@upstash/redis';
-import { updateListedCache } from './count';
 import { FullToken } from "../../../../../models/FullToken";
 import { getAsString } from '../../../../../lib/getAsString';
+import { updateListedCache } from './updateCache';
+import { get } from '../../../../../lib/database/rest/get';
+import { addToZeplo } from '../../../../../lib/addToZeplo';
+import { zRange } from '../../../../../lib/database/rest/zRange';
+import { mGetTokens } from '../../../../../lib/database/rest/Tokens';
 
 const client = Redis.fromEnv();
 
-export const getListed = async (address: string, offset: number, limit: number, skipCache = false): Promise<{ items: Token[], next: number; total: number }> => {
+export const getListed = async (
+    address: string,
+    offset: number,
+    limit: number,
+    req
+): Promise<{ items: Token[], next: number; total: number }> => {
     if (!address) {
         return null;
     }
 
-    let listedCount = skipCache ? null : await client.get<number>(`user:${address}:listedCount`);
+    let listedCount = await get(`user:${address}:listedCount`);
 
     if (listedCount === null) { // repopulate the cache  
-        await updateListedCache(address);
+        // Previously, we emptied the cached data after a TTL; 
+        // So there's a chance the cache is empty on prod. 
+        // We'll probably ping all the profiles before going live to fill the cache
+        // But if for some reason we don't have this users cached data, we should request it
+        // They should get the updated data on a refresh or after a SWR revalidation :)
+
+        // Longer term, this can probably go; although it might be nice to have if we decide to bring back a TTL
+        // on data. (with a high value; maybe 30 days or something)
+
+        addToZeplo(
+            'api/contracts/market/listed/updateCache',
+            {
+                address
+            },
+            req.cookies.refreshToken,
+            req.cookies.accessToken
+        );
+        
+        return {
+            items: [],
+            next: Number(offset) + Number(limit),
+            total: Number(0)
+        };
     }
 
     if (listedCount === 0) {
@@ -26,7 +57,7 @@ export const getListed = async (address: string, offset: number, limit: number, 
         };
     }
 
-    const tokenIdsWithPrice: number[] = await client.zrange<number[]>(`user:${address}:listed`, offset, offset + limit - 1, { withScores: true });
+    const tokenIdsWithPrice = await zRange(`user:${address}:listed`, offset, offset + limit - 1, { withScores: true});
 
     const tokenIdToPriceMap = tokenIdsWithPrice.reduce(
         (map, currentValue, currentIndex, array) => {
@@ -40,13 +71,7 @@ export const getListed = async (address: string, offset: number, limit: number, 
     );
 
     const tokenIds = Object.keys(tokenIdToPriceMap);
-
-    // We get all the comment data with one round trip to redis
-    const pipeline = client.pipeline();
-    for (let id of tokenIds) {
-        pipeline.get(`token:${id}`);
-    }
-    const tokens: Token[] = tokenIds?.length ? await pipeline.exec() : [];
+    const tokens = tokenIds?.length ? await mGetTokens(tokenIds) : [];
 
     const fullTokens = tokens.map(item => {
         const token: FullToken = {
@@ -80,7 +105,7 @@ route.get(async (req, res) => {
         return res.status(400).json({ message: 'Bad Request' });
     }
 
-    const data = await getListed(address, +offset, +limit);
+    const data = await getListed(address, +offset, +limit, req);
     return res.status(200).json(data);
 });
 

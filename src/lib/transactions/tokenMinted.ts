@@ -20,7 +20,6 @@ import axios from 'axios';
 import { Token } from "../../models/Token";
 import { HodlMetadata } from "../../models/Metadata";
 
-import { updateHodlingCache } from "../../pages/api/contracts/token/hodling/updateCache";
 import { updateTransactionRecords } from "./updateTransactionRecords";
 import { addToZeplo } from "../addToZeplo";
 
@@ -185,7 +184,6 @@ export const tokenMinted = async (
         return false;
     }
 
-    // TODO: Via Message Queue
     addToZeplo(
         'api/contracts/token/hodling/updateCache',
         {

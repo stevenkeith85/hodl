@@ -62,8 +62,6 @@ export const getHodling = async (
 }
 
 const route = apiRoute();
-
-
 route.get(async (req, res) => {
     const address = getAsString(req.query.address);
     const offset = getAsString(req.query.offset);
