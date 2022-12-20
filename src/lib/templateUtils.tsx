@@ -1,4 +1,4 @@
-import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 import Link from "next/link";
 
 export const insertTagLinks = (text) => {
@@ -24,7 +24,7 @@ export const insertTagLinks = (text) => {
         jsx.push(text.slice(lastPosition, index));
         jsx.push(
             <Link href={`/explore?q=${tag}`} key={tag}>
-                <Typography
+                <Box
                     component="span"
                     color="primary"
                     sx={{
@@ -32,7 +32,7 @@ export const insertTagLinks = (text) => {
                         cursor: 'pointer'
                     }}>
                     {hash}
-                </Typography>
+                </Box>
             </Link>);
         lastPosition = index + hash.length;
     }

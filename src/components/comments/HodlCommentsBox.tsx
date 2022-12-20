@@ -1,13 +1,35 @@
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useRef, useState } from "react";
 import { NftContext } from "../../contexts/NftContext";
-import { useCommentCount, useComments } from "../../hooks/useComments";
+import { useComments } from "../../hooks/useComments";
+import { useCommentCount } from "../../hooks/useCommentCount";
 import { getAsString } from "../../lib/getAsString";
 
-import { AddComment } from "../nft/AddComment";
-import { HodlCommentsBoxBody } from "./HodlCommentsBoxBody";
-import { HodlCommentsBoxHeader } from "./HodlCommentsBoxHeader";
 
+const HodlCommentsBoxBody = dynamic(
+    () => import('./HodlCommentsBoxBody').then(mod => mod.HodlCommentsBoxBody),
+    {
+      ssr: true,
+      loading: () => null
+    }
+  );
+
+  const HodlCommentsBoxHeader = dynamic(
+    () => import('./HodlCommentsBoxHeader').then(mod => mod.HodlCommentsBoxHeader),
+    {
+      ssr: true,
+      loading: () => null
+    }
+  );
+
+  const AddComment = dynamic(
+    () => import('../nft/AddComment').then(mod => mod.AddComment),
+    {
+      ssr: true,
+      loading: () => null
+    }
+  );
 
 interface HodlCommentsBoxProps {
     limit: number;
@@ -80,11 +102,13 @@ export const HodlCommentsBox: React.FC<HodlCommentsBoxProps> = ({
     }, [router.query.comment])
 
     return (<>
-        { Boolean(oldTopLevel.length) && <HodlCommentsBoxHeader
+        { 
+            Boolean(oldTopLevel.length) && <HodlCommentsBoxHeader
             setTopLevel={setTopLevel}
             oldTopLevel={oldTopLevel}
             setOldTopLevel={setOldTopLevel}
-        />}
+        />
+        }
         <HodlCommentsBoxBody
             swr={swr}
             countSWR={countSWR}

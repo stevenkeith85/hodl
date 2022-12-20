@@ -14,6 +14,7 @@ import { ListModal } from "../modals/ListModal";
 import { SuccessModal } from "../modals/SuccessModal";
 import { Token } from "../../models/Token";
 import { MutableToken } from "../../models/MutableToken";
+import { ConnectButton } from '../menu/ConnectButton';
 
 
 const TransactionModal = ({ modalOpen, setModalOpen }) => {
@@ -74,7 +75,7 @@ export const NftActionButtons = ({
     // if this changes then the user has successfully, listed/delisted/bought reenable the button
     useEffect(() => {
         setLoading(false);
-    }, [mutableToken.forSale])
+    }, [mutableToken?.forSale])
 
     useEffect(() => {
         const displayError = async () => {
@@ -118,11 +119,20 @@ export const NftActionButtons = ({
 
 
     if (!address) {
-        return null;
+        return <Box sx={{
+            display: 'flex',
+            alignItems: 'center',
+            paddingTop: 2,
+            marginTop: 2,
+            borderTop: `1px solid #eee`,
+            gap: 1
+        }}>
+            <ConnectButton variant="outlined" text="Sign in" sx={{ paddingY: 0, paddingX: 1 }}/><span>to transact with the market</span>
+        </Box>
     }
 
     return (
-        <>
+        <Box sx={{ marginTop: 3}}>
             <TransactionModal modalOpen={boughtModalOpen} setModalOpen={setBoughtModalOpen} />
             <TransactionModal modalOpen={delistModalOpen} setModalOpen={setDelistModalOpen} />
             <TransactionModal modalOpen={listedModalOpen} setModalOpen={setListedModalOpen} />
@@ -146,7 +156,11 @@ export const NftActionButtons = ({
                             <Button
                                 disabled={loading}
                                 variant="contained"
-                                sx={{ paddingY: 1.5, paddingX: 3 }}
+                                sx={{ 
+                                    paddingY: 1, 
+                                    paddingX: 3,
+                                    fontSize: 15
+                                }}
                                 onClick={async () => {
                                     try {
                                         setLoading(true);
@@ -164,10 +178,9 @@ export const NftActionButtons = ({
                                         setError(e.message)
                                     }
                                 }}>
-                                Buy NFT
+                                Buy now
                             </Button>
                         </div>
-                        <FormHelperText sx={{ margin: 0, marginTop: 0.5 }}>Connected to Polygon and have Matic for gas?</FormHelperText>
                     </FormControl>
                 </Box>
             }
@@ -179,7 +192,11 @@ export const NftActionButtons = ({
                             <Button
                                 disabled={loading}
                                 variant="contained"
-                                sx={{ paddingY: 1.5, paddingX: 3 }}
+                                sx={{ 
+                                    paddingY: 1, 
+                                    paddingX: 3,
+                                    fontSize: 15
+                                 }}
                                 onClick={async () => {
                                     try {
                                         setLoading(true);
@@ -197,11 +214,10 @@ export const NftActionButtons = ({
                                         setError(e.message)
                                     }
                                 }}>
-                                Delist NFT
+                                Delist from market
                             </Button>
                         </div>
                     </FormControl>
-                    <FormHelperText sx={{ margin: 0, marginTop: 0.5 }}>Connected to Polygon and have Matic for gas?</FormHelperText>
                 </Box>
 
             }
@@ -213,20 +229,23 @@ export const NftActionButtons = ({
                             <Button
                                 disabled={loading}
                                 variant="contained"
-                                sx={{ paddingY: 1.5, paddingX: 3 }}
+                                sx={{ 
+                                    paddingY: 1, 
+                                    paddingX: 3,
+                                    fontSize: 15
+                                 }}
                                 onClick={() => {
                                     setLoading(true);
                                     setListModalOpen(true);
                                     setLoading(false);
                                 }
                                 }>
-                                List NFT
+                                List for sale
                             </Button>
                         </div>
                     </FormControl>
-                    <FormHelperText sx={{ margin: 0, marginTop: 0.5 }}>Connected to Polygon and have Matic for gas?</FormHelperText>
                 </Box>
             }
-        </>
+        </Box>
     )
 }

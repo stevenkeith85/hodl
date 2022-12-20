@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+import Skeleton from '@mui/material/Skeleton';
 import React from 'react';
 
 
-export const TokenNameAndDescriptionLoading = ({ nft }) => (
+export const TokenNameAndDescriptionLoading = () => (
     <Box
         marginBottom={2}
         sx={{
@@ -12,7 +12,7 @@ export const TokenNameAndDescriptionLoading = ({ nft }) => (
             borderBottom: `1px solid #ddd`
         }}
     >
-        <Typography mb={1} sx={{ fontWeight: 600 }}>{nft?.name}</Typography>
-        <Box sx={{ whiteSpace: 'pre-line' }}>{nft?.description}</Box>
+        <Skeleton variant="text" width={100}></Skeleton>
+        <Skeleton variant="text" width={200}></Skeleton>
     </Box>
 )

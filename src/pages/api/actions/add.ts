@@ -8,12 +8,13 @@ import { isFollowing } from "../follows";
 import { likesComment } from "../like/comment/likes";
 import { getMutableToken } from "../contracts/mutable-token/[tokenId]";
 import { HodlComment } from "../../../models/HodlComment";
-import { MutableToken } from "../../../models/MutableToken";
 import { getAction } from ".";
 import { pusher } from "../../../lib/server/pusher";
 import { runRedisTransaction } from "../../../lib/database/rest/databaseUtils";
 import axios from "axios";
 import { getComment } from "../../../lib/database/rest/getComment";
+import { getListingFromBlockchain } from "../contracts/market/listing/[tokenId]";
+import { getTokenFromBlockchain } from "../contracts/token/[tokenId]";
 
 const route = apiRoute();
 const client = Redis.fromEnv()
@@ -119,7 +120,6 @@ const addToFeedOfFollowers = async (action: HodlAction) => {
 }
 
 
-
 // This is the entry point ot the actions system, that will also add the appropriate feed item or notification
 //
 // TODO: We'd likely want to retry this if its not successful.
@@ -164,13 +164,10 @@ export const addAction = async (action: HodlAction) => {
       }
 
       // We just use the cache value here; as the worst thing that could happen is we tell
-      // the old token hodler someone liked their token. (if it happens within the cache timeout - 15 mins)
-
-      // our cache invalidation strategy is pretty good; so the only way this would happen is if someone
-      // transfers the token outwith our site
+      // the old owner that someone liked their token if the cache is a little stale.
       const mutableToken = await getMutableToken(action.objectId);
 
-      if (mutableToken.hodler === action.subject) {
+      if (!mutableToken || mutableToken.hodler === action.subject) {
         return; // We've liked our own token. No need for a notification.
       }
 
@@ -201,13 +198,10 @@ export const addAction = async (action: HodlAction) => {
     if (comment?.object === "token") { // the comment was about a token, tell the token owner.
 
       // We just use the cache value here; as the worst thing that could happen is we tell
-      // the old token hodler someone commented on their token. (if it happens within the cache timeout - 15 mins)
-
-      // our cache invalidation strategy is pretty good; so the only way this would happen is if someone
-      // transfers the token outwith our site
+      // the old owner that someone commented on their token if our cache is a little stale.
       const mutableToken = await getMutableToken(comment.tokenId);
 
-      if (mutableToken.hodler === action.subject) {
+      if (!mutableToken || mutableToken.hodler === action.subject) {
         return; // We've commented on our own token. No need for a notification.
       }
 
@@ -265,16 +259,16 @@ export const addAction = async (action: HodlAction) => {
   // Tell the seller's followers there's a new token on the market
   if (action.action === ActionTypes.Listed) {
     try {
-      // This also updates the cache for us :)
-      const token: MutableToken = await getMutableToken(+action.objectId, true);
+      // Sanity check: Read the blockchain to ensure what we are about to do is correct
+      const listing = await getListingFromBlockchain(+action.objectId);
 
-      if (token.hodler !== action.subject) {
-        return;
+      if (listing === null) {
+        console.log('actions/listed - token is not listed on the market. not updating actions');
+        return true;
       }
 
-      if (!token.forSale) {
-        return;
-      }
+      // We could also check the action.subject matches the token owner. Possibly not worth the performance hit though, as 
+      // the actions system is not callable by users
 
       // Notify the user their token has made it onto the market
       await addNotification(action.subject, action);
@@ -289,39 +283,18 @@ export const addAction = async (action: HodlAction) => {
   // Who: Tell the seller's followers (via their feed) there's no longer a new token for sale
   if (action.action === ActionTypes.Delisted) {
     try {
-      const token: MutableToken = await getMutableToken(+action.objectId, true);
+      // Sanity check: Read the blockchain to ensure what we are about to do is correct
+      const listing = await getListingFromBlockchain(+action.objectId);
 
-      if (token.hodler !== action.subject) {
-        return;
+      if (listing !== null) {
+        console.log('actions/delisted - token is still for sale on the market. not updating actions');
+        return true;
       }
 
-      if (token.forSale) {
-        return;
-      }
+      // We could also check the action.subject matches the token owner. Possibly not worth the performance hit though, as 
+      // the actions system is not callable by users
 
       await addNotification(action.subject, action);
-      await addToFeedOfFollowers(action);
-
-      return;
-    } catch (e) {
-      return;
-    }
-  }
-
-
-  // Who: 
-  // Tell the seller their token is now on hodlmymoon
-  // Tell the seller's followers there's a new token on hodlmymoon
-  if (action.action === ActionTypes.Added) {
-    try {
-      // This also caches it for us :)
-      const token: MutableToken = await getMutableToken(+action.objectId, true);
-
-      if (token.hodler !== action.subject) {
-        return;
-      }
-
-      await addNotification(`${action.subject}`, action);
       await addToFeedOfFollowers(action);
 
       return;
@@ -334,16 +307,16 @@ export const addAction = async (action: HodlAction) => {
   // Tell the seller they've sold a token
   // Tell the buyer they've bought a token
   if (action.action === ActionTypes.Bought) {
-    // This also caches it for us :)
-    const token: MutableToken = await getMutableToken(+action.objectId, true);
+    // Sanity check: Read the blockchain to ensure what we are about to do is correct
+    const listing = await getListingFromBlockchain(+action.objectId);
 
-    if (token.hodler !== action.subject) {
-      return;
+    if (listing !== null) {
+      console.log('actions/bought - token is still for sale on the market. not updating actions');
+      return true;
     }
 
-    if (token.forSale) {
-      return;
-    }
+    // We could also check the action.subject matches the token owner. Possibly not worth the performance hit though, as 
+    // the actions system is not callable by users
 
     await addNotification(`${action.subject}`, action);
     await addNotification(`${action.metadata.seller}`, action);
@@ -351,15 +324,37 @@ export const addAction = async (action: HodlAction) => {
     return;
   }
 
+  // Who: 
+  // Tell the seller their token is now on hodlmymoon
+  // Tell the seller's followers there's a new token on hodlmymoon
+  if (action.action === ActionTypes.Added) {
+    try {
+      // Sanity check: Read the blockchain to ensure what we are about to do is correct
+      const { ownerOf } = await getTokenFromBlockchain(+action.objectId);
+
+      if (ownerOf !== action.subject) {
+        console.log('actions/added - token owner is different to the action subject. not updating actions');
+        return true;
+      }
+
+      await addNotification(`${action.subject}`, action);
+      await addToFeedOfFollowers(action);
+
+      return;
+    } catch (e) {
+      return;
+    }
+  }
+
   return;
 }
 
 
-// TODO: Most actions are now added by our tx handlers; 
-
-// Adding a comment isn't; and it consults the blockchain; so it is pretty slow.
-// We either need to consult a cache (fast but possibly inaccurate); or move the actions stuff to a message queue
-
+// We do sanity checks against the blockchain for any 'web3' actions
+// For 'web2' actions; we just consult the cache.
+// We sync the cache pretty well for onsite stuff; anything that happens off-site could in theory
+// be a little stale; although I don't think the user will be able to like or comment on a token
+// that's not been recached yet; so we probably good.
 route.post(async (req, res: NextApiResponse) => {
   if (req.query.secret !== process.env.ZEPLO_SECRET) {
     console.log("actions/add - endpoint not called via our message queue");

@@ -101,20 +101,6 @@ export const FeedItemAction: FC<FeedItemActionProps> = memo(({action, price}) =>
             delisted
         </Box>
     }
-    {/* {action === ActionTypes.Added &&
-        <Box
-            sx={{
-                textAlign: 'right',
-                fontFamily: theme => theme.logo.fontFamily,
-                color: theme => theme.palette.primary.main,
-                fontSize: {
-                    xs: 12,
-                    sm: 14
-                }
-            }}>
-            new
-        </Box>
-    } */}
     </>
 ));
 FeedItemAction.displayName = "FeedItemAction"

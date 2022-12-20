@@ -4,7 +4,12 @@ import { useContext } from "react";
 import { useConnect } from "../../hooks/useConnect";
 import { WalletContext } from '../../contexts/WalletContext';
 
-export const ConnectButton = ({ onConnected = () => { } }) => {
+export const ConnectButton = ({
+    onConnected = () => { },
+    text = "Connect Wallet",
+    variant = "contained" as "text" | "contained" | "outlined",
+    sx = {}
+}) => {
     const { walletAddress } = useContext(WalletContext);
 
     const connect = useConnect();
@@ -12,22 +17,22 @@ export const ConnectButton = ({ onConnected = () => { } }) => {
     return (<>
         <Button
             disabled={walletAddress}
-            variant="contained"
+            variant={variant}
             color="secondary"
             sx={{
                 paddingX: 2,
-                paddingY: 1
+                paddingY: 1,
+                ...sx
             }}
             onClick={async e => {
                 e.stopPropagation();
                 e.preventDefault();
 
-                // deliberately not waiting here, so that we can close the menu
-                connect(true);
+                await connect(true);
                 onConnected();
             }}
         >
-            Connect Wallet
+            {text}
         </Button>
     </>)
 }

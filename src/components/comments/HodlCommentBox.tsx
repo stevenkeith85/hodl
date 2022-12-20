@@ -4,7 +4,6 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 
 import { useTheme } from "@mui/material/styles"
-
 import Typography from "@mui/material/Typography";
 
 import formatDistanceStrict from "date-fns/formatDistanceStrict";
@@ -13,20 +12,31 @@ import { NftContext } from "../../contexts/NftContext";
 
 import { HodlCommentViewModel } from "../../models/HodlComment";
 
-import { Replies } from "./Replies";
+
 import { ProfileNameOrAddress } from "../avatar/ProfileNameOrAddress";
 import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
 import { HodlCommentActionButtons } from "./HodlCommentActionButtons";
 
-import { useComments, useCommentCount, useDeleteComment } from "../../hooks/useComments";
+import { useComments } from "../../hooks/useComments";
+import { useCommentCount } from "../../hooks/useCommentCount";
+import { useDeleteComment } from "../../hooks/useDeleteComment";
 
-import { pluralize } from "../../lib/utils";
+import { pluralize } from "../../lib/pluralize";
+
+import { SignedInContext } from "../../contexts/SignedInContext";
+import { useMutableToken } from "../../hooks/useMutableToken";
 
 import { ExpandMoreIcon } from "../icons/ExpandMoreIcon";
 import { ExpandLessIcon } from "../icons/ExpandLessIcon";
-import useSWR, { Fetcher } from "swr";
-import { MutableToken } from "../../models/MutableToken";
-import { SignedInContext } from "../../contexts/SignedInContext";
+
+
+const Replies = dynamic(
+    () => import('./Replies').then(mod => mod.Replies),
+    {
+        ssr: false,
+        loading: () => null
+    }
+);
 
 const HodlCommentPopUpMenu = dynamic(
     () => import('./HodlCommentPopUpMenu'),
@@ -102,19 +112,8 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
     const router = useRouter();
 
     const { signedInAddress: address } = useContext(SignedInContext);
-    const { nft, mutableToken: mutableTokenFallback } = useContext(NftContext);
-
-    // We have the mutable token on the nft page already; so use the context value as a fallback.
-    // We don't have it on the pop up comments
-    // TODO: Extract hook
-    const mutableTokenFetcher: Fetcher<MutableToken> = (url, id) => fetch(`${url}/${id}`).then(r => r.json()).then(data => data.mutableToken);
-    const { data: mutableToken } = useSWR(
-        nft?.id ? [`/api/contracts/mutable-token`, nft.id] : null,
-        mutableTokenFetcher, {
-        fallbackData: mutableTokenFallback,
-        dedupingInterval: 15000,
-        focusThrottleInterval: 15000,
-    });
+    const { nft } = useContext(NftContext);
+    const { data: mutableToken } = useMutableToken(nft.id);
 
     const canDeleteComment = (comment: HodlCommentViewModel) => comment.user.address === address || mutableToken?.hodler === address;
     const [deleteComment] = useDeleteComment();

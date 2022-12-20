@@ -1,16 +1,11 @@
+import { Link } from "@mui/material";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
-import Tooltip from "@mui/material/Tooltip";
-import Typography from "@mui/material/Typography";
 
 import { token, nonCommercial, commercial } from "../../lib/copyright";
-import { CommercialText } from "../tooltips/CommercialTooltip";
-import { AssetLicenseTooltip } from "../tooltips/HodlerPrivilegeTooltip";
-import { NonCommercialText } from "../tooltips/NonCommercialTooltip";
-import { NoLicenseText } from "../tooltips/TokenOnlyTooltip";
 
-export const AssetLicense = ({ nft }) => {
-    if (!nft?.properties?.asset?.license) {
+export const AssetLicense = ({ prefetchedToken }) => {
+    if (!prefetchedToken?.properties?.asset?.license) {
         return null;
     }
 
@@ -18,59 +13,64 @@ export const AssetLicense = ({ nft }) => {
         <Box
             sx={{
                 padding: 2,
-                border: `1px solid #ddd`,
+                border: `1px solid #eee`,
+                borderRadius: 1,
                 background: 'white'
             }}
         >
-            <Box display="flex" justifyContent="space-between">
-                <Typography variant="h2" sx={{ marginBottom: 2 }}>
-                    <Tooltip
-                        title={<AssetLicenseTooltip />}
-                        placement="right-start"
-                        arrow>
-                        <span>License</span></Tooltip>
-                </Typography>
+            <Box sx={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                alignItems: 'center',
+                columnGap: 2
+            }}>
+                <Box
+                    sx={{
+                        fontSize: 14,
+                        color: theme => theme.palette.text.secondary
+                    }}>
+
+                    Asset License
+                </Box>
                 <div>
-                    {nft.properties.asset.license === token && <>
-                        <Chip
-                            label="Token Only"
-                            color={nft.privilege === token ? "success" : "default"}
-                            variant="outlined"
-                        />
-                    </>
+                    {prefetchedToken.properties.asset.license === token &&
+                        <Link target="_blank" href="/asset-license">
+                            <Chip
+                                label="Token Only"
+                                color={"secondary"}
+                                variant="outlined"
+                                sx={{
+                                    cursor: 'pointer'
+                                }}
+                            />
+                        </Link>
                     }
-                    {nft.properties.asset.license === nonCommercial &&
-                        <Chip
-                            disabled={nft.privilege !== nonCommercial}
-                            label="Non Commercial"
-                            color={nft.privilege === nonCommercial ? "success" : "default"}
-                            variant="outlined"
-                        />
+                    {prefetchedToken.properties.asset.license === nonCommercial &&
+                        <Link target="_blank" href="/asset-license">
+                            <Chip
+                                label="Non Commercial"
+                                color={"secondary"}
+                                variant="outlined"
+                                sx={{
+                                    cursor: 'pointer'
+                                }}
+                            />
+                        </Link>
                     }
-                    {nft.properties.asset.license === commercial &&
-                        <Chip
-                            disabled={nft.privilege !== commercial}
-                            label="Commercial"
-                            color={nft.privilege === commercial ? "success" : "default"}
-                            variant="outlined"
-                        />
+                    {prefetchedToken.properties.asset.license === commercial &&
+                        <Link target="_blank" href="/asset-license">
+                            <Chip
+                                label="Commercial"
+                                color={"secondary"}
+                                variant="outlined"
+                                sx={{
+                                    cursor: 'pointer'
+                                }}
+                            />
+                        </Link>
                     }
                 </div>
             </Box>
-            <div>
-                <div>
-                    {nft.properties.asset.license === token &&
-                        <NoLicenseText />
-
-                    }
-                    {nft.properties.asset.license === nonCommercial &&
-                        <NonCommercialText />
-                    }
-                    {nft.properties.asset.license === commercial &&
-                        <CommercialText />
-                    }
-                </div>
-            </div>
         </Box >
     )
 }

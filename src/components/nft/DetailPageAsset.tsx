@@ -1,26 +1,12 @@
 import { useState } from "react";
-
 import dynamic from 'next/dynamic';
-
-import Skeleton from "@mui/material/Skeleton";
-
-import { getTopPadding } from "../../lib/getTopPadding";
 import { assetType } from "../../lib/assetType";
-
-
 import { AssetTypes } from "../../models/AssetType";
 import { Token } from "../../models/Token";
+import { HodlImageResponsive } from "../HodlImageResponsive";
 
 const DetailPageAssetModal = dynamic(
     () => import('./DetailPageAssetModal'),
-    {
-      ssr: false,
-      loading: () => null
-    }
-  );
-
-  const HodlImageResponsive = dynamic(
-    () => import('../HodlImageResponsive').then(mod => mod.HodlImageResponsive),
     {
       ssr: false,
       loading: () => null
@@ -47,25 +33,18 @@ const DetailPageAssetModal = dynamic(
 interface DetailPageAssetProps {
     token: Token;
 }
+
 export const DetailPageAsset: React.FC<DetailPageAssetProps> = ({ token }) => {
     const [assetModalOpen, setAssetModalOpen] = useState(false);
-    const [loading, setLoading] = useState(true);
 
     return (token &&
         <>
             <DetailPageAssetModal assetModalOpen={assetModalOpen} setAssetModalOpen={setAssetModalOpen} token={token} />      
-            <Skeleton
-                variant="rectangular"
-                animation="wave"
-                sx={{
-                    display: loading ? 'block' : 'none',
-                    width: "100%",
-                    paddingTop: token.properties.aspectRatio ? `${getTopPadding(token.properties.aspectRatio)}%` : '100%'
-                }}
-            >
-            </Skeleton>
             <div style={{
-                display: loading ? 'none' : 'block',
+                borderRadius: '8px',
+                overflow: 'hidden',
+                cursor: 'pointer',
+                lineHeight: 0
             }}>
                 {
                     assetType(token) === AssetTypes.Gif &&
@@ -74,7 +53,6 @@ export const DetailPageAsset: React.FC<DetailPageAssetProps> = ({ token }) => {
                             cid={token?.properties?.asset?.uri}
                             assetFolder="image"
                             gif={true}
-                            onLoad={() => setLoading(false)}
                             aspectRatio={token?.properties?.aspectRatio || "1:1"}
                         />
                     </div>
@@ -89,7 +67,6 @@ export const DetailPageAsset: React.FC<DetailPageAssetProps> = ({ token }) => {
                             cid={token?.properties?.asset?.uri}
                             widths={[600, 700, 800, 900, 1080]}
                             sizes="(min-width: 1200px) calc(1200px / 2), (min-width: 900px) calc(50vw / 2), 100vw"
-                            onLoad={() => setLoading(false)}
                             aspectRatio={token?.properties?.aspectRatio}
                         />
                     </div>
@@ -101,7 +78,6 @@ export const DetailPageAsset: React.FC<DetailPageAssetProps> = ({ token }) => {
                         cid={token?.properties?.asset?.uri}
                         controls={true}
                         aspectRatio={token?.properties?.aspectRatio || "1:1"}
-                        onLoad={() => setLoading(false)}
                     />
                 }
                 {

@@ -29,7 +29,7 @@ export const LoggedInMenu = () => {
         },
         {
             label: 'Profile',
-            action: () => router.push(user?.nickname ? `/profile/${user?.nickname}` : `/profile/${user?.address}`),
+            action: () => router.push(`/profile/${user?.nickname ?? user?.address ?? '#'}`),
         },
         {
             label: 'Nickname',

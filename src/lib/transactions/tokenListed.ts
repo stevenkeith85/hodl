@@ -6,12 +6,11 @@ import { LogDescription } from '@ethersproject/abi'
 
 import { Redis } from '@upstash/redis';
 import { getTagsForToken } from "../../pages/api/tags";
-import { getMutableToken } from "../../pages/api/contracts/mutable-token/[tokenId]";
-import { MutableToken } from "../../models/MutableToken";
 
 import { updateTransactionRecords } from "./updateTransactionRecords";
 import { runRedisTransaction } from "../database/rest/databaseUtils";
 import { addToZeplo } from "../addToZeplo";
+import { getListingFromBlockchain } from "../../pages/api/contracts/market/listing/[tokenId]";
 
 
 const client = Redis.fromEnv()
@@ -45,15 +44,15 @@ export const tokenListed = async (
     }
 
     // Read the blockchain to ensure what we are about to do is correct
-    // This also updates our cache :)
-    const token: MutableToken = await getMutableToken(tokenId, true);
+    const listing = await getListingFromBlockchain(tokenId);
 
-    if (!token.forSale) {
+    if (listing === null) {
         console.log('tokenListed - token is not for sale according to the blockchain - not listing on market');
         return true;
     }
 
-    if (token.price !== price) {
+    
+    if (listing.price !== price) {
         console.log('tokenListed - token is listed at a different price on the blockchain to the provided tx; strange! - not listing on market');
         return true;
     }
@@ -80,13 +79,22 @@ export const tokenListed = async (
         if (!success) {
             return false;
         }
-    } 
+    }
 
     const recordsUpdated = await updateTransactionRecords(req.address, tx.nonce, hash);
 
     if (!recordsUpdated) {
         return false;
     }
+
+    addToZeplo(
+        'api/contracts/mutable-token/updateCache',
+        {
+            id: tokenId
+        },
+        req.cookies.refreshToken,
+        req.cookies.accessToken
+    )
 
     addToZeplo(
         'api/contracts/token/hodling/updateCache',
@@ -96,7 +104,7 @@ export const tokenListed = async (
         req.cookies.refreshToken,
         req.cookies.accessToken
     )
-    
+
     addToZeplo(
         'api/contracts/market/listed/updateCache',
         {
@@ -105,7 +113,7 @@ export const tokenListed = async (
         req.cookies.refreshToken,
         req.cookies.accessToken
     );
-    
+
     const action = {
         subject: req.address,
         action: ActionTypes.Listed,

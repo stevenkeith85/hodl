@@ -8,31 +8,25 @@ import Tab from '@mui/material/Tab';
 import { DataObjectIcon } from '../icons/DataObjectIcon';
 import { InsightsIcon } from '../icons/InsightsIcon';
 import { ForumIcon } from "../icons/ForumIcon";
+import { useMutableToken } from "../../hooks/useMutableToken";
+import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
 
-import dynamic from 'next/dynamic';
-import { UserAvatarAndHandleBodyLoading } from "../avatar/UserAvatarAndHandleBodyLoading";
-
-
-
-const UserAvatarAndHandle = dynamic(
-    () => import('../avatar/UserAvatarAndHandle').then(mod => mod.UserAvatarAndHandle),
-    {
-        ssr: false,
-        loading: () => <UserAvatarAndHandleBodyLoading size={50} handle={false} />
-    }
-);
 
 export default function TokenHeader({
-    mutableToken,
+    prefetchedToken,
+    prefetchedMutableToken,
+    prefetchedHodler,
     value,
-    setValue,
-    nft }) {
+    setValue
+}) {
+
+    const { data: mutableToken } = useMutableToken(prefetchedToken.id, prefetchedMutableToken);
 
     return (
         <Box
             sx={{
-                marginX: {
-                    xs: 0
+                marginY: {
+                    xs: 1
                 }
             }}>
             <Stack
@@ -48,6 +42,7 @@ export default function TokenHeader({
                     alignItems="center"
                 >
                     <UserAvatarAndHandle
+                        fallbackData={prefetchedHodler}
                         address={mutableToken?.hodler}
                         size={50}
                         fontSize={16}
@@ -68,7 +63,7 @@ export default function TokenHeader({
                                 {
                                     pathname: '/nft/[tokenId]',
                                     query: {
-                                        tokenId: nft.id,
+                                        tokenId: prefetchedToken.id,
                                         tab: v
                                     }
                                 },

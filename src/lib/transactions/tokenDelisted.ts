@@ -2,8 +2,6 @@ import { ActionTypes } from "../../models/HodlAction";
 
 import { Redis } from '@upstash/redis';
 import { getTagsForToken } from "../../pages/api/tags";
-import { MutableToken } from "../../models/MutableToken";
-import { getMutableToken } from "../../pages/api/contracts/mutable-token/[tokenId]";
 
 import { updateTransactionRecords } from "./updateTransactionRecords";
 import { runRedisTransaction } from "../database/rest/databaseUtils";
@@ -11,6 +9,7 @@ import { runRedisTransaction } from "../database/rest/databaseUtils";
 import { TransactionResponse } from '@ethersproject/abstract-provider'
 import { LogDescription } from '@ethersproject/abi'
 import { addToZeplo } from "../addToZeplo";
+import { getListingFromBlockchain } from "../../pages/api/contracts/market/listing/[tokenId]";
 
 const client = Redis.fromEnv()
 
@@ -37,12 +36,11 @@ export const tokenDelisted = async (
     }
 
     // Read the blockchain to ensure what we are about to do is correct
-    // This also updates our cache
-    const token: MutableToken = await getMutableToken(tokenId, true);
+    const listing = await getListingFromBlockchain(tokenId);
 
-    if (token.forSale) {
-        console.log('tokenDelisted - token is still for sale according to the blockchain');
-        return;
+    if (listing !== null) {
+        console.log('tokenBought - token is still for sale according to the blockchain');
+        return true;
     }
 
     const marketListing = await client.zscore(`market`, tokenId);
@@ -73,6 +71,15 @@ export const tokenDelisted = async (
     }
 
     addToZeplo(
+        'api/contracts/mutable-token/updateCache',
+        {
+            id: tokenId
+        },
+        req.cookies.refreshToken,
+        req.cookies.accessToken
+    )
+
+    addToZeplo(
         'api/contracts/token/hodling/updateCache',
         {
             address: req.address
@@ -80,7 +87,7 @@ export const tokenDelisted = async (
         req.cookies.refreshToken,
         req.cookies.accessToken
     )
-    
+
     addToZeplo(
         'api/contracts/market/listed/updateCache',
         {

@@ -66,10 +66,9 @@ route.delete(async (req, res: NextApiResponse) => {
 
   const { object, objectId, subject, tokenId } = comment;
 
-  // Read the blockchain to ensure what we are about to do is correct. (Potentially, we could rely on the cache at some point)
-  const token: MutableToken = await getMutableToken(tokenId, true);
+  const token: MutableToken = await getMutableToken(tokenId, req);
 
-  const notTokenOwner = req.address !== token.hodler;
+  const notTokenOwner = req.address !== token?.hodler;
   const notMyComment = req.address !== subject;
 
   if (notMyComment && notTokenOwner) {

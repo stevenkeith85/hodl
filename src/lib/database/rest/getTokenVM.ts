@@ -15,7 +15,7 @@ export const getTokenVM = async (id: string) => {
 
   return {
     ...token,
-    commentCount,
+    commentCount: commentCount ?? 0,
     likeCount
   }
 
