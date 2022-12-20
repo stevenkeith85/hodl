@@ -1,44 +1,52 @@
 import Box from "@mui/material/Box";
-import dynamic from "next/dynamic";
-
 import React from 'react';
-
-import { HodlCommentsBoxLoading } from "../comments/HodlCommentsBoxLoading";
-import { TokenNameAndDescriptionLoading } from "./TokenNameAndDescriptionLoading";
-
-
-const HodlCommentsBox = dynamic(
-  () => import("../../components/comments/HodlCommentsBox").then(mod => mod.HodlCommentsBox),
-  {
-    ssr: false,
-    loading: () => <HodlCommentsBoxLoading />
-  }
-);
+import { NftContext } from "../../contexts/NftContext";
+import { HodlCommentsBox } from "../comments/HodlCommentsBox";
+import { TokenNameAndDescription } from "./TokenNameAndDescription";
 
 
-const SocialTab = ({ nft, limit }) => {
-  const TokenNameAndDescription = dynamic(
-    () => import('./TokenNameAndDescription').then(mod => mod.TokenNameAndDescription),
-    {
-      ssr: false,
-      loading: () => <TokenNameAndDescriptionLoading nft={nft} />
-    }
-  );
-
+const SocialTab = ({ prefetchedToken, limit }) => {
   return (
     <Box
       sx={{
-        background: 'white',
-        padding: {
+        display: 'grid',
+        gap: {
           xs: 2,
-          sm: 2
-        },
-        border: `1px solid #ddd`
-      }}>
-      <TokenNameAndDescription nft={nft} />
-      <HodlCommentsBox limit={limit} />
-    </Box>
-  )
+          sm: 4
+        }
+      }}
+    >
+      <Box
+        sx={{
+          background: 'white',
+          padding: {
+            xs: 2,
+            sm: 2
+          },
+          borderRadius: 1,
+          border: '1px solid #eee',
+        }}>
+        <TokenNameAndDescription token={prefetchedToken} />
+      </Box>
+      <Box
+        sx={{
+          background: 'white',
+          padding: {
+            xs: 2,
+            sm: 2
+          },
+          borderRadius: 1,
+          border: '1px solid #eee',
+        }}>
+        <NftContext.Provider
+          value={{
+            nft: prefetchedToken,
+          }}
+        >
+          <HodlCommentsBox limit={limit} />
+        </NftContext.Provider>
+      </Box>
+    </Box>)
 }
 
 export default SocialTab;

@@ -1,32 +1,34 @@
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
 import Stack from "@mui/material/Stack";
-import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 
 import { cidToGatewayUrl } from "../../lib/utils";
 import { Token } from "../../models/Token";
-import { IpfsTooltip } from "../tooltips/IpfsTooltip";
 
 interface IpfsCardProps {
     token: Token;
 }
 
-export const IpfsCard : React.FC<IpfsCardProps> = ({ token }) => {
+export const IpfsCard: React.FC<IpfsCardProps> = ({ token }) => {
     return (
         <Box
             sx={{
                 padding: 2,
-                border: `1px solid #ddd`,
+                border: `1px solid #eee`,
+                borderRadius: 1,
                 background: 'white'
             }}>
 
-            <Typography variant="h2" sx={{ marginBottom: 2 }}>
-                <Tooltip
-                    title={<IpfsTooltip />}
-                    placement="right-start"
-                    arrow>
-                    <span>Data</span></Tooltip>
+            <Typography
+                component="h1"
+                sx={{
+                    fontSize: 16,
+                    fontWeight: 500,
+                    padding: 0,
+                    marginBottom: 1
+                }}>
+                Data
             </Typography>
             <Typography mb={2}>View the decentralized data on the interplanatary file system.</Typography>
             <Stack direction="row" spacing={2}>

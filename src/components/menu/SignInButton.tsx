@@ -56,8 +56,13 @@ export const SignInButton = ({ onSignedIn=() => {}}) => {
 
                     try {
                         await signIn(uuid);
+                        
+                        if(router.asPath === '/') {
+                            router.push('/feed');
+                        }
+
                         onSignedIn();
-                        router.push('/feed');
+                        
                     } catch (e) {
                         // user rejected the sign in request
                     }

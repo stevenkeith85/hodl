@@ -1,17 +1,12 @@
 import { FC, useState } from "react";
-
 import dynamic from 'next/dynamic';
-
 import Box from "@mui/material/Box";
-
+import Typography from "@mui/material/Typography";
 import CommentOutlinedIcon from "@mui/icons-material/CommentOutlined";
-
 import humanize from "humanize-plus";
-
-import { useCommentCount } from "../../hooks/useComments";
+import { useCommentCount } from "../../hooks/useCommentCount";
 import { NftContext } from "../../contexts/NftContext";
 
-import Typography from "@mui/material/Typography";
 
 const HodlCommentsModal = dynamic(
     () => import('./HodlCommentsModal'),

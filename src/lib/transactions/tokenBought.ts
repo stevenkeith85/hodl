@@ -6,12 +6,11 @@ import { LogDescription } from '@ethersproject/abi'
 
 import { Redis } from '@upstash/redis';
 import { getTagsForToken } from "../../pages/api/tags";
-import { MutableToken } from "../../models/MutableToken";
-import { getMutableToken } from "../../pages/api/contracts/mutable-token/[tokenId]";
 
 import { updateTransactionRecords } from "./updateTransactionRecords";
 import { runRedisTransaction } from "../database/rest/databaseUtils";
 import { addToZeplo } from "../addToZeplo";
+import { getListingFromBlockchain } from "../../pages/api/contracts/market/listing/[tokenId]";
 
 const client = Redis.fromEnv()
 
@@ -46,9 +45,9 @@ export const tokenBought = async (
     const tokenId = tokenIdBN.toNumber();
 
     // Read the blockchain to ensure what we are about to do is correct
-    const token: MutableToken = await getMutableToken(tokenId, true);
+    const listing = await getListingFromBlockchain(tokenId);
 
-    if (token.forSale) {
+    if (listing !== null) {
         console.log('tokenBought - token is still for sale according to the blockchain');
         return true;
     }
@@ -73,7 +72,7 @@ export const tokenBought = async (
             return false;
         }
     }
-    
+
     // Clear the avatar if the user still has it
     const currentAvatar = await client.hmget(`user:${seller}`, 'avatar');
     if (currentAvatar === tokenId) {
@@ -87,6 +86,15 @@ export const tokenBought = async (
     }
 
     addToZeplo(
+        'api/contracts/mutable-token/updateCache',
+        {
+            id: tokenId
+        },
+        req.cookies.refreshToken,
+        req.cookies.accessToken
+    )
+
+    addToZeplo(
         'api/contracts/token/hodling/updateCache',
         {
             address: req.address
@@ -94,7 +102,7 @@ export const tokenBought = async (
         req.cookies.refreshToken,
         req.cookies.accessToken
     )
-    
+
     addToZeplo(
         'api/contracts/market/listed/updateCache',
         {

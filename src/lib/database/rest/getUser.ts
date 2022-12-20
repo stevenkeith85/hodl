@@ -7,6 +7,10 @@ import { hmGet } from "./hmGet";
 // At the moment we just toggle between asking for the nonce or not.
 // This is mostly used by the UI, so I'm not sure that we even need to return the nonce; potentially can go at some point.
 export const getUser = async (address: string, viewer: string = null, nonce = false) => {
+    if (!address) {
+        return null;
+    }
+    
     try {
         const user = nonce ?
             await hmGet<{ nickname, avatar, nonce }>(`user:${address}`, 'nickname', 'avatar', 'nonce') :

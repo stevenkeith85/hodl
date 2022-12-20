@@ -1,9 +1,9 @@
-import { useRouter } from "next/router";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useUser } from '../../hooks/useUser';
 import dynamic from 'next/dynamic';
 import Box from "@mui/material/Box";
 import { SignedInContext } from "../../contexts/SignedInContext";
+import Link from "next/link";
 
 const NicknameModal = dynamic(
     () => import('../modals/NicknameModal').then(mod => mod.NicknameModal),
@@ -22,35 +22,41 @@ const ProfilePictureModal = dynamic(
 );
 
 export const LoggedInMenu = () => {
-    const [pages] = useState([
-        {
-            label: 'Create',
-            action: () => router.push('/create'),
-        },
-        {
-            label: 'Profile',
-            action: () => router.push(user?.nickname ? `/profile/${user?.nickname}` : `/profile/${user?.address}`),
-        },
-        {
-            label: 'Nickname',
-            action: () => setNicknameModalOpen(true),
-        },
-        {
-            label: 'Avatar NFT',
-            action: () => setProfilePictureModalOpen(true),
-        },
-        {
-            label: 'Transactions',
-            action: () => router.push('/transactions'),
-        },
-    ]);
 
     const [nicknameModalOpen, setNicknameModalOpen] = useState(false);
     const [profilePictureModalOpen, setProfilePictureModalOpen] = useState(false);
 
-    const router = useRouter();
     const { signedInAddress } = useContext(SignedInContext);
     const { data: user } = useUser(signedInAddress);
+
+    const [pages, setPages] = useState([
+        { title: "Create", url: '/create' },
+        { title: "Profile", url: '#' },
+        { title: "Transactions", url: '/transactions' }
+    ])
+
+    useEffect(() => {
+        if (user) {
+            setPages([
+                { title: "Create", url: '/create' },
+                { title: "Profile", url: `/profile/${user.nickname || user.address}` },
+                { title: "Transactions", url: '/transactions' }
+            ])
+        }
+    }, [user])
+
+    const [actions] = useState([
+        {
+            title: 'Nickname',
+            action: () => setNicknameModalOpen(true),
+        },
+        {
+            title: 'Avatar NFT',
+            action: () => setProfilePictureModalOpen(true),
+        },
+    ]);
+
+
 
     if (!user) {
         return null;
@@ -66,26 +72,44 @@ export const LoggedInMenu = () => {
                     display: 'flex',
                     flexDirection: 'column'
                 }}>
-                {pages.map((page, i) => (
-                    <Box
-                        key={i}
-                        onClick={e => {
-                            e.stopPropagation();
-                            page.action();
-                        }}
+                {pages.map(({ title, url }) =>
+                    <Link
+                        href={url}
+                        key={url}
                     >
                         <Box
                             sx={{
-                                fontSize: 16,
                                 color: theme => theme.palette.text.secondary,
+                                fontSize: 16,
                                 margin: 1,
                                 '&:hover': {
                                     color: "secondary.main",
                                     cursor: 'pointer'
                                 }
                             }}>
-                            {page.label}
+                            {title}
                         </Box>
+                    </Link>
+                )}
+                {actions.map(({ title, action }) => (
+                    <Box
+                        key={title}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+
+                            action();
+                        }}
+                        sx={{
+                            color: theme => theme.palette.text.secondary,
+                            fontSize: 16,
+                            margin: 1,
+                            '&:hover': {
+                                color: "secondary.main",
+                                cursor: 'pointer'
+                            }
+                        }}>
+                        {title}
                     </Box>
                 ))}
             </Box>

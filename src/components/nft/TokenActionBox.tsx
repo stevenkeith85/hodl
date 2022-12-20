@@ -8,31 +8,15 @@ import IconButton from "@mui/material/IconButton";
 import { ShareIcon } from '../icons/ShareIcon';
 import theme from "../../theme";
 
-import { LikesLoading } from "../LikesLoading";
-import { CommentsLoading } from "../CommentsLoading";
+import { Likes } from "../Likes";
+import { Comments } from "../comments/Comments";
 
 
 const HodlShareMenu = dynamic(
   () => import('../HodlShareMenu').then(mod => mod.HodlShareMenu),
   {
-    ssr: false,
-    loading: () => <ShareIcon size={20} fill={'#ddd'} />
-  }
-);
-
-const Likes = dynamic(
-  () => import('../Likes').then(mod => mod.Likes),
-  {
-    ssr: false,
-    loading: () => <LikesLoading />
-  }
-);
-
-const Comments = dynamic(
-  () => import('../comments/Comments').then(mod => mod.Comments),
-  {
-    ssr: false,
-    loading: () => <CommentsLoading />
+    ssr: true,
+    loading: () => null
   }
 );
 
@@ -82,7 +66,6 @@ export default function TokenActionBox({
           prefetchedCommentCount={prefetchedCommentCount}
         />
       </div>
-
       <IconButton
         className="shareMenu"
         onClick={handleClick}
@@ -94,15 +77,12 @@ export default function TokenActionBox({
       >
         <ShareIcon size={20} fill={grey[600]} />
       </IconButton>
-      {
-        open &&
-        <HodlShareMenu
-          relativeUrl={'/nft/' + nft?.id}
-          anchorEl={anchorEl}
-          handleClose={handleClose}
-          open={open}
-        />
-      }
+      <HodlShareMenu
+        relativeUrl={'/nft/' + nft?.id}
+        anchorEl={anchorEl}
+        handleClose={handleClose}
+        open={open}
+      />
     </div>
   )
 }

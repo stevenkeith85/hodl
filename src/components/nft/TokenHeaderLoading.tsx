@@ -1,5 +1,3 @@
-import router from "next/router";
-
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Tabs from "@mui/material/Tabs";
@@ -11,17 +9,13 @@ import { ForumIcon } from "../icons/ForumIcon";
 
 import { UserAvatarAndHandleBodyLoading } from "../avatar/UserAvatarAndHandleBodyLoading";
 
-export default function TokenHeader({
-    mutableToken,
-    value,
-    setValue,
-    nft }) {
+export default function TokenHeader({}) {
 
     return (
         <Box
             sx={{
-                marginX: {
-                    xs: 0
+                marginY: {
+                    xs: 1
                 }
             }}>
             <Stack
@@ -45,24 +39,6 @@ export default function TokenHeader({
                         marginBottom: 2
                     }}>
                     <Tabs
-                        value={value}
-                        onChange={(e, v) => {
-                            setValue(v);
-
-                            router.push(
-                                {
-                                    pathname: '/nft/[tokenId]',
-                                    query: {
-                                        tokenId: nft.id,
-                                        tab: v
-                                    }
-                                },
-                                undefined,
-                                {
-                                    shallow: true
-                                }
-                            )
-                        }}
                         textColor="secondary"
                         indicatorColor="secondary"
                     >

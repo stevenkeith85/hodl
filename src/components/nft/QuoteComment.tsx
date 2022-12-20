@@ -1,10 +1,12 @@
+import useSWR from "swr";
+
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import useSWR from "swr";
-import { HighlightOffOutlined } from "@mui/icons-material";
+import HighlightOffOutlinedIcon from "@mui/icons-material/HighlightOffOutlined";
+
 import { fetchWithId } from "../../lib/swrFetchers";
-import { ProfileNameOrAddress } from "../avatar/ProfileNameOrAddress";
 import { truncateText } from "../../lib/truncateText";
+import { ProfileNameOrAddress } from "../avatar/ProfileNameOrAddress";
 
 
 export const QuoteComment = ({ reset, id, color }) => {
@@ -29,7 +31,7 @@ export const QuoteComment = ({ reset, id, color }) => {
                 <ProfileNameOrAddress profileAddress={comment?.user?.address} fallbackData={comment?.user} color={color} />
                 <Typography sx={{ color: '#666' }}>{truncateText(comment?.comment || '...', 80)}</Typography>
             </div>
-            <HighlightOffOutlined
+            <HighlightOffOutlinedIcon
                 sx={{ cursor: 'pointer', position: 'absolute', right: 8, top: 8, color: '#999' }}
                 fontSize="inherit"
                 onClick={() => {

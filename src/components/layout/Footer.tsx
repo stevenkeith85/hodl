@@ -128,6 +128,8 @@ const Footer = ({
                             <Typography
                                 variant="h2"
                                 sx={{
+                                    padding: 0,
+                                    margin: 0,
                                     fontFamily: theme => theme.logo.fontFamily,
                                     fontSize: theme => theme.logo.fontSize,
                                     color: theme => theme.palette.primary.main

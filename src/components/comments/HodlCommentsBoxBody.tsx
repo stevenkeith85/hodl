@@ -1,11 +1,21 @@
 import Box from "@mui/material/Box"
 import Typography from "@mui/material/Typography";
+
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
+
 import { InfiniteScrollComments } from "../profile/InfiniteScrollComments";
-import { HodlCommentBox } from "./HodlCommentBox";
 import { fetchWithId } from "../../lib/swrFetchers";
 import useSWR from "swr";
+import dynamic from "next/dynamic";
 
+
+const HodlCommentBox = dynamic(
+    () => import("./HodlCommentBox").then(mod => mod.HodlCommentBox),
+    {
+      ssr: false,
+      loading: () => null
+    }
+  );
 
 export const HodlCommentsBoxBody = ({
     loading,

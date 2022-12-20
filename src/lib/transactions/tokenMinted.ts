@@ -185,6 +185,15 @@ export const tokenMinted = async (
     }
 
     addToZeplo(
+        'api/contracts/mutable-token/updateCache',
+        {
+            id: token.id
+        },
+        req.cookies.refreshToken,
+        req.cookies.accessToken
+    )
+
+    addToZeplo(
         'api/contracts/token/hodling/updateCache',
         {
             address: req.address
