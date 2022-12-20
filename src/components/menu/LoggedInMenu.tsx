@@ -93,6 +93,7 @@ export const LoggedInMenu = () => {
                 )}
                 {actions.map(({ title, action }) => (
                     <Box
+                        key={title}
                         onClick={(e) => {
                             e.stopPropagation();
                             e.preventDefault();
