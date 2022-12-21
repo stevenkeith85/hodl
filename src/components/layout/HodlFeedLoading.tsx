@@ -5,7 +5,6 @@ export default function HodlFeedLoading() {
         <div>
             <HodlFeedItemLoading />
             <HodlFeedItemLoading />
-            <HodlFeedItemLoading />
         </div>
     )
 }

@@ -11,7 +11,16 @@ import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
-import { CopyText } from './CopyText';
+
+import dynamic from 'next/dynamic';
+
+const CopyText = dynamic(
+    () => import('./CopyText').then(mod => mod.CopyText),
+    {
+        ssr: true,
+        loading: () => null
+    }
+  );
 
 export const HodlShareMenu = ({ 
     anchorEl, 

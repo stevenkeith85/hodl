@@ -6,14 +6,14 @@ import Link from 'next/link';
 
 
 const Footer = ({
-    address 
+    address
 }) => {
     return (
         <div>
             <Box sx={{
                 backgroundColor: '#efefef',
-                borderTop: `1px solid #ddd`,
-                borderBottom: `1px solid #ddd`
+                borderTop: `1px solid #eee`,
+                borderBottom: `1px solid #eee`
             }}
             >
                 <Container
@@ -73,9 +73,8 @@ const Footer = ({
                                     }}>
                                     hodl my moon
                                 </Typography>
-                                <Link href="/about">about this dapp</Link>
-                                <Link href="/contact">contact hodl my moon</Link>
-
+                                <Link style={{ textDecoration: 'none' }} href="/about">about this dapp</Link>
+                                <Link style={{ textDecoration: 'none' }} href="/contact">contact hodl my moon</Link>
                             </Box>
                             <Box
                                 sx={{
@@ -91,11 +90,11 @@ const Footer = ({
                                     }}>
                                     learn
                                 </Typography>
-                                <Link href="/learn">nfts and dapps</Link>
-                                <Link href="/learn/nfts/what-are-nfts">what are nfts</Link>
-                                <Link href="/learn/dapps/what-are-dapps">what are dapps</Link>
-                                <Link href="/learn/dapps/interact-with-dapps">interact with dapps</Link>
-                                <Link href="/learn/sign-in/coinbase-wallet">sign in with coinbase wallet</Link>
+                                <Link style={{ textDecoration: 'none' }} href="/learn"><Typography color="text.secondary">nfts and dapps</Typography></Link>
+                                <Link style={{ textDecoration: 'none' }} href="/learn/nfts/what-are-nfts"><Typography color="text.secondary">what are nfts</Typography></Link>
+                                <Link style={{ textDecoration: 'none' }} href="/learn/dapps/what-are-dapps"><Typography color="text.secondary">what are dapps</Typography></Link>
+                                <Link style={{ textDecoration: 'none' }} href="/learn/dapps/interact-with-dapps"><Typography color="text.secondary">interact with dapps</Typography></Link>
+                                <Link style={{ textDecoration: 'none' }} href="/learn/sign-in/coinbase-wallet"><Typography color="text.secondary">sign in with coinbase wallet</Typography></Link>
                             </Box>
                             <Box
                                 sx={{
@@ -105,11 +104,11 @@ const Footer = ({
                                 }}
                             >
                                 <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>polygon nfts</Typography>
-                                <Link href="/explore">explore polygon nfts</Link>
-                                <Link href="/explore?forSale=true">buy polygon nfts</Link>
+                                <Link style={{ textDecoration: 'none' }} href="/explore"><Typography color="text.secondary">explore polygon nfts</Typography></Link>
+                                <Link style={{ textDecoration: 'none' }} href="/explore?forSale=true"><Typography color="text.secondary">buy polygon nfts</Typography></Link>
                                 {
                                     address &&
-                                    <Link href="/create">create</Link>
+                                    <Link style={{ textDecoration: 'none' }} href="/create"><Typography color="text.secondary">create</Typography></Link>
                                 }
                             </Box>
                         </Box>
@@ -124,18 +123,18 @@ const Footer = ({
                                 }
                             }}
                         >
-                            <Link href="/">
-                            <Typography
-                                variant="h2"
-                                sx={{
-                                    padding: 0,
-                                    margin: 0,
-                                    fontFamily: theme => theme.logo.fontFamily,
-                                    fontSize: theme => theme.logo.fontSize,
-                                    color: theme => theme.palette.primary.main
-                                }}>
-                                Hodl My Moon
-                            </Typography>
+                            <Link style={{ textDecoration: 'none' }} href="/">
+                                <Typography
+                                    variant="h2"
+                                    sx={{
+                                        padding: 0,
+                                        margin: 0,
+                                        fontFamily: theme => theme.logo.fontFamily,
+                                        fontSize: theme => theme.logo.fontSize,
+                                        color: theme => theme.palette.primary.main
+                                    }}>
+                                    Hodl My Moon
+                                </Typography>
                             </Link>
                         </Box>
                     </Box>
@@ -149,7 +148,17 @@ const Footer = ({
                         padding: 2
                     }}>
                     <Box>
-                        <Typography sx={{ color: grey[500], fontSize: '12px', textAlign: {xs:'center', md: 'left'} }}>Copyright © 2022 Pony Powered Limited.</Typography>
+                        <Typography
+                            sx={{
+                                color: grey[500],
+                                fontSize: '12px',
+                                textAlign: {
+                                    xs: 'center',
+                                    md: 'right'
+                                }
+                            }}>
+                            Copyright © 2022 Pony Powered Limited.
+                        </Typography>
                     </Box>
                 </Container>
             </Box>

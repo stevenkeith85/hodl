@@ -3,16 +3,16 @@ import dynamic from 'next/dynamic';
 
 import { authenticate } from '../lib/jwt';
 
-import PrivateHomePageLoading from '../components/layout/PrivateHomePageLoading';
 import { FeedContext } from '../contexts/FeedContext';
 import { useActions2 } from '../hooks/useActions2';
 import { ActionSet } from '../models/HodlAction';
+import { getUser } from '../lib/database/rest/getUser';
 
 const PrivateHomePage = dynamic(
   () => import('../components/layout/PrivateHomePage'),
   {
-    ssr: false,
-    loading: () => <PrivateHomePageLoading />
+    ssr: true,
+    loading: () => null
   }
 );
 
@@ -29,15 +29,19 @@ export const getServerSideProps = async ({ req, res }) => {
     }
   }
 
+  const user = await getUser(req.address, req.address);
+
   return {
     props: {
-      address: req.address || null
+      address: req.address || null,
+      user
     }
   }
 }
 
 export default function Feed({
   address,
+  user
 }) {
 
   const homepage = "https://www.hodlmymoon.com";
@@ -68,7 +72,7 @@ export default function Feed({
         <meta property="og:image" content={shareImage} />
         <meta property="og:description" content={description} />
       </Head>
-      <PrivateHomePage />
+      <PrivateHomePage user={user} />
       </FeedContext.Provider>
   )
 }

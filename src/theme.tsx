@@ -37,6 +37,7 @@ let theme = createTheme({
       fontWeight: 600
     },
     h2: {
+      paddingTop: '16px',
       fontSize: '16px',
       fontWeight: 500
     },

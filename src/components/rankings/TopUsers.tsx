@@ -4,7 +4,6 @@ import { UserLinksList } from '../profile/UserLinksList';
 import { HodlScrollBox } from '../HodlScrollBox';
 import Typography from '@mui/material/Typography';
 
-
 export const TopUsers = ({ followButton=true, titleSize=16, height=325, size=60, fontSize=14, titleMargin=3 }) => {
     const { limit, mostFollowed: rankings } = useContext(RankingsContext);
 

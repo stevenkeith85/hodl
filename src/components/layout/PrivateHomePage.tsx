@@ -5,52 +5,44 @@ import dynamic from 'next/dynamic';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 
-import HodlFeedLoading from './HodlFeedLoading';
-import PrivateHomePageSidebarLoading from './PrivateHomePageSidebarLoading';
-
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import PrivateHomePageSwitchLoading from './PrivateHomePageSwitchLoading';
+import PrivateHomePageSidebarLoading from './PrivateHomePageSidebarLoading';
 
 
-const HodlFeed2 = dynamic(
-    () => import('../feed/HodlFeed2').then(mod => mod.HodlFeed2),
+const HodlFeed = dynamic(
+    () => import('../feed/HodlFeed').then(mod => mod.HodlFeed),
     {
-        ssr: false,
-        loading: () => <HodlFeedLoading />
+        ssr: true,
+        loading: () => null
     }
 );
-
 
 const PrivateHomePageSwitch = dynamic(
     () => import('./PrivateHomePageSwitch'),
     {
-        ssr: false,
-        loading: () => <PrivateHomePageSwitchLoading />
+        ssr: true,
+        loading: () => null
     }
 );
 
-interface PrivateHomePageProps {
-}
+const PrivateHomePageSidebar = dynamic(
+    () => import('./PrivateHomePageSidebar'),
+    {
+        ssr: true,
+    }
+);
 
-const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ }) => {
+const PrivateHomePage = ({ user }) => {
     const theme = useTheme();
 
     const desktop = useMediaQuery(theme.breakpoints.up('md'), { noSsr: true });
 
     const [viewSidebar, setViewSidebar] = useState(false);
 
-    const PrivateHomePageSidebar = dynamic(
-        () => import('./PrivateHomePageSidebar'),
-        {
-            ssr: false,
-            loading: () => <PrivateHomePageSidebarLoading display={desktop || viewSidebar} />
-        }
-    );
-
     return (
         <>
-            {!desktop && <PrivateHomePageSwitch viewSidebar={viewSidebar} setViewSidebar={setViewSidebar} />}
+            <PrivateHomePageSwitch viewSidebar={viewSidebar} setViewSidebar={setViewSidebar} />
             <Grid container>
                 <Grid
                     item
@@ -64,7 +56,7 @@ const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ }) => {
                     xs={12}
                     md={7}
                 >
-                    {(desktop || !viewSidebar) &&
+                    {(!viewSidebar || desktop )&&
                         <Box
                             sx={{
                                 width: '100%',
@@ -85,15 +77,13 @@ const PrivateHomePage: React.FC<PrivateHomePageProps> = ({ }) => {
                                     sm: 4
                                 },
                             }}>
-                            <HodlFeed2 />
+                            <HodlFeed />
                         </Box>
                     }
                 </Grid>
-                {(desktop || viewSidebar) &&
-                    <Grid item xs={12} md={5}>
-                        <PrivateHomePageSidebar />
-                    </Grid>
-                }
+                <Grid item xs={12} md={5}>
+                    {(viewSidebar || desktop ) && <PrivateHomePageSidebar prefetchedUser={user}/>}
+                </Grid>
             </Grid>
         </>
     )

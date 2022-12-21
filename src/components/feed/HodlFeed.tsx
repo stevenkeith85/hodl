@@ -1,70 +1,92 @@
+import { useContext, useEffect, useState } from 'react';
+
+import { FeedContext } from '../../contexts/FeedContext';
+import { PusherContext } from '../../contexts/PusherContext';
+
+import { HodlFeedItemLoading } from './HodlFeedItemLoading';
+
 import dynamic from 'next/dynamic';
 
-import Box from "@mui/material/Box"
-import InfiniteScroll from "react-swr-infinite-scroll";
+const EmptyFeedOnboarding = dynamic(
+    () => import('./EmptyFeedOnboarding').then(mod => mod.EmptyFeedOnboarding),
+    {
+        ssr: true,
+        loading: () => null
+    }
+);
 
-import { FeedContext } from "../../contexts/FeedContext";
-import { useActions } from '../../hooks/useActions';
-
-import { ActionSet, HodlAction } from '../../models/HodlAction';
-
-import HodlFeedLoading from '../layout/HodlFeedLoading';
+const MutateFeedButton = dynamic(
+    () => import('./MutateFeedButton').then(mod => mod.MutateFeedButton),
+    {
+        ssr: false,
+        loading: () => null
+    }
+);
 
 const HodlFeedItem = dynamic(
     () => import('./HodlFeedItem').then(mod => mod.HodlFeedItem),
     {
-        ssr: false,
-        loading: () => null
+        ssr: true,
+        loading: () => <HodlFeedItemLoading />
     }
 );
 
-const HodlImpactAlert = dynamic(
-    () => import('../HodlImpactAlert').then(mod => mod.HodlImpactAlert),
+const Virtuoso = dynamic(
+    () => import('react-virtuoso').then(mod => mod.Virtuoso),
     {
         ssr: false,
         loading: () => null
     }
 );
 
-export const HodlFeed = ({ feed, limit = 8 }) => {
+export const HodlFeed = () => {
+    const { feed } = useContext(FeedContext);
+    const { pusher, userSignedInToPusher } = useContext(PusherContext);
+    const [mutateButtonVisible, setMutateButtonVisible] = useState(false);
 
-    const isReachingEnd = swr => {
-        return swr.data?.[0]?.items?.length == 0 ||
-            swr.data?.[swr.data?.length - 1]?.items?.length < limit
+    const displayMutateButton = () => setMutateButtonVisible(true);
+
+    useEffect(() => {
+        if (!pusher || !userSignedInToPusher) {
+            return;
+        }
+
+        pusher.user.bind("feed", displayMutateButton);
+
+        return () => {
+            pusher.user.unbind('feed', displayMutateButton);
+        }
+
+    }, [pusher, userSignedInToPusher]);
+
+    const loadMore = () => {
+        feed.setSize(size => size + 1)
+    };
+
+    if (!feed?.data && !feed?.error) {
+        return null
+    }
+
+    if (feed?.data?.[0] && feed?.data[0]?.total === 0) {
+        return <>
+            {mutateButtonVisible && <MutateFeedButton setMutateButtonVisible={setMutateButtonVisible} />}
+            <EmptyFeedOnboarding />
+        </>
     }
 
     return (
-        <FeedContext.Provider value={{ feed }}>
-            <Box
-                id="hodlfeed"
-                sx={{
-                    gap: {
-                        xs: 2,
-                        sm: 4
+        <>
+            <div style={{ position: 'relative' }}>
+                {mutateButtonVisible && <MutateFeedButton setMutateButtonVisible={setMutateButtonVisible} />}
+                <Virtuoso
+                    useWindowScroll
+                    data={feed?.data}
+                    overscan={700}
+                    endReached={loadMore}
+                    // @ts-ignore
+                    itemContent={(index, page) => page?.items.map((item, i) => <HodlFeedItem key={i} item={item} />)
                     }
-                }}
-                display="flex"
-                flexDirection="column"
-            >
-                {
-                    feed?.data?.[0] && !feed?.data[0]?.items?.length &&
-                    (
-                        <Box display="flex" flexDirection="column">
-                            <HodlImpactAlert message={"Follow some users to see what they are up to."} title="Your feed is currently empty" />
-                        </Box>
-                    )
-                }
-                <InfiniteScroll
-                    swr={feed}
-                    loadingIndicator={<HodlFeedLoading />}
-                    isReachingEnd={isReachingEnd}
-                >
-                    {
-                        ({ items }) =>
-                            (items || []).map((item: HodlAction) => <>{item && <HodlFeedItem key={item.id} item={item} />}</>)
-                    }
-                </InfiniteScroll>
-            </Box>
-        </FeedContext.Provider>
-    )
+                />
+            </div >
+        </>)
 }

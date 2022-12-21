@@ -20,9 +20,14 @@ export const HomePagePitch = ({ limit, prefetchedTopTokens}) => {
                     xs: 4,
                     sm: 6
                 },
-                paddingX: 4,
-                paddingY: 4,
-                gap: 4,
+                padding: {
+                    xs: 2,
+                    md: 4
+                },
+                gap: {
+                    xs: 2,
+                    md: 4,
+                },
                 background: 'white',
                 boxShadow: '1px 1px 8px #eee',
                 borderRadius: 2,
@@ -32,9 +37,17 @@ export const HomePagePitch = ({ limit, prefetchedTopTokens}) => {
                 },
                 alignItems: 'center',
             }}>
-            <Box>
-                <Box
+            <Box
+                sx={{
+                    padding: {
+                        xs: 4,
+                        md: 0
+                    },
+                }}
+            >
+                <Typography
                     component="h1"
+                    variant="h1"
                     sx={{
                         fontFamily: theme => theme.logo.fontFamily,
                         fontSize: {
@@ -47,9 +60,10 @@ export const HomePagePitch = ({ limit, prefetchedTopTokens}) => {
                         color: theme => theme.palette.primary.main,
                     }}>
                     The Social Polygon NFT Platform
-                </Box>
+                </Typography>
                 <Typography
                     component="h2"
+                    variant="h2"
                     sx={{
                         fontFamily: theme => theme.logo.fontFamily,
                         fontSize: {
@@ -62,7 +76,7 @@ export const HomePagePitch = ({ limit, prefetchedTopTokens}) => {
                     }}>
                     Make frens. Mint NFTs. Buy and sell on the Marketplace.
                 </Typography>
-                <ConnectButton />
+                <ConnectButton text="Connect to Get Started" />
             </Box>
             <Box
                 sx={{

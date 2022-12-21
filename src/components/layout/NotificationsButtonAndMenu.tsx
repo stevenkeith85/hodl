@@ -4,7 +4,6 @@ import { CloseIcon } from '../icons/CloseIcon';
 
 import { NotificationsIcon } from '../icons/NotificationsIcon';
 import { NotificationsNoneIcon } from '../icons/NotificationsNoneIcon';
-import { HodlNotifications } from '../notifications/HodlNotifications';
 
 import { useContext, useEffect } from 'react';
 
@@ -17,7 +16,15 @@ import {
 } from '../../models/HodlAction';
 import { PusherContext } from '../../contexts/PusherContext';
 import { SignedInContext } from '../../contexts/SignedInContext';
+import dynamic from 'next/dynamic';
 
+const HodlNotifications = dynamic(
+    () => import('../notifications/HodlNotifications').then(mod => mod.HodlNotifications),
+    {
+        ssr: true,
+        loading: () => null
+    }
+);
 
 export const NotificationsButtonAndMenu = ({
     showNotifications,
@@ -25,7 +32,6 @@ export const NotificationsButtonAndMenu = ({
     setMobileSearchOpen,
     setShowNotifications,
 }) => {
-
     const { pusher, userSignedInToPusher } = useContext(PusherContext);
     const { signedInAddress: address } = useContext(SignedInContext);
 

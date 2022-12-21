@@ -11,9 +11,11 @@ interface UserHandle {
 }
 
 export const UserHandle: FC<UserHandle> = ({ user, fontSize }) => {
-    
     return (<>
-        <Typography sx={{ fontSize }}>
+        <Typography 
+            sx={{ 
+                fontSize,
+                color: theme => theme.palette.text.secondary }}>
             {user?.nickname ? 
                 truncateText(user.nickname, 10) : 
                 getShortAddress(user?.address)}

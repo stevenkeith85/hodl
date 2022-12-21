@@ -1,4 +1,3 @@
-
 export const getProviderSignerAddress = async (dialog = false) => {
   const { default: CoinbaseWalletSDK } = await import("@coinbase/wallet-sdk");
   const { default: WalletConnect } = await import('@walletconnect/web3-provider');

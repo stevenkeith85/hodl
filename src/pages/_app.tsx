@@ -39,7 +39,6 @@ import createEmotionCache from '../createEmotionCache';
 import { SignedInContext } from '../contexts/SignedInContext';
 import Layout from '../components/layout/Layout';
 
-
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
@@ -153,7 +152,9 @@ export default function MyApp(props: MyAppProps) {
                       hodlnotification: HodlNotificationSnackbar
                     }}
                   >
-                    <Layout address={signedInAddress}>
+                    <Layout 
+                      address={signedInAddress}
+                      >
                       <Component {...pageProps} />
                     </Layout>
                   </SnackbarProvider>
