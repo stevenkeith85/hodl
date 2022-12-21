@@ -1,7 +1,6 @@
 import Box from "@mui/material/Box";
 import { useMutableToken } from "../../hooks/useMutableToken";
-import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
-
+import { ProfileNameOrAddress } from "../avatar/ProfileNameOrAddress";
 
 export const HodlerCreatorCard = ({
     prefetchedToken,
@@ -33,8 +32,8 @@ export const HodlerCreatorCard = ({
                     }}>
                     Creator
                 </Box>
-                <UserAvatarAndHandle
-                    address={prefetchedToken.creator}
+                <ProfileNameOrAddress
+                    profileAddress={prefetchedToken.creator}
                     color={"primary"}
                 />
                 <Box
@@ -44,8 +43,8 @@ export const HodlerCreatorCard = ({
                     }}>
                     Hodler
                 </Box>
-                <UserAvatarAndHandle
-                    address={mutableToken?.hodler}
+                <ProfileNameOrAddress
+                    profileAddress={mutableToken?.hodler}
                     color={"primary"}
                 />
             </Box>

@@ -4,16 +4,16 @@ import { Redis } from '@upstash/redis';
 import apiRoute from "../handler";
 import { ActionSet, HodlAction, HodlActionViewModel } from "../../../models/HodlAction";
 
-import { getCommentVM } from "../comment";
 import { getToken } from "../../../lib/database/rest/getToken";
 import { mGetActions } from "../../../lib/database/rest/Actions";
 import { getUsers } from "../../../lib/database/rest/Users";
-import { mGetComments } from "../../../lib/database/rest/mGetComments";
+import { mGetComments } from "../../../lib/database/rest/Comments";
 import { getTokenVMs, mGetTokens } from "../../../lib/database/rest/Tokens";
 import { UserViewModel } from "../../../models/User";
 import { getUser } from "../../../lib/database/rest/getUser";
 import { zCard } from "../../../lib/database/rest/zCard";
 import { zRange } from "../../../lib/database/rest/zRange";
+import { getCommentVM } from "../../../lib/database/rest/getCommentVM";
 
 const client = Redis.fromEnv();
 
@@ -39,7 +39,7 @@ export const getAction = async (id, viewer): Promise<HodlActionViewModel | null>
   let tokenPromise = null;
 
   if (hodlAction.object === "comment") {
-    vm.comment = await getCommentVM(hodlAction.objectId, false);
+    vm.comment = await getCommentVM(hodlAction.objectId);
 
     if (vm.comment) {
       tokenPromise = getToken(vm.comment.tokenId)

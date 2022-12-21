@@ -12,8 +12,6 @@ export const useCommentCount = (
         fetchWithObjectAndId,
         {
             revalidateOnMount: fallbackData === null,
-            revalidateOnFocus: false,
-            revalidateOnReconnect: false,
             fallbackData
         }
     );

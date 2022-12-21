@@ -17,6 +17,7 @@ import { green, red } from "@mui/material/colors";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import dynamic from "next/dynamic";
 import { ConnectButton } from "../menu/ConnectButton";
+import { CommentsContext } from "../../contexts/CommentsContext";
 
 
 const QuoteComment = dynamic(
@@ -31,11 +32,8 @@ interface AddCommentProps {
     tokenId?: number, // we always store the tokenId this comment was made against to allow us to link to it; give the token owner permission to delete, etc
     objectId: number, // the base object we will be commenting on
     object: "token" | "comment", // the base object type we will be commenting on
-    commentingOn: any, // this will be a sub comment, or the base object
-    setCommentingOn: Function,
     setLoading: Function,
     mutateList: Function,
-    mutateCount: Function,
     newTagRef: any
 }
 
@@ -43,14 +41,13 @@ export const AddComment: FC<AddCommentProps> = ({
     tokenId, // TODO: We don't need to pass this now, as we have access to 'nft' via the context
     objectId,
     object,
-    commentingOn,
-    setCommentingOn,
     setLoading,
     mutateList,
-    mutateCount,
     newTagRef
 }) => {
     const { signedInAddress } = useContext(SignedInContext);
+    const { commentingOn, setCommentingOn } = useContext(CommentsContext);
+
     const [addComment] = useAddComment();
     const theme = useTheme();
     const [open, setOpen] = useState(false);
@@ -60,7 +57,6 @@ export const AddComment: FC<AddCommentProps> = ({
             object,
             objectId,
             mutateList,
-            mutateCount,
             setShowThread: () => null,
             color: "primary"
         });
@@ -101,11 +97,6 @@ export const AddComment: FC<AddCommentProps> = ({
 
                 commentingOn.setShowThread(true);
                 commentingOn.mutateList();
-                commentingOn.mutateCount();
-
-
-                mutateCount();
-                // TODO: NEED TO MUTATE THE TOP LEVEL COUNT ??
 
                 newTagRef.current.value = "";
                 actions.setFieldValue('comment', '');

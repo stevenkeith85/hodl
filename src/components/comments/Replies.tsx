@@ -1,22 +1,14 @@
 import React from "react";
-
 import { useTheme } from "@mui/material/styles"
 import Typography from "@mui/material/Typography";
-
 import { HodlCommentViewModel } from "../../models/HodlComment";
 import { HodlCommentBox } from "./HodlCommentBox";
 
 
 export const Replies = ({
-    countSWR,
     showThread,
     swr,
-    setCommentingOn,
     addCommentInput,
-    topLevel,
-    setTopLevel,
-    setOldTopLevel,
-    mutateCount,
     parentColor,
     level
 }) => {
@@ -26,10 +18,6 @@ export const Replies = ({
     const firstIndex = colors.indexOf(parentColor) + 1
 
     if (!showThread) {
-        return null;
-    }
-
-    if (!countSWR.data) {
         return null;
     }
 
@@ -49,14 +37,8 @@ export const Replies = ({
                         key={`hodl-comments-${comment.id}`}
                         comment={comment}
                         color={colors[(firstIndex + i) % 2]}
-                        setCommentingOn={setCommentingOn}
                         addCommentInput={addCommentInput}
                         parentMutateList={swr.mutate}
-                        parentMutateCount={countSWR.mutate}
-                        topLevel={topLevel}
-                        setTopLevel={setTopLevel}
-                        setOldTopLevel={setOldTopLevel}
-                        mutateCount={mutateCount}
                         level={level + 1}
                     />
                 )

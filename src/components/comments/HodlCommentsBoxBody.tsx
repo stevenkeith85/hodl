@@ -7,40 +7,41 @@ import { InfiniteScrollComments } from "../profile/InfiniteScrollComments";
 import { fetchWithId } from "../../lib/swrFetchers";
 import useSWR from "swr";
 import dynamic from "next/dynamic";
+import { useContext } from "react";
+import { CommentsContext } from "../../contexts/CommentsContext";
 
 
 const HodlCommentBox = dynamic(
     () => import("./HodlCommentBox").then(mod => mod.HodlCommentBox),
     {
-      ssr: false,
-      loading: () => null
+        ssr: false,
+        loading: () => null
     }
-  );
+);
 
 export const HodlCommentsBoxBody = ({
     loading,
-    minHeight,
-    maxHeight,
+    height,
     swr,
-    countSWR,
     limit,
-    setCommentingOn,
-    topLevel,
-    setTopLevel,
-    setOldTopLevel,
     newTagRef,
 }) => {
+    // When there's a top level comment we want to display that first, and then all its replies
+    // if we just use the top level swr we would only have the replies
+    const { topLevel } = useContext(CommentsContext);
     const { data: comment } = useSWR(
-        topLevel && topLevel.object === "comment" && topLevel.objectId ? [`/api/comment`, topLevel?.objectId] : null,
+        topLevel &&
+            topLevel.object === "comment" &&
+            topLevel.objectId ? [`/api/comment`, topLevel?.objectId] : null,
         fetchWithId
     );
 
     return (
         <Box
             sx={{
-                maxHeight,
-                minHeight,
-                overflow: 'auto',
+                height,
+                overflowY: 'auto',
+                overflowX: 'hidden',
                 position: 'relative',
             }}
         >
@@ -55,38 +56,29 @@ export const HodlCommentsBoxBody = ({
                         height: '100%',
                         margin: 0,
                     }} />
-
             }
-            {topLevel?.object === "token" ?
-                <div>
-                    <InfiniteScrollComments
-                        swr={swr}
-                        limit={limit}
-                        setCommentingOn={setCommentingOn}
-                        addCommentInput={newTagRef?.current}
-                        parentMutateCount={countSWR.mutate}
-                        topLevel={topLevel}
-                        setTopLevel={setTopLevel}
-                        setOldTopLevel={setOldTopLevel}
-                        mutateCount={countSWR.mutate}
+            {
+                topLevel?.object === "token" ?
+                    <div>
+                        <InfiniteScrollComments
+                            swr={swr}
+                            limit={limit}
+                            addCommentInput={newTagRef?.current}
+                        />
+                        {
+                            swr?.data &&
+                            swr?.data[0]?.items?.length === 0 &&
+                            <Typography>No comments</Typography>
+                        }
+                    </div> :
+                    comment && <HodlCommentBox
+                        addCommentInput={newTagRef.current}
+                        color="primary"
+                        shouldShowThread={true}
+                        comment={comment}
+                        parentMutateList={() => null}
+                        replySWR={swr}
                     />
-                    {swr?.data && swr?.data[0]?.items?.length === 0 && <Typography>No comments</Typography>}
-                </div> :
-                comment && <HodlCommentBox
-                    color="primary"
-                    shouldShowThread={true}
-                    comment={comment}
-                    setCommentingOn={setCommentingOn}
-                    parentMutateList={() => null}
-                    parentMutateCount={() => null}
-                    addCommentInput={newTagRef.current}
-                    replySWR={swr}
-                    replyCountSWR={countSWR}
-                    topLevel={topLevel}
-                    setTopLevel={setTopLevel}
-                    setOldTopLevel={setOldTopLevel}
-                    mutateCount={countSWR.mutate}
-                />
             }
         </Box>
     );

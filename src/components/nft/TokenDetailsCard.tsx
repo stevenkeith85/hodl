@@ -1,12 +1,11 @@
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
-import { getShortAddress } from "../../lib/getShortAddress";
 
+import { getShortAddress } from "../../lib/getShortAddress";
 import { cidToGatewayUrl } from "../../lib/utils";
 
 
-
-export const TokenDetailsCard = ({ token }) => {
+export const TokenDetailsCard = ({ prefetchedToken }) => {
     return (<>
         <Box
             sx={{
@@ -31,7 +30,7 @@ export const TokenDetailsCard = ({ token }) => {
                     <Box
                         sx={{
                             fontSize: 14,
-                            color: theme => theme.palette.text.secondary
+                            color: theme => theme.palette.primary.main
                         }}>{getShortAddress('0xca312c1d297570eb37d940ec3143768ccbdeb974')}</Box>
                 </Link>
                 <Box
@@ -39,12 +38,12 @@ export const TokenDetailsCard = ({ token }) => {
                         fontSize: 14,
                         color: theme => theme.palette.text.secondary
                     }}>Token Id</Box>
-                <Link href={cidToGatewayUrl(token?.metadata)} target="blank" sx={{ textDecoration: 'none' }}>
+                <Link href={cidToGatewayUrl(prefetchedToken?.metadata)} target="blank" sx={{ textDecoration: 'none' }}>
                     <Box
                         sx={{
                             fontSize: 14,
-                            color: theme => theme.palette.text.secondary
-                        }}>{token.id}</Box>
+                            color: theme => theme.palette.primary.main
+                        }}>{prefetchedToken.id}</Box>
                 </Link>
                 <Box
                     sx={{
