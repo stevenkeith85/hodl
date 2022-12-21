@@ -7,6 +7,7 @@ import Grid from '@mui/material/Grid';
 
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import PrivateHomePageSidebarLoading from './PrivateHomePageSidebarLoading';
 
 
 const HodlFeed = dynamic(
@@ -29,7 +30,6 @@ const PrivateHomePageSidebar = dynamic(
     () => import('./PrivateHomePageSidebar'),
     {
         ssr: true,
-        loading: () => null
     }
 );
 
@@ -56,7 +56,7 @@ const PrivateHomePage = ({ user }) => {
                     xs={12}
                     md={7}
                 >
-                    {(desktop || !viewSidebar) &&
+                    {(!viewSidebar || desktop )&&
                         <Box
                             sx={{
                                 width: '100%',
@@ -82,7 +82,7 @@ const PrivateHomePage = ({ user }) => {
                     }
                 </Grid>
                 <Grid item xs={12} md={5}>
-                    <PrivateHomePageSidebar prefetchedUser={user}/>
+                    {(viewSidebar || desktop ) && <PrivateHomePageSidebar prefetchedUser={user}/>}
                 </Grid>
             </Grid>
         </>

@@ -1,7 +1,8 @@
 import Box from '@mui/material/Box';
 
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import { Skeleton, Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
+import Skeleton from '@mui/material/Skeleton';
 
 
 export const LikesLoading = ({

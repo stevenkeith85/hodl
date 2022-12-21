@@ -1,15 +1,16 @@
 import { useContext, useEffect, useState } from 'react';
-import { Virtuoso } from 'react-virtuoso'
+
 import { FeedContext } from '../../contexts/FeedContext';
 import { PusherContext } from '../../contexts/PusherContext';
-import HodlFeedLoading from '../layout/HodlFeedLoading';
-import { HodlFeedItem } from './HodlFeedItem';
+
+import { HodlFeedItemLoading } from './HodlFeedItemLoading';
+
 import dynamic from 'next/dynamic';
 
 const EmptyFeedOnboarding = dynamic(
     () => import('./EmptyFeedOnboarding').then(mod => mod.EmptyFeedOnboarding),
     {
-        ssr: false,
+        ssr: true,
         loading: () => null
     }
 );
@@ -22,6 +23,21 @@ const MutateFeedButton = dynamic(
     }
 );
 
+const HodlFeedItem = dynamic(
+    () => import('./HodlFeedItem').then(mod => mod.HodlFeedItem),
+    {
+        ssr: true,
+        loading: () => <HodlFeedItemLoading />
+    }
+);
+
+const Virtuoso = dynamic(
+    () => import('react-virtuoso').then(mod => mod.Virtuoso),
+    {
+        ssr: false,
+        loading: () => null
+    }
+);
 
 export const HodlFeed = () => {
     const { feed } = useContext(FeedContext);
@@ -48,7 +64,7 @@ export const HodlFeed = () => {
     };
 
     if (!feed?.data && !feed?.error) {
-        return <HodlFeedLoading />
+        return null
     }
 
     if (feed?.data?.[0] && feed?.data[0]?.total === 0) {
@@ -67,6 +83,7 @@ export const HodlFeed = () => {
                     data={feed?.data}
                     overscan={700}
                     endReached={loadMore}
+                    // @ts-ignore
                     itemContent={(index, page) => page?.items.map((item, i) => <HodlFeedItem key={i} item={item} />)
                     }
                 />

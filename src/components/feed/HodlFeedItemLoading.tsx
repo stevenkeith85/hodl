@@ -1,10 +1,11 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
-import TokenActionBoxLoading from "../nft/TokenActionBoxLoading";
+
 import Skeleton from "@mui/material/Skeleton";
 import { memo } from "react";
 
+import TokenActionBoxLoading from "../nft/TokenActionBoxLoading";
 
 export const HodlFeedItemLoading = memo(({ }) => {
 

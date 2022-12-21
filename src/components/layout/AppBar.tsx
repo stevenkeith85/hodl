@@ -35,7 +35,7 @@ const SearchBox = dynamic(
     () => import('../SearchBox').then(mod => mod.SearchBox),
     {
         ssr: true,
-        loading: () => <p style={{ width: 157, height: 36 }} />
+        loading: () => null
     }
 );
 
@@ -74,8 +74,8 @@ const MobileSearch = dynamic(
 const NotificationsButtonAndMenu = dynamic(
     () => import('./NotificationsButtonAndMenu').then(mod => mod.NotificationsButtonAndMenu),
     {
-        ssr: false,
-        loading: () => <p style={{ width: 40, height: 40 }}></p>
+        ssr: true,
+        loading: () => null
     }
 );
 
@@ -179,10 +179,12 @@ const AppBar = ({ address }) => {
 
     return (
         <>
-            <SignInDialog
-                setSignInModalOpen={setSignInModalOpen}
-                signInModalOpen={signInModalOpen}
-            />
+            {
+                signInModalOpen && <SignInDialog
+                    setSignInModalOpen={setSignInModalOpen}
+                    signInModalOpen={signInModalOpen}
+                />
+            }
             {
                 sessionExpired &&
                 <SessionExpiredModal modalOpen={sessionExpired} setModalOpen={setSessionExpired} />
@@ -333,7 +335,7 @@ const AppBar = ({ address }) => {
                                     </Box>
                                 </IconButton>
                                 {
-                                    hoverMenuOpen && 
+                                    hoverMenuOpen &&
                                     <HoverMenu hoverMenuOpen={hoverMenuOpen} setHoverMenuOpen={setHoverMenuOpen} />
                                 }
                             </Box>

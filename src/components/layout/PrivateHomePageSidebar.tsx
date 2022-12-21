@@ -1,5 +1,3 @@
-import { RankingListLoading } from './RankingListLoading';
-
 import { useFollowersCount } from '../../hooks/useFollowersCount';
 import { useFollowingCount } from '../../hooks/useFollowingCount';
 import { useHodlingCount } from '../../hooks/useHodlingCount';

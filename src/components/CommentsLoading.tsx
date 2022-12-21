@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box';
 
 import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined';
-import { Skeleton, Typography } from '@mui/material';
-
+import Skeleton from '@mui/material/Skeleton';
+import Typography from '@mui/material/Typography';
 
 export const CommentsLoading = ({
     color = "secondary",

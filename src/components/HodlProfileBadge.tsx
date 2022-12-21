@@ -12,6 +12,7 @@ import Typography from "@mui/material/Typography";
 import Skeleton from "@mui/material/Skeleton";
 import Box from "@mui/material/Box";
 import dynamic from 'next/dynamic';
+import { UserAvatarAndHandle } from "./avatar/UserAvatarAndHandle";
 
 
 interface CountAndLinkProps {
@@ -21,13 +22,13 @@ interface CountAndLinkProps {
     tab: number;
 }
 
-const UserAvatarAndHandle = dynamic(
-    () => import('./avatar/UserAvatarAndHandle').then(mod => mod.UserAvatarAndHandle),
-    {
-        ssr: true,
-        loading: () => null
-    }
-);
+// const UserAvatarAndHandle = dynamic(
+//     () => import('./avatar/UserAvatarAndHandle').then(mod => mod.UserAvatarAndHandle),
+//     {
+//         ssr: true,
+//         loading: () => 'load'
+//     }
+// );
 
 const CountAndLink: React.FC<CountAndLinkProps> = memo(({ count, user, label, tab }) => {
 

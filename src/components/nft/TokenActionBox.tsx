@@ -8,9 +8,21 @@ import IconButton from "@mui/material/IconButton";
 import { ShareIcon } from '../icons/ShareIcon';
 import theme from "../../theme";
 
-import { Likes } from "../Likes";
-import { Comments } from "../comments/Comments";
+const Likes = dynamic(
+  () => import('../Likes').then(mod => mod.Likes),
+  {
+      ssr: true,
+      loading: () => null
+  }
+);
 
+const Comments = dynamic(
+  () => import('../comments/Comments').then(mod => mod.Comments),
+  {
+      ssr: true,
+      loading: () => null
+  }
+);
 
 const HodlShareMenu = dynamic(
   () => import('../HodlShareMenu').then(mod => mod.HodlShareMenu),
