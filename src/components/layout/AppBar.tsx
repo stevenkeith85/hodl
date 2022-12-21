@@ -163,7 +163,6 @@ const AppBar = ({ address }) => {
                 return Promise.reject(error);
             });
         }
-
         setUpAxios();
         connect(false);
     }, [address]);
