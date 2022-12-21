@@ -1,17 +1,19 @@
-import { useState, useEffect, useContext } from 'react';
+import {
+    useState,
+    useEffect,
+    useContext
+} from 'react';
 
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Container from '@mui/material/Container';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { PusherContext } from '../../contexts/PusherContext';
 import { useConnect } from '../../hooks/useConnect';
 import { WalletContext } from '../../contexts/WalletContext';
 import { SignedInContext } from '../../contexts/SignedInContext';
-
 
 const SignInDialog = dynamic(
     () => import('../menu/SignInDialog').then(mod => mod.SignInDialog),
@@ -20,7 +22,6 @@ const SignInDialog = dynamic(
         loading: () => null
     }
 );
-
 
 const CloseIcon = dynamic(
     () => import('../icons/CloseIcon').then(mod => mod.CloseIcon),
@@ -31,9 +32,9 @@ const CloseIcon = dynamic(
 );
 
 const SearchBox = dynamic(
-    () => import('../Search').then(mod => mod.SearchBox),
+    () => import('../SearchBox').then(mod => mod.SearchBox),
     {
-        ssr: false,
+        ssr: true,
         loading: () => <p style={{ width: 157, height: 36 }} />
     }
 );
@@ -49,7 +50,7 @@ const HoverMenu = dynamic(
 const MobileSearchIcon = dynamic(
     () => import('./MobileSearchIcon').then(mod => mod.MobileSearchIcon),
     {
-        ssr: false,
+        ssr: true,
         loading: () => null
     }
 );
@@ -57,8 +58,8 @@ const MobileSearchIcon = dynamic(
 const MenuIcon = dynamic(
     () => import('@mui/icons-material/Menu'),
     {
-        ssr: false,
-        loading: () => <p style={{ width: 40, height: 40 }}></p>
+        ssr: true,
+        loading: () => null
     }
 );
 
@@ -86,7 +87,7 @@ const SessionExpiredModal = dynamic(
     }
 );
 
-const ResponsiveAppBar = ({ address }) => {
+const AppBar = ({ address }) => {
     const theme = useTheme();
 
     const [error, setError] = useState('');
@@ -96,9 +97,6 @@ const ResponsiveAppBar = ({ address }) => {
     const [sessionExpired, setSessionExpired] = useState(false);
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
     const [signInModalOpen, setSignInModalOpen] = useState(false);
-
-    const mdUp = useMediaQuery(theme.breakpoints.up('md'));
-    const mdDown = useMediaQuery(theme.breakpoints.down('md'));
 
     const { pusher } = useContext(PusherContext);
     const { walletAddress } = useContext(WalletContext);
@@ -133,7 +131,6 @@ const ResponsiveAppBar = ({ address }) => {
         displayError().catch(console.error)
 
     }, [error]);
-
 
     useEffect(() => {
         if (!address) {
@@ -182,8 +179,14 @@ const ResponsiveAppBar = ({ address }) => {
 
     return (
         <>
-            <SignInDialog setSignInModalOpen={setSignInModalOpen} signInModalOpen={signInModalOpen} />
-            {sessionExpired && <SessionExpiredModal modalOpen={sessionExpired} setModalOpen={setSessionExpired} />}
+            <SignInDialog
+                setSignInModalOpen={setSignInModalOpen}
+                signInModalOpen={signInModalOpen}
+            />
+            {
+                sessionExpired &&
+                <SessionExpiredModal modalOpen={sessionExpired} setModalOpen={setSessionExpired} />
+            }
             <Box
                 sx={{
                     display: 'flex',
@@ -224,7 +227,10 @@ const ResponsiveAppBar = ({ address }) => {
                                 justifyContent: 'center',
                             }}>
 
-                                <Link key={homepage.url} href={homepage.url}>
+                                <Link
+                                    key={homepage.url}
+                                    href={homepage.url}
+                                >
                                     <Box
                                         sx={{
                                             color: theme => theme.palette.primary.main,
@@ -260,22 +266,35 @@ const ResponsiveAppBar = ({ address }) => {
                                     gap: { xs: 1, md: 2 },
                                 }}
                             >
-                                {mdUp && <Box><SearchBox /></Box>}
-                                {mdDown && <MobileSearchIcon
-                                    mobileSearchOpen={mobileSearchOpen}
-                                    setMobileSearchOpen={setMobileSearchOpen}
-                                    setShowNotifications={setShowNotifications}
-                                />
-                                }
-                                {address &&
+                                <Box sx={{
+                                    display: {
+                                        xs: 'none',
+                                        md: 'flex'
+                                    }
+                                }}>
+                                    <SearchBox />
+                                </Box>
+                                <Box sx={{
+                                    display: {
+                                        xs: 'flex',
+                                        md: 'none'
+                                    }
+                                }}>
+                                    <MobileSearchIcon
+                                        mobileSearchOpen={mobileSearchOpen}
+                                        setMobileSearchOpen={setMobileSearchOpen}
+                                        setShowNotifications={setShowNotifications}
+                                    />
+                                </Box>
+                                {
+                                    address &&
                                     <NotificationsButtonAndMenu
                                         setHoverMenuOpen={setHoverMenuOpen}
                                         setMobileSearchOpen={setMobileSearchOpen}
                                         setShowNotifications={setShowNotifications}
                                         showNotifications={showNotifications}
-                                    />}
-
-                                {/* menu */}
+                                    />
+                                }
                                 <IconButton
                                     size="large"
                                     sx={{
@@ -313,7 +332,10 @@ const ResponsiveAppBar = ({ address }) => {
                                         <MenuIcon sx={{ fontSize: 22 }} />
                                     </Box>
                                 </IconButton>
-                                {hoverMenuOpen && <HoverMenu hoverMenuOpen={hoverMenuOpen} setHoverMenuOpen={setHoverMenuOpen} />}
+                                {
+                                    hoverMenuOpen && 
+                                    <HoverMenu hoverMenuOpen={hoverMenuOpen} setHoverMenuOpen={setHoverMenuOpen} />
+                                }
                             </Box>
                         </Box>
                     </Box>
@@ -332,4 +354,4 @@ const ResponsiveAppBar = ({ address }) => {
     );
 };
 
-export default ResponsiveAppBar;
+export default AppBar;

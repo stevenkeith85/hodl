@@ -11,9 +11,15 @@ import CssBaseline from '@mui/material/CssBaseline';
 
 import { SnackbarProvider } from 'notistack';
 import { SWRConfig } from 'swr'
-import { CacheProvider, EmotionCache } from '@emotion/react';
+import { 
+  CacheProvider, 
+  EmotionCache 
+} from '@emotion/react';
+
 import cookie from 'cookie'
+
 import '../styles/globals.css'
+
 import { PusherContext } from '../contexts/PusherContext';
 import { WalletContext } from '../contexts/WalletContext';
 
@@ -29,9 +35,6 @@ const LoginPage = dynamic(
 
 import theme from '../theme';
 import createEmotionCache from '../createEmotionCache';
-
-// Also loads a lot of deps
-// import Layout from '../components/layout/Layout';
 
 import { SignedInContext } from '../contexts/SignedInContext';
 import Layout from '../components/layout/Layout';
