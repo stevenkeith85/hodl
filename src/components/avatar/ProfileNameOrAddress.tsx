@@ -1,7 +1,5 @@
-import { FC } from 'react';
 import { getShortAddress } from "../../lib/getShortAddress";
 import Link from 'next/link';
-import { UserViewModel } from '../../models/User';
 import { useUser } from '../../hooks/useUser';
 import theme from '../../theme';
 import { truncateText } from '../../lib/truncateText';
@@ -10,22 +8,12 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
 
-interface ProfileNameOrAddressProps {
-    profileAddress: string;
-    fontSize?: string;
-    fontWeight?: number;
-    color?: "primary" | "secondary" | "inherit";
-    sx?: object | null;
-    fallbackData?: UserViewModel | null;
-    you?: boolean; // use the word 'you' instead of the 3rd party form (address/nickname)
-}
-
-export const ProfileNameOrAddress: FC<ProfileNameOrAddressProps> = ({
+export const ProfileNameOrAddress= ({
     profileAddress,
-    fontSize = '14px',
+    fontSize = "14px",
     fontWeight = 500,
     color = "inherit",
-    sx = null,
+    sx = {},
     fallbackData = null,
     you = false
 }) => {

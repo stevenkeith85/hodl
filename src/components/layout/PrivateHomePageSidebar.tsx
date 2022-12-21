@@ -1,4 +1,3 @@
-import HodlProfileBadgeLoading from './HodlProfileBadgeLoading';
 import { RankingListLoading } from './RankingListLoading';
 
 import { useFollowersCount } from '../../hooks/useFollowersCount';
@@ -24,47 +23,47 @@ import { SignedInContext } from '../../contexts/SignedInContext';
 const HodlProfileBadge = dynamic(
     () => import('../HodlProfileBadge').then(mod => mod.HodlProfileBadge),
     {
-        ssr: false,
-        loading: () => <HodlProfileBadgeLoading />
+        ssr: true,
+        loading: () => null
     }
 );
 
 const NewTokens = dynamic(
     () => import('../rankings/NewTokens').then(mod => mod.NewTokens),
     {
-        ssr: false,
-        loading: () => <RankingListLoading text="New Polygon NFTs" />
+        ssr: true,
+        loading: () => null
     }
 );
 
 const TopUsers = dynamic(
     () => import('../rankings/TopUsers').then(mod => mod.TopUsers),
     {
-        ssr: false,
-        loading: () => <RankingListLoading text="Top Polygon NFT Creators" />
+        ssr: true,
+        loading: () => null
     }
 );
 
 const TopTokens = dynamic(
     () => import('../rankings/TopTokens').then(mod => mod.TopTokens),
     {
-        ssr: false,
-        loading: () => <RankingListLoading text="Top Polygon NFTs" />
+        ssr: true,
+        loading: () => null
     }
 );
 
 const NewUsers = dynamic(
     () => import('../rankings/NewUsers').then(mod => mod.NewUsers),
     {
-        ssr: false,
-        loading: () => <RankingListLoading text="New Polygon NFT Creators" />
+        ssr: true,
+        loading: () => null
     }
 );
 
-export default function PrivateHomePageSidebar({  }) {
+export default function PrivateHomePageSidebar({ prefetchedUser }) {
 
     const { signedInAddress: address } = useContext(SignedInContext);
-    const { data: user } = useUser(address);
+    const { data: user } = useUser(address, prefetchedUser);
 
     const limit = 8;
 

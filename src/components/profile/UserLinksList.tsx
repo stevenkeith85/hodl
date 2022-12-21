@@ -27,21 +27,12 @@ interface UserLinksListProps {
 
 export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit, followButton = true, size=44, fontSize=14 }) => {
 
-  if (!swr) {
-    return null;
-  }
-
-  if (!swr.data) {
-    return;
-  }
-
   return (
     <Box
       display="flex"
       flexDirection={"column"}
       sx={{width: '100%'}}
-    >
-      
+    >      
       <InfiniteScroll
         swr={swr}
         loadingIndicator={
@@ -61,11 +52,10 @@ export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit, follow
               alignItems="center"
               key={user?.address}
               sx={{
-                marginBottom: 4
+                marginBottom: 3
               }}
             >
               <Box flexGrow={1}>
-              {/* <>{ JSON.stringify(user)}</> */}
                 <UserAvatarAndHandle
                   address={user?.address}
                   fallbackData={user}

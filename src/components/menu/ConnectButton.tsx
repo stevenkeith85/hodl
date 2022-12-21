@@ -28,7 +28,7 @@ export const ConnectButton = ({
                 e.stopPropagation();
                 e.preventDefault();
 
-                await connect(true);
+                connect(true);
                 onConnected();
             }}
         >

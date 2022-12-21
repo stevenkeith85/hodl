@@ -201,7 +201,7 @@ const AppBar = ({ address }) => {
                     width: '100%',
                     maxWidth: `100vw`,
                     boxShadow: 'none',
-                    borderBottom: `1px solid #ddd`
+                    borderBottom: `1px solid #eee`
                 }}>
                 <Container
                     maxWidth="xl"

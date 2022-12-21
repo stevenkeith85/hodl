@@ -1,11 +1,15 @@
 import Box from "@mui/material/Box";
 import Switch from "@mui/material/Switch";
 
+
 export default function PrivateHomePageSwitch({ viewSidebar, setViewSidebar }) {
     return (
         <Box
             sx={{
-                display: 'flex',
+                display: {
+                    xs: 'flex',
+                    md: 'none'
+                },
                 justifyContent: 'right',
             }}>
             <Box

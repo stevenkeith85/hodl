@@ -8,7 +8,6 @@ import { TokenLink } from "../token/TokenLink";
 import { Token } from "../../models/Token";
 import theme from "../../theme";
 
-
 const Likes = dynamic(
   () => import('../Likes').then(mod => mod.Likes),
   {
@@ -27,15 +26,21 @@ interface TokenLinksListProps {
   fontSize?: number;
 }
 
-export const TokenLinksList: React.FC<TokenLinksListProps> = ({ swr, limit, showLikes = true, size = 44, fontSize = 14 }) => {
+export const TokenLinksList: React.FC<TokenLinksListProps> = ({ 
+  swr, 
+  limit, 
+  showLikes=true, 
+  size=44, 
+  fontSize=14
+ }) => {
   return (
     <>
-      {swr.data &&
         <div
           style={{
             display: 'flex',
             flexDirection: 'column',
             width: '100%',
+            height: '100%'
           }}
         >
           <InfiniteScroll
@@ -54,7 +59,7 @@ export const TokenLinksList: React.FC<TokenLinksListProps> = ({ swr, limit, show
                     display: 'flex',
                     width: '100%',
                     alignItems: 'center',
-                    margin: `0 0 ${theme.spacing(4)} 0`,
+                    margin: `0 0 ${theme.spacing(3)} 0`,
                   }}
                   key={token.id}
                 >
@@ -81,6 +86,5 @@ export const TokenLinksList: React.FC<TokenLinksListProps> = ({ swr, limit, show
             }
           </InfiniteScroll>
         </div>
-      }
     </>)
 }

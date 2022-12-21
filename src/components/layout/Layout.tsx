@@ -44,7 +44,9 @@ export default function Layout({ children, address }) {
                         flexBasis: 'auto',
                         background: "#fcfcfc"
                     }}>
-                <Container maxWidth="xl">
+                <Container 
+                    maxWidth="xl"
+                >
                     {children}
                 </Container>
             </main>

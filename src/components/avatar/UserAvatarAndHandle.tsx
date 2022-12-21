@@ -25,7 +25,7 @@ export const UserAvatarAndHandle: React.FC<UserAvatarProps> = (({
     withLink = true,
     color = "secondary"
 }) => {
-    
+
     const { data: user } = useUser(address, fallbackData);
 
     if (!user) {
@@ -35,7 +35,10 @@ export const UserAvatarAndHandle: React.FC<UserAvatarProps> = (({
     return (<>
         {
             withLink ?
-                <Link href={`/profile/${user?.nickname || user?.address}`}>
+                <Link
+                    style={{ textDecoration: 'none' }}
+                    href={`/profile/${user?.nickname || user?.address}`}
+                >
                     <UserAvatarAndHandleBody
                         user={user}
                         size={size}

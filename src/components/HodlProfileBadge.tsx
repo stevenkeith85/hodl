@@ -12,7 +12,6 @@ import Typography from "@mui/material/Typography";
 import Skeleton from "@mui/material/Skeleton";
 import Box from "@mui/material/Box";
 import dynamic from 'next/dynamic';
-import { UserAvatarAndHandleBodyLoading } from "./avatar/UserAvatarAndHandleBodyLoading";
 
 
 interface CountAndLinkProps {
@@ -25,8 +24,8 @@ interface CountAndLinkProps {
 const UserAvatarAndHandle = dynamic(
     () => import('./avatar/UserAvatarAndHandle').then(mod => mod.UserAvatarAndHandle),
     {
-        ssr: false,
-        loading: () => <UserAvatarAndHandleBodyLoading size={80} handle={false} />
+        ssr: true,
+        loading: () => null
     }
 );
 
@@ -34,7 +33,10 @@ const CountAndLink: React.FC<CountAndLinkProps> = memo(({ count, user, label, ta
 
     return (<>
         {
-            <Link href={`/profile/${user?.nickname || user?.address}?tab=${tab}`}>
+            <Link 
+                style={{ textDecoration: 'none'}}
+                href={`/profile/${user?.nickname || user?.address}?tab=${tab}`}
+                >
                 <Typography
                     sx={{
                         color: grey[700],
@@ -93,7 +95,11 @@ export const HodlProfileBadge: React.FC<HodlProfileBadgeProps> = ({ user }) => {
                             display: "flex",
                             flexDirection: "column",
                         }}>
-                        <ProfileNameOrAddress profileAddress={user?.address} fallbackData={user} fontSize={'18px'} />
+                        <ProfileNameOrAddress 
+                            profileAddress={user?.address} 
+                            fallbackData={user} 
+                            fontSize={'18px'} 
+                        />
                         <CopyText text={user?.address}>
                             <Typography sx={{ fontSize: 14 }}>{getShortAddress(user?.address)}</Typography>
                         </CopyText>

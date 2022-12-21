@@ -19,7 +19,7 @@ const HodlAudioBoxMini = dynamic(
 const HodlImageResponsive = dynamic(
     () => import('../HodlImageResponsive').then(mod => mod.HodlImageResponsive),
     {
-        ssr: false,
+        ssr: true,
         loading: () => null
     }
 );
@@ -38,9 +38,8 @@ export const TokenLink: React.FC<TokenLinkProps> = memo(({ token, size = 44, fon
             alignItems="center"
             gap={2}
         >
-
             {token?.properties?.asset?.uri &&
-                <Link href={`/nft/${token.id}`}>
+                <Link style={{ textDecoration: 'none' }} href={`/nft/${token.id}`}>
                     <Box
                         sx={{
                             width: size,
@@ -84,7 +83,8 @@ export const TokenLink: React.FC<TokenLinkProps> = memo(({ token, size = 44, fon
                     </Box>
                 </Link>
             }
-            <Link 
+            <Link
+                style={{ textDecoration: 'none' }}
                 href={`/nft/${token.id}`}
             >
                 <Typography
