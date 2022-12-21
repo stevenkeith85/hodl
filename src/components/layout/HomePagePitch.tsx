@@ -1,14 +1,12 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { useContext } from "react";
-
-import { RankingsContext } from "../../contexts/RankingsContext";
+import { useRankings } from "../../hooks/useRankings";
 import { ConnectButton } from "../menu/ConnectButton";
 
 import { NftWindow } from "../NftWindow"
 
-export const HomePagePitch = ({ }) => {
-    const { mostLiked } = useContext(RankingsContext);
+export const HomePagePitch = ({ limit, prefetchedTopTokens}) => {
+    const { rankings: mostLiked } = useRankings(true, limit, prefetchedTopTokens, "token");
 
     return (
         <Box

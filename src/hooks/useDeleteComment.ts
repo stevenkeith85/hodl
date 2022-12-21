@@ -1,6 +1,6 @@
 import { HodlCommentViewModel } from '../models/HodlComment';
 
-export const useDeleteComment = (): [Function] => {
+export const useDeleteComment = () => {
     const deleteComment = async (comment: HodlCommentViewModel) => {
         try {
             const { default: axios } = await import('axios');
@@ -18,5 +18,5 @@ export const useDeleteComment = (): [Function] => {
         }
     };
 
-    return [deleteComment];
+    return deleteComment;
 };

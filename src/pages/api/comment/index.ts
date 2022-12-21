@@ -2,40 +2,11 @@ import { NextApiResponse } from "next";
 
 import apiRoute from '../handler';
 
-import { Redis } from '@upstash/redis';
-import { HodlComment, HodlCommentViewModel } from "../../../models/HodlComment";
-import { getUser } from "../../../lib/database/rest/getUser";
-import { getComment as _getComment} from "../../../lib/database/rest/getComment";
+import { getCommentVM } from "../../../lib/database/rest/getCommentVM";
 
-const client = Redis.fromEnv()
 const route = apiRoute();
 
-export const getCommentVM = async (id, withUser: boolean = true, viewer: string = null): Promise<HodlCommentViewModel | null> => {
-  if (!id) {
-    return null;
-  }
-
-  const comment: HodlComment = await _getComment(id);
-  
-
-  if (comment) {
-    const vm: HodlCommentViewModel = {
-      id: comment.id,
-      user: withUser ? await getUser(comment.subject, viewer) : null,
-      comment: comment.comment,
-      timestamp: comment.timestamp,
-      object: comment.object,
-      objectId: comment.objectId,
-      tokenId: comment.tokenId
-    }
-
-    return vm;
-  }
-
-  return null;
-}
-
-// TODO: Convert to edge function
+// TODO: If we migrate the jwt auth to jose, we could convert this to an edge function
 route.get(async (req, res: NextApiResponse) => {
   const { id } = req.query;
 
@@ -43,13 +14,8 @@ route.get(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
-  const comment = await getCommentVM(id, true, req?.address);
+  const comment = await getCommentVM(id, req?.address);
 
-  // You can't edit comments but.. we edit them on the users behalf sometimes. 
-  // i.e. when they delete a comment that has replies we change the comment to [deleted]
-  
-  // Serve from cache; but revalidate it if requested after 1 second. 
-  res.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate');
   res.status(200).json(comment)
 });
 

@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import Container from "@mui/material/Container";
 import Fade from "@mui/material/Fade";
-import { SearchBox } from "./Search";
+import { SearchBox } from "./SearchBox";
 
 interface MobileSearchProps {
     setMobileSearchOpen: Function;

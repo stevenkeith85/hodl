@@ -7,21 +7,31 @@ import { getNewTokens } from './api/rankings/token/new';
 import { getTopUsers } from './api/rankings/user';
 import { getMostLikedTokens } from './api/rankings/token';
 
-import { TopUsers } from '../components/rankings/TopUsers';
-import { TopTokens } from '../components/rankings/TopTokens';
-import { NewUsers } from '../components/rankings/NewUsers';
-import { NewTokens } from '../components/rankings/NewTokens';
+import dynamic from 'next/dynamic';
 
-import Box from '@mui/material/Box';
+const HomePagePitch = dynamic(
+  () => import('../components/layout/HomePagePitch').then(mod => mod.HomePagePitch),
+  {
+    ssr: true,
+    loading: () => null
+  }
+);
 
-import { HomepageQuickstart } from '../components/layout/HomepageQuickstart';
-import { HomePagePitch } from '../components/layout/HomePagePitch'; // 36kb
+const HomepageRankings = dynamic(
+  () => import('../components/layout/HomepageRankings').then(mod => mod.HomepageRankings),
+  {
+    ssr: true,
+    loading: () => null
+  }
+);
 
-import { RankingsContext } from '../contexts/RankingsContext';
-
-import { useNewTokens } from '../hooks/useNewTokens';
-import { useNewUsers } from '../hooks/useNewUsers';
-import { useRankings } from '../hooks/useRankings';
+const HomepageQuickstart = dynamic(
+  () => import('../components/layout/HomepageQuickstart').then(mod => mod.HomepageQuickstart),
+  {
+    ssr: true,
+    loading: () => null
+  }
+);
 
 
 export const getServerSideProps = async ({ req, res }) => {
@@ -74,12 +84,6 @@ export default function Home({
   const description = "Join our social platform for Polygon NFT creators. Quickly, and easily mint NFTs. Connect with other NFT creators. Buy and Sell on the Marketplace.";
   const shareImage = "https://res.cloudinary.com/dyobirj7r/image/upload/ar_216:253,c_fill,w_1080/prod/nfts/bafkreihuew5ij6lvc2k7vjqr65hit7fljl7fsxlikrkndcdyp47xbi6pvy" // nft 36
 
-  const { rankings: mostLiked } = useRankings(true, limit, prefetchedTopTokens, "token");
-  const { rankings: mostFollowed } = useRankings(true, limit, prefetchedTopUsers);
-
-  const { results: newUsers } = useNewUsers(limit, prefetchedNewUsers);
-  const { results: newTokens } = useNewTokens(limit, prefetchedNewTokens);
-
   return (
     <>
       <Head>
@@ -101,45 +105,25 @@ export default function Home({
         <meta property="og:image" content={shareImage} />
         <meta property="og:description" content={description} />
       </Head>
-      <RankingsContext.Provider value={{
-        limit,
-        mostFollowed,
-        mostLiked,
-        newUsers,
-        newTokens
-      }}>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column'
-          }}
-        >
-          <HomePagePitch />
-
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: {
-                xs: `1fr`,
-                sm: `1fr 1fr`,
-              },
-              gap: 8,
-              rowGap: 8,
-              marginY: 4,
-              textAlign: {
-                xs: 'center',
-                sm: 'left'
-            }
-            }}
-          >
-            <TopUsers followButton={false} />
-            <TopTokens showLikes={false}  />
-            <NewUsers followButton={false}  />
-            <NewTokens showLikes={false}  />
-          </Box>
-          <HomepageQuickstart />
-        </div>
-      </RankingsContext.Provider>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
+        <HomePagePitch
+          limit={limit}
+          prefetchedTopTokens={prefetchedTopTokens}
+        />
+        <HomepageRankings
+          limit={limit}
+          prefetchedTopTokens={prefetchedTopTokens}
+          prefetchedTopUsers={prefetchedTopUsers}
+          prefetchedNewUsers={prefetchedNewUsers}
+          prefetchedNewTokens={prefetchedNewTokens}
+        />
+        <HomepageQuickstart />
+      </div>
     </>
   )
 }

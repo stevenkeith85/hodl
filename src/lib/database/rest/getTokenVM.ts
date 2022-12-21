@@ -1,6 +1,5 @@
 import { runRedisPipeline } from "./pipeline";
 
-
 // This is optimised for getting one token vm.
 // use getTokenVMs if you need to get multiple
 export const getTokenVM = async (id: string) => {
@@ -18,8 +17,4 @@ export const getTokenVM = async (id: string) => {
     commentCount: commentCount ?? 0,
     likeCount
   }
-
 }
-
-
-

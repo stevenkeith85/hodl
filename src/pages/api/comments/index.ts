@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { mGetComments } from '../../../lib/database/rest/mGetComments';
+import { getCommentVMs, mGetComments } from '../../../lib/database/rest/Comments';
 import { getUsers } from '../../../lib/database/rest/Users';
 import { zCard } from '../../../lib/database/rest/zCard';
 import { zRange } from '../../../lib/database/rest/zRange';
@@ -25,31 +25,10 @@ export const getCommentsForObject = async (
     };
   }
 
-  const ids = await zRange(`${object}:${objectId}:comments`, offset, offset + limit - 1, { rev: reverse});
-  const comments = await mGetComments(ids);
-
-  const addresses: string[] = comments?.map(comment => comment.subject);
-  const uniqueAddresses = new Set(addresses);
-
-  const userVMs = uniqueAddresses.size ? await getUsers(Array.from(uniqueAddresses)) : [];
-
-  // Create an address to user map so that we can extrapolate the comment info for the UI
-  const userMap = userVMs.reduce((map, user) => {
-    map[user.address] = user;
-    return map;
-  }, {});
-
-  // The final result we'll give back to the FE
-  const result = comments.map(comment => ({
-    id: comment.id,
-    user: userMap[comment.subject],
-    comment: comment.comment,
-    timestamp: comment.timestamp,
-    object: comment.object,
-    tokenId: comment.tokenId
-  }));
-
-
+  const ids = await zRange(`${object}:${objectId}:comments`, offset, offset + limit - 1, { rev: reverse });
+  
+  const result = await getCommentVMs(ids);
+  
   return {
     items: result,
     next: Number(offset) + Number(limit),

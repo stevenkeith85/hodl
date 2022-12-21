@@ -35,4 +35,7 @@ export interface HodlCommentViewModel {
     objectId: number;
     
     tokenId: number;
+
+    replyCount: number;
+    likeCount: number;
 }

@@ -1,33 +1,23 @@
 import React, { FC, useContext, useState } from "react";
-
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-
 import { useTheme } from "@mui/material/styles"
 import Typography from "@mui/material/Typography";
-
 import formatDistanceStrict from "date-fns/formatDistanceStrict";
-
 import { NftContext } from "../../contexts/NftContext";
-
 import { HodlCommentViewModel } from "../../models/HodlComment";
-
-
 import { ProfileNameOrAddress } from "../avatar/ProfileNameOrAddress";
 import { UserAvatarAndHandle } from "../avatar/UserAvatarAndHandle";
 import { HodlCommentActionButtons } from "./HodlCommentActionButtons";
-
 import { useComments } from "../../hooks/useComments";
-import { useCommentCount } from "../../hooks/useCommentCount";
 import { useDeleteComment } from "../../hooks/useDeleteComment";
-
 import { pluralize } from "../../lib/pluralize";
-
 import { SignedInContext } from "../../contexts/SignedInContext";
 import { useMutableToken } from "../../hooks/useMutableToken";
-
 import { ExpandMoreIcon } from "../icons/ExpandMoreIcon";
 import { ExpandLessIcon } from "../icons/ExpandLessIcon";
+import { CommentsContext } from "../../contexts/CommentsContext";
+import { canDeleteComment } from "../../lib/ui/canDeleteComment";
 
 
 const Replies = dynamic(
@@ -49,88 +39,58 @@ const HodlCommentPopUpMenu = dynamic(
 interface HodlCommentBoxProps {
     comment: HodlCommentViewModel;
     color?: "primary" | "secondary";
-    setCommentingOn: Function;
-
     parentMutateList: Function;
-    parentMutateCount: Function;
-
     addCommentInput: any;
-
     // we need to pass in the swr's for a single comment thread
-    replyCountSWR?: any;
     replySWR?: any;
-
     shouldShowThread?: boolean;
-
-    topLevel?: any;
-    setTopLevel?: any;
-
-    setOldTopLevel?: Function;
-
-    mutateCount?: any;
-
     level?: number; // tells us how deep we are in the thread. we only show the 'view single comment thread' thing when they are a few levels in
 }
 
 export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
     comment,
     color = "secondary",
-    setCommentingOn,
     parentMutateList,
-    parentMutateCount,
     addCommentInput,
-    replyCountSWR = null,
     replySWR = null,
     shouldShowThread = false,
-    topLevel = null,
-    setTopLevel = null,
-    setOldTopLevel = null,
-    mutateCount = null,
     level = 0
 }) => {
-
-    const theme = useTheme();
-
-    // once there's a certain depth; we rebase the comment to the root so that its easy to read. (especially on mobiles)
-    const numberOfLevelsBeforeThread = 2;
-
-    const [showThread, setShowThread] = useState(shouldShowThread); // we could do 'shouldShowThread || level < X' if we want to auto show replies. This could hammer the db though; so perhaps hold off on that until we see what its like with some users
-
-    // SWRs
-
-    // If we have a top level COMMENT, then we'll use the SWR passed in (as we need to use EXACTLY the same bound mutate function for things to work)
-    // If we have a top level NFT, then we'll use the internal SWRs here to get the replies, and reply count for the comment
-
-    // we can't conditionally call react hooks. hence the double assignment
-    const internalSWR = useComments(comment.id, 10, "comment", null, showThread);
-    const swr = replySWR || internalSWR;
-
-    // we can't conditionally call react hooks. hence the double assignment
-    const internalCountSWR = useCommentCount(comment.id, "comment", null);
-    const countSWR = replyCountSWR || internalCountSWR;
-
-    const router = useRouter();
-
-    const { signedInAddress: address } = useContext(SignedInContext);
+    const { signedInAddress } = useContext(SignedInContext);
     const { nft } = useContext(NftContext);
-    const { data: mutableToken } = useMutableToken(nft.id);
-
-    const canDeleteComment = (comment: HodlCommentViewModel) => comment.user.address === address || mutableToken?.hodler === address;
-    const [deleteComment] = useDeleteComment();
+    const { setCommentingOn, topLevel, setTopLevel, setOldTopLevel } = useContext(CommentsContext);
 
     // When the user tries to delete a comment, we give a visual cue
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const onDelete = async () => {
-        setIsDeleting(true);
+    const router = useRouter();
+    const theme = useTheme();
 
-        await deleteComment(comment);
-        parentMutateList();
-        parentMutateCount();
-        mutateCount();
+    const { data: mutableToken } = useMutableToken(nft.id);
+    const deleteComment = useDeleteComment();
 
-        setTimeout(() => setIsDeleting(false));
-    };
+    // once there's a certain depth; 
+    // we rebase the comment to the root so that its easy to read. (especially on mobiles)
+    const numberOfLevelsBeforeThread = 2;
+
+    // we could do 'shouldShowThread || level < X' if we want to auto show replies. 
+    // This could hammer the db though; so perhaps hold off on that until we see what its like with some users
+    const [showThread, setShowThread] = useState(shouldShowThread);
+
+    // SWRs
+    // If we have a top level COMMENT, then we'll use the SWR passed in (as we need to use EXACTLY the same bound mutate function for things to work)
+    // If we have a top level NFT, then we'll use the internal SWRs here to get the replies, and reply count for the comment
+
+    // we can't conditionally call react hooks. hence the double assignment
+    const internalSWR = useComments(
+        comment.id,
+        10,
+        "comment",
+        null,
+        showThread
+    );
+
+    const swr = replySWR || internalSWR;
 
     return (
         <div
@@ -218,19 +178,19 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                                 display: 'flex',
                                                 alignItems: 'center'
                                             }}>
-                                            {address && canDeleteComment(comment) && <HodlCommentPopUpMenu onDelete={onDelete} />}
-                                            <HodlCommentActionButtons
-                                                comment={comment}
-                                                setCommentingOn={setCommentingOn}
-                                                swr={swr}
-                                                countSWR={countSWR}
-                                                setShowThread={setShowThread}
-                                                color={color}
-                                                addCommentInput={addCommentInput}
-                                                parentMutateList={parentMutateList}
-                                                parentMutateCount={parentMutateCount}
-                                                mutateCount={mutateCount}
-                                            />
+                                            {
+                                                signedInAddress &&
+                                                canDeleteComment(comment, signedInAddress, mutableToken) &&
+                                                <HodlCommentPopUpMenu onDelete={async () => {
+                                                    setIsDeleting(true);
+
+                                                    await deleteComment(comment);
+                                                    parentMutateList();
+
+                                                    setTimeout(() => setIsDeleting(false));
+                                                }} />
+                                            }
+                                            <HodlCommentActionButtons comment={comment} />
                                         </div>
                                     </div>
                                     <Typography
@@ -239,7 +199,6 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                             marginTop: 0,
                                             marginBottom: 0
                                         }}
-
                                     >
                                         {comment.comment}
                                     </Typography>
@@ -258,9 +217,12 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                             color: theme => theme.palette.text.secondary,
                                             fontSize: 12
                                         }}>
-                                        {comment.timestamp && formatDistanceStrict(new Date(comment.timestamp), new Date(), { addSuffix: false })}
+                                        {
+                                            comment.timestamp &&
+                                            formatDistanceStrict(new Date(comment.timestamp), new Date(), { addSuffix: false })
+                                        }
                                     </Typography>
-                                    {address &&
+                                    {signedInAddress &&
                                         <a
                                             className="text-secondary"
                                             style={{
@@ -268,11 +230,11 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                                 fontSize: 12,
                                             }}
                                             onClick={() => {
+                                                console.log(comment);
                                                 setCommentingOn({
                                                     object: "comment",
                                                     objectId: comment.id,
                                                     mutateList: swr.mutate,
-                                                    mutateCount: countSWR.mutate,
                                                     setShowThread,
                                                     color
                                                 })
@@ -284,7 +246,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                     }
                                 </div>
                                 {
-                                    Boolean(countSWR?.data) &&
+                                    Boolean(comment.replyCount) &&
                                     <a
                                         className="text-secondary"
                                         onClick={() => {
@@ -299,7 +261,6 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                                     query: { comment: comment.id }
                                                 }, undefined, { shallow: true });
                                             }
-
                                         }}
                                         style={{
                                             display: 'flex',
@@ -309,13 +270,21 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                             marginTop: theme.spacing(0.5)
                                         }}
                                     >
-                                        {level < numberOfLevelsBeforeThread && <>
-                                            {showThread ?
-                                                <ExpandLessIcon size={12} /> :
-                                                <ExpandMoreIcon size={12} />
-                                            }</>}
                                         {
-                                            countSWR.data && showThread && !swr.error && !swr.data ?
+                                            level < numberOfLevelsBeforeThread && <>
+                                                {
+                                                    showThread ?
+                                                        <ExpandLessIcon size={12} /> :
+                                                        <ExpandMoreIcon size={12} />
+                                                }
+                                            </>
+                                        }
+                                        {
+                                            Boolean(comment.replyCount) &&
+                                                showThread &&
+                                                swr &&
+                                                !swr.error &&
+                                                !swr.data ?
                                                 <Typography
                                                     sx={{
                                                         fontSize: 12
@@ -328,22 +297,21 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                                         fontSize: 12
                                                     }}
                                                 >
-                                                    {level < numberOfLevelsBeforeThread ? pluralize(countSWR.data, 'reply') : 'view comment thread'}
+                                                    {
+                                                        level < numberOfLevelsBeforeThread ?
+                                                            pluralize(comment.replyCount, 'reply')
+                                                            : 'view comment thread'
+                                                    }
                                                 </Typography>
                                         }
-                                    </a>}
+                                    </a>
+                                    }
                             </div>
                         </div>
                         <Replies
-                            countSWR={countSWR}
                             showThread={showThread}
                             swr={swr}
-                            setCommentingOn={setCommentingOn}
                             addCommentInput={addCommentInput}
-                            topLevel={topLevel}
-                            setTopLevel={setTopLevel}
-                            setOldTopLevel={setOldTopLevel}
-                            mutateCount={mutateCount}
                             parentColor={color}
                             level={level}
                         />

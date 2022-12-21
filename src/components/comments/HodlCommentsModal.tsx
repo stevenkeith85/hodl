@@ -17,8 +17,7 @@ export default function HodlCommentsModal({open, setOpen}) {
         >
             <HodlCommentsBox
                 limit={10}
-                maxHeight="400px"
-                minHeight="40vh"
+                height="450px"
             />
         </HodlModal>
     )

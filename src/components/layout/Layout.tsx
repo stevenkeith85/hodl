@@ -1,6 +1,23 @@
 import Container from '@mui/material/Container';
-import ResponsiveAppBar from './AppBar';
-import Footer from './Footer';
+import dynamic from 'next/dynamic';
+
+
+const AppBar = dynamic(
+    () => import('./AppBar'),
+    {
+      ssr: true,
+      loading: () => null
+    }
+  );
+
+
+const Footer = dynamic(
+    () => import('./Footer'),
+    {
+      ssr: true,
+      loading: () => null
+    }
+  );
 
 export default function Layout({ children, address }) {
 
@@ -17,7 +34,7 @@ export default function Layout({ children, address }) {
                     flexShrink: 0,
                     flexBasis: 'auto'
                 }}>
-                <ResponsiveAppBar address={address} />
+                <AppBar address={address} />
             </header>
             <main
                 style={
