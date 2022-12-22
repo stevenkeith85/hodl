@@ -108,7 +108,6 @@ const AppBar = ({ address }) => {
         label: 'hodl my moon',
         url: '/',
         icon: <img src="https://res.cloudinary.com/dyobirj7r/image/upload/w_70,h_70/static/logo.png" width={35} height={35} />,
-        publicPage: true
     };
 
     useEffect(() => {
@@ -223,7 +222,7 @@ const AppBar = ({ address }) => {
                         }}>
                             <Box sx={{
                                 display: 'flex',
-                                gap: { xs: 1, md: 4 },
+                                gap: 6,
                                 alignItems: 'center',
                                 justifyContent: 'center',
                             }}>
@@ -257,6 +256,27 @@ const AppBar = ({ address }) => {
                                         </IconButton>
                                     </Box>
                                 </Link>
+                                <Box sx={{
+                                    display: {
+                                        xs: 'none',
+                                        md: 'flex'
+                                    },
+                                    fontSize: 16,
+                                    fontWeight: 600,
+                                    a: {
+                                        color: theme => theme.palette.text.secondary,
+                                        textDecoration: 'none'
+                                    },
+                                    
+                                    gap: 6
+                                }}>
+                                    <Link href="/explore">
+                                        Explore
+                                    </Link>
+                                    <Link href="/learn">
+                                        Learn
+                                    </Link>
+                                </Box>
                             </Box>
                             <Box
                                 sx={{
