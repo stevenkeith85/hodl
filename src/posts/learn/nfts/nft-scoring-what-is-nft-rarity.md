@@ -22,7 +22,7 @@ A trait is an attribute given to an object.
 
 It could be a real world object or person. Or it could be a digital collectible.
 
-For example, if you think of a footballer, their traits (0 - 20) might be:
+For example, if you think of a footballer, their traits might be:
 
 ```
     speed:    20
@@ -41,16 +41,16 @@ Traits do not have to be numeric. They could just be an enumeration for example.
 
 ## Scoring rarity
 
-We could have NFT collection of colored shapes.
+We could have an NFT collection of colored shapes.
 
-The traits could be 'color' and 'shape'
+The traits could be 'color' and 'shape'.
 
 ```
     color: red | green | blue
     shape: square | circle
 ```
 
-If every trait has equal rarity and the NFT collection just mints all the permutations we'd have 6 NFTs for sale.
+If every trait has equal rarity and the collection author just mints all the permutations we'd have 6 NFTs for sale.
 
 Neither of which is any rarer than the other.
 
@@ -126,8 +126,7 @@ If we make red twice as common as green and blue we'd have:
     </div>
 </div>
 
-So there's 8 NFTs.
-
+So there are 8 NFTs.
 - 2 / 8 are red square
 - 2 / 8 are red circle
 - 1 / 8 is green square
@@ -137,28 +136,25 @@ So there's 8 NFTs.
 
 We can also say 4/8 of them are red. 2/8 are green and 2/8 are blue.
 
-So a green or a blue shape is twice as rare as a red shape.
+So, a green or a blue shape is twice as rare as a red shape.
 
 In other words, if all were minted at the same time and I were put in a lucky dip I'd have a 50% chance of getting a red shape but only a 25% chance of getting a blue or green shape.
 
-So, you could say the blue and green shapes are more valuable. (scarcity)
+So, you could say the blue and green shapes are more valuable. (Scarcity)
 
 ## Where are NFT traits stored?
-
 Traits are stored off chain in the Metadata file for an NFT.
 
 ## What is Metadata?
-
 Storing all the NFT data on the blockchain is inefficient. We typically only store the tokenId and the tokenURI on the blockchain.
 
-The tokenURI points to a file with the rest of the data on your NFT. Hodl My Moon stores Metadata files on IPFS, which is decentralized file system.
+The tokenURI points to a file with the rest of the data about your NFT. Hodl My Moon stores Metadata files on IPFS, which is decentralized file system.
 
 This data includes a name, description, and an image. (The ERC721 standard fields)
 
 It can also include a properties section with traits. (From the Enjin Metadata suggestions)
 
 ## What does a trait look like in the Metadata?
-
 There are various ways to express traits in the Metadata file, and each NFT platform may accept different representations.
 
 One common approach is to follow the Enjin Metadata standards.
@@ -197,9 +193,9 @@ On Hodl My Moon, our metadata typically looks like this.
 }
 ```
 
-These are the properties we add during the minting process.
+As these are the properties we add during the minting process.
 
-## Where can I see traits on common NFT platforms and marketplaces?
+## Where can I see traits on common NFT platforms?
 
 ### OpenSea
 
@@ -213,9 +209,11 @@ One interesting thing you can see is that the hairspray filter on Hodl NFTs is s
 
 ### Hodl My Moon
 
-On Hodl My Moon; traits are currently only visible in the Metadata.
+On Hodl My Moon; all traits are visible in the Metadata.
 
 You can see them by clicking on the number next to 'Token Id' on the Token Data tab. (80 in this case)
+
+The license trait is prominantly displayed on the user interface next to the Asset License label.
 
 > We plan to make our traits more visible on the platform soon.
 
@@ -223,7 +221,7 @@ You can see them by clicking on the number next to 'Token Id' on the Token Data 
 
 ## Are traits the only way to score rarity?
 
-No. Traits are more commonly associated with NFTs that we like to call Digital Collectibles.
+No. Traits are most commonly associated with NFTs that some call Digital Collectibles.
 
 These are akin to Pokemon or Magic Cards.
 
@@ -231,13 +229,14 @@ Getting a rare card is nice for the collector. They can brag to other collectors
 
 ## Digital artwork
 
-With NFTs with non generative artwork or photography the rarity depends on how often the author mints an NFT and attaches that particular artwork.
+With digital art NFTs, or photography NFTs, the rarity depends on how often the author mints an NFT and attaches that particular artwork.
 
 Most authors will only attach their artwork to one NFT; so that it remains rare.
 
 If they attach that artwork to multiple NFTs, then they are potentially devaluing the original NFT.
 
 >It's worth pointing out that plaguerised artwork can be spotted by looking at the creator address; and shouldn't devalue the original.
+>
 >The same way that a Mona Lisa print doesn't devalue the orginal.
 
 ## How do I score an NFT based on its rarity?

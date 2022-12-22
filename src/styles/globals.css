@@ -167,3 +167,8 @@ a:hover:not(.MuiButton-root) {
 .blog blockquote p {
   margin: 0;
 }
+
+.blog pre {
+  white-space: break-spaces;
+  word-wrap: break-word;
+}
