@@ -2,9 +2,11 @@ import fs from 'fs';
 import matter from 'gray-matter';
 import Link from 'next/link';
 import Box from '@mui/material/Box';
-import { HodlBorderedBox } from '../../components/HodlBorderedBox';
 import Button from '@mui/material/Button';
+
+import { HodlBorderedBox } from '../../components/HodlBorderedBox';
 import { HodlShareButton } from '../../components/HodlShareButton';
+
 import Head from 'next/head';
 
 const getData = (root) => {
@@ -40,7 +42,7 @@ export async function getStaticProps() {
     const categories = {
         'src/posts/learn/nfts': {
             name: 'Non Fungible Tokens',
-            description: 'Non Fungible Tokens are digital assets with their ownership recorded on a digital ledger.'
+            description: 'Non Fungible Tokens, or collectibles, are digital assets with their ownership recorded on a digital ledger.'
         },
         'src/posts/learn/sign-in': {
             name: 'Sign in to dApps',
@@ -81,9 +83,8 @@ export async function getStaticProps() {
 }
 
 export default function Learn({ categories, posts }) {
-
-    const title = "Learn about NFTs, minting, blockchains, smart contracts and everything else";
-    const description = "Get an overview of key web3 terms and start your nft journey today";
+    const title = "Learn about NFTs and Decentralized Applications";
+    const description = "Take your NFT knowledge to the next level with us.";
     const canonical = "https://www.hodlmymoon.com/learn";
     const socialImage = "https://res.cloudinary.com/dyobirj7r/image/upload/ar_216:253,c_fill,w_1080/prod/nfts/bafkreihuew5ij6lvc2k7vjqr65hit7fljl7fsxlikrkndcdyp47xbi6pvy"
 
@@ -106,76 +107,85 @@ export default function Learn({ categories, posts }) {
             <meta property="og:image" content={socialImage} />
             <meta property="og:description" content={description} />
         </Head>
-        <HodlBorderedBox sx={{ marginY: 4 }}>
-            <h1 className='primary-main'>Learn about Web3</h1>
-            <div style={{ margin: '0 0 16px 0', display: 'flex', gap: '16px' }}>
-                <HodlShareButton />
-            </div>
-            <p>
-                We have beginner friendly guides on NFTs, dApps, and everything you need to know to get up to speed with Web3.
-            </p>
-            <p>
-                This section of the website will be continually growing, so bookmark it now
-            </p>
-            {Object.keys(categories).map(category => (
-                <div key={category}>
-                    <h2>{categories[category].name}</h2>
-                    <p>{categories[category].description}</p>
-                    <Box
-                        sx={{
-                            display: 'grid',
-                            gridTemplateColumns: {
-                                xs: '1fr',
-                                md: '1fr 1fr 1fr',
-                            },
-                            gap: 3,
-                            marginBottom: 3,
-                            width: '100%',
-                        }}>
-                        {
-                            posts[category]?.map(({ url, frontmatter }) => (<div
-                                key={url}
-                                style={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    boxSizing: 'border-box',
-                                    border: '1px solid #ddd',
-                                    borderRadius: 8,
-                                    overflow: 'hidden'
-                                }}>
+        <div className='blog'>
+            <HodlBorderedBox sx={{ marginY: 4 }}>
+                <div style={{ margin: '0 0 16px 0', display: 'flex', gap: '16px' }}>
+                    <HodlShareButton />
+                </div>
+                <h1 className='primary-main'>Learn about NFTs and DApps</h1>
+                <p>
+                    The best way to learn about NFTs and DApps is with Hodl My Moon.
+                </p>
+                <p>
+                    We have beginner friendly guides on NFTs, DApps, and everything you need to know to get up to speed with Web3.
+                </p>
+                <p>
+                    Anyone can create an NFT, and we are here to show you how.
+                </p>
 
-                                <img src={frontmatter.socialImage} width="100%" style={{ height: 300 }} />
-                                <div style={{
-                                    padding: `16px`,
-                                    flexGrow: 1,
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                }}>
-                                    <div
-                                        style={{ flexGrow: 1 }}
-                                    >
-                                        <p style={{ fontWeight: 600 }}>{frontmatter.title}</p>
-                                        <p>{frontmatter.metaDescription}</p>
-                                    </div>
-                                    <div style={{ textAlign: 'right' }}>
-                                        <Link href={`/learn/${url}`}>
-                                            <Button color="secondary" sx={{ paddingX: 2, paddingY: 1 }}>
+                {Object.keys(categories).map(category => (
+                    <div key={category}>
+                        <h2>{categories[category].name}</h2>
+                        <p>{categories[category].description}</p>
+                        <Box
+                            sx={{
+                                display: 'grid',
+                                gridTemplateColumns: {
+                                    xs: '1fr',
+                                    md: '1fr 1fr 1fr',
+                                },
+                                gap: 3,
+                                marginBottom: 3,
+                                width: '100%',
+                            }}>
+                            {
+                                posts[category]?.map(({ url, frontmatter }) => (<div
+                                    key={url}
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        boxSizing: 'border-box',
+                                        border: '1px solid #ddd',
+                                        borderRadius: 8,
+                                        overflow: 'hidden'
+                                    }}>
+
+                                    <img src={frontmatter.socialImage} width="100%" style={{ height: 300 }} />
+                                    <div style={{
+                                        padding: `16px`,
+                                        flexGrow: 1,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                    }}>
+                                        <div
+                                            style={{ flexGrow: 1 }}
+                                        >
+                                            <p style={{ fontWeight: 600 }}>{frontmatter.title}</p>
+                                            <p>{frontmatter.metaDescription}</p>
+                                        </div>
+                                        <div style={{ textAlign: 'right' }}>
+                                            <Button
+                                                LinkComponent={Link}
+                                                href={`/learn/${url}`}
+                                                color="secondary"
+                                                sx={{ paddingX: 2, paddingY: 1 }}
+                                            >
                                                 Read
                                             </Button>
-                                        </Link>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            ))
-                        }
-                    </Box>
+                                ))
+                            }
+                        </Box>
+                    </div>
+                )
+                )
+                }
+                <div style={{ margin: '32px 0 16px 0', display: 'flex', gap: '16px' }}>
+                    <HodlShareButton />
                 </div>
-            )
-            )
-            }
-            <div style={{ margin: '32px 0 16px 0', display: 'flex', gap: '16px' }}>
-                <HodlShareButton />
-            </div>
-        </HodlBorderedBox >
+            </HodlBorderedBox >
+        </div>
     </>)
 }

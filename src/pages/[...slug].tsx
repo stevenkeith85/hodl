@@ -56,6 +56,31 @@ export async function getStaticProps({ params: { slug } }) {
   };
 }
 
+
+const MainLinks = ({top=true}) => (
+  <div 
+    style={{ 
+      margin: top? '0 0 32px 0': '32px 0 0 0',
+      display: 'flex', 
+      gap: '16px' 
+  }}>
+    <HodlShareButton />
+    
+      <Button
+      LinkComponent={Link}
+      href="/learn"
+        variant="outlined"
+        sx={{ 
+          fontWeight: 600,
+          paddingX: 2, 
+          paddingY: 1 
+        }}>
+        Back To Learning Hub
+      </Button>
+    
+  </div>
+)
+
 export default function PostPage({ frontmatter, content }) {
   return (<>
     <Head>
@@ -76,31 +101,19 @@ export default function PostPage({ frontmatter, content }) {
       <meta property="og:image" content={frontmatter?.socialImage} />
       <meta property="og:description" content={frontmatter?.metaDescription} />
     </Head>
-    <HodlBorderedBox sx={{ marginY: 4 }}>
-
-      <h1 className="primary-main">{frontmatter.title}</h1>
-      <div style={{ margin: '0 0 16px 0', display: 'flex', gap: '16px' }}>
-        <HodlShareButton />
-        <Link href="/learn">
-          <Button variant="contained" sx={{ paddingX: 2, paddingY: 1 }}>
-            Back To Learning Hub
-          </Button>
-        </Link>
-      </div>
-
-      <div
-        dangerouslySetInnerHTML={{
-          __html: md().render(content)
-        }}
-      />
-      <div style={{ margin: '32px 0 16px 0', display: 'flex', gap: '16px' }}>
-        <HodlShareButton />
-        <Link href="/learn">
-          <Button variant="contained" sx={{ paddingX: 2, paddingY: 1 }}>
-            Back To Learning Hub
-          </Button>
-        </Link>
-      </div>
-    </HodlBorderedBox>
+    <div className="blog">
+      <HodlBorderedBox sx={{ marginY: 4 }}>
+        <MainLinks />
+        <h1 className="primary-main">{frontmatter.title}</h1>
+        <div
+          dangerouslySetInnerHTML={{
+            __html: md({
+              html: true
+            }).render(content)
+          }}
+        />
+        <MainLinks top={false} />
+      </HodlBorderedBox>
+    </div>
   </>);
 }

@@ -123,16 +123,30 @@ body::-webkit-scrollbar {
 /*********/
 /* Links */
 /*********/
-a, 
-a:link, 
-a:visited, 
-a:focus, 
-a:hover, 
-a:active {
-  text-decoration: none;
+a:not(.MuiButton-root), 
+a:link:not(.MuiButton-root), 
+a:visited:not(.MuiButton-root), 
+a:focus:not(.MuiButton-root), 
+a:hover:not(.MuiButton-root), 
+a:active:not(.MuiButton-root) {
   color: rgba(0, 0, 0, 0.6);
+  text-decoration: none;
 }
 
-a:hover {
+a:hover:not(.MuiButton-root) {
   color: rgba(0, 0, 0, 0.87);
+}
+
+.blog a:not(.MuiButton-root), 
+.blog a:link:not(.MuiButton-root), 
+.blog a:visited:not(.MuiButton-root), 
+.blog a:focus:not(.MuiButton-root), 
+.blog a:hover:not(.MuiButton-root), 
+.blog a:active:not(.MuiButton-root) {
+  color: #05778A;
+  text-decoration: none;
+}
+
+.blog a:hover:not(.MuiButton-root) {
+  text-decoration: underline;
 }

@@ -73,8 +73,8 @@ const Footer = ({
                                     }}>
                                     hodl my moon
                                 </Typography>
-                                <Link style={{ textDecoration: 'none' }} href="/about">about this dapp</Link>
-                                <Link style={{ textDecoration: 'none' }} href="/contact">contact hodl my moon</Link>
+                                <Link style={{ textDecoration: 'none' }} href="/about"><Typography color="text.secondary">about this dapp</Typography></Link>
+                                <Link style={{ textDecoration: 'none' }} href="/contact"><Typography color="text.secondary">contact hodl my moon</Typography></Link>
                             </Box>
                             <Box
                                 sx={{
@@ -92,6 +92,7 @@ const Footer = ({
                                 </Typography>
                                 <Link style={{ textDecoration: 'none' }} href="/learn"><Typography color="text.secondary">nfts and dapps</Typography></Link>
                                 <Link style={{ textDecoration: 'none' }} href="/learn/nfts/what-are-nfts"><Typography color="text.secondary">what are nfts</Typography></Link>
+                                <Link style={{ textDecoration: 'none' }} href="/learn/nfts/how-much-does-it-cost-to-create-an-nft"><Typography color="text.secondary">how much does it cost to create an nft</Typography></Link>
                                 <Link style={{ textDecoration: 'none' }} href="/learn/dapps/what-are-dapps"><Typography color="text.secondary">what are dapps</Typography></Link>
                                 <Link style={{ textDecoration: 'none' }} href="/learn/dapps/interact-with-dapps"><Typography color="text.secondary">interact with dapps</Typography></Link>
                                 <Link style={{ textDecoration: 'none' }} href="/learn/sign-in/coinbase-wallet"><Typography color="text.secondary">sign in with coinbase wallet</Typography></Link>
