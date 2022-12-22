@@ -93,6 +93,7 @@ const Footer = ({
                                 <Link style={{ textDecoration: 'none' }} href="/learn"><Typography color="text.secondary">nfts and dapps</Typography></Link>
                                 <Link style={{ textDecoration: 'none' }} href="/learn/nfts/what-are-nfts"><Typography color="text.secondary">what are nfts</Typography></Link>
                                 <Link style={{ textDecoration: 'none' }} href="/learn/nfts/how-much-does-it-cost-to-create-an-nft"><Typography color="text.secondary">how much does it cost to create an nft</Typography></Link>
+                                <Link style={{ textDecoration: 'none' }} href="/learn/nfts/nft-scoring-what-is-nft-rarity"><Typography color="text.secondary">scoring nft rarity</Typography></Link>
                                 <Link style={{ textDecoration: 'none' }} href="/learn/dapps/what-are-dapps"><Typography color="text.secondary">what are dapps</Typography></Link>
                                 <Link style={{ textDecoration: 'none' }} href="/learn/dapps/interact-with-dapps"><Typography color="text.secondary">interact with dapps</Typography></Link>
                                 <Link style={{ textDecoration: 'none' }} href="/learn/sign-in/coinbase-wallet"><Typography color="text.secondary">sign in with coinbase wallet</Typography></Link>

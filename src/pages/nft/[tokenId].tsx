@@ -100,8 +100,8 @@ const NftDetail = ({
 
   const getImage = (nft) => makeCloudinaryUrl("image", "nfts", nft?.image, { crop: 'fill', aspect_ratio: nft?.properties?.aspectRatio, width: '1080' });
 
-  const title = `${prefetchedToken?.name || ''} - Polygon Matic NFT `;
-  const description = prefetchedToken?.description || 'An NFT minted on the polygon blockchain';
+  const title = `${prefetchedToken?.name || ''} NFT`;
+  const description = prefetchedToken?.description || 'An NFT minted on the Polygon blockchain';
   const canonical = `https://www.hodlmymoon.com/nft/${prefetchedToken.id}`;
 
   return (
