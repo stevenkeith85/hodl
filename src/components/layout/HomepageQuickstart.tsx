@@ -40,7 +40,7 @@ export const HomepageQuickstart = () => (
             gap: 8,
             marginBottom: 4
         }}>
-            <HodlBorderedBox sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 4, textAlign: 'center' }}>
+            <HodlBorderedBox sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 6, textAlign: 'center' }}>
                 <AccountBalanceWalletIcon color="primary" sx={{ fontSize: 40, marginBottom: 2 }}></AccountBalanceWalletIcon>
                 <Typography
                     sx={{
@@ -52,10 +52,10 @@ export const HomepageQuickstart = () => (
                     Install a Polygon Wallet
                 </Typography>
 
-                <Typography mb={3} sx={{ color: theme => theme.palette.text.secondary }}>Get a wallet from the Play store, App store, or as a Google Chrome extension.</Typography>
-                <Typography mb={0} sx={{ color: theme => theme.palette.text.secondary }}>We recommend MetaMask or Coinbase Wallet.</Typography>
+                <Typography mb={3} sx={{ color: theme => theme.palette.text.secondary }}>Get a polygon wallet from the Play store, App store, or as a Google Chrome extension.</Typography>
+                <Typography mb={0} sx={{ color: theme => theme.palette.text.secondary }}>We recommend <Link target="_blank" href="https://metamask.io/">MetaMask</Link> or <Link target="_blank" href="https://www.coinbase.com/wallet">Coinbase Wallet</Link>.</Typography>
             </HodlBorderedBox>
-            <HodlBorderedBox sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 4, textAlign: 'center' }}>
+            <HodlBorderedBox sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 6, textAlign: 'center' }}>
                 <OpenInBrowserIcon color="primary" sx={{ fontSize: 40, marginBottom: 2 }}></OpenInBrowserIcon>
                 <Typography
                     sx={{
@@ -67,9 +67,9 @@ export const HomepageQuickstart = () => (
                     Open a Web Browser
                 </Typography>
                 <Typography mb={3} sx={{ color: theme => theme.palette.text.secondary }}>Open Google Chrome or your wallet&apos;s integrated browser.</Typography>
-                <Typography mb={0} sx={{ color: theme => theme.palette.text.secondary }}>Visit https://www.hodlmymoon.com</Typography>
+                <Typography mb={0} sx={{ color: theme => theme.palette.text.secondary }}>Visit <Link target="_blank" href="https://www.hodlmymoon.com">Hodl My Moon</Link></Typography>
             </HodlBorderedBox>
-            <HodlBorderedBox sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 4, textAlign: 'center' }}>
+            <HodlBorderedBox sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 6, textAlign: 'center' }}>
                 <ConnectWithoutContactIcon color="primary" sx={{ fontSize: 40, marginBottom: 2 }}></ConnectWithoutContactIcon>
                 <Typography
                     sx={{
@@ -83,7 +83,7 @@ export const HomepageQuickstart = () => (
                 <Typography mb={3} sx={{ color: theme => theme.palette.text.secondary }}>Click the Connect Wallet button</Typography>
                 <Typography mb={0} sx={{ color: theme => theme.palette.text.secondary }}>Select your wallet&apos;s logo, or WalletConnect for Mobile Chrome to Mobile Wallet</Typography>
             </HodlBorderedBox>
-            <HodlBorderedBox sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 4, textAlign: 'center' }}>
+            <HodlBorderedBox sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 6, textAlign: 'center' }}>
                 <LoginIcon color="primary" sx={{ fontSize: 40, marginBottom: 2 }}></LoginIcon>
                 <Typography
                     sx={{
