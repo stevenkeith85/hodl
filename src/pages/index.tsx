@@ -80,8 +80,8 @@ export default function Home({
   limit
 }) {
   const homepage = "https://www.hodlmymoon.com";
-  const title = "Hodl My Moon - Social Polygon NFT Platform - Make Frens. Mint, Buy, and Sell NFTs.";
-  const description = "Join our social platform for Polygon NFT creators. Quickly, and easily mint NFTs. Connect with other NFT creators. Buy and Sell on the Marketplace.";
+  const title = "Hodl My Moon - Social Polygon NFT Platform and Marketplace";
+  const description = "Make frens. Mint NFTs, Buy and Sell on the Polygon Marketplace.";
   const shareImage = "https://res.cloudinary.com/dyobirj7r/image/upload/ar_216:253,c_fill,w_1080/prod/nfts/bafkreihuew5ij6lvc2k7vjqr65hit7fljl7fsxlikrkndcdyp47xbi6pvy" // nft 36
 
   return (
