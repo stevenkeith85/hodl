@@ -3,7 +3,7 @@ title: 'What are dApps'
 metaTitle: 'What are decentralized applications (dApps)'
 metaDescription: 'Learn about decentralized applications'
 canonical: 'https://www.hodlmymoon.com/learn/dapps/what-are-dapps'
-socialImage: https://res.cloudinary.com/dyobirj7r/image/upload/ar_506:675,c_fill,w_1080/prod/nfts/bafkreibi2hsrycjo66e6rmk2kl25hsyxntgisrzdspi6mhop7h7mxsa2cq
+socialImage: https://res.cloudinary.com/dyobirj7r/image/upload/ar_1:1,c_fill,w_1080/prod/nfts/bafkreibi2hsrycjo66e6rmk2kl25hsyxntgisrzdspi6mhop7h7mxsa2cq
 ---
 A dApp is a decentralized application.
 

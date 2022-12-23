@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 
 import React from 'react';
-import { AssetLicense } from "../../components/nft/AssetLicense";
+import { TokenProperties } from "./TokenProperties";
 import { HodlerCreatorCard } from "../../components/nft/HodlerCreatorCard";
 import { TokenDetailsCard } from "./TokenDetailsCard";
 
@@ -24,7 +24,7 @@ const TokenDataTab = ({ prefetchedMutableToken, prefetchedToken }) => {
         prefetchedToken={prefetchedToken}
         prefetchedMutableToken={prefetchedMutableToken}
       />
-      <AssetLicense
+      <TokenProperties
         prefetchedToken={prefetchedToken}
       />
     </Box>

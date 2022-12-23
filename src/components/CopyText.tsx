@@ -21,7 +21,7 @@ export const CopyText = ({
             }}
         >
             <Tooltip title={copied ? "Copied!" : "Copy"} arrow={true} placement={placement}>
-                <Box component="span" sx={{ cursor: 'pointer' }}>
+                <Box component="span" sx={{ cursor: 'pointer', margin: 0, padding: 0, lineHeight: 0 }}>
                     { children }
                 </Box>
             </Tooltip>

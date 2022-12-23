@@ -1,10 +1,11 @@
 import { Link } from "@mui/material";
 import Box from "@mui/material/Box";
-import Chip from "@mui/material/Chip";
 
 import { token, nonCommercial, commercial } from "../../lib/copyright";
+import { extractTraits } from "../../lib/extractTraits";
 
-export const AssetLicense = ({ prefetchedToken }) => {
+
+export const TokenProperties = ({ prefetchedToken }) => {
     if (!prefetchedToken?.properties?.asset?.license) {
         return null;
     }
@@ -22,51 +23,32 @@ export const AssetLicense = ({ prefetchedToken }) => {
                 display: 'grid',
                 gridTemplateColumns: '1fr 1fr',
                 alignItems: 'center',
-                columnGap: 2
+                gap: 2
             }}>
-                <Box
-                    sx={{
-                        fontSize: 14,
-                        color: theme => theme.palette.text.secondary
-                    }}>
-
+                {
+                    extractTraits(prefetchedToken.properties).map(([trait, value]) => <>
+                        <Box sx={{ color: "text.secondary" }}>{trait} </Box>
+                        <Box sx={{ color: "text.secondary" }}>{value}</Box>
+                    </>
+                    )
+                }
+                <Box sx={{ color: "text.secondary" }}>
                     Asset License
                 </Box>
                 <div>
                     {prefetchedToken.properties.asset.license === token &&
                         <Link target="_blank" href="/asset-license">
-                            <Chip
-                                label="Token Only"
-                                color={"secondary"}
-                                variant="outlined"
-                                sx={{
-                                    cursor: 'pointer'
-                                }}
-                            />
+                            <Box color="primary.main">no license</Box>
                         </Link>
                     }
                     {prefetchedToken.properties.asset.license === nonCommercial &&
                         <Link target="_blank" href="/asset-license">
-                            <Chip
-                                label="Non Commercial"
-                                color={"secondary"}
-                                variant="outlined"
-                                sx={{
-                                    cursor: 'pointer'
-                                }}
-                            />
+                            <Box color="primary.main">non commercial</Box>
                         </Link>
                     }
                     {prefetchedToken.properties.asset.license === commercial &&
                         <Link target="_blank" href="/asset-license">
-                            <Chip
-                                label="Commercial"
-                                color={"secondary"}
-                                variant="outlined"
-                                sx={{
-                                    cursor: 'pointer'
-                                }}
-                            />
+                            <Box color="primary.main">commercial</Box>
                         </Link>
                     }
                 </div>

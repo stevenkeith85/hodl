@@ -52,7 +52,7 @@ export const UserLinksList: React.FC<UserLinksListProps> = ({ swr, limit, follow
               alignItems="center"
               key={user?.address}
               sx={{
-                marginBottom: 3
+                marginBottom: 2
               }}
             >
               <Box flexGrow={1}>

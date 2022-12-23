@@ -52,7 +52,7 @@ export const HomepageQuickstart = () => (
                     Install a Polygon Wallet
                 </Typography>
 
-                <Typography mb={3} sx={{ color: theme => theme.palette.text.secondary }}>Get a wallet from the play store, app store, or as a chrome extension.</Typography>
+                <Typography mb={3} sx={{ color: theme => theme.palette.text.secondary }}>Get a wallet from the Play store, App store, or as a Google Chrome extension.</Typography>
                 <Typography mb={0} sx={{ color: theme => theme.palette.text.secondary }}>We recommend MetaMask or Coinbase Wallet.</Typography>
             </HodlBorderedBox>
             <HodlBorderedBox sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 4, textAlign: 'center' }}>

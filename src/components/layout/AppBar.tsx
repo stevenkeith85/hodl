@@ -261,8 +261,7 @@ const AppBar = ({ address }) => {
                                         xs: 'none',
                                         md: 'flex'
                                     },
-                                    fontSize: 16,
-                                    fontWeight: 600,
+                                    fontSize: 14,
                                     a: {
                                         color: theme => theme.palette.text.secondary,
                                         textDecoration: 'none'

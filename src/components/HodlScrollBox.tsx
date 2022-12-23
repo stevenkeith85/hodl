@@ -12,7 +12,11 @@ export const HodlScrollBox = ({ title, height = 250, children }) => {
             sx={{
                 padding: 2,
                 height,
-                overflowY: 'auto',
+                
+                overflow: 'hidden',
+                "&:hover": {
+                    overflowY: 'auto',
+                }
             }}
         >
             {children}
