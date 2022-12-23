@@ -39,10 +39,32 @@ export default function About({ address }) {
                 <HodlBorderedBox>
                     <Box mb={4}>
                         <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
-                            About
+                            About Hodl My Moon
                         </Typography>
                         <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            Hodl My Moon is a Web3 Social Network, and NFT Marketplace. NFTs are minted on Polygon.
+                            Hodl My Moon is a Social NFT Platform. Make Frens; Mint NFTs on the Polygon blockchain; or list on our NFT Marketplace.
+                        </Typography>
+                    </Box>
+                    <Box mb={4}>
+                        <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
+                            What makes Hodl My Moon different?
+                        </Typography>
+                        <Typography component="ul">
+                            <Typography component="li" mb={1} color={theme => theme.palette.text.secondary}>
+                                Your community and marketplace are in the same place.
+                            </Typography>
+                            <Typography component="li" mb={1} color={theme => theme.palette.text.secondary}>
+                                Unlike web2 social media, your immediately own your social posts. They are in your wallet.
+                            </Typography>
+                            <Typography component="li" mb={1} color={theme => theme.palette.text.secondary}>
+                                You can create an NFT and see it on the blockchain in less than a minute.
+                            </Typography>
+                            <Typography component="li" mb={1} color={theme => theme.palette.text.secondary}>
+                                You do not need any technical knowledge to use the platform.
+                            </Typography>
+                            <Typography component="li" mb={1} color={theme => theme.palette.text.secondary}>
+                                We are also much faster than other DApps you may have used.
+                            </Typography>
                         </Typography>
                     </Box>
                     <Box mb={4}>
@@ -50,7 +72,7 @@ export default function About({ address }) {
                             Joining
                         </Typography>
                         <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            Users sign in with their MetaMask wallet to create a profile. This is quick, easy, and crytographically secure.
+                            Users sign in with their crypto wallet to create their profile. This is quick, easy, and crytographically secure.
                         </Typography>
                     </Box>
                     <Box mb={4}>
@@ -58,7 +80,7 @@ export default function About({ address }) {
                             Social Interactions
                         </Typography>
                         <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            Users can follow other NFT artists; and like and comment on their posts. This does not trigger a blockchain transaction and is 100% free.
+                            Users can follow other NFT artists to see their content in their feed. Liking or commenting on NFTs does not trigger blockchain transactions.
                         </Typography>
                     </Box>
                     <Box mb={4}>
@@ -66,32 +88,35 @@ export default function About({ address }) {
                             Posting / Minting NFTs.
                         </Typography>
                         <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            Every post on HodlMyMoon is an NFT.
+                            Every post on HodlMyMoon is a Polygon NFT.
                         </Typography>
                         <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            Users mint their posts via the website.The process is quick and easy and requires no technical knowledge.
+                            Users mint their posts via the website. They can add filters, or crop the asset. The metadata is uploaded to IPFS, a decentralized file system.
                         </Typography>
-
-
+                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                            The process quick, easy and requires no technical knowledge.
+                        </Typography>
                     </Box>
                     <Box mb={4}>
                         <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
                             Polygon / Matic
                         </Typography>
                         <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            Posts are minted on the Polygon Blockchain
+                            NFTs are minted on the Polygon Blockchain
                         </Typography>
                         <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            To confirm a transaction on the blockchain requires paying a tiny amount of Matic. (fractions of a penny). Hodl My Moon does not receive this fee.
+                            To confirm a transaction on the blockchain requires paying a tiny amount of Matic. (less than a cent). Hodl My Moon does not receive this fee.
                         </Typography>
                         <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            Users can obtain Matic from wherever they like. Directly from MetaMask, via an exchange, or just ask a friend to transfer them some.
+                            Obtaining Matic is very easy to do. You can now buy directly from most wallets with your bank card.
                         </Typography>
-
+                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                            Other options include: asking frens, or transferring from an exchange.
+                        </Typography>
                     </Box>
                     <Box mb={4}>
                         <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
-                            Who owns the NFTs
+                            Who owns the NFTs?
                         </Typography>
                         <Typography mb={1} color={theme => theme.palette.text.secondary}>
                             The users do!
@@ -100,47 +125,20 @@ export default function About({ address }) {
                             This is why we ask the users to mint them at post time.
                         </Typography>
                         <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            You, the user, are free to do whatever you want with that NFT. (e.g. Cross sharing it as an Instagram digital collectable is common.)
-                        </Typography>
-                    </Box>
-                    <Box mb={4}>
-                        <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
-                            What makes you different
-                        </Typography>
-                        <Typography component="ul">
-                            <Typography component="li" mb={1} color={theme => theme.palette.text.secondary}>
-                                Our website is very fast and easy to use. No technical knowledge required!
-                            </Typography>
-                            <Typography component="li" mb={1} color={theme => theme.palette.text.secondary}>
-                                Your community is where you mint. It&apos;s a very social place.
-                            </Typography>
-                            <Typography component="li" mb={1} color={theme => theme.palette.text.secondary}>
-                                We have an integrated marketplace
-                            </Typography>
-                            <Typography component="li" mb={1} color={theme => theme.palette.text.secondary}>
-                                We have plans to allow user&apos;s to earn without having to sell their NFTs.
-                            </Typography>
-                            <Typography component="li" mb={1} color={theme => theme.palette.text.secondary}>
-                                Minting an NFT is fast and easy.  (You can add filters to your images, and crop them directly on the website)
-                            </Typography>
-                            <Typography component="li" mb={1} color={theme => theme.palette.text.secondary}>
-                                Our Metadata is frozen and always uploaded to IPFS, which is a decentralized and content addressed file system.
-                            </Typography>
-                            <Typography component="li" mb={1} color={theme => theme.palette.text.secondary}>
-                                We ask user&apos;s to pick a license for the asset attached to the token at mint time; and write this information into the metadata.
-                            </Typography>
-                        </Typography>
-                    </Box>
-                    <Box mb={4}>
-                        <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
-                            Where can I learn about nfts and dapps?
+                            You, the user, are free to do whatever you want with that NFT.
                         </Typography>
                         <Typography mb={1} color={theme => theme.palette.text.secondary}>
-                            We have a web3 learning hub that we are expanding.
+                            As posts are on the blockchain; any other platform you join will be able to retrieve them for you.
                         </Typography>
-                        <Link href="/learn" sx={{ color: theme => theme.palette.primary.main, textDecoration: 'none' }}>
-                            <Button sx={{ marginY: 2 }}>Learn about NFTs and DApps</Button>
-                        </Link>
+                    </Box>
+                    <Box mb={4}>
+                        <Typography mb={1} sx={{ fontSize: 18, fontWeight: 500 }}>
+                            Where can I learn about NFTs and DApps?
+                        </Typography>
+
+                        <Typography mb={1} color={theme => theme.palette.text.secondary}>
+                            You can <Link href="/learn">learn about NFTs and DApps</Link> on Hodl My Moon.
+                        </Typography>
                     </Box>
                     <Box marginY={6} sx={{ display: 'flex', flexDirection: 'column' }}>
                         <Typography mb={2} sx={{ fontSize: 18, fontWeight: 500 }}>

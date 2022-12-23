@@ -3,7 +3,7 @@ title: "How much does it cost to create an NFT?"
 metaTitle: "How much does it cost to create an NFT?"
 metaDescription: "Learn how much money you need to create an NFT"
 canonical: "https://www.hodlmymoon.com/learn/nfts/how-much-does-it-cost-to-create-an-nft"
-socialImage: https://res.cloudinary.com/dyobirj7r/image/upload/ar_506:675,c_fill,w_1080/prod/nfts/bafkreibfqcdhpgrkxzo7d4njs2jijyicq3viangev5almiyo2yudjttcbi
+socialImage: https://res.cloudinary.com/dyobirj7r/image/upload/ar_1:1,c_fill,w_1080/prod/nfts/bafkreibfqcdhpgrkxzo7d4njs2jijyicq3viangev5almiyo2yudjttcbi
 ---
 
 If you choose the right platform and the right blockchain, creating an NFT can be virtually free!

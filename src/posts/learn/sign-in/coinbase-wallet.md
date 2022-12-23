@@ -3,7 +3,7 @@ title: 'Sign in to dApps with Coinbase Wallet'
 metaTitle: 'How can I sign in to a dApp with Coinbase Wallet?'
 metaDescription: 'Learn how to sign in to dApps with Coinbase Wallet'
 canonical: 'https://www.hodlmymoon.com/learn/sign-in/coinbase-wallet'
-socialImage: https://res.cloudinary.com/dyobirj7r/image/upload/ar_4:3,c_fill,w_1080/prod/nfts/bafkreialkfpobi4ekcwegnavzixtamotcntxuzdnpj3wygdrwso4baqegy
+socialImage: https://res.cloudinary.com/dyobirj7r/image/upload/ar_1:1,c_fill,w_1080/prod/nfts/bafkreialkfpobi4ekcwegnavzixtamotcntxuzdnpj3wygdrwso4baqegy
 ---
 For this guide, we will be using the Coinbase Wallet mobile app, and connecting to Hodl My Moon.
 

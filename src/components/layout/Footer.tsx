@@ -71,10 +71,25 @@ const Footer = ({
                                         fontWeight: 600,
                                         marginBottom: 0.5,
                                     }}>
-                                    hodl my moon
+                                    Hodl My Moon
                                 </Typography>
-                                <Link style={{ textDecoration: 'none' }} href="/about"><Typography color="text.secondary">about this dapp</Typography></Link>
-                                <Link style={{ textDecoration: 'none' }} href="/contact"><Typography color="text.secondary">contact hodl my moon</Typography></Link>
+                                <Link style={{ textDecoration: 'none' }} href="/about"><Typography color="text.secondary">about</Typography></Link>
+                                <Link style={{ textDecoration: 'none' }} href="/contact"><Typography color="text.secondary">contact</Typography></Link>
+                            </Box>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: 1.5,
+                                }}
+                            >
+                                <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>NFTs</Typography>
+                                <Link style={{ textDecoration: 'none' }} href="/explore"><Typography color="text.secondary">explore nfts</Typography></Link>
+                                <Link style={{ textDecoration: 'none' }} href="/explore?forSale=true"><Typography color="text.secondary">buy nfts</Typography></Link>
+                                {
+                                    address &&
+                                    <Link style={{ textDecoration: 'none' }} href="/create"><Typography color="text.secondary">create</Typography></Link>
+                                }
                             </Box>
                             <Box
                                 sx={{
@@ -88,15 +103,12 @@ const Footer = ({
                                         fontWeight: 600,
                                         marginBottom: 0.5,
                                     }}>
-                                    learn
+                                    Learn NFTs
                                 </Typography>
-                                <Link style={{ textDecoration: 'none' }} href="/learn"><Typography color="text.secondary">nfts and dapps</Typography></Link>
+                                <Link style={{ textDecoration: 'none' }} href="/learn"><Typography color="text.secondary">overview</Typography></Link>
                                 <Link style={{ textDecoration: 'none' }} href="/learn/nfts/what-are-nfts"><Typography color="text.secondary">what are nfts</Typography></Link>
-                                <Link style={{ textDecoration: 'none' }} href="/learn/nfts/how-much-does-it-cost-to-create-an-nft"><Typography color="text.secondary">how much does it cost to create an nft</Typography></Link>
+                                <Link style={{ textDecoration: 'none' }} href="/learn/nfts/how-much-does-it-cost-to-create-an-nft"><Typography color="text.secondary">costs creating an nft</Typography></Link>
                                 <Link style={{ textDecoration: 'none' }} href="/learn/nfts/nft-scoring-what-is-nft-rarity"><Typography color="text.secondary">scoring nft rarity</Typography></Link>
-                                <Link style={{ textDecoration: 'none' }} href="/learn/dapps/what-are-dapps"><Typography color="text.secondary">what are dapps</Typography></Link>
-                                <Link style={{ textDecoration: 'none' }} href="/learn/dapps/interact-with-dapps"><Typography color="text.secondary">interact with dapps</Typography></Link>
-                                <Link style={{ textDecoration: 'none' }} href="/learn/sign-in/coinbase-wallet"><Typography color="text.secondary">sign in with coinbase wallet</Typography></Link>
                             </Box>
                             <Box
                                 sx={{
@@ -105,13 +117,17 @@ const Footer = ({
                                     gap: 1.5,
                                 }}
                             >
-                                <Typography sx={{ fontWeight: 600, marginBottom: 0.5 }}>polygon nfts</Typography>
-                                <Link style={{ textDecoration: 'none' }} href="/explore"><Typography color="text.secondary">explore polygon nfts</Typography></Link>
-                                <Link style={{ textDecoration: 'none' }} href="/explore?forSale=true"><Typography color="text.secondary">buy polygon nfts</Typography></Link>
-                                {
-                                    address &&
-                                    <Link style={{ textDecoration: 'none' }} href="/create"><Typography color="text.secondary">create</Typography></Link>
-                                }
+                                <Typography
+                                    sx={{
+                                        fontWeight: 600,
+                                        marginBottom: 0.5,
+                                    }}>
+                                    Learn DApps
+                                </Typography>
+                                <Link style={{ textDecoration: 'none' }} href="/learn"><Typography color="text.secondary">overview</Typography></Link>
+                                <Link style={{ textDecoration: 'none' }} href="/learn/dapps/what-are-dapps"><Typography color="text.secondary">what are dapps</Typography></Link>
+                                <Link style={{ textDecoration: 'none' }} href="/learn/dapps/interact-with-dapps"><Typography color="text.secondary">interact with dapps</Typography></Link>
+                                <Link style={{ textDecoration: 'none' }} href="/learn/sign-in/coinbase-wallet"><Typography color="text.secondary">connect with coinbase wallet</Typography></Link>
                             </Box>
                         </Box>
                         <Box

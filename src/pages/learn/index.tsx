@@ -42,11 +42,11 @@ export async function getStaticProps() {
     const categories = {
         'src/posts/learn/nfts': {
             name: 'Non Fungible Tokens',
-            description: 'Non Fungible Tokens, or collectibles, are digital assets with their ownership recorded on a digital ledger.'
+            description: 'Non Fungible Tokens are digital assets with their ownership recorded on a blockchain.'
         },
         'src/posts/learn/sign-in': {
-            name: 'Sign in to dApps',
-            description: 'Sign in to dApps with our visual guides'
+            name: 'Sign in to DApps',
+            description: 'Sign in to decentralized applications with our visual guides'
         },
         'src/posts/learn/dapps': {
             name: 'Decentralized Applications',
@@ -109,20 +109,21 @@ export default function Learn({ categories, posts }) {
         </Head>
         <div className='blog'>
             <HodlBorderedBox sx={{ marginY: 4 }}>
-                <div style={{ margin: '0 0 16px 0', display: 'flex', gap: '16px' }}>
+                <div style={{ margin: '0 0 32px 0', display: 'flex', gap: '16px' }}>
                     <HodlShareButton />
                 </div>
                 <h1 className='primary-main'>Learn about NFTs and DApps</h1>
-                <p>
-                    The best way to learn about NFTs and DApps is with Hodl My Moon.
-                </p>
-                <p>
-                    We have beginner friendly guides on NFTs, DApps, and everything you need to know to get up to speed with Web3.
-                </p>
-                <p>
-                    Anyone can create an NFT, and we are here to show you how.
-                </p>
-
+                <div style={{ marginBottom: '32px' }}>
+                    <p>
+                        The best way to learn about NFTs and DApps is with Hodl My Moon.
+                    </p>
+                    <p>
+                        We have beginner friendly guides on NFTs, DApps, and everything you need to know to get up to speed with Web3.
+                    </p>
+                    <p>
+                        Anyone can create an NFT, and we are here to show you how.
+                    </p>
+                </div>
                 {Object.keys(categories).map(category => (
                     <div key={category}>
                         <h2>{categories[category].name}</h2>
@@ -135,7 +136,7 @@ export default function Learn({ categories, posts }) {
                                     md: '1fr 1fr 1fr',
                                 },
                                 gap: 3,
-                                marginBottom: 3,
+                                marginY: 4,
                                 width: '100%',
                             }}>
                             {
@@ -150,16 +151,19 @@ export default function Learn({ categories, posts }) {
                                         overflow: 'hidden'
                                     }}>
 
-                                    <img src={frontmatter.socialImage} width="100%" style={{ height: 300 }} />
+                                    <div style={{ height: 0, paddingTop: "100%", position: 'relative' }}>
+                                        <Link href={`/learn/${url}`}>
+                                            <img src={frontmatter.socialImage} style={{ width: "100%", height: '100%', position: 'absolute', top: 0 }} />
+                                        </Link>
+                                    </div>
+
                                     <div style={{
-                                        padding: `16px`,
+                                        padding: `24px 16px 16px`,
                                         flexGrow: 1,
                                         display: 'flex',
                                         flexDirection: 'column',
                                     }}>
-                                        <div
-                                            style={{ flexGrow: 1 }}
-                                        >
+                                        <div style={{ flexGrow: 1 }}>
                                             <p style={{ fontWeight: 600 }}>{frontmatter.title}</p>
                                             <p>{frontmatter.metaDescription}</p>
                                         </div>

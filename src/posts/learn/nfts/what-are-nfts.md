@@ -3,7 +3,7 @@ title: 'What are NFTs'
 metaTitle: 'What are Non Fungible Tokens (NFTs)'
 metaDescription: 'Learn about Non Fungible Tokens'
 canonical: 'https://www.hodlmymoon.com/learn/nfts/what-are-nfts'
-socialImage: https://res.cloudinary.com/dyobirj7r/image/upload/ar_216:253,c_fill,w_1080/prod/nfts/bafkreihuew5ij6lvc2k7vjqr65hit7fljl7fsxlikrkndcdyp47xbi6pvy
+socialImage: https://res.cloudinary.com/dyobirj7r/image/upload/ar_1:1,c_fill,w_1080/prod/nfts/bafkreihuew5ij6lvc2k7vjqr65hit7fljl7fsxlikrkndcdyp47xbi6pvy
 ---
 Non fungible tokens (NFTs) are digital assets with their ownership recorded on a digital ledger.
 
