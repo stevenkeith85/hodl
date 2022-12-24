@@ -18,7 +18,7 @@ const Footer = ({
     return (
         <div>
             <Box sx={{
-                backgroundColor: '#efefef',
+                backgroundColor: '#f6f6f6',
                 borderTop: `1px solid #eee`,
                 borderBottom: `1px solid #eee`
             }}

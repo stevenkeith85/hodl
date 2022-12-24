@@ -161,7 +161,8 @@ export const HodlFeedItem: FC<HodlFeedItemProps> = ({ item }) => {
                             xs: 1.5,
                             sm: 2
                         },
-                        boxShadow: '1px 1px 8px #eee',
+                        // boxShadow: '1px 1px 8px #eee',
+                        border: "1px solid #eee",
                         background: 'white'
                     }
                     }
