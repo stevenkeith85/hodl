@@ -42,10 +42,10 @@ export const HomepageRankings = ({limit, prefetchedTopTokens, prefetchedTopUsers
                     }
                 }}
             >
-                <TopUsers followButton={false} />
-                <TopTokens showLikes={false} />
-                <NewUsers followButton={false} />
-                <NewTokens showLikes={false} />
+                <TopUsers followButton={false} titleSize={18} titleMargin={4} />
+                <TopTokens showLikes={false} titleSize={18} titleMargin={4} />
+                <NewUsers followButton={false} titleSize={18} titleMargin={4} />
+                <NewTokens showLikes={false} titleSize={18} titleMargin={4} />
             </Box>
         </RankingsContext.Provider>
     );
