@@ -8,7 +8,7 @@ export default function HodlCommentsModal({open, setOpen}) {
             open={open}
             setOpen={setOpen}
             sx={{
-                padding: 2,
+                padding: 0,
                 width: '90vw',
                 maxWidth: "900px",
                 maxHeight: '90vh',

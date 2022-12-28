@@ -9,7 +9,6 @@ export const HodlBorderedBox: React.FC<HodlBorderedBoxProps> = ({ sx = null, chi
     <Box
         sx={{
             border: `1px solid #eee`,
-            // boxShadow: '1px 1px 8px #eee',
             borderRadius: 1,
             padding: 2,
             background: 'white',
