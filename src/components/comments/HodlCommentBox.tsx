@@ -197,6 +197,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                     <Typography
                                         sx={{
                                             whiteSpace: 'pre-line',
+                                            overflowWrap: 'anywhere',
                                             marginTop: 0,
                                             marginBottom: 0
                                         }}
