@@ -18,6 +18,7 @@ import { ExpandMoreIcon } from "../icons/ExpandMoreIcon";
 import { ExpandLessIcon } from "../icons/ExpandLessIcon";
 import { CommentsContext } from "../../contexts/CommentsContext";
 import { canDeleteComment } from "../../lib/ui/canDeleteComment";
+import { insertProfileLinks } from "../../lib/insertProfileLinks";
 
 
 const Replies = dynamic(
@@ -200,7 +201,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                             marginBottom: 0
                                         }}
                                     >
-                                        {comment.comment}
+                                        {insertProfileLinks(comment.comment)}
                                     </Typography>
                                 </div>
                                 <div
