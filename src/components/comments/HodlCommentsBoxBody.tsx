@@ -43,6 +43,8 @@ export const HodlCommentsBoxBody = ({
                 overflowY: 'auto',
                 overflowX: 'hidden',
                 position: 'relative',
+                padding: 2,
+                paddingBottom: 0
             }}
         >
             {

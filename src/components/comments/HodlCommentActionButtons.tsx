@@ -13,7 +13,12 @@ export const HodlCommentActionButtons: React.FC<HodlCommentActionButtonsProps> =
 }) => {
 
 
-    return (<Box display="flex" alignItems="center" gap={1} marginX={1}>
+    return (<Box 
+        display="flex" 
+        alignItems="center" 
+        gap={1} 
+        marginLeft={1}
+        >
         <Likes
             color="inherit"
             sx={{

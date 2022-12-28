@@ -66,7 +66,7 @@ export const AddComment: FC<AddCommentProps> = ({
         return <Box sx={{
             display: 'flex',
             alignItems: 'center',
-            paddingTop: 2,
+            padding: 2,
             marginTop: 2,
             borderTop: `1px solid #eee`,
             gap: 1
@@ -112,7 +112,8 @@ export const AddComment: FC<AddCommentProps> = ({
                             style={{
                                 display: "flex",
                                 alignItems: "center",
-                                marginTop: 0
+                                marginTop: 0,
+                                // padding: '16px'
                             }}
                         >
                             <div
@@ -128,8 +129,9 @@ export const AddComment: FC<AddCommentProps> = ({
                                     flexDirection="column"
                                     gap={0}
                                     sx={{
-                                        paddingTop: 2,
-                                        marginTop: 2,
+                                        // paddingTop: 2,
+                                        padding: 2,
+                                        // marginTop: 2,
                                         borderTop: `1px solid #eee`,
                                         '#hodl-comments-add': {
                                             border: 'none',
@@ -157,14 +159,20 @@ export const AddComment: FC<AddCommentProps> = ({
                                         autoComplete='off'
                                         ref={newTagRef}
                                         placeholder={
-                                            commentingOn.object === "comment" ? "Your reply ?" : "Your comment ?"
+                                            commentingOn.object === "comment" ? "Your reply?" : "Your comment?"
                                         }
                                         minRows={2}
                                         name="comment"
                                         id="hodl-comments-add"
                                     />
                                 </Box>
-                                <Box display="flex" justifyContent="right" alignItems="center" gap={2}>
+                                <Box 
+                                    display="flex" 
+                                    justifyContent="right" 
+                                    alignItems="center" 
+                                    gap={2}
+                                    padding={2}
+                                    >
                                     <Typography
                                         sx={{
                                             fontSize: 10,
