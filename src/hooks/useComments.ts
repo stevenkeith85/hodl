@@ -10,6 +10,7 @@ export const useComments = (
     rev = false
 ) => {
     const getKey = (index, _previous) => {
+        console.log([`/api/comments`, object, objectId, index * limit, limit, rev])
         return objectId ? [`/api/comments`, object, objectId, index * limit, limit, rev] : null;
     }
 

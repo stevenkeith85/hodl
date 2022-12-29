@@ -34,7 +34,7 @@ const AddComment = dynamic(
 export const HodlCommentsBox = ({
     limit,
     height = '300px',
-    fallbackData = null
+    fallbackData = null,
 }) => {
     const { nft } = useContext(NftContext);
     const router = useRouter();
@@ -107,7 +107,8 @@ export const HodlCommentsBox = ({
             topLevel,
             setTopLevel,
             oldTopLevel,
-            setOldTopLevel
+            setOldTopLevel,
+            limit
         }}>
             <HodlCommentsBoxHeader/>
             <HodlCommentsBoxBody

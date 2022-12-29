@@ -9,10 +9,11 @@ import MenuList from "@mui/material/MenuList";
 import MenuItem from "@mui/material/MenuItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import PushPinIcon from '@mui/icons-material/PushPin';
 
 
-export default function HodlCommentPopUpMenu({ onDelete }) {
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+export default function HodlCommentPopUpMenu({ onDelete, onPin }) {
+    const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -46,25 +47,22 @@ export default function HodlCommentPopUpMenu({ onDelete }) {
                 anchorEl={anchorEl}
                 open={open}
                 onClose={handleClose}
+                onClick={handleClose}
             >
-                <MenuList
-                    dense
-                    sx={{
-                        padding: 0
-                    }}
-                >
+                <MenuList dense>
                     <MenuItem
                         onClick={onDelete}>
-                        <ListItemIcon
-                            sx={{
-                                '&.MuiListItemIcon-root': {
-                                    minWidth: 0,
-                                    marginRight: `8px`
-                                }
-                            }}>
+                        <ListItemIcon>
                             <DeleteOutlineSharpIcon sx={{ fontSize: '14px' }} />
                         </ListItemIcon>
                         <ListItemText>delete</ListItemText>
+                    </MenuItem>
+                    <MenuItem
+                        onClick={onPin}>
+                        <ListItemIcon>
+                            <PushPinIcon sx={{ fontSize: '14px' }} />
+                        </ListItemIcon>
+                        <ListItemText>pin</ListItemText>
                     </MenuItem>
                 </MenuList>
             </Menu>
