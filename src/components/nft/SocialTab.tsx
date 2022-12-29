@@ -31,10 +31,6 @@ const SocialTab = ({ prefetchedToken, limit }) => {
       <Box
         sx={{
           background: 'white',
-          // padding: {
-          //   xs: 2,
-          //   sm: 2
-          // },
           borderRadius: 1,
           border: '1px solid #eee',
         }}>
@@ -43,7 +39,7 @@ const SocialTab = ({ prefetchedToken, limit }) => {
             nft: prefetchedToken,
           }}
         >
-          <HodlCommentsBox limit={limit} height='400px' />
+          <HodlCommentsBox limit={limit} height='450px' />
         </NftContext.Provider>
       </Box>
     </Box>)

@@ -101,17 +101,17 @@ body::-webkit-scrollbar {
 
 /* firefox */
 * {
-  scrollbar-width: 8px;
+  scrollbar-width: 6px;
   scrollbar-color: #ddd #eee;
 }
 
 /* chrome, edge, safari */
 *::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 *::-webkit-scrollbar-track {
-  background: #f9f9f9;
+  background-color: #eee;
 }
 
 *::-webkit-scrollbar-thumb {

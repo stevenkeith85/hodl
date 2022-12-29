@@ -18,6 +18,8 @@ import ClickAwayListener from "@mui/material/ClickAwayListener";
 import dynamic from "next/dynamic";
 import { ConnectButton } from "../menu/ConnectButton";
 import { CommentsContext } from "../../contexts/CommentsContext";
+import SendIcon from '@mui/icons-material/Send';
+import IconButton from '@mui/material/IconButton';
 
 
 const QuoteComment = dynamic(
@@ -71,7 +73,7 @@ export const AddComment: FC<AddCommentProps> = ({
             borderTop: `1px solid #eee`,
             gap: 1
         }}>
-            <ConnectButton variant="outlined" text={"Sign In"} sx={{ padding: 0 }}/><span>to like or comment</span>
+            <ConnectButton variant="outlined" text={"Sign In"} sx={{ padding: 0 }} /><span>to like or comment</span>
         </Box>
     }
     return (
@@ -113,7 +115,6 @@ export const AddComment: FC<AddCommentProps> = ({
                                 display: "flex",
                                 alignItems: "center",
                                 marginTop: 0,
-                                // padding: '16px'
                             }}
                         >
                             <div
@@ -122,17 +123,15 @@ export const AddComment: FC<AddCommentProps> = ({
                                     flexDirection: "column",
                                     position: "relative",
                                     flexGrow: 1,
-                                    gap: theme.spacing(1)
+                                    gap: theme.spacing(1),
+                                    borderTop: `1px solid #eee`,
+                                    padding: 0
                                 }} >
                                 <Box
                                     display="flex"
                                     flexDirection="column"
                                     gap={0}
                                     sx={{
-                                        // paddingTop: 2,
-                                        padding: 2,
-                                        // marginTop: 2,
-                                        borderTop: `1px solid #eee`,
                                         '#hodl-comments-add': {
                                             border: 'none',
                                             outline: 'none',
@@ -148,6 +147,9 @@ export const AddComment: FC<AddCommentProps> = ({
                                         <QuoteComment id={commentingOn.objectId} color={commentingOn.color} reset={reset} />
                                     }
                                     <TextareaAutosize
+                                        style={{
+                                            padding: 16,
+                                        }}
                                         onKeyDown={async e => {
                                             if (e.ctrlKey && e.code === "Enter") {
                                                 await submitForm();
@@ -161,22 +163,25 @@ export const AddComment: FC<AddCommentProps> = ({
                                         placeholder={
                                             commentingOn.object === "comment" ? "Your reply?" : "Your comment?"
                                         }
-                                        minRows={2}
+                                        minRows={1}
+                                        maxRows={10}
                                         name="comment"
                                         id="hodl-comments-add"
                                     />
                                 </Box>
-                                <Box 
-                                    display="flex" 
-                                    justifyContent="right" 
-                                    alignItems="center" 
-                                    gap={2}
-                                    padding={2}
-                                    >
+                                <Box
+                                    display="flex"
+                                    justifyContent="right"
+                                    alignItems="center"
+                                    gap={1}
+                                    sx={{
+                                        paddingX: 2,
+                                        paddingBottom: 2
+                                    }}
+                                >
                                     <Typography
                                         sx={{
                                             fontSize: 10,
-                                            paddingLeft: 0.75,
                                             color: isValid ? green : red
                                         }}>{values?.comment?.length} / 400
                                     </Typography>
@@ -194,12 +199,32 @@ export const AddComment: FC<AddCommentProps> = ({
                                             </Box>
                                         </Box>
                                     </ClickAwayListener>
-                                    <Button
+                                    <IconButton 
                                         disabled={!isValid}
+                                        color="primary" 
                                         type="submit"
+                                        
+                                        >
+                                        <SendIcon sx={{
+                                            fontSize: 18
+                                        }}
+                                        
+                                        />
+                                    </IconButton>
+
+
+                                    {/* <Button
+                                        variant="outlined"
+                                        sx={{
+                                            fontSize: 12,
+                                            paddingY: 0.25,
+                                            paddingX: 1
+                                        }}
+                                        
+                                        
                                     >
                                         {commentingOn.object === "comment" ? "Reply" : "Comment"}
-                                    </Button>
+                                    </Button> */}
                                 </Box>
                             </div>
                         </div>

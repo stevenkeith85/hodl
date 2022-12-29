@@ -112,6 +112,8 @@ const NotificationLink: React.FC<NotificationLinkProps> = ({ item }) => {
     return (<Box
         sx={{
             width: `100%`,
+            overflowWrap: 'break-word',
+            wordBreak: 'break-word',
             "& > a": {
                 display: 'block',
                 width: `100%`,
