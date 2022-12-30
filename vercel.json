@@ -3,6 +3,18 @@
 		"pages/api/actions/index.ts": {
 			"memory": 3008
 		},
+        "pages/api/actions/add.ts": {
+			"memory": 3008
+		},
+        "pages/api/comments/add.ts": {
+			"memory": 3008
+		},
+        "pages/api/follow/index.ts": {
+			"memory": 3008
+		},
+        "pages/api/like/token/index.ts": {
+			"memory": 3008
+		},
         "pages/api/contracts/mutable-token/[tokenId].ts": {
             "memory": 3008
         },
