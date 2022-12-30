@@ -19,6 +19,12 @@ import { ExpandLessIcon } from "../icons/ExpandLessIcon";
 import { CommentsContext } from "../../contexts/CommentsContext";
 import { canDeleteComment } from "../../lib/ui/canDeleteComment";
 import { insertProfileLinks } from "../../lib/insertProfileLinks";
+import Box from "@mui/material/Box";
+import { isHodler } from "../../lib/ui/isHodler";
+import { usePinComment } from "../../hooks/usePinComment";
+import { mutate } from "swr";
+import { NoSsr } from "@mui/material";
+import { useUnpinComment } from "../../hooks/useUnpinComment";
 
 
 const Replies = dynamic(
@@ -46,6 +52,7 @@ interface HodlCommentBoxProps {
     replySWR?: any;
     shouldShowThread?: boolean;
     level?: number; // tells us how deep we are in the thread. we only show the 'view single comment thread' thing when they are a few levels in
+    canReply?: boolean;
 }
 
 export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
@@ -55,11 +62,12 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
     addCommentInput,
     replySWR = null,
     shouldShowThread = false,
-    level = 0
+    level = 0,
+    canReply = true
 }) => {
     const { signedInAddress } = useContext(SignedInContext);
-    const { nft } = useContext(NftContext);
-    const { setCommentingOn, topLevel, setTopLevel, setOldTopLevel } = useContext(CommentsContext);
+    const { nft, pinnedComment } = useContext(NftContext);
+    const { setCommentingOn, topLevel, setTopLevel, setOldTopLevel, limit } = useContext(CommentsContext);
 
     // When the user tries to delete a comment, we give a visual cue
     const [isDeleting, setIsDeleting] = useState(false);
@@ -68,11 +76,14 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
     const theme = useTheme();
 
     const { data: mutableToken } = useMutableToken(nft.id);
+
     const deleteComment = useDeleteComment();
+    const pinComment = usePinComment();
+    const unpinComment = useUnpinComment();
 
     // once there's a certain depth; 
     // we rebase the comment to the root so that its easy to read. (especially on mobiles)
-    const numberOfLevelsBeforeThread = 2;
+    const numberOfLevelsBeforeThread = 1;
 
     // we could do 'shouldShowThread || level < X' if we want to auto show replies. 
     // This could hammer the db though; so perhaps hold off on that until we see what its like with some users
@@ -84,7 +95,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
 
     // we can't conditionally call react hooks. hence the double assignment
     const internalSWR = useComments(
-        comment.id,
+        comment?.id,
         10,
         "comment",
         null,
@@ -99,17 +110,14 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                 display: "flex",
                 flexDirection: "column",
                 opacity: isDeleting ? 0.4 : 1,
-                marginLeft: '20px',
+                padding: '8px 0',
             }}
         >
-            <div
-                style={{
+            <Box
+                sx={{
                     display: "flex",
                     flexDirection: "column",
                     boxSizing: 'border-box',
-                    width: `calc(100% + 20px)`,
-                    marginLeft: '-20px',
-                    marginBottom: theme.spacing(2)
                 }}
             >
                 <div
@@ -121,6 +129,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                     }}
                     id={`hodl-comments-${comment.id}`}
                 >
+                    
                     <UserAvatarAndHandle
                         address={comment.user.address}
                         fallbackData={comment.user}
@@ -164,9 +173,10 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                         <div
                                             style={{
                                                 display: 'flex',
-                                                gap: theme.spacing(1),
-                                                alignItems: 'center',
+                                                flexDirection: 'column',
+                                                alignItems: 'start',
                                             }}>
+                                                { pinnedComment?.id === comment?.id &&<Box sx={{ fontSize: 10, color: 'text.secondary'}}>Pinned Comment</Box> }
                                             <ProfileNameOrAddress
                                                 profileAddress={comment.user.address}
                                                 fallbackData={comment.user}
@@ -181,15 +191,30 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                             }}>
                                             {
                                                 signedInAddress &&
-                                                canDeleteComment(comment, signedInAddress, mutableToken) &&
-                                                <HodlCommentPopUpMenu onDelete={async () => {
-                                                    setIsDeleting(true);
+                                                (canDeleteComment(comment, signedInAddress, mutableToken) || isHodler(signedInAddress, mutableToken)) &&
+                                                <HodlCommentPopUpMenu
+                                                    isHodler={isHodler(signedInAddress, mutableToken)}
+                                                    pinned={pinnedComment?.id === comment?.id}
+                                                    onDelete={async () => {
+                                                        setIsDeleting(true);
 
-                                                    await deleteComment(comment);
-                                                    parentMutateList();
+                                                        await deleteComment(comment);
 
-                                                    setTimeout(() => setIsDeleting(false));
-                                                }} />
+                                                        // The comment we've deleted might have been a pinned comment. Mutate if needed
+                                                        mutate([`/api/comments/pinned`, comment?.tokenId]);
+
+                                                        parentMutateList();
+
+                                                        setTimeout(() => setIsDeleting(false));
+                                                    }} onPin={async () => {
+                                                        await pinComment(comment);
+                                                        mutate([`/api/comments/pinned`, comment?.tokenId]);
+                                                    }}
+                                                    onUnpin={async () => {
+                                                        await unpinComment(comment);
+                                                        mutate([`/api/comments/pinned`, comment?.tokenId]);
+                                                    }}
+                                                />
                                             }
                                             <HodlCommentActionButtons comment={comment} />
                                         </div>
@@ -219,12 +244,14 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                             color: theme => theme.palette.text.secondary,
                                             fontSize: 12
                                         }}>
-                                        {
-                                            comment.timestamp &&
-                                            formatDistanceStrict(new Date(comment.timestamp), new Date(), { addSuffix: false })
-                                        }
+                                        <NoSsr>
+                                            {
+                                                comment.timestamp &&
+                                                formatDistanceStrict(new Date(comment.timestamp), new Date(), { addSuffix: false })
+                                            }
+                                        </NoSsr>
                                     </Typography>
-                                    {signedInAddress &&
+                                    {signedInAddress && canReply &&
                                         <a
                                             className="text-secondary"
                                             style={{
@@ -232,7 +259,6 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                                 fontSize: 12,
                                             }}
                                             onClick={() => {
-                                                console.log(comment);
                                                 setCommentingOn({
                                                     object: "comment",
                                                     objectId: comment.id,
@@ -248,7 +274,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                     }
                                 </div>
                                 {
-                                    Boolean(comment.replyCount) &&
+                                    canReply && Boolean(comment.replyCount) &&
                                     <a
                                         className="text-secondary"
                                         onClick={() => {
@@ -307,19 +333,19 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                                 </Typography>
                                         }
                                     </a>
-                                    }
+                                }
                             </div>
                         </div>
-                        <Replies
+                        {canReply && <Replies
                             showThread={showThread}
                             swr={swr}
                             addCommentInput={addCommentInput}
                             parentColor={color}
                             level={level}
-                        />
+                        />}
                     </div>
                 </div>
-            </div>
+            </Box>
         </div >
     );
 };

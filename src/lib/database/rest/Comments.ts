@@ -77,6 +77,7 @@ export const getCommentVMs = async (ids: string[]) => {
     comment: comment.comment,
     timestamp: comment.timestamp,
     object: comment.object,
+    objectId: comment.objectId,
     tokenId: comment.tokenId,
     replyCount: comment.replyCount,
     likeCount: comment.likeCount

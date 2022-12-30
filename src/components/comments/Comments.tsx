@@ -6,6 +6,9 @@ import CommentOutlinedIcon from "@mui/icons-material/CommentOutlined";
 import humanize from "humanize-plus";
 import { useCommentCount } from "../../hooks/useCommentCount";
 import { NftContext } from "../../contexts/NftContext";
+import useSWR from "swr";
+import { fetchWithId } from "../../lib/swrFetchers";
+import { useRouter } from "next/router";
 
 
 const HodlCommentsModal = dynamic(
@@ -34,8 +37,15 @@ export const Comments: FC<CommentsProps> = ({
     fontSize = 14,
     sx = {},
     prefetchedCommentCount = null
-}) => {
-    const { data: count } = useCommentCount(nft?.id, "token", prefetchedCommentCount)
+}) => {    
+    const { data: count } = useCommentCount(nft?.id, "token", prefetchedCommentCount);
+    const { data: comment } = useSWR(
+        nft?.id ? [`/api/comments/pinned`, nft?.id] : null,
+        fetchWithId,
+        {
+            fallbackData: null
+        }
+    );
 
     const [open, setOpen] = useState(false);
 
@@ -44,6 +54,7 @@ export const Comments: FC<CommentsProps> = ({
             <NftContext.Provider
                 value={{
                     nft,
+                    pinnedComment: comment
                 }}
             >
                 {open && <HodlCommentsModal open={open} setOpen={setOpen} />}
@@ -61,7 +72,7 @@ export const Comments: FC<CommentsProps> = ({
                         e.stopPropagation();
                         e.preventDefault();
                         if (popUp) {
-                            setOpen(true)
+                            setOpen(true);
                         } else {
                             // @ts-ignore
                             document.querySelector('#hodl-comments-add')?.focus()
