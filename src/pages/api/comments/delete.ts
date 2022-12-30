@@ -9,14 +9,17 @@ import { runRedisTransaction } from "../../../lib/database/rest/databaseUtils";
 import { getComment } from "../../../lib/database/rest/getComment";
 import { setComment } from "../../../lib/database/rest/setComment";
 import { getCommentReplyCount } from "../../../lib/database/rest/getCommentReplyCount";
+import { get } from "../../../lib/database/rest/get";
+import { del } from "../../../lib/database/rest/del";
 
 const route = apiRoute();
 
 // TODO: Do we remove the 'likes comment' data? (Potential bug)
-const removeComment = async (address, object, objectId, id, tokenId) : Promise<boolean> => {
+const removeComment = async (address, object, objectId, id, tokenId): Promise<boolean> => {
   const count = await getCommentReplyCount(id);
 
   if (count === 0) { // remove the comment
+
     const cmds = [
       ['DEL', `comment:${id}`],
 
@@ -25,9 +28,18 @@ const removeComment = async (address, object, objectId, id, tokenId) : Promise<b
       ['ZREM', `${object}:${objectId}:comments`, id],
 
       // We always decrement the token id's comment count
-      ['INCRBY', `token:${tokenId}:comments:count`, -1] 
+      ['INCRBY', `token:${tokenId}:comments:count`, -1]
     ];
-  
+
+    // if the comment to be deleted was a pinned comment, we should also remove that pin
+    const pinnedCommentId = await get(`token:${tokenId}:comments:pinned`);
+
+    if (Number(pinnedCommentId) === Number(id)) {
+      cmds.push(
+        ['DEL', `token:${tokenId}:comments:pinned`],
+      )
+    }
+
     const success = await runRedisTransaction(cmds);
     return success;
   } else { // just change the text to "[deleted]"
@@ -35,6 +47,16 @@ const removeComment = async (address, object, objectId, id, tokenId) : Promise<b
     comment.comment = "[deleted]";
 
     const success = await setComment(id, comment);
+
+    if (success) {
+      // if the comment to be deleted was a pinned comment, we should also remove that pin
+      const pinnedCommentId = await get(`token:${tokenId}:comments:pinned`);
+
+      if (Number(pinnedCommentId) === Number(id)) {
+        await del(`token:${tokenId}:comments:pinned`)
+      }
+    }
+
     return success;
   }
 }

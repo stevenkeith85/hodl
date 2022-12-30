@@ -14,16 +14,20 @@ export const getCommentVM = async (id, viewer=null) => {
   
   const comment = JSON.parse(commentString);
 
-  const user = await getUser(comment.subject, viewer);
+  if (!comment) {
+    return null;
+  }
+
+  const user = await getUser(comment?.subject, viewer);
 
   return {
-    id: comment.id,
+    id: comment?.id,
     user,
-    comment: comment.comment,
-    timestamp: comment.timestamp,
-    object: comment.object,
-    objectId: comment.objectId,
-    tokenId: comment.tokenId,
+    comment: comment?.comment,
+    timestamp: comment?.timestamp,
+    object: comment?.object,
+    objectId: comment?.objectId,
+    tokenId: comment?.tokenId,
     replyCount: replyCount,
     likeCount: likeCount
   }

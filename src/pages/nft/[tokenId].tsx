@@ -16,6 +16,7 @@ import { makeCloudinaryUrl } from '../../lib/cloudinaryUrl';
 import { getTokenVM } from '../../lib/database/rest/getTokenVM';
 import { getMutableToken } from '../api/contracts/mutable-token/[tokenId]';
 import { getUser } from '../../lib/database/rest/getUser';
+import { getPinnedComment } from '../api/comments/pinned';
 
 
 const TokenHeader = dynamic(
@@ -70,7 +71,8 @@ export async function getServerSideProps({ params, query, req, res }) {
 
   const prefetchedTokenPromise = getTokenVM(params.tokenId);
   const prefetchedMutableTokenPromise = getMutableToken(params.tokenId, req);
-  const [prefetchedToken, prefetchedMutableToken] = await Promise.all([prefetchedTokenPromise, prefetchedMutableTokenPromise])
+  const prefetchedPinnedCommentPromise = getPinnedComment(params.tokenId);
+  const [prefetchedToken, prefetchedMutableToken, prefetchedPinnedComment] = await Promise.all([prefetchedTokenPromise, prefetchedMutableTokenPromise, prefetchedPinnedCommentPromise])
 
   const prefetchedHodler = await getUser(prefetchedMutableToken?.hodler);
   // const stop = Date.now();
@@ -83,7 +85,8 @@ export async function getServerSideProps({ params, query, req, res }) {
       tab,
       prefetchedToken,
       prefetchedMutableToken,
-      prefetchedHodler
+      prefetchedHodler,
+      prefetchedPinnedComment
     },
   }
 }
@@ -94,7 +97,8 @@ const NftDetail = ({
   tab,
   prefetchedToken,
   prefetchedMutableToken,
-  prefetchedHodler
+  prefetchedHodler,
+  prefetchedPinnedComment
 }) => {
   const [value, setValue] = useState(Number(tab)); // tab
 
@@ -181,9 +185,9 @@ const NftDetail = ({
                 token={prefetchedToken}
               />
               <Box
-              sx={{
-                marginY: 0
-              }}>
+                sx={{
+                  marginY: 0
+                }}>
                 <TokenActionBox
                   nft={prefetchedToken}
                   prefetchedCommentCount={prefetchedToken?.commentCount}
@@ -211,6 +215,7 @@ const NftDetail = ({
                 <SocialTab
                   prefetchedToken={prefetchedToken}
                   limit={limit}
+                  prefetchedPinnedComment={prefetchedPinnedComment}
                 />}
             </div>
             <div hidden={value !== 1}>
