@@ -34,7 +34,7 @@ const AddComment = dynamic(
 export const HodlCommentsBox = ({
     limit,
     height = '300px',
-    fallbackData = null
+    fallbackData = null,
 }) => {
     const { nft } = useContext(NftContext);
     const router = useRouter();
@@ -46,16 +46,10 @@ export const HodlCommentsBox = ({
         objectId: +getAsString(router.query.comment) || nft.id,
         object: router?.query?.comment ? "comment" : "token"
     })
-    const [oldTopLevel, setOldTopLevel] = useState([])
 
-    const swr = useComments(
-        topLevel.objectId,
-        limit,
-        topLevel.object,
-        fallbackData,
-        true,
-        (topLevel.object === "token")
-    );
+    const [oldTopLevel, setOldTopLevel] = useState([]);
+
+    const swr = useComments(topLevel.objectId, limit, topLevel.object, fallbackData, true, (topLevel.object === "token"));
 
     const [commentingOn, setCommentingOn] = useState<{
         object: "token" | "comment",
@@ -107,7 +101,8 @@ export const HodlCommentsBox = ({
             topLevel,
             setTopLevel,
             oldTopLevel,
-            setOldTopLevel
+            setOldTopLevel,
+            limit
         }}>
             <HodlCommentsBoxHeader/>
             <HodlCommentsBoxBody

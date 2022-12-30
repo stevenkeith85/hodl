@@ -10,6 +10,8 @@ export const CommentsContext = createContext<{
 
     topLevel: any,
     setTopLevel: Function,
+
+    limit?: any
 }>({
     commentingOn: null,
     setCommentingOn: () => { },
@@ -19,5 +21,7 @@ export const CommentsContext = createContext<{
 
     topLevel: null,
     setTopLevel: () => {},
+
+    limit: null
 });
 

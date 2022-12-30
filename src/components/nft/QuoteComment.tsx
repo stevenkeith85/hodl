@@ -21,9 +21,8 @@ export const QuoteComment = ({ reset, id, color }) => {
             sx={{
                 background: '#fafafa',
                 padding: 1,
-                // marginBottom: 2,
-                // borderRadius: 0.5,
-                borderLeft: "3px solid #999",
+                paddingLeft: 2,
+                borderLeft: "5px solid",
                 borderColor: theme => theme.palette[color].main
             }}
         >

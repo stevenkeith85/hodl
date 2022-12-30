@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCommentVMs, mGetComments } from '../../../lib/database/rest/Comments';
-import { getUsers } from '../../../lib/database/rest/Users';
+import { getCommentVMs } from '../../../lib/database/rest/Comments';
 import { zCard } from '../../../lib/database/rest/zCard';
 import { zRange } from '../../../lib/database/rest/zRange';
 import { getAsString } from '../../../lib/getAsString';

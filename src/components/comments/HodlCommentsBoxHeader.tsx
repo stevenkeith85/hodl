@@ -3,6 +3,7 @@ import { KeyboardBackspaceIcon } from "../icons/KeyboardBackspaceIcon";
 import { useTheme } from "@mui/material/styles";
 import { CommentsContext } from "../../contexts/CommentsContext";
 import { useContext } from "react";
+import Box from "@mui/material/Box";
 
 
 export const HodlCommentsBoxHeader= ({}) => {
@@ -16,12 +17,13 @@ export const HodlCommentsBoxHeader= ({}) => {
     }
 
     return (<>
-        <div
-            style={{
+        <Box
+            sx={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: theme.spacing(1),
-                marginBottom: theme.spacing(2),
+                gap: 1,
+                paddingTop: 2,
+                paddingX: 2,
                 cursor: 'pointer'
             }}
             onClick={() => {
@@ -30,6 +32,6 @@ export const HodlCommentsBoxHeader= ({}) => {
                 router.back();
             }}>
             <KeyboardBackspaceIcon size={14} fill={theme.palette.secondary.main} />
-        </div>
+        </Box>
     </>)
 }

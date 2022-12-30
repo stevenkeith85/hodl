@@ -1,13 +1,16 @@
 import { createContext } from 'react';
+import { HodlCommentViewModel } from '../models/HodlComment';
 import { MutableToken } from "../models/MutableToken";
 import { Token } from "../models/Token";
 
 
 export const NftContext = createContext<{
     nft: Token,
-    mutableToken?: MutableToken
+    mutableToken?: MutableToken,
+    pinnedComment?: HodlCommentViewModel
 }>({
     nft: null,
-    mutableToken: null
+    mutableToken: null,
+    pinnedComment: null
 });
 

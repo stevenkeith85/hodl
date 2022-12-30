@@ -27,8 +27,9 @@ export const Replies = ({
                 display: 'flex',
                 flexDirection: 'column',
                 width: '100%',
-                marginTop: theme.spacing(1),
-                marginBottom: theme.spacing(-2)
+                paddingTop: '8px'
+                // marginTop: theme.spacing(1),
+                // marginBottom: theme.spacing(-2)
             }}
         >
             {
