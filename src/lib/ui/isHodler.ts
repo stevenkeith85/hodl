@@ -1,0 +1,1 @@
+export const isHodler = (address, mutableToken) => mutableToken?.hodler === address;

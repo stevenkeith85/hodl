@@ -68,8 +68,8 @@ export const AddComment: FC<AddCommentProps> = ({
         return <Box sx={{
             display: 'flex',
             alignItems: 'center',
-            padding: 2,
-            marginTop: 2,
+            padding: 1,
+            // marginTop: 1,
             borderTop: `1px solid #eee`,
             gap: 1
         }}>
@@ -211,20 +211,6 @@ export const AddComment: FC<AddCommentProps> = ({
                                         
                                         />
                                     </IconButton>
-
-
-                                    {/* <Button
-                                        variant="outlined"
-                                        sx={{
-                                            fontSize: 12,
-                                            paddingY: 0.25,
-                                            paddingX: 1
-                                        }}
-                                        
-                                        
-                                    >
-                                        {commentingOn.object === "comment" ? "Reply" : "Comment"}
-                                    </Button> */}
                                 </Box>
                             </div>
                         </div>

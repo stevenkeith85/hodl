@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteOutlineSharpIcon from '@mui/icons-material/DeleteOutlineSharp';
@@ -12,7 +12,7 @@ import ListItemText from "@mui/material/ListItemText";
 import PushPinIcon from '@mui/icons-material/PushPin';
 
 
-export default function HodlCommentPopUpMenu({ onDelete, onPin }) {
+export default function HodlCommentPopUpMenu({ onDelete, onPin, onUnpin, pinned = false, isHodler = false }) {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -57,13 +57,23 @@ export default function HodlCommentPopUpMenu({ onDelete, onPin }) {
                         </ListItemIcon>
                         <ListItemText>delete</ListItemText>
                     </MenuItem>
-                    <MenuItem
-                        onClick={onPin}>
-                        <ListItemIcon>
-                            <PushPinIcon sx={{ fontSize: '14px' }} />
-                        </ListItemIcon>
-                        <ListItemText>pin</ListItemText>
-                    </MenuItem>
+                    {isHodler && <>
+                        {!pinned ? <MenuItem
+                            onClick={onPin}>
+                            <ListItemIcon>
+                                <PushPinIcon sx={{ fontSize: '14px' }} />
+                            </ListItemIcon>
+                            <ListItemText>pin</ListItemText>
+                        </MenuItem> :
+                            <MenuItem
+                                onClick={onUnpin}>
+                                <ListItemIcon>
+                                    <PushPinIcon sx={{ fontSize: '14px' }} />
+                                </ListItemIcon>
+                                <ListItemText>unpin</ListItemText>
+                            </MenuItem>
+                        }
+                    </>}
                 </MenuList>
             </Menu>
         </>

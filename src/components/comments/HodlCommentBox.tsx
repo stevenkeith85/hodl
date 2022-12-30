@@ -20,10 +20,11 @@ import { CommentsContext } from "../../contexts/CommentsContext";
 import { canDeleteComment } from "../../lib/ui/canDeleteComment";
 import { insertProfileLinks } from "../../lib/insertProfileLinks";
 import Box from "@mui/material/Box";
-import { canPinComment } from "../../lib/ui/canPinComment";
+import { isHodler } from "../../lib/ui/isHodler";
 import { usePinComment } from "../../hooks/usePinComment";
 import { mutate } from "swr";
 import { NoSsr } from "@mui/material";
+import { useUnpinComment } from "../../hooks/useUnpinComment";
 
 
 const Replies = dynamic(
@@ -65,7 +66,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
     canReply = true
 }) => {
     const { signedInAddress } = useContext(SignedInContext);
-    const { nft } = useContext(NftContext);
+    const { nft, pinnedComment } = useContext(NftContext);
     const { setCommentingOn, topLevel, setTopLevel, setOldTopLevel, limit } = useContext(CommentsContext);
 
     // When the user tries to delete a comment, we give a visual cue
@@ -78,10 +79,11 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
 
     const deleteComment = useDeleteComment();
     const pinComment = usePinComment();
+    const unpinComment = useUnpinComment();
 
     // once there's a certain depth; 
     // we rebase the comment to the root so that its easy to read. (especially on mobiles)
-    const numberOfLevelsBeforeThread = 2;
+    const numberOfLevelsBeforeThread = 1;
 
     // we could do 'shouldShowThread || level < X' if we want to auto show replies. 
     // This could hammer the db though; so perhaps hold off on that until we see what its like with some users
@@ -127,6 +129,7 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                     }}
                     id={`hodl-comments-${comment.id}`}
                 >
+                    
                     <UserAvatarAndHandle
                         address={comment.user.address}
                         fallbackData={comment.user}
@@ -170,9 +173,10 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                         <div
                                             style={{
                                                 display: 'flex',
-                                                gap: theme.spacing(1),
-                                                alignItems: 'center',
+                                                flexDirection: 'column',
+                                                alignItems: 'start',
                                             }}>
+                                                { pinnedComment?.id === comment?.id &&<Box sx={{ fontSize: 10, color: 'text.secondary'}}>Pinned Comment</Box> }
                                             <ProfileNameOrAddress
                                                 profileAddress={comment.user.address}
                                                 fallbackData={comment.user}
@@ -187,28 +191,30 @@ export const HodlCommentBox: FC<HodlCommentBoxProps> = ({
                                             }}>
                                             {
                                                 signedInAddress &&
-                                                (canDeleteComment(comment, signedInAddress, mutableToken) ||
-                                                    canPinComment(signedInAddress, mutableToken)) &&
+                                                (canDeleteComment(comment, signedInAddress, mutableToken) || isHodler(signedInAddress, mutableToken)) &&
                                                 <HodlCommentPopUpMenu
+                                                    isHodler={isHodler(signedInAddress, mutableToken)}
+                                                    pinned={pinnedComment?.id === comment?.id}
                                                     onDelete={async () => {
                                                         setIsDeleting(true);
 
                                                         await deleteComment(comment);
-                                                        parentMutateList();
 
                                                         // The comment we've deleted might have been a pinned comment. Mutate if needed
                                                         mutate([`/api/comments/pinned`, comment?.tokenId]);
 
-                                                        // if we hit delete on the pinned comment box, we should mutate its parent as well,
-                                                        // so that the list updates
-                                                        console.log("deleted, mutating", [`/api/comments`, comment.object, comment?.objectId, 0, limit, true])
-                                                        mutate([`/api/comments`, comment.object, comment?.objectId, 0, limit, true])
+                                                        parentMutateList();
 
                                                         setTimeout(() => setIsDeleting(false));
                                                     }} onPin={async () => {
                                                         await pinComment(comment);
                                                         mutate([`/api/comments/pinned`, comment?.tokenId]);
-                                                    }} />
+                                                    }}
+                                                    onUnpin={async () => {
+                                                        await unpinComment(comment);
+                                                        mutate([`/api/comments/pinned`, comment?.tokenId]);
+                                                    }}
+                                                />
                                             }
                                             <HodlCommentActionButtons comment={comment} />
                                         </div>
