@@ -5,7 +5,7 @@ export const useUnpinComment = () => {
         try {
             const { default: axios } = await import('axios');
             const r = await axios.delete(
-                `/api/comments/pin`,
+                `/api/comments/unpin`,
                 {
                     headers: {
                         'Accept': 'application/json'

@@ -68,7 +68,7 @@ export const AddComment: FC<AddCommentProps> = ({
         return <Box sx={{
             display: 'flex',
             alignItems: 'center',
-            padding: 1,
+            padding: 2,
             // marginTop: 1,
             borderTop: `1px solid #eee`,
             gap: 1

@@ -38,7 +38,10 @@ export default function HodlCommentsModal({ open, setOpen }) {
                     boxShadow: 24,
                     p: 4,
                     padding: 0,
-                    width: '90vw',
+                    width: {
+                        xs: '90%',
+                        lg: '1080px'
+                    },
                     overflow: 'auto'
                 }}
                 onClick={e => {
