@@ -30,7 +30,6 @@ export const HomePagePitch = ({ limit, prefetchedTopTokens }) => {
                     md: 4,
                 },
                 background: 'white',
-                // boxShadow: '1px 1px 8px #eee',
                 border: '1px solid #eee',
                 borderRadius: 2,
                 alignItems: 'center',
