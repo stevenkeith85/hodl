@@ -15,9 +15,10 @@ import { User } from "../../../models/User";
 import { getAsString } from "../../../lib/getAsString";
 
 import { BaseProvider } from '@ethersproject/providers'
-import { TransactionResponse, TransactionReceipt} from '@ethersproject/abstract-provider'
+import { TransactionResponse, TransactionReceipt } from '@ethersproject/abstract-provider'
 import { LogDescription } from '@ethersproject/abi'
 import { Contract } from '@ethersproject/contracts'
+import { updateTransactionRecords } from "../../../lib/transactions/updateTransactionRecords";
 
 const route = apiRoute();
 const client = Redis.fromEnv()
@@ -61,7 +62,7 @@ route.post(async (req, res: NextApiResponse) => {
     }
 
     const firstHashToBeProcessed = await client.zrange(`user:${req.address}:txs:pending`, 0, 0);
-    
+
     if (hash !== firstHashToBeProcessed[0]) {
         console.log(`blockchain/transaction - cannot process this tx until we successfully process the early ones`, hash, firstHashToBeProcessed[0]);
         return res.status(400).json({ message: 'tx with a lower nonce still in the queue' });
@@ -82,11 +83,6 @@ route.post(async (req, res: NextApiResponse) => {
         return res.status(503);
     }
 
-    if (txReceipt.byzantium && txReceipt.status === 0) {
-        console.log('blockchain/transaction - The tx was reverted');
-        return res.status(503);
-    }
-
     if (txReceipt.from !== req.address) {
         console.log(`blockchain/transaction - credentials do not match the tx sender`);
         return res.status(400).json({ message: 'bad request' });
@@ -98,25 +94,38 @@ route.post(async (req, res: NextApiResponse) => {
         return res.status(400).json({ message: 'bad request' });
     }
 
-    if (!txReceipt.logs?.[0]) {
-        console.log('blockchain/transaction - unable to retrieve the transaction log');
-        return res.status(503);
-    }
-
     const tx: TransactionResponse = await provider.getTransaction(hash);
-
     const user = await client.hmget<User>(`user:${req.address}`, 'nonce');
 
     if (tx.nonce <= user.nonce) {
         console.log(`blockchain/transaction - tx nonce older than last one we successfully processed. tx nonce: ${tx.nonce}, user nonce: ${user.nonce}`);
         return res.status(400).json({ message: 'bad request' });
-    }    
+    }
+
+    // If the transaction was reverted; we can update our records and return now
+    if (txReceipt.byzantium &&
+        txReceipt.status === 0) {
+        console.log('blockchain/transaction - The tx was reverted');
+        
+        const recordsUpdated = await updateTransactionRecords(req.address, tx.nonce, hash);
+        if (!recordsUpdated) {
+            return res.status(503);
+        }
+
+        // We pass an empty action; which will result in an early exit in the action step of this zeplo pipeline
+        return res.status(200).json({});
+    }
 
     let contract = null;
     if (txReceipt.to === process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS) {
         contract = new Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
     } else if (txReceipt.to === process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS) {
         contract = new Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, provider);
+    }
+
+    if (!txReceipt.logs?.[0]) {
+        console.log('blockchain/transaction - unable to retrieve the transaction log');
+        return res.status(503);
     }
 
     // if there are logs unknown to the ABI, then parseLog throws. 

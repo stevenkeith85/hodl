@@ -384,7 +384,14 @@ route.post(async (req, res: NextApiResponse) => {
   const { action, object, objectId, metadata } = body;
 
   if (!action || !object || !objectId) {
-    return res.status(400).json({ message: 'Bad Request' });
+    // We'd normally say this is a 400, however this is used in a zeplo pipeline
+    // and if we give back a 400, zeplo will retry it
+    //
+    // in the case of a rejected transaction, there's no action to add to the system
+    // and in cases where we are missing action, object, or objectId there would be no point
+    // in retrying as we wouldn't be able to handle it
+    console.log("actions/add - Incomplete action sent. Not processing", body);
+    return res.status(200).json({ message: 'Incomplete action sent. Not processing' });
   }
 
   await addAction({
