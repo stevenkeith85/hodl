@@ -110,7 +110,8 @@ export default function NewYear2023({ tokens }) {
               <NftWindow
                 key={nft.id}
                 nft={nft}
-                sizes="(min-width: 900px) 25vw, (min-width: 1200px) calc(1200px / 5 * 2), 33vw"
+                sizes="(min-width: 600px) 20vw, (min-width: 900px) 15vw, (min-width: 1200px) calc(1200px / 9), 33vw"
+                widths={[600]}
                 showAssetType={false}
               />)
           }
