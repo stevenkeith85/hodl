@@ -56,13 +56,15 @@ interface NftWindowProps {
     sizes?: string;
     widths?: number[],
     lcp?: boolean; // if this window will be the largest content paint, then set to true
+    showAssetType?: boolean
 }
 
 export const NftWindow: React.FC<NftWindowProps> = ({
     nft,
     sizes = "(min-width: 900px) 25vw, (min-width: 1200px) calc(1200px / 5 * 2), 50vw",
     widths = [600, 700, 800, 900, 1080],
-    lcp = false
+    lcp = false,
+    showAssetType=true,
 }) => {
     return (
         <div
@@ -88,7 +90,7 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                             height: '100%',
                             position: 'relative'
                         }}>
-                        <GifBoxOutlinedIcon sx={{ position: 'absolute', top: 8, left: 8, zIndex: 1 }} />
+                        { showAssetType && <GifBoxOutlinedIcon sx={{ position: 'absolute', top: 8, left: 8, zIndex: 1 }} />}
                         <HodlImageResponsive
                             assetFolder={"image"}
                             folder="nfts"
@@ -112,7 +114,7 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                             height: '100%',
                             position: 'relative'
                         }}>
-                        <VideocamOutlinedIcon sx={{ position: 'absolute', top: 8, left: 8, zIndex: 1 }} />
+                        { showAssetType && <VideocamOutlinedIcon sx={{ position: 'absolute', top: 8, left: 8, zIndex: 1 }} />}
                         <HodlImageResponsive
                             assetFolder={"image"}
                             folder="nfts"
@@ -131,7 +133,7 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                             position: 'relative',
                             color: 'white',
                         }}>
-                        <MusicNoteOutlinedIcon sx={{ position: 'absolute', top: 8, left: 8, zIndex: 1 }} />
+                        { showAssetType && <MusicNoteOutlinedIcon sx={{ position: 'absolute', top: 8, left: 8, zIndex: 1 }} />}
                         <HodlAudioBox token={nft} audio={false} minHeight={1000} size={50} />
                     </div>
                 }
@@ -147,7 +149,7 @@ export const NftWindow: React.FC<NftWindowProps> = ({
                             height: '100%',
                             position: 'relative'
                         }}>
-                        <ImageOutlinedIcon sx={{ position: 'absolute', top: 8, left: 8, zIndex: 1 }} />
+                        { showAssetType && <ImageOutlinedIcon sx={{ position: 'absolute', top: 8, left: 8, zIndex: 1 }} />}
                         <HodlImageResponsive
                             assetFolder={"image"}
                             folder="nfts"

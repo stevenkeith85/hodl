@@ -24,7 +24,7 @@
     "**/*.ts",
     "**/*.tsx", 
     "**/*.mjs", 
-    "**/*.js",
+    "**/*.js", "src/pages/[...slug].tsx",
     //"scripts/generateNfts.mjs"  
   ],
   "exclude": [

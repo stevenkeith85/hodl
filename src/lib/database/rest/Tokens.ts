@@ -66,7 +66,7 @@ export const mGetTokenAndCommentCount = async (tokenIds: string[]) => {
 
 
 // TODO: Possibly might be able to further optimise this
-export const getTokenVMs = async (tokenIds: string[]) => {
+export const getTokenVMs = async (tokenIds: any[]) => {
   if (tokenIds.length === 0) {
     return [];
   }

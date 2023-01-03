@@ -137,6 +137,14 @@ a:hover:not(.MuiButton-root) {
   color: rgba(0, 0, 0, 0.87);
 }
 
+/*************************/
+/* Blog and learn content
+/*************************/
+
+.blog h1 {
+  color: #05778A
+}
+
 .blog a:not(.MuiButton-root), 
 .blog a:link:not(.MuiButton-root), 
 .blog a:visited:not(.MuiButton-root), 

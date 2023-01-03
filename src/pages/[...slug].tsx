@@ -57,27 +57,25 @@ export async function getStaticProps({ params: { slug } }) {
 }
 
 
-const MainLinks = ({top=true}) => (
-  <div 
-    style={{ 
-      margin: top? '0 0 32px 0': '32px 0 0 0',
-      display: 'flex', 
-      gap: '16px' 
-  }}>
+const MainLinks = ({ top = true }) => (
+  <div
+    style={{
+      margin: top ? '0 0 32px 0' : '32px 0 0 0',
+      display: 'flex',
+      gap: '16px'
+    }}>
     <HodlShareButton />
-    
-      <Button
+    <Button
       LinkComponent={Link}
       href="/learn"
-        variant="outlined"
-        sx={{ 
-          fontWeight: 600,
-          paddingX: 2, 
-          paddingY: 1 
-        }}>
-        Back To Learning Hub
-      </Button>
-    
+      variant="outlined"
+      sx={{
+        fontWeight: 600,
+        paddingX: 2,
+        paddingY: 1
+      }}>
+      Back To Learning Hub
+    </Button>
   </div>
 )
 
