@@ -92,7 +92,7 @@ export default function NewYear2023({ tokens }) {
         <h2>To The Moon</h2>
         <p>We hope 2023 turns out to be a good one for <strong>everyone</strong>.</p>
         <p>As Bob Marley put it:</p>
-        <blockquote>One love, one heart. Let's get together and feel all right</blockquote>
+        <blockquote>One love, one heart. Let&apos;s get together and feel all right</blockquote>
         <h2>New Year NFT Collage</h2>
         <p>Can you spot yours?</p>
         <Box
