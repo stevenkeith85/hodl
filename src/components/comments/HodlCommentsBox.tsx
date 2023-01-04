@@ -5,6 +5,8 @@ import { NftContext } from "../../contexts/NftContext";
 import { useComments } from "../../hooks/useComments";
 import { getAsString } from "../../lib/getAsString";
 import { CommentsContext } from "../../contexts/CommentsContext";
+import Box from "@mui/material/Box";
+import { HodlCommentBox } from "./HodlCommentBox";
 
 
 const HodlCommentsBoxBody = dynamic(
@@ -36,7 +38,7 @@ export const HodlCommentsBox = ({
     height = '300px',
     fallbackData = null,
 }) => {
-    const { nft } = useContext(NftContext);
+    const { nft, pinnedComment } = useContext(NftContext);
     const router = useRouter();
 
     const [topLevel, setTopLevel] = useState<{
@@ -70,6 +72,8 @@ export const HodlCommentsBox = ({
     const newTagRef = useRef();
     const [loading, setLoading] = useState(false);
 
+    const [fullscreen, setFullscreen] = useState(false);
+
     useEffect(() => {
         setCommentingOn({
             object: topLevel.object,
@@ -102,24 +106,56 @@ export const HodlCommentsBox = ({
             setTopLevel,
             oldTopLevel,
             setOldTopLevel,
+            fullscreen,
+            setFullscreen,
             limit
         }}>
-            <HodlCommentsBoxHeader/>
-            <HodlCommentsBoxBody
-                swr={swr}
-                loading={loading}
-                height={height}
-                limit={limit}
-                newTagRef={newTagRef} 
-            />
-            <AddComment
-                object={topLevel.object}
-                objectId={topLevel.objectId}
-                tokenId={nft.id}
-                mutateList={swr.mutate}
-                setLoading={setLoading}
-                newTagRef={newTagRef}
-            />
+            <Box
+                sx={{
+                    position: fullscreen ? 'fixed' : 'static',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    top: 0,
+                    left: 0,
+                    width: fullscreen ? '100vw' : 'auto',
+                    height: fullscreen ? '100%' : 'auto',
+                    background: 'white',
+                    zIndex: 1400
+                }}
+            >
+                <HodlCommentsBoxHeader />
+                {
+                    pinnedComment && <Box
+                        sx={{
+                            paddingY: 1,
+                            paddingX: 2,
+                            position: 'relative',
+                            borderBottom: `1px solid #eee`
+                        }}>
+                        <HodlCommentBox
+                            comment={pinnedComment}
+                            canReply={false}
+                            parentMutateList={() => { }}
+                            addCommentInput={undefined}
+                        />
+                    </Box>
+                }
+                <HodlCommentsBoxBody
+                    swr={swr}
+                    loading={loading}
+                    height={height}
+                    limit={limit}
+                    newTagRef={newTagRef}
+                />
+                <AddComment
+                    object={topLevel.object}
+                    objectId={topLevel.objectId}
+                    tokenId={nft.id}
+                    mutateList={swr.mutate}
+                    setLoading={setLoading}
+                    newTagRef={newTagRef}
+                />
+            </Box>
         </CommentsContext.Provider>
     </>)
 }

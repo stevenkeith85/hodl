@@ -3,11 +3,8 @@ import React from 'react';
 import useSWR from "swr";
 import { NftContext } from "../../contexts/NftContext";
 import { fetchWithId } from "../../lib/swrFetchers";
-import { HodlCommentBox } from "../comments/HodlCommentBox";
 import { HodlCommentsBox } from "../comments/HodlCommentsBox";
-import { HodlBorderedBox } from "../HodlBorderedBox";
 import { TokenNameAndDescription } from "./TokenNameAndDescription";
-import PushPinIcon from '@mui/icons-material/PushPin';
 
 
 const SocialTab = ({ prefetchedToken, limit, prefetchedPinnedComment = null }) => {
@@ -48,11 +45,6 @@ const SocialTab = ({ prefetchedToken, limit, prefetchedPinnedComment = null }) =
           }}>
           <TokenNameAndDescription token={prefetchedToken} />
         </Box>
-        {
-          comment && <HodlBorderedBox sx={{ paddingY: 1, paddingX: 2, position: 'relative' }}>
-            <HodlCommentBox comment={comment} canReply={false} parentMutateList={() => { }} addCommentInput={undefined} />
-          </HodlBorderedBox>
-        }
         <Box
           sx={{
             background: 'white',

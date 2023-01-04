@@ -11,6 +11,9 @@ export const CommentsContext = createContext<{
     topLevel: any,
     setTopLevel: Function,
 
+    fullscreen: any,
+    setFullscreen: Function,
+
     limit?: any
 }>({
     commentingOn: null,
@@ -21,6 +24,9 @@ export const CommentsContext = createContext<{
 
     topLevel: null,
     setTopLevel: () => {},
+
+    fullscreen: false,
+    setFullscreen: () => {},
 
     limit: null
 });
