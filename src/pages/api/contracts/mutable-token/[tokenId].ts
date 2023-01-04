@@ -17,9 +17,7 @@ export const getMutableToken = async (id, req = null): Promise<MutableToken> => 
       'api/contracts/mutable-token/updateCache',
       {
         id
-      },
-      req.cookies.refreshToken,
-      req.cookies.accessToken
+      }
     )
   }
 

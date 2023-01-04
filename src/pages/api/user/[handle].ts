@@ -5,6 +5,7 @@ import { UserViewModel } from "../../../models/User";
 import { getAsString } from "../../../lib/getAsString";
 import { getUser } from '../../../lib/database/rest/getUser';
 import { get } from '../../../lib/database/rest/get';
+import { validAddressFormat } from '../../../lib/utils';
 
 
 export const getUserUsingHandle = async (handle: string, viewerAddress: string): Promise<UserViewModel | null> => {
@@ -15,7 +16,7 @@ export const getUserUsingHandle = async (handle: string, viewerAddress: string):
 
   let address = handle;
 
-  if (!/^0x[0-9A-F]{40}$/i.test(address)) {// An ethereum/polygon address is a 42 character hexadecimal address
+  if (!validAddressFormat(address)) {
     address = await get(`nickname:${handle}`);
   }
 

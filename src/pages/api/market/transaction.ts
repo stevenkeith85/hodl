@@ -62,7 +62,7 @@ route.post(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'You are trying to queue a tx that we have already processed; or a transaction older than the last one we have successfully processed' });
   }
 
-  const success = await queueTxAndAction(hash, req.cookies.refreshToken, req.cookies.accessToken, req.address);
+  const success = await queueTxAndAction(hash, req.address);
 
   if (!success) {
     return res.status(501).json({ message: 'We were unable to queue tx at the moment; please try later' });

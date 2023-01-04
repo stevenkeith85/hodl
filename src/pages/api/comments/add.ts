@@ -85,12 +85,11 @@ export const addComment = async (comment: HodlComment, req) => {
   await addToZeplo(
     'api/actions/add',
     {
+      subject: req.address,
       action: ActionTypes.Commented,
       object: "comment",
       objectId: comment.id
     },
-    req.cookies.refreshToken,
-    req.cookies.accessToken
   );
 
   return true;

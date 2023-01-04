@@ -33,8 +33,6 @@ export const getHodling = async (
             {
                 address
             },
-            req.cookies.refreshToken,
-            req.cookies.accessToken
         );
         return {
             items: [],

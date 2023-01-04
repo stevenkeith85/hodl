@@ -58,8 +58,6 @@ route.post(async (req, res: NextApiResponse) => {
     await addToZeplo(
       'api/actions/add',
       action,
-      req.cookies.refreshToken,
-      req.cookies.accessToken
     );
   }
 

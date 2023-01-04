@@ -3,7 +3,6 @@ import { Token } from "../../../../../models/Token";
 import { Redis } from '@upstash/redis';
 import { FullToken } from "../../../../../models/FullToken";
 import { getAsString } from '../../../../../lib/getAsString';
-import { updateListedCache } from './updateCache';
 import { get } from '../../../../../lib/database/rest/get';
 import { addToZeplo } from '../../../../../lib/addToZeplo';
 import { zRange } from '../../../../../lib/database/rest/zRange';
@@ -37,9 +36,7 @@ export const getListed = async (
             'api/contracts/market/listed/updateCache',
             {
                 address
-            },
-            req.cookies.refreshToken,
-            req.cookies.accessToken
+            }
         );
         
         return {

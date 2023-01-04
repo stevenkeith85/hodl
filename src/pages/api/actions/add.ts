@@ -361,15 +361,9 @@ route.post(async (req, res: NextApiResponse) => {
     return res.status(401).json({ message: 'unauthenticated' });
   }
 
-  // We also require the user to be authenticated; so they'll need to have their access/refresh cookies forwarded
-  if (!req.address) {
-    return res.status(403).json({ message: "Not Authenticated" });
-  }
-
   let body = req.body;
 
   const inputFromPreviousStep = req.headers['x-zeplo-step-a'];
-
   if (inputFromPreviousStep) {
     try {
       const url = `https://zeplo.to/requests/${inputFromPreviousStep}/response.body?_token=${process.env.ZEPLO_TOKEN}`;
@@ -381,9 +375,9 @@ route.post(async (req, res: NextApiResponse) => {
     }
   }
 
-  const { action, object, objectId, metadata } = body;
+  const { subject, action, object, objectId, metadata } = body;
 
-  if (!action || !object || !objectId) {
+  if (!subject || !action || !object || !objectId) {
     // We'd normally say this is a 400, however this is used in a zeplo pipeline
     // and if we give back a 400, zeplo will retry it
     //
@@ -395,7 +389,7 @@ route.post(async (req, res: NextApiResponse) => {
   }
 
   await addAction({
-    subject: req.address,
+    subject,
     action,
     objectId,
     object,

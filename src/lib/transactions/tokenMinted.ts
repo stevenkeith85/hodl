@@ -26,9 +26,21 @@ import { addToZeplo } from "../addToZeplo";
 
 const client = Redis.fromEnv()
 
+// TODO: This can probably morph towards a general import function
+
+// Some things that would need changed:
+
+// We'd have to get the image from IPFS here and add it to cloudinary. (Probably a better approch as it would speed up the create process, and we'd no longer have orphaned images in the nfts folder)
+// Only issue could be that it increases the time this function takes to complete; so we might need to call a 'getImageFromIPFS' task or something
+
+// We'd have to allow a parameter to specify the contract. (We could have an allowlist of valid contracts)
+// We'd have to calculate the aspect ratio and store that in our db. It likely wouldn't be in the metadata unless we make that a prerequisite for getting your contract onto the site
+
+// We'd have to check the user currently hodls the token; as they could have minted it and then sold it. We'd assign it to the correct user when the mutable cache is updated
+// but that user might not be on our site; or want to be
 
 // returns whether we've successfully handled this log
-// dediciding not to process it can also be a 'success'
+// deciding not to process it can also be a 'success'
 
 // event Transfer(address from, address to, uint256 tokenId)
 export const tokenMinted = async (
@@ -36,7 +48,7 @@ export const tokenMinted = async (
     provider: BaseProvider,
     tx: TransactionResponse,
     log: LogDescription,
-    req
+    address: string
 ) => {
     const start = Date.now();
 
@@ -90,6 +102,14 @@ export const tokenMinted = async (
             filter
         }
     } = metadata;
+
+    // TODO:
+    // We should check the metadata is what we expect here; as users can always mint from a script bypassing the UI
+    // and putting up rubbish.
+
+    // Easier to just prevent that rubbish from getting on the site, than trying to handle it at the smart contract level
+    // if there's no incentive for scammers; then they might go elsewhere
+
 
     // NB: We just store the cid as its simpler to construct the relevant urls from it
     const token: Token = {
@@ -178,7 +198,7 @@ export const tokenMinted = async (
         }
     }
 
-    const recordsUpdated = await updateTransactionRecords(req.address, tx.nonce, hash);
+    const recordsUpdated = await updateTransactionRecords(address, tx.nonce, hash);
 
     if (!recordsUpdated) {
         return false;
@@ -189,21 +209,17 @@ export const tokenMinted = async (
         {
             id: token.id
         },
-        req.cookies.refreshToken,
-        req.cookies.accessToken
     )
 
     addToZeplo(
         'api/contracts/token/hodling/updateCache',
         {
-            address: req.address
+            address
         },
-        req.cookies.refreshToken,
-        req.cookies.accessToken
     )
 
     const action = {
-        subject: req.address,
+        subject: address,
         action: ActionTypes.Added,
         object: "token",
         objectId: token.id

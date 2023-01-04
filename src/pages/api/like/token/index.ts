@@ -65,9 +65,6 @@ route.post(async (req, res: NextApiResponse) => {
     notificationPromise = addToZeplo(
       'api/actions/add',
       action,
-      req.cookies.refreshToken,
-      req.cookies.accessToken,
-      req.address
     );
   }
 
