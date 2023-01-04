@@ -3,7 +3,7 @@ import { Redis } from '@upstash/redis';
 import apiRoute from "../handler";
 
 import { ActionTypes } from '../../../models/HodlAction';
-import { addToZeplo, addToZeploWithUserAuth } from '../../../lib/addToZeplo';
+import { addToZeplo } from '../../../lib/addToZeplo';
 import { runRedisTransaction } from '../../../lib/database/rest/databaseUtils';
 import { validAddressFormat } from '../../../lib/utils';
 

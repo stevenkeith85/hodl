@@ -3,9 +3,8 @@ import { Token } from "../../../../../models/Token";
 import { Redis } from '@upstash/redis';
 import { FullToken } from "../../../../../models/FullToken";
 import { getAsString } from '../../../../../lib/getAsString';
-import { updateListedCache } from './updateCache';
 import { get } from '../../../../../lib/database/rest/get';
-import { addToZeplo, addToZeploWithUserAuth } from '../../../../../lib/addToZeplo';
+import { addToZeplo } from '../../../../../lib/addToZeplo';
 import { zRange } from '../../../../../lib/database/rest/zRange';
 import { mGetTokens } from '../../../../../lib/database/rest/Tokens';
 

@@ -21,7 +21,7 @@ import { Token } from "../../models/Token";
 import { HodlMetadata } from "../../models/Metadata";
 
 import { updateTransactionRecords } from "./updateTransactionRecords";
-import { addToZeplo, addToZeploWithUserAuth } from "../addToZeplo";
+import { addToZeplo } from "../addToZeplo";
 
 
 const client = Redis.fromEnv()

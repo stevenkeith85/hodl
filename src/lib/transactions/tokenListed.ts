@@ -9,7 +9,7 @@ import { getTagsForToken } from "../../pages/api/tags";
 
 import { updateTransactionRecords } from "./updateTransactionRecords";
 import { runRedisTransaction } from "../database/rest/databaseUtils";
-import { addToZeplo, addToZeploWithUserAuth } from "../addToZeplo";
+import { addToZeplo } from "../addToZeplo";
 import { getListingFromBlockchain } from "../../pages/api/contracts/market/listing/[tokenId]";
 
 

@@ -6,7 +6,7 @@ import { ActionTypes } from "../../../models/HodlAction";
 import { AddCommentValidationSchema } from "../../../validation/comments/addComments";
 import { HodlComment } from "../../../models/HodlComment";
 
-import { addToZeplo, addToZeploWithUserAuth } from "../../../lib/addToZeplo";
+import { addToZeplo } from "../../../lib/addToZeplo";
 import { runRedisTransaction } from "../../../lib/database/rest/databaseUtils";
 import { jsonEscapeUTF } from "../../../lib/utils";
 

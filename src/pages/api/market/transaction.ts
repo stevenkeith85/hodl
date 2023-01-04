@@ -4,7 +4,7 @@ import { getProvider } from "../../../lib/server/connections";
 import { Redis } from '@upstash/redis';
 import { validTxHashFormat } from "../../../lib/utils";
 import { User } from "../../../models/User";
-import { queueTxAndAction, queueTxAndActionWithUserAuth } from "../../../lib/addToZeplo";
+import { queueTxAndAction } from "../../../lib/addToZeplo";
 import { addPendingTransaction } from "../../../lib/transactions/updateTransactionRecords";
 import { getAsString } from "../../../lib/getAsString";
 
