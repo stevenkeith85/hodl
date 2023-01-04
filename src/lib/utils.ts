@@ -102,6 +102,10 @@ export const validTxHashFormat = (addr) => {
   return /^0x([A-Fa-f0-9]{64})$/.test(addr);
 }
 
+export const validAddressFormat = (addr) => {
+  return /^0x[A-Fa-f0-9]{40}$/.test(addr);
+}
+
 export const assetTypeFromMimeType = (mimeType: string): AssetTypes | null => {
   if (!mimeType) {
     return null;

@@ -9,11 +9,17 @@ import { HodlLoadingSpinner } from '../components/HodlLoadingSpinner'
 import { authenticate } from '../lib/jwt'
 import { useWarningOnExit } from '../hooks/useWarningOnExit'
 
+// TODO: Can maybe SSR these
+
+const CentredSpinner = ({}) => (
+  <Box sx={{ width: "100%", display: 'flex', alignItems: 'center', justifyContent: 'center'}}><HodlLoadingSpinner /></Box>
+)
+
 const SelectAssetAction = dynamic(
   () => import('../components/mint/SelectAssetAction').then((module) => module.SelectAssetAction),
   {
     ssr: false,
-    loading: () => <HodlLoadingSpinner />
+    loading: () => <CentredSpinner />
   }
 );
 
@@ -21,7 +27,7 @@ const CropAssetAction = dynamic(
   () => import('../components/mint/CropAssetAction').then((module) => module.CropAssetAction),
   {
     ssr: false,
-    loading: () => <HodlLoadingSpinner />
+    loading: () => <CentredSpinner />
   }
 );
 
@@ -29,7 +35,7 @@ const FilterAssetAction = dynamic(
   () => import('../components/mint/FilterAssetAction').then((module) => module.FilterAssetAction),
   {
     ssr: false,
-    loading: () => <HodlLoadingSpinner />
+    loading: () => <CentredSpinner />
   }
 );
 
@@ -37,7 +43,7 @@ const UploadMetadataAction = dynamic(
   () => import('../components/mint/UploadMetadataAction').then((module) => module.UploadMetadataAction),
   {
     ssr: false,
-    loading: () => <HodlLoadingSpinner />
+    loading: () => <CentredSpinner />
   }
 );
 
@@ -45,7 +51,7 @@ const MintTokenAction = dynamic(
   () => import('../components/mint/MintTokenAction').then((module) => module.MintTokenAction),
   {
     ssr: false,
-    loading: () => <HodlLoadingSpinner />
+    loading: () => <CentredSpinner />
   }
 );
 
@@ -149,10 +155,8 @@ const Create = ({ address }) => {
             md: '720px',
           },
           justifyContent: {
-            // xs: 'start',
             xs:'center'
           }
-          // background: 'yellow'
         }}>
         <Box sx={{
           display: activeStep === 0 ? 'flex' : 'none',

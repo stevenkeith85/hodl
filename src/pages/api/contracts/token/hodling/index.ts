@@ -5,7 +5,7 @@ import { getAsString } from '../../../../../lib/getAsString';
 import { mGetTokens } from '../../../../../lib/database/rest/Tokens';
 import { zRange } from '../../../../../lib/database/rest/zRange';
 import { get } from '../../../../../lib/database/rest/get';
-import { addToZeplo } from '../../../../../lib/addToZeplo';
+import { addToZeplo, addToZeploWithUserAuth } from '../../../../../lib/addToZeplo';
 
 export const getHodling = async (
     address: string,
@@ -33,8 +33,6 @@ export const getHodling = async (
             {
                 address
             },
-            req.cookies.refreshToken,
-            req.cookies.accessToken
         );
         return {
             items: [],

@@ -24,7 +24,7 @@ export const tokenBought = async (
     hash: string, // check valid address?
     tx: TransactionResponse,
     log: LogDescription,
-    req
+    address: string
 ) => {
     const start = Date.now();
     console.log(`tokenBought - processing tx`);
@@ -79,7 +79,7 @@ export const tokenBought = async (
         await client.hmset(`user:${seller}`, { 'avatar': '' });
     }
 
-    const recordsUpdated = await updateTransactionRecords(req.address, tx.nonce, hash);
+    const recordsUpdated = await updateTransactionRecords(address, tx.nonce, hash);
 
     if (!recordsUpdated) {
         return false;
@@ -89,18 +89,14 @@ export const tokenBought = async (
         'api/contracts/mutable-token/updateCache',
         {
             id: tokenId
-        },
-        req.cookies.refreshToken,
-        req.cookies.accessToken
+        }
     )
 
     addToZeplo(
         'api/contracts/token/hodling/updateCache',
         {
-            address: req.address
+            address
         },
-        req.cookies.refreshToken,
-        req.cookies.accessToken
     )
 
     addToZeplo(
@@ -108,8 +104,6 @@ export const tokenBought = async (
         {
             address: seller
         },
-        req.cookies.refreshToken,
-        req.cookies.accessToken
     );
 
     const action = {

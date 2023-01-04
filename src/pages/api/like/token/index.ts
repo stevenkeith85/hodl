@@ -4,7 +4,7 @@ import { Redis } from '@upstash/redis';
 import apiRoute from "../../handler";
 import { ActionTypes } from "../../../../models/HodlAction";
 import { runRedisTransaction } from "../../../../lib/database/rest/databaseUtils";
-import { addToZeplo } from "../../../../lib/addToZeplo";
+import { addToZeplo, addToZeploWithUserAuth } from "../../../../lib/addToZeplo";
 
 const route = apiRoute();
 
@@ -65,9 +65,6 @@ route.post(async (req, res: NextApiResponse) => {
     notificationPromise = addToZeplo(
       'api/actions/add',
       action,
-      req.cookies.refreshToken,
-      req.cookies.accessToken,
-      req.address
     );
   }
 

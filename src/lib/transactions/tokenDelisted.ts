@@ -21,7 +21,7 @@ export const tokenDelisted = async (
     hash: string, // check valid address?
     tx: TransactionResponse,
     log: LogDescription,
-    req
+    address: string
 ) => {
     const start = Date.now();
     console.log(`tokenDelisted - processing tx`);
@@ -64,7 +64,7 @@ export const tokenDelisted = async (
         }
     }
 
-    const recordsUpdated = await updateTransactionRecords(req.address, tx.nonce, hash);
+    const recordsUpdated = await updateTransactionRecords(address, tx.nonce, hash);
 
     if (!recordsUpdated) {
         return false;
@@ -75,30 +75,24 @@ export const tokenDelisted = async (
         {
             id: tokenId
         },
-        req.cookies.refreshToken,
-        req.cookies.accessToken
     )
 
     addToZeplo(
         'api/contracts/token/hodling/updateCache',
         {
-            address: req.address
+            address
         },
-        req.cookies.refreshToken,
-        req.cookies.accessToken
     )
 
     addToZeplo(
         'api/contracts/market/listed/updateCache',
         {
-            address: req.address
+            address
         },
-        req.cookies.refreshToken,
-        req.cookies.accessToken
     );
 
     const action = {
-        subject: req.address,
+        subject: address,
         action: ActionTypes.Delisted,
         object: "token",
         objectId: tokenId

@@ -3,8 +3,9 @@ import { Redis } from '@upstash/redis';
 import apiRoute from "../handler";
 
 import { ActionTypes } from '../../../models/HodlAction';
-import { addToZeplo } from '../../../lib/addToZeplo';
+import { addToZeplo, addToZeploWithUserAuth } from '../../../lib/addToZeplo';
 import { runRedisTransaction } from '../../../lib/database/rest/databaseUtils';
+import { validAddressFormat } from '../../../lib/utils';
 
 const client = Redis.fromEnv()
 const route = apiRoute();
@@ -54,6 +55,7 @@ export const toggleFollow = async (userAddress, targetAddress, req) => {
     }
 
     const action = {
+      subject: req.address,
       action: ActionTypes.Followed,
       object: "address",
       objectId: targetAddress
@@ -62,8 +64,6 @@ export const toggleFollow = async (userAddress, targetAddress, req) => {
     await addToZeplo(
       'api/actions/add',
       action,
-      req.cookies.refreshToken,
-      req.cookies.accessToken
     );
   }
 
@@ -96,7 +96,7 @@ route.post(async (req, res) => {
     return res.status(400).json({ message: 'Bad Request' });
   }
 
-  if (!/^0x[0-9A-F]{40}$/i.test(address)) { // not a valid address
+  if (!validAddressFormat(address)) { // not a valid address
     return res.status(400).json({ message: 'Bad Request' });
   }
 

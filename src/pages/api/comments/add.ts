@@ -6,7 +6,7 @@ import { ActionTypes } from "../../../models/HodlAction";
 import { AddCommentValidationSchema } from "../../../validation/comments/addComments";
 import { HodlComment } from "../../../models/HodlComment";
 
-import { addToZeplo } from "../../../lib/addToZeplo";
+import { addToZeplo, addToZeploWithUserAuth } from "../../../lib/addToZeplo";
 import { runRedisTransaction } from "../../../lib/database/rest/databaseUtils";
 import { jsonEscapeUTF } from "../../../lib/utils";
 
@@ -85,12 +85,11 @@ export const addComment = async (comment: HodlComment, req) => {
   await addToZeplo(
     'api/actions/add',
     {
+      subject: req.address,
       action: ActionTypes.Commented,
       object: "comment",
       objectId: comment.id
     },
-    req.cookies.refreshToken,
-    req.cookies.accessToken
   );
 
   return true;

@@ -5,7 +5,7 @@ import { FullToken } from "../../../../../models/FullToken";
 import { getAsString } from '../../../../../lib/getAsString';
 import { updateListedCache } from './updateCache';
 import { get } from '../../../../../lib/database/rest/get';
-import { addToZeplo } from '../../../../../lib/addToZeplo';
+import { addToZeplo, addToZeploWithUserAuth } from '../../../../../lib/addToZeplo';
 import { zRange } from '../../../../../lib/database/rest/zRange';
 import { mGetTokens } from '../../../../../lib/database/rest/Tokens';
 
@@ -37,9 +37,7 @@ export const getListed = async (
             'api/contracts/market/listed/updateCache',
             {
                 address
-            },
-            req.cookies.refreshToken,
-            req.cookies.accessToken
+            }
         );
         
         return {

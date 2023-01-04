@@ -128,7 +128,7 @@ export default function Transaction({ address }) {
                                 paddingY: 2,
                             }}
                         >
-                            Please read carefully; and only use this if support asks you to.
+                            This tool is in the process of being decomissioned. We should be able to resolve your issue for you if you contact support!
                         </Alert>
                         <Typography marginY={2} sx={{ fontSize: 18, fontWeight: 500 }}>
                             Requeue a transaction
