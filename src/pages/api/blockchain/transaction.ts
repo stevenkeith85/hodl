@@ -20,6 +20,7 @@ import { LogDescription } from '@ethersproject/abi'
 import { Contract } from '@ethersproject/contracts'
 import { updateTransactionRecords } from "../../../lib/transactions/updateTransactionRecords";
 import { zScore } from "../../../lib/database/rest/zScore";
+import { zCard } from "../../../lib/database/rest/zCard";
 
 const route = apiRoute();
 const client = Redis.fromEnv()
@@ -60,11 +61,16 @@ route.post(async (req, res: NextApiResponse) => {
         return res.status(400).json({ message: 'Bad request' });
     }
 
-    // if they have multiple waiting to process we must do them in order
-    const firstHashToBeProcessed = await client.zrange(`user:${address}:txs:pending`, 0, 0);
-    if (hash !== firstHashToBeProcessed[0]) {
-        console.log(`blockchain/transaction - cannot process this tx until we successfully process the early ones`, hash, firstHashToBeProcessed[0]);
-        return res.status(400).json({ message: 'bad request' });
+    // There wont often be a queue of txs, so do a zcard
+    const numberOfPendingTxs = await zCard(`user:${address}:txs:pending`);
+
+    if (Number(numberOfPendingTxs) > 0) {
+        // if there are multiple txs waiting to process we must do them in the correct order
+        const firstHashToBeProcessed = await client.zrange(`user:${address}:txs:pending`, 0, 0);
+        if (hash !== firstHashToBeProcessed[0]) {
+            console.log(`blockchain/transaction - cannot process this tx until we successfully process the early ones`, hash, firstHashToBeProcessed[0]);
+            return res.status(400).json({ message: 'bad request' });
+        }
     }
 
     // Wait for a short time for the tx to be confirmed on the blockchain. 
