@@ -9,6 +9,7 @@ import useSWR from "swr";
 import dynamic from "next/dynamic";
 import { useContext } from "react";
 import { CommentsContext } from "../../contexts/CommentsContext";
+import { NftContext } from "../../contexts/NftContext";
 
 
 const HodlCommentBox = dynamic(
@@ -28,7 +29,8 @@ export const HodlCommentsBoxBody = ({
 }) => {
     // When there's a top level comment we want to display that first, and then all its replies
     // if we just use the top level swr we would only have the replies
-    const { topLevel } = useContext(CommentsContext);
+    const { topLevel, fullscreen } = useContext(CommentsContext);
+    const { pinnedComment } = useContext(NftContext);
     const { data: comment } = useSWR(
         topLevel &&
             topLevel.object === "comment" &&
@@ -39,14 +41,23 @@ export const HodlCommentsBoxBody = ({
     return (
         <Box
             sx={{
-                height,
+                height: fullscreen ? 'auto' : height,
+                flexGrow: 1,
                 overflowY: 'auto',
                 overflowX: 'hidden',
                 position: 'relative',
                 padding: 2,
-                paddingBottom: 0
+                paddingBottom: 0,
             }}
         >
+            {
+                pinnedComment && topLevel.object === "token" &&
+                <HodlCommentBox
+                    comment={pinnedComment}
+                    parentMutateList={swr.mutate}
+                    addCommentInput={newTagRef.current}
+                />
+            }
             {
                 loading && <HodlLoadingSpinner
                     sx={{

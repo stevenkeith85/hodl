@@ -4,34 +4,70 @@ import { useTheme } from "@mui/material/styles";
 import { CommentsContext } from "../../contexts/CommentsContext";
 import { useContext } from "react";
 import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 
-
-export const HodlCommentsBoxHeader= ({}) => {
+export const HodlCommentsBoxHeader = ({ }) => {
     const theme = useTheme();
     const router = useRouter();
 
-    const { oldTopLevel, setOldTopLevel, setTopLevel} = useContext(CommentsContext);
-
-    if (!oldTopLevel?.length) {
-        return null;
-    }
+    const { oldTopLevel, setOldTopLevel, setTopLevel, fullscreen, setFullscreen } = useContext(CommentsContext);
 
     return (<>
         <Box
             sx={{
                 display: 'flex',
                 alignItems: 'center',
+                justifyContent: 'space-between',
                 gap: 1,
-                paddingTop: 2,
-                paddingX: 2,
-                cursor: 'pointer'
-            }}
-            onClick={() => {
-                setTopLevel(oldTopLevel[oldTopLevel.length - 1]);
-                setOldTopLevel(old => old.slice(0, -1))
-                router.back();
+                paddingY: 0.25,
+                paddingX: 1,
+                borderBottom: `1px solid #eee`
             }}>
-            <KeyboardBackspaceIcon size={14} fill={theme.palette.secondary.main} />
+            {Boolean(oldTopLevel?.length) ?
+                <IconButton
+                    onClick={() => {
+                        setTopLevel(oldTopLevel[oldTopLevel.length - 1]);
+                        setOldTopLevel(old => old.slice(0, -1))
+                        router.back();
+                    }}
+                >
+                    <KeyboardBackspaceIcon
+                        size={14}
+                        fill={theme.palette.secondary.main}
+
+                    />
+                </IconButton>
+                : <div></div>
+            }
+            {fullscreen ?
+                <IconButton
+                    onClick={() => {
+                        document.querySelector('body').style.overflow = 'auto';
+                        setFullscreen(false)
+                    }
+                    }
+                >
+                    <FullscreenExitIcon
+                        sx={{ fontSize: 14 }}
+                        fill={theme.palette.secondary.main}
+
+                    />
+                </IconButton> :
+                <IconButton
+                    onClick={() => {
+                        document.querySelector('body').style.overflow = 'hidden';
+                        setFullscreen(true)
+                    }}
+                >
+                    <FullscreenIcon
+                        sx={{ fontSize: 14 }}
+                        fill={theme.palette.secondary.main}
+
+                    />
+                </IconButton>
+            }
         </Box>
     </>)
 }
