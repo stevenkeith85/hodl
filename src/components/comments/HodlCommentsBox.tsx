@@ -6,7 +6,6 @@ import { useComments } from "../../hooks/useComments";
 import { getAsString } from "../../lib/getAsString";
 import { CommentsContext } from "../../contexts/CommentsContext";
 import Box from "@mui/material/Box";
-import { HodlCommentBox } from "./HodlCommentBox";
 
 
 const HodlCommentsBoxBody = dynamic(
@@ -38,7 +37,7 @@ export const HodlCommentsBox = ({
     height = '300px',
     fallbackData = null,
 }) => {
-    const { nft, pinnedComment } = useContext(NftContext);
+    const { nft } = useContext(NftContext);
     const router = useRouter();
 
     const [topLevel, setTopLevel] = useState<{
@@ -120,26 +119,10 @@ export const HodlCommentsBox = ({
                     width: fullscreen ? '100vw' : 'auto',
                     height: fullscreen ? '100%' : 'auto',
                     background: 'white',
-                    zIndex: 1400
+                    zIndex: 1200
                 }}
             >
                 <HodlCommentsBoxHeader />
-                {
-                    pinnedComment && <Box
-                        sx={{
-                            paddingY: 1,
-                            paddingX: 2,
-                            position: 'relative',
-                            borderBottom: `1px solid #eee`
-                        }}>
-                        <HodlCommentBox
-                            comment={pinnedComment}
-                            canReply={false}
-                            parentMutateList={() => { }}
-                            addCommentInput={undefined}
-                        />
-                    </Box>
-                }
                 <HodlCommentsBoxBody
                     swr={swr}
                     loading={loading}

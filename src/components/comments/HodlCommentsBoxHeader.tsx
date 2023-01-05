@@ -14,10 +14,6 @@ export const HodlCommentsBoxHeader = ({ }) => {
 
     const { oldTopLevel, setOldTopLevel, setTopLevel, fullscreen, setFullscreen } = useContext(CommentsContext);
 
-    // if (!oldTopLevel?.length) {
-    //     return null;
-    // }
-
     return (<>
         <Box
             sx={{
@@ -47,7 +43,11 @@ export const HodlCommentsBoxHeader = ({ }) => {
             }
             {fullscreen ?
                 <IconButton
-                    onClick={() => setFullscreen(false)}
+                    onClick={() => {
+                        document.querySelector('body').style.overflow = 'auto';
+                        setFullscreen(false)
+                    }
+                    }
                 >
                     <FullscreenExitIcon
                         sx={{ fontSize: 14 }}
@@ -56,7 +56,10 @@ export const HodlCommentsBoxHeader = ({ }) => {
                     />
                 </IconButton> :
                 <IconButton
-                    onClick={() => setFullscreen(true)}
+                    onClick={() => {
+                        document.querySelector('body').style.overflow = 'hidden';
+                        setFullscreen(true)
+                    }}
                 >
                     <FullscreenIcon
                         sx={{ fontSize: 14 }}

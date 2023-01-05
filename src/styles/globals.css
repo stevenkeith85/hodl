@@ -101,13 +101,13 @@ body::-webkit-scrollbar {
 
 /* firefox */
 * {
-  scrollbar-width: 6px;
+  scrollbar-width: 8px;
   scrollbar-color: #ddd #eee;
 }
 
 /* chrome, edge, safari */
 *::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 *::-webkit-scrollbar-track {
@@ -115,9 +115,9 @@ body::-webkit-scrollbar {
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: #e0e0e0;
+  background-color: #ddd;
   border-radius: 8px;
-  border: 1px solid #eee;
+  border: 1px solid #bbb;
 }
 
 /*********/
