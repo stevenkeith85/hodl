@@ -1,4 +1,4 @@
-import { chunk } from "../../lodash";
+import { chunk, pick } from "../../lodash";
 import { runRedisPipeline } from "./pipeline";
 
 
@@ -22,9 +22,9 @@ export const mGetTokens = async (tokenIds: string[]) => {
   }
 }
 
-// This is optimed to return only the data required for the explore page
-// TODO: Maybe we look at using GraphQL; or make mGetTokens accept a list of fields to return
-export const mGetTokensExplore = async (tokenIds: string[]) => {
+// This is optimed to return only a subset of fields that are asked for; 
+// so that we send no redundant data over the network.
+export const mGetTokensWithFields = async (tokenIds: string[], keys) => {
   try {
     const tokenArgs = tokenIds.map(id => `token:${id}`).join('/')
     const r = await fetch(
@@ -40,14 +40,7 @@ export const mGetTokensExplore = async (tokenIds: string[]) => {
 
     return data?.result?.map(item => {
       const token = JSON.parse(item);
-
-      return {
-        id: token.id,
-        image: token.image,
-        properties: {
-          ...token.properties
-        }
-      }
+      return pick(token, keys);
     });
   } catch (e) {
     console.log(e)

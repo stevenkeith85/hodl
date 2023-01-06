@@ -2,9 +2,27 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useRankings } from "../../hooks/useRankings";
 import { ConnectButton } from "../menu/ConnectButton";
-import Carousel from 'react-material-ui-carousel'
 
-import { NftWindow } from "../NftWindow"
+
+import dynamic from "next/dynamic";
+
+
+const NftWindow = dynamic(
+    () => import('../NftWindow').then(mod => mod.NftWindow),
+    {
+      ssr: true,
+      loading: () => null
+    }
+  );
+
+  const Carousel = dynamic(
+    () => import('react-material-ui-carousel'),
+    {
+      ssr: true,
+      loading: () => null
+    }
+  );
+
 
 export const HomePagePitch = ({ limit, prefetchedTopTokens }) => {
     const { rankings: mostLiked } = useRankings(true, limit, prefetchedTopTokens, "token");
