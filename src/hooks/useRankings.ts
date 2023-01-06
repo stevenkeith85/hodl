@@ -10,6 +10,7 @@ export const useRankings = (
   object: "token" | "user" | "tag" = "user"
 ) => {
 
+  
   const fetcher = (
     url: string, 
     offset: number, 

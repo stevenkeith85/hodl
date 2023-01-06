@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { getAsString } from '../../../lib/getAsString';
-import { getTokenVMs, mGetTokens, mGetTokensExplore } from '../../../lib/database/rest/Tokens';
+import { getTokenVMs, mGetTokens, mGetTokensWithFields } from '../../../lib/database/rest/Tokens';
 import { zCard } from '../../../lib/database/rest/zCard';
 import { zCount } from '../../../lib/database/rest/zCount';
 import { zRange } from '../../../lib/database/rest/zRange';
@@ -122,7 +122,7 @@ export const getTokenSearchResults = async (
                     { rev: true }
                 );
             }
-            tokens = await mGetTokensExplore(ids);
+            tokens = await mGetTokensWithFields(ids, ['id', 'image', 'properties']);
             // tokens = await getTokenVMs(ids)
         }
         // const stop = Date.now()

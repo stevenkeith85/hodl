@@ -1,5 +1,5 @@
 import { Token } from "../../../../models/Token";
-import { mGetTokens } from "../../../../lib/database/rest/Tokens";
+import { mGetTokensWithFields } from "../../../../lib/database/rest/Tokens";
 import { getAsString } from "../../../../lib/getAsString";
 import { NextRequest, NextResponse } from 'next/server';
 import { zCard } from "../../../../lib/database/rest/zCard";
@@ -26,7 +26,7 @@ export const getMostLikedTokens = async (
   }
 
   const ids = await zRange(`rankings:token:likes:count`, offset, offset + limit - 1, {rev:true});
-  const tokens = await mGetTokens(ids);
+  const tokens = await mGetTokensWithFields(ids, ['id', 'name', 'image', 'properties']);
 
   return {
     items: tokens,

@@ -33,7 +33,6 @@ const HomepageQuickstart = dynamic(
   }
 );
 
-
 export const getServerSideProps = async ({ req, res }) => {
   await authenticate(req, res);
 
