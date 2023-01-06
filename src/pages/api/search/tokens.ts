@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { getAsString } from '../../../lib/getAsString';
-import { getTokenVMs } from '../../../lib/database/rest/Tokens';
+import { getTokenVMs, mGetTokens, mGetTokensExplore } from '../../../lib/database/rest/Tokens';
 import { zCard } from '../../../lib/database/rest/zCard';
 import { zCount } from '../../../lib/database/rest/zCount';
 import { zRange } from '../../../lib/database/rest/zRange';
@@ -99,7 +99,6 @@ export const getTokenSearchResults = async (
                 }, {}
             );
 
-            // tokens = await mGetTokens(Object.keys(tokenIdToPriceMap));
             tokens = await getTokenVMs(Object.keys(tokenIdToPriceMap));
 
             // append the price
@@ -123,8 +122,8 @@ export const getTokenSearchResults = async (
                     { rev: true }
                 );
             }
-            // tokens = await mGetTokens(ids);
-            tokens = await getTokenVMs(ids)
+            tokens = await mGetTokensExplore(ids);
+            // tokens = await getTokenVMs(ids)
         }
         // const stop = Date.now()
         // console.log('get data', stop - start);
