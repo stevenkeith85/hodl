@@ -9,6 +9,7 @@ interface SearchQuery {
     maxPrice: number;
 }
 
+// TODO: I dont think this is getting used at the moment. We should extract the logic from the explore page and add it here
 export const useSearchTokens = (
     {
         q, 

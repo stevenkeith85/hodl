@@ -22,6 +22,38 @@ export const mGetTokens = async (tokenIds: string[]) => {
   }
 }
 
+// This is optimed to return only the data required for the explore page
+// TODO: Maybe we look at using GraphQL; or make mGetTokens accept a list of fields to return
+export const mGetTokensExplore = async (tokenIds: string[]) => {
+  try {
+    const tokenArgs = tokenIds.map(id => `token:${id}`).join('/')
+    const r = await fetch(
+      `${process.env.UPSTASH_REDIS_REST_URL}/mget/${tokenArgs}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
+        },
+        keepalive: true
+      });
+
+    const data = await r.json();
+
+    return data?.result?.map(item => {
+      const token = JSON.parse(item);
+
+      return {
+        id: token.id,
+        image: token.image,
+        properties: {
+          ...token.properties
+        }
+      }
+    });
+  } catch (e) {
+    console.log(e)
+  }
+}
+
 export const mGetTokensCommentCounts = async (tokenIds: string[]) => {
   try {
     const args = tokenIds.map(id => `token:${id}:comments:count`).join('/')
