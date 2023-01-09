@@ -64,7 +64,7 @@ export const SignInButton = ({ onSignedIn=() => {}}) => {
                         onSignedIn();
                         
                     } catch (e) {
-                        // user rejected the sign in request
+                        // There was a problem signing in
                     }
                 }}
             >
