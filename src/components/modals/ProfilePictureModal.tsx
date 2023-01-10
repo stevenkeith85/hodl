@@ -102,7 +102,7 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
         }
     }, [userSWR?.data?.avatar?.id])
 
-    if (!profilePictureModalOpen || !hodlingSwr?.data || !userSWR?.data) {
+    if (!profilePictureModalOpen || (!hodlingSwr?.data && !listedSwr?.data) || !userSWR?.data) {
         return null
     }
 
