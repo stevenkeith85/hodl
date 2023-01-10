@@ -2,7 +2,6 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { useContext, useEffect, useState } from "react";
-import { HodlModal } from "./HodlModal";
 import axios from 'axios'
 import InfiniteScroll from 'react-swr-infinite-scroll'
 import useSWR from "swr";
@@ -11,7 +10,63 @@ import { AssetThumbnail } from "../AssetThumbnail";
 import { useRouter } from "next/router";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 import { SignedInContext } from "../../contexts/SignedInContext";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from "@mui/material/styles";
+import { useListed } from "../../hooks/useListed";
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 
+
+const AvatarSelector = ({ swr, setMessage, setToken, token, lim }) => {
+    return (
+        <Box
+            sx={{
+                display: 'grid',
+                gap: 0,
+                gridTemplateColumns: '1fr 1fr 1fr',
+            }}>
+            <InfiniteScroll
+                swr={swr}
+                isReachingEnd={
+                    swr => {
+                        return swr.data?.[0]?.items?.length === 0 ||
+                            swr.data?.[swr.data?.length - 1]?.items?.length < lim
+                    }
+                }
+            >
+                {
+                    ({ items }) => items.map((nft, i) => (
+                        <Box
+                            key={i}
+                            onClick={
+                                () => {
+                                    setMessage('');
+                                    setToken(nft.id);
+                                }
+                            }
+                        >
+                            <Box
+                                sx={{
+                                    lineHeight: 0,
+                                    border: token === nft?.id ? theme => `2px solid ${theme.palette.secondary.main}` : "2px solid #ddd"
+                                }}
+                            >
+                                <AssetThumbnail
+                                    token={nft}
+                                    size={150}
+                                />
+                            </Box>
+                        </Box>
+                    )
+                    )
+                }
+            </InfiniteScroll>
+        </Box>
+    )
+}
 
 export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePictureModalOpen, lim = 10 }) => {
 
@@ -21,7 +76,8 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
         profilePictureModalOpen && address ? [`/api/user`, address] : null,
         (url, address) => axios.get(`${url}/${address}`).then(r => r.data.user)
     )
-    const { swr } = useHodling(address, lim, null, profilePictureModalOpen);
+    const { swr: hodlingSwr } = useHodling(address, lim, null, profilePictureModalOpen);
+    const { swr: listedSwr } = useListed(address, lim, null, profilePictureModalOpen);
 
     const [token, setToken] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -30,156 +86,190 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
 
     const [message, setMessage] = useState('');
 
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+
+    const [value, setValue] = useState(0);
+
+    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+        setValue(newValue);
+    };
+
+
     useEffect(() => {
         if (userSWR?.data?.avatar?.id) {
             setToken(userSWR?.data?.avatar?.id);
         }
     }, [userSWR?.data?.avatar?.id])
 
-    if (!profilePictureModalOpen || !swr?.data || !userSWR?.data) {
+    if (!profilePictureModalOpen || !hodlingSwr?.data || !userSWR?.data) {
         return null
     }
 
     return (
         <>
-            <HodlModal
+            <Dialog
+                fullScreen={fullScreen}
+                maxWidth="sm"
+                fullWidth
                 open={profilePictureModalOpen}
-                setOpen={setProfilePictureModalOpen}
-                sx={{
-                    width: 'auto',
-                    maxWidth: '90%'
+                onClose={(e) => {
+                    // @ts-ignore
+                    e.stopPropagation();
+
+                    // @ts-ignore
+                    e.preventDefault();
+
+                    setProfilePictureModalOpen(false);
                 }}
             >
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-                    <Typography variant="h2" sx={{ marginBottom: 2, fontWeight: 600 }}>Avatar NFT</Typography>
-
+                <DialogTitle>Avatar NFT</DialogTitle>
+                <DialogContent
+                    sx={{
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 2
+                    }}
+                >
                     {
-                        swr.data?.[0]?.items?.length === 0 && <>
-                            <Typography sx={{
-                                marginBottom: 2,
-                                color: theme => theme.palette.text.secondary,
-                            }}>Sorry, you aren&apos;t hodling any NFTs at the moment</Typography>
-                            <div><Button variant="contained" sx={{ paddingY: 1.5, paddingX: 3, }} onClick={() => router.push('/create')}>Create an NFT</Button></div>
+                        hodlingSwr.data?.[0]?.items?.length === 0 && listedSwr.data?.[0]?.items?.length === 0 &&
+                        <>
+                            <Typography
+                                sx={{
+                                    color: theme => theme.palette.text.secondary,
+                                }}>You aren&apos;t hodling any NFTs at the moment</Typography>
+                            <div>
+                                <Button variant="contained" sx={{ paddingY: 1, paddingX: 2, }} onClick={() => router.push('/create')}>Create an NFT</Button>
+                            </div>
                         </>
                     }
                     {
-                        swr.data?.[0]?.items?.length !== 0 && <>
-                            <Typography sx={{
-                                marginBottom: 2,
-                                color: theme => theme.palette.text.secondary,
-                            }}>Select an NFT to use as your avatar</Typography>
+                       ( hodlingSwr.data?.[0]?.items?.length !== 0 || listedSwr.data?.[0]?.items?.length === 0) &&
+                        <>
                             <Box
                                 sx={{
-                                    maxWidth: '100%',
-                                    maxHeight: '100%',
-                                    width: '350px',
-                                    marginBottom: 2,
-                                    overflow: 'auto',
-                                    display: 'grid',
-                                    gap: 0,
-                                    gridTemplateColumns: '1fr 1fr 1fr',
-                                    gridTemplateRows: 'auto'
+                                    flex: 0
                                 }}>
-                                <InfiniteScroll
-                                    swr={swr}
-                                    isReachingEnd={
-                                        swr => {
-                                            return swr.data?.[0]?.items?.length === 0 ||
-                                                swr.data?.[swr.data?.length - 1]?.items?.length < lim
-                                        }
-                                    }
-                                >
-                                    {
-                                        ({ items }) => items.map((nft, i) => (
-                                            <Box
-                                                key={i}
-                                                onClick={
-                                                    () => {
-                                                        setMessage('');
-                                                        setToken(nft.id);
-                                                    }
-                                                }
-                                            >
-                                                <Box
-                                                    sx={{
-                                                        lineHeight: 0,
-                                                        border: token === nft?.id ?
-                                                            theme => `2px solid ${theme.palette.secondary.main}` :
-                                                            "2px solid #ddd"
-                                                    }}
-                                                >
-
-                                                    <AssetThumbnail
-                                                        token={nft}
-                                                        size={150}
-                                                    />
-
-                                                </Box>
-                                            </Box>
-                                        )
-                                        )
-                                    }
-                                </InfiniteScroll>
+                                <Typography
+                                    sx={{
+                                        color: 'text.secondary',
+                                    }}>
+                                    Select an NFT to use as your avatar
+                                </Typography>
                             </Box>
-                            <Box sx={{ height: '20px', marginBottom: '16px', color: 'text.secondary' }}>
-                                {loading ? <HodlLoadingSpinner />
-                                    : message
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    flex: 0,
+                                }}>
+                                <Tabs
+                                    value={value}
+                                    onChange={handleChange}
+                                    textColor="secondary"
+                                    indicatorColor="secondary"
+                                >
+                                    <Tab label="Hodling"></Tab>
+                                    <Tab label="Listed"></Tab>
+                                </Tabs>
+                            </Box>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    flex: 1,
+                                    overflow: 'auto',
+                                }}>
+                                <div
+                                    hidden={value !== 0}>
+                                    <AvatarSelector swr={hodlingSwr} setMessage={setMessage} setToken={setToken} token={token} lim={lim} />
+                                </div>
+                                <div
+                                    hidden={value !== 1}>
+                                    <AvatarSelector swr={listedSwr} setMessage={setMessage} setToken={setToken} token={token} lim={lim} />
+                                </div>
+                            </Box>
+
+                            <Box
+                                sx={{
+                                    flex: 0,
+                                    color: 'text.secondary'
+                                }}>
+                                {
+                                    loading ? <HodlLoadingSpinner /> : message
                                 }
                             </Box>
-                            <Box display="grid" gridTemplateColumns={"1fr 1fr"} gap={4}>
-                                <Button
-                                    disabled={!token || loading}
-                                    variant="contained"
-                                    color="primary"
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    flex: 0,
+                                    justifyContent: 'flex-end'
+                                }}>
+                                <Box
                                     sx={{
-                                        paddingY: 1.5,
-                                        paddingX: 3
+                                        display: 'grid',
+                                        gridTemplateColumns: '1fr 1fr',
+                                        gap: 4
                                     }}
-                                    onClick={async () => {
-                                        if (token) {
-                                            try {
-                                                setLoading(true);
-                                                const r = await axios.post(
-                                                    '/api/profile/picture',
-                                                    { token },
-                                                    {
-                                                        headers: {
-                                                            'Accept': 'application/json',
-                                                        },
-                                                    }
-                                                );
-                                                setLoading(false);
-                                                setMessage("Avatar successfully updated");
-                                            } catch (error) {
-                                                setLoading(false);
-                                                setMessage("Unable to update avatar at this time");
-                                            } finally {
-                                                userSWR?.mutate();
+                                >
+                                    <Button
+                                        disabled={!token || loading}
+                                        variant="contained"
+                                        color="primary"
+                                        sx={{
+                                            paddingY: 1.5,
+                                            paddingX: 3
+                                        }}
+                                        onClick={async () => {
+                                            if (token) {
+                                                try {
+                                                    setLoading(true);
+                                                    const r = await axios.post(
+                                                        '/api/profile/picture',
+                                                        { token },
+                                                        {
+                                                            headers: {
+                                                                'Accept': 'application/json',
+                                                            },
+                                                        }
+                                                    );
+                                                    setLoading(false);
+                                                    setMessage("Avatar successfully updated");
+                                                } catch (error) {
+                                                    setLoading(false);
+                                                    setMessage("Unable to update avatar at this time");
+                                                } finally {
+                                                    userSWR?.mutate();
+                                                }
                                             }
-                                        }
-                                    }}
-                                >
-                                    Select
-                                </Button>
-                                <Button
-                                    disabled={loading}
-                                    variant="contained"
-                                    color="inherit"
-                                    sx={{
-                                        paddingY: 1.5,
-                                        paddingX: 3
-                                    }}
-                                    onClick={() => {
-                                        setMessage('');
-                                        setProfilePictureModalOpen(false);
-                                    }}
-                                >
-                                    Close
-                                </Button>
+                                        }}
+                                    >
+                                        Select
+                                    </Button>
+                                    <Button
+                                        disabled={loading}
+                                        variant="contained"
+                                        color="inherit"
+                                        sx={{
+                                            paddingY: 1.5,
+                                            paddingX: 3
+                                        }}
+                                        onClick={() => {
+                                            setMessage('');
+                                            setProfilePictureModalOpen(false);
+                                        }}
+                                    >
+                                        Close
+                                    </Button>
+                                </Box>
                             </Box>
-                        </>}
-                </div>
-            </HodlModal>
+
+                        </>
+                    }
+                </DialogContent>
+            </Dialog>
         </>
     )
 }

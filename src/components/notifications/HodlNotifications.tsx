@@ -75,7 +75,7 @@ export const HodlNotifications: React.FC<HodlNotificationsProps> = ({
 
             } catch (error) {
             }
-        }, 1000)
+        }, 10000)
     }, [showNotifications])
 
 

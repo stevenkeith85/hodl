@@ -1,6 +1,3 @@
-import { useContext } from "react";
-import { NftContext } from "../../contexts/NftContext";
-import { HodlCommentBox } from "./HodlCommentBox";
 import { HodlCommentsBox } from "./HodlCommentsBox";
 import Box from "@mui/material/Box";
 import Dialog from "@mui/material/Dialog";
