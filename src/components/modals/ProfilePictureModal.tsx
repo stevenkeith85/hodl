@@ -95,7 +95,6 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
         setValue(newValue);
     };
 
-
     useEffect(() => {
         if (userSWR?.data?.avatar?.id) {
             setToken(userSWR?.data?.avatar?.id);
@@ -110,7 +109,7 @@ export const ProfilePictureModal = ({ profilePictureModalOpen, setProfilePicture
         <>
             <Dialog
                 fullScreen={fullScreen}
-                maxWidth="sm"
+                maxWidth="xs"
                 fullWidth
                 open={profilePictureModalOpen}
                 onClose={(e) => {
