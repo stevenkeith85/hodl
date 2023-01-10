@@ -74,8 +74,9 @@ export const tokenBought = async (
     }
 
     // Clear the avatar if the user still has it
-    const currentAvatar = await client.hmget(`user:${seller}`, 'avatar');
-    if (currentAvatar === tokenId) {
+    const { avatar } = await client.hmget(`user:${seller}`, 'avatar');
+
+    if (avatar === tokenId) {
         await client.hmset(`user:${seller}`, { 'avatar': '' });
     }
 
