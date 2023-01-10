@@ -1,16 +1,19 @@
-import { HodlModal } from "./HodlModal";
 import { useNickname } from "../../hooks/useNickname";
-import { Formik, Form, Field } from 'formik';
-import { nicknameValidationSchema } from "../../validation/nickname";
-import { InputBase } from "formik-mui";
-import { useContext, useState } from "react";
+// import { nicknameValidationSchema } from "../../validation/nickname";
+import { useContext, useEffect, useState } from "react";
 import { useUser } from "../../hooks/useUser";
 import { HodlLoadingSpinner } from "../HodlLoadingSpinner";
 import Typography from "@mui/material/Typography";
-import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { SignedInContext } from "../../contexts/SignedInContext";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from "@mui/material/styles";
+import TextField from "@mui/material/TextField";
+import { nicknameValidationSchema } from "../../validation/nickname";
 
 
 export const NicknameModal = ({ nicknameModalOpen, setNicknameModalOpen }) => {
@@ -19,8 +22,30 @@ export const NicknameModal = ({ nicknameModalOpen, setNicknameModalOpen }) => {
     const { signedInAddress: address } = useContext(SignedInContext);
     const userSWR = useUser(address);
 
+    const [nickname, setNickname] = useState('');
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
+    const [valid, setValid] = useState(true);
+
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+
+    useEffect(() => {
+        if (userSWR?.data?.nickname) {
+            setNickname(userSWR?.data?.nickname)
+        }
+    }, [userSWR?.data?.nickname]);
+
+
+    const submitNickname = async () => {
+        setLoading(true);
+        const { success, message } = await updateNickname(nickname);
+        if (success) {
+            userSWR.mutate(old => ({ ...old, nickname }), { revalidate: false });
+        }
+        setLoading(false);
+        setMessage(message);
+    }
 
     if (!userSWR?.data) {
         return null;
@@ -28,95 +53,112 @@ export const NicknameModal = ({ nicknameModalOpen, setNicknameModalOpen }) => {
 
     return (
         <>
-            <HodlModal
+            <Dialog
+                fullScreen={fullScreen}
+                maxWidth="xs"
+                fullWidth
                 open={nicknameModalOpen}
-                setOpen={setNicknameModalOpen}
-                sx={{
-                    maxWidth: '90vw'
+                onClose={(e) => {
+                    // @ts-ignore
+                    e.stopPropagation();
+
+                    // @ts-ignore
+                    e.preventDefault();
+
+                    setNicknameModalOpen(false);
                 }}
             >
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center'}}>
-                    <Typography variant="h2" sx={{ fontSize: '18px', fontWeight: 600, marginBottom: 2 }}>Nickname</Typography>
-                    <Typography sx={{
-                        marginBottom: 2,
-                        color: theme => theme.palette.text.secondary,
-                    }}>Enter a nickname to use as an alias for your wallet address</Typography>
-                    <Formik
-                        initialValues={{ nickname: userSWR?.data?.nickname }}
-                        validationSchema={nicknameValidationSchema}
-                        onSubmit={async (values) => {
-                            setLoading(true);
-                            const { success, message } = await updateNickname(values.nickname);
-                            if (success) {
-                                userSWR.mutate(old => ({...old, nickname: values.nickname}), {revalidate: false});
-                            }
-                            setLoading(false);
-                            setMessage(message);
-                        }}
-                    >
-                        {({ isSubmitting, errors, setFieldValue, values }) => (
-                            <Form>
-                                <Stack spacing={2}>
-                                    <Field
-                                        validateOnChange
-                                        autoComplete='off'
-                                        component={InputBase}
-                                        sx={{
-                                            border: (errors.nickname) ? theme => `1px solid ${theme.palette.error.main}` : `1px solid #ccc`,
-                                            borderRadius: 1,
-                                            paddingY: 1,
-                                            paddingX: 1.5
-                                        }}
-                                        fullWidth
-                                        placeholder=""
-                                        name="nickname"
-                                        type="text"
-                                        onChange={e => {
-                                            setMessage('');
-                                            const value = e.target.value || "";
-                                            setFieldValue('nickname', value.toLowerCase());
-                                        }}
-                                    />
-                                    <Box sx={{ height: '20px', marginBottom: '16px', color: 'text.secondary' }}>
-                                        {loading ? <HodlLoadingSpinner />
-                                            : message || errors?.nickname
-                                        }
-                                    </Box>
-                                    <Box display="grid" gridTemplateColumns={"1fr 1fr"} gap={4}>
-                                        <Button
-                                            disabled={loading || values.nickname === userSWR?.data?.nickname}
-                                            type="submit"
-                                            variant="contained"
-                                            color="primary"
-                                            sx={{
-                                                paddingY: 1.5,
-                                                paddingX: 3
-                                            }}
-                                        >
-                                            Select
-                                        </Button>
-                                        <Button
-                                            variant="contained"
-                                            color="inherit"
-                                            sx={{
-                                                paddingY: 1.5,
-                                                paddingX: 3
-                                            }}
-                                            onClick={() => {
-                                                setMessage('');
-                                                setNicknameModalOpen(false)
-                                            }}
-                                        >
-                                            Close
-                                        </Button>
-                                    </Box>
+                <DialogTitle>Nickname</DialogTitle>
+                <DialogContent
+                    sx={{
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 2
+                    }}>
+                    <Box
+                        sx={{
+                            flex: 0
+                        }}>
+                        <Typography
+                            sx={{
+                                color: 'text.secondary',
+                            }}>
+                            Enter a nickname to use as an alias for your address
+                        </Typography>
+                    </Box>
+                    <Box
+                        sx={{
+                            flex: 1
+                        }}>
+                        <TextField
+                            autoComplete='off'
+                            error={!valid}
+                            fullWidth
+                            placeholder=""
+                            name="nickname"
+                            type="text"
+                            value={nickname}
+                            onChange={e => {
+                                setMessage('');
+                                const value = e.target.value || "";
+                                setNickname(value.toLowerCase());
 
-                                </Stack>
-                            </Form>
-                        )}
-                    </Formik>
-                </div>
-            </HodlModal>
+                                nicknameValidationSchema.isValid({nickname: value.toLowerCase()}).then(valid => setValid(valid))
+                            }}
+                        />
+                    </Box>
+                    <Box
+                        sx={{
+                            flex: 0,
+                            color: 'text.secondary'
+                        }}>
+                        {
+                            loading ? <HodlLoadingSpinner /> : message
+                        }
+                    </Box>
+                    <Box
+                        sx={{
+                            flex: 0
+                        }}>
+                        <Box
+                            sx={{
+                                display: 'grid',
+                                gridTemplateColumns: '1fr 1fr',
+                                gap: 4
+                            }}
+                        >
+                            <Button
+                                disabled={loading || nickname === userSWR?.data?.nickname || !valid}
+                                type="submit"
+                                variant="contained"
+                                color="primary"
+                                sx={{
+                                    paddingY: 1.5,
+                                    paddingX: 3
+                                }}
+                                onClick={submitNickname}
+                            >
+                                Select
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="inherit"
+                                sx={{
+                                    paddingY: 1.5,
+                                    paddingX: 3
+                                }}
+                                onClick={() => {
+                                    setMessage('');
+                                    setNicknameModalOpen(false)
+                                }}
+                            >
+                                Close
+                            </Button>
+                        </Box>
+                    </Box>
+                </DialogContent>
+            </Dialog>
         </>
     )
 }
