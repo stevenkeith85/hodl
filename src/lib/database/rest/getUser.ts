@@ -5,7 +5,7 @@ import { hmGet } from "./hmGet";
 
 // TODO: This could be enhanced accepting the user fields we are interested in. 
 // At the moment we just toggle between asking for the nonce or not.
-// This is mostly used by the UI, so I'm not sure that we even need to return the nonce; potentially can go at some point.
+// The nonce is only used on the tx pages at the moment. Haven'nt checked if they call this function
 export const getUser = async (address: string, viewer: string = null, nonce = false) => {
     if (!address) {
         return null;
@@ -13,11 +13,16 @@ export const getUser = async (address: string, viewer: string = null, nonce = fa
     
     try {
         const user = nonce ?
-            await hmGet<{ nickname, avatar, nonce }>(`user:${address}`, 'nickname', 'avatar', 'nonce') :
-            await hmGet<{ nickname, avatar }>(`user:${address}`, 'nickname', 'avatar');
+            await hmGet<{ address, nickname, avatar, nonce }>(`user:${address}`, 'address', 'nickname', 'avatar', 'nonce') :
+            await hmGet<{ address, nickname, avatar }>(`user:${address}`, 'address', 'nickname', 'avatar');
+
+        // Because non-existing keys are treated as empty hashes, running HMGET against a non-existing key (i.e. user:<address that hasn't logged in yet>) will return a list of nil values.
+        // We can therefore check the returned value of address, and if its null then this isn't an address who has signed in yet
+        if (user.address == null) {
+            return null;
+        }
 
         const vm: UserViewModel = {
-            address,
             ...user,
             followedByViewer: false,
             followsViewer: false

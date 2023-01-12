@@ -9,20 +9,15 @@ import Market from '../../../../../../../smart-contracts/artifacts/contracts/Hod
 import apiRoute from '../../../../handler';
 import { PriceHistory } from "../../../../../../models/PriceHistory";
 
-
+// This should be called from the message queue to update our cache
 export const getPriceHistory = async (tokenId) : Promise<PriceHistory []>  => {
   const provider = await getProvider();
 
   const marketContract = new Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
   const tokenFilter = marketContract.filters.TokenBought(null, null, tokenId);
 
-  // Infura only lets us search 3500 blocks
-  const latest = await provider.getBlockNumber();
-  const earliest = Math.max(latest - 3500 + 1, 0);
-
-  console.log('price history from earliest block to latest block', earliest, latest);
   // TODO: We should store the blockhash a token was minted at
-  const txs = await marketContract.queryFilter(tokenFilter, earliest, latest);
+  const txs = await marketContract.queryFilter(tokenFilter, "earliest", "latest");
 
   const result = [];
 
