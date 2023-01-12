@@ -7,6 +7,7 @@ import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 import { useMutableToken } from '../../hooks/useMutableToken';
 import { MaticPrice } from "../MaticPrice";
+import { PriceHistoryGraph } from './PriceHistory';
 
 
 const NftActionButtons = dynamic(
@@ -72,7 +73,7 @@ const MarketTab = ({ prefetchedMutableToken, prefetchedToken }) => {
         }
       </Box>
       {/* TODO */}
-      {/* <PriceHistoryGraph nft={nft} /> */}
+      <PriceHistoryGraph nft={prefetchedToken} />
     </Box>
   )
 }

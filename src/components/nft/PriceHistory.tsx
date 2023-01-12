@@ -65,7 +65,7 @@ const CustomTick = ({ x, y, stroke, payload }) => {
 };
 
 export const PriceHistoryGraph = ({ nft, fallbackData=null }) => {
-    const fetcher: Fetcher<PriceHistory[], [string, string]> = (url, query) => axios.get(`${url}/${query}`).then(r => r.data.priceHistory);
+    const fetcher: Fetcher<PriceHistory[], [string, string]> = (url, tokenId) => axios.get(`${url}?tokenId=${tokenId}&offset=0&limit=10`).then(r => r.data.items);
 
     const { data: priceHistory, error } = useSWR(nft.id ? [`/api/contracts/market/events/token-bought/`, nft.id] : null,
         fetcher,
@@ -74,7 +74,7 @@ export const PriceHistoryGraph = ({ nft, fallbackData=null }) => {
 
     if (!priceHistory && !error) {
         return <HodlBorderedBox>
-            <Typography variant="h2" sx={{ marginBottom: 2 }}>History</Typography>
+            <Typography component="h2" sx={{ paddingTop: 0, marginBottom: 2 }}>History</Typography>
             <Skeleton variant="rectangular" height={300} animation="wave" />
         </HodlBorderedBox>
     }
@@ -83,7 +83,7 @@ export const PriceHistoryGraph = ({ nft, fallbackData=null }) => {
     // new data. :(
     return (
         <HodlBorderedBox>
-            <Typography variant="h2" sx={{ marginBottom: 2 }}>Recent Price History</Typography>
+            <Typography variant="h2" sx={{ marginBottom: 2 }}>Price History</Typography>
             <ResponsiveContainer
                 key={Date.now()}
                 width={'100%'}
