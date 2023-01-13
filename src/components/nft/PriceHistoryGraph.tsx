@@ -88,22 +88,21 @@ export const PriceHistoryGraph = ({ nft, prefetchedPriceHistory = null }) => {
                     <LineChart
                         margin={{
                             left: 0,
-                            bottom: 20,
-                            top: 20,
-                            right: 40
+                            bottom: 0,
+                            top: 10,
+                            right: 10
                         }}
                         data={priceHistory}
                     >
                         <Line dataKey="price" stroke={indigo[500]} isAnimationActive={false} />
                         <CartesianGrid stroke="#ddd" strokeDasharray="5" />
-                        <XAxis dataKey="timestamp" tick={
+                        <XAxis 
+                            height={30}
+                            dataKey="timestamp" tick={
                             // @ts-ignore
                             <CustomTick />
-                        }>
-                            <Label position="bottom">Date</Label>
-                        </XAxis>
-                        <YAxis>
-                        </YAxis>
+                        } />
+                        <YAxis width={40}/>
                         <Tooltip content={
                             // @ts-ignore
                             <CustomTooltip />
