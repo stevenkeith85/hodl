@@ -102,7 +102,7 @@ export const PriceHistoryGraph = ({ nft, prefetchedPriceHistory = null }) => {
                             // @ts-ignore
                             <CustomTick />
                         } />
-                        <YAxis width={30}/>
+                        <YAxis width={40}/>
                         <Tooltip content={
                             // @ts-ignore
                             <CustomTooltip />
