@@ -78,7 +78,7 @@ export const PriceHistoryGraph = ({ nft, prefetchedPriceHistory = null }) => {
     // We are doing key={Date.now()} to force a rerender; as the chart doesn't seem to rerender when we get 
     // new data. :(
     return (
-        <HodlBorderedBox sx={{ height: 320 }}>
+        <HodlBorderedBox >
             <Typography variant="h2" sx={{ padding: 0, marginBottom: 2 }}>Price History</Typography>
             {priceHistory &&
                 <ResponsiveContainer
@@ -87,10 +87,10 @@ export const PriceHistoryGraph = ({ nft, prefetchedPriceHistory = null }) => {
                     height={250}>
                     <LineChart
                         margin={{
-                            left: 0,
+                            left: 10,
                             bottom: 20,
-                            top: 20,
-                            right: 40
+                            top: 10,
+                            right: 10
                         }}
                         data={priceHistory}
                     >
@@ -102,8 +102,6 @@ export const PriceHistoryGraph = ({ nft, prefetchedPriceHistory = null }) => {
                         }>
                             <Label position="bottom">Date</Label>
                         </XAxis>
-                        <YAxis>
-                        </YAxis>
                         <Tooltip content={
                             // @ts-ignore
                             <CustomTooltip />
