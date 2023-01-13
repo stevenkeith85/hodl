@@ -132,7 +132,7 @@ export const NftActionButtons = ({
     }
 
     return (
-        <Box sx={{ marginTop: 3}}>
+        <Box sx={{ marginTop: 2}}>
             <TransactionModal modalOpen={boughtModalOpen} setModalOpen={setBoughtModalOpen} />
             <TransactionModal modalOpen={delistModalOpen} setModalOpen={setDelistModalOpen} />
             <TransactionModal modalOpen={listedModalOpen} setModalOpen={setListedModalOpen} />
@@ -157,9 +157,9 @@ export const NftActionButtons = ({
                                 disabled={loading}
                                 variant="contained"
                                 sx={{ 
-                                    paddingY: 1, 
-                                    paddingX: 3,
-                                    fontSize: 15
+                                    paddingY: 0.75, 
+                                    paddingX: 2.25,
+                                    fontSize: 14
                                 }}
                                 onClick={async () => {
                                     try {
@@ -193,9 +193,9 @@ export const NftActionButtons = ({
                                 disabled={loading}
                                 variant="contained"
                                 sx={{ 
-                                    paddingY: 1, 
-                                    paddingX: 3,
-                                    fontSize: 15
+                                    paddingY: 0.75, 
+                                    paddingX: 2.25,
+                                    fontSize: 14
                                  }}
                                 onClick={async () => {
                                     try {
@@ -219,7 +219,6 @@ export const NftActionButtons = ({
                         </div>
                     </FormControl>
                 </Box>
-
             }
             {
                 !mutableToken?.forSale && isHodler() &&
@@ -230,9 +229,9 @@ export const NftActionButtons = ({
                                 disabled={loading}
                                 variant="contained"
                                 sx={{ 
-                                    paddingY: 1, 
-                                    paddingX: 3,
-                                    fontSize: 15
+                                    paddingY: 0.75, 
+                                    paddingX: 2.25,
+                                    fontSize: 14
                                  }}
                                 onClick={() => {
                                     setLoading(true);

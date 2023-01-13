@@ -7,7 +7,7 @@ const createProvider = () => {
     if (JSON.parse(process.env.LOCAL_BLOCKCHAIN_NODE)) {
         provider = getDefaultProvider(process.env.DEFAULT_PROVIDER_NETWORK);
     } else {
-        provider = new JsonRpcProvider(`${process.env.QUICKNODE_URL}/${process.env.QUICKNODE_AUTHENTICATION_TOKEN}`);
+        provider = new JsonRpcProvider(`${process.env.ALCHEMY_URL}/${process.env.ALCHEMY_AUTHENTICATION_TOKEN}`);
     }
 }
 

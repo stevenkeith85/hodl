@@ -17,7 +17,15 @@ const NftActionButtons = dynamic(
   }
 );
 
-const MarketTab = ({ prefetchedMutableToken, prefetchedToken }) => {
+const PriceHistoryGraph = dynamic(
+  () => import('./PriceHistoryGraph').then(mod => mod.PriceHistoryGraph),
+  {
+    ssr: true,
+    loading: () => null
+  }
+);
+
+const MarketTab = ({ prefetchedMutableToken, prefetchedToken, prefetchedPriceHistory }) => {
   const { data: mutableToken } = useMutableToken(prefetchedToken.id, prefetchedMutableToken);
 
   return (
@@ -71,8 +79,8 @@ const MarketTab = ({ prefetchedMutableToken, prefetchedToken }) => {
           />
         }
       </Box>
-      {/* TODO */}
-      {/* <PriceHistoryGraph nft={nft} /> */}
+      
+      <PriceHistoryGraph nft={prefetchedToken} prefetchedPriceHistory={prefetchedPriceHistory}/>
     </Box>
   )
 }
