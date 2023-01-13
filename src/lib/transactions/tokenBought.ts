@@ -101,6 +101,13 @@ export const tokenBought = async (
     )
 
     addToZeplo(
+        'api/contracts/market/token-bought/updateCache',
+        {
+            tokenId
+        },
+    );
+
+    addToZeplo(
         'api/contracts/market/listed/updateCache',
         {
             address: seller
