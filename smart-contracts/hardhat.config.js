@@ -21,11 +21,11 @@ module.exports = {
       chainId: 1337,
     },
     // mumbai: {
-    //   url: `${process.env.QUICKNODE_URL}/${process.env.QUICKNODE_AUTHENTICATION_TOKEN}/`,
+    //   url: `${process.env.ALCHEMY_URL}/${process.env.ALCHEMY_AUTHENTICATION_TOKEN}/`,
     //   accounts: [process.env.WALLET_PRIVATE_KEY]
     // },
     // mainnet: {
-    //   url: `${process.env.QUICKNODE_URL}/${process.env.QUICKNODE_AUTHENTICATION_TOKEN}/`,
+    //   url: `${process.env.ALCHEMY_URL}/${process.env.ALCHEMY_AUTHENTICATION_TOKEN}/`,
     //   accounts: [process.env.WALLET_PRIVATE_KEY],
     // }
   },

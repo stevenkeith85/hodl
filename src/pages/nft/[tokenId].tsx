@@ -17,6 +17,7 @@ import { getTokenVM } from '../../lib/database/rest/getTokenVM';
 import { getMutableToken } from '../api/contracts/mutable-token/[tokenId]';
 import { getUser } from '../../lib/database/rest/getUser';
 import { getPinnedComment } from '../api/comments/pinned';
+import { getPriceHistory } from '../api/contracts/market/token-bought';
 
 
 const TokenHeader = dynamic(
@@ -72,7 +73,18 @@ export async function getServerSideProps({ params, query, req, res }) {
   const prefetchedTokenPromise = getTokenVM(params.tokenId);
   const prefetchedMutableTokenPromise = getMutableToken(params.tokenId, req);
   const prefetchedPinnedCommentPromise = getPinnedComment(params.tokenId);
-  const [prefetchedToken, prefetchedMutableToken, prefetchedPinnedComment] = await Promise.all([prefetchedTokenPromise, prefetchedMutableTokenPromise, prefetchedPinnedCommentPromise])
+  const prefetchedPriceHistoryPromise = getPriceHistory(params.tokenId, 0, 100)
+
+  const [
+    prefetchedToken,
+    prefetchedMutableToken,
+    prefetchedPinnedComment,
+    prefetchedPriceHistory] = await Promise.all([
+      prefetchedTokenPromise,
+      prefetchedMutableTokenPromise,
+      prefetchedPinnedCommentPromise,
+      prefetchedPriceHistoryPromise
+    ])
 
   const prefetchedHodler = await getUser(prefetchedMutableToken?.hodler);
   // const stop = Date.now();
@@ -86,7 +98,8 @@ export async function getServerSideProps({ params, query, req, res }) {
       prefetchedToken,
       prefetchedMutableToken,
       prefetchedHodler,
-      prefetchedPinnedComment
+      prefetchedPinnedComment,
+      prefetchedPriceHistory
     },
   }
 }
@@ -98,7 +111,8 @@ const NftDetail = ({
   prefetchedToken,
   prefetchedMutableToken,
   prefetchedHodler,
-  prefetchedPinnedComment
+  prefetchedPinnedComment,
+  prefetchedPriceHistory
 }) => {
   const [value, setValue] = useState(Number(tab)); // tab
 
@@ -222,6 +236,7 @@ const NftDetail = ({
               <MarketTab
                 prefetchedMutableToken={prefetchedMutableToken}
                 prefetchedToken={prefetchedToken}
+                prefetchedPriceHistory={prefetchedPriceHistory}
               />
             </div>
             <div hidden={value !== 2}>

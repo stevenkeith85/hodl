@@ -44,7 +44,7 @@ export const MaticPrice: React.FC<MaticPriceProps> = ({
             }}>
             <img src="/matic.svg" width={size} height={size} alt="matic symbol" />
             {
-                humanizeNumber ? humanize.formatNumber(price, 1) :
+                humanizeNumber ? humanize.formatNumber(price, 2) :
                     price
             }
         </Typography>
