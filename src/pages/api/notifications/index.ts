@@ -19,6 +19,10 @@ export const checkForNewNotifications = async (address) => {
   
   const [notification, timestamp] = await client.zrange(`user:${address}:notifications`, 0, 0, { rev: true, withScores: true });
 
+  console.log("lastRead", lastRead);
+  console.log("notification", notification);
+  console.log("timestamp", timestamp);
+  
   // check if last notification time is newer than user's last read time
   if (timestamp) {
     return +timestamp > +lastRead;
