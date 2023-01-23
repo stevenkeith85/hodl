@@ -1,11 +1,8 @@
 import { NextApiResponse } from "next";
 
-// import dotenv from 'dotenv'
 import apiRoute from '../handler';
 
 import { Redis } from '@upstash/redis';
-
-// dotenv.config({ path: '../.env' })
 
 const client = Redis.fromEnv()
 const route = apiRoute();
@@ -16,11 +13,8 @@ const route = apiRoute();
 
 export const checkForNewNotifications = async (address) => {
   const lastRead: string = await client.get(`user:${address}:notifications:lastRead`);
-  console.log("lastRead", lastRead);
-
+  
   const [notification, timestamp] = await client.zrange(`user:${address}:notifications`, 0, 0, { rev: true, withScores: true });
-  console.log("notification", notification);
-  console.log("timestamp", timestamp);
 
   // check if last notification time is newer than user's last read time
   if (timestamp) {
