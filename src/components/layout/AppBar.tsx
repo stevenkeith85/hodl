@@ -156,7 +156,8 @@ const AppBar = ({ address }) => {
                     const { message } = error.response.data;
                     setError(message);
                 } else if (error.config && error.response && error.response.status === 500) {
-                    setError("Something hasn't worked as expected; sorry");
+                    // TODO: We should maybe just write this to the console
+                    console.log("Something hasn't worked as expected; sorry");
                 }
 
                 return Promise.reject(error);
