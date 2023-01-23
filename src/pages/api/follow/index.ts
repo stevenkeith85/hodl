@@ -5,7 +5,7 @@ import apiRoute from "../handler";
 import { ActionTypes } from '../../../models/HodlAction';
 import { addToZeplo } from '../../../lib/addToZeplo';
 import { runRedisTransaction } from '../../../lib/database/rest/databaseUtils';
-import { validAddressFormat } from '../../../lib/utils';
+import { validAddressFormat } from "../../../lib/validAddressFormat";
 
 const client = Redis.fromEnv()
 const route = apiRoute();

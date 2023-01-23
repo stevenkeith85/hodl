@@ -4,7 +4,8 @@ import apiRoute from "../handler";
 import { getProvider } from "../../../lib/server/connections";
 import Market from '../../../../smart-contracts/artifacts/contracts/HodlMarket.sol/HodlMarket.json';
 import { Redis } from '@upstash/redis';
-import { validAddressFormat, validTxHashFormat } from "../../../lib/utils";
+import { validTxHashFormat } from "../../../lib/utils";
+import { validAddressFormat } from "../../../lib/validAddressFormat";
 
 import NFT from '../../../../smart-contracts/artifacts/contracts/HodlNFT.sol/HodlNFT.json';
 import { tokenMinted } from "../../../lib/transactions/tokenMinted";

@@ -5,7 +5,7 @@ import { UserViewModel } from "../../../models/User";
 import { getAsString } from "../../../lib/getAsString";
 import { getUser } from '../../../lib/database/rest/getUser';
 import { get } from '../../../lib/database/rest/get';
-import { validAddressFormat } from '../../../lib/utils';
+import { validAddressFormat } from "../../../lib/validAddressFormat";
 
 
 export const getUserUsingHandle = async (handle: string, viewerAddress: string): Promise<UserViewModel | null> => {
