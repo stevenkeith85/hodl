@@ -3,6 +3,7 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721RoyaltyUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
@@ -12,6 +13,7 @@ import "hardhat/console.sol";
 contract HodlNFT is
     ReentrancyGuardUpgradeable,
     ERC721URIStorageUpgradeable,
+    ERC721RoyaltyUpgradeable,
     OwnableUpgradeable,
     PausableUpgradeable
 {
@@ -22,6 +24,9 @@ contract HodlNFT is
     mapping(address => uint256[]) private _addressToTokenIds;
 
     uint256 public mintFee;
+
+    // v2
+    uint96 public maxRoyaltyFee; // In Basis Points
 
     event TokenMappingUpdated(
         address fromAddress,
@@ -41,8 +46,17 @@ contract HodlNFT is
         mintFee = 1 ether;
     }
 
+    // v2
+    function initializeV2() public reinitializer(2) {
+        maxRoyaltyFee = 1500; // initially set this to 15%
+    }
+
     function setMintFee(uint256 _mintFee) public onlyOwner {
         mintFee = _mintFee;
+    }
+
+    function setMaxRoyaltyFee(uint96 _maxRoyaltyFee) public onlyOwner {
+        maxRoyaltyFee = _maxRoyaltyFee;
     }
 
     function exists(uint256 tokenId) public view returns (bool) {
@@ -55,15 +69,7 @@ contract HodlNFT is
         address _address,
         uint256 offset,
         uint256 limit
-    )
-        public
-        view
-        returns (
-            uint256[] memory page,
-            uint256 next,
-            uint256 total
-        )
-    {
+    ) public view returns (uint256[] memory page, uint256 next, uint256 total) {
         uint256[] storage allTokenIds = _addressToTokenIds[_address];
 
         require(limit > 0, "Limit must be a positive number");
@@ -102,21 +108,23 @@ contract HodlNFT is
         return (page, offset + limit, allTokenIds.length);
     }
 
-    function createToken(string memory tokenURI)
-        public
-        payable
-        whenNotPaused
-        nonReentrant
-        returns (uint256)
-    {
+    function createToken(
+        string memory _tokenURI,
+        uint96 _royaltyFeeInBasisPoints
+    ) public payable whenNotPaused nonReentrant returns (uint256) {
         require(msg.value == mintFee, "Mint Fee not sent");
+        require(
+            _royaltyFeeInBasisPoints <= maxRoyaltyFee,
+            "Cannot set a royalty fee above the max"
+        );
 
         _tokenIds.increment();
 
         uint256 tokenId = _tokenIds.current();
 
         _mint(msg.sender, tokenId);
-        _setTokenURI(tokenId, tokenURI);
+        _setTokenURI(tokenId, _tokenURI);
+        _setTokenRoyalty(tokenId, msg.sender, _royaltyFeeInBasisPoints); // setting a 5% royalty would be 500 basis points
 
         // Approve the marketplace to transfer hodltokens for this user
         // If the user nevers mint a token, then they will need to approve the market place on
@@ -172,5 +180,49 @@ contract HodlNFT is
         _unpause();
     }
 
-    // TODO: Burn mechanism for token owner
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(ERC721RoyaltyUpgradeable, ERC721Upgradeable)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+
+    /**
+     * @dev See {ERC721-_burn}. This override:
+     *
+     * checks to see if a token-specific URI was set for the token, and if so, it deletes the token URI from the storage mapping
+     * clears the royalty information for the token
+     */
+    function _burn(
+        uint256 tokenId
+    )
+        internal
+        virtual
+        override(ERC721RoyaltyUpgradeable, ERC721URIStorageUpgradeable)
+    {
+        super._burn(tokenId);
+    }
+
+    /**
+     * @dev See {IERC721Metadata-tokenURI}.
+     */
+    function tokenURI(
+        uint256 tokenId
+    )
+        public
+        view
+        virtual
+        override(ERC721URIStorageUpgradeable, ERC721Upgradeable)
+        returns (string memory)
+    {
+        return super.tokenURI(tokenId);
+    }
 }

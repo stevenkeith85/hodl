@@ -13,7 +13,7 @@ async function main() {
 
   const HodlNFTFactoryNew = await ethers.getContractFactory("HodlNFT", ownerAccount);
 
-  const hodlNFTAsOwnerNew = await upgrades.upgradeProxy(HodlNFTProxy, HodlNFTFactoryNew);
+  const hodlNFTAsOwnerNew = await upgrades.upgradeProxy(HodlNFTProxy, HodlNFTFactoryNew, { call: 'initializeV2' }); // TODO: This should only be allowed to be called once, but we might want to check that before going to V3
   await hodlNFTAsOwnerNew.deployed();
   
   const proxyAddressAfter = hodlNFTAsOwnerNew.address;

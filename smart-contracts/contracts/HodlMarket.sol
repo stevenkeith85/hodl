@@ -6,7 +6,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
-
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721RoyaltyUpgradeable.sol";
 
 contract HodlMarket is
     ReentrancyGuardUpgradeable,
@@ -28,6 +28,8 @@ contract HodlMarket is
     // tokens that 'address' currently has listed on the market
     mapping(address => uint256[]) public addressToTokenIds;
 
+    bytes4 private constant _INTERFACE_ID_ERC2981 = 0x2a55205a;
+
     // Events
     event TokenListed(
         address indexed seller,
@@ -35,10 +37,7 @@ contract HodlMarket is
         uint256 price
     );
 
-    event TokenDelisted(
-        address indexed seller, 
-        uint256 indexed tokenId
-    );
+    event TokenDelisted(address indexed seller, uint256 indexed tokenId);
 
     event TokenBought(
         address indexed buyer,
@@ -61,17 +60,15 @@ contract HodlMarket is
         return addressToTokenIds[_address].length;
     }
 
-    function setMarketSaleFeeInPercent(uint256 _marketSaleFeeInPercent)
-        public
-        onlyOwner
-    {
+    function setMarketSaleFeeInPercent(
+        uint256 _marketSaleFeeInPercent
+    ) public onlyOwner {
         marketSaleFeeInPercent = _marketSaleFeeInPercent;
     }
 
-    function setMinListingPriceInMatic(uint256 _minListingPriceInMatic)
-        public
-        onlyOwner
-    {
+    function setMinListingPriceInMatic(
+        uint256 _minListingPriceInMatic
+    ) public onlyOwner {
         minListingPriceInMatic = _minListingPriceInMatic;
     }
 
@@ -121,11 +118,10 @@ contract HodlMarket is
         );
     }
 
-    function delistToken(address tokenContract, uint256 tokenId)
-        public
-        payable
-        nonReentrant
-    {
+    function delistToken(
+        address tokenContract,
+        uint256 tokenId
+    ) public payable nonReentrant {
         bool found = false;
         for (uint256 i = 0; i < listingKeys.length; i++) {
             if (listingKeys[i] == tokenId) {
@@ -165,12 +161,10 @@ contract HodlMarket is
         );
     }
 
-    function buyToken(address tokenContract, uint256 tokenId)
-        public
-        payable
-        nonReentrant
-        whenNotPaused
-    {
+    function buyToken(
+        address tokenContract,
+        uint256 tokenId
+    ) public payable nonReentrant whenNotPaused {
         bool found = false;
         for (uint256 i = 0; i < listingKeys.length; i++) {
             if (listingKeys[i] == tokenId) {
@@ -203,8 +197,20 @@ contract HodlMarket is
 
         assert(removedTokenFromAddress);
 
+        (address creator, uint256 royaltyFee) = (address(0), 0);
+
+        // TODO: What if a contract sets a massive royalty fee?
+        if (checkRoyalties(tokenContract)) {
+            (creator, royaltyFee) = IERC2981Upgradeable(tokenContract).royaltyInfo(
+                tokenId,
+                listings[tokenId].price
+            );
+        }
+
         uint256 ownerFee = (marketSaleFeeInPercent * listings[tokenId].price) / 100;
-        uint256 sellerFee = listings[tokenId].price - ownerFee;
+
+        // this will just underflow and revert if the ownerfee + royalty fee sum up to more than the listing fee; so no harm.
+        uint256 sellerFee = listings[tokenId].price - ownerFee - royaltyFee;
 
         emit TokenBought(
             msg.sender,
@@ -224,6 +230,9 @@ contract HodlMarket is
         (bool ownerReceivedFee, ) = owner().call{value: ownerFee}("");
         require(ownerReceivedFee, "Could not send the owner their fee");
 
+        (bool creatorReceivedFee, ) = creator.call{value: royaltyFee}("");
+        require(creatorReceivedFee, "Could not send the creator their fee");
+
         (bool sellerReceivedFee, ) = sellerAddress.call{value: sellerFee}("");
         require(sellerReceivedFee, "Could not send the seller their fee");
     }
@@ -234,14 +243,13 @@ contract HodlMarket is
 
     // e.g. 100 items, offset of 0, limit of 10
     // we return [0..9], 0 + 10 (next offset for pagination),
-    function fetchMarketItems(uint256 offset, uint256 limit)
+    function fetchMarketItems(
+        uint256 offset,
+        uint256 limit
+    )
         public
         view
-        returns (
-            Listing[] memory page,
-            uint256 nextOffset,
-            uint256 totalItems
-        )
+        returns (Listing[] memory page, uint256 nextOffset, uint256 totalItems)
     {
         require(limit > 0, "Limit must be a positive number");
         require(limit < 500, "Limited to 500 items per page");
@@ -287,11 +295,7 @@ contract HodlMarket is
     )
         public
         view
-        returns (
-            Listing[] memory page,
-            uint256 nextOffset,
-            uint256 totalItems
-        )
+        returns (Listing[] memory page, uint256 nextOffset, uint256 totalItems)
     {
         require(limit > 0, "Limit must be a positive number");
         require(limit < 500, "Limited to 500 items per page");
@@ -341,5 +345,12 @@ contract HodlMarket is
 
     function unpauseContract() external onlyOwner {
         _unpause();
+    }
+
+    function checkRoyalties(address _contract) internal view returns (bool) {
+        bool success = IERC165Upgradeable(_contract).supportsInterface(
+            _INTERFACE_ID_ERC2981
+        );
+        return success;
     }
 }
