@@ -3,25 +3,35 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721RoyaltyUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
-
-import "hardhat/console.sol";
+import "@openzeppelin/contracts-upgradeable/interfaces/IERC2981Upgradeable.sol";
 
 contract HodlNFT is
     ReentrancyGuardUpgradeable,
     ERC721URIStorageUpgradeable,
     OwnableUpgradeable,
-    PausableUpgradeable
+    PausableUpgradeable,
+    IERC2981Upgradeable
 {
     using CountersUpgradeable for CountersUpgradeable.Counter;
+
+    struct RoyaltyInfo {
+        address receiver;
+        uint96 royaltyFraction;
+    }
 
     CountersUpgradeable.Counter private _tokenIds;
     address public marketAddress;
     mapping(address => uint256[]) private _addressToTokenIds;
-
     uint256 public mintFee;
+
+    // V2
+    RoyaltyInfo private _defaultRoyaltyInfo;
+    mapping(uint256 => RoyaltyInfo) private _tokenRoyaltyInfo;
+    uint96 public maxRoyaltyFee; // In Basis Points
 
     event TokenMappingUpdated(
         address fromAddress,
@@ -41,8 +51,17 @@ contract HodlNFT is
         mintFee = 1 ether;
     }
 
+    // v2
+    function initializeV2() public reinitializer(2) {
+        maxRoyaltyFee = 1500; // initially set this to 15%
+    }
+
     function setMintFee(uint256 _mintFee) public onlyOwner {
         mintFee = _mintFee;
+    }
+
+    function setMaxRoyaltyFee(uint96 _maxRoyaltyFee) public onlyOwner {
+        maxRoyaltyFee = _maxRoyaltyFee;
     }
 
     function exists(uint256 tokenId) public view returns (bool) {
@@ -55,15 +74,7 @@ contract HodlNFT is
         address _address,
         uint256 offset,
         uint256 limit
-    )
-        public
-        view
-        returns (
-            uint256[] memory page,
-            uint256 next,
-            uint256 total
-        )
-    {
+    ) public view returns (uint256[] memory page, uint256 next, uint256 total) {
         uint256[] storage allTokenIds = _addressToTokenIds[_address];
 
         require(limit > 0, "Limit must be a positive number");
@@ -102,21 +113,23 @@ contract HodlNFT is
         return (page, offset + limit, allTokenIds.length);
     }
 
-    function createToken(string memory tokenURI)
-        public
-        payable
-        whenNotPaused
-        nonReentrant
-        returns (uint256)
-    {
+    function createToken(
+        string memory _tokenURI,
+        uint96 _royaltyFeeInBasisPoints
+    ) public payable whenNotPaused nonReentrant returns (uint256) {
         require(msg.value == mintFee, "Mint Fee not sent");
+        require(
+            _royaltyFeeInBasisPoints <= maxRoyaltyFee,
+            "Cannot set a royalty fee above the max"
+        );
 
         _tokenIds.increment();
 
         uint256 tokenId = _tokenIds.current();
 
         _mint(msg.sender, tokenId);
-        _setTokenURI(tokenId, tokenURI);
+        _setTokenURI(tokenId, _tokenURI);
+        _setTokenRoyalty(tokenId, msg.sender, _royaltyFeeInBasisPoints); // setting a 5% royalty would be 500 basis points
 
         // Approve the marketplace to transfer hodltokens for this user
         // If the user nevers mint a token, then they will need to approve the market place on
@@ -172,5 +185,118 @@ contract HodlNFT is
         _unpause();
     }
 
-    // TODO: Burn mechanism for token owner
+    /**
+     * @dev See {ERC721-_burn}. This override:
+     *
+     * checks to see if a token-specific URI was set for the token, and if so, it deletes the token URI from the storage mapping and
+     * clears the royalty information for the token
+     */
+    function _burn(
+        uint256 tokenId
+    ) internal virtual override(ERC721URIStorageUpgradeable) {
+        super._burn(tokenId);
+        _resetTokenRoyalty(tokenId);
+    }
+
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(ERC721Upgradeable, IERC165Upgradeable)
+        returns (bool)
+    {
+        return
+            interfaceId == type(IERC2981Upgradeable).interfaceId ||
+            super.supportsInterface(interfaceId);
+    }
+
+    /**
+     * @inheritdoc IERC2981Upgradeable
+     */
+    function royaltyInfo(
+        uint256 _tokenId,
+        uint256 _salePrice
+    ) public view virtual override returns (address, uint256) {
+        RoyaltyInfo memory royalty = _tokenRoyaltyInfo[_tokenId];
+
+        if (royalty.receiver == address(0)) {
+            royalty = _defaultRoyaltyInfo;
+        }
+
+        uint256 royaltyAmount = (_salePrice * royalty.royaltyFraction) /
+            _feeDenominator();
+
+        return (royalty.receiver, royaltyAmount);
+    }
+
+    /**
+     * @dev The denominator with which to interpret the fee set in {_setTokenRoyalty} and {_setDefaultRoyalty} as a
+     * fraction of the sale price. Defaults to 10000 so fees are expressed in basis points, but may be customized by an
+     * override.
+     */
+    function _feeDenominator() internal pure virtual returns (uint96) {
+        return 10000;
+    }
+
+    /**
+     * @dev Sets the royalty information that all ids in this contract will default to.
+     *
+     * Requirements:
+     *
+     * - `receiver` cannot be the zero address.
+     * - `feeNumerator` cannot be greater than the fee denominator.
+     */
+    function _setDefaultRoyalty(
+        address receiver,
+        uint96 feeNumerator
+    ) internal virtual {
+        require(
+            feeNumerator <= _feeDenominator(),
+            "ERC2981: royalty fee will exceed salePrice"
+        );
+        require(receiver != address(0), "ERC2981: invalid receiver");
+
+        _defaultRoyaltyInfo = RoyaltyInfo(receiver, feeNumerator);
+    }
+
+    /**
+     * @dev Removes default royalty information.
+     */
+    function _deleteDefaultRoyalty() internal virtual {
+        delete _defaultRoyaltyInfo;
+    }
+
+    /**
+     * @dev Sets the royalty information for a specific token id, overriding the global default.
+     *
+     * Requirements:
+     *
+     * - `receiver` cannot be the zero address.
+     * - `feeNumerator` cannot be greater than the fee denominator.
+     */
+    function _setTokenRoyalty(
+        uint256 tokenId,
+        address receiver,
+        uint96 feeNumerator
+    ) internal virtual {
+        require(
+            feeNumerator <= _feeDenominator(),
+            "ERC2981: royalty fee will exceed salePrice"
+        );
+        require(receiver != address(0), "ERC2981: Invalid parameters");
+
+        _tokenRoyaltyInfo[tokenId] = RoyaltyInfo(receiver, feeNumerator);
+    }
+
+    /**
+     * @dev Resets royalty information for the token id back to the global default.
+     */
+    function _resetTokenRoyalty(uint256 tokenId) internal virtual {
+        delete _tokenRoyaltyInfo[tokenId];
+    }
 }

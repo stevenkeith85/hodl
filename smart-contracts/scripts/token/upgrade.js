@@ -1,26 +1,29 @@
 const { ethers, upgrades } = require("hardhat");
-const { getImplementationAddress } = require('@openzeppelin/upgrades-core');
-const { getProvider } = require("../getProvider");
 const dotenv = require('dotenv');
-dotenv.config({ path: '.env.local' })
+dotenv.config({ path: '.env.deployment.local' })
 
-const HodlNFTProxy = process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS;
 
-// This is cool! We won't have to update the address the FE uses except when we deploy the proxy.
-// Any upgrades will just update the implementation address (if required/i.e. there are changes)
+// The website will always point to the proxy address.
+// An upgrade will change where the proxy points to
 async function main() {
-  const ownerAccount = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY, getProvider());
 
-  const HodlNFTFactoryNew = await ethers.getContractFactory("HodlNFT", ownerAccount);
+  const FEE_DATA = {
+    maxFeePerGas: ethers.utils.parseUnits('80', 'gwei'),
+    maxPriorityFeePerGas: ethers.utils.parseUnits('40', 'gwei'),
+  };
 
-  const hodlNFTAsOwnerNew = await upgrades.upgradeProxy(HodlNFTProxy, HodlNFTFactoryNew);
-  await hodlNFTAsOwnerNew.deployed();
-  
-  const proxyAddressAfter = hodlNFTAsOwnerNew.address;
-  const implAddressAfter = await getImplementationAddress(ethers.provider, hodlNFTAsOwnerNew.address);
+  // Wrap the provider so we can override fee data.
+  const provider = new ethers.providers.FallbackProvider([ethers.provider], 1);
+  provider.getFeeData = async () => FEE_DATA;
 
-  console.log("NFT PROXY IS NOW: ", proxyAddressAfter); // The same as before
-  console.log("NFT IMPL IS NOW: ", implAddressAfter); 
+  // Create the signer for the private key, connected to the provider with hardcoded fee data
+  const signer = (new ethers.Wallet(process.env.WALLET_PRIVATE_KEY)).connect(provider);
+
+  const MyContractV2Factory = await ethers.getContractFactory("HodlNFT", signer);
+
+  const updatedProxy = await upgrades.upgradeProxy(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, MyContractV2Factory, { call: "initializeV2" });
+  await updatedProxy.deployed();
+
 }
 
 // We recommend this pattern to be able to use async/await everywhere

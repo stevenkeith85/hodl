@@ -7,6 +7,8 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { WalletContext } from '../../contexts/WalletContext';
 import { AssetPreview } from './AssetPreview';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
 
 
 export const MintTokenAction = ({
@@ -20,6 +22,7 @@ export const MintTokenAction = ({
   metadata
 }) => {
   const [successModalOpen, setSuccessModalOpen] = useState(false);
+  const [royaltyFeePercent, setRoyaltyFeePercent] = useState("");
 
   const { signer } = useContext(WalletContext);
 
@@ -37,13 +40,13 @@ export const MintTokenAction = ({
         throw new Error("Metadata URL is not an IPFS url");
       }
 
-      await mintToken(metadataUrl, signer);
+      await mintToken(metadataUrl, Number(royaltyFeePercent) * 100, signer);
 
       setStepComplete(4);
       setSuccessModalOpen(true);
     } catch (e) {
       enqueueSnackbar(
-        e.message,
+        e.reason || e.message,
         {
           variant: "error",
           hideIconVariant: true
@@ -89,25 +92,75 @@ export const MintTokenAction = ({
         flexDirection: 'column',
         width: '100%',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        gap: 4,
       }}>
         <AssetPreview originalAspectRatio={originalAspectRatio} formData={formData} setFormData={setFormData} />
-        <Box sx={{ margin: 2, textAlign: 'center' }}>
-          <Typography component="h1" variant="h1" mb={2}>{metadata?.name}</Typography>
-          <Box mb={1} sx={{ whiteSpace: 'pre-line' }}>{metadata?.description}</Box>
-          <Typography component="p" mb={1} >{metadata?.license}</Typography>
+        <Box sx={{
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center'
+        }}>
+          <Typography
+            sx={{
+              fontWeight: 600,
+              marginBottom: 2
+            }}>
+            {metadata?.name}
+          </Typography>
+          <Box
+            sx={{
+              whiteSpace: 'pre-line',
+              color: theme => theme.palette.text.secondary
+            }}>
+            {metadata?.description}
+          </Box>
         </Box>
 
-        <div>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 4
+          }}
+        >
+          <TextField
+            InputLabelProps={{ shrink: true }}
+            type="number"
+            value={royaltyFeePercent}
+            onChange={e => {
+              const valid = e?.target?.value?.match(/^\b(([0-9]|1[0-5])\b\.{0,1}\d{0,2}$)/);
+
+              if (e.target.value === "" || valid) {
+                setRoyaltyFeePercent(e.target.value)
+              }
+            }}
+            label="Royalty Fee"
+            inputProps={{
+              min: 0,
+              max: 15,
+              step: 1,
+              maxLength: 3
+            }}
+            InputProps={{
+              endAdornment: <InputAdornment position="end">%</InputAdornment>,
+            }}
+          ></TextField>
           <Button
             color="primary"
             onClick={mint}
-            sx={{ paddingY: 1, paddingX: 3 }}
+            sx={{
+              paddingY: 0.75,
+              paddingX: 2.25,
+              fontSize: 14
+            }}
             variant="contained"
           >
-            Mint Your Token
+            Mint Token
           </Button>
-        </div>
+        </Box>
       </Box>
     </>
   );

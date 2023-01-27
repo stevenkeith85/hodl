@@ -1,11 +1,15 @@
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
+import { useMutableToken } from "../../hooks/useMutableToken";
 
 import { getShortAddress } from "../../lib/getShortAddress";
 import { cidToGatewayUrl } from "../../lib/utils";
 
 
-export const TokenDetailsCard = ({ prefetchedToken }) => {
+export const TokenDetailsCard = ({ prefetchedToken, prefetchedMutableToken }) => {
+
+    const { data: mutableToken } = useMutableToken(prefetchedToken.id, prefetchedMutableToken);
+
     return (<>
         <Box
             sx={{
@@ -38,6 +42,7 @@ export const TokenDetailsCard = ({ prefetchedToken }) => {
                         fontSize: 14,
                         color: theme => theme.palette.text.secondary
                     }}>Token Id</Box>
+                
                 <Link href={cidToGatewayUrl(prefetchedToken?.metadata)} target="blank" sx={{ textDecoration: 'none' }}>
                     <Box
                         sx={{
@@ -45,6 +50,18 @@ export const TokenDetailsCard = ({ prefetchedToken }) => {
                             color: theme => theme.palette.primary.main
                         }}>{prefetchedToken.id}</Box>
                 </Link>
+                <Box
+                    sx={{
+                        fontSize: 14,
+                        color: theme => theme.palette.text.secondary
+                    }}>Creator Royalty</Box>
+                <Box
+                    sx={{
+                        fontSize: 14,
+                        color: theme => theme.palette.text.secondary
+                    }}>{
+                        mutableToken?.royaltyFeeInBasisPoints ? `${mutableToken?.royaltyFeeInBasisPoints / 100}%` : "None"
+                    }</Box>
                 <Box
                     sx={{
                         fontSize: 14,

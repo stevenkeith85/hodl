@@ -4,6 +4,7 @@ import { Redis } from '@upstash/redis';
 import { getListingFromBlockchain } from '../market/listing/[tokenId]';
 import { getTokenFromBlockchain } from '../token/[tokenId]';
 import { getAsString } from "../../../../lib/getAsString";
+import { MutableToken } from "../../../../models/MutableToken";
 
 const route = apiRoute();
 const client = Redis.fromEnv()
@@ -14,19 +15,21 @@ export const updateCache = async (id) => {
 
   const [listing, token] = await Promise.all([listingPromise, tokenPromise]);
 
-  let mutableToken = null;
+  let mutableToken: MutableToken = null;
 
   if (listing) {
     mutableToken = {
       forSale: true,
       hodler: listing.seller,
-      price: listing.price
+      price: listing.price,
+      royaltyFeeInBasisPoints: token.royaltyFeeInBasisPoints
     }
   } else {
     mutableToken = {
       forSale: false,
       hodler: token.ownerOf,
-      price: null
+      price: null,
+      royaltyFeeInBasisPoints: token.royaltyFeeInBasisPoints
     }
   }
   await client.set(`token:${id}:mutable`, mutableToken);

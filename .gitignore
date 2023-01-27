@@ -70,3 +70,6 @@ generateNfts/assets
 .openzeppelin/unknown-*.json
 
 scripts/addresses.json
+
+// vscode
+.vscode
