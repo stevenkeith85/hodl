@@ -10,4 +10,8 @@ export interface MutableToken {
 
   // price in ether. it will be null if the token is not for sale
   price?: string;
+
+  // When we sync with the blockchain, we'll check this again as in-theory a contract could change this
+  // Our Hodl NFT only allows this to be changed at mint though.
+  royaltyFeeInBasisPoints?: string;
 }

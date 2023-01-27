@@ -390,14 +390,13 @@ describe("HodlNft Contract", function () {
 
     it("Should support the royalty (erc2981) interface", async function () {
         const _INTERFACE_ID_ERC2981 = 0x2a55205a;
-        const suportsRoyaltyInterface = await hodlNFTAsUser.supportsInterface(_INTERFACE_ID_ERC2981);
-        expect(suportsRoyaltyInterface).to.equal(true);
-    });
-
-    it("Should support the nft (erc721) interface", async function () {
         const _INTERFACE_ID_ERC721 = 0x80ac58cd;
+
+        const suportsRoyaltyInterface = await hodlNFTAsUser.supportsInterface(_INTERFACE_ID_ERC2981);
         const suportsNFTInterface = await hodlNFTAsUser.supportsInterface(_INTERFACE_ID_ERC721);
+
         expect(suportsNFTInterface).to.equal(true);
+        expect(suportsRoyaltyInterface).to.equal(true);
     });
 
     // Tokens minted prior to the royalty update will have 0 royalty fee
@@ -436,9 +435,9 @@ describe("HodlNft Contract", function () {
         }
     });
 
-    // TODO:
     it("Should allow a royalty value set at maxRoyaltyFee", async function () {
-        let tx = await hodlNFTAsUser.createToken("ipfs://123", 1500, { value: mintFee });
+        const maxRoyaltyFee = hodlNFTAsUser.maxRoyaltyFee();
+        let tx = await hodlNFTAsUser.createToken("ipfs://123", maxRoyaltyFee, { value: mintFee });
         await tx.wait();
 
         const [receiverAddress, royaltyAmount] = await hodlNFTAsUser.royaltyInfo(1, 100);

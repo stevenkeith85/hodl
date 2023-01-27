@@ -10,7 +10,7 @@ async function main() {
   const signer = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY, ethers.provider);
   const hodlNFTAsOwner = new ethers.Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, HodlNFT.abi, signer);
 
-  console.log(await hodlNFTAsOwner.mintFee());
+  console.log(await hodlNFTAsOwner.maxRoyaltyFee());
 }
 
 // We recommend this pattern to be able to use async/await everywhere

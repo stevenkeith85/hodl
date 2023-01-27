@@ -2,7 +2,7 @@ const { ethers, upgrades } = require("hardhat");
 const { getProvider } = require("../getProvider");
 
 const dotenv = require('dotenv');
-dotenv.config({ path: '.env.development.local' })
+dotenv.config({ path: '.env.deployment.local' })
 
 const HodlNFTProxy = process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS;
 

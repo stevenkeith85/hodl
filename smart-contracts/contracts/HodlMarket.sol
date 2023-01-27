@@ -8,6 +8,8 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721RoyaltyUpgradeable.sol";
 
+import "hardhat/console.sol";
+
 contract HodlMarket is
     ReentrancyGuardUpgradeable,
     OwnableUpgradeable,
@@ -28,7 +30,9 @@ contract HodlMarket is
     // tokens that 'address' currently has listed on the market
     mapping(address => uint256[]) public addressToTokenIds;
 
+    // v2
     bytes4 private constant _INTERFACE_ID_ERC2981 = 0x2a55205a;
+    uint96 public maxRoyaltyFee; // In Basis Points
 
     // Events
     event TokenListed(
@@ -46,6 +50,12 @@ contract HodlMarket is
         uint256 price
     );
 
+    event RoyaltySent(
+        address indexed receiver,
+        uint256 indexed tokenId,
+        uint256 amount
+    );
+
     function initialize() public initializer {
         __ReentrancyGuard_init();
         __Ownable_init();
@@ -53,6 +63,11 @@ contract HodlMarket is
 
         marketSaleFeeInPercent = 3;
         minListingPriceInMatic = 1 ether;
+    }
+
+    // v2
+    function initializeV2() public reinitializer(2) {
+        maxRoyaltyFee = 1500; // initially set this to 15%
     }
 
     // Returns the number of NFTs _address has currently listed on the market
@@ -72,6 +87,10 @@ contract HodlMarket is
         minListingPriceInMatic = _minListingPriceInMatic;
     }
 
+    function setMaxRoyaltyFee(uint96 _maxRoyaltyFee) public onlyOwner {
+        maxRoyaltyFee = _maxRoyaltyFee;
+    }
+
     function remove(uint256[] storage array, uint256 _index) private {
         require(_index < array.length, "index out of bound");
 
@@ -88,14 +107,6 @@ contract HodlMarket is
         uint256 price
     ) public payable nonReentrant whenNotPaused {
         require(
-            keccak256(bytes(ERC721Upgradeable(tokenContract).name())) ==
-                keccak256(bytes("Hodl NFT")) &&
-                keccak256(bytes(ERC721Upgradeable(tokenContract).symbol())) ==
-                keccak256(bytes("HNFT")),
-            "We only support HodlNFTs on the market at the moment"
-        );
-
-        require(
             msg.sender == IERC721Upgradeable(tokenContract).ownerOf(tokenId),
             "You do not own this token or it is already listed"
         );
@@ -104,6 +115,22 @@ contract HodlMarket is
             price >= minListingPriceInMatic,
             "Token must be listed at the minimum listing price or higher."
         );
+
+        if (checkRoyalties(tokenContract)) {
+            // The maxRoyaltyFee is set in basis points
+            // i.e. 100 is 1%, 1000 is 10%, 10000 is 100%
+            // so we ask what the fee would be if the price was 10000 to get 
+            // the royalty fee the user set for their nft in basis points, 
+            // and compare it with what the marketplace allows
+            (, uint256 royaltyFee) = IERC2981Upgradeable(
+                tokenContract
+            ).royaltyInfo(tokenId, 10000); 
+
+            require(
+                royaltyFee <= maxRoyaltyFee,
+                "Token must have a royalty fee equal to or lower than the maximum royalty fee"
+            );
+        }
 
         listings[tokenId] = Listing(tokenId, price, payable(msg.sender));
         listingKeys.push(tokenId);
@@ -199,15 +226,13 @@ contract HodlMarket is
 
         (address creator, uint256 royaltyFee) = (address(0), 0);
 
-        // TODO: What if a contract sets a massive royalty fee?
         if (checkRoyalties(tokenContract)) {
-            (creator, royaltyFee) = IERC2981Upgradeable(tokenContract).royaltyInfo(
-                tokenId,
-                listings[tokenId].price
-            );
+            (creator, royaltyFee) = IERC2981Upgradeable(tokenContract)
+                .royaltyInfo(tokenId, listings[tokenId].price);
         }
 
-        uint256 ownerFee = (marketSaleFeeInPercent * listings[tokenId].price) / 100;
+        uint256 ownerFee = (marketSaleFeeInPercent * listings[tokenId].price) /
+            100;
 
         // this will just underflow and revert if the ownerfee + royalty fee sum up to more than the listing fee; so no harm.
         uint256 sellerFee = listings[tokenId].price - ownerFee - royaltyFee;
@@ -230,8 +255,12 @@ contract HodlMarket is
         (bool ownerReceivedFee, ) = owner().call{value: ownerFee}("");
         require(ownerReceivedFee, "Could not send the owner their fee");
 
-        (bool creatorReceivedFee, ) = creator.call{value: royaltyFee}("");
-        require(creatorReceivedFee, "Could not send the creator their fee");
+        if (royaltyFee > 0) {
+            (bool creatorReceivedFee, ) = creator.call{value: royaltyFee}("");
+            require(creatorReceivedFee, "Could not send the creator their fee");
+
+            emit RoyaltySent(creator, tokenId, royaltyFee);
+        }
 
         (bool sellerReceivedFee, ) = sellerAddress.call{value: sellerFee}("");
         require(sellerReceivedFee, "Could not send the seller their fee");

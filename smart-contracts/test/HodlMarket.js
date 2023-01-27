@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const { upgrades, ethers } = require("hardhat");
 const { BigNumber } = require("ethers");
 
-const path = require('path')
+const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env.test.local') })
 
 
@@ -25,7 +25,7 @@ describe("HodlMarket Contract", function () {
     let hodlNFTAsUser2; // Deployed NFT Contract Instance (via proxy) with the signer set as user2
     let hodlNFTAsUser3; // Deployed NFT Contract Instance (via proxy) with the signer set as user3
 
-    let myTokenAsOwner; // Deployed MyToken contract instance with the signer set as owner
+    let userAccount1Collection; // Deployed MyToken contract instance with the signer set as owner
 
     let hodlNFTAddress;
 
@@ -55,7 +55,7 @@ describe("HodlMarket Contract", function () {
         await hodlMarketAsOwner.deployed();
 
         // Upgrade
-        hodlMarketAsOwner = await upgrades.upgradeProxy(hodlMarketAsOwner, HodlMarketFactory);
+        hodlMarketAsOwner = await upgrades.upgradeProxy(hodlMarketAsOwner, HodlMarketFactory, { call: 'initializeV2' });
         await hodlMarketAsOwner.deployed();
 
         hodlMarketAsUser = hodlMarketAsOwner.connect(userAccount);
@@ -73,14 +73,15 @@ describe("HodlMarket Contract", function () {
         hodlNFTAsOwner = await upgrades.upgradeProxy(hodlNFTAsOwner, HodlNFTFactory, { call: 'initializeV2' });
         await hodlNFTAsOwner.deployed();
 
+        // Connect to the Hodl NFT Contract as various wallets
         hodlNFTAsUser = hodlNFTAsOwner.connect(userAccount);
         hodlNFTAsUser2 = hodlNFTAsOwner.connect(userAccount2);
         hodlNFTAsUser3 = hodlNFTAsOwner.connect(userAccount3);
 
-        // Another token
-        MyToken = await ethers.getContractFactory("MyToken", ownerAccount);
-        myTokenAsOwner = await MyToken.deploy(hodlMarketAsOwner.address);
-        await myTokenAsOwner.deployed();
+        // UserAccount1 creates their collection
+        MyToken = await ethers.getContractFactory("MyToken", userAccount);
+        userAccount1Collection = await MyToken.deploy();
+        await userAccount1Collection.deployed();
 
         hodlNFTAddress = hodlNFTAsOwner.address;
 
@@ -128,7 +129,22 @@ describe("HodlMarket Contract", function () {
     });
 
     describe("listToken", function () {
-        it("Should allow user to list their token", async function () {
+        it("Should allow user to list any ERC721 token", async function () {
+            let tx = await userAccount1Collection.safeMint();
+            await tx.wait();
+
+            await userAccount1Collection.approve(hodlMarketAsOwner.address, 1);
+
+            tx = await hodlMarketAsUser.listToken(userAccount1Collection.address, 1, ethers.utils.parseEther("5"));
+            await tx.wait();
+
+            const TokenListedEvents = await hodlMarketAsUser.queryFilter("TokenListed")
+            expect(TokenListedEvents.length).to.equal(1);
+            expect(TokenListedEvents[0].args.seller).to.equal(process.env.ACCOUNT1_PUBLIC_KEY);
+            expect(TokenListedEvents[0].args.tokenId).to.equal(1);
+        });
+
+        it("Should allow user to list their Hodl NFT", async function () {
             let tx = await hodlNFTAsUser.createToken('ipfs://12345', 0, { value: mintFee });
             await tx.wait();
 
@@ -167,6 +183,42 @@ describe("HodlMarket Contract", function () {
             expect(TokenListedEvents[0].args.tokenId).to.equal(tokenId);
             expect(TokenListedEvents[0].args.price).to.equal(ethers.utils.parseEther("5"));
             expect(TokenListedEvents[0].args.seller).to.equal(process.env.ACCOUNT1_PUBLIC_KEY);
+        });
+
+        it("Should NOT allow user to list their token if the royalty is above maxRoyalty", async function () {
+            let tx = await hodlNFTAsOwner.setMaxRoyaltyFee(10000); // a contract that lets the user set any royalty fee
+            tx = await hodlNFTAsUser.createToken('ipfs://12345', 1501, { value: mintFee }); // user sets a 15.01% royalty
+            await tx.wait();
+
+            // The marketplace will compare that with its limits, and reject the addition
+            await expect(hodlMarketAsUser.listToken(hodlNFTAsUser.address, 1, ethers.utils.parseEther("5"))).to.be.reverted;
+        });
+
+        
+        it("Should allow the owner to change the maxRoyalty fee, and allow listings that would have been rejected on", async function () {
+            let tx = await hodlNFTAsOwner.setMaxRoyaltyFee(10000); // a contract that lets the user set any royalty fee
+            tx = await hodlNFTAsUser.createToken('ipfs://12345', 1501, { value: mintFee }); // user sets a 15.01% royalty
+            await tx.wait();
+
+            // The marketplace will compare that with its limits, and reject the addition
+            await expect(hodlMarketAsUser.listToken(hodlNFTAsUser.address, 1, ethers.utils.parseEther("5"))).to.be.reverted;
+
+            await hodlMarketAsOwner.setMaxRoyaltyFee(1600);
+
+            // The marketplace will compare that with its limits, and now allow the addition
+            await expect(hodlMarketAsUser.listToken(hodlNFTAsUser.address, 1, ethers.utils.parseEther("5"))).not.to.be.reverted;
+        });
+
+        
+        it("Should NOT allow a user (other than the owner) to change the maxRoyalty fee to get their listing on", async function () {
+            let tx = await hodlNFTAsOwner.setMaxRoyaltyFee(10000); // a contract that lets the user set any royalty fee
+            tx = await hodlNFTAsUser.createToken('ipfs://12345', 1501, { value: mintFee }); // user sets a 15.01% royalty
+            await tx.wait();
+
+            // The marketplace will compare that with its limits, and reject the addition
+            await expect(hodlMarketAsUser.listToken(hodlNFTAsUser.address, 1, ethers.utils.parseEther("5"))).to.be.reverted;
+
+            await expect(hodlMarketAsUser.setMaxRoyaltyFee(1600)).to.be.reverted;
         });
 
         it("Should NOT allow user to list another user's token", async function () {
@@ -229,43 +281,29 @@ describe("HodlMarket Contract", function () {
                 expect(e.message).to.equal('value out-of-bounds (argument="price", value={"type":"BigNumber","hex":"-0x8ac7230489e80000"}, code=INVALID_ARGUMENT, version=abi/5.7.0)');
             }
         });
-
-        // This will only check the token name and symbol at the moment, which do not have to be unique.
-        //
-        // Other developers could create their own contracts to use with the same name and symbol, which would allow them to list. (spoof)
-
-        // Once the HoldNFT contract is deployed we could upgrade the HodlMarket contract to only let users list tokens with that address. (which will stop spoofing)
-        //
-        // We could also blacklist users trying to do malicious stuff in general (still to be implemented)
-        //
-        // It's more about alerting the 'good' user that what they are trying to do isn't intended to work on the website at the moment.
-        //
-        // These spoof tokens wouldn't show on the website regardless, as we consult the HodlNFT contract before storing data in redis
-        //
-        // We MAY consider letting other tokens list in future, but we'd have to then store the image, metadata etc in our database at that point (probably want to differentiate tokens by contract etc too)
-        it("Should only allow user to list tokens created with HodlNFT contract (at the moment)", async function () {
-            let tx = await myTokenAsOwner.safeMint();
-            await tx.wait();
-
-            const transferEvents = await myTokenAsOwner.queryFilter("Transfer")
-            const tokenId = transferEvents[0].args.tokenId;
-
-            try {
-                tx = await hodlMarketAsOwner.listToken(myTokenAsOwner.address, tokenId, ethers.utils.parseUnits("1", "ether"));
-                await tx.wait();
-            } catch (e) {
-                expect(e.message).to.equal("VM Exception while processing transaction: reverted with reason string 'We only support HodlNFTs on the market at the moment'");
-            }
-
-            const TokenListedEvents = await hodlMarketAsUser.queryFilter("TokenListed")
-            expect(TokenListedEvents.length).to.equal(0);
-        });
     });
 
-
-
     describe("DelistToken", function () {
-        it("Should allow user to delist their token", async function () {
+
+        it("Should allow user to delist any ERC721 token", async function () {
+            let tx = await userAccount1Collection.safeMint();
+            await tx.wait();
+
+            await userAccount1Collection.approve(hodlMarketAsOwner.address, 1);
+
+            tx = await hodlMarketAsUser.listToken(userAccount1Collection.address, 1, ethers.utils.parseEther("5"));
+            await tx.wait();
+
+            tx = await hodlMarketAsUser.delistToken(userAccount1Collection.address, 1);
+            await tx.wait();
+
+            const TokenDelistedEvents = await hodlMarketAsUser.queryFilter("TokenDelisted")
+            expect(TokenDelistedEvents.length).to.equal(1);
+            expect(TokenDelistedEvents[0].args.seller).to.equal(process.env.ACCOUNT1_PUBLIC_KEY);
+            expect(TokenDelistedEvents[0].args.tokenId).to.equal(1);
+        });
+
+        it("Should allow user to delist their HODL NFT token", async function () {
             let tx = await hodlNFTAsUser.createToken('ipfs://12345', 0, { value: mintFee });
             await tx.wait();
 
@@ -467,12 +505,12 @@ describe("HodlMarket Contract", function () {
             // Marketplace commision is 3%
             // Royalty is set to 5%
             // Sale price is 100 Matic
-            
+
             // Get balances of marketplace owner, creator/seller, and buyer
             let ownerBeforeBalance = await ownerAccount.getBalance();
             let sellerBeforeBalance = await userAccount.getBalance();
             let buyerBeforeBalance = await userAccount2.getBalance();
-            
+
             tx = await hodlMarketAsUser2.buyToken(hodlNFTAsUser2.address, 1, { value: ethers.utils.parseEther("100") })
             receipt = await tx.wait();
 
@@ -491,7 +529,7 @@ describe("HodlMarket Contract", function () {
             // Marketplace commision is 3%
             // Royalty is set to 5%
             // Sale price is 200 Matic
-            
+
             // We need to re-approve as a transfer event clears the approved operator
             await hodlNFTAsUser2.approve(hodlMarketAsOwner.address, 1);
             tx = await hodlMarketAsUser2.listToken(hodlNFTAsUser2.address, 1, ethers.utils.parseEther("200"));
@@ -505,7 +543,7 @@ describe("HodlMarket Contract", function () {
 
             tx = await hodlMarketAsUser3.buyToken(hodlNFTAsUser3.address, 1, { value: ethers.utils.parseEther("200") })
             receipt = await tx.wait();
-            
+
             let creatorAfterBalance = await userAccount.getBalance();
             ownerAfterBalance = await ownerAccount.getBalance();
             sellerAfterBalance = await userAccount2.getBalance();
@@ -518,78 +556,166 @@ describe("HodlMarket Contract", function () {
             expect(await hodlNFTAsUser2.ownerOf(1)).to.equal(userAccount3.address);
         });
 
-        // In this scenario, technically the secondary seller will be left with nothing; which is a bit unusual.
-        // 97% royalty to the creator
-        // 3% fee to us
-        // We should perhaps set a max royalty value allowed and revert the tx if the amount is over that? 
-        // We could do that here, as we can work out the percentage against the sale.
-        // Individual contracts probably wouldn't provide that info
-        it("Should check the boundaries for secondary sales", async function () {
-            let tx = await hodlNFTAsOwner.setMaxRoyaltyFee(10000);
-
-            // creator creates a token with a 97% royalty
-            tx = await hodlNFTAsUser.createToken('ipfs://12345', 9700, { value: mintFee }); // 97% for creator, 3% for us would leave the seller with nothing
+        it("Should emit an event when a royalty is paid", async function () {
+            tx = await hodlNFTAsUser.createToken('ipfs://12345', 500, { value: mintFee }); // 5%
             let receipt = await tx.wait();
 
-            // they list it for 100 MATIC
             tx = await hodlMarketAsUser.listToken(hodlNFTAsUser.address, 1, ethers.utils.parseEther("100"));
             receipt = await tx.wait();
 
-            //
-            // Primary sale
-            //
-            // Marketplace commision is 3%
-            // Royalty is set to 5%
-            // Sale price is 100 Matic
-            
-            // Get balances of marketplace owner, creator/seller, and buyer
-            let ownerBeforeBalance = await ownerAccount.getBalance();
-            let sellerBeforeBalance = await userAccount.getBalance();
-            let buyerBeforeBalance = await userAccount2.getBalance();
-            
             tx = await hodlMarketAsUser2.buyToken(hodlNFTAsUser2.address, 1, { value: ethers.utils.parseEther("100") })
             receipt = await tx.wait();
 
-            let ownerAfterBalance = await ownerAccount.getBalance();
-            let sellerAfterBalance = await userAccount.getBalance();
-            let buyerAfterBalance = await userAccount2.getBalance();
-
-            expect(ownerAfterBalance).to.equal(ownerBeforeBalance.add(ethers.utils.parseEther("3")));
-            expect(sellerAfterBalance).to.equal(sellerBeforeBalance.add(ethers.utils.parseEther("97")));
-            expect(buyerAfterBalance).to.equal(buyerBeforeBalance.sub(ethers.utils.parseEther("100")).sub(receipt.effectiveGasPrice * receipt.gasUsed)); // and the gas fee needs to be factored in
-            expect(await hodlNFTAsUser2.ownerOf(1)).to.equal(userAccount2.address);
-
-            //
-            // Secondary sale
-            //
-            // Marketplace commision is 3%
-            // Royalty is set to 5%
-            // Sale price is 200 Matic
-            
             // We need to re-approve as a transfer event clears the approved operator
             await hodlNFTAsUser2.approve(hodlMarketAsOwner.address, 1);
+
             tx = await hodlMarketAsUser2.listToken(hodlNFTAsUser2.address, 1, ethers.utils.parseEther("200"));
             receipt = await tx.wait();
 
-            // Get balances of the creator (who will receive the royalty), marketplace owner, seller, and buyer
-            let creatorBeforeBalance = await userAccount.getBalance();
-            ownerBeforeBalance = await ownerAccount.getBalance();
-            sellerBeforeBalance = await userAccount2.getBalance();
-            buyerBeforeBalance = await userAccount3.getBalance();
+            tx = await hodlMarketAsUser3.buyToken(hodlNFTAsUser3.address, 1, { value: ethers.utils.parseEther("200") })
+            receipt = await tx.wait();
+
+            let events = await hodlMarketAsUser.queryFilter("RoyaltySent");
+
+            expect(events[0].args.tokenId).to.equal(1);
+            expect(events[0].args.receiver).to.equal(process.env.ACCOUNT1_PUBLIC_KEY);
+            expect(events[0].args.amount).to.equal(ethers.utils.parseEther("5"));
+
+            expect(events[1].args.tokenId).to.equal(1);
+            expect(events[1].args.receiver).to.equal(process.env.ACCOUNT1_PUBLIC_KEY);
+            expect(events[1].args.amount).to.equal(ethers.utils.parseEther("10"));
+        });
+
+        // Royalties can be 0. If they are then we do not send a 0 transfer to save gas.
+        it("Should NOT send a royalty when the value is 0, but the token should still be transferred, and the users paid", async function () {
+            tx = await hodlNFTAsUser.createToken('ipfs://12345', 0, { value: mintFee }); // 5%
+            let receipt = await tx.wait();
+
+            tx = await hodlMarketAsUser.listToken(hodlNFTAsUser.address, 1, ethers.utils.parseEther("100"));
+            receipt = await tx.wait();
+
+            const ownerBeforeBalance = await ownerAccount.getBalance();
+            const creatorBeforeBalance = await userAccount.getBalance();
+            const buyerBeforeBalance = await userAccount2.getBalance();
+
+            tx = await hodlMarketAsUser2.buyToken(hodlNFTAsUser2.address, 1, { value: ethers.utils.parseEther("100") })
+            receipt = await tx.wait();
+
+            const ownerAfterBalance = await ownerAccount.getBalance();
+            const creatorAfterBalance = await userAccount.getBalance();
+            const buyerAfterBalance = await userAccount2.getBalance();
+
+            expect(ownerAfterBalance).to.equal(ownerBeforeBalance.add(ethers.utils.parseEther("3")));
+            expect(creatorAfterBalance).to.equal(creatorBeforeBalance.add(ethers.utils.parseEther("97")));
+            expect(buyerAfterBalance).to.equal(buyerBeforeBalance.sub(ethers.utils.parseEther("100")).sub(receipt.gasUsed * receipt.effectiveGasPrice));
+
+            // We need to re-approve as a transfer event clears the approved operator
+            await hodlNFTAsUser2.approve(hodlMarketAsOwner.address, 1);
+
+            tx = await hodlMarketAsUser2.listToken(hodlNFTAsUser2.address, 1, ethers.utils.parseEther("200"));
+            receipt = await tx.wait();
+
+            const ownerBeforeBalance2 = await ownerAccount.getBalance();
+            const creatorBeforeBalance2 = await userAccount.getBalance();
+            const sellerBeforeBalance2 = await userAccount2.getBalance();
+            const buyerBeforeBalance2 = await userAccount3.getBalance();
 
             tx = await hodlMarketAsUser3.buyToken(hodlNFTAsUser3.address, 1, { value: ethers.utils.parseEther("200") })
             receipt = await tx.wait();
-            
-            let creatorAfterBalance = await userAccount.getBalance();
-            ownerAfterBalance = await ownerAccount.getBalance();
-            sellerAfterBalance = await userAccount2.getBalance();
-            buyerAfterBalance = await userAccount3.getBalance();
 
-            expect(ownerAfterBalance).to.equal(ownerBeforeBalance.add(ethers.utils.parseEther("6"))); // 3% of 200 is 6
-            expect(creatorAfterBalance).to.equal(creatorBeforeBalance.add(ethers.utils.parseEther("194"))); // 5% of 200 is 10
-            expect(sellerAfterBalance).to.equal(sellerBeforeBalance.add(ethers.utils.parseEther("0"))); // 92% of 200 is 184
-            expect(buyerAfterBalance).to.equal(buyerBeforeBalance.sub(ethers.utils.parseEther("200")).sub(receipt.effectiveGasPrice * receipt.gasUsed)); // and the gas fee needs to be factored in
-            expect(await hodlNFTAsUser2.ownerOf(1)).to.equal(userAccount3.address);
+            const ownerAfterBalance2 = await ownerAccount.getBalance();
+            const creatorAfterBalance2 = await userAccount.getBalance();
+            const sellerAfterBalance2 = await userAccount2.getBalance();
+            const buyerAfterBalance2 = await userAccount3.getBalance();
+
+            expect(ownerAfterBalance2).to.equal(ownerBeforeBalance2.add(ethers.utils.parseEther("6")));
+            expect(creatorAfterBalance2).to.equal(creatorBeforeBalance2); // No royalties were paid as the token was minted with a 0 royalty fee
+            expect(sellerAfterBalance2).to.equal(sellerBeforeBalance2.add(ethers.utils.parseEther("194")));
+            expect(buyerAfterBalance2).to.equal(buyerBeforeBalance2.sub(ethers.utils.parseEther("200")).sub(receipt.gasUsed * receipt.effectiveGasPrice));
+
+            let royaltyEvents = await hodlMarketAsUser.queryFilter("RoyaltySent");
+            let tokenboughtEvents = await hodlMarketAsUser.queryFilter("TokenBought");
+            expect(royaltyEvents.length).to.equal(0);
+
+            expect(tokenboughtEvents.length).to.equal(2);
+
+            expect(tokenboughtEvents[0].args.buyer).to.equal(process.env.ACCOUNT2_PUBLIC_KEY);
+            expect(tokenboughtEvents[0].args.seller).to.equal(process.env.ACCOUNT1_PUBLIC_KEY);
+            expect(tokenboughtEvents[0].args.tokenId).to.equal(1);
+            expect(tokenboughtEvents[0].args.price).to.equal(ethers.utils.parseEther("100"));
+
+            expect(tokenboughtEvents[1].args.seller).to.equal(process.env.ACCOUNT2_PUBLIC_KEY);
+            expect(tokenboughtEvents[1].args.buyer).to.equal(process.env.ACCOUNT3_PUBLIC_KEY);
+            expect(tokenboughtEvents[1].args.tokenId).to.equal(1);
+            expect(tokenboughtEvents[1].args.price).to.equal(ethers.utils.parseEther("200"));
+        });
+
+        // We want to allow ANY ERC721 Polygon contracts to trade their tokens on our marketplace.
+        // We test here with "MyToken" which is a basic non royalty contract
+        it("Should work with any ERC721 contracts that do not support royalties", async function () {
+            let tx = await userAccount1Collection.safeMint();
+            let receipt = await tx.wait();
+
+            // User approves the marketplace to transfer their token
+            await userAccount1Collection.approve(hodlMarketAsOwner.address, 1);
+
+            tx = await hodlMarketAsUser.listToken(userAccount1Collection.address, 1, ethers.utils.parseEther("100"));
+            receipt = await tx.wait();
+
+            const ownerBeforeBalance = await ownerAccount.getBalance();
+            const creatorBeforeBalance = await userAccount.getBalance();
+            const buyerBeforeBalance = await userAccount2.getBalance();
+
+            tx = await hodlMarketAsUser2.buyToken(userAccount1Collection.address, 1, { value: ethers.utils.parseEther("100") })
+            receipt = await tx.wait();
+
+            const ownerAfterBalance = await ownerAccount.getBalance();
+            const creatorAfterBalance = await userAccount.getBalance();
+            const buyerAfterBalance = await userAccount2.getBalance();
+
+            expect(ownerAfterBalance).to.equal(ownerBeforeBalance.add(ethers.utils.parseEther("3")));
+            expect(creatorAfterBalance).to.equal(creatorBeforeBalance.add(ethers.utils.parseEther("97")));
+            expect(buyerAfterBalance).to.equal(buyerBeforeBalance.sub(ethers.utils.parseEther("100")).sub(receipt.gasUsed * receipt.effectiveGasPrice));
+
+            // The buyer (userAccount2) needs to connect to the NFT contract and approve the marketplace to transfer their token
+            await userAccount1Collection.connect(userAccount2).approve(hodlMarketAsOwner.address, 1);
+
+            tx = await hodlMarketAsUser2.listToken(userAccount1Collection.address, 1, ethers.utils.parseEther("200"));
+            receipt = await tx.wait();
+
+            const ownerBeforeBalance2 = await ownerAccount.getBalance();
+            const creatorBeforeBalance2 = await userAccount.getBalance();
+            const sellerBeforeBalance2 = await userAccount2.getBalance();
+            const buyerBeforeBalance2 = await userAccount3.getBalance();
+
+            tx = await hodlMarketAsUser3.buyToken(userAccount1Collection.address, 1, { value: ethers.utils.parseEther("200") })
+            receipt = await tx.wait();
+
+            const ownerAfterBalance2 = await ownerAccount.getBalance();
+            const creatorAfterBalance2 = await userAccount.getBalance();
+            const sellerAfterBalance2 = await userAccount2.getBalance();
+            const buyerAfterBalance2 = await userAccount3.getBalance();
+
+            expect(ownerAfterBalance2).to.equal(ownerBeforeBalance2.add(ethers.utils.parseEther("6")));
+            expect(creatorAfterBalance2).to.equal(creatorBeforeBalance2); // No royalties were paid as the token was minted with a 0 royalty fee
+            expect(sellerAfterBalance2).to.equal(sellerBeforeBalance2.add(ethers.utils.parseEther("194")));
+            expect(buyerAfterBalance2).to.equal(buyerBeforeBalance2.sub(ethers.utils.parseEther("200")).sub(receipt.gasUsed * receipt.effectiveGasPrice));
+
+            let royaltyEvents = await hodlMarketAsUser.queryFilter("RoyaltySent");
+            let tokenboughtEvents = await hodlMarketAsUser.queryFilter("TokenBought");
+            expect(royaltyEvents.length).to.equal(0);
+
+            expect(tokenboughtEvents.length).to.equal(2);
+
+            expect(tokenboughtEvents[0].args.buyer).to.equal(process.env.ACCOUNT2_PUBLIC_KEY);
+            expect(tokenboughtEvents[0].args.seller).to.equal(process.env.ACCOUNT1_PUBLIC_KEY);
+            expect(tokenboughtEvents[0].args.tokenId).to.equal(1);
+            expect(tokenboughtEvents[0].args.price).to.equal(ethers.utils.parseEther("100"));
+
+            expect(tokenboughtEvents[1].args.seller).to.equal(process.env.ACCOUNT2_PUBLIC_KEY);
+            expect(tokenboughtEvents[1].args.buyer).to.equal(process.env.ACCOUNT3_PUBLIC_KEY);
+            expect(tokenboughtEvents[1].args.tokenId).to.equal(1);
+            expect(tokenboughtEvents[1].args.price).to.equal(ethers.utils.parseEther("200"));
         });
 
         it("Should NOT allow user to buy another users token if correct amount is NOT provided", async function () {
@@ -679,7 +805,6 @@ describe("HodlMarket Contract", function () {
             expect(await hodlNFTAsUser2.ownerOf(1)).to.equal(userAccount2.address);
         });
 
-        // TODO: We may consider remembering the rate a token was listed at and charge that instead
         it("Should charge the current commision rate, even if token was listed when the rate was different", async function () {
             let tx = await hodlNFTAsUser.createToken('ipfs://12345', 0, { value: mintFee });
             await tx.wait();
