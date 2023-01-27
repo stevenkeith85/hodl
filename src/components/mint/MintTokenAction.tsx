@@ -22,7 +22,7 @@ export const MintTokenAction = ({
   metadata
 }) => {
   const [successModalOpen, setSuccessModalOpen] = useState(false);
-  const [royaltyFeePercent, setRoyaltyFeePercent] = useState(0);
+  const [royaltyFeePercent, setRoyaltyFeePercent] = useState("");
 
   const { signer } = useContext(WalletContext);
 
@@ -40,7 +40,7 @@ export const MintTokenAction = ({
         throw new Error("Metadata URL is not an IPFS url");
       }
 
-      await mintToken(metadataUrl, royaltyFeePercent * 100, signer);
+      await mintToken(metadataUrl, Number(royaltyFeePercent) * 100, signer);
 
       setStepComplete(4);
       setSuccessModalOpen(true);
