@@ -127,6 +127,7 @@ export const MintTokenAction = ({
           }}
         >
           <TextField
+            InputLabelProps={{ shrink: true }}
             type="number"
             value={royaltyFeePercent}
             onChange={e => {
