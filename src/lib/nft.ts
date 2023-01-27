@@ -11,12 +11,12 @@ import { MutableToken } from "../models/MutableToken"
 import { Token } from "../models/Token"
 
 
-export const mintToken = async (url, signer) => {
+export const mintToken = async (url, royaltyFeeInBasisPoints, signer) => {
   try {
     const tokenContract = new Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, signer);
 
     const mintFee = await tokenContract.mintFee();
-    const { hash } = await tokenContract.createToken(url, { value: mintFee });
+    const { hash } = await tokenContract.createToken(url, royaltyFeeInBasisPoints, { value: mintFee });
 
     const r = await axios.post(
       '/api/market/transaction',

@@ -19,6 +19,7 @@ const TokenDataTab = ({ prefetchedMutableToken, prefetchedToken }) => {
     >
       <TokenDetailsCard 
         prefetchedToken={prefetchedToken} 
+        prefetchedMutableToken={prefetchedMutableToken}
       />
       <HodlerCreatorCard
         prefetchedToken={prefetchedToken}

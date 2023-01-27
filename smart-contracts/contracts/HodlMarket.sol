@@ -6,7 +6,9 @@ import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721RoyaltyUpgradeable.sol";
 
+import "hardhat/console.sol";
 
 contract HodlMarket is
     ReentrancyGuardUpgradeable,
@@ -28,6 +30,10 @@ contract HodlMarket is
     // tokens that 'address' currently has listed on the market
     mapping(address => uint256[]) public addressToTokenIds;
 
+    // v2
+    bytes4 private constant _INTERFACE_ID_ERC2981 = 0x2a55205a;
+    uint96 public maxRoyaltyFee; // In Basis Points
+
     // Events
     event TokenListed(
         address indexed seller,
@@ -35,16 +41,19 @@ contract HodlMarket is
         uint256 price
     );
 
-    event TokenDelisted(
-        address indexed seller, 
-        uint256 indexed tokenId
-    );
+    event TokenDelisted(address indexed seller, uint256 indexed tokenId);
 
     event TokenBought(
         address indexed buyer,
         address indexed seller,
         uint256 indexed tokenId,
         uint256 price
+    );
+
+    event RoyaltySent(
+        address indexed receiver,
+        uint256 indexed tokenId,
+        uint256 amount
     );
 
     function initialize() public initializer {
@@ -56,23 +65,30 @@ contract HodlMarket is
         minListingPriceInMatic = 1 ether;
     }
 
+    // v2
+    function initializeV2() public reinitializer(2) {
+        maxRoyaltyFee = 1500; // initially set this to 15%
+    }
+
     // Returns the number of NFTs _address has currently listed on the market
     function balanceOf(address _address) external view returns (uint256) {
         return addressToTokenIds[_address].length;
     }
 
-    function setMarketSaleFeeInPercent(uint256 _marketSaleFeeInPercent)
-        public
-        onlyOwner
-    {
+    function setMarketSaleFeeInPercent(
+        uint256 _marketSaleFeeInPercent
+    ) public onlyOwner {
         marketSaleFeeInPercent = _marketSaleFeeInPercent;
     }
 
-    function setMinListingPriceInMatic(uint256 _minListingPriceInMatic)
-        public
-        onlyOwner
-    {
+    function setMinListingPriceInMatic(
+        uint256 _minListingPriceInMatic
+    ) public onlyOwner {
         minListingPriceInMatic = _minListingPriceInMatic;
+    }
+
+    function setMaxRoyaltyFee(uint96 _maxRoyaltyFee) public onlyOwner {
+        maxRoyaltyFee = _maxRoyaltyFee;
     }
 
     function remove(uint256[] storage array, uint256 _index) private {
@@ -91,14 +107,6 @@ contract HodlMarket is
         uint256 price
     ) public payable nonReentrant whenNotPaused {
         require(
-            keccak256(bytes(ERC721Upgradeable(tokenContract).name())) ==
-                keccak256(bytes("Hodl NFT")) &&
-                keccak256(bytes(ERC721Upgradeable(tokenContract).symbol())) ==
-                keccak256(bytes("HNFT")),
-            "We only support HodlNFTs on the market at the moment"
-        );
-
-        require(
             msg.sender == IERC721Upgradeable(tokenContract).ownerOf(tokenId),
             "You do not own this token or it is already listed"
         );
@@ -107,6 +115,22 @@ contract HodlMarket is
             price >= minListingPriceInMatic,
             "Token must be listed at the minimum listing price or higher."
         );
+
+        if (checkRoyalties(tokenContract)) {
+            // The maxRoyaltyFee is set in basis points
+            // i.e. 100 is 1%, 1000 is 10%, 10000 is 100%
+            // so we ask what the fee would be if the price was 10000 to get 
+            // the royalty fee the user set for their nft in basis points, 
+            // and compare it with what the marketplace allows
+            (, uint256 royaltyFee) = IERC2981Upgradeable(
+                tokenContract
+            ).royaltyInfo(tokenId, 10000); 
+
+            require(
+                royaltyFee <= maxRoyaltyFee,
+                "Token must have a royalty fee equal to or lower than the maximum royalty fee"
+            );
+        }
 
         listings[tokenId] = Listing(tokenId, price, payable(msg.sender));
         listingKeys.push(tokenId);
@@ -121,11 +145,10 @@ contract HodlMarket is
         );
     }
 
-    function delistToken(address tokenContract, uint256 tokenId)
-        public
-        payable
-        nonReentrant
-    {
+    function delistToken(
+        address tokenContract,
+        uint256 tokenId
+    ) public payable nonReentrant {
         bool found = false;
         for (uint256 i = 0; i < listingKeys.length; i++) {
             if (listingKeys[i] == tokenId) {
@@ -165,12 +188,10 @@ contract HodlMarket is
         );
     }
 
-    function buyToken(address tokenContract, uint256 tokenId)
-        public
-        payable
-        nonReentrant
-        whenNotPaused
-    {
+    function buyToken(
+        address tokenContract,
+        uint256 tokenId
+    ) public payable nonReentrant whenNotPaused {
         bool found = false;
         for (uint256 i = 0; i < listingKeys.length; i++) {
             if (listingKeys[i] == tokenId) {
@@ -203,8 +224,18 @@ contract HodlMarket is
 
         assert(removedTokenFromAddress);
 
-        uint256 ownerFee = (marketSaleFeeInPercent * listings[tokenId].price) / 100;
-        uint256 sellerFee = listings[tokenId].price - ownerFee;
+        (address creator, uint256 royaltyFee) = (address(0), 0);
+
+        if (checkRoyalties(tokenContract)) {
+            (creator, royaltyFee) = IERC2981Upgradeable(tokenContract)
+                .royaltyInfo(tokenId, listings[tokenId].price);
+        }
+
+        uint256 ownerFee = (marketSaleFeeInPercent * listings[tokenId].price) /
+            100;
+
+        // this will just underflow and revert if the ownerfee + royalty fee sum up to more than the listing fee; so no harm.
+        uint256 sellerFee = listings[tokenId].price - ownerFee - royaltyFee;
 
         emit TokenBought(
             msg.sender,
@@ -224,6 +255,13 @@ contract HodlMarket is
         (bool ownerReceivedFee, ) = owner().call{value: ownerFee}("");
         require(ownerReceivedFee, "Could not send the owner their fee");
 
+        if (royaltyFee > 0) {
+            (bool creatorReceivedFee, ) = creator.call{value: royaltyFee}("");
+            require(creatorReceivedFee, "Could not send the creator their fee");
+
+            emit RoyaltySent(creator, tokenId, royaltyFee);
+        }
+
         (bool sellerReceivedFee, ) = sellerAddress.call{value: sellerFee}("");
         require(sellerReceivedFee, "Could not send the seller their fee");
     }
@@ -234,14 +272,13 @@ contract HodlMarket is
 
     // e.g. 100 items, offset of 0, limit of 10
     // we return [0..9], 0 + 10 (next offset for pagination),
-    function fetchMarketItems(uint256 offset, uint256 limit)
+    function fetchMarketItems(
+        uint256 offset,
+        uint256 limit
+    )
         public
         view
-        returns (
-            Listing[] memory page,
-            uint256 nextOffset,
-            uint256 totalItems
-        )
+        returns (Listing[] memory page, uint256 nextOffset, uint256 totalItems)
     {
         require(limit > 0, "Limit must be a positive number");
         require(limit < 500, "Limited to 500 items per page");
@@ -287,11 +324,7 @@ contract HodlMarket is
     )
         public
         view
-        returns (
-            Listing[] memory page,
-            uint256 nextOffset,
-            uint256 totalItems
-        )
+        returns (Listing[] memory page, uint256 nextOffset, uint256 totalItems)
     {
         require(limit > 0, "Limit must be a positive number");
         require(limit < 500, "Limited to 500 items per page");
@@ -341,5 +374,12 @@ contract HodlMarket is
 
     function unpauseContract() external onlyOwner {
         _unpause();
+    }
+
+    function checkRoyalties(address _contract) internal view returns (bool) {
+        bool success = IERC165Upgradeable(_contract).supportsInterface(
+            _INTERFACE_ID_ERC2981
+        );
+        return success;
     }
 }

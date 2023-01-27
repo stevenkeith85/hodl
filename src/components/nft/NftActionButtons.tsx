@@ -113,7 +113,7 @@ export const NftActionButtons = ({
             setLoading(true); // disable the outer button?
         } catch (e) {
             setLoading(false);
-            setError(e.message);
+            setError(e.reason || e.message);
         }
     }
 
