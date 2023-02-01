@@ -18,30 +18,29 @@ export const AssetPreview: FC<MintProps> = ({
   const isGif = () => mimeType && mimeType.indexOf('gif') !== -1;
   const isVideo = () => mimeType && mimeType.indexOf('video') !== -1;
   const isAudio = () => mimeType && mimeType.indexOf('audio') !== -1;
-  
-  return (
-    <Box
-      sx={{ 
-        background: '#f0f0f0',
-        // height: '300px',
-        height: {
-          xs: 300,
-          md: 350,
-        },
-        maxWidth: {
-          xs: '533px',
-          md: '622px',
-        },
-        // maxWidth: '633px', // 16:9
-        width: '100%'
 
-      }}
-    >
+  return (
+    <>
       {fileName && isImage() && !isGif() &&
-        <FilteredImageMemo
-          originalAspectRatio={originalAspectRatio}
-          formData={formData}
-        />
+        <Box
+          sx={{
+            background: '#f0f0f0',
+            height: {
+              xs: 300,
+              md: 350,
+            },
+            maxWidth: {
+              xs: '533px',
+              md: '622px',
+            },
+            width: '100%'
+          }}
+        >
+          <FilteredImageMemo
+            originalAspectRatio={originalAspectRatio}
+            formData={formData}
+          />
+        </Box>
       }
       {fileName && isGif() &&
         <HodlVideo
@@ -52,12 +51,21 @@ export const AssetPreview: FC<MintProps> = ({
         />
       }
       {fileName && isVideo() &&
-        <>
+        <Box
+          sx={{
+            background: '#f0f0f0',
+            maxWidth: {
+              xs: '533px',
+              md: '622px',
+            },
+            width: '100%'
+          }}
+        >
           <HodlVideo
             folder="uploads"
             cid={fileName.split('/')[2]}
           />
-        </>
+        </Box>
       }
       {fileName && isAudio() &&
         <HodlAudio
@@ -67,6 +75,6 @@ export const AssetPreview: FC<MintProps> = ({
           mimeType={mimeType}
         />
       }
-    </Box>
+    </>
   )
 }

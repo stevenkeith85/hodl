@@ -65,8 +65,9 @@ export const HodlDropzone = ({ onDrop, loading }) => {
                         // title="We recommend trimming your video to 15s before upload"
                         >
                             <VideocamOutlinedIcon
+                                color="secondary"
                                 sx={{
-                                    color: grey[300],
+
                                     fontSize: {
                                         xs: 36,
                                         sm: 40
@@ -96,7 +97,7 @@ export const HodlDropzone = ({ onDrop, loading }) => {
                             }
                         }}>
                         {/* Image, video (&#8804; 15s) or audio (&#8804; 60s) */}
-                        Create an Image NFT
+                        Create an Image or Video (15s) NFT
                     </Typography>
                     <div>
                         <Button

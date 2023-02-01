@@ -3,6 +3,8 @@ import { useSnackbar } from 'notistack';
 import { useCloudinaryUpload } from "../../hooks/useCloudinaryUpload";
 import { HodlDropzone } from "../formFields/HodlDropZone";
 import Box from "@mui/material/Box";
+import { AssetTypes } from '../../models/AssetType';
+import { assetTypeFromMimeType } from '../../lib/utils';
 
 
 export const SelectAssetAction = ({
@@ -31,7 +33,14 @@ export const SelectAssetAction = ({
         aspectRatio
       }))
       setStepComplete(0);
-      setActiveStep(1);
+      
+      // we only allow filtering of images
+      if (assetTypeFromMimeType(mimeType) !== AssetTypes.Image) {
+        setActiveStep(3);
+      } else {
+        setActiveStep(1);
+      }
+
     } catch (e) {
       enqueueSnackbar(
         e.message,
