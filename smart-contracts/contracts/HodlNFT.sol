@@ -136,6 +136,7 @@ contract HodlNFT is
         // their first attempt to list a token. this can be done client-side
         setApprovalForAll(marketAddress, true);
 
+        // TODO: We should check if there's a value to transfer and skip this if not to save gas
         (bool received, ) = owner().call{value: msg.value}("");
         require(received, "Could not send the contract owner the minting fee");
 
@@ -151,8 +152,7 @@ contract HodlNFT is
 
         uint256[] storage fromTokens = _addressToTokenIds[from];
 
-        // The array order isn't important.
-        // TODO: Array order should be maintained
+        // The array order isn't important; just swap the last entry to the deleted entry to save gas
         for (uint256 i = 0; i < fromTokens.length; i++) {
             if (fromTokens[i] == tokenId) {
                 fromTokens[i] = fromTokens[fromTokens.length - 1];

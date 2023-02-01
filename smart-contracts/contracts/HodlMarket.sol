@@ -91,6 +91,11 @@ contract HodlMarket is
         maxRoyaltyFee = _maxRoyaltyFee;
     }
 
+    // TODO:
+    // This is expensive gas-wise, we could perhaps just swap the removed item with the
+    // last element in the array if order isn't important. (it probably isn't as we cache the data in redis)
+    // 
+    // For V3, we should check this and update
     function remove(uint256[] storage array, uint256 _index) private {
         require(_index < array.length, "index out of bound");
 
