@@ -95,29 +95,15 @@ export const MintTokenAction = ({
         justifyContent: 'center',
         gap: 4,
       }}>
-        <AssetPreview originalAspectRatio={originalAspectRatio} formData={formData} setFormData={setFormData} />
-        <Box sx={{
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          textAlign: 'center'
-        }}>
-          <Typography
-            sx={{
-              fontWeight: 600,
-              marginBottom: 2
-            }}>
-            {metadata?.name}
-          </Typography>
-          <Box
-            sx={{
-              whiteSpace: 'pre-line',
-              color: theme => theme.palette.text.secondary
-            }}>
-            {metadata?.description}
-          </Box>
+        <AssetPreview 
+          originalAspectRatio={originalAspectRatio} 
+          formData={formData} 
+          setFormData={setFormData} 
+        />
+        <Box sx={{ margin: 2, textAlign: 'center' }}>
+          <Typography component="h1" variant="h1" mb={2}>{metadata?.name}</Typography>
+          <Box mb={1} sx={{ whiteSpace: 'pre-line' }}>{metadata?.description}</Box>
+          <Typography component="p" mb={1} >{metadata?.license}</Typography>
         </Box>
 
         <Box

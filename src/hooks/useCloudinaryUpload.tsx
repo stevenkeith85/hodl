@@ -32,10 +32,11 @@ export const useCloudinaryUpload = () => {
       };
 
       file = await resizeImage(file, config); 
-    }
 
-    if (file.size > 20 * 1024 * 1024) {
-      throw new Error(`Images can be up to 20MB`);
+      // If the image is still above 20MB on a resize then its too big
+      if (file.size > 20 * 1024 * 1024) {
+        throw new Error(`Images can be up to 20MB`);
+      }
     }
 
     let fd = new FormData();
