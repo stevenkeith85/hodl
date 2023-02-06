@@ -15,6 +15,10 @@ export type User = {
 
     txQueueId: number;
     actionQueueId: number;
+
+    // for meta txs
+    batchId?: number;
+    batchNonce?: number;
 }
 
 // For the UI

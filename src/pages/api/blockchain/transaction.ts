@@ -23,6 +23,10 @@ import { updateTransactionRecords } from "../../../lib/transactions/updateTransa
 import { zScore } from "../../../lib/database/rest/zScore";
 import { zCard } from "../../../lib/database/rest/zCard";
 
+import BiconomyForwarder from "../../../lib/abis/BiconomyForwarder.json"
+import { Interface } from "@ethersproject/abi";
+import { getPersonalSignData } from "../market/getPersonalSignData";
+
 const route = apiRoute();
 const client = Redis.fromEnv()
 
@@ -89,32 +93,43 @@ route.post(async (req, res: NextApiResponse) => {
         return res.status(503);
     }
 
-    // If we've been given a hash that is not for the user, we should not process it
-    if (txReceipt.from !== address) {
+    const tx: TransactionResponse = await provider.getTransaction(hash);
+    
+    let from = tx.from;
+    let to = tx.to;
+    let nonce = tx.nonce;
+
+    const isMetaTx = to === process.env.NEXT_PUBLIC_BICONOMY_FORWARDER_ADDRESS;
+    if (isMetaTx) {
+      ({ from, to, nonce } = getPersonalSignData(tx));
+    }
+
+    if (from !== address) {
         console.log(`blockchain/transaction - credentials do not match the tx sender`);
         return res.status(400).json({ message: 'bad request' });
     }
 
-    if (txReceipt.to !== process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS &&
-        txReceipt.to !== process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS) {
+    if (
+        to !== process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS &&
+        to !== process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS) {
         console.log(`blockchain/transaction - tx is not for our contracts`);
         return res.status(400).json({ message: 'bad request' });
     }
 
-    const tx: TransactionResponse = await provider.getTransaction(hash);
     const user = await client.hmget<User>(`user:${address}`, 'nonce');
 
-    if (tx.nonce <= user.nonce) {
+    if (!isMetaTx && tx.nonce <= user.nonce) {
         console.log(`blockchain/transaction - tx nonce older than last one we successfully processed. tx nonce: ${tx.nonce}, user nonce: ${user.nonce}`);
         return res.status(400).json({ message: 'bad request' });
     }
+
 
     // If the transaction was reverted; we can update our records and return now
     if (txReceipt.byzantium &&
         txReceipt.status === 0) {
         console.log('blockchain/transaction - The tx was reverted');
 
-        const recordsUpdated = await updateTransactionRecords(address, tx.nonce, hash);
+        const recordsUpdated = await updateTransactionRecords(address, nonce, hash, isMetaTx);
         if (!recordsUpdated) {
             return res.status(503);
         }
@@ -124,9 +139,10 @@ route.post(async (req, res: NextApiResponse) => {
     }
 
     let contract = null;
-    if (txReceipt.to === process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS) {
+    if (to === process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS) {
         contract = new Contract(process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS, Market.abi, provider);
-    } else if (txReceipt.to === process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS) {
+    } else if (to === process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS
+    ) {
         contract = new Contract(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, NFT.abi, provider);
     }
 

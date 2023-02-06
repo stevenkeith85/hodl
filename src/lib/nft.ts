@@ -10,6 +10,9 @@ import axios from 'axios'
 import { MutableToken } from "../models/MutableToken"
 import { Token } from "../models/Token"
 
+import { Biconomy } from "@biconomy/mexa";
+import { ExternalProvider } from '@ethersproject/providers'
+
 
 export const mintToken = async (url, royaltyFeeInBasisPoints, signer) => {
   try {
@@ -29,12 +32,74 @@ export const mintToken = async (url, royaltyFeeInBasisPoints, signer) => {
           'Content-Type': 'application/json',
         },
       }
-    )
+    );
   } catch (e) {
     throw e;
   }
 }
 
+
+export const mintTokenGasless = async (url, royaltyFeeInBasisPoints, signer) => {
+  try {
+    const biconomy = new Biconomy(window.ethereum as ExternalProvider, {
+      apiKey: process.env.NEXT_PUBLIC_BICONOMY_API_KEY,
+      strictMode: true,
+      contractAddresses: [process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS],
+    });
+
+    await biconomy.init();
+
+    const provider = await biconomy.provider;
+
+    const contractInstance = new Contract(
+      process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS,
+      NFT.abi,
+      biconomy.ethersProvider
+    );
+
+    let { data } = await contractInstance.populateTransaction.createToken(url, royaltyFeeInBasisPoints);
+
+    let txParams = {
+      data: data,
+      to: process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS,
+      from: (await signer.getAddress()),
+      signatureType: "PERSONAL_SIGN",
+      value: 0,
+    };
+
+    // @ts-ignore
+    const tx = await provider.send("eth_sendTransaction", [txParams]);
+    console.log('tx', tx);
+
+    biconomy.on("txHashGenerated", async data => {
+      console.log('hash generated');
+      console.log(data);
+      console.log('hash', data.hash);
+
+      const r = await axios.post(
+        '/api/market/transaction',
+        {
+          hash: data.hash,
+        },
+        {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+    });
+    
+    
+    biconomy.on("onError", data => {
+      console.log('error');
+      console.log(data);
+    });
+    
+  } catch (e) {
+  throw e;
+}
+}
 
 export const listNft = async (token: Token, price: string, signer) => {
   try {
@@ -122,18 +187,18 @@ export const buyNft = async (token: Token, mutableToken: MutableToken, signer) =
       const { hash } = await contract.buyToken(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, token.id, { value: price })
 
       try {
-      const r = await axios.post(
-        '/api/market/transaction',
-        {
-          hash,
-        },
-        {
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
+        const r = await axios.post(
+          '/api/market/transaction',
+          {
+            hash,
           },
-        }
-      );
+          {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          }
+        );
       } catch (e) {
         // unable to queue the tx.
         throw new Error("We likely weren't able to queue that transaction. Please contact support.")
