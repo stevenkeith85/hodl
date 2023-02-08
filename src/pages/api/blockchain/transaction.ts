@@ -25,7 +25,7 @@ import { zCard } from "../../../lib/database/rest/zCard";
 
 import BiconomyForwarder from "../../../lib/abis/BiconomyForwarder.json"
 import { Interface } from "@ethersproject/abi";
-import { getPersonalSignData } from "../market/getPersonalSignData";
+import { getExecuteEIP712Data } from "../market/getPersonalSignData";
 
 const route = apiRoute();
 const client = Redis.fromEnv()
@@ -101,7 +101,7 @@ route.post(async (req, res: NextApiResponse) => {
 
     const isMetaTx = to === process.env.NEXT_PUBLIC_BICONOMY_FORWARDER_ADDRESS;
     if (isMetaTx) {
-      ({ from, to, nonce } = getPersonalSignData(tx));
+      ({ from, to, nonce } = getExecuteEIP712Data(tx));
     }
 
     if (from !== address) {

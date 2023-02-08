@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { enqueueSnackbar } from 'notistack';
 import { mintToken, mintTokenGasless } from '../../lib/nft';
 import { MintTokenModal } from '../modals/MintTokenModal';
@@ -9,7 +9,8 @@ import { WalletContext } from '../../contexts/WalletContext';
 import { AssetPreview } from './AssetPreview';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
-import { FormHelperText } from '@mui/material';
+import { BiconomyContext } from '../../contexts/BiconomyContext';
+import useSWR from 'swr';
 
 
 export const MintTokenAction = ({
@@ -25,7 +26,15 @@ export const MintTokenAction = ({
   const [successModalOpen, setSuccessModalOpen] = useState(false);
   const [royaltyFeePercent, setRoyaltyFeePercent] = useState("");
 
-  const { signer } = useContext(WalletContext);
+  const { signer, walletAddress } = useContext(WalletContext);
+  const { biconomy } = useContext(BiconomyContext);
+
+
+  let { data } = useSWR(
+    walletAddress ? [`/api/metatx/checkLimits`, walletAddress] : null,
+    (url, address) => fetch(`${url}?address=${address}`).then(data => data.json()),
+  )
+
 
   async function mint() {
     setLoading(true);
@@ -56,6 +65,20 @@ export const MintTokenAction = ({
     setLoading(false);
   }
 
+  function onSuccess() {
+    setStepComplete(4);
+    setSuccessModalOpen(true);
+  }
+
+  function onError() {
+    enqueueSnackbar(
+      "Sorry. We weren't able to process your gasless TX",
+      {
+        variant: "error",
+        hideIconVariant: true
+      });
+  }
+
   async function mintGasless() {
     setLoading(true);
 
@@ -70,10 +93,14 @@ export const MintTokenAction = ({
         throw new Error("Metadata URL is not an IPFS url");
       }
 
-      await mintTokenGasless(metadataUrl, Number(royaltyFeePercent) * 100, signer);
-
-      setStepComplete(4);
-      setSuccessModalOpen(true);
+      await mintTokenGasless(
+        metadataUrl, 
+        Number(royaltyFeePercent) * 100, 
+        walletAddress, 
+        biconomy,
+        onSuccess,
+        onError
+        );
     } catch (e) {
       enqueueSnackbar(
         e.reason || e.message,
@@ -170,8 +197,15 @@ export const MintTokenAction = ({
           </div>
           <div>
             <Button
+              disabled={!data}
               color="primary"
-              onClick={mintGasless}
+              onClick={() => {
+                if (data?.allowed) {
+                  mintGasless();
+                } else {
+                  mint();
+                }
+              }}
               sx={{
                 paddingY: 0.75,
                 paddingX: 2.25,
@@ -179,27 +213,11 @@ export const MintTokenAction = ({
               }}
               variant="contained"
             >
-              Mint NFT (Gassless)
+              Mint NFT
             </Button>
-            
+
           </div>
-          <div>
-            <Button
-              color="primary"
-              onClick={mint}
-              sx={{
-                paddingY: 0.75,
-                paddingX: 2.25,
-                fontSize: 14
-              }}
-              variant="outlined"
-            >
-              Mint NFT (Gas)
-            </Button>
-          </div>
-          <FormHelperText>3 gassless mints per day are allowed.</FormHelperText>
         </Box>
-        
       </Box>
     </>
   );

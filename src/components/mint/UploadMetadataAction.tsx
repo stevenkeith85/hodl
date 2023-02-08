@@ -200,8 +200,8 @@ I'll add a few tags to help with search.
 
         </HodlBorderedBox>
         {formData?.assetCid ?
-          <Box sx={{ display: 'flex', textAlign: 'center', justifyContent: 'center', alignItems: 'center', gap: 2 }}>Asset ready <CheckBoxIcon color="success" sx={{ fontSize: 14 }}/></Box> :
-          <Box sx={{ display: 'flex', textAlign: 'center', justifyContent: 'center', alignItems: 'center', gap: 2 }}>Preparing asset <HodlLoadingSpinner size={14} /></Box>
+          <Box sx={{ display: 'flex', textAlign: 'center', justifyContent: 'center', alignItems: 'center', gap: 2 }}>Ready <CheckBoxIcon color="success" sx={{ fontSize: 16 }}/></Box> :
+          <Box sx={{ display: 'flex', textAlign: 'center', justifyContent: 'center', alignItems: 'center', gap: 2 }}>Loading <HodlLoadingSpinner size={16} /></Box>
         }
         <div style={{ textAlign: 'center' }}>
           <Button
@@ -218,7 +218,6 @@ I'll add a few tags to help with search.
             Upload Metadata
           </Button>
         </div>
-      <Box sx={{ textAlign: 'center' }}>Metadata is frozen at mint</Box>
     </Box>
   </>)
 }

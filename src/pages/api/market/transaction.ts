@@ -8,7 +8,7 @@ import { queueTxAndAction } from "../../../lib/addToZeplo";
 import { addPendingTransaction } from "../../../lib/transactions/updateTransactionRecords";
 import { getAsString } from "../../../lib/getAsString";
 
-import { getPersonalSignData } from "./getPersonalSignData";
+import { getExecuteEIP712Data } from "./getPersonalSignData";
 
 const route = apiRoute();
 const client = Redis.fromEnv()
@@ -51,7 +51,7 @@ route.post(async (req, res: NextApiResponse) => {
 
   const isMetaTx = to === process.env.NEXT_PUBLIC_BICONOMY_FORWARDER_ADDRESS;
   if (isMetaTx) {
-    ({ from, to, nonce } = getPersonalSignData(tx));
+    ({ from, to, nonce } = getExecuteEIP712Data(tx));
   }
 
   if (from !== req.address) {

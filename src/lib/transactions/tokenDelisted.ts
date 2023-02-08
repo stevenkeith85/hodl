@@ -10,7 +10,7 @@ import { TransactionResponse } from '@ethersproject/abstract-provider'
 import { LogDescription } from '@ethersproject/abi'
 import { addToZeplo } from "../addToZeplo";
 import { getListingFromBlockchain } from "../../pages/api/contracts/market/listing/[tokenId]";
-import { getPersonalSignData } from "../../pages/api/market/getPersonalSignData";
+import { getExecuteEIP712Data } from "../../pages/api/market/getPersonalSignData";
 
 const client = Redis.fromEnv()
 
@@ -67,7 +67,7 @@ export const tokenDelisted = async (
     let nonce = tx.nonce;
     const isMetaTx = tx.to === process.env.NEXT_PUBLIC_BICONOMY_FORWARDER_ADDRESS;
     if (isMetaTx) {
-      ({ nonce } = getPersonalSignData(tx));
+      ({ nonce } = getExecuteEIP712Data(tx));
     }
     const recordsUpdated = await updateTransactionRecords(address, nonce, hash, isMetaTx);
 
