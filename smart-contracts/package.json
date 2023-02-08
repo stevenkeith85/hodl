@@ -10,7 +10,6 @@
     "development:token:mintFee:set": "env-cmd -f ./.env.development.local node scripts/token/mintFee/setMintFee.js",
     "development:token:owner:get": "env-cmd -f ./.env.development.local node scripts/token/owner/getOwner.js",
     "development:token:owner:set": "env-cmd -f ./.env.development.local node scripts/token/owner/setOwner.js",
-
     "staging:market:minListingPrice:get": "env-cmd -f ./.env.staging.local node scripts/market/minListingPrice/getMinListingPrice.js",
     "staging:market:minListingPrice:set": "env-cmd -f ./.env.staging.local node scripts/market/minListingPrice/setMinListingPrice.js",
     "staging:market:owner:get": "env-cmd -f ./.env.staging.local node scripts/market/owner/getOwner.js",
@@ -19,7 +18,6 @@
     "staging:token:mintFee:set": "env-cmd -f ./.env.staging.local node scripts/token/mintFee/setMintFee.js",
     "staging:token:owner:get": "env-cmd -f ./.env.staging.local node scripts/token/owner/getOwner.js",
     "staging:token:owner:set": "env-cmd -f ./.env.staging.local node scripts/token/owner/setOwner.js",
-
     "production:market:minListingPrice:get": "env-cmd -f ./.env.productionlocal node scripts/market/minListingPrice/getMinListingPrice.js",
     "production:market:minListingPrice:set": "env-cmd -f ./.env.production.local node scripts/market/minListingPrice/setMinListingPrice.js",
     "production:market:owner:get": "env-cmd -f ./.env.production.local node scripts/market/owner/getOwner.js",
@@ -38,6 +36,7 @@
     "@types/mocha": "^9.1.0",
     "chai": "^4.2.0",
     "dotenv": "^16.0.0",
+    "eth-sig-util": "^3.0.1",
     "ethereum-waffle": "^3.0.0",
     "ethers": "^5.7.2",
     "hardhat": "^2.8.3",

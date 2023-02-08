@@ -8,6 +8,8 @@ import { queueTxAndAction } from "../../../lib/addToZeplo";
 import { addPendingTransaction } from "../../../lib/transactions/updateTransactionRecords";
 import { getAsString } from "../../../lib/getAsString";
 
+import { getExecuteEIP712Data } from "./getPersonalSignData";
+
 const route = apiRoute();
 const client = Redis.fromEnv()
 
@@ -23,7 +25,7 @@ const client = Redis.fromEnv()
 // This could be vulnerable to CSRF. To prevent this we are setting the auth cookies to LAX.
 // https://portswigger.net/web-security/csrf/samesite-cookies
 route.post(async (req, res: NextApiResponse) => {
-  console.log('TRANSACTION QUEUER CALLED');
+  // console.log('TRANSACTION QUEUER CALLED');
 
   const hash = getAsString(req.body.hash);
 
@@ -43,23 +45,56 @@ route.post(async (req, res: NextApiResponse) => {
     return res.status(400).json({ message: 'That transaction hash is not known on this blockchain.' });
   }
 
-  if (tx.from !== req.address) {
-    console.log(`queue/transaction - user trying to process a transaction they did not create`);
-    return res.status(400).json({ message: 'You are trying to queue a tx that you did not initiate' });
+  let from = tx.from;
+  let to = tx.to;
+  let nonce = tx.nonce;
+
+  const isMetaTx = to === process.env.NEXT_PUBLIC_BICONOMY_FORWARDER_ADDRESS;
+  if (isMetaTx) {
+    ({ from, to, nonce } = getExecuteEIP712Data(tx));
   }
 
-  if (
-    tx.to !== process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS &&
-    tx.to !== process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS) {
+  if (from !== req.address) {
+    console.log(`queue/transaction - user trying to process a transaction they did not sign for`);
+    return res.status(400).json({ message: `You are trying to queue a tx that you did not sign for. from ${from}, req.address ${req.address}` });
+  }
+
+  if (to !== process.env.NEXT_PUBLIC_HODL_MARKET_ADDRESS &&
+    to !== process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS) {
     console.log(`queue/transaction - user trying to process a transaction that isn't for our contract`);
     return res.status(400).json({ message: 'You are trying to queue a tx that is not for one of our contracts' });
   }
 
-  const user = await client.hmget<User>(`user:${req.address}`, 'nonce');
+  // We can make sure meta txs are done in the right order, 
+  // and we can make sure regular txs are done in the right order (by looking at batchNonce, and nonce)
+  // 
+  // This is probably good enough, as our processing functions are idempotent.
 
-  if (tx.nonce <= user.nonce) {
-    console.log(`queue/transaction - user nonce is ${user?.nonce}. tx nonce is ${tx?.nonce}`);
-    return res.status(400).json({ message: 'You are trying to queue a tx that we have already processed; or a transaction older than the last one we have successfully processed' });
+  // e.g.
+  // create with normal (succeed)
+  // list with meta (we miss this)
+  // delist with normal (it would fail anyways)
+  //
+  // TODO: We probably want to move away from the batch processing tx model and move more to a sync with the blockchain type model
+  // We could move the minting stuff first and then think about how the market would work
+  //
+  // I think there's alchemy APIs that could help out here.
+
+  if (isMetaTx) {
+    const user = await client.hmget<User>(`user:${req.address}`, 'batchNonce');
+
+    if (nonce <= user?.batchNonce ?? -1) {
+      console.log(`queue/transaction - last batchNonce we've handled for the user is ${user?.batchNonce}. queued tx batchNonce is ${nonce}`);
+      return res.status(400).json({ message: 'Transactions must be processed in the same order they were processed on the blockchain' });
+    }
+  }
+  else {
+    const user = await client.hmget<User>(`user:${req.address}`, 'nonce');
+
+    if (nonce <= user.nonce) {
+      console.log(`queue/transaction - last nonce we've handled for the user is ${user?.nonce}. queued tx nonce is ${tx?.nonce}`);
+      return res.status(400).json({ message: 'Transactions must be processed in the same order they were processed on the blockchain' });
+    }
   }
 
   const success = await queueTxAndAction(hash, req.address);

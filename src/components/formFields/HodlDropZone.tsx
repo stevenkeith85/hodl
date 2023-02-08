@@ -108,7 +108,7 @@ export const HodlDropzone = ({ onDrop, loading }) => {
                                 paddingX: 3,
                                 paddingY: 1
                             }}>
-                            Select asset
+                            Select Asset
                         </Button>
                     </div>
                 </Box>

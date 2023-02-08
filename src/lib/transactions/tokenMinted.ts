@@ -22,6 +22,7 @@ import { HodlMetadata } from "../../models/Metadata";
 
 import { updateTransactionRecords } from "./updateTransactionRecords";
 import { addToZeplo } from "../addToZeplo";
+import { getExecuteEIP712Data } from "../../pages/api/market/getPersonalSignData";
 
 
 const client = Redis.fromEnv()
@@ -197,8 +198,13 @@ export const tokenMinted = async (
             return false; // We will likely want to retry this; so its an unsuccessful run of this function
         }
     }
-
-    const recordsUpdated = await updateTransactionRecords(address, tx.nonce, hash);
+    
+    let nonce = tx.nonce;
+    const isMetaTx = tx.to === process.env.NEXT_PUBLIC_BICONOMY_FORWARDER_ADDRESS;
+    if (isMetaTx) {
+      ({ nonce } = getExecuteEIP712Data(tx));
+    }
+    const recordsUpdated = await updateTransactionRecords(address, nonce, hash, isMetaTx);
 
     if (!recordsUpdated) {
         return false;
