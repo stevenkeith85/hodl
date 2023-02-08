@@ -331,7 +331,14 @@ module.exports = withBundleAnalyzer(withMDX({
   experimental: {
     scrollRestoration: true,
   },
-  webpack(config) {
+  webpack(config, { isServer }) {
+    if (!isServer) {
+      config.resolve.fallback = { 
+        net: false,
+        tls: false,
+        fs: false
+      } 
+    }
     config.module.rules.push({
       test: /\.svg$/i,
       issuer: /\.[jt]sx?$/,

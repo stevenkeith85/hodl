@@ -14,6 +14,9 @@ import { PusherContext } from '../../contexts/PusherContext';
 import { useConnect } from '../../hooks/useConnect';
 import { WalletContext } from '../../contexts/WalletContext';
 import { SignedInContext } from '../../contexts/SignedInContext';
+import { BiconomyContext } from '../../contexts/BiconomyContext';
+import { Biconomy } from "@biconomy/mexa";
+
 
 const SignInDialog = dynamic(
     () => import('../menu/SignInDialog').then(mod => mod.SignInDialog),
@@ -99,7 +102,8 @@ const AppBar = ({ address }) => {
     const [signInModalOpen, setSignInModalOpen] = useState(false);
 
     const { pusher } = useContext(PusherContext);
-    const { walletAddress } = useContext(WalletContext);
+    const { setBiconomy } = useContext(BiconomyContext);
+    const { walletAddress, provider } = useContext(WalletContext);
     const { signedInAddress } = useContext(SignedInContext);
 
     const connect = useConnect();
@@ -175,6 +179,27 @@ const AppBar = ({ address }) => {
             setSignInModalOpen(true);
         }
     }, [walletAddress, signedInAddress]);
+
+
+    useEffect(() => {
+        const loadBiconomy = async () => {
+            const biconomy = new Biconomy(
+                provider.provider,
+                {
+                    apiKey: process.env.NEXT_PUBLIC_BICONOMY_API_KEY,
+                    contractAddresses: [process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS],
+                });
+
+            await biconomy.init();
+
+            setBiconomy(biconomy);
+        }
+
+        if (provider) {
+            loadBiconomy();
+        }
+        
+    }, [provider])
 
     return (
         <>
@@ -267,7 +292,7 @@ const AppBar = ({ address }) => {
                                         color: theme => theme.palette.text.secondary,
                                         textDecoration: 'none'
                                     },
-                                    
+
                                     gap: 6
                                 }}>
                                     <Link href="/explore">

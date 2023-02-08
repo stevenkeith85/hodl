@@ -5,8 +5,8 @@ dotenv.config({ path: '.env.deployment.local' })
 
 async function main() {
   const FEE_DATA = {
-    maxFeePerGas: ethers.utils.parseUnits('100', 'gwei'), // we used 300 to deploy to mainnet
-    maxPriorityFeePerGas: ethers.utils.parseUnits('5', 'gwei'), // we used 85 to deploy to mainnet
+    maxFeePerGas: ethers.utils.parseUnits('300', 'gwei'), // we used 300 to deploy to mainnet
+    maxPriorityFeePerGas: ethers.utils.parseUnits('85', 'gwei'), // we used 85 to deploy to mainnet
   };
 
   // Wrap the provider so we can override fee data.

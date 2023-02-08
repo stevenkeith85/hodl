@@ -21,6 +21,7 @@ import cookie from 'cookie'
 import '../styles/globals.css'
 
 import { PusherContext } from '../contexts/PusherContext';
+import { BiconomyContext } from '../contexts/BiconomyContext';
 import { WalletContext } from '../contexts/WalletContext';
 
 import { HodlNotificationSnackbar } from '../components/snackbars/HodlNotificationSnackbar';
@@ -64,6 +65,10 @@ export default function MyApp(props: MyAppProps) {
   const [pusher, setPusher] = useState(null);
   const [userSignedInToPusher, setUserSignedInToPusher] = useState(false); // TODO
 
+  // BiconomyContext state
+  const [biconomy, setBiconomy] = useState(null);
+
+
   useEffect(() => {
     const setPusherSignInSuccess = () => {
       setUserSignedInToPusher(true);
@@ -97,7 +102,7 @@ export default function MyApp(props: MyAppProps) {
     }
 
     loadPusher().catch(console.error);
-
+    
   }, [signedInAddress])
 
 
@@ -146,6 +151,10 @@ export default function MyApp(props: MyAppProps) {
                   userSignedInToPusher,
                   setUserSignedInToPusher
                 }}>
+                  <BiconomyContext.Provider value={{
+                    biconomy,
+                    setBiconomy
+                    }}>
                   <SnackbarProvider
                     Components={{
                       // @ts-ignore
@@ -158,6 +167,7 @@ export default function MyApp(props: MyAppProps) {
                       <Component {...pageProps} />
                     </Layout>
                   </SnackbarProvider>
+                  </BiconomyContext.Provider>
                 </PusherContext.Provider>
               </SignedInContext.Provider>
             </WalletContext.Provider>

@@ -9,6 +9,8 @@ import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/interfaces/IERC2981Upgradeable.sol";
 
+import "hardhat/console.sol";
+
 contract HodlNFT is
     ReentrancyGuardUpgradeable,
     ERC721URIStorageUpgradeable,
@@ -28,10 +30,13 @@ contract HodlNFT is
     mapping(address => uint256[]) private _addressToTokenIds;
     uint256 public mintFee;
 
-    // V2
+    // V2 - Royalties
     RoyaltyInfo private _defaultRoyaltyInfo;
     mapping(uint256 => RoyaltyInfo) private _tokenRoyaltyInfo;
     uint96 public maxRoyaltyFee; // In Basis Points
+
+    // V3 - Meta Txs
+    address private _trustedForwarder;
 
     event TokenMappingUpdated(
         address fromAddress,
@@ -51,9 +56,14 @@ contract HodlNFT is
         mintFee = 1 ether;
     }
 
-    // v2
+    // Initialize V2, set the maxRoyaltyFee to 15%
     function initializeV2() public reinitializer(2) {
         maxRoyaltyFee = 1500; // initially set this to 15%
+    }
+
+    // Initialize V3, set the _trustedForwarder to biconomy's forwarder
+    function initializeV3(address _forwarder) public reinitializer(3) {
+        _trustedForwarder = _forwarder;
     }
 
     function setMintFee(uint256 _mintFee) public onlyOwner {
@@ -62,6 +72,10 @@ contract HodlNFT is
 
     function setMaxRoyaltyFee(uint96 _maxRoyaltyFee) public onlyOwner {
         maxRoyaltyFee = _maxRoyaltyFee;
+    }
+
+    function setTrustedForwarder(address _forwarder) public onlyOwner {
+        _trustedForwarder = _forwarder;
     }
 
     function exists(uint256 tokenId) public view returns (bool) {
@@ -122,14 +136,14 @@ contract HodlNFT is
             _royaltyFeeInBasisPoints <= maxRoyaltyFee,
             "Cannot set a royalty fee above the max"
         );
-
         _tokenIds.increment();
 
         uint256 tokenId = _tokenIds.current();
+        address minter = _msgSender();
 
-        _mint(msg.sender, tokenId);
+        _mint(minter, tokenId);
         _setTokenURI(tokenId, _tokenURI);
-        _setTokenRoyalty(tokenId, msg.sender, _royaltyFeeInBasisPoints); // setting a 5% royalty would be 500 basis points
+        _setTokenRoyalty(tokenId, minter, _royaltyFeeInBasisPoints); // setting a 5% royalty would be 500 basis points
 
         // Approve the marketplace to transfer hodltokens for this user
         // If the user nevers mint a token, then they will need to approve the market place on
@@ -298,5 +312,29 @@ contract HodlNFT is
      */
     function _resetTokenRoyalty(uint256 tokenId) internal virtual {
         delete _tokenRoyaltyInfo[tokenId];
+    }
+
+    function isTrustedForwarder(address forwarder) public view virtual returns (bool) {
+        return forwarder == _trustedForwarder;
+    }
+
+    function _msgSender() internal view virtual override returns (address sender) {
+        if (isTrustedForwarder(msg.sender)) {
+            // The assembly code is more direct than the Solidity version using `abi.decode`.
+            /// @solidity memory-safe-assembly
+            assembly {
+                sender := shr(96, calldataload(sub(calldatasize(), 20)))
+            }
+        } else {
+            return super._msgSender();
+        }
+    }
+
+    function _msgData() internal view virtual override returns (bytes calldata) {
+        if (isTrustedForwarder(msg.sender)) {
+            return msg.data[:msg.data.length - 20];
+        } else {
+            return super._msgData();
+        }
     }
 }

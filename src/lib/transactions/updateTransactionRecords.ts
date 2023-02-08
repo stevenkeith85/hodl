@@ -14,8 +14,6 @@ import { Redis } from '@upstash/redis';
 //
 // we could probably block them at that stage too.
 //
-// TODO: For the future - if the tx gets 'stuck' then we probably need the user to tell us they no longer wish to process it
-// via a form. We could them bump that tx from the ZSET and retry the later ones?
 
 const client = Redis.fromEnv();
 
@@ -28,19 +26,26 @@ export const addPendingTransaction = async (address: string, nonce: number, hash
     });
 }
 
-// Once we've successfully processed the transaction, we add it to the users successful queue; and we
-// update the last processed nonce value
-export const updateTransactionRecords = async (address: string, nonce: number, hash: string): Promise<boolean> => {
+export const updateTransactionRecords = async (address: string, nonce: number, hash: string, isMetaTx: boolean): Promise<boolean> => {
     console.log('blockchain/transaction - updating processed records');
+
+    // We've processed these on behalf on the user (signer)
+    const cmds = [
+        ["ZADD", `user:${address}:txs`, Date.now(), hash],
+        ["ZREM", `user:${address}:txs:pending`, hash]
+    ];
+
+    // If the user also paid the tx, their nonce will have been updated so record that here
+    if (isMetaTx) {
+        cmds.push(["HSET", `user:${address}`, 'batchNonce', nonce]);
+    } else {
+        cmds.push(["HSET", `user:${address}`, 'nonce', nonce]);
+    }
 
     try {
         const r = await axios.post(
             `${process.env.UPSTASH_REDIS_REST_URL}/multi-exec`,
-            [
-                ["HSET", `user:${address}`, 'nonce', nonce],
-                ["ZADD", `user:${address}:txs`, Date.now(), hash],
-                ["ZREM", `user:${address}:txs:pending`, hash]
-            ],
+            cmds,
             {
                 headers: {
                     Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`

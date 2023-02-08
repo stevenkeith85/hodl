@@ -20,6 +20,7 @@ export const apiAuthenticate = async (req, res, next) => {
   }
 
   try {
+    // @ts-ignore
     const { address } = jwt.verify(accessToken, process.env.JWT_SECRET);
     req.address = address;
     return next();
@@ -27,7 +28,9 @@ export const apiAuthenticate = async (req, res, next) => {
   } catch (e) {
     if (e instanceof jwt.TokenExpiredError) {
       try {
+        // @ts-ignore
         const { sessionId } = jwt.verify(refreshToken, process.env.JWT_SECRET);
+        // @ts-ignore
         const { address } = jwt.decode(accessToken);
 
         const storedSessionId = await client.hget(`user:${address}`, 'sessionId');
@@ -94,6 +97,7 @@ export const authenticate = async (req, res): Promise<boolean> => {
   }
 
   try {
+    // @ts-ignore
     const { address } = jwt.verify(accessToken, process.env.JWT_SECRET);
     console.log('AUTH: successfully verified access token, setting req.address')
     req.address = address;
@@ -101,7 +105,9 @@ export const authenticate = async (req, res): Promise<boolean> => {
   } catch (e) {
     if (e instanceof jwt.TokenExpiredError) {
       try {
+        // @ts-ignore
         const { sessionId } = jwt.verify(refreshToken, process.env.JWT_SECRET);
+        // @ts-ignore
         const { address } = jwt.decode(accessToken);
 
         const storedSessionId = await client.hget(`user:${address}`, 'sessionId');

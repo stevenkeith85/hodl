@@ -29,12 +29,65 @@ export const mintToken = async (url, royaltyFeeInBasisPoints, signer) => {
           'Content-Type': 'application/json',
         },
       }
-    )
+    );
   } catch (e) {
     throw e;
   }
 }
 
+
+export const mintTokenGasless = async (
+  url, 
+  royaltyFeeInBasisPoints, 
+  walletAddress, 
+  biconomy, 
+  onSuccess,
+  onError
+  ) => {
+
+  const tokenContract = new Contract(
+    process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS,
+    NFT.abi,
+    biconomy.ethersProvider
+  );
+
+  const mintFee = await tokenContract.mintFee();
+  let { data } = await tokenContract.populateTransaction.createToken(url, royaltyFeeInBasisPoints, { value: mintFee });
+
+  let txParams = {
+    data: data,
+    to: process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS,
+    from: walletAddress,
+    signatureType: "EIP712_SIGN",
+  };
+
+  const provider = await biconomy.provider;
+
+  // @ts-ignore
+  const tx = await provider.send("eth_sendTransaction", [txParams]);
+
+  biconomy.on("txHashGenerated", async data => {
+    const r = await axios.post(
+      '/api/market/transaction',
+      {
+        hash: data.hash,
+      },
+      {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    onSuccess();
+  });
+
+  biconomy.on("onError", data => {
+    console.log(data);
+    onError();
+  });
+}
 
 export const listNft = async (token: Token, price: string, signer) => {
   try {
@@ -122,18 +175,18 @@ export const buyNft = async (token: Token, mutableToken: MutableToken, signer) =
       const { hash } = await contract.buyToken(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, token.id, { value: price })
 
       try {
-      const r = await axios.post(
-        '/api/market/transaction',
-        {
-          hash,
-        },
-        {
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
+        const r = await axios.post(
+          '/api/market/transaction',
+          {
+            hash,
           },
-        }
-      );
+          {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          }
+        );
       } catch (e) {
         // unable to queue the tx.
         throw new Error("We likely weren't able to queue that transaction. Please contact support.")

@@ -3,10 +3,9 @@ const dotenv = require('dotenv');
 dotenv.config({ path: '.env.deployment.local' })
 
 
-// The website will always point to the proxy address.
-// An upgrade will change where the proxy points to
+// address biconomyForwarder = 0x69015912AA33720b842dCD6aC059Ed623F28d9f7;
+// address biconomyForwarderMainnet = 0xf0511f123164602042ab2bCF02111fA5D3Fe97CD;
 async function main() {
-
   const FEE_DATA = {
     maxFeePerGas: ethers.utils.parseUnits('300', 'gwei'),
     maxPriorityFeePerGas: ethers.utils.parseUnits('50', 'gwei'),
@@ -21,7 +20,9 @@ async function main() {
 
   const MyContractV2Factory = await ethers.getContractFactory("HodlNFT", signer);
 
-  const updatedProxy = await upgrades.upgradeProxy(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, MyContractV2Factory, { call: "initializeV2" });
+  const updatedProxy = await upgrades.upgradeProxy(process.env.NEXT_PUBLIC_HODL_NFT_ADDRESS, MyContractV2Factory, { 
+    call: { fn: "initializeV3", args: ["0x69015912AA33720b842dCD6aC059Ed623F28d9f7"] },
+  });
   await updatedProxy.deployed();
 
 }
