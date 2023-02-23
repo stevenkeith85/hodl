@@ -200,11 +200,11 @@ export const MintTokenAction = ({
               disabled={!data}
               color="primary"
               onClick={() => {
-                if (data?.allowed) {
-                  mintGasless();
-                } else {
+                // if (data?.allowed) {
+                //   mintGasless();
+                // } else {
                   mint();
-                }
+                // }
               }}
               sx={{
                 paddingY: 0.75,

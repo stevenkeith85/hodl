@@ -50,6 +50,8 @@ export const AddComment: FC<AddCommentProps> = ({
     const { signedInAddress } = useContext(SignedInContext);
     const { commentingOn, setCommentingOn } = useContext(CommentsContext);
 
+    const [suggestions, setSuggestions] = useState([]);
+
     const [addComment] = useAddComment();
     const theme = useTheme();
     const [open, setOpen] = useState(false);
@@ -146,6 +148,7 @@ export const AddComment: FC<AddCommentProps> = ({
                                         commentingOn.object === "comment" &&
                                         <QuoteComment id={commentingOn.objectId} color={commentingOn.color} reset={reset} />
                                     }
+                                    { JSON.stringify(suggestions)}
                                     <TextareaAutosize
                                         style={{
                                             padding: 16,
@@ -155,7 +158,20 @@ export const AddComment: FC<AddCommentProps> = ({
                                                 await submitForm();
                                             }
                                         }}
-                                        onChange={(e) => {
+                                        onChange={async (e) => {
+
+                                            const match = e.target.value.match(/@([\d\w._]+)$/);
+
+                                            if (match) {
+                                                const prefix = match[1];
+
+                                                const { suggestions } = await fetch(`http://hodlmymoon/api/autocomplete/nicknames?prefix=${prefix}`).then(r => r.json());
+
+                                                setSuggestions(suggestions);
+                                            } else {
+                                                setSuggestions([])
+                                            }
+                                            
                                             setFieldValue('comment', e.target.value);
                                         }}
                                         autoComplete='off'
