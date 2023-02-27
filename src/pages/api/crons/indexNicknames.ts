@@ -43,12 +43,12 @@ const getNicknames = async () => {
 }
 
 
-route.post(async (req, res: NextApiResponse) => {
+route.get(async (req, res: NextApiResponse) => {
 
-    if (req.query.secret !== process.env.ZEPLO_SECRET) {
-        console.log("endpoint not called via our message queue");
-        return res.status(401).json({ message: 'unauthenticated' });
-    }
+    // if (req.query.secret !== process.env.ZEPLO_SECRET) {
+    //     console.log("endpoint not called via our message queue");
+    //     return res.status(401).json({ message: 'unauthenticated' });
+    // }
 
     const nicknames = await getNicknames();
 

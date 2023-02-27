@@ -3,13 +3,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAsString } from "../../../lib/getAsString";
 import { zRank } from '../../../lib/database/rest/zRank';
 import { zRange } from '../../../lib/database/rest/zRange';
+import { mGet } from '../../../lib/database/rest/mGet';
 
 
 // prefix is the substring to look for. i.e. "ste" for "steven" or "steve"
 // count is the number of suggestions we'd like to offer
 export const getSuggestions = async (prefix: string, count: number = 4) => {
 
-  const results = [];
+  const results: string[] = [];
 
   if (!prefix) {
     return results;
@@ -23,7 +24,7 @@ export const getSuggestions = async (prefix: string, count: number = 4) => {
   const rangelen = 100;
 
   while (results.length !== count) {
-    const range = await zRange('nicknames', start, start + rangelen -1, {});    
+    const range = await zRange('nicknames', start, start + rangelen - 1, {});
     start += rangelen;
 
     // if there's no suggestions in this range, we are done
@@ -42,12 +43,21 @@ export const getSuggestions = async (prefix: string, count: number = 4) => {
 
       if (entry.endsWith('*') && results.length !== count) {
         // full words end with a '*', and we want a maximum of count suggestions
-        results.push(entry.slice(0, -1)); 
+        results.push(entry.slice(0, -1));
       }
     };
   }
 
-  return results;
+  // TODO: Is it possible to end up with no results at this stage? Probably not, but just being defensive here
+  if (!results.length) {
+    return [];
+  }
+
+  
+  // @ts-ignore
+  const addresses = await mGet(...results.map(nickname => `nickname:${nickname}`));
+
+  return results.map((nickname,i) => ({ nickname, address: addresses[i]}) );
 }
 
 
