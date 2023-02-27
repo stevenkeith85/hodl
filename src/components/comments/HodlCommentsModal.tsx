@@ -9,6 +9,12 @@ export default function HodlCommentsModal({ open, setOpen }) {
     const router = useRouter();
     return (
         <Dialog
+            PaperProps={{
+                sx: {
+                    overflow: 'visible'
+                }
+            }}
+
             maxWidth="sm"
             fullWidth
             disableRestoreFocus={true}
@@ -34,6 +40,6 @@ export default function HodlCommentsModal({ open, setOpen }) {
                     height="350px"
                 />
             </Box>
-        </Dialog>
+        </Dialog >
     )
 }
