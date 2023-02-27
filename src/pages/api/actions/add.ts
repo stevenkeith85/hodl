@@ -15,6 +15,7 @@ import axios from "axios";
 import { getComment } from "../../../lib/database/rest/getComment";
 import { getListingFromBlockchain } from "../contracts/market/listing/[tokenId]";
 import { getTokenFromBlockchain } from "../contracts/token/[tokenId]";
+import { addToZeplo } from "../../../lib/addToZeplo";
 
 const route = apiRoute();
 const client = Redis.fromEnv()
@@ -190,11 +191,42 @@ export const addAction = async (action: HodlAction) => {
     }
   }
 
-  // Who: The token author if the action is about a token; or the comment author if the action is about the comment
+  if (action.action === ActionTypes.Tagged) {
+    if (!action?.metadata?.address) {
+      return;
+    }
+    return await addNotification(action.metadata.address, action);
+  }
+
+  // Who: 
+  // The token author if the action is about a token; or 
+  // the comment author if the action is about the comment; or
+  // any user who has been 'tagged' in the comment
   if (action.action === ActionTypes.Commented) {
 
     const comment: HodlComment = await getComment(action.objectId);
 
+    // Tagged...
+    const mentionedInComment = Array.from(new Set(comment.comment.match(/0x[A-Fa-f0-9]{40}/g)));
+
+    for (let address of mentionedInComment) {
+      // subject tagged metadata.address in a comment
+      const tagged = {
+        subject: action.subject,
+        action: ActionTypes.Tagged,
+        object: "comment",
+        objectId: comment.id,
+        metadata: {
+          address // The person tagged
+        }
+      };
+  
+      addToZeplo(
+        'api/actions/add',
+        tagged,
+      );
+    }
+  
     if (comment?.object === "token") { // the comment was about a token, tell the token owner.
 
       // We just use the cache value here; as the worst thing that could happen is we tell

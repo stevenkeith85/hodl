@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { enqueueSnackbar } from 'notistack';
 import { mintToken, mintTokenGasless } from '../../lib/nft';
 import { MintTokenModal } from '../modals/MintTokenModal';

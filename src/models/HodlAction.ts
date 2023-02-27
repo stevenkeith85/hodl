@@ -13,6 +13,7 @@ export enum ActionTypes {
     Liked = 'liked', // token or comment liked
     Commented = 'commented', // token or comment commented on - maybe should just be 'commented'
     Followed = 'followed', // address has been followed
+    Tagged = 'tagged'
 }
 
 // These map to the Redis collection names
@@ -30,6 +31,7 @@ export const ActionSetMembers = {
         ActionTypes.Liked,
         ActionTypes.Commented,
         ActionTypes.Followed,
+        ActionTypes.Tagged
     ],
     [ActionSet.Feed]: [
         ActionTypes.Added, 
@@ -41,7 +43,8 @@ export const ActionSetMembers = {
         ActionTypes.Commented,
         ActionTypes.Followed,
         ActionTypes.Listed, // user needs alerted when the blockchain transaction has completed
-        ActionTypes.Delisted // user needs alerted when the blockchain transaction has completed
+        ActionTypes.Delisted, // user needs alerted when the blockchain transaction has completed
+        ActionTypes.Tagged
     ]
 }
 
@@ -64,7 +67,7 @@ export interface HodlAction {
     object: "token" | "comment" | "address"; // the type that was interacted with. We should change "address" to "user" to be more consistent with our terminology / allow us to share types over the app (DDD)
     objectId?: number | string; // if object is (token | comment) then it will a numeric id (e.g. liked a token); otherwise it will be a wallet address (e.g. followed an address)
 
-    metadata?: any; // an object that is ideally only used for ephemeral data that we can't easily look up. e.g. price a token was listed at
+    metadata?: any;
 }
 
 export interface HodlActionViewModel {

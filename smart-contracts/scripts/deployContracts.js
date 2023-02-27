@@ -11,7 +11,11 @@ async function main() {
 
   // Wrap the provider so we can override fee data.
   const provider = new ethers.providers.FallbackProvider([ethers.provider], 1);
+  
   provider.getFeeData = async () => FEE_DATA;
+
+  // For Ganache
+  // const provider = new ethers.providers.JsonRpcProvider(process.env.GANACHE_URL);
 
   // Create the signer for the private key, connected to the provider with hardcoded fee data
   const signer = (new ethers.Wallet(process.env.WALLET_PRIVATE_KEY)).connect(provider);

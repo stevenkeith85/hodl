@@ -18,6 +18,7 @@ import { FollowButtonLoading } from '../profile/FollowButtonLoading';
 import { UserAvatarAndHandle } from '../avatar/UserAvatarAndHandle';
 import { ProfileNameOrAddress } from '../avatar/ProfileNameOrAddress';
 import { SignedInContext } from '../../contexts/SignedInContext';
+import { insertProfileLinks } from '../../lib/insertProfileLinks';
 
 const AssetThumbnail = dynamic(
     () => import('../AssetThumbnail').then(mod => mod.AssetThumbnail),
@@ -40,6 +41,7 @@ const FollowButton = dynamic(
 const likedToken = item => item.action === ActionTypes.Liked && item.object === "token";
 const likedDeletedComment = item => item.action === ActionTypes.Liked && item.object === "comment" && item.comment === null;
 const likedComment = item => item.action === ActionTypes.Liked && item.object === "comment" && item.comment !== null;
+const taggedInComment = item => item.action === ActionTypes.Tagged;
 const madeDeletedComment = item => item.action === ActionTypes.Commented && item.object === "comment" && item.comment === null;
 const commentedOnToken = item => item.action === ActionTypes.Commented && item.object === "comment" && item.comment && item.comment.object == "token";
 const repliedToComment = item => item.action === ActionTypes.Commented && item.object === "comment" && item.comment && item.comment.object == "comment";
@@ -54,10 +56,13 @@ const followed = item => item.action === ActionTypes.Followed;
 // Components
 const LikedToken = () => <>liked your token.</>
 const LikedDeletedComment = () => <>liked your comment, that has now been deleted.</>
-const LikedComment = ({ item }) => <>{`liked your comment: ${truncateText(item?.comment?.comment, 70)}.`}</>
+const LikedComment = ({ item }) => <>{insertProfileLinks(`liked your comment: ${truncateText(item?.comment?.comment, 70)}.`)}</>
+const TaggedInComment = ({ item }) => <>
+    mentioned you in a comment
+</>
 const MadeDeletedComment = () => <>commented on your token: [deleted]</>
-const CommentedOnToken = ({ item }) => <>{`commented on your token: ${truncateText(item?.comment?.comment, 70)}.`}</>
-const RepliedToComment = ({ item }) => <>{`replied: ${truncateText(item?.comment?.comment, 70)}.`}</>
+const CommentedOnToken = ({ item }) => <>{insertProfileLinks(`commented on your token: ${truncateText(item?.comment?.comment, 70)}.`)}</>
+const RepliedToComment = ({ item }) => <>{insertProfileLinks(`replied: ${truncateText(item?.comment?.comment, 70)}.`)}</>
 
 const MintedToken = () => <>minted a token on the blockchain</>
 const ListedToken = ({ item }) => <>listed a token on the market for <MaticPrice price={item?.metadata?.price} color="black" fontSize={14} size={14} sx={{ marginLeft: 0.5 }} /></>
@@ -132,7 +137,6 @@ const NotificationLink: React.FC<NotificationLinkProps> = ({ item }) => {
                     fontWeight={600}
                     you={item?.subject === address}
                 />}
-
         </Box>
         {
             likedToken(item) &&
@@ -153,6 +157,15 @@ const NotificationLink: React.FC<NotificationLinkProps> = ({ item }) => {
             <Link href={`/nft/${item?.comment.tokenId}?comment=${item?.comment?.id}`}>
                 <MessageWithAvatarAndTime item={item}>
                     <LikedComment item={item} />
+                </MessageWithAvatarAndTime>
+            </Link>
+        }
+        {
+            taggedInComment(item) &&
+            <Link href={`/nft/${item?.comment.tokenId}?comment=${item?.comment?.id}`}
+                >
+                <MessageWithAvatarAndTime item={item}>
+                    <TaggedInComment item={item} />
                 </MessageWithAvatarAndTime>
             </Link>
         }
