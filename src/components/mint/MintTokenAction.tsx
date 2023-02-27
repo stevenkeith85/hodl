@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { enqueueSnackbar } from 'notistack';
 import { mintToken, mintTokenGasless } from '../../lib/nft';
 import { MintTokenModal } from '../modals/MintTokenModal';
@@ -200,11 +200,11 @@ export const MintTokenAction = ({
               disabled={!data}
               color="primary"
               onClick={() => {
-                // if (data?.allowed) {
-                //   mintGasless();
-                // } else {
+                if (data?.allowed) {
+                  mintGasless();
+                } else {
                   mint();
-                // }
+                }
               }}
               sx={{
                 paddingY: 0.75,
