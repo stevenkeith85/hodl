@@ -246,6 +246,7 @@ export const AddComment: FC<AddCommentProps> = ({
                                             <Box>
                                                 {suggestions?.map((suggestion, index) =>
                                                     <Box
+                                                        key={index}
                                                         sx={{
                                                             background: selectedSuggestionIndex === index ? '#fafafa' : 'white',
                                                             padding: 2,
